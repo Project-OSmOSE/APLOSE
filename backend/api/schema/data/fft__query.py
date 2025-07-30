@@ -16,7 +16,7 @@ class FFTNode(ApiObjectType):
         interfaces = (relay.Node,)
 
 
-class FFTQuery(ObjectType):
+class FFTQuery(ObjectType):  # pylint: disable=too-few-public-methods
     """FFT queries"""
 
     all_ffts = AuthenticatedDjangoConnectionField(FFTNode)

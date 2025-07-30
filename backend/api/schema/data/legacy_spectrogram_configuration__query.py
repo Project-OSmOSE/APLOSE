@@ -16,7 +16,9 @@ class LegacySpectrogramConfigurationNode(ApiObjectType):
         interfaces = (relay.Node,)
 
 
-class LegacySpectrogramConfigurationQuery(ObjectType):
+class LegacySpectrogramConfigurationQuery(
+    ObjectType
+):  # pylint: disable=too-few-public-methods
     """LegacySpectrogramConfiguration queries"""
 
     all_legacy_spectrogram_configurations = AuthenticatedDjangoConnectionField(

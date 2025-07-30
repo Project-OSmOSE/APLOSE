@@ -27,7 +27,7 @@ class MultiLinearScaleNode(ApiObjectType):
         interfaces = (relay.Node,)
 
 
-class ScalesQuery(ObjectType):
+class ScalesQuery(ObjectType):  # pylint: disable=too-few-public-methods
     """Scales queries"""
 
     all_linear_scales = AuthenticatedDjangoConnectionField(LinearScaleNode)

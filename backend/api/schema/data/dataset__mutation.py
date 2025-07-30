@@ -25,7 +25,10 @@ from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 
 
 class ImportDatasetMutation(Mutation):
+    """Import dataset mutation"""
+
     class Arguments:
+        # pylint: disable=too-few-public-methods, missing-class-docstring
         name = String(required=True)
         path = String(required=True)
         legacy = Boolean()
@@ -34,20 +37,14 @@ class ImportDatasetMutation(Mutation):
 
     @GraphQLResolve(permission=GraphQLPermissions.STAFF_OR_SUPERUSER)
     @transaction.atomic
-    def mutate(root, info, name, path, legacy):
-        if not Dataset.objects.filter(name=name, path=path).exists():
-            dataset: Dataset = Dataset.objects.create(
-                name=name,
-                path=path,
-                owner=info.context.user,
-                legacy=legacy,
-            )
-        else:
-            dataset: Dataset = Dataset.objects.get(
-                name=name,
-                path=path,
-                legacy=legacy,
-            )
+    def mutate(self, info, name, path, legacy):
+        """Do the mutation: create the dataset and all of its analysis"""
+        dataset, _ = Dataset.objects.get_or_create(
+            name=name,
+            path=path,
+            owner=info.context.user,
+            legacy=legacy,
+        )
         if legacy:
             datasets_csv_path = settings.DATASET_IMPORT_FOLDER / settings.DATASET_FILE
             if not exists(datasets_csv_path):
@@ -96,20 +93,23 @@ class ImportDatasetMutation(Mutation):
         else:
             json_path = join(path, "dataset.json")
             d = OSEkitDataset.from_json(Path(json_path))
-            for [name, d] in d.datasets.items():
+            for [analysis, d] in d.datasets.items():
                 if d["class"] != SpectroDataset.__name__:
                     continue
                 analysis_mutation = ImportSpectrogramAnalysisMutation()
                 analysis_mutation.mutate(
                     info,
-                    name=name,
+                    dataset_name=dataset.name,
+                    dataset_path=dataset.path,
+                    legacy=dataset.legacy,
+                    name=analysis,
                     path=str(d["dataset"].folder).split(path)[1].strip("\\").strip("/"),
                 )
 
         return ImportDatasetMutation(ok=True)
 
 
-class DatasetMutation(ObjectType):
+class DatasetMutation(ObjectType):  # pylint: disable=too-few-public-methods
     """Dataset mutations"""
 
     import_dataset = ImportDatasetMutation.Field()

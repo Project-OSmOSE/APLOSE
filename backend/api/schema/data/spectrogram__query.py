@@ -16,7 +16,7 @@ class SpectrogramNode(ApiObjectType):
         interfaces = (relay.Node,)
 
 
-class SpectrogramQuery(ObjectType):
+class SpectrogramQuery(ObjectType):  # pylint: disable=too-few-public-methods
     """Spectrogram queries"""
 
     all_spectrograms = AuthenticatedDjangoConnectionField(SpectrogramNode)

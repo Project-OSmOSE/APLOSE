@@ -16,7 +16,7 @@ class ColormapNode(ApiObjectType):
         interfaces = (relay.Node,)
 
 
-class ColormapQuery(ObjectType):
+class ColormapQuery(ObjectType):  # pylint: disable=too-few-public-methods
     """Colormap queries"""
 
     all_colormaps = AuthenticatedDjangoConnectionField(ColormapNode)
