@@ -26,7 +26,7 @@ const enhancedAPI = api.enhanceEndpoints<TagType, apiType>({
       ]
     },
     postAnalysisForImport: {
-      invalidatesTags: [ 'Dataset' ]
+      invalidatesTags: (_, error) => error ? [] : [ 'Dataset' ]
     }
   }
 })

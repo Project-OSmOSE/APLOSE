@@ -4,12 +4,15 @@ import { useSearchedData } from "@/service/ui/search.ts";
 import { IonNote, IonSearchbar, IonSpinner, SearchbarInputEventDetail } from "@ionic/react";
 import { Modal, ModalFooter, ModalHeader } from "@/components/ui";
 import { DatasetAPI, ImportDataset } from "@/features/data/dataset/api";
-import { DatasetCheckbox } from "./DatasetCheckbox.tsx";
+import { DatasetImportRow } from "./ImportRow.tsx";
 import { DatasetImportHelpButton } from "./HelpButton.tsx";
 
 export const ImportDatasetModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
-  const { data: availableDatasets, isLoading } = DatasetAPI.endpoints.getAvailableDatasetsForImport.useQuery()
+  const {
+    data: availableDatasets,
+    isLoading
+  } = DatasetAPI.endpoints.getAvailableDatasetsForImport.useQuery({}, { refetchOnMountOrArgChange: true })
 
   const [ imports, setImports ] = useState<Map<string, string[]>>(new Map());
 
@@ -72,11 +75,11 @@ export const ImportDatasetModal: React.FC<{ onClose: () => void }> = ({ onClose 
           <IonSearchbar ref={ searchbar } onIonInput={ onSearchUpdated } onIonClear={ onSearchCleared }/>
 
           <div className={ styles.content }>
-            { searchDatasets.map(d => <DatasetCheckbox key={ [ d.name, d.path ].join(' ') }
-                                                       dataset={ d }
-                                                       importedAnalysis={ imports.get(d.name) }
-                                                       search={ search }
-                                                       onImported={ onDatasetImported }/>) }
+            { searchDatasets.map(d => <DatasetImportRow key={ [ d.name, d.path ].join(' ') }
+                                                        dataset={ d }
+                                                        importedAnalysis={ imports.get(d.name) }
+                                                        search={ search }
+                                                        onImported={ onDatasetImported }/>) }
           </div>
 
           <ModalFooter>

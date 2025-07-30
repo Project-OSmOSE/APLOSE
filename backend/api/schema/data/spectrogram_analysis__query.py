@@ -12,6 +12,8 @@ from graphene import (
     String,
     Int,
     DateTime,
+    List,
+    ID,
 )
 from osekit.public_api.dataset import (
     Dataset as OSEkitDataset,
@@ -19,8 +21,13 @@ from osekit.public_api.dataset import (
 )
 from typing_extensions import deprecated
 
-from backend.api.models import SpectrogramAnalysis
-from backend.utils.schema import AuthenticatedDjangoConnectionField, ApiObjectType
+from backend.api.models import SpectrogramAnalysis, Dataset
+from backend.utils.schema import (
+    AuthenticatedDjangoConnectionField,
+    ApiObjectType,
+    GraphQLPermissions,
+    GraphQLResolve,
+)
 from .spectrogram__query import SpectrogramNode
 
 
@@ -165,3 +172,22 @@ class SpectrogramAnalysisQuery(ObjectType):  # pylint: disable=too-few-public-me
     all_spectrogram_analysis = AuthenticatedDjangoConnectionField(
         SpectrogramAnalysisNode
     )
+
+    all_spectrogram_analysis_for_import = List(
+        ImportSpectrogramAnalysisType, dataset_id=ID(required=True)
+    )
+
+    @GraphQLResolve(permission=GraphQLPermissions.STAFF_OR_SUPERUSER)
+    def resolve_all_spectrogram_analysis_for_import(self, _, dataset_id: int):
+        """Get all datasets for import"""
+        dataset = Dataset.objects.get(pk=dataset_id)
+
+        analysis = resolve_all_spectrogram_analysis_available_for_import(
+            dataset=dataset.get_osekit_dataset(), folder=dataset.path
+        )
+        legacy_analysis = legacy_resolve_all_spectrogram_analysis_available_for_import(
+            dataset_name=dataset.name,
+            dataset_path=dataset.path,
+            config_folder=dataset.get_config_folder(),
+        )
+        return analysis + legacy_analysis

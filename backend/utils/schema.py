@@ -9,14 +9,13 @@ from graphene_django import DjangoObjectType
 from graphene_django.views import GraphQLView
 from graphene_django_pagination import DjangoPaginationConnectionField
 from graphql import GraphQLResolveInfo
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.decorators import (
     permission_classes,
     authentication_classes,
     api_view,
 )
 from rest_framework.exceptions import APIException
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
 from typing_extensions import Optional
@@ -126,7 +125,11 @@ class ApiObjectType(DjangoObjectType):
     @classmethod
     def _finalize_queryset(cls, queryset):
         """Finalize queryset select, prefetch, annotation"""
-        return queryset.select_related(*cls.select).prefetch_related(*cls.prefetch).annotate(**cls.annotations)
+        return (
+            queryset.select_related(*cls.select)
+            .prefetch_related(*cls.prefetch)
+            .annotate(**cls.annotations)
+        )
 
 
 class DRFAuthenticatedGraphQLView(GraphQLView):
@@ -140,7 +143,7 @@ class DRFAuthenticatedGraphQLView(GraphQLView):
     @classmethod
     def as_view(cls, *args, **kwargs):
         view = super().as_view(*args, **kwargs)
-        view = permission_classes((IsAuthenticated,))(view)
+        view = permission_classes((permissions.AllowAny,))(view)
         view = authentication_classes(api_settings.DEFAULT_AUTHENTICATION_CLASSES)(view)
         view = api_view(["GET", "POST"])(view)
         return view

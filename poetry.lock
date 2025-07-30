@@ -1015,13 +1015,13 @@ files = [
 
 [[package]]
 name = "metadatax"
-version = "0.4.10"
+version = "0.4.12"
 description = "PAM acquisition metadata"
 optional = false
 python-versions = ">=3.9,<4.0"
 groups = ["main"]
 files = [
-    {file = "metadatax-0.4.10.tar.gz", hash = "sha256:360541f264ede70efb7f245b912974388ccc0803d3c36a6239f35f7042af8381"},
+    {file = "metadatax-0.4.12.tar.gz", hash = "sha256:7ac47909a26c5366d9486c894d611c318450392d1737d0763f0a4a94ec2a4a9c"},
 ]
 
 [package.dependencies]
@@ -1033,13 +1033,14 @@ django-filter = ">=2"
 django-model-prefix = ">=1.1.0,<2.0.0"
 djangorestframework = ">=3.15.1,<4.0.0"
 graphene-django = ">=3.2.3,<4.0.0"
+graphene-django-optimizer = ">=0.10.0,<0.11.0"
 graphene-django-pagination = {url = "https://github.com/instruct-br/graphene-django-pagination/archive/master.zip"}
 psycopg2-binary = ">=2.8.6,<3.0.0"
 python-dotenv = ">=1.0.1,<2.0.0"
 
 [package.source]
 type = "url"
-url = "https://github.com/PAM-Standardization/metadatax/releases/download/v0.4.10/metadatax-0.4.10.tar.gz"
+url = "https://github.com/PAM-Standardization/metadatax/releases/download/v0.4.12/metadatax-0.4.12.tar.gz"
 
 [[package]]
 name = "mypy-extensions"
@@ -2189,4 +2190,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "bca6e10491373be57cc71bfbecd799bef06caa50b425fbd2df26e79bc367f1b6"
+content-hash = "d9e6b89b0e1abb445f2f8f876ba77e817656c57b97ed076094b630cb59470e4c"

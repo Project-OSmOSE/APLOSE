@@ -788,7 +788,6 @@ export type AuthorNode = Node & {
   __typename?: 'AuthorNode';
   bibliography: BibliographyNode;
   contact?: Maybe<ContactNode>;
-  /** The ID of the object */
   id: Scalars['ID']['output'];
   institutions: InstitutionNodeConnection;
   order: Scalars['Int']['output'];
@@ -4642,6 +4641,7 @@ export type Query = {
   allSounds?: Maybe<SoundNodeNodeConnection>;
   allSources?: Maybe<SourceNodeNodeConnection>;
   allSpectrogramAnalysis?: Maybe<SpectrogramAnalysisNodeNodeConnection>;
+  allSpectrogramAnalysisForImport?: Maybe<Array<Maybe<ImportSpectrogramAnalysisType>>>;
   allSpectrograms?: Maybe<SpectrogramNodeNodeConnection>;
   allStorageSpecifications?: Maybe<StorageSpecificationNodeNodeConnection>;
   allTags?: Maybe<TagNodeNodeConnection>;
@@ -5979,6 +5979,12 @@ export type QueryAllSpectrogramAnalysisArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
   ordering?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Global query */
+export type QueryAllSpectrogramAnalysisForImportArgs = {
+  datasetId: Scalars['ID']['input'];
 };
 
 

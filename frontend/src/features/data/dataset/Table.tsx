@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import styles from './styles.module.scss'
 import { IonNote, IonSpinner } from "@ionic/react";
 import { dateToString, getErrorMessage } from "@/service/function.ts";
 import { Table, TableContent, TableDivider, TableHead, WarningText } from "@/components/ui";
@@ -7,14 +8,17 @@ import { DatasetNameAccessLink } from "./NameAccessLink";
 
 export const DatasetTable: React.FC = () => {
 
-  const { data: datasets, isLoading, error } = DatasetAPI.endpoints.getDatasets.useQuery();
+  const { data: datasets, isLoading, error, isFetching } = DatasetAPI.endpoints.getDatasets.useQuery();
 
   if (isLoading) return <IonSpinner/>
   if (error) <WarningText>{ getErrorMessage(error) }</WarningText>
   if (!datasets || datasets.length === 0) return <IonNote color='medium'>No datasets</IonNote>
 
   return <Table columns={ 9 }>
-    <TableHead topSticky isFirstColumn={ true }>Name</TableHead>
+    <TableHead topSticky isFirstColumn={ true }>
+      Name
+      { isFetching && <IonSpinner className={ styles.gridSpinner }/> }
+    </TableHead>
     <TableHead topSticky>Created at</TableHead>
     <TableHead topSticky>Number of analysis</TableHead>
     <TableHead topSticky>Number of files</TableHead>
