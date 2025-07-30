@@ -39,3 +39,9 @@ query getDatasetByID($id: ID!) {
         }
     }
 }
+
+mutation postDatasetForImport($name: String!, $path: String!, $legacy: Boolean) {
+    importDataset(name: $name, path: $path, legacy: $legacy) {
+        ok
+    }
+}

@@ -1183,19 +1183,6 @@ type Query {
     after: String
     first: Int
     last: Int
-    folder: String
-    zoomLevel: Int
-    hpFilterMinFrequency: Int
-    dataNormalization: String
-    frequencyResolution: Float
-    spectrogramNormalization: String
-    zscoreDuration: String
-    windowType: String
-    peakVoltage: Float
-    sensitivityDb: Float
-    temporalResolution: Float
-    linearFrequencyScale: ID
-    multiLinearFrequencyScale: ID
   ): LegacySpectrogramConfigurationNodeNodeConnection
   allLinearScales(
     """Query limit"""
@@ -2527,6 +2514,7 @@ type DatasetNode implements Node {
   end: DateTime
 }
 
+"""User node"""
 type UserNode implements Node {
   id: ID!
   password: String!
@@ -2741,6 +2729,9 @@ type ColormapNode implements Node {
 type LegacySpectrogramConfigurationNode implements Node {
   id: ID!
   folder: String!
+  audioFilesSubtypes: [String!]
+  channelCount: Int
+  fileOverlap: Int
   zoomLevel: Int!
   hpFilterMinFrequency: Int!
   dataNormalization: String!
@@ -2751,6 +2742,7 @@ type LegacySpectrogramConfigurationNode implements Node {
   peakVoltage: Float
   sensitivityDb: Float
   temporalResolution: Float
+  gainDb: Float
   linearFrequencyScale: LinearScaleNode
   multiLinearFrequencyScale: MultiLinearScaleNode
   spectrogramAnalysis(
@@ -2777,7 +2769,7 @@ type LinearScaleNode implements Node {
   minValue: Float!
   maxValue: Float!
   outerScales(offset: Int, before: String, after: String, first: Int, last: Int, name: String, innerScales: ID): MultiLinearScaleNodeConnection!
-  legacyspectrogramconfigurationSet(offset: Int, before: String, after: String, first: Int, last: Int, folder: String, zoomLevel: Int, hpFilterMinFrequency: Int, dataNormalization: String, frequencyResolution: Float, spectrogramNormalization: String, zscoreDuration: String, windowType: String, peakVoltage: Float, sensitivityDb: Float, temporalResolution: Float, linearFrequencyScale: ID, multiLinearFrequencyScale: ID): LegacySpectrogramConfigurationNodeConnection!
+  legacyspectrogramconfigurationSet(offset: Int, before: String, after: String, first: Int, last: Int): LegacySpectrogramConfigurationNodeConnection!
 }
 
 type MultiLinearScaleNodeConnection {
@@ -2802,7 +2794,7 @@ type MultiLinearScaleNode implements Node {
   id: ID!
   name: String
   innerScales(offset: Int, before: String, after: String, first: Int, last: Int, name: String, ratio: Float, minValue: Float, maxValue: Float): LinearScaleNodeConnection!
-  legacyspectrogramconfigurationSet(offset: Int, before: String, after: String, first: Int, last: Int, folder: String, zoomLevel: Int, hpFilterMinFrequency: Int, dataNormalization: String, frequencyResolution: Float, spectrogramNormalization: String, zscoreDuration: String, windowType: String, peakVoltage: Float, sensitivityDb: Float, temporalResolution: Float, linearFrequencyScale: ID, multiLinearFrequencyScale: ID): LegacySpectrogramConfigurationNodeConnection!
+  legacyspectrogramconfigurationSet(offset: Int, before: String, after: String, first: Int, last: Int): LegacySpectrogramConfigurationNodeConnection!
 }
 
 type LinearScaleNodeConnection {
@@ -4103,6 +4095,8 @@ type Mutation {
   deleteSource(id: ID): DeleteSourceMutation
   postSound(input: PostSoundMutationInput!): PostSoundMutationPayload
   deleteSound(id: ID): DeleteSoundMutation
+  importSpectrogramAnalysis(datasetName: String!, datasetPath: String!, legacy: Boolean, name: String!, path: String!): ImportSpectrogramAnalysisMutation
+  importDataset(legacy: Boolean, name: String!, path: String!): ImportDatasetMutation
 }
 
 type PostSourceMutationPayload {
@@ -4170,5 +4164,13 @@ input PostSoundMutationInput {
 }
 
 type DeleteSoundMutation {
+  ok: Boolean
+}
+
+type ImportSpectrogramAnalysisMutation {
+  ok: Boolean
+}
+
+type ImportDatasetMutation {
   ok: Boolean
 }

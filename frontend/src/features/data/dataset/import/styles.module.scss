@@ -8,9 +8,9 @@
     gap: 0.5rem;
     overflow: auto;
 
-    .allDatasets, .dataset, .analysis {
+    .dataset, .analysis {
       display: grid;
-      grid-template-columns: auto 1fr;
+      grid-template-columns: 3rem 1fr;
       gap: 0.5rem;
       align-items: center;
       border-radius: 0.5rem;
@@ -24,8 +24,15 @@
     }
 
     .dataset {
-      .checkbox {
+      .import {
         grid-row: 1 / 2;
+        justify-self: center;
+
+        &.icon {
+          width: 1.5rem !important;
+          height: 1.5rem !important;
+          color: var(--ion-color-success);
+        }
       }
       .analysis {
         grid-column: 2;

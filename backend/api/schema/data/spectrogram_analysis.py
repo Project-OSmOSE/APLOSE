@@ -5,7 +5,16 @@ from os.path import join, isfile, exists
 from django.conf import settings
 from django.db.models import Count, Min, Max
 from django_filters import OrderingFilter, FilterSet, NumberFilter
-from graphene import relay, ObjectType, NonNull, String, Int, DateTime
+from graphene import (
+    relay,
+    ObjectType,
+    NonNull,
+    String,
+    Int,
+    DateTime,
+    Mutation,
+    Boolean,
+)
 from osekit.public_api.dataset import (
     Dataset as OSEkitDataset,
     SpectroDataset as OSEkitSpectroDataset,
@@ -152,9 +161,36 @@ def legacy_resolve_all_spectrogram_analysis_available_for_import(
     return available_analyses
 
 
+# ----- Queries
+
+
 class SpectrogramAnalysisQuery(ObjectType):  # pylint: disable=too-few-public-methods
     """SpectrogramAnalysis queries"""
 
     all_spectrogram_analysis = AuthenticatedDjangoConnectionField(
         SpectrogramAnalysisNode
     )
+
+
+# ----- Mutations
+
+
+class ImportSpectrogramAnalysisMutation(Mutation):
+    class Arguments:
+        dataset_name = String(required=True)
+        dataset_path = String(required=True)
+        legacy = Boolean()
+        name = String(required=True)
+        path = String(required=True)
+
+    ok = Boolean()
+
+    def mutate(root, info, dataset_name, dataset_path, legacy, name, path):
+        print("mutate", info, dataset_name, dataset_path, legacy, name, path)
+        ok = False
+
+
+class SpectrogramAnalysisMutation(ObjectType):
+    """SpectrogramAnalysis mutations"""
+
+    import_spectrogram_analysis = ImportSpectrogramAnalysisMutation.Field()

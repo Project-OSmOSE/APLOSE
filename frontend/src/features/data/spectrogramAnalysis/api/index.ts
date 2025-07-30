@@ -25,6 +25,9 @@ const enhancedAPI = api.enhanceEndpoints<TagType, apiType>({
         { type: 'SpectrogramAnalysis', id: `d${ datasetID }-ac${ annotationCampaignID }` }
       ]
     },
+    postAnalysisForImport: {
+      invalidatesTags: [ 'Dataset' ]
+    }
   }
 })
 

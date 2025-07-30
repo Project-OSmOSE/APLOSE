@@ -18,6 +18,7 @@ from graphene import (
     ID,
     Field,
     DateTime,
+    Mutation,
 )
 from graphql import GraphQLResolveInfo
 from osekit.public_api.dataset import (
@@ -36,8 +37,8 @@ from .spectrogram_analysis import (
     ImportSpectrogramAnalysisType,
     legacy_resolve_all_spectrogram_analysis_available_for_import,
     resolve_all_spectrogram_analysis_available_for_import,
+    SpectrogramAnalysisNode,
 )
-from .spectrogram_analysis import SpectrogramAnalysisNode
 
 
 class DatasetFilter(FilterSet):
@@ -177,6 +178,9 @@ def legacy_resolve_all_datasets_available_for_import() -> [ImportDatasetType]:
     return available_datasets
 
 
+# ----- Queries
+
+
 class DatasetQuery(ObjectType):
     """Dataset queries"""
 
@@ -197,3 +201,25 @@ class DatasetQuery(ObjectType):
         datasets = resolve_all_datasets_available_for_import()
         legacy_datasets = legacy_resolve_all_datasets_available_for_import()
         return datasets + legacy_datasets
+
+
+# ----- Mutations
+
+
+class ImportDatasetMutation(Mutation):
+    class Arguments:
+        name = String(required=True)
+        path = String(required=True)
+        legacy = Boolean()
+
+    ok = Boolean()
+
+    def mutate(root, info, name, path, legacy):
+        print("mutate", info, name, path, legacy)
+        ok = False
+
+
+class DatasetMutation(ObjectType):
+    """Dataset mutations"""
+
+    import_dataset = ImportDatasetMutation.Field()

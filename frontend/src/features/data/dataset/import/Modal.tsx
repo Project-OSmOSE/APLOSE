@@ -1,17 +1,8 @@
-import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import styles from "./styles.module.scss";
 import { useSearchedData } from "@/service/ui/search.ts";
-import {
-  IonButton,
-  IonCheckbox,
-  IonIcon,
-  IonNote,
-  IonSearchbar,
-  IonSpinner,
-  SearchbarInputEventDetail
-} from "@ionic/react";
+import { IonNote, IonSearchbar, IonSpinner, SearchbarInputEventDetail } from "@ionic/react";
 import { Modal, ModalFooter, ModalHeader } from "@/components/ui";
-import { cloudUploadOutline } from "ionicons/icons";
 import { DatasetAPI, ImportDataset } from "@/features/data/dataset/api";
 import { DatasetCheckbox } from "./DatasetCheckbox.tsx";
 import { DatasetImportHelpButton } from "./HelpButton.tsx";
@@ -20,15 +11,10 @@ export const ImportDatasetModal: React.FC<{ onClose: () => void }> = ({ onClose 
 
   const { data: availableDatasets, isLoading } = DatasetAPI.endpoints.getAvailableDatasetsForImport.useQuery()
 
+  const [ imports, setImports ] = useState<Map<string, string[]>>(new Map());
+
+
   const [ search, setSearch ] = useState<string | undefined>();
-  const [ selectAllDatasets, setSelectAllDatasets ] = useState<boolean>(false);
-  const [ datasetSelection, setDatasetSelection ] = useState<Map<string, string[]>>(new Map());
-  const datasetSelectionCount = useMemo(() => {
-    return [ ...datasetSelection.values() ].filter(analysis => analysis.length > 0).length;
-  }, [ datasetSelection ])
-  const analysisSelectionCount = useMemo(() => {
-    return [ ...datasetSelection.values() ].flatMap(a => a).length;
-  }, [ datasetSelection ])
 
   const searchDatasets = useSearchedData({
     items: availableDatasets ?? [],
@@ -43,13 +29,6 @@ export const ImportDatasetModal: React.FC<{ onClose: () => void }> = ({ onClose 
     searchbar.current?.getInputElement().then(input => input.focus())
   }, [ searchbar.current ]);
 
-  useEffect(() => {
-    if (!availableDatasets) return setSelectAllDatasets(false);
-    if (availableDatasets.length > datasetSelectionCount) return setSelectAllDatasets(false);
-    if (availableDatasets.flatMap(d => d.analysis).length > analysisSelectionCount) return setSelectAllDatasets(false);
-    setSelectAllDatasets(true)
-  }, [ datasetSelectionCount, analysisSelectionCount, availableDatasets ]);
-
   const onSearchUpdated = useCallback((event: CustomEvent<SearchbarInputEventDetail>) => {
     setSearch(event.detail.value ?? undefined);
   }, [])
@@ -58,19 +37,8 @@ export const ImportDatasetModal: React.FC<{ onClose: () => void }> = ({ onClose 
     setSearch(undefined);
   }, [])
 
-  const toggleSelectAllDatasets = useCallback(() => {
-    if (isLoading || !availableDatasets) return;
-    if (selectAllDatasets) {
-      setDatasetSelection(new Map<string, string[]>());
-    } else {
-      setDatasetSelection(new Map<string, string[]>(availableDatasets.map(d => [ d.name, d.analysis.map(a => a.name) ])));
-    }
-    setSelectAllDatasets(!selectAllDatasets)
-  }, [ isLoading, availableDatasets, selectAllDatasets ])
-
-  const onDatasetSelected = useCallback((dataset: ImportDataset) => {
-    setDatasetSelection(prevState => {
-      console.debug(prevState)
+  const onDatasetImported = useCallback((dataset: ImportDataset) => {
+    setImports(prevState => {
       if (prevState.get(dataset.name)) {
         return new Map<string, string[]>(
           [ ...prevState.entries() ]
@@ -86,22 +54,7 @@ export const ImportDatasetModal: React.FC<{ onClose: () => void }> = ({ onClose 
         return new Map<string, string[]>([ ...prevState.entries(), [ dataset.name, dataset.analysis.map(a => a.name) ] ])
       }
     });
-  }, [ isLoading, availableDatasets, selectAllDatasets, setDatasetSelection ])
-
-  const onDatasetUnSelected = useCallback((dataset: ImportDataset) => {
-    setDatasetSelection(prevState => {
-      return new Map<string, string[]>(
-        [ ...prevState.entries() ]
-          .map(([ datasetName, analysis ]) => {
-            if (datasetName !== dataset.name) return [ datasetName, analysis ];
-            return [
-              datasetName,
-              analysis.filter((a: string) => !dataset.analysis.map(a => a.name).includes(a))
-            ]
-          })
-      )
-    });
-  }, [ isLoading, availableDatasets, selectAllDatasets ])
+  }, [ isLoading, availableDatasets, setImports ])
 
   return (
     <Modal onClose={ onClose }
@@ -119,30 +72,17 @@ export const ImportDatasetModal: React.FC<{ onClose: () => void }> = ({ onClose 
           <IonSearchbar ref={ searchbar } onIonInput={ onSearchUpdated } onIonClear={ onSearchCleared }/>
 
           <div className={ styles.content }>
-              <div className={ styles.allDatasets } onClick={ toggleSelectAllDatasets }>
-                  <IonCheckbox checked={ selectAllDatasets } disabled={ isLoading }/>
-                  <span><b>All datasets</b><IonNote>{ availableDatasets && search && ` (${ searchDatasets.length }/${ availableDatasets.length } datasets)` }</IonNote></span>
-              </div>
-
             { searchDatasets.map(d => <DatasetCheckbox key={ [ d.name, d.path ].join(' ') }
                                                        dataset={ d }
+                                                       importedAnalysis={ imports.get(d.name) }
                                                        search={ search }
-                                                       disabled={ isLoading }
-                                                       selected={ datasetSelection.get(d.name) }
-                                                       onSelect={ onDatasetSelected }
-                                                       onUnSelect={ onDatasetUnSelected }/>) }
+                                                       onImported={ onDatasetImported }/>) }
           </div>
 
-          <ModalFooter className={ styles.buttons }>
+          <ModalFooter>
               <DatasetImportHelpButton/>
 
             { isLoading && <IonSpinner/> }
-            { datasetSelectionCount > 0 &&
-                <p>{ datasetSelectionCount } Dataset selected ({ analysisSelectionCount } analysis)</p> }
-              <IonButton onClick={ console.debug } disabled={ isLoading } color='primary' fill='solid'>
-                  <IonIcon slot='start' icon={ cloudUploadOutline }/>
-                  Import datasets
-              </IonButton>
           </ModalFooter>
 
       </Fragment> }

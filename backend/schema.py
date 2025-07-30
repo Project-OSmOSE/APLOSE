@@ -13,7 +13,7 @@ from metadatax.acquisition.schema.project import ProjectFilter
 from metadatax.acquisition.schema.project import ProjectNode as MetadataxProjectNode
 from metadatax.schema import Mutation as MetadataxMutation, Query as MetadataxQuery
 
-from .api.schema import APIQuery
+from .api.schema import APIQuery, APIMutation
 from .aplose.schema import AploseQuery
 from .osmosewebsite.schema import OSmOSEWebsiteQuery, WebsiteProjectNode
 
@@ -66,7 +66,9 @@ class Query(
 
 
 class Mutation(
-    MetadataxMutation, graphene.ObjectType
+    APIMutation,
+    MetadataxMutation,
+    graphene.ObjectType,
 ):  # pylint: disable=too-few-public-methods
     """Global mutation"""
 
