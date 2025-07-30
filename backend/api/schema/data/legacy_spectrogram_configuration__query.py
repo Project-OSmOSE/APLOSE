@@ -1,8 +1,8 @@
 """LegacySpectrogramConfiguration schema"""
-from graphene import relay
+from graphene import relay, ObjectType
 
 from backend.api.models import LegacySpectrogramConfiguration
-from backend.utils.schema import ApiObjectType
+from backend.utils.schema import ApiObjectType, AuthenticatedDjangoConnectionField
 
 
 class LegacySpectrogramConfigurationNode(ApiObjectType):
@@ -14,3 +14,11 @@ class LegacySpectrogramConfigurationNode(ApiObjectType):
         fields = "__all__"
         filter_fields = {}
         interfaces = (relay.Node,)
+
+
+class LegacySpectrogramConfigurationQuery(ObjectType):
+    """LegacySpectrogramConfiguration queries"""
+
+    all_legacy_spectrogram_configurations = AuthenticatedDjangoConnectionField(
+        LegacySpectrogramConfigurationNode
+    )

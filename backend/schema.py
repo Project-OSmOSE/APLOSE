@@ -3,6 +3,7 @@
 import graphene
 from django_filters import NumberFilter
 from graphene import relay, Field
+from graphene_django.debug import DjangoDebug
 from graphene_django_pagination import DjangoPaginationConnectionField
 from metadatax.acquisition.models import Deployment, Project
 from metadatax.acquisition.schema.deployment import (
@@ -58,6 +59,8 @@ class Query(
     graphene.ObjectType,
 ):
     """Global query"""
+
+    debug = graphene.Field(DjangoDebug, name="_debug")
 
     # pylint: disable=too-few-public-methods
 

@@ -1,8 +1,8 @@
 """Colormap model"""
-from graphene import relay
+from graphene import relay, ObjectType
 
 from backend.api.models import Colormap
-from backend.utils.schema import ApiObjectType
+from backend.utils.schema import ApiObjectType, AuthenticatedDjangoConnectionField
 
 
 class ColormapNode(ApiObjectType):
@@ -14,3 +14,9 @@ class ColormapNode(ApiObjectType):
         fields = "__all__"
         filter_fields = "__all__"
         interfaces = (relay.Node,)
+
+
+class ColormapQuery(ObjectType):
+    """Colormap queries"""
+
+    all_colormaps = AuthenticatedDjangoConnectionField(ColormapNode)

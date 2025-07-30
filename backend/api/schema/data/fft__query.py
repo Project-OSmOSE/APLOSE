@@ -1,8 +1,8 @@
 """FFT schema"""
-from graphene import relay
+from graphene import relay, ObjectType
 
 from backend.api.models import FFT
-from backend.utils.schema import ApiObjectType
+from backend.utils.schema import ApiObjectType, AuthenticatedDjangoConnectionField
 
 
 class FFTNode(ApiObjectType):
@@ -14,3 +14,9 @@ class FFTNode(ApiObjectType):
         fields = "__all__"
         filter_fields = "__all__"
         interfaces = (relay.Node,)
+
+
+class FFTQuery(ObjectType):
+    """FFT queries"""
+
+    all_ffts = AuthenticatedDjangoConnectionField(FFTNode)

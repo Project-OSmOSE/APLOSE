@@ -1,8 +1,8 @@
 """scales schema"""
-from graphene import relay
+from graphene import relay, ObjectType
 
 from backend.api.models import LinearScale, MultiLinearScale
-from backend.utils.schema import ApiObjectType
+from backend.utils.schema import ApiObjectType, AuthenticatedDjangoConnectionField
 
 
 class LinearScaleNode(ApiObjectType):
@@ -25,3 +25,10 @@ class MultiLinearScaleNode(ApiObjectType):
         fields = "__all__"
         filter_fields = "__all__"
         interfaces = (relay.Node,)
+
+
+class ScalesQuery(ObjectType):
+    """Scales queries"""
+
+    all_linear_scales = AuthenticatedDjangoConnectionField(LinearScaleNode)
+    all_multi_linear_scales = AuthenticatedDjangoConnectionField(MultiLinearScaleNode)

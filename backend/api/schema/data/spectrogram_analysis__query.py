@@ -12,8 +12,6 @@ from graphene import (
     String,
     Int,
     DateTime,
-    Mutation,
-    Boolean,
 )
 from osekit.public_api.dataset import (
     Dataset as OSEkitDataset,
@@ -23,7 +21,7 @@ from typing_extensions import deprecated
 
 from backend.api.models import SpectrogramAnalysis
 from backend.utils.schema import AuthenticatedDjangoConnectionField, ApiObjectType
-from .spectrogram import SpectrogramNode
+from .spectrogram__query import SpectrogramNode
 
 
 class SpectrogramAnalysisFilter(FilterSet):
@@ -161,36 +159,9 @@ def legacy_resolve_all_spectrogram_analysis_available_for_import(
     return available_analyses
 
 
-# ----- Queries
-
-
 class SpectrogramAnalysisQuery(ObjectType):  # pylint: disable=too-few-public-methods
     """SpectrogramAnalysis queries"""
 
     all_spectrogram_analysis = AuthenticatedDjangoConnectionField(
         SpectrogramAnalysisNode
     )
-
-
-# ----- Mutations
-
-
-class ImportSpectrogramAnalysisMutation(Mutation):
-    class Arguments:
-        dataset_name = String(required=True)
-        dataset_path = String(required=True)
-        legacy = Boolean()
-        name = String(required=True)
-        path = String(required=True)
-
-    ok = Boolean()
-
-    def mutate(root, info, dataset_name, dataset_path, legacy, name, path):
-        print("mutate", info, dataset_name, dataset_path, legacy, name, path)
-        ok = False
-
-
-class SpectrogramAnalysisMutation(ObjectType):
-    """SpectrogramAnalysis mutations"""
-
-    import_spectrogram_analysis = ImportSpectrogramAnalysisMutation.Field()
