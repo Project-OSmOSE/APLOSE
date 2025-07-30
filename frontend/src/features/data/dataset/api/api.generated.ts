@@ -16,7 +16,7 @@ export type GetDatasetByIdQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetDatasetByIdQuery = { __typename?: 'Query', datasetById?: { __typename?: 'DatasetNode', name: string, path: string, description?: string | null, start?: any | null, end?: any | null, createdAt: any, owner: { __typename?: 'UserNode', displayName?: string | null } } | null };
+export type GetDatasetByIdQuery = { __typename?: 'Query', datasetById?: { __typename?: 'DatasetNode', name: string, path: string, description?: string | null, start?: any | null, end?: any | null, createdAt: any, legacy: boolean, owner: { __typename?: 'UserNode', displayName?: string | null } } | null };
 
 export type PostDatasetForImportMutationVariables = Types.Exact<{
   name: Types.Scalars['String']['input'];
@@ -67,6 +67,7 @@ export const GetDatasetByIdDocument = `
     start
     end
     createdAt
+    legacy
     owner {
       displayName
     }

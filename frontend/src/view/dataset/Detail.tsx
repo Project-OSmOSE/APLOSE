@@ -6,6 +6,7 @@ import { IonSpinner } from "@ionic/react";
 import { WarningText } from "@/components/ui";
 import { getErrorMessage } from "@/service/function.ts";
 import { SpectrogramAnalysisTable } from "@/features/data/spectrogramAnalysis";
+import { ImportAnalysisButton } from "@/features/data/spectrogramAnalysis/import";
 
 
 export const DatasetDetail: React.FC = () => {
@@ -42,9 +43,11 @@ export const DatasetDetail: React.FC = () => {
   return <Fragment>
     { head }
 
-    <div style={ { overflowX: 'hidden' } }>
+    <div style={ { overflowX: 'hidden', display: 'grid', gap: '1rem' } }>
 
       <SpectrogramAnalysisTable datasetID={ datasetID }/>
+
+      <ImportAnalysisButton/>
     </div>
 
     <DatasetImportNote dataset={ dataset }/>

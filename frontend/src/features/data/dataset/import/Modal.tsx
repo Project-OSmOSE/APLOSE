@@ -84,8 +84,6 @@ export const ImportDatasetModal: React.FC<{ onClose: () => void }> = ({ onClose 
 
           <ModalFooter>
               <DatasetImportHelpButton/>
-
-            { isLoading && <IonSpinner/> }
           </ModalFooter>
 
       </Fragment> }

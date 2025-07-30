@@ -35,7 +35,11 @@ class Dataset(AbstractDataset, models.Model):
         datasets_csv_path = settings.DATASET_IMPORT_FOLDER / settings.DATASET_FILE
         with open(datasets_csv_path, encoding="utf-8") as csvfile:
             d: dict
-            dataset = next(d for d in csv.DictReader(csvfile) if d["dataset"])
+            dataset = next(
+                d
+                for d in csv.DictReader(csvfile)
+                if d["dataset"] == self.name and d["path"] == self.path
+            )
         return f"{dataset['spectro_duration']}_{dataset['dataset_sr']}"
 
     def get_osekit_dataset(self) -> OSEkitDataset:

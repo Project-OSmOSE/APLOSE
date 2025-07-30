@@ -9,14 +9,22 @@ import { downloadOutline } from "ionicons/icons";
 
 export const SpectrogramAnalysisTable: React.FC<GetSpectrogramAnalysisQueryVariables> = (option) => {
 
-  const { data: analysis, isLoading, error } = SpectrogramAnalysisAPI.endpoints.getSpectrogramAnalysis.useQuery(option);
+  const {
+    data: analysis,
+    isLoading,
+    error,
+    isFetching
+  } = SpectrogramAnalysisAPI.endpoints.getSpectrogramAnalysis.useQuery(option);
 
   if (isLoading) return <IonSpinner/>
   if (error) <WarningText>{ getErrorMessage(error) }</WarningText>
   if (!analysis || analysis.length === 0) return <IonNote color='medium'>No spectrogram analysis</IonNote>
 
   return <Table columns={ 12 }>
-    <TableHead topSticky isFirstColumn={ true }>Analysis</TableHead>
+    <TableHead topSticky isFirstColumn={ true }>
+      Analysis
+      { isFetching && <IonSpinner className={ styles.gridSpinner }/> }
+    </TableHead>
     <TableHead topSticky>Type</TableHead>
     <TableHead topSticky>Created at</TableHead>
     <TableHead topSticky>Number of files</TableHead>

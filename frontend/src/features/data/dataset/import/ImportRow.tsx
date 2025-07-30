@@ -4,7 +4,7 @@ import { useSearchedData } from "@/service/ui/search.ts";
 import { FolderCheck, MoveToFolder } from "@solar-icons/react";
 import { useToast } from "@/service/ui";
 import { ImportRow } from "@/components/ui/ImportRow.tsx";
-import { AnalysisImportRow } from "@/features/data/spectrogramAnalysis/ImportRow.tsx";
+import { AnalysisImportRow } from "@/features/data/spectrogramAnalysis/import";
 
 export const DatasetImportRow: React.FC<{
   dataset: ImportDataset,

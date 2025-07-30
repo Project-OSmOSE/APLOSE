@@ -9,6 +9,13 @@ export type GetSpectrogramAnalysisQueryVariables = Types.Exact<{
 
 export type GetSpectrogramAnalysisQuery = { __typename?: 'Query', allSpectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', results: Array<{ __typename?: 'SpectrogramAnalysisNode', id: string, name: string, description?: string | null, createdAt: any, legacy: boolean, filesCount?: number | null, start?: any | null, end?: any | null, dataDuration?: number | null, fft: { __typename?: 'FFTNode', samplingFrequency: number, nfft: number, windowSize: number, overlap: any } } | null> } | null };
 
+export type GetAvailableSpectrogramAnalysisForImportQueryVariables = Types.Exact<{
+  datasetID: Types.Scalars['ID']['input'];
+}>;
+
+
+export type GetAvailableSpectrogramAnalysisForImportQuery = { __typename?: 'Query', allSpectrogramAnalysisForImport?: Array<{ __typename?: 'ImportSpectrogramAnalysisType', name: string, path: string } | null> | null };
+
 export type PostAnalysisForImportMutationVariables = Types.Exact<{
   datasetName: Types.Scalars['String']['input'];
   datasetPath: Types.Scalars['String']['input'];
@@ -48,6 +55,14 @@ export const GetSpectrogramAnalysisDocument = `
   }
 }
     `;
+export const GetAvailableSpectrogramAnalysisForImportDocument = `
+    query getAvailableSpectrogramAnalysisForImport($datasetID: ID!) {
+  allSpectrogramAnalysisForImport(datasetId: $datasetID) {
+    name
+    path
+  }
+}
+    `;
 export const PostAnalysisForImportDocument = `
     mutation postAnalysisForImport($datasetName: String!, $datasetPath: String!, $legacy: Boolean, $name: String!, $path: String!) {
   importSpectrogramAnalysis(
@@ -66,6 +81,9 @@ const injectedRtkApi = gqlAPI.injectEndpoints({
   endpoints: (build) => ({
     getSpectrogramAnalysis: build.query<GetSpectrogramAnalysisQuery, GetSpectrogramAnalysisQueryVariables | void>({
       query: (variables) => ({ document: GetSpectrogramAnalysisDocument, variables })
+    }),
+    getAvailableSpectrogramAnalysisForImport: build.query<GetAvailableSpectrogramAnalysisForImportQuery, GetAvailableSpectrogramAnalysisForImportQueryVariables>({
+      query: (variables) => ({ document: GetAvailableSpectrogramAnalysisForImportDocument, variables })
     }),
     postAnalysisForImport: build.mutation<PostAnalysisForImportMutation, PostAnalysisForImportMutationVariables>({
       query: (variables) => ({ document: PostAnalysisForImportDocument, variables })

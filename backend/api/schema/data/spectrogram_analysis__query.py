@@ -182,12 +182,13 @@ class SpectrogramAnalysisQuery(ObjectType):  # pylint: disable=too-few-public-me
         """Get all datasets for import"""
         dataset = Dataset.objects.get(pk=dataset_id)
 
-        analysis = resolve_all_spectrogram_analysis_available_for_import(
+        if dataset.legacy:
+            return legacy_resolve_all_spectrogram_analysis_available_for_import(
+                dataset_name=dataset.name,
+                dataset_path=dataset.path,
+                config_folder=dataset.get_config_folder(),
+            )
+
+        return resolve_all_spectrogram_analysis_available_for_import(
             dataset=dataset.get_osekit_dataset(), folder=dataset.path
         )
-        legacy_analysis = legacy_resolve_all_spectrogram_analysis_available_for_import(
-            dataset_name=dataset.name,
-            dataset_path=dataset.path,
-            config_folder=dataset.get_config_folder(),
-        )
-        return analysis + legacy_analysis

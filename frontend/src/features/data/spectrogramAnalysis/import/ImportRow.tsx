@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo } from "react";
-import { ImportAnalysis, ImportDataset } from "@/features/data/dataset/api";
+import { ImportDataset } from "@/features/data/dataset/api";
 import { useToast } from "@/service/ui";
 import { FileCheck, FileRight } from "@solar-icons/react";
-import { SpectrogramAnalysisAPI } from "@/features/data/spectrogramAnalysis/api";
+import { ImportSpectrogramAnalysis, SpectrogramAnalysisAPI } from "@/features/data/spectrogramAnalysis/api";
 import { ImportRow } from "@/components/ui/ImportRow.tsx";
 
 export const AnalysisImportRow: React.FC<{
-  analysis: ImportAnalysis,
-  dataset: Omit<ImportDataset, 'analysis'>,
+  analysis: ImportSpectrogramAnalysis,
+  dataset: Omit<ImportDataset, 'analysis' | '__typename'>,
   imported?: boolean
-  onImported?: (analysis: ImportAnalysis) => void
+  onImported?: (analysis: ImportSpectrogramAnalysis) => void
 }> = ({ analysis, dataset, imported, onImported }) => {
 
   const [ doImport, {
@@ -44,7 +44,7 @@ export const AnalysisImportRow: React.FC<{
                     doImport={ () => doImport({
                       datasetName: dataset.name,
                       datasetPath: dataset.path,
-                      legacy: dataset.legacy,
+                      legacy: dataset.legacy ?? false,
                       ...analysis
                     }) }/>
 }

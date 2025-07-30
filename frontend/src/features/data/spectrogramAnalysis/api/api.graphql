@@ -20,6 +20,12 @@ query getSpectrogramAnalysis($datasetID: Decimal, $annotationCampaignID: Decimal
     }
 }
 
+query getAvailableSpectrogramAnalysisForImport($datasetID: ID!) {
+    allSpectrogramAnalysisForImport(datasetId: $datasetID) {
+        name
+        path
+    }
+}
 
 mutation postAnalysisForImport($datasetName: String!, $datasetPath: String!, $legacy: Boolean, $name: String!, $path: String!) {
     importSpectrogramAnalysis(datasetName: $datasetName, datasetPath: $datasetPath, legacy: $legacy, name: $name, path: $path) {
