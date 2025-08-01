@@ -11,12 +11,10 @@ export class DatasetPage {
               public ui = new UI(page)) {
   }
 
-  async go(as: UserType, options?: { empty: boolean }) {
+  async go(as: UserType) {
     await test.step('Navigate to Datasets', async () => {
       await this.campaignList.go(as);
-      await this.mock.datasets(options?.empty)
       await this.page.getByRole('button', { name: 'Datasets' }).click()
-      await this.mock.datasets(options?.empty)
     });
   }
 

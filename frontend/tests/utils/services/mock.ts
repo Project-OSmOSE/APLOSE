@@ -20,7 +20,10 @@ import {
 } from '../../fixtures';
 import { Paginated } from '../../../src/service/type';
 import { AnnotationCampaign, AnnotationFile, Phase } from '../../../src/service/types';
-import { GetAvailableDatasetsForImportQuery } from "../../../src/features/data/dataset/api/api.generated";
+import {
+  GetAvailableDatasetsForImportQuery,
+  GetDatasetsQuery
+} from "../../../src/features/data/dataset/api/api.generated";
 
 type Response = {
   status: number,
@@ -213,5 +216,30 @@ export const MOCK = {
         ]
       } ]
     } as GetAvailableDatasetsForImportQuery
+  },
+  getDatasets: {
+    empty: {
+      allDatasets: {
+        results: []
+      }
+    } as GetDatasetsQuery,
+    filled: {
+      allDatasets: {
+        results: [
+          {
+            id: '1',
+            name: 'Test dataset',
+            legacy: true,
+            createdAt: new Date().toISOString(),
+            start: "2021-08-02T00:00:00Z",
+            end: "2022-07-13T06:00:00Z",
+            filesCount: 99,
+            description: "Coastal audio recordings",
+            analysisCount: 1,
+          }
+        ]
+      }
+    } as GetDatasetsQuery
   }
+
 }

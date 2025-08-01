@@ -7,7 +7,7 @@ import { MOCK } from "./utils/services";
 const TEST = {
   empty: (as: UserType) => {
     return test('Should display empty state', async ({ page, interceptGQL }) => {
-      await page.dataset.go(as, { empty: true });
+      await page.dataset.go(as);
       interceptGQL(page, "getAvailableDatasetsForImport", MOCK.getDatasetsAvailableForImport.empty)
       const modal = await page.dataset.openImportModal()
 
