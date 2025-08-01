@@ -32,7 +32,7 @@ class ImportSpectrogramAnalysisMutation(Mutation):
     @transaction.atomic
     def mutate(self, info, **kwargs):
         """Do the mutation: create required analysis"""
-        dataset: Dataset = Dataset.objects.get_or_create(
+        dataset, _ = Dataset.objects.get_or_create(
             name=kwargs.pop("dataset_name"),
             path=kwargs.pop("dataset_path"),
             owner=info.context.user,
@@ -40,7 +40,9 @@ class ImportSpectrogramAnalysisMutation(Mutation):
         )
         name = kwargs.pop("name")
         path = kwargs.pop("path")
-        if SpectrogramAnalysis.objects.filter(dataset=dataset, name=name).exists():
+        if SpectrogramAnalysis.objects.filter(
+            dataset_id=dataset.id, name=name
+        ).exists():
             return ImportSpectrogramAnalysisMutation(ok=False)
 
         analysis = SpectrogramAnalysis.objects.import_for_dataset(

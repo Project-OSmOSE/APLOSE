@@ -112,6 +112,7 @@ class SpectrogramManager(Manager):  # pylint: disable=too-few-public-methods
                 )
             )
         Spectrogram.analysis.through.objects.bulk_create(spectrogram_analysis_rel)
+        return spectrograms
 
 
 class Spectrogram(AbstractFile, TimeSegment, models.Model):

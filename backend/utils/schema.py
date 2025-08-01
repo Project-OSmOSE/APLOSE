@@ -8,7 +8,7 @@ from graphene import ID
 from graphene_django import DjangoObjectType
 from graphene_django.views import GraphQLView
 from graphene_django_pagination import DjangoPaginationConnectionField
-from graphql import GraphQLResolveInfo
+from graphql import GraphQLResolveInfo, GraphQLError
 from rest_framework import status, permissions
 from rest_framework.decorators import (
     permission_classes,
@@ -48,6 +48,9 @@ class GraphQLResolve:
             try:
                 return fn(*args, **kwargs)
             except Exception as e:
+                if isinstance(e, GraphQLError):
+                    raise e
+
                 print(traceback.format_exc())
 
                 # Capture the full traceback in your console
@@ -66,14 +69,23 @@ class GraphQLResolve:
             GraphQLPermissions.SUPERUSER,
         ]:
             if not user.is_authenticated:
-                raise APIException("Unauthorized", code=status.HTTP_401_UNAUTHORIZED)
+                raise GraphQLError(
+                    "Unauthorized",
+                    original_error=APIException(code=status.HTTP_401_UNAUTHORIZED),
+                )
 
         if self.permission == GraphQLPermissions.STAFF_OR_SUPERUSER:
             if not (user.is_staff or user.is_superuser):
-                raise APIException("Forbidden", code=status.HTTP_403_FORBIDDEN)
+                raise GraphQLError(
+                    "Forbidden",
+                    original_error=APIException(code=status.HTTP_403_FORBIDDEN),
+                )
         if self.permission == GraphQLPermissions.SUPERUSER:
             if not user.is_superuser:
-                raise APIException("Forbidden", code=status.HTTP_403_FORBIDDEN)
+                raise GraphQLError(
+                    "Forbidden",
+                    original_error=APIException(code=status.HTTP_403_FORBIDDEN),
+                )
 
 
 class AuthenticatedDjangoConnectionField(DjangoPaginationConnectionField):
@@ -85,7 +97,11 @@ class AuthenticatedDjangoConnectionField(DjangoPaginationConnectionField):
         cls, connection, iterable, info, args, filtering_args, filterset_class
     ):
         if not info.context.user.is_authenticated:
-            raise APIException("Unauthorized", code=status.HTTP_401_UNAUTHORIZED)
+            raise GraphQLError(
+                "Unauthorized",
+                original_error=APIException(code=status.HTTP_401_UNAUTHORIZED),
+            )
+
         return super().resolve_queryset(
             connection, iterable, info, args, filtering_args, filterset_class
         )

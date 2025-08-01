@@ -2,7 +2,7 @@
 import csv
 from os import listdir
 from os.path import join, exists, isfile
-from pathlib import Path
+from pathlib import Path, WindowsPath
 
 from django.conf import settings
 from django.db import transaction
@@ -12,6 +12,7 @@ from graphene import (
     ObjectType,
     Mutation,
 )
+from graphql import GraphQLError
 from osekit.core_api.spectro_dataset import SpectroDataset
 from osekit.public_api.dataset import (
     Dataset as OSEkitDataset,
@@ -33,7 +34,7 @@ class ImportDatasetMutation(Mutation):
         path = String(required=True)
         legacy = Boolean()
 
-    ok = Boolean()
+    ok = Boolean(required=True)
 
     @GraphQLResolve(permission=GraphQLPermissions.STAFF_OR_SUPERUSER)
     @transaction.atomic
@@ -46,16 +47,21 @@ class ImportDatasetMutation(Mutation):
             legacy=legacy,
         )
         if legacy:
-            datasets_csv_path = settings.DATASET_IMPORT_FOLDER / settings.DATASET_FILE
+            datasets_csv_path: WindowsPath = (
+                settings.DATASET_IMPORT_FOLDER / settings.DATASET_FILE
+            )
             if not exists(datasets_csv_path):
-                return ImportDatasetMutation(ok=False)
+                raise GraphQLError(message=f"Missing datasets.csv file")
             with open(datasets_csv_path, encoding="utf-8") as csvfile:
                 _d: dict
-                csv_dataset: dict = next(
-                    _d
-                    for _d in csv.DictReader(csvfile)
-                    if dataset.name == _d["dataset"] and dataset.path == _d["path"]
-                )
+                csv_dataset: dict = None
+                for _d in csv.DictReader(csvfile):
+                    if dataset.name == _d.get("dataset") and dataset.path == _d.get(
+                        "path"
+                    ):
+                        csv_dataset = _d
+                if not csv_dataset:
+                    raise GraphQLError(message=f"Dataset not found")
                 config_folder = (
                     f"{csv_dataset['spectro_duration']}_{csv_dataset['dataset_sr']}"
                 )
