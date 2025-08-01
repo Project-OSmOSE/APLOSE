@@ -1,7 +1,6 @@
 import json
 
 from graphene_django.utils import GraphQLTestCase
-from rest_framework import status
 
 from backend.api.tests.fixtures import DATA_FIXTURES
 
@@ -31,8 +30,10 @@ class DatasetByIdTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY)
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        response = self.query(QUERY, variables={"id": 1})
+        self.assertResponseHasErrors(response)
+        content = json.loads(response.content)
+        self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected(self):
         self.client.login(username="user1", password="osmose29")
