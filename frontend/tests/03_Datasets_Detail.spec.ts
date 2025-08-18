@@ -6,50 +6,38 @@ import { UserType } from './fixtures';
 const TEST = {
   empty: (as: UserType) => {
     return test('Should display empty state', async ({ page }) => {
-      await page.dataset.list.go(as, 'empty');
+      await page.dataset.detail.go(as, 'empty');
       await expect(page.locator('.table-content')).not.toBeVisible();
-      await expect(page.getByText('No datasets')).toBeVisible();
+      await expect(page.getByText('No spectrogram analysis')).toBeVisible();
 
-      const modal = await page.dataset.list.openImportModal('empty')
-      await expect(modal.locator).toContainText('There is no new dataset or analysis')
+      const modal = await page.dataset.detail.openImportModal('empty')
+      await expect(modal.locator).toContainText('There is no new analysis')
     });
   },
   display: (as: UserType) => {
     return test('Should display loaded data', async ({ page }) => {
-      await page.dataset.list.go(as);
-      await expect(page.getByText('Test dataset')).toBeVisible();
+      await page.dataset.detail.go(as);
+      await expect(page.getByText('Test analysis')).toBeVisible();
 
-      const modal = await page.dataset.list.openImportModal()
-      await expect(modal.locator).toContainText('Test import dataset')
+      const modal = await page.dataset.detail.openImportModal()
       await expect(modal.locator).toContainText('Test analysis 1')
       await expect(modal.locator).toContainText('Test analysis 2')
       await modal.search('1')
-      await expect(modal.locator).toContainText('Test import dataset')
       await expect(modal.locator).toContainText('Test analysis 1')
       await expect(modal.locator).not.toContainText('Test analysis 2')
     });
   },
-  manageDatasetImport: (as: UserType) => {
-    return test('Should manage import of a dataset', async ({ page }) => {
-      await page.dataset.list.go(as);
-      const modal = await page.dataset.list.openImportModal()
-
-      // TODO: intercept import mutation and check content
-      await Promise.all([
-        page.waitForRequest("**/graphql"),
-        await modal.importDataset()
-      ])
-    })
-  },
   manageAnalysisImport: (as: UserType) => {
     return test('Should manage import of an analysis', async ({ page }) => {
-      await page.dataset.list.go(as);
-      const modal = await page.dataset.list.openImportModal()
+      await page.dataset.detail.go(as);
+      await expect(page.getByText('Test analysis')).toBeVisible();
+
+      const modal = await page.dataset.detail.openImportModal()
 
       // TODO: intercept import mutation and check content
       await Promise.all([
         page.waitForRequest("**/graphql"),
-        await modal.importAnalysis()
+        await modal.locator.locator('.download-analysis').first().click()
       ])
     })
   }
@@ -61,13 +49,11 @@ const TEST = {
 test.describe('Staff', ESSENTIAL, () => {
   TEST.empty('staff')
   TEST.display('staff')
-  TEST.manageDatasetImport('staff')
   TEST.manageAnalysisImport('staff')
 })
 
 test.describe('Superuser', ESSENTIAL, () => {
   TEST.empty('superuser')
   TEST.display('superuser')
-  TEST.manageDatasetImport('superuser')
   TEST.manageAnalysisImport('superuser')
 })

@@ -13,13 +13,17 @@ import { Mock } from './services';
 import { CampaignImportAnnotationsPage } from "./pages/campaign-import-annotations";
 import { interceptGQL } from "./functions";
 import { Route } from "playwright-core";
+import { DatasetDetailPage } from "./pages/dataset-detail";
 
 interface PageExtension {
   readonly mock: Mock;
 
   readonly home: HomePage;
   readonly login: LoginPage;
-  readonly dataset: DatasetPage;
+  readonly dataset: {
+    list: DatasetPage;
+    detail: DatasetDetailPage;
+  }
   readonly annotator: AnnotatorPage;
   readonly campaign: {
     list: CampaignListPage;
@@ -58,7 +62,10 @@ export const test = testBase.extend<Fixture>({
 
       home: new HomePage(page),
       login: new LoginPage(page),
-      dataset: new DatasetPage(page),
+      dataset: {
+        list: new DatasetPage(page),
+        detail: new DatasetDetailPage(page),
+      },
       annotator: new AnnotatorPage(page),
       campaign: {
         list: new CampaignListPage(page),
