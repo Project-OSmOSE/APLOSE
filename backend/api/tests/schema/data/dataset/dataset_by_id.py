@@ -41,6 +41,6 @@ class DatasetByIdTestCase(GraphQLTestCase):
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["datasetById"]
-        self.assertEqual(content["name"], "SPM Aural A 2010")
+        self.assertEqual(content["name"], "gliderSPAmsDemo")
         self.assertEqual(content["start"], "2012-10-03T10:00:00+00:00")
         self.assertEqual(content["end"], "2012-10-03T20:15:00+00:00")

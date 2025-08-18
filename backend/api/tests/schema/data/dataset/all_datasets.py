@@ -46,7 +46,7 @@ class AllDatasetsTestCase(GraphQLTestCase):
 
         content = json.loads(response.content)["data"]["allDatasets"]["results"]
         self.assertEqual(len(content), Dataset.objects.count())
-        self.assertEqual(content[0]["name"], "SPM Aural A 2010")
+        self.assertEqual(content[0]["name"], "gliderSPAmsDemo")
         self.assertEqual(content[0]["analysisCount"], 2)
         self.assertEqual(content[0]["filesCount"], 11)
         self.assertEqual(content[0]["start"], "2012-10-03T10:00:00+00:00")

@@ -2,9 +2,9 @@
   pk: 1
   fields:
     created_at: 2023-11-02
-    name: SPM Aural A 2010
+    name: gliderSPAmsDemo
     description: null
-    path: seed/dataset_path
+    path: gliderSPAmsDemo
     owner: 1
     legacy: true
 - model: api.dataset
@@ -16,3 +16,11 @@
     path: seed/dataset_path
     owner: 1
     legacy: true
+- model: api.dataset
+  pk: 3
+  fields:
+    created_at: 2023-10-02
+    name: tp_osekit
+    description: null
+    path: tp_osekit
+    owner: 1

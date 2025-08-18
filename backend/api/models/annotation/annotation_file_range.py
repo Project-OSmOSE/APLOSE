@@ -55,6 +55,8 @@ class AnnotationFileRange(models.Model):
         to_datetime = files[self.last_file_index].end
         if from_datetime > to_datetime:
             self.from_datetime, self.to_datetime = to_datetime, from_datetime
+        else:
+            self.from_datetime, self.to_datetime = from_datetime, to_datetime
 
         super().save(*args, **kwargs)
 

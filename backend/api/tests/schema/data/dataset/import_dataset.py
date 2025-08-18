@@ -5,7 +5,6 @@ from django.test import override_settings
 from graphene_django.utils import GraphQLTestCase
 
 from backend.api.models import Dataset, SpectrogramAnalysis, Spectrogram
-from backend.api.tests.fixtures import DATA_FIXTURES
 
 QUERY = """
 mutation ($name: String!, $path: String!, $legacy: Boolean) {
@@ -24,7 +23,7 @@ LEGACY_IMPORT_FIXTURES = (
 class ImportDatasetTestCase(GraphQLTestCase):
 
     GRAPHQL_URL = "/api/graphql"
-    fixtures = ["users", *DATA_FIXTURES]
+    fixtures = ["users"]
 
     def tearDown(self):
         """Logout when tests ends"""
@@ -39,7 +38,6 @@ class ImportDatasetTestCase(GraphQLTestCase):
     def test_connected_not_staff(self):
         self.client.login(username="user1", password="osmose29")
         response = self.query(QUERY, variables=BASE_VARIABLES)
-        print(response)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Forbidden")

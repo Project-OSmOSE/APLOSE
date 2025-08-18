@@ -10,38 +10,42 @@ from graphene_django.utils.testing import GraphQLTestCase
 IMPORT_FIXTURES = settings.FIXTURE_DIRS[1] / "data" / "dataset" / "list_to_import"
 
 QUERY = """
-query {
-    allDatasetsAvailableForImport {
+query ($datasetID: ID!) {
+    allSpectrogramAnalysisForImport(datasetId: $datasetID) {
         name
         path
-        legacy
-        analysis {
-            name
-            path
-        }
     }
 }
 """
+VARIABLES_LEGACY = {
+    "datasetID": 1,
+}
+VARIABLES = {
+    "datasetID": 3,
+}
 
 
-class AllDatasetsAvailableForImportTestCase(GraphQLTestCase):
+class AllSpectrogramAnalysisForImportTestCase(GraphQLTestCase):
 
     GRAPHQL_URL = "/api/graphql"
-    fixtures = ["users"]
+    fixtures = [
+        "users",
+        "dataset",
+    ]
 
     def tearDown(self):
         """Logout when tests ends"""
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY)
+        response = self.query(QUERY, variables=VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_not_staff(self):
         self.client.login(username="user1", password="osmose29")
-        response = self.query(QUERY)
+        response = self.query(QUERY, variables=VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Forbidden")
@@ -49,32 +53,28 @@ class AllDatasetsAvailableForImportTestCase(GraphQLTestCase):
     @override_settings(DATASET_IMPORT_FOLDER=IMPORT_FIXTURES / "legacy" / "good")
     def test_list_legacy(self):
         self.client.login(username="staff", password="osmose29")
-        response = self.query(QUERY)
+        response = self.query(QUERY, variables=VARIABLES_LEGACY)
         self.assertResponseNoErrors(response)
 
-        content = json.loads(response.content)["data"]["allDatasetsAvailableForImport"]
+        content = json.loads(response.content)["data"][
+            "allSpectrogramAnalysisForImport"
+        ]
         self.assertEqual(len(content), 1)
-        self.assertEqual(content[0]["name"], "gliderSPAmsDemo")
-        self.assertEqual(content[0]["path"], "gliderSPAmsDemo")
-        self.assertEqual(len(content[0]["analysis"]), 1)
-        self.assertEqual(content[0]["analysis"][0]["name"], "4096_512_85")
+        self.assertEqual(content[0]["name"], "4096_512_85")
         self.assertEqual(
-            content[0]["analysis"][0]["path"],
+            content[0]["path"],
             join("processed", "spectrogram", "600_480", "4096_512_85"),
         )
 
     @override_settings(DATASET_IMPORT_FOLDER=IMPORT_FIXTURES / "good")
     def test_list(self):
         self.client.login(username="staff", password="osmose29")
-        response = self.query(QUERY)
+        response = self.query(QUERY, variables=VARIABLES)
         self.assertResponseNoErrors(response)
 
-        content = json.loads(response.content)["data"]["allDatasetsAvailableForImport"]
+        content = json.loads(response.content)["data"][
+            "allSpectrogramAnalysisForImport"
+        ]
         self.assertEqual(len(content), 1)
-        self.assertEqual(content[0]["name"], "tp_osekit")
-        self.assertEqual(content[0]["path"], "tp_osekit")
-        self.assertEqual(len(content[0]["analysis"]), 1)
-        self.assertEqual(content[0]["analysis"][0]["name"], "my_first_analysis")
-        self.assertEqual(
-            content[0]["analysis"][0]["path"], join("processed", "my_first_analysis")
-        )
+        self.assertEqual(content[0]["name"], "my_first_analysis")
+        self.assertEqual(content[0]["path"], join("processed", "my_first_analysis"))
