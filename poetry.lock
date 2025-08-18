@@ -1015,13 +1015,13 @@ files = [
 
 [[package]]
 name = "metadatax"
-version = "0.4.12"
+version = "0.4.13"
 description = "PAM acquisition metadata"
 optional = false
 python-versions = ">=3.9,<4.0"
 groups = ["main"]
 files = [
-    {file = "metadatax-0.4.12.tar.gz", hash = "sha256:7ac47909a26c5366d9486c894d611c318450392d1737d0763f0a4a94ec2a4a9c"},
+    {file = "metadatax-0.4.13.tar.gz", hash = "sha256:aa2e583098eb22842ffc48e2744f6cc16b31b83005997337914f8b72e10ed34d"},
 ]
 
 [package.dependencies]
@@ -1040,7 +1040,7 @@ python-dotenv = ">=1.0.1,<2.0.0"
 
 [package.source]
 type = "url"
-url = "https://github.com/PAM-Standardization/metadatax/releases/download/v0.4.12/metadatax-0.4.12.tar.gz"
+url = "https://github.com/PAM-Standardization/metadatax/releases/download/v0.4.13/metadatax-0.4.13.tar.gz"
 
 [[package]]
 name = "mypy-extensions"
@@ -2190,4 +2190,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "d9e6b89b0e1abb445f2f8f876ba77e817656c57b97ed076094b630cb59470e4c"
+content-hash = "0f23aba3935cc41020df5015c9a412025ef9c4c7e1930d1ac57ccdd53a02ee6d"

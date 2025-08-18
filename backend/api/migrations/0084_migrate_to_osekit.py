@@ -1102,4 +1102,8 @@ class Migration(migrations.Migration):
             SELECT setval('api_annotation_id_seq', (SELECT max(id) from api_annotation));
             """,
         ),
+        migrations.AlterModelOptions(
+            name="acousticfeatures",
+            options={"verbose_name_plural": "Acoustic features"},
+        ),
     ]
