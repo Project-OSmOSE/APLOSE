@@ -51,7 +51,7 @@ class ImportDatasetMutation(Mutation):
                 settings.DATASET_IMPORT_FOLDER / settings.DATASET_FILE
             )
             if not exists(datasets_csv_path):
-                raise GraphQLError(message=f"Missing datasets.csv file")
+                raise GraphQLError(message="Missing datasets.csv file")
             with open(datasets_csv_path, encoding="utf-8") as csvfile:
                 _d: dict
                 csv_dataset: dict = None
@@ -61,7 +61,7 @@ class ImportDatasetMutation(Mutation):
                     ):
                         csv_dataset = _d
                 if not csv_dataset:
-                    raise GraphQLError(message=f"Dataset not found")
+                    raise GraphQLError(message="Dataset not found")
                 config_folder = (
                     f"{csv_dataset['spectro_duration']}_{csv_dataset['dataset_sr']}"
                 )
