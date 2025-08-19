@@ -1093,4 +1093,17 @@ class Migration(migrations.Migration):
                 name="start is lower than end",
             ),
         ),
+        migrations.RunSQL(
+            sql="""
+            SELECT setval('api_legacyspectrogramconfiguration_id_seq', (SELECT max(id) from api_legacyspectrogramconfiguration));
+            SELECT setval('api_dataset_id_seq', (SELECT max(id) from api_dataset));
+            SELECT setval('api_spectrogramanalysis_id_seq', (SELECT max(id) from api_spectrogramanalysis));
+            SELECT setval('api_spectrogram_id_seq', (SELECT max(id) from api_spectrogram));
+            SELECT setval('api_annotation_id_seq', (SELECT max(id) from api_annotation));
+            """,
+        ),
+        migrations.AlterModelOptions(
+            name="acousticfeatures",
+            options={"verbose_name_plural": "Acoustic features"},
+        ),
     ]

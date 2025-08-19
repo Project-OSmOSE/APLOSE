@@ -16,7 +16,16 @@ export type GetDatasetByIdQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetDatasetByIdQuery = { __typename?: 'Query', datasetById?: { __typename?: 'DatasetNode', name: string, description?: string | null, start?: any | null, end?: any | null, path: string, createdAt: any, owner: { __typename?: 'UserNode', displayName?: string | null } } | null };
+export type GetDatasetByIdQuery = { __typename?: 'Query', datasetById?: { __typename?: 'DatasetNode', name: string, path: string, description?: string | null, start?: any | null, end?: any | null, createdAt: any, legacy: boolean, owner: { __typename?: 'UserNode', displayName?: string | null } } | null };
+
+export type PostDatasetForImportMutationVariables = Types.Exact<{
+  name: Types.Scalars['String']['input'];
+  path: Types.Scalars['String']['input'];
+  legacy?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
+}>;
+
+
+export type PostDatasetForImportMutation = { __typename?: 'Mutation', importDataset?: { __typename?: 'ImportDatasetMutation', ok?: boolean | null } | null };
 
 
 export const GetDatasetsDocument = `
@@ -53,14 +62,22 @@ export const GetDatasetByIdDocument = `
     query getDatasetByID($id: ID!) {
   datasetById(id: $id) {
     name
+    path
     description
     start
     end
-    path
     createdAt
+    legacy
     owner {
       displayName
     }
+  }
+}
+    `;
+export const PostDatasetForImportDocument = `
+    mutation postDatasetForImport($name: String!, $path: String!, $legacy: Boolean) {
+  importDataset(name: $name, path: $path, legacy: $legacy) {
+    ok
   }
 }
     `;
@@ -75,6 +92,9 @@ const injectedRtkApi = gqlAPI.injectEndpoints({
     }),
     getDatasetByID: build.query<GetDatasetByIdQuery, GetDatasetByIdQueryVariables>({
       query: (variables) => ({ document: GetDatasetByIdDocument, variables })
+    }),
+    postDatasetForImport: build.mutation<PostDatasetForImportMutation, PostDatasetForImportMutationVariables>({
+      query: (variables) => ({ document: PostDatasetForImportDocument, variables })
     }),
   }),
 });

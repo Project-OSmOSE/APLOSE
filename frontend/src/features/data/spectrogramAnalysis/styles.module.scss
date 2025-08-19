@@ -2,3 +2,10 @@
   grid-auto-flow: row !important;
   gap: 0 !important;
 }
+
+.gridSpinner {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}

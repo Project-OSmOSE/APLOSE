@@ -788,7 +788,6 @@ export type AuthorNode = Node & {
   __typename?: 'AuthorNode';
   bibliography: BibliographyNode;
   contact?: Maybe<ContactNode>;
-  /** The ID of the object */
   id: Scalars['ID']['output'];
   institutions: InstitutionNodeConnection;
   order: Scalars['Int']['output'];
@@ -3047,6 +3046,11 @@ export type HydrophoneSpecificationNodeNodeConnection = {
   totalCount?: Maybe<Scalars['Int']['output']>;
 };
 
+export type ImportDatasetMutation = {
+  __typename?: 'ImportDatasetMutation';
+  ok?: Maybe<Scalars['Boolean']['output']>;
+};
+
 /** Type for import dataset */
 export type ImportDatasetType = {
   __typename?: 'ImportDatasetType';
@@ -3054,6 +3058,11 @@ export type ImportDatasetType = {
   legacy?: Maybe<Scalars['Boolean']['output']>;
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
+};
+
+export type ImportSpectrogramAnalysisMutation = {
+  __typename?: 'ImportSpectrogramAnalysisMutation';
+  ok?: Maybe<Scalars['Boolean']['output']>;
 };
 
 /** Type for import dataset */
@@ -3579,9 +3588,13 @@ export type LabelSetNodeNodeConnection = {
 /** LegacySpectrogramConfiguration schema */
 export type LegacySpectrogramConfigurationNode = Node & {
   __typename?: 'LegacySpectrogramConfigurationNode';
+  audioFilesSubtypes?: Maybe<Array<Scalars['String']['output']>>;
+  channelCount?: Maybe<Scalars['Int']['output']>;
   dataNormalization: Scalars['String']['output'];
+  fileOverlap?: Maybe<Scalars['Int']['output']>;
   folder: Scalars['String']['output'];
   frequencyResolution: Scalars['Float']['output'];
+  gainDb?: Maybe<Scalars['Float']['output']>;
   hpFilterMinFrequency: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   linearFrequencyScale?: Maybe<LinearScaleNode>;
@@ -3654,22 +3667,9 @@ export type LinearScaleNode = Node & {
 export type LinearScaleNodeLegacyspectrogramconfigurationSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  dataNormalization?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  folder?: InputMaybe<Scalars['String']['input']>;
-  frequencyResolution?: InputMaybe<Scalars['Float']['input']>;
-  hpFilterMinFrequency?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  linearFrequencyScale?: InputMaybe<Scalars['ID']['input']>;
-  multiLinearFrequencyScale?: InputMaybe<Scalars['ID']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  peakVoltage?: InputMaybe<Scalars['Float']['input']>;
-  sensitivityDb?: InputMaybe<Scalars['Float']['input']>;
-  spectrogramNormalization?: InputMaybe<Scalars['String']['input']>;
-  temporalResolution?: InputMaybe<Scalars['Float']['input']>;
-  windowType?: InputMaybe<Scalars['String']['input']>;
-  zoomLevel?: InputMaybe<Scalars['Int']['input']>;
-  zscoreDuration?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -3820,22 +3820,9 @@ export type MultiLinearScaleNodeInnerScalesArgs = {
 export type MultiLinearScaleNodeLegacyspectrogramconfigurationSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  dataNormalization?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  folder?: InputMaybe<Scalars['String']['input']>;
-  frequencyResolution?: InputMaybe<Scalars['Float']['input']>;
-  hpFilterMinFrequency?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  linearFrequencyScale?: InputMaybe<Scalars['ID']['input']>;
-  multiLinearFrequencyScale?: InputMaybe<Scalars['ID']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  peakVoltage?: InputMaybe<Scalars['Float']['input']>;
-  sensitivityDb?: InputMaybe<Scalars['Float']['input']>;
-  spectrogramNormalization?: InputMaybe<Scalars['String']['input']>;
-  temporalResolution?: InputMaybe<Scalars['Float']['input']>;
-  windowType?: InputMaybe<Scalars['String']['input']>;
-  zoomLevel?: InputMaybe<Scalars['Int']['input']>;
-  zscoreDuration?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type MultiLinearScaleNodeConnection = {
@@ -3869,6 +3856,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   deleteSound?: Maybe<DeleteSoundMutation>;
   deleteSource?: Maybe<DeleteSourceMutation>;
+  importDataset?: Maybe<ImportDatasetMutation>;
+  importSpectrogramAnalysis?: Maybe<ImportSpectrogramAnalysisMutation>;
   postSound?: Maybe<PostSoundMutationPayload>;
   postSource?: Maybe<PostSourceMutationPayload>;
 };
@@ -3883,6 +3872,24 @@ export type MutationDeleteSoundArgs = {
 /** Global mutation */
 export type MutationDeleteSourceArgs = {
   id?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+/** Global mutation */
+export type MutationImportDatasetArgs = {
+  legacy?: InputMaybe<Scalars['Boolean']['input']>;
+  name: Scalars['String']['input'];
+  path: Scalars['String']['input'];
+};
+
+
+/** Global mutation */
+export type MutationImportSpectrogramAnalysisArgs = {
+  datasetName: Scalars['String']['input'];
+  datasetPath: Scalars['String']['input'];
+  legacy?: InputMaybe<Scalars['Boolean']['input']>;
+  name: Scalars['String']['input'];
+  path: Scalars['String']['input'];
 };
 
 
@@ -4634,6 +4641,7 @@ export type Query = {
   allSounds?: Maybe<SoundNodeNodeConnection>;
   allSources?: Maybe<SourceNodeNodeConnection>;
   allSpectrogramAnalysis?: Maybe<SpectrogramAnalysisNodeNodeConnection>;
+  allSpectrogramAnalysisForImport?: Maybe<Array<Maybe<ImportSpectrogramAnalysisType>>>;
   allSpectrograms?: Maybe<SpectrogramNodeNodeConnection>;
   allStorageSpecifications?: Maybe<StorageSpecificationNodeNodeConnection>;
   allTags?: Maybe<TagNodeNodeConnection>;
@@ -5656,24 +5664,11 @@ export type QueryAllLabelsArgs = {
 export type QueryAllLegacySpectrogramConfigurationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  dataNormalization?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  folder?: InputMaybe<Scalars['String']['input']>;
-  frequencyResolution?: InputMaybe<Scalars['Float']['input']>;
-  hpFilterMinFrequency?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
-  linearFrequencyScale?: InputMaybe<Scalars['ID']['input']>;
-  multiLinearFrequencyScale?: InputMaybe<Scalars['ID']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   ordering?: InputMaybe<Scalars['String']['input']>;
-  peakVoltage?: InputMaybe<Scalars['Float']['input']>;
-  sensitivityDb?: InputMaybe<Scalars['Float']['input']>;
-  spectrogramNormalization?: InputMaybe<Scalars['String']['input']>;
-  temporalResolution?: InputMaybe<Scalars['Float']['input']>;
-  windowType?: InputMaybe<Scalars['String']['input']>;
-  zoomLevel?: InputMaybe<Scalars['Int']['input']>;
-  zscoreDuration?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -5984,6 +5979,12 @@ export type QueryAllSpectrogramAnalysisArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
   ordering?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Global query */
+export type QueryAllSpectrogramAnalysisForImportArgs = {
+  datasetId: Scalars['ID']['input'];
 };
 
 
@@ -7045,6 +7046,7 @@ export type TagNodeNodeConnection = {
   totalCount?: Maybe<Scalars['Int']['output']>;
 };
 
+/** User node */
 export type UserNode = Node & {
   __typename?: 'UserNode';
   annotationComments: AnnotationCommentNodeConnection;
@@ -7077,6 +7079,7 @@ export type UserNode = Node & {
 };
 
 
+/** User node */
 export type UserNodeAnnotationCommentsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotation?: InputMaybe<Scalars['ID']['input']>;
@@ -7091,6 +7094,7 @@ export type UserNodeAnnotationCommentsArgs = {
 };
 
 
+/** User node */
 export type UserNodeAnnotationFileRangesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationPhase?: InputMaybe<Scalars['ID']['input']>;
@@ -7107,6 +7111,7 @@ export type UserNodeAnnotationFileRangesArgs = {
 };
 
 
+/** User node */
 export type UserNodeAnnotationResultsValidationArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotation?: InputMaybe<Scalars['ID']['input']>;
@@ -7121,6 +7126,7 @@ export type UserNodeAnnotationResultsValidationArgs = {
 };
 
 
+/** User node */
 export type UserNodeAnnotationTasksArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationPhase?: InputMaybe<Scalars['ID']['input']>;
@@ -7135,6 +7141,7 @@ export type UserNodeAnnotationTasksArgs = {
 };
 
 
+/** User node */
 export type UserNodeAnnotationcampaignSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   allowColormapTuning?: InputMaybe<Scalars['Boolean']['input']>;
@@ -7161,6 +7168,7 @@ export type UserNodeAnnotationcampaignSetArgs = {
 };
 
 
+/** User node */
 export type UserNodeAnnotationsArgs = {
   acousticFeatures?: InputMaybe<Scalars['ID']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
@@ -7186,6 +7194,7 @@ export type UserNodeAnnotationsArgs = {
 };
 
 
+/** User node */
 export type UserNodeArchivesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -7197,6 +7206,7 @@ export type UserNodeArchivesArgs = {
 };
 
 
+/** User node */
 export type UserNodeCreatedPhasesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationCampaign?: InputMaybe<Scalars['ID']['input']>;
@@ -7212,6 +7222,7 @@ export type UserNodeCreatedPhasesArgs = {
 };
 
 
+/** User node */
 export type UserNodeDatasetSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -7222,6 +7233,7 @@ export type UserNodeDatasetSetArgs = {
 };
 
 
+/** User node */
 export type UserNodeEndedPhasesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationCampaign?: InputMaybe<Scalars['ID']['input']>;
@@ -7237,6 +7249,7 @@ export type UserNodeEndedPhasesArgs = {
 };
 
 
+/** User node */
 export type UserNodeSpectrogramAnalysisArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationCampaigns_Id?: InputMaybe<Scalars['Decimal']['input']>;

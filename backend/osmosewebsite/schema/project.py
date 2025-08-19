@@ -1,12 +1,12 @@
 """Project graphql definitions"""
 import graphene
 from graphene import relay
-from graphene_django import DjangoObjectType
 
 from backend.osmosewebsite.models import Project
+from backend.utils.schema import ApiObjectType
 
 
-class WebsiteProjectNode(DjangoObjectType):
+class WebsiteProjectNode(ApiObjectType):
     """Project node"""
 
     id = graphene.ID(required=True)

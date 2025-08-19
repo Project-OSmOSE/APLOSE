@@ -46,6 +46,9 @@ const enhancedAPI = api.enhanceEndpoints<TagType, apiType>({
       // @ts-expect-error: result and error are unused
       providesTags: (result, error, { id }) => [ { type: 'DetailedDataset', id } ]
     },
+    postDatasetForImport: {
+      invalidatesTags: [ 'Dataset' ]
+    }
   }
 })
 

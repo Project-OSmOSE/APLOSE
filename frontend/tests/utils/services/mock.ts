@@ -20,7 +20,15 @@ import {
 } from '../../fixtures';
 import { Paginated } from '../../../src/service/type';
 import { AnnotationCampaign, AnnotationFile, Phase } from '../../../src/service/types';
-import { GetAvailableDatasetsForImportQuery } from "../../../src/features/data/import/api/api.generated";
+import {
+  GetAvailableDatasetsForImportQuery,
+  GetDatasetByIdQuery,
+  GetDatasetsQuery
+} from "../../../src/features/data/dataset/api/api.generated";
+import {
+  GetAvailableSpectrogramAnalysisForImportQuery,
+  GetSpectrogramAnalysisQuery
+} from "../../../src/features/data/spectrogramAnalysis/api/api.generated";
 
 type Response = {
   status: number,
@@ -192,8 +200,10 @@ export class Mock {
   }
 }
 
-export const MOCK = {
-  getDatasetsAvailableForImport: {
+export const MOCK_QUERIES: {
+  [key in string]: { [key in MockType]: any }
+} = {
+  getAvailableDatasetsForImport: {
     empty: {
       allDatasetsAvailableForImport: []
     } as GetAvailableDatasetsForImportQuery,
@@ -213,5 +223,109 @@ export const MOCK = {
         ]
       } ]
     } as GetAvailableDatasetsForImportQuery
-  }
+  },
+  getDatasets: {
+    empty: {
+      allDatasets: {
+        results: []
+      }
+    } as GetDatasetsQuery,
+    filled: {
+      allDatasets: {
+        results: [
+          {
+            id: '1',
+            name: 'Test dataset',
+            legacy: true,
+            createdAt: new Date().toISOString(),
+            start: "2021-08-02T00:00:00Z",
+            end: "2022-07-13T06:00:00Z",
+            filesCount: 99,
+            description: "Coastal audio recordings",
+            analysisCount: 1,
+          }
+        ]
+      }
+    } as GetDatasetsQuery
+  },
+  getDatasetByID: {
+    empty: {
+      datasetById: undefined
+    } as GetDatasetByIdQuery,
+    filled: {
+      datasetById: {
+        name: 'Test dataset',
+        path: 'test/dataset',
+        description: "Coastal audio recordings",
+        start: "2021-08-02T00:00:00Z",
+        end: "2022-07-13T06:00:00Z",
+        createdAt: new Date().toISOString(),
+        legacy: true,
+        owner: {
+          displayName: 'John Doe'
+        }
+      }
+    } as GetDatasetByIdQuery
+  },
+
+  getAvailableSpectrogramAnalysisForImport: {
+    empty: {
+      allSpectrogramAnalysisForImport: []
+    } as GetAvailableSpectrogramAnalysisForImportQuery,
+    filled: {
+      allSpectrogramAnalysisForImport: [
+        {
+          name: 'Test analysis 1',
+          path: 'Test analysis 1',
+        },
+        {
+          name: 'Test analysis 2',
+          path: 'Test analysis 2',
+        }
+      ]
+    } as GetAvailableSpectrogramAnalysisForImportQuery
+  },
+  getSpectrogramAnalysis: {
+    empty: {
+      allSpectrogramAnalysis: {
+        results: []
+      }
+    } as GetSpectrogramAnalysisQuery,
+    filled: {
+      allSpectrogramAnalysis: {
+        results: [
+          {
+            id: '1',
+            name: 'Test analysis',
+            description: "Coastal audio recordings",
+            createdAt: new Date().toISOString(),
+            legacy: true,
+            filesCount: 99,
+            start: "2021-08-02T00:00:00Z",
+            end: "2022-07-13T06:00:00Z",
+            dataDuration: 10,
+            fft: {
+              samplingFrequency: 64_000,
+              nfft: 2_048,
+              windowSize: 1_024,
+              overlap: 0.95
+            }
+          }
+        ]
+      }
+    } as GetSpectrogramAnalysisQuery
+  },
+
 }
+export const MOCK_MUTATIONS: {
+  [key in string]: { empty: Record<string, never> }
+} = {
+  postDatasetForImport: { empty: {} },
+  postAnalysisForImport: { empty: {} },
+}
+
+export const MOCK = { ...MOCK_QUERIES, ...MOCK_MUTATIONS }
+
+export type QueryName = keyof typeof MOCK_QUERIES | keyof typeof MOCK_MUTATIONS
+
+export type MockType = 'filled' | 'empty'

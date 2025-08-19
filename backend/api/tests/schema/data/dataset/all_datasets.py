@@ -1,7 +1,6 @@
 import json
 
 from graphene_django.utils import GraphQLTestCase
-from rest_framework import status
 
 from backend.api.models import Dataset
 from backend.api.tests.fixtures import DATA_FIXTURES
@@ -36,7 +35,9 @@ class AllDatasetsTestCase(GraphQLTestCase):
 
     def test_not_connected(self):
         response = self.query(QUERY)
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertResponseHasErrors(response)
+        content = json.loads(response.content)
+        self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected(self):
         self.client.login(username="user1", password="osmose29")
@@ -45,7 +46,7 @@ class AllDatasetsTestCase(GraphQLTestCase):
 
         content = json.loads(response.content)["data"]["allDatasets"]["results"]
         self.assertEqual(len(content), Dataset.objects.count())
-        self.assertEqual(content[0]["name"], "SPM Aural A 2010")
+        self.assertEqual(content[0]["name"], "gliderSPAmsDemo")
         self.assertEqual(content[0]["analysisCount"], 2)
         self.assertEqual(content[0]["filesCount"], 11)
         self.assertEqual(content[0]["start"], "2012-10-03T10:00:00+00:00")

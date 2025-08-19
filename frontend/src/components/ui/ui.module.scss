@@ -78,6 +78,7 @@
       display: grid;
       grid-auto-flow: column;
       justify-content: space-between;
+      align-items: center;
     }
 
     @media (max-width: 800px) {
@@ -145,8 +146,9 @@
   //noinspection CssInvalidFunction
   grid-template-columns: 1fr repeat(calc(var(--content-columns, 1) - 1), auto);
   gap: 0.25rem 0;
-  overflow-x: auto;
+  overflow: auto;
   max-width: 100%;
+  max-height: 100%;
 
   &.uniqueColumn {
     grid-template-columns: 1fr;
@@ -283,5 +285,34 @@
 
   .buttons {
     grid-auto-flow: column;
+  }
+}
+
+
+.importRow {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  background-color: transparent;
+
+  >:first-child {
+    grid-row: 1 / 2;
+    justify-self: center;
+  }
+
+  &.success > :first-child {
+    color: var(--ion-color-success);
+  }
+
+  .importRow {
+    grid-column: 2;
+  }
+
+  &:hover:not(:has(.importRow:hover)) {
+    background-color: rgba(var(--ion-color-primary-rgb), 0.06);
   }
 }

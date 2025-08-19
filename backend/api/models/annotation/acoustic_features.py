@@ -15,6 +15,9 @@ class AcousticFeatures(models.Model):
         DESCENDING = ("DESC", "Descending")
         MODULATED = ("MOD", "Modulated")
 
+    class Meta:
+        verbose_name_plural = "Acoustic features"
+
     start_frequency = models.FloatField(
         null=True,
         blank=True,

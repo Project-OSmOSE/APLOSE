@@ -1,4 +1,4 @@
-import { AudioMetadatum, Dataset, ImportDataset, SpectrogramConfiguration } from '../../src/service/types';
+import { AudioMetadatum, Dataset, SpectrogramConfiguration } from '../../src/service/types';
 
 export const DATASET_SR: number = 480
 export const SPECTROGRAM_CONFIGURATION: SpectrogramConfiguration = {
@@ -53,12 +53,4 @@ export const DATASET: Dataset = {
   files_count: 99,
   type: "Coastal audio recordings",
   spectros: [ SPECTROGRAM_CONFIGURATION ],
-}
-export const IMPORT_DATASET: ImportDataset = {
-  name: 'Test import dataset',
-  dataset: 'Test import dataset',
-  dataset_sr: DATASET_SR.toString(),
-  path: 'mypath/dataset',
-  file_type: ".wav",
-  spectro_duration: '3600'
 }

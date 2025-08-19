@@ -3,6 +3,7 @@
 import graphene
 from django_filters import NumberFilter
 from graphene import relay, Field
+from graphene_django.debug import DjangoDebug
 from graphene_django_pagination import DjangoPaginationConnectionField
 from metadatax.acquisition.models import Deployment, Project
 from metadatax.acquisition.schema.deployment import (
@@ -13,7 +14,7 @@ from metadatax.acquisition.schema.project import ProjectFilter
 from metadatax.acquisition.schema.project import ProjectNode as MetadataxProjectNode
 from metadatax.schema import Mutation as MetadataxMutation, Query as MetadataxQuery
 
-from .api.schema import APIQuery
+from .api.schema import APIQuery, APIMutation
 from .aplose.schema import AploseQuery
 from .osmosewebsite.schema import OSmOSEWebsiteQuery, WebsiteProjectNode
 
@@ -59,6 +60,8 @@ class Query(
 ):
     """Global query"""
 
+    debug = graphene.Field(DjangoDebug, name="_debug")
+
     # pylint: disable=too-few-public-methods
 
     all_deployments = DjangoPaginationConnectionField(DeploymentNode)
@@ -66,7 +69,9 @@ class Query(
 
 
 class Mutation(
-    MetadataxMutation, graphene.ObjectType
+    APIMutation,
+    MetadataxMutation,
+    graphene.ObjectType,
 ):  # pylint: disable=too-few-public-methods
     """Global mutation"""
 

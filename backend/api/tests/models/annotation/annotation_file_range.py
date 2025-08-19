@@ -13,10 +13,12 @@ class AnnotationFileRangeTestCase(TestCase):
         self.assertEqual(AnnotationTask.objects.count(), 13)
         self.assertEqual(AnnotationFileRange.objects.count(), 6)
 
+        files_count = file_range.files_count
         file_range.last_file_index -= 1
         file_range.save()
 
         self.assertEqual(AnnotationFileRange.objects.count(), 6)
+        self.assertEqual(file_range.files_count, files_count - 1)
         self.assertEqual(AnnotationTask.objects.count(), 12)
 
     def test_delete_also_delete_tasks(self):

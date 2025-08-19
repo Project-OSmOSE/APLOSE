@@ -3,7 +3,7 @@ import graphene
 
 from .annotation import APIAnnotationQuery
 from .common import APICommonQuery
-from .data import APIDataQuery
+from .data import APIDataQuery, APIDataMutation
 
 
 class APIQuery(
@@ -13,3 +13,10 @@ class APIQuery(
     graphene.ObjectType,
 ):  # pylint: disable=too-few-public-methods
     """API GraphQL queries"""
+
+
+class APIMutation(
+    APIDataMutation,
+    graphene.ObjectType,
+):  # pylint: disable=too-few-public-methods
+    """API GraphQL mutations"""

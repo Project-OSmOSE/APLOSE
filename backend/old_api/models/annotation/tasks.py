@@ -118,7 +118,6 @@ class AnnotationFileRange(models.Model):
         files = DatasetFile.objects.filter(dataset__in=allowed_datasets).order_by(
             "start"
         )
-        print(self.last_file_index, files[self.last_file_index].id)
         from_datetime = files[self.first_file_index].start
         to_datetime = files[self.last_file_index].end
         if from_datetime > to_datetime:
