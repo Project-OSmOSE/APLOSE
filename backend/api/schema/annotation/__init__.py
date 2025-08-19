@@ -4,10 +4,10 @@ import graphene
 from backend.utils.schema import AuthenticatedDjangoConnectionField
 from .acoustic_features import AcousticFeaturesNode
 from .annotation import AnnotationNode
-from .annotation_campaign import AnnotationCampaignNode
+from .annotation_campaign import AnnotationCampaignNode, AnnotationCampaignQuery
 from .annotation_comment import AnnotationCommentNode
 from .annotation_file_range import AnnotationFileRangeNode
-from .annotation_phase import AnnotationPhaseNode
+from .annotation_phase import AnnotationPhaseNode, PhaseTypeEnum
 from .annotation_task import AnnotationTaskNode
 from .annotation_validation import AnnotationValidationNode
 from .confidence import ConfidenceNode
@@ -18,14 +18,13 @@ from .label import LabelNode
 from .label_set import LabelSetNode
 
 
-class APIAnnotationQuery(graphene.ObjectType):  # pylint: disable=too-few-public-methods
+class APIAnnotationQuery(
+    AnnotationCampaignQuery, graphene.ObjectType
+):  # pylint: disable=too-few-public-methods
     """API GraphQL queries"""
 
     all_acoustic_features = AuthenticatedDjangoConnectionField(AcousticFeaturesNode)
     all_annotations = AuthenticatedDjangoConnectionField(AnnotationNode)
-    all_annotation_campaigns = AuthenticatedDjangoConnectionField(
-        AnnotationCampaignNode
-    )
     all_annotation_comments = AuthenticatedDjangoConnectionField(AnnotationCommentNode)
     all_annotation_file_ranges = AuthenticatedDjangoConnectionField(
         AnnotationFileRangeNode

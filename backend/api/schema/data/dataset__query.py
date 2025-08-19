@@ -70,35 +70,36 @@ class DatasetNode(ApiObjectType):
 
     @classmethod
     def get_queryset(cls, queryset: QuerySet[Dataset], info: GraphQLResolveInfo):
-        field_names = cls._get_query_field_names(info)
+        fields = cls._get_query_fields(info)
 
         cls._init_queryset_extensions()
-        if "analysisCount" in field_names:
-            cls.annotations = {
-                **cls.annotations,
-                "analysis_count": Count("spectrogram_analysis", distinct=True),
-            }
-            cls.prefetch.append("spectrogram_analysis")
-        if "filesCount" in field_names:
-            cls.annotations = {
-                **cls.annotations,
-                "files_count": Count(
-                    "spectrogram_analysis__spectrograms", distinct=True
-                ),
-            }
-            cls.prefetch.append("spectrogram_analysis__spectrograms")
-        if "start" in field_names:
-            cls.annotations = {
-                **cls.annotations,
-                "start": Min("spectrogram_analysis__spectrograms__start"),
-            }
-            cls.prefetch.append("spectrogram_analysis__spectrograms")
-        if "end" in field_names:
-            cls.annotations = {
-                **cls.annotations,
-                "end": Max("spectrogram_analysis__spectrograms__end"),
-            }
-            cls.prefetch.append("spectrogram_analysis__spectrograms")
+        for field in fields:
+            if field.name.value == "analysisCount":
+                cls.annotations = {
+                    **cls.annotations,
+                    "analysis_count": Count("spectrogram_analysis", distinct=True),
+                }
+                cls.prefetch.append("spectrogram_analysis")
+            if field.name.value == "filesCount":
+                cls.annotations = {
+                    **cls.annotations,
+                    "files_count": Count(
+                        "spectrogram_analysis__spectrograms", distinct=True
+                    ),
+                }
+                cls.prefetch.append("spectrogram_analysis__spectrograms")
+            if field.name.value == "start":
+                cls.annotations = {
+                    **cls.annotations,
+                    "start": Min("spectrogram_analysis__spectrograms__start"),
+                }
+                cls.prefetch.append("spectrogram_analysis__spectrograms")
+            if field.name.value == "end":
+                cls.annotations = {
+                    **cls.annotations,
+                    "end": Max("spectrogram_analysis__spectrograms__end"),
+                }
+                cls.prefetch.append("spectrogram_analysis__spectrograms")
         return cls._finalize_queryset(super().get_queryset(queryset, info))
 
 

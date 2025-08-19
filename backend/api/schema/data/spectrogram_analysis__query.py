@@ -66,27 +66,28 @@ class SpectrogramAnalysisNode(ApiObjectType):
 
     @classmethod
     def get_queryset(cls, queryset, info):
-        field_names = cls._get_query_field_names(info)
+        fields = cls._get_query_fields(info)
 
         cls._init_queryset_extensions()
-        if "filesCount" in field_names:
-            cls.annotations = {
-                **cls.annotations,
-                "files_count": Count("spectrograms", distinct=True),
-            }
-            cls.prefetch.append("spectrograms")
-        if "start" in field_names:
-            cls.annotations = {
-                **cls.annotations,
-                "start": Min("spectrograms__start"),
-            }
-            cls.prefetch.append("spectrograms")
-        if "end" in field_names:
-            cls.annotations = {
-                **cls.annotations,
-                "end": Max("spectrograms__end"),
-            }
-            cls.prefetch.append("spectrograms")
+        for field in fields:
+            if field.name.value == "filesCount":
+                cls.annotations = {
+                    **cls.annotations,
+                    "files_count": Count("spectrograms", distinct=True),
+                }
+                cls.prefetch.append("spectrograms")
+            if field.name.value == "start":
+                cls.annotations = {
+                    **cls.annotations,
+                    "start": Min("spectrograms__start"),
+                }
+                cls.prefetch.append("spectrograms")
+            if field.name.value == "end":
+                cls.annotations = {
+                    **cls.annotations,
+                    "end": Max("spectrograms__end"),
+                }
+                cls.prefetch.append("spectrograms")
         return cls._finalize_queryset(super().get_queryset(queryset, info))
 
 
