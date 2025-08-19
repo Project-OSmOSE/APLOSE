@@ -64,12 +64,14 @@ class Dataset(AbstractDataset, models.Model):
         """Get config folder for legacy datasets"""
         datasets_csv_path = settings.DATASET_IMPORT_FOLDER / settings.DATASET_FILE
         with open(datasets_csv_path, encoding="utf-8") as csvfile:
+            data = csv.DictReader(csvfile)
             d: dict
-            dataset = next(
-                d
-                for d in csv.DictReader(csvfile)
-                if d["dataset"] == self.name and d["path"] == self.path
-            )
+            datasets = [
+                d for d in data if d["dataset"] == self.name and d["path"] == self.path
+            ]
+            if len(datasets) == 0:
+                return ""
+            dataset = datasets[0]
         return f"{dataset['spectro_duration']}_{dataset['dataset_sr']}"
 
     def get_osekit_dataset(self) -> OSEkitDataset:

@@ -323,7 +323,22 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.RunSQL(
-            sql='            INSERT INTO api_dataset (id, created_at, name, description, path, owner_id, legacy)            SELECT id, created_at, name, "desc", dataset_path, owner_id, true from datasets;            INSERT INTO api_dataset_related_channel_configurations (dataset_id, channelconfiguration_id)            SELECT olddataset_id, channelconfiguration_id from datasets_related_channel_configuration;            ',
+            sql="""
+            INSERT INTO api_dataset (id, created_at, name, description, path, owner_id, legacy)
+            SELECT
+                id,
+                created_at,
+                name,
+                "desc",
+                CASE
+                    WHEN  split_part(dataset_path, 'datawork/dataset/', 2) != '' THEN split_part(dataset_path, 'datawork/dataset/', 2)
+                    ELSE dataset_path
+                END,
+                owner_id,
+                true
+            FROM datasets;
+            INSERT INTO api_dataset_related_channel_configurations (dataset_id, channelconfiguration_id)
+            SELECT olddataset_id, channelconfiguration_id FROM datasets_related_channel_configuration;""",
             reverse_sql="",
         ),
         migrations.CreateModel(
