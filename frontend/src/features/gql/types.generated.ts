@@ -35,6 +35,7 @@ export type Scalars = {
   Decimal: { input: any; output: any; }
   FinancingEnum: { input: any; output: any; }
   HydrophoneDirectivityEnum: { input: any; output: any; }
+  PhaseTypeEnum: { input: any; output: any; }
   RoleEnum: { input: any; output: any; }
   SignalPluralityEnum: { input: any; output: any; }
   SignalShapeEnum: { input: any; output: any; }
@@ -226,13 +227,17 @@ export type AnnotationCampaignNode = Node & {
   dataset: DatasetNode;
   deadline?: Maybe<Scalars['Date']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  finishedTasksCount?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   instructionsUrl?: Maybe<Scalars['String']['output']>;
   labelSet?: Maybe<LabelSetNode>;
   labelsWithAcousticFeatures: LabelNodeConnection;
   name: Scalars['String']['output'];
   owner: UserNode;
-  phases: AnnotationPhaseNodeConnection;
+  phases?: Maybe<AnnotationPhaseNodeNodeConnection>;
+  tasksCount?: Maybe<Scalars['Int']['output']>;
+  userFinishedTasksCount?: Maybe<Scalars['Int']['output']>;
+  userTasksCount?: Maybe<Scalars['Int']['output']>;
 };
 
 
@@ -274,8 +279,22 @@ export type AnnotationCampaignNodePhasesArgs = {
   endedBy?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  phase?: InputMaybe<ApiAnnotationPhasePhaseChoices>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
+  phase?: InputMaybe<Scalars['PhaseTypeEnum']['input']>;
+};
+
+
+/** AnnotationCampaign schema */
+export type AnnotationCampaignNodeUserFinishedTasksCountArgs = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+/** AnnotationCampaign schema */
+export type AnnotationCampaignNodeUserTasksCountArgs = {
+  id?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type AnnotationCampaignNodeConnection = {
@@ -502,7 +521,7 @@ export type AnnotationPhaseNode = Node & {
   endedAt?: Maybe<Scalars['DateTime']['output']>;
   endedBy?: Maybe<UserNode>;
   id: Scalars['ID']['output'];
-  phase: ApiAnnotationPhasePhaseChoices;
+  phase?: Maybe<Scalars['PhaseTypeEnum']['output']>;
   results: AnnotationNodeConnection;
 };
 
@@ -698,14 +717,6 @@ export enum ApiAnnotationAnnotatorExpertiseLevelChoices {
   E = 'E',
   /** Novice */
   N = 'N'
-}
-
-/** An enumeration. */
-export enum ApiAnnotationPhasePhaseChoices {
-  /** Annotation */
-  A = 'A',
-  /** Verification */
-  V = 'V'
 }
 
 /** An enumeration. */
@@ -1639,27 +1650,16 @@ export type ConfidenceSetNode = Node & {
 /** ConfidenceSet schema */
 export type ConfidenceSetNodeAnnotationcampaignSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
-  allowColormapTuning?: InputMaybe<Scalars['Boolean']['input']>;
-  allowImageTuning?: InputMaybe<Scalars['Boolean']['input']>;
-  allowPointAnnotation?: InputMaybe<Scalars['Boolean']['input']>;
-  analysis?: InputMaybe<Scalars['ID']['input']>;
-  archive?: InputMaybe<Scalars['ID']['input']>;
+  annotatorId?: InputMaybe<Scalars['Decimal']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  colormapDefault?: InputMaybe<Scalars['String']['input']>;
-  colormapInvertedDefault?: InputMaybe<Scalars['Boolean']['input']>;
-  confidenceSet?: InputMaybe<Scalars['ID']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dataset?: InputMaybe<Scalars['ID']['input']>;
-  deadline?: InputMaybe<Scalars['Date']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  instructionsUrl?: InputMaybe<Scalars['String']['input']>;
-  labelSet?: InputMaybe<Scalars['ID']['input']>;
-  labelsWithAcousticFeatures?: InputMaybe<Scalars['ID']['input']>;
+  isArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  owner?: InputMaybe<Scalars['ID']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  ownerId?: InputMaybe<Scalars['Decimal']['input']>;
+  phaseType?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1996,27 +1996,16 @@ export type DatasetNode = Node & {
 /** Dataset schema */
 export type DatasetNodeAnnotationCampaignsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
-  allowColormapTuning?: InputMaybe<Scalars['Boolean']['input']>;
-  allowImageTuning?: InputMaybe<Scalars['Boolean']['input']>;
-  allowPointAnnotation?: InputMaybe<Scalars['Boolean']['input']>;
-  analysis?: InputMaybe<Scalars['ID']['input']>;
-  archive?: InputMaybe<Scalars['ID']['input']>;
+  annotatorId?: InputMaybe<Scalars['Decimal']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  colormapDefault?: InputMaybe<Scalars['String']['input']>;
-  colormapInvertedDefault?: InputMaybe<Scalars['Boolean']['input']>;
-  confidenceSet?: InputMaybe<Scalars['ID']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dataset?: InputMaybe<Scalars['ID']['input']>;
-  deadline?: InputMaybe<Scalars['Date']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  instructionsUrl?: InputMaybe<Scalars['String']['input']>;
-  labelSet?: InputMaybe<Scalars['ID']['input']>;
-  labelsWithAcousticFeatures?: InputMaybe<Scalars['ID']['input']>;
+  isArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  owner?: InputMaybe<Scalars['ID']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  ownerId?: InputMaybe<Scalars['Decimal']['input']>;
+  phaseType?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -3046,9 +3035,10 @@ export type HydrophoneSpecificationNodeNodeConnection = {
   totalCount?: Maybe<Scalars['Int']['output']>;
 };
 
+/** Import dataset mutation */
 export type ImportDatasetMutation = {
   __typename?: 'ImportDatasetMutation';
-  ok?: Maybe<Scalars['Boolean']['output']>;
+  ok: Scalars['Boolean']['output'];
 };
 
 /** Type for import dataset */
@@ -3060,6 +3050,7 @@ export type ImportDatasetType = {
   path: Scalars['String']['output'];
 };
 
+/** "Import spectrogram analysis mutation */
 export type ImportSpectrogramAnalysisMutation = {
   __typename?: 'ImportSpectrogramAnalysisMutation';
   ok?: Maybe<Scalars['Boolean']['output']>;
@@ -3541,27 +3532,16 @@ export type LabelSetNode = Node & {
 /** LabelSet schema */
 export type LabelSetNodeAnnotationcampaignSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
-  allowColormapTuning?: InputMaybe<Scalars['Boolean']['input']>;
-  allowImageTuning?: InputMaybe<Scalars['Boolean']['input']>;
-  allowPointAnnotation?: InputMaybe<Scalars['Boolean']['input']>;
-  analysis?: InputMaybe<Scalars['ID']['input']>;
-  archive?: InputMaybe<Scalars['ID']['input']>;
+  annotatorId?: InputMaybe<Scalars['Decimal']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  colormapDefault?: InputMaybe<Scalars['String']['input']>;
-  colormapInvertedDefault?: InputMaybe<Scalars['Boolean']['input']>;
-  confidenceSet?: InputMaybe<Scalars['ID']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dataset?: InputMaybe<Scalars['ID']['input']>;
-  deadline?: InputMaybe<Scalars['Date']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  instructionsUrl?: InputMaybe<Scalars['String']['input']>;
-  labelSet?: InputMaybe<Scalars['ID']['input']>;
-  labelsWithAcousticFeatures?: InputMaybe<Scalars['ID']['input']>;
+  isArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  owner?: InputMaybe<Scalars['ID']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  ownerId?: InputMaybe<Scalars['Decimal']['input']>;
+  phaseType?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -3856,7 +3836,9 @@ export type Mutation = {
   __typename?: 'Mutation';
   deleteSound?: Maybe<DeleteSoundMutation>;
   deleteSource?: Maybe<DeleteSourceMutation>;
+  /** Import dataset mutation */
   importDataset?: Maybe<ImportDatasetMutation>;
+  /** "Import spectrogram analysis mutation */
   importSpectrogramAnalysis?: Maybe<ImportSpectrogramAnalysisMutation>;
   postSound?: Maybe<PostSoundMutationPayload>;
   postSource?: Maybe<PostSourceMutationPayload>;
@@ -4744,29 +4726,18 @@ export type QueryAllAcousticFeaturesArgs = {
 /** Global query */
 export type QueryAllAnnotationCampaignsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
-  allowColormapTuning?: InputMaybe<Scalars['Boolean']['input']>;
-  allowImageTuning?: InputMaybe<Scalars['Boolean']['input']>;
-  allowPointAnnotation?: InputMaybe<Scalars['Boolean']['input']>;
-  analysis?: InputMaybe<Scalars['ID']['input']>;
-  archive?: InputMaybe<Scalars['ID']['input']>;
+  annotatorId?: InputMaybe<Scalars['Decimal']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  colormapDefault?: InputMaybe<Scalars['String']['input']>;
-  colormapInvertedDefault?: InputMaybe<Scalars['Boolean']['input']>;
-  confidenceSet?: InputMaybe<Scalars['ID']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dataset?: InputMaybe<Scalars['ID']['input']>;
-  deadline?: InputMaybe<Scalars['Date']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  instructionsUrl?: InputMaybe<Scalars['String']['input']>;
-  labelSet?: InputMaybe<Scalars['ID']['input']>;
-  labelsWithAcousticFeatures?: InputMaybe<Scalars['ID']['input']>;
+  isArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
   ordering?: InputMaybe<Scalars['String']['input']>;
-  owner?: InputMaybe<Scalars['ID']['input']>;
+  ownerId?: InputMaybe<Scalars['Decimal']['input']>;
+  phaseType?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -4834,7 +4805,7 @@ export type QueryAllAnnotationPhasesArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   ordering?: InputMaybe<Scalars['String']['input']>;
-  phase?: InputMaybe<ApiAnnotationPhasePhaseChoices>;
+  phase?: InputMaybe<Scalars['PhaseTypeEnum']['input']>;
 };
 
 
@@ -6747,27 +6718,16 @@ export type SpectrogramAnalysisNode = Node & {
 /** SpectrogramAnalysis schema */
 export type SpectrogramAnalysisNodeAnnotationCampaignsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
-  allowColormapTuning?: InputMaybe<Scalars['Boolean']['input']>;
-  allowImageTuning?: InputMaybe<Scalars['Boolean']['input']>;
-  allowPointAnnotation?: InputMaybe<Scalars['Boolean']['input']>;
-  analysis?: InputMaybe<Scalars['ID']['input']>;
-  archive?: InputMaybe<Scalars['ID']['input']>;
+  annotatorId?: InputMaybe<Scalars['Decimal']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  colormapDefault?: InputMaybe<Scalars['String']['input']>;
-  colormapInvertedDefault?: InputMaybe<Scalars['Boolean']['input']>;
-  confidenceSet?: InputMaybe<Scalars['ID']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dataset?: InputMaybe<Scalars['ID']['input']>;
-  deadline?: InputMaybe<Scalars['Date']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  instructionsUrl?: InputMaybe<Scalars['String']['input']>;
-  labelSet?: InputMaybe<Scalars['ID']['input']>;
-  labelsWithAcousticFeatures?: InputMaybe<Scalars['ID']['input']>;
+  isArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  owner?: InputMaybe<Scalars['ID']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  ownerId?: InputMaybe<Scalars['Decimal']['input']>;
+  phaseType?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -7144,27 +7104,16 @@ export type UserNodeAnnotationTasksArgs = {
 /** User node */
 export type UserNodeAnnotationcampaignSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
-  allowColormapTuning?: InputMaybe<Scalars['Boolean']['input']>;
-  allowImageTuning?: InputMaybe<Scalars['Boolean']['input']>;
-  allowPointAnnotation?: InputMaybe<Scalars['Boolean']['input']>;
-  analysis?: InputMaybe<Scalars['ID']['input']>;
-  archive?: InputMaybe<Scalars['ID']['input']>;
+  annotatorId?: InputMaybe<Scalars['Decimal']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  colormapDefault?: InputMaybe<Scalars['String']['input']>;
-  colormapInvertedDefault?: InputMaybe<Scalars['Boolean']['input']>;
-  confidenceSet?: InputMaybe<Scalars['ID']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dataset?: InputMaybe<Scalars['ID']['input']>;
-  deadline?: InputMaybe<Scalars['Date']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  instructionsUrl?: InputMaybe<Scalars['String']['input']>;
-  labelSet?: InputMaybe<Scalars['ID']['input']>;
-  labelsWithAcousticFeatures?: InputMaybe<Scalars['ID']['input']>;
+  isArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  owner?: InputMaybe<Scalars['ID']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  ownerId?: InputMaybe<Scalars['Decimal']['input']>;
+  phaseType?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -7218,7 +7167,7 @@ export type UserNodeCreatedPhasesArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  phase?: InputMaybe<ApiAnnotationPhasePhaseChoices>;
+  phase?: InputMaybe<Scalars['PhaseTypeEnum']['input']>;
 };
 
 
@@ -7245,7 +7194,7 @@ export type UserNodeEndedPhasesArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  phase?: InputMaybe<ApiAnnotationPhasePhaseChoices>;
+  phase?: InputMaybe<Scalars['PhaseTypeEnum']['input']>;
 };
 
 

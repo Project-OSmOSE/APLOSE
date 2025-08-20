@@ -1,5 +1,4 @@
 export * from './Badge'
 export * from './Buttons'
-export * from './Card'
 export * from './LabelSetTable'
 export * from './Progress'

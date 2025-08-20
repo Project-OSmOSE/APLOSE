@@ -1,0 +1,31 @@
+query getAnnotationCampaigns($userID: ID!, $annotatorID: Decimal, $ownerID: Decimal, $isArchived: Boolean, $phase: String, $search: String) {
+    allAnnotationCampaigns(
+        annotatorId: $annotatorID
+        ownerId: $ownerID
+        isArchived: $isArchived
+        phaseType: $phase
+        search: $search
+        orderBy: "name"
+    ) {
+        results {
+            id
+            name
+            deadline
+            tasksCount
+            finishedTasksCount
+            userTasksCount(id: $userID)
+            userFinishedTasksCount(id: $userID)
+            dataset {
+                name
+            }
+            archive {
+                id
+            }
+            phases {
+                results {
+                    phase
+                }
+            }
+        }
+    }
+}

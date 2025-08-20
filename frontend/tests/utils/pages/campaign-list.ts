@@ -1,8 +1,8 @@
 import { Locator, Page, test } from '@playwright/test';
 import { UserType } from '../../fixtures';
 import { LoginPage } from './login';
-import { Mock } from '../services';
-import { API_URL } from '../const';
+import { Mock, MockType } from '../services';
+import { interceptGQL } from "../functions";
 
 export class CampaignListPage {
 
@@ -19,14 +19,13 @@ export class CampaignListPage {
               private mock = new Mock(page)) {
   }
 
-  async go(as: UserType, options?: { empty: boolean }) {
+  async go(as: UserType, type: MockType = 'filled') {
     await test.step('Navigate to Campaigns', async () => {
       await this.mock.userSelf(as)
-      await this.mock.campaigns(options?.empty)
+      await interceptGQL(this.page, { getAnnotationCampaigns: type }, 2)
       await this.login.login(as)
-      await this.mock.campaigns(options?.empty)
-      await this.page.waitForRequest(API_URL.campaign.list)
-      await this.page.locator('ion-spinner').waitFor({ state: 'hidden' });
+      await this.page.waitForRequest('**/graphql')
+      await this.page.waitForRequest('**/graphql')
     });
   }
 

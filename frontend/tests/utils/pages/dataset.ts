@@ -13,8 +13,8 @@ export class DatasetPage {
 
   async go(as: UserType, type: MockType = 'filled') {
     await test.step('Navigate to Datasets', async () => {
-      await interceptGQL(this.page, { getDatasets: type })
       await this.campaignList.go(as);
+      await interceptGQL(this.page, { getDatasets: type })
       await this.page.getByRole('button', { name: 'Datasets' }).click()
     });
   }

@@ -11,6 +11,7 @@ import { AnnotatorSlice } from "@/service/slices/annotator.ts";
 import { ImportAnnotationsSlice } from "@/service/slices/import-annotations.ts";
 import { SettingsSlice } from "@/service/slices/settings.ts";
 import { gqlAPI } from "@/features/gql/baseApi.ts";
+import { AnnotationCampaignSlice } from "@/features/annotation/annotationCampaign";
 
 export const AppStore = configureStore({
   reducer: {
@@ -23,6 +24,7 @@ export const AppStore = configureStore({
     [gqlAPI.reducerPath]: gqlAPI.reducer,
     auth: AuthSlice.reducer,
     filter: FilterSlice.reducer,
+    [AnnotationCampaignSlice.reducerPath]: AnnotationCampaignSlice.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>

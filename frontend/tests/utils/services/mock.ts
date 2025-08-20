@@ -29,6 +29,7 @@ import {
   GetAvailableSpectrogramAnalysisForImportQuery,
   GetSpectrogramAnalysisQuery
 } from "../../../src/features/data/spectrogramAnalysis/api/api.generated";
+import { GetAnnotationCampaignsQuery } from "../../../src/features/annotation/annotationCampaign/api/api.generated";
 
 type Response = {
   status: number,
@@ -200,6 +201,11 @@ export class Mock {
   }
 }
 
+
+const _deadline = new Date()
+_deadline.setTime(0)
+const deadline = _deadline.toISOString().split('T')[0]
+
 export const MOCK_QUERIES: {
   [key in string]: { [key in MockType]: any }
 } = {
@@ -316,6 +322,41 @@ export const MOCK_QUERIES: {
     } as GetSpectrogramAnalysisQuery
   },
 
+  getAnnotationCampaigns: {
+    empty: {
+      allAnnotationCampaigns: {
+        results: []
+      }
+    } as GetAnnotationCampaignsQuery,
+    filled: {
+      allAnnotationCampaigns: {
+        results: [
+          {
+            id: '1',
+            name: 'Test campaign',
+            deadline,
+            archive: {
+              id: '1'
+            },
+            dataset: {
+              name: 'Test dataset'
+            },
+            finishedTasksCount: 50,
+            tasksCount: 100,
+            userFinishedTasksCount: 5,
+            userTasksCount: 10,
+            phases: {
+              results: [
+                {
+                  phase: 'Annotation'
+                }
+              ]
+            }
+          }
+        ]
+      }
+    } as GetAnnotationCampaignsQuery
+  },
 }
 export const MOCK_MUTATIONS: {
   [key in string]: { empty: Record<string, never> }

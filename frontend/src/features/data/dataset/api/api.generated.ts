@@ -25,7 +25,7 @@ export type PostDatasetForImportMutationVariables = Types.Exact<{
 }>;
 
 
-export type PostDatasetForImportMutation = { __typename?: 'Mutation', importDataset?: { __typename?: 'ImportDatasetMutation', ok?: boolean | null } | null };
+export type PostDatasetForImportMutation = { __typename?: 'Mutation', importDataset?: { __typename?: 'ImportDatasetMutation', ok: boolean } | null };
 
 
 export const GetDatasetsDocument = `

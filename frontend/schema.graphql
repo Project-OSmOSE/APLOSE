@@ -1253,6 +1253,30 @@ type Query {
     date: DateTime
     byUser: ID
   ): ArchiveNodeNodeConnection
+  allAnnotationCampaigns(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotatorId: Decimal
+    ownerId: Decimal
+    isArchived: Boolean
+    phaseType: String
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeNodeConnection
   allAcousticFeatures(
     """Query limit"""
     limit: Int
@@ -1304,37 +1328,6 @@ type Query {
     createdAt: DateTime
     lastUpdatedAt: DateTime
   ): AnnotationNodeNodeConnection
-  allAnnotationCampaigns(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    createdAt: DateTime
-    name: String
-    description: String
-    instructionsUrl: String
-    deadline: Date
-    labelSet: ID
-    labelsWithAcousticFeatures: ID
-    allowPointAnnotation: Boolean
-    dataset: ID
-    analysis: ID
-    allowImageTuning: Boolean
-    allowColormapTuning: Boolean
-    colormapDefault: String
-    colormapInvertedDefault: Boolean
-    owner: ID
-    confidenceSet: ID
-    archive: ID
-  ): AnnotationCampaignNodeNodeConnection
   allAnnotationComments(
     """Query limit"""
     limit: Int
@@ -1388,7 +1381,7 @@ type Query {
     after: String
     first: Int
     last: Int
-    phase: ApiAnnotationPhasePhaseChoices
+    phase: PhaseTypeEnum
     annotationCampaign: ID
     createdAt: DateTime
     createdBy: ID
@@ -2394,7 +2387,23 @@ type ConfidenceSetNode implements Node {
   name: String!
   desc: String
   confidenceIndicators(offset: Int, before: String, after: String, first: Int, last: Int, label: String, level: Int): ConfidenceNodeConnection!
-  annotationcampaignSet(offset: Int, before: String, after: String, first: Int, last: Int, createdAt: DateTime, name: String, description: String, instructionsUrl: String, deadline: Date, labelSet: ID, labelsWithAcousticFeatures: ID, allowPointAnnotation: Boolean, dataset: ID, analysis: ID, allowImageTuning: Boolean, allowColormapTuning: Boolean, colormapDefault: String, colormapInvertedDefault: Boolean, owner: ID, confidenceSet: ID, archive: ID): AnnotationCampaignNodeConnection!
+  annotationcampaignSet(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotatorId: Decimal
+    ownerId: Decimal
+    isArchived: Boolean
+    phaseType: String
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeConnection!
 }
 
 type ConfidenceNodeConnection {
@@ -2464,7 +2473,30 @@ type AnnotationCampaignNode implements Node {
   owner: UserNode!
   confidenceSet: ConfidenceSetNode
   archive: ArchiveNode
-  phases(offset: Int, before: String, after: String, first: Int, last: Int, phase: ApiAnnotationPhasePhaseChoices, annotationCampaign: ID, createdAt: DateTime, createdBy: ID, endedAt: DateTime, endedBy: ID): AnnotationPhaseNodeConnection!
+  phases(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    phase: PhaseTypeEnum
+    annotationCampaign: ID
+    createdAt: DateTime
+    createdBy: ID
+    endedAt: DateTime
+    endedBy: ID
+  ): AnnotationPhaseNodeNodeConnection
+  tasksCount: Int
+  finishedTasksCount: Int
+  userTasksCount(id: ID): Int
+  userFinishedTasksCount(id: ID): Int
 }
 
 """LabelSet schema"""
@@ -2473,7 +2505,23 @@ type LabelSetNode implements Node {
   name: String!
   description: String
   labels(offset: Int, before: String, after: String, first: Int, last: Int, name: String, metadataxLabel: ID): LabelNodeConnection!
-  annotationcampaignSet(offset: Int, before: String, after: String, first: Int, last: Int, createdAt: DateTime, name: String, description: String, instructionsUrl: String, deadline: Date, labelSet: ID, labelsWithAcousticFeatures: ID, allowPointAnnotation: Boolean, dataset: ID, analysis: ID, allowImageTuning: Boolean, allowColormapTuning: Boolean, colormapDefault: String, colormapInvertedDefault: Boolean, owner: ID, confidenceSet: ID, archive: ID): AnnotationCampaignNodeConnection!
+  annotationcampaignSet(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotatorId: Decimal
+    ownerId: Decimal
+    isArchived: Boolean
+    phaseType: String
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeConnection!
 }
 
 """Dataset schema"""
@@ -2507,7 +2555,23 @@ type DatasetNode implements Node {
     """Ordering"""
     orderBy: String
   ): SpectrogramAnalysisNodeNodeConnection
-  annotationCampaigns(offset: Int, before: String, after: String, first: Int, last: Int, createdAt: DateTime, name: String, description: String, instructionsUrl: String, deadline: Date, labelSet: ID, labelsWithAcousticFeatures: ID, allowPointAnnotation: Boolean, dataset: ID, analysis: ID, allowImageTuning: Boolean, allowColormapTuning: Boolean, colormapDefault: String, colormapInvertedDefault: Boolean, owner: ID, confidenceSet: ID, archive: ID): AnnotationCampaignNodeConnection!
+  annotationCampaigns(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotatorId: Decimal
+    ownerId: Decimal
+    isArchived: Boolean
+    phaseType: String
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeConnection!
   analysisCount: Int
   filesCount: Int
   start: DateTime
@@ -2564,9 +2628,25 @@ type UserNode implements Node {
     """Ordering"""
     orderBy: String
   ): SpectrogramAnalysisNodeConnection!
-  annotationcampaignSet(offset: Int, before: String, after: String, first: Int, last: Int, createdAt: DateTime, name: String, description: String, instructionsUrl: String, deadline: Date, labelSet: ID, labelsWithAcousticFeatures: ID, allowPointAnnotation: Boolean, dataset: ID, analysis: ID, allowImageTuning: Boolean, allowColormapTuning: Boolean, colormapDefault: String, colormapInvertedDefault: Boolean, owner: ID, confidenceSet: ID, archive: ID): AnnotationCampaignNodeConnection!
-  createdPhases(offset: Int, before: String, after: String, first: Int, last: Int, phase: ApiAnnotationPhasePhaseChoices, annotationCampaign: ID, createdAt: DateTime, createdBy: ID, endedAt: DateTime, endedBy: ID): AnnotationPhaseNodeConnection!
-  endedPhases(offset: Int, before: String, after: String, first: Int, last: Int, phase: ApiAnnotationPhasePhaseChoices, annotationCampaign: ID, createdAt: DateTime, createdBy: ID, endedAt: DateTime, endedBy: ID): AnnotationPhaseNodeConnection!
+  annotationcampaignSet(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotatorId: Decimal
+    ownerId: Decimal
+    isArchived: Boolean
+    phaseType: String
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeConnection!
+  createdPhases(offset: Int, before: String, after: String, first: Int, last: Int, phase: PhaseTypeEnum, annotationCampaign: ID, createdAt: DateTime, createdBy: ID, endedAt: DateTime, endedBy: ID): AnnotationPhaseNodeConnection!
+  endedPhases(offset: Int, before: String, after: String, first: Int, last: Int, phase: PhaseTypeEnum, annotationCampaign: ID, createdAt: DateTime, createdBy: ID, endedAt: DateTime, endedBy: ID): AnnotationPhaseNodeConnection!
   annotations(offset: Int, before: String, after: String, first: Int, last: Int, type: ApiAnnotationTypeChoices, startTime: Float, endTime: Float, startFrequency: Float, endFrequency: Float, label: ID, confidence: ID, annotationPhase: ID, annotator: ID, annotatorExpertiseLevel: ApiAnnotationAnnotatorExpertiseLevelChoices, spectrogram: ID, detectorConfiguration: ID, acousticFeatures: ID, isUpdateOf: ID, createdAt: DateTime, lastUpdatedAt: DateTime): AnnotationNodeConnection!
   annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, comment: String, annotation: ID, annotationPhase: ID, author: ID, spectrogram: ID): AnnotationCommentNodeConnection!
   annotationTasks(offset: Int, before: String, after: String, first: Int, last: Int, status: ApiAnnotationTaskStatusChoices, annotationPhase: ID, annotator: ID, spectrogram: ID, sessions: [ID]): AnnotationTaskNodeConnection!
@@ -2673,7 +2753,23 @@ type SpectrogramAnalysisNode implements Node {
     end: DateTime
     analysis: ID
   ): SpectrogramNodeNodeConnection
-  annotationCampaigns(offset: Int, before: String, after: String, first: Int, last: Int, createdAt: DateTime, name: String, description: String, instructionsUrl: String, deadline: Date, labelSet: ID, labelsWithAcousticFeatures: ID, allowPointAnnotation: Boolean, dataset: ID, analysis: ID, allowImageTuning: Boolean, allowColormapTuning: Boolean, colormapDefault: String, colormapInvertedDefault: Boolean, owner: ID, confidenceSet: ID, archive: ID): AnnotationCampaignNodeConnection!
+  annotationCampaigns(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotatorId: Decimal
+    ownerId: Decimal
+    isArchived: Boolean
+    phaseType: String
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeConnection!
   filesCount: Int
   start: DateTime
   end: DateTime
@@ -3185,7 +3281,7 @@ type AnnotationCommentNode implements Node {
 """AnnotationPhase schema"""
 type AnnotationPhaseNode implements Node {
   id: ID!
-  phase: ApiAnnotationPhasePhaseChoices!
+  phase: PhaseTypeEnum
   annotationCampaign: AnnotationCampaignNode!
   createdAt: DateTime!
   createdBy: UserNode!
@@ -3197,14 +3293,7 @@ type AnnotationPhaseNode implements Node {
   annotationFileRanges(offset: Int, before: String, after: String, first: Int, last: Int, firstFileIndex: Int, lastFileIndex: Int, fromDatetime: DateTime, toDatetime: DateTime, filesCount: Int, annotator: ID, annotationPhase: ID): AnnotationFileRangeNodeConnection!
 }
 
-"""An enumeration."""
-enum ApiAnnotationPhasePhaseChoices {
-  """Annotation"""
-  A
-
-  """Verification"""
-  V
-}
+scalar PhaseTypeEnum
 
 type AnnotationTaskNodeConnection {
   """Pagination data for this connection."""
@@ -3320,6 +3409,15 @@ type SpectrogramAnalysisNodeNodeConnection {
 
   """Contains the nodes in this connection."""
   results: [SpectrogramAnalysisNode]!
+  totalCount: Int
+}
+
+type AnnotationPhaseNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [AnnotationPhaseNode]!
   totalCount: Int
 }
 
@@ -3906,6 +4004,15 @@ type ArchiveNodeNodeConnection {
   totalCount: Int
 }
 
+type AnnotationCampaignNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [AnnotationCampaignNode]!
+  totalCount: Int
+}
+
 type AcousticFeaturesNodeNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfoExtra!
@@ -3924,15 +4031,6 @@ type AnnotationNodeNodeConnection {
   totalCount: Int
 }
 
-type AnnotationCampaignNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [AnnotationCampaignNode]!
-  totalCount: Int
-}
-
 type AnnotationCommentNodeNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfoExtra!
@@ -3948,15 +4046,6 @@ type AnnotationFileRangeNodeNodeConnection {
 
   """Contains the nodes in this connection."""
   results: [AnnotationFileRangeNode]!
-  totalCount: Int
-}
-
-type AnnotationPhaseNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [AnnotationPhaseNode]!
   totalCount: Int
 }
 
@@ -4095,7 +4184,11 @@ type Mutation {
   deleteSource(id: ID): DeleteSourceMutation
   postSound(input: PostSoundMutationInput!): PostSoundMutationPayload
   deleteSound(id: ID): DeleteSoundMutation
+
+  """"Import spectrogram analysis mutation"""
   importSpectrogramAnalysis(datasetName: String!, datasetPath: String!, legacy: Boolean, name: String!, path: String!): ImportSpectrogramAnalysisMutation
+
+  """Import dataset mutation"""
   importDataset(legacy: Boolean, name: String!, path: String!): ImportDatasetMutation
 }
 
@@ -4167,10 +4260,12 @@ type DeleteSoundMutation {
   ok: Boolean
 }
 
+""""Import spectrogram analysis mutation"""
 type ImportSpectrogramAnalysisMutation {
   ok: Boolean
 }
 
+"""Import dataset mutation"""
 type ImportDatasetMutation {
-  ok: Boolean
+  ok: Boolean!
 }

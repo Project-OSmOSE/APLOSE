@@ -1,80 +1,82 @@
-import { ESSENTIAL, expect, test } from './utils';
-import { CAMPAIGN, CAMPAIGN_PHASE } from './fixtures';
+import { ESSENTIAL, expect, interceptGQL, test } from './utils';
 
 
 test.describe('Annotator', () => {
+
+  test('Handle empty states', ESSENTIAL, async ({ page }) => {
+    await page.campaign.list.go('annotator', 'empty');
+    await expect(page.campaign.list.card).not.toBeVisible();
+    await expect(page.getByText('No annotation campaigns')).toBeVisible();
+  })
+
   test('Can see campaigns and access first', ESSENTIAL, async ({ page }) => {
     await page.campaign.list.go('annotator');
     await page.campaign.list.card.click()
-    await page.waitForURL(`/app/annotation-campaign/${ CAMPAIGN.id }/phase/${ CAMPAIGN_PHASE.id }`)
-  })
-
-  test('Can filter campaigns', async ({ page }) => {
-    await page.campaign.list.go('annotator');
-    await test.step('Search', async () => {
-      await page.mock.campaigns()
-      await Promise.all([
-        page.waitForRequest(/.*\/api\/annotation-campaign\/?\?.*search/g),
-        page.campaign.list.search(CAMPAIGN.name),
-      ])
-    })
-
-    await test.step('Remove My work filter', async () => {
-      await page.mock.campaigns()
-      await Promise.all([
-        page.waitForRequest(/\/api\/annotation-campaign\/\?((?!annotator).)*$/g),
-        page.getByText('My work').click()
-      ])
-    })
-
-    await test.step('Add Only archived filter', async () => {
-      await page.mock.campaigns()
-      await Promise.all([
-        page.waitForRequest(/\/api\/annotation-campaign\/x?\?.*archive__isnull=false.*$/g),
-        page.getByText('Archived: False').click()
-      ])
-    })
-
-    await test.step('Add Campaign mode to Annotation filter', async () => {
-      await page.mock.campaigns()
-      await Promise.all([
-        page.waitForRequest(/\/api\/annotation-campaign\/?\?.*?phases__phase=A/g),
-        page.getByText('Campaign mode filter').click()
-      ])
-    })
-
-    await test.step('Change Campaign mode to Verification filter', async () => {
-      await page.mock.campaigns()
-      await Promise.all([
-        page.waitForRequest(/\/api\/annotation-campaign\/?\?.*?phases__phase=V/g),
-        page.getByText('Campaign mode filter').click()
-      ])
-    })
-
-    await test.step('Add Owned campaigns filter', async () => {
-      await page.mock.campaigns()
-      await Promise.all([
-        page.waitForRequest(/\/api\/annotation-campaign\/?\?.*?owner/g),
-        page.getByText('Owned campaigns').click()
-      ])
-    })
+    await page.waitForURL(`/app/annotation-campaign/1`)
   })
 
   test('Can access campaign creation', ESSENTIAL, async ({ page }) => {
     await page.campaign.list.go('annotator');
-    await page.mock.users()
-    await page.mock.datasets()
-    await page.mock.labelSets()
-    await page.mock.confidenceSets()
     await page.campaign.list.createButton.click()
-    await page.mock.users()
-    await page.mock.datasets()
-    await expect(page.getByRole('heading', { name: 'Create Annotation Campaign' })).toBeVisible();
+    await page.waitForURL(`/app/annotation-campaign/new`)
   })
 
-  test('Cannot see campaigns if empty', ESSENTIAL, async ({ page }) => {
-    await page.campaign.list.go('annotator', { empty: true });
-    await expect(page.campaign.list.card).not.toBeVisible();
-    await expect(page.getByText('No campaigns')).toBeVisible();
+  test('Can filter campaigns', async ({ page }) => {
+    await page.campaign.list.go('annotator');
+    await interceptGQL(page, { getAnnotationCampaigns: 'filled' }, 0)
+
+    await test.step('Search', async () => {
+      await page.mock.campaigns()
+      const [ request ] = await Promise.all([
+        page.waitForRequest('**/graphql'),
+        page.campaign.list.search('Test campaign'),
+      ])
+      expect(request.postDataJSON().variables.search).toEqual('Test campaign')
+    })
+
+    await test.step('Remove My work filter', async () => {
+      await page.mock.campaigns()
+      const [ request ] = await Promise.all([
+        page.waitForRequest('**/graphql'),
+        page.getByText('My work').click()
+      ])
+      expect(request.postDataJSON().variables.annotatorID).toEqual(undefined)
+    })
+
+    await test.step('Add Only archived filter', async () => {
+      await page.mock.campaigns()
+      const [ request ] = await Promise.all([
+        page.waitForRequest('**/graphql'),
+        page.getByText('Archived: False').click()
+      ])
+      expect(request.postDataJSON().variables.isArchived).toBeTruthy()
+    })
+
+    await test.step('Add Campaign mode to Annotation filter', async () => {
+      await page.mock.campaigns()
+      const [ request ] = await Promise.all([
+        page.waitForRequest('**/graphql'),
+        page.getByText('Campaign mode filter').click()
+      ])
+      expect(request.postDataJSON().variables.phase).toEqual("A")
+    })
+
+    await test.step('Change Campaign mode to Verification filter', async () => {
+      await page.mock.campaigns()
+      const [ request ] = await Promise.all([
+        page.waitForRequest('**/graphql'),
+        page.getByText('Campaign mode filter').click()
+      ])
+      expect(request.postDataJSON().variables.phase).toEqual("V")
+    })
+
+    await test.step('Add Owned campaigns filter', async () => {
+      await page.mock.campaigns()
+      const [ request ] = await Promise.all([
+        page.waitForRequest('**/graphql'),
+        page.getByText('Owned campaigns').click()
+      ])
+      expect(request.postDataJSON().variables.ownerID).toEqual(1)
+    })
   })
 })
