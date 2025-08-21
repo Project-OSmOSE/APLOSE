@@ -275,6 +275,11 @@
     justify-items: center;
     position: relative;
 
+    ion-note {
+      align-items: center;
+      display: grid;
+      grid-auto-flow: column;
+    }
   }
 
   .content, .buttons {

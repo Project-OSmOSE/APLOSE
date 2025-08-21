@@ -18,6 +18,13 @@ export type GetDatasetByIdQueryVariables = Types.Exact<{
 
 export type GetDatasetByIdQuery = { __typename?: 'Query', datasetById?: { __typename?: 'DatasetNode', name: string, path: string, description?: string | null, start?: any | null, end?: any | null, createdAt: any, legacy: boolean, owner: { __typename?: 'UserNode', displayName?: string | null } } | null };
 
+export type GetDatasetChannelConfigurationsByIdQueryVariables = Types.Exact<{
+  id: Types.Scalars['ID']['input'];
+}>;
+
+
+export type GetDatasetChannelConfigurationsByIdQuery = { __typename?: 'Query', datasetById?: { __typename?: 'DatasetNode', relatedChannelConfigurations?: { __typename?: 'ChannelConfigurationNodeNodeConnection', results: Array<{ __typename?: 'ChannelConfigurationNode', deployment: { __typename?: 'DeploymentNode', name?: string | null, campaign?: { __typename?: 'CampaignNode', name: string } | null, site?: { __typename?: 'SiteNode', name: string } | null, project: { __typename?: 'ProjectNodeOverride', name: string } }, recorderSpecification?: { __typename?: 'ChannelConfigurationRecorderSpecificationNode', recorder: { __typename?: 'EquipmentNode', serialNumber: string, model: string }, hydrophone: { __typename?: 'EquipmentNode', serialNumber: string, model: string } } | null, detectorSpecification?: { __typename?: 'ChannelConfigurationDetectorSpecificationNode', detector: { __typename?: 'EquipmentNode', serialNumber: string, model: string } } | null } | null> } | null } | null };
+
 export type PostDatasetForImportMutationVariables = Types.Exact<{
   name: Types.Scalars['String']['input'];
   path: Types.Scalars['String']['input'];
@@ -74,6 +81,44 @@ export const GetDatasetByIdDocument = `
   }
 }
     `;
+export const GetDatasetChannelConfigurationsByIdDocument = `
+    query getDatasetChannelConfigurationsByID($id: ID!) {
+  datasetById(id: $id) {
+    relatedChannelConfigurations {
+      results {
+        deployment {
+          name
+          campaign {
+            name
+          }
+          site {
+            name
+          }
+          project {
+            name
+          }
+        }
+        recorderSpecification {
+          recorder {
+            serialNumber
+            model
+          }
+          hydrophone {
+            serialNumber
+            model
+          }
+        }
+        detectorSpecification {
+          detector {
+            serialNumber
+            model
+          }
+        }
+      }
+    }
+  }
+}
+    `;
 export const PostDatasetForImportDocument = `
     mutation postDatasetForImport($name: String!, $path: String!, $legacy: Boolean) {
   importDataset(name: $name, path: $path, legacy: $legacy) {
@@ -92,6 +137,9 @@ const injectedRtkApi = gqlAPI.injectEndpoints({
     }),
     getDatasetByID: build.query<GetDatasetByIdQuery, GetDatasetByIdQueryVariables>({
       query: (variables) => ({ document: GetDatasetByIdDocument, variables })
+    }),
+    getDatasetChannelConfigurationsByID: build.query<GetDatasetChannelConfigurationsByIdQuery, GetDatasetChannelConfigurationsByIdQueryVariables>({
+      query: (variables) => ({ document: GetDatasetChannelConfigurationsByIdDocument, variables })
     }),
     postDatasetForImport: build.mutation<PostDatasetForImportMutation, PostDatasetForImportMutationVariables>({
       query: (variables) => ({ document: PostDatasetForImportDocument, variables })

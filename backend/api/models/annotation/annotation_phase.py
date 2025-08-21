@@ -1,7 +1,9 @@
 """Phase model"""
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
+from backend.aplose.models import User
 from .annotation_campaign import AnnotationCampaign
 
 
@@ -43,17 +45,15 @@ class AnnotationPhase(models.Model):
         null=True,
     )
 
-    # TODO:
-    #  @property
-    #  def is_open(self) -> bool:
-    #      """Get open state of the phase"""
-    #      if not self.ended_at or not self.ended_by:
-    #          return True
-    #      return False
+    @property
+    def is_open(self) -> bool:
+        """Get open state of the phase"""
+        if not self.ended_at or not self.ended_by:
+            return True
+        return False
 
-    # TODO:
-    #  def end(self, user: User):
-    #      """End the phase"""
-    #      self.ended_at = timezone.now()
-    #      self.ended_by = user
-    #      self.save()
+    def end(self, user: User):
+        """End the phase"""
+        self.ended_at = timezone.now()
+        self.ended_by = user
+        self.save()

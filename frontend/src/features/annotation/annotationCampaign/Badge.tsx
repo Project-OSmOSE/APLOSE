@@ -1,21 +1,16 @@
-import React, { useMemo } from "react";
-import { AnnotationCampaign } from "./api";
-import { useCampaignState } from "./hook";
+import React, { Fragment } from "react";
+import { AnnotationCampaignState } from "./api";
+import { useCampaignStateColor } from "./hook";
 import { IonBadge } from "@ionic/react";
 import { dateToString } from "@/service/function.ts";
 
-export const AnnotationCampaignBadge: React.FC<{ campaign: AnnotationCampaign }> = ({ campaign }) => {
-  const { state, color, deadline } = useCampaignState(campaign);
-  const label = useMemo(() => {
-    switch (state) {
-      case 'open':
-        return 'Open';
-      case 'due date':
-        return `Due date: ${ dateToString(deadline) }`
-      case 'archived':
-        return 'Archived'
-    }
-  }, [ campaign ])
-
-  return <IonBadge color={ color } children={ label }/>
+export const AnnotationCampaignBadge: React.FC<{
+  state?: string | null,
+  deadline?: string | null,
+}> = ({ state, deadline }) => {
+  const color = useCampaignStateColor(state);
+  if (!state) return <Fragment/>
+  return <IonBadge color={ color }>
+    { state }{ state === AnnotationCampaignState.dueDate && deadline && `: ${ dateToString(deadline) }` }
+  </IonBadge>
 }

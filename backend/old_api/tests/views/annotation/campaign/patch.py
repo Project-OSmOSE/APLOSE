@@ -47,20 +47,6 @@ class PatchAdminAuthenticatedTestCase(AuthenticatedTestCase):
             },
         )
 
-    def test_labels_with_acoustic_features(self):
-        response_get = self.client.patch(URL, format="json")
-        response_patch = self.client.patch(
-            URL, data={"labels_with_acoustic_features": ["Rain"]}, format="json"
-        )
-        self.assertEqual(response_patch.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response_patch.data,
-            {
-                **response_get.data,
-                "labels_with_acoustic_features": ["Rain"],
-            },
-        )
-
     def test_confidence_indicator_set(self):
         response_get = self.client.patch(URL, format="json")
         response_patch = self.client.patch(
@@ -103,9 +89,6 @@ class PatchAnnotatorAuthenticatedTestCase(PatchAdminAuthenticatedTestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_label_set(self):
-        pass
-
-    def test_labels_with_acoustic_features(self):
         pass
 
     def test_confidence_indicator_set(self):

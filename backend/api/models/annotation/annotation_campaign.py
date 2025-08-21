@@ -3,12 +3,13 @@ from typing import Optional
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.db import models
-from django.db.models import signals
+from django.db import models, transaction
+from django.db.models import signals, Manager, Q, Exists, OuterRef
 from django.dispatch import receiver
 from django.utils import timezone
 
 from backend.aplose.models import User
+from .annotation_file_range import AnnotationFileRange
 from .confidence_set import ConfidenceSet
 from .label import Label
 from .label_set import LabelSet
@@ -16,8 +17,31 @@ from ..common import Archive
 from ..data import Dataset, SpectrogramAnalysis
 
 
+class AnnotationCampaignManager(Manager):  # pylint: disable=too-few-public-methods
+    """AnnotationCampaign custom manager"""
+
+    def filter_user_access(self, user: User):
+        """Only provide authorized campaigns"""
+        if user.is_staff or user.is_superuser:
+            return self.all()
+        return self.filter(
+            Q(owner_id=user.id)
+            | (
+                Q(archive__isnull=True)
+                & Exists(
+                    AnnotationFileRange.objects.filter(
+                        annotation_phase__annotation_campaign_id=OuterRef("pk"),
+                        annotator_id=user.id,
+                    )
+                )
+            )
+        )
+
+
 class AnnotationCampaign(models.Model):
     """Campaign to make annotation on the designated dataset with the given label set and confidence indicator set"""
+
+    objects = AnnotationCampaignManager()
 
     class Meta:
         ordering = ["name"]
@@ -63,6 +87,7 @@ class AnnotationCampaign(models.Model):
         null=True,
     )
 
+    @transaction.atomic
     def do_archive(self, user: User):
         """Archive current campaign"""
         if self.archive is not None:

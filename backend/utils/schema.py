@@ -26,6 +26,36 @@ from backend.aplose.models import User
 logger = logging.getLogger(__name__)
 
 
+class UnauthorizedError(GraphQLError):
+    """Unauthorized error"""
+
+    def __init__(self):
+        super().__init__(
+            "Unauthorized",
+            original_error=APIException(code=status.HTTP_401_UNAUTHORIZED),
+        )
+
+
+class ForbiddenError(GraphQLError):
+    """Forbidden error"""
+
+    def __init__(self):
+        super().__init__(
+            "Forbidden",
+            original_error=APIException(code=status.HTTP_403_FORBIDDEN),
+        )
+
+
+class NotFoundError(GraphQLError):
+    """Not found error"""
+
+    def __init__(self):
+        super().__init__(
+            "Not found",
+            original_error=APIException(code=status.HTTP_404_NOT_FOUND),
+        )
+
+
 class GraphQLPermissions(Enum):
     """GraphQL access permission"""
 
@@ -70,23 +100,14 @@ class GraphQLResolve:
             GraphQLPermissions.SUPERUSER,
         ]:
             if not user.is_authenticated:
-                raise GraphQLError(
-                    "Unauthorized",
-                    original_error=APIException(code=status.HTTP_401_UNAUTHORIZED),
-                )
+                raise UnauthorizedError()
 
         if self.permission == GraphQLPermissions.STAFF_OR_SUPERUSER:
             if not (user.is_staff or user.is_superuser):
-                raise GraphQLError(
-                    "Forbidden",
-                    original_error=APIException(code=status.HTTP_403_FORBIDDEN),
-                )
+                raise ForbiddenError()
         if self.permission == GraphQLPermissions.SUPERUSER:
             if not user.is_superuser:
-                raise GraphQLError(
-                    "Forbidden",
-                    original_error=APIException(code=status.HTTP_403_FORBIDDEN),
-                )
+                raise ForbiddenError()
 
 
 class AuthenticatedDjangoConnectionField(DjangoPaginationConnectionField):
@@ -98,10 +119,7 @@ class AuthenticatedDjangoConnectionField(DjangoPaginationConnectionField):
         cls, connection, iterable, info, args, filtering_args, filterset_class
     ):
         if not info.context.user.is_authenticated:
-            raise GraphQLError(
-                "Unauthorized",
-                original_error=APIException(code=status.HTTP_401_UNAUTHORIZED),
-            )
+            raise UnauthorizedError()
 
         return super().resolve_queryset(
             connection, iterable, info, args, filtering_args, filterset_class
@@ -122,15 +140,9 @@ class ApiObjectType(DjangoObjectType):
         abstract = True
 
     @classmethod
-    def filter_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
-        # pylint: disable=unused-argument
-        """Filter Queryset"""
-        return queryset
-
-    @classmethod
     def get_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
         """Resolve Queryset"""
-        return gql_optimizer.query(cls.filter_queryset(queryset, info), info)
+        return gql_optimizer.query(queryset, info)
 
     @classmethod
     def _get_query_fields(cls, info) -> list[FieldNode]:

@@ -7,15 +7,17 @@ import { Progress, SkeletonProgress } from "@/components/ui";
 import { pluralize } from "@/service/function.ts";
 import { useNavigate } from "react-router-dom";
 import { AnnotationCampaignBadge } from "./Badge.tsx";
-import { useCampaignState } from "@/features/annotation/annotationCampaign/hook.ts";
+import { useCampaignStateColor } from "@/features/annotation/annotationCampaign/hook.ts";
 
 export const AnnotationCampaignCard: React.FC<{ campaign: AnnotationCampaign }> = ({ campaign }) => {
   const navigate = useNavigate();
   const link = useMemo(() => `/annotation-campaign/${ campaign.id }`, [ campaign, ])
-  const { color } = useCampaignState(campaign);
+  const color = useCampaignStateColor(campaign.state);
 
   const accessDetail = useCallback(() => navigate(link), [ link ]);
   const accessAuxDetail = useCallback(() => window.open(`/app${ link }`, '_blank'), [ link ]);
+
+  const phases = useMemo(() => campaign.phases?.results?.filter(p => p !== null), [ campaign.phases ]);
 
   return (
     // campaign-card classname for test purpose
@@ -23,16 +25,15 @@ export const AnnotationCampaignCard: React.FC<{ campaign: AnnotationCampaign }> 
          onAuxClick={ accessAuxDetail }>
 
       <div className={ styles.head }>
-        <AnnotationCampaignBadge campaign={ campaign }/>
+        <AnnotationCampaignBadge { ...campaign }/>
         <p className={ styles.campaign }>{ campaign.name }</p>
         <p className={ styles.dataset }>{ campaign.dataset.name }</p>
       </div>
 
       <div className={ styles.property }>
         <IonIcon className={ styles.icon } icon={ crop }/>
-        <p className={ styles.label }>Phase{ pluralize(campaign.phases ?? []) }:</p>
-        <p>{ campaign.phases.length > 0 ?
-          campaign.phases.map(p => p.phase).join(', ') : 'No phase' }</p>
+        <p className={ styles.label }>Phase{ pluralize(phases ?? []) }:</p>
+        <p>{ (phases && phases.length > 0) ? phases.map(p => p.phase).join(', ') : 'No phase' }</p>
       </div>
 
       { !!campaign.userTasksCount && <Progress label='My progress'

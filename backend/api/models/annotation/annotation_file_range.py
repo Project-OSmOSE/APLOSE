@@ -5,7 +5,6 @@ from django.db import models
 from django.db.models import Exists, Subquery, OuterRef, signals
 from django.dispatch import receiver
 
-from .annotation_phase import AnnotationPhase
 from .annotation_task import AnnotationTask
 from ..data import Spectrogram
 
@@ -38,7 +37,7 @@ class AnnotationFileRange(models.Model):
         related_name="annotation_file_ranges",
     )
     annotation_phase = models.ForeignKey(
-        AnnotationPhase,
+        "AnnotationPhase",
         on_delete=models.CASCADE,
         related_name="annotation_file_ranges",
     )
@@ -46,6 +45,7 @@ class AnnotationFileRange(models.Model):
     def save(self, *args, **kwargs):
         self.files_count = self.last_file_index - self.first_file_index + 1
 
+        # pylint: disable=no-member
         analysis_ids = self.annotation_phase.annotation_campaign.analysis.values_list(
             "id", flat=True
         )

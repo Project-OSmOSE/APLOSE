@@ -41,6 +41,43 @@ query getDatasetByID($id: ID!) {
     }
 }
 
+query getDatasetChannelConfigurationsByID($id: ID!) {
+    datasetById(id: $id) {
+        relatedChannelConfigurations {
+            results {
+                deployment {
+                    name
+                    campaign {
+                        name
+                    }
+                    site {
+                        name
+                    }
+                    project {
+                        name
+                    }
+                }
+                recorderSpecification {
+                    recorder {
+                        serialNumber
+                        model
+                    }
+                    hydrophone {
+                        serialNumber
+                        model
+                    }
+                }
+                detectorSpecification {
+                    detector {
+                        serialNumber
+                        model
+                    }
+                }
+            }
+        }
+    }
+}
+
 mutation postDatasetForImport($name: String!, $path: String!, $legacy: Boolean) {
     importDataset(name: $name, path: $path, legacy: $legacy) {
         ok

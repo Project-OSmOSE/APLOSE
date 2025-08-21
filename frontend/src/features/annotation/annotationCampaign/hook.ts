@@ -1,27 +1,18 @@
-import { AnnotationCampaign } from './api';
+import { AnnotationCampaignState } from './api';
 import { useMemo } from "react";
 import { Color } from "@ionic/core";
 
-type State = 'archived' | 'due date' | 'open';
-
-export const useCampaignState = (campaign: AnnotationCampaign) => {
-  const deadline: Date | undefined = useMemo(() => campaign.deadline ? new Date(campaign.deadline) : undefined, [ campaign.deadline ]);
-  const state: State = useMemo(() => {
-    if (campaign.archive) return 'archived';
-    if (deadline && (deadline.getTime() - 7 * 24 * 60 * 60 * 1000) <= Date.now()) return 'due date'
-    return 'open';
-  }, [ campaign.deadline, campaign.archive ]);
-
-  const color: Color = useMemo(() => {
+export const useCampaignStateColor = (state?: string | null): Color => {
+  return useMemo(() => {
     switch (state) {
-      case 'open':
-        return 'secondary';
-      case 'due date':
+      case AnnotationCampaignState.finished:
+        return 'success';
+      case AnnotationCampaignState.dueDate:
         return 'warning';
-      case 'archived':
+      case AnnotationCampaignState.archived:
         return 'medium';
+      default:
+        return 'secondary';
     }
-  }, [ state ]);
-
-  return { state, color, deadline }
+  }, [ state ])
 }

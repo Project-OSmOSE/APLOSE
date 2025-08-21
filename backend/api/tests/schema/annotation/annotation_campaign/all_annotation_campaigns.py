@@ -103,9 +103,9 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         content = json.loads(response.content)["data"]["allAnnotationCampaigns"][
             "results"
         ]
-        self.assertEqual(len(content), 3)
+        self.assertEqual(len(content), 4)
         self.assertEqual(content[0]["name"], "Test DCLDE LF campaign")
-        self.assertEqual(content[1]["name"], "Test SPM campaign")
+        self.assertEqual(content[1]["name"], "Test RTF campaign")
         self.assertEqual(content[1]["phases"]["results"][0]["phase"], "Annotation")
 
     def test_connected_empty_user(self):
@@ -139,9 +139,9 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         content = json.loads(response.content)["data"]["allAnnotationCampaigns"][
             "results"
         ]
-        self.assertEqual(len(content), 3)
+        self.assertEqual(len(content), 4)
         self.assertEqual(content[0]["name"], "Test DCLDE LF campaign")
-        self.assertEqual(content[1]["name"], "Test SPM campaign")
+        self.assertEqual(content[1]["name"], "Test RTF campaign")
         self.assertEqual(content[1]["phases"]["results"][0]["phase"], "Annotation")
 
     def test_connected_admin_filter_annotator(self):

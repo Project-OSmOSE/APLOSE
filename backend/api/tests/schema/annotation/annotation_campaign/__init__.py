@@ -1,2 +1,4 @@
 """API annotation annotation_campaign GraphQL tests"""
 from .all_annotation_campaigns import AllAnnotationCampaignsTestCase
+from .annotation_campaigns_by_id import AnnotationCampaignsByIDTestCase
+from .archive_annotation_campaign import ArchiveAnnotationCampaignTestCase

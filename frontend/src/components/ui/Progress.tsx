@@ -23,7 +23,7 @@ export const Progress: React.FC<{
   return (
     <div className={ [ styles.progress, className ].join(' ') }>
       { label && <FadedText>
-        { label }: <span className={ `ion-color-${ color }` }>{ value }&nbsp;/&nbsp;{ total }</span>
+        { label }:&nbsp;<span className={ `ion-color-${ color }` }>{ value }&nbsp;/&nbsp;{ total }</span>
       </FadedText> }
       <IonProgressBar color={ color }
                       value={ total > 0 ? value / total : total }/>

@@ -3,7 +3,7 @@ import { IonNote, IonSkeletonText } from "@ionic/react";
 import { dateToString, getErrorMessage } from "@/service/function.ts";
 import { Table, TableContent, TableDivider, TableHead, WarningText } from "@/components/ui";
 import { DatasetAPI } from "@/features/data/dataset/api";
-import { DatasetNameAccessLink } from "./NameAccessLink";
+import { DatasetName } from "@/features/data/dataset/Description.tsx";
 
 export const DatasetTable: React.FC = () => {
 
@@ -52,9 +52,7 @@ export const DatasetTable: React.FC = () => {
     { heads }
 
     { datasets.map(d => <Fragment key={ d.name }>
-      <TableContent isFirstColumn={ true }>
-        <DatasetNameAccessLink dataset={ d }/>
-      </TableContent>
+      <TableContent isFirstColumn={ true }><DatasetName { ...d } link/></TableContent>
       <TableContent>{ dateToString(d.createdAt) }</TableContent>
       <TableContent>{ d.analysisCount }</TableContent>
       <TableContent>{ d.filesCount }</TableContent>

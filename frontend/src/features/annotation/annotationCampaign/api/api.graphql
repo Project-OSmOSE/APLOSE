@@ -15,6 +15,7 @@ query getAnnotationCampaigns($userID: ID!, $annotatorID: Decimal, $ownerID: Deci
             finishedTasksCount
             userTasksCount(id: $userID)
             userFinishedTasksCount(id: $userID)
+            state
             dataset {
                 name
             }
@@ -27,5 +28,90 @@ query getAnnotationCampaigns($userID: ID!, $annotatorID: Decimal, $ownerID: Deci
                 }
             }
         }
+    }
+}
+
+query getAnnotationCampaignByIDGlobal($id: ID!) {
+    annotationCampaignById(id: $id) {
+        name
+        createdAt
+        owner {
+            displayName
+            email
+        }
+        phases(orderBy: "phase") {
+            results {
+                phase
+            }
+        }
+    }
+}
+
+query getAnnotationCampaignByIDDetailed($id: ID!) {
+    annotationCampaignById(id: $id) {
+        id
+        isEditAllowed
+        instructionsUrl
+        deadline
+        description
+        allowPointAnnotation
+        labelsWithAcousticFeatures {
+            results {
+                name
+            }
+        }
+        labelSet {
+            name
+            description
+            labels {
+                results {
+                    name
+                }
+            }
+        }
+        confidenceSet {
+            name
+            confidenceIndicators {
+                results {
+                    label
+                }
+            }
+        }
+        archive {
+            id
+            date
+            byUser {
+                displayName
+            }
+        }
+        phases {
+            results {
+                phase
+                isFinished
+                finishedTasksCount
+                tasksCount
+            }
+        }
+        dataset {
+            id
+            name
+        }
+        analysis {
+            results {
+                name
+            }
+        }
+    }
+}
+
+mutation postArchiveAnnotationCampaign($id: ID!) {
+    archiveAnnotationCampaign(id: $id) {
+        ok
+    }
+}
+
+mutation postUpdateAnnotationCampaignLabelsWithFeatures($id: ID!, $labels: [String]!) {
+    updateAnnotationCampaignLabelsWithFeatures(id: $id, labelsWithAcousticFeatures: $labels) {
+        ok
     }
 }

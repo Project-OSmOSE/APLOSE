@@ -1277,6 +1277,7 @@ type Query {
     """Ordering"""
     orderBy: String
   ): AnnotationCampaignNodeNodeConnection
+  annotationCampaignById(id: ID!): AnnotationCampaignNode
   allAcousticFeatures(
     """Query limit"""
     limit: Int
@@ -1381,12 +1382,9 @@ type Query {
     after: String
     first: Int
     last: Int
-    phase: PhaseTypeEnum
-    annotationCampaign: ID
-    createdAt: DateTime
-    createdBy: ID
-    endedAt: DateTime
-    endedBy: ID
+
+    """Ordering"""
+    orderBy: String
   ): AnnotationPhaseNodeNodeConnection
   allAnnotationTasks(
     """Query limit"""
@@ -1506,7 +1504,7 @@ type Query {
     last: Int
     name: String
     metadataxLabel: ID
-  ): LabelNodeNodeConnection
+  ): AnnotationLabelNodeNodeConnection
   allLabelSets(
     """Query limit"""
     limit: Int
@@ -1561,7 +1559,7 @@ type LabelNode implements Node {
   meanDuration: Float
   description: String
   children(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], sourceId: ID, sourceId_In: [ID], soundId: ID, soundId_In: [ID], parentId: ID, parentId_In: [ID], children_Id: Decimal, children_Id_In: [ID], nickname: String, nickname_Icontains: String, acousticDetectors_Id: Decimal, acousticDetectors_Id_In: [ID], channelConfigurationDetectorSpecifications_Id: Decimal, channelConfigurationDetectorSpecifications_Id_In: [ID], shape: SignalShapeEnum, plurality: SignalPluralityEnum, minFrequency: Int, minFrequency_Lt: Int, minFrequency_Lte: Int, minFrequency_Gt: Int, minFrequency_Gte: Int, maxFrequency: Int, maxFrequency_Lt: Int, maxFrequency_Lte: Int, maxFrequency_Gt: Int, maxFrequency_Gte: Int, meanDuration: Float, meanDuration_Lt: Float, meanDuration_Lte: Float, meanDuration_Gt: Float, meanDuration_Gte: Float, labels_Id: Decimal): LabelNodeConnection!
-  labelSet(offset: Int, before: String, after: String, first: Int, last: Int, name: String, metadataxLabel: ID): LabelNodeConnection!
+  labelSet(offset: Int, before: String, after: String, first: Int, last: Int, name: String, metadataxLabel: ID): AnnotationLabelNodeConnection!
   acousticDetectors(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], equipment_Id: Decimal, equipment_Id_In: [ID], detectedLabels_Id: Decimal, detectedLabels_Id_In: [ID], minFrequency: Int, minFrequency_Lt: Int, minFrequency_Lte: Int, minFrequency_Gt: Int, minFrequency_Gte: Int, maxFrequency: Int, maxFrequency_Lt: Int, maxFrequency_Lte: Int, maxFrequency_Gt: Int, maxFrequency_Gte: Int, algorithmName: String, algorithmName_Icontains: String): AcousticDetectorSpecificationNodeConnection!
   channelConfigurationDetectorSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], detectorId: ID, detectorId_In: [ID], labels_Id: Decimal, labels_Id_In: [ID], channelConfiguration_Id: Decimal, channelConfiguration_Id_In: [ID], outputFormats: String): ChannelConfigurationDetectorSpecificationNodeConnection!
 }
@@ -2323,7 +2321,7 @@ type AnnotationNode implements Node {
   endTime: Float
   startFrequency: Float
   endFrequency: Float
-  label: LabelNode!
+  label: AnnotationLabelNode!
   confidence: ConfidenceNode
   annotationPhase: AnnotationPhaseNode!
   annotator: UserNode
@@ -2355,38 +2353,70 @@ enum ApiAnnotationTypeChoices {
   B
 }
 
-"""Confidence schema"""
-type ConfidenceNode implements Node {
+"""Label schema"""
+type AnnotationLabelNode implements Node {
   id: ID!
-  label: String!
-  level: Int!
-  confidenceIndicatorSets(offset: Int, before: String, after: String, first: Int, last: Int, name: String, desc: String, confidenceIndicators: ID): ConfidenceSetNodeConnection!
+  name: String!
+  metadataxLabel: LabelNode
+  labelsetSet(offset: Int, before: String, after: String, first: Int, last: Int, name: String, description: String, labels: ID): LabelSetNodeConnection!
+  annotationcampaignSet(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotatorId: Decimal
+    ownerId: Decimal
+    isArchived: Boolean
+    phaseType: String
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeConnection!
   annotationSet(offset: Int, before: String, after: String, first: Int, last: Int, type: ApiAnnotationTypeChoices, startTime: Float, endTime: Float, startFrequency: Float, endFrequency: Float, label: ID, confidence: ID, annotationPhase: ID, annotator: ID, annotatorExpertiseLevel: ApiAnnotationAnnotatorExpertiseLevelChoices, spectrogram: ID, detectorConfiguration: ID, acousticFeatures: ID, isUpdateOf: ID, createdAt: DateTime, lastUpdatedAt: DateTime): AnnotationNodeConnection!
 }
 
-type ConfidenceSetNodeConnection {
+type LabelSetNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfo!
 
   """Contains the nodes in this connection."""
-  edges: [ConfidenceSetNodeEdge]!
+  edges: [LabelSetNodeEdge]!
 }
 
-"""A Relay edge containing a `ConfidenceSetNode` and its cursor."""
-type ConfidenceSetNodeEdge {
+"""A Relay edge containing a `LabelSetNode` and its cursor."""
+type LabelSetNodeEdge {
   """The item at the end of the edge"""
-  node: ConfidenceSetNode
+  node: LabelSetNode
 
   """A cursor for use in pagination"""
   cursor: String!
 }
 
-"""ConfidenceSet schema"""
-type ConfidenceSetNode implements Node {
+"""LabelSet schema"""
+type LabelSetNode implements Node {
   id: ID!
   name: String!
-  desc: String
-  confidenceIndicators(offset: Int, before: String, after: String, first: Int, last: Int, label: String, level: Int): ConfidenceNodeConnection!
+  description: String
+  labels(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    name: String
+    metadataxLabel: ID
+  ): AnnotationLabelNodeNodeConnection
   annotationcampaignSet(
     offset: Int
     before: String
@@ -2406,21 +2436,13 @@ type ConfidenceSetNode implements Node {
   ): AnnotationCampaignNodeConnection!
 }
 
-type ConfidenceNodeConnection {
+type AnnotationLabelNodeNodeConnection {
   """Pagination data for this connection."""
-  pageInfo: PageInfo!
+  pageInfo: PageInfoExtra!
 
   """Contains the nodes in this connection."""
-  edges: [ConfidenceNodeEdge]!
-}
-
-"""A Relay edge containing a `ConfidenceNode` and its cursor."""
-type ConfidenceNodeEdge {
-  """The item at the end of the edge"""
-  node: ConfidenceNode
-
-  """A cursor for use in pagination"""
-  cursor: String!
+  results: [AnnotationLabelNode]!
+  totalCount: Int
 }
 
 type AnnotationCampaignNodeConnection {
@@ -2449,11 +2471,33 @@ type AnnotationCampaignNode implements Node {
   instructionsUrl: String
   deadline: Date
   labelSet: LabelSetNode
-  labelsWithAcousticFeatures(offset: Int, before: String, after: String, first: Int, last: Int, name: String, metadataxLabel: ID): LabelNodeConnection!
+  labelsWithAcousticFeatures(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    name: String
+    metadataxLabel: ID
+  ): AnnotationLabelNodeNodeConnection
   allowPointAnnotation: Boolean!
   dataset: DatasetNode!
   analysis(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
     offset: Int
+
+    """Query order"""
+    ordering: String
     before: String
     after: String
     first: Int
@@ -2465,7 +2509,7 @@ type AnnotationCampaignNode implements Node {
 
     """Ordering"""
     orderBy: String
-  ): SpectrogramAnalysisNodeConnection!
+  ): SpectrogramAnalysisNodeNodeConnection
   allowImageTuning: Boolean!
   allowColormapTuning: Boolean!
   colormapDefault: String
@@ -2486,42 +2530,16 @@ type AnnotationCampaignNode implements Node {
     after: String
     first: Int
     last: Int
-    phase: PhaseTypeEnum
-    annotationCampaign: ID
-    createdAt: DateTime
-    createdBy: ID
-    endedAt: DateTime
-    endedBy: ID
+
+    """Ordering"""
+    orderBy: String
   ): AnnotationPhaseNodeNodeConnection
   tasksCount: Int
   finishedTasksCount: Int
   userTasksCount(id: ID): Int
   userFinishedTasksCount(id: ID): Int
-}
-
-"""LabelSet schema"""
-type LabelSetNode implements Node {
-  id: ID!
-  name: String!
-  description: String
-  labels(offset: Int, before: String, after: String, first: Int, last: Int, name: String, metadataxLabel: ID): LabelNodeConnection!
-  annotationcampaignSet(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-    annotatorId: Decimal
-    ownerId: Decimal
-    isArchived: Boolean
-    phaseType: String
-
-    """search"""
-    search: String
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationCampaignNodeConnection!
+  state: String
+  isEditAllowed: Boolean
 }
 
 """Dataset schema"""
@@ -2533,7 +2551,57 @@ type DatasetNode implements Node {
   path: String!
   owner: UserNode!
   legacy: Boolean!
-  relatedChannelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, deploymentId: ID, deploymentId_In: [ID], continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, files_Id: Decimal, files_Id_In: [ID], storages_Id: Decimal, storages_Id_In: [ID]): ChannelConfigurationNodeConnection!
+  relatedChannelConfigurations(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    id: ID
+    id_In: [ID]
+    recorderSpecification_Isnull: Boolean
+    detectorSpecification_Isnull: Boolean
+    deploymentId: ID
+    deploymentId_In: [ID]
+    continuous: Boolean
+    dutyCycleOn: Int
+    dutyCycleOn_Lt: Int
+    dutyCycleOn_Lte: Int
+    dutyCycleOn_Gt: Int
+    dutyCycleOn_Gte: Int
+    dutyCycleOff: Int
+    dutyCycleOff_Lt: Int
+    dutyCycleOff_Lte: Int
+    dutyCycleOff_Gt: Int
+    dutyCycleOff_Gte: Int
+    instrumentDepth: Int
+    instrumentDepth_Lt: Int
+    instrumentDepth_Lte: Int
+    instrumentDepth_Gt: Int
+    instrumentDepth_Gte: Int
+    timezone: String
+    harvestStartingDate: DateTime
+    harvestStartingDate_Lt: DateTime
+    harvestStartingDate_Lte: DateTime
+    harvestStartingDate_Gt: DateTime
+    harvestStartingDate_Gte: DateTime
+    harvestEndingDate: DateTime
+    harvestEndingDate_Lt: DateTime
+    harvestEndingDate_Lte: DateTime
+    harvestEndingDate_Gt: DateTime
+    harvestEndingDate_Gte: DateTime
+    files_Id: Decimal
+    files_Id_In: [ID]
+    storages_Id: Decimal
+    storages_Id_In: [ID]
+  ): ChannelConfigurationNodeNodeConnection
   spectrogramAnalysis(
     """Query limit"""
     limit: Int
@@ -2645,8 +2713,26 @@ type UserNode implements Node {
     """Ordering"""
     orderBy: String
   ): AnnotationCampaignNodeConnection!
-  createdPhases(offset: Int, before: String, after: String, first: Int, last: Int, phase: PhaseTypeEnum, annotationCampaign: ID, createdAt: DateTime, createdBy: ID, endedAt: DateTime, endedBy: ID): AnnotationPhaseNodeConnection!
-  endedPhases(offset: Int, before: String, after: String, first: Int, last: Int, phase: PhaseTypeEnum, annotationCampaign: ID, createdAt: DateTime, createdBy: ID, endedAt: DateTime, endedBy: ID): AnnotationPhaseNodeConnection!
+  createdPhases(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationPhaseNodeConnection!
+  endedPhases(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationPhaseNodeConnection!
   annotations(offset: Int, before: String, after: String, first: Int, last: Int, type: ApiAnnotationTypeChoices, startTime: Float, endTime: Float, startFrequency: Float, endFrequency: Float, label: ID, confidence: ID, annotationPhase: ID, annotator: ID, annotatorExpertiseLevel: ApiAnnotationAnnotatorExpertiseLevelChoices, spectrogram: ID, detectorConfiguration: ID, acousticFeatures: ID, isUpdateOf: ID, createdAt: DateTime, lastUpdatedAt: DateTime): AnnotationNodeConnection!
   annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, comment: String, annotation: ID, annotationPhase: ID, author: ID, spectrogram: ID): AnnotationCommentNodeConnection!
   annotationTasks(offset: Int, before: String, after: String, first: Int, last: Int, status: ApiAnnotationTaskStatusChoices, annotationPhase: ID, annotator: ID, spectrogram: ID, sessions: [ID]): AnnotationTaskNodeConnection!
@@ -3291,6 +3377,11 @@ type AnnotationPhaseNode implements Node {
   annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, comment: String, annotation: ID, annotationPhase: ID, author: ID, spectrogram: ID): AnnotationCommentNodeConnection!
   annotationTasks(offset: Int, before: String, after: String, first: Int, last: Int, status: ApiAnnotationTaskStatusChoices, annotationPhase: ID, annotator: ID, spectrogram: ID, sessions: [ID]): AnnotationTaskNodeConnection!
   annotationFileRanges(offset: Int, before: String, after: String, first: Int, last: Int, firstFileIndex: Int, lastFileIndex: Int, fromDatetime: DateTime, toDatetime: DateTime, filesCount: Int, annotator: ID, annotationPhase: ID): AnnotationFileRangeNodeConnection!
+  isFinished: Boolean
+  tasksCount: Int
+  finishedTasksCount: Int
+  userTasksCount(id: ID): Int
+  userFinishedTasksCount(id: ID): Int
 }
 
 scalar PhaseTypeEnum
@@ -3403,6 +3494,15 @@ type AnnotationValidationNode implements Node {
   lastUpdatedAt: DateTime!
 }
 
+type ChannelConfigurationNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [ChannelConfigurationNode]!
+  totalCount: Int
+}
+
 type SpectrogramAnalysisNodeNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfoExtra!
@@ -3410,6 +3510,81 @@ type SpectrogramAnalysisNodeNodeConnection {
   """Contains the nodes in this connection."""
   results: [SpectrogramAnalysisNode]!
   totalCount: Int
+}
+
+"""ConfidenceSet schema"""
+type ConfidenceSetNode implements Node {
+  id: ID!
+  name: String!
+  desc: String
+  confidenceIndicators(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    label: String
+    level: Int
+  ): ConfidenceNodeNodeConnection
+  annotationcampaignSet(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotatorId: Decimal
+    ownerId: Decimal
+    isArchived: Boolean
+    phaseType: String
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeConnection!
+}
+
+type ConfidenceNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [ConfidenceNode]!
+  totalCount: Int
+}
+
+"""Confidence schema"""
+type ConfidenceNode implements Node {
+  id: ID!
+  label: String!
+  level: Int!
+  confidenceIndicatorSets(offset: Int, before: String, after: String, first: Int, last: Int, name: String, desc: String, confidenceIndicators: ID): ConfidenceSetNodeConnection!
+  annotationSet(offset: Int, before: String, after: String, first: Int, last: Int, type: ApiAnnotationTypeChoices, startTime: Float, endTime: Float, startFrequency: Float, endFrequency: Float, label: ID, confidence: ID, annotationPhase: ID, annotator: ID, annotatorExpertiseLevel: ApiAnnotationAnnotatorExpertiseLevelChoices, spectrogram: ID, detectorConfiguration: ID, acousticFeatures: ID, isUpdateOf: ID, createdAt: DateTime, lastUpdatedAt: DateTime): AnnotationNodeConnection!
+}
+
+type ConfidenceSetNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [ConfidenceSetNodeEdge]!
+}
+
+"""A Relay edge containing a `ConfidenceSetNode` and its cursor."""
+type ConfidenceSetNodeEdge {
+  """The item at the end of the edge"""
+  node: ConfidenceSetNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
 }
 
 type AnnotationPhaseNodeNodeConnection {
@@ -3579,6 +3754,23 @@ type SourceNodeConnection {
 type SourceNodeEdge {
   """The item at the end of the edge"""
   node: SourceNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type AnnotationLabelNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [AnnotationLabelNodeEdge]!
+}
+
+"""A Relay edge containing a `AnnotationLabelNode` and its cursor."""
+type AnnotationLabelNodeEdge {
+  """The item at the end of the edge"""
+  node: AnnotationLabelNode
 
   """A cursor for use in pagination"""
   cursor: String!
@@ -3771,15 +3963,6 @@ type CampaignNodeNodeConnection {
 
   """Contains the nodes in this connection."""
   results: [CampaignNode]!
-  totalCount: Int
-}
-
-type ChannelConfigurationNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [ChannelConfigurationNode]!
   totalCount: Int
 }
 
@@ -4067,15 +4250,6 @@ type AnnotationValidationNodeNodeConnection {
   totalCount: Int
 }
 
-type ConfidenceNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [ConfidenceNode]!
-  totalCount: Int
-}
-
 type ConfidenceSetNodeNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfoExtra!
@@ -4185,6 +4359,12 @@ type Mutation {
   postSound(input: PostSoundMutationInput!): PostSoundMutationPayload
   deleteSound(id: ID): DeleteSoundMutation
 
+  """Archive annotation campaign mutation"""
+  archiveAnnotationCampaign(id: ID!): ArchiveAnnotationCampaignMutation
+
+  """Update annotation campaign labels with features mutation"""
+  updateAnnotationCampaignLabelsWithFeatures(id: ID!, labelsWithAcousticFeatures: [String]!): UpdateAnnotationCampaignLabelsWithFeaturesMutation
+
   """"Import spectrogram analysis mutation"""
   importSpectrogramAnalysis(datasetName: String!, datasetPath: String!, legacy: Boolean, name: String!, path: String!): ImportSpectrogramAnalysisMutation
 
@@ -4258,6 +4438,16 @@ input PostSoundMutationInput {
 
 type DeleteSoundMutation {
   ok: Boolean
+}
+
+"""Archive annotation campaign mutation"""
+type ArchiveAnnotationCampaignMutation {
+  ok: Boolean!
+}
+
+"""Update annotation campaign labels with features mutation"""
+type UpdateAnnotationCampaignLabelsWithFeaturesMutation {
+  ok: Boolean!
 }
 
 """"Import spectrogram analysis mutation"""
