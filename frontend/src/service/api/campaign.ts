@@ -10,7 +10,7 @@ export type CampaignFilter = {
   archive__isnull?: boolean;
   phases__phase?: 'A' | 'V';
   owner?: number;
-  phases__file_ranges__annotator_id?: number;
+  phases__annotation_file_ranges__annotator_id?: number;
   search?: string;
 }
 
@@ -26,14 +26,14 @@ export function extendCampaign(campaign: AnnotationCampaign): AnnotationCampaign
 }
 
 export type PostAnnotationCampaign = Pick<AnnotationCampaign,
-  'name' | 'desc' | 'instructions_url' | 'deadline' | 'datasets' |
+  'name' | 'desc' | 'instructions_url' | 'deadline' | 'dataset' |
   'allow_image_tuning' | 'allow_colormap_tuning' | 'colormap_default' | 'colormap_inverted_default'
 > & {
   spectro_configs: ID[]
 }
 
 export type PatchAnnotationCampaign = Optionable<Pick<AnnotationCampaign,
-  'labels_with_acoustic_features' | 'label_set' | 'confidence_indicator_set' | 'allow_point_annotation'
+  'labels_with_acoustic_features' | 'label_set' | 'confidence_set' | 'allow_point_annotation'
 >> & { id: ID }
 
 export const CampaignAPI = API.injectEndpoints({

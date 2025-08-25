@@ -4,7 +4,7 @@ from typing import Optional
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.db.models import signals, Manager, Q, Exists, OuterRef
+from django.db.models import signals, Manager, Q, Exists, OuterRef, QuerySet
 from django.dispatch import receiver
 from django.utils import timezone
 
@@ -14,7 +14,7 @@ from .confidence_set import ConfidenceSet
 from .label import Label
 from .label_set import LabelSet
 from ..common import Archive
-from ..data import Dataset, SpectrogramAnalysis
+from ..data import Dataset, SpectrogramAnalysis, Spectrogram
 
 
 class AnnotationCampaignManager(Manager):  # pylint: disable=too-few-public-methods
@@ -97,12 +97,11 @@ class AnnotationCampaign(models.Model):
         for phase in self.phases.all():
             phase.end(user)
 
-    # TODO:
-    #  def get_sorted_files(self) -> QuerySet[Spectrogram]:
-    #      """Return sorted dataset files"""
-    #      return Spectrogram.objects.filter(analysis=self.analysis).order_by(
-    #          "start", "id"
-    #      )
+    def get_sorted_files(self) -> QuerySet[Spectrogram]:
+        """Return sorted dataset files"""
+        return Spectrogram.objects.filter(analysis__in=self.analysis).order_by(
+            "start", "id"
+        )
 
 
 class AnnotationCampaignAnalysis(models.Model):

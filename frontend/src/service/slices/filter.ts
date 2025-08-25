@@ -3,6 +3,7 @@ import { CampaignFilter } from "@/service/api/campaign.ts";
 import { useAppSearchParams } from "@/service/ui/search.ts";
 import { useEffect } from "react";
 import { AppState, useAppDispatch, useAppSelector } from "@/service/app.ts";
+import { UserAPI } from "@/service/api/user.ts";
 import { AuthAPI } from "@/service/api/auth.ts";
 import { FileFilter } from "@/service/api/annotation-file-range.ts";
 
@@ -35,6 +36,42 @@ export const FilterSlice = createSlice({
     builder.addMatcher(AuthAPI.endpoints.logout.matchFulfilled, reset)
   }
 })
+
+export const selectCampaignFilters = createSelector(
+  (state: AppState) => state.filter,
+  (state: FilterState) => state.campaign,
+)
+
+export const useCampaignFilters = () => {
+  const { params, updateParams } = useAppSearchParams<CampaignFilter>()
+  const { data: user } = UserAPI.endpoints.getCurrentUser.useQuery()
+  const loadedFilters = useAppSelector(selectCampaignFilters)
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Load default params
+    const updatedFilters = {
+      phases__file_ranges__annotator_id: user.id,
+      archive__isnull: true,
+      ...loadedFilters
+    }
+    if (updatedFilters.phases__file_ranges__annotator_id !== user.id) {
+      updatedFilters.phases__file_ranges__annotator_id = user.id
+    }
+    if (updatedFilters.owner && updatedFilters.owner !== user.id) {
+      updatedFilters.owner = user.id
+    }
+    updateParams(updatedFilters)
+  }, [ user ]);
+
+  useEffect(() => {
+    dispatch(FilterSlice.actions.updateCampaignFilters(params))
+  }, [ params ]);
+
+  return { params, updateParams }
+}
 
 export const selectFileFilters = createSelector(
   (state: AppState) => state.filter,

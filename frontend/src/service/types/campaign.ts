@@ -45,14 +45,14 @@ export type AnnotationCampaign = {
   archive: AnnotationCampaignArchive | null;
   phases: number[]; // pk
 
-  datasets: string[]
+  dataset: string
   files_count: number;
 
   /** ID */
   label_set: number | null;
   labels_with_acoustic_features: string[]
   /** ID */
-  confidence_indicator_set: number | null;
+  confidence_set: number | null;
 
   allow_point_annotation: boolean;
   allow_image_tuning: boolean;

@@ -76,7 +76,7 @@ export const CreateAnnotationPhaseModal: React.FC<{
   }, [])
   const onConfidenceSetChange = useCallback((value: number | string | undefined) => {
     setConfidenceSet(allConfidenceSets?.find(c => c.id === value))
-    setErrors(prev => ({ ...prev, confidence_indicator_set: undefined }))
+    setErrors(prev => ({ ...prev, confidence_set: undefined }))
   }, [ allConfidenceSets ])
   const onAllowPointAnnotationChange = useCallback(() => {
     setAllowPointAnnotation(prev => !prev)
@@ -134,7 +134,7 @@ export const CreateAnnotationPhaseModal: React.FC<{
             <WarningText>Fail loading confidence sets:<br/>{ getErrorMessage(confidenceSetsError) }
             </WarningText> }
         { allConfidenceSets && <Select label="Confidence indicator set" placeholder="Select a confidence set"
-                                       error={ errors.confidence_indicator_set }
+                                       error={ errors.confidence_set }
                                        options={ allConfidenceSets?.map(s => ({ value: s.id, label: s.name })) ?? [] }
                                        optionsContainer="alert"
                                        disabled={ !allConfidenceSets?.length }

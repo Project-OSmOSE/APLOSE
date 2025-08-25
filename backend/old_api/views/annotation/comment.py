@@ -1,8 +1,4 @@
 """Annotation comment viewset"""
-from backend.api.serializers import (
-    AnnotationCommentSerializer,
-)
-
 # pylint: disable=duplicate-code
 from django.db.models import QuerySet, Q
 from rest_framework import viewsets, permissions, filters, mixins
@@ -14,6 +10,9 @@ from backend.api.models import (
     AnnotationComment,
     AnnotationCampaignPhase,
 )
+from backend.api.serializers import (
+    AnnotationCommentSerializer,
+)
 from backend.utils.filters import ModelFilter, get_boolean_query_param
 
 
@@ -23,7 +22,7 @@ class CommentAccessFilter(filters.BaseFilterBackend):
     def filter_queryset(
         self, request: Request, queryset: QuerySet[AnnotationComment], view
     ):
-        if request.user.is_staff_or_superuser:
+        if request.user.is_staff or request.user.is_superuser:
             return queryset
         return queryset.filter(
             Q(annotation_campaign_phase__annotation_campaign__owner=request.user)

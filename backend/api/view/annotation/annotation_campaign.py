@@ -38,9 +38,7 @@ class CampaignAccessFilter(filters.BaseFilterBackend):
                 Q(archive__isnull=True)
                 & Exists(
                     AnnotationFileRange.objects.filter(
-                        annotation_campaign_phase__annotation_campaign_id=OuterRef(
-                            "pk"
-                        ),
+                        annotation_phase__annotation_campaign_id=OuterRef("pk"),
                         annotator_id=request.user.id,
                     )
                 )
@@ -55,18 +53,16 @@ class CampaignPatchPermission(permissions.BasePermission):
         if request.method == "PATCH":
             if obj.archive is not None:
                 return False
-            if (
-                request.user.is_staff
-                or request.user.is_superuser
-                or request.user == obj.owner
-            ):
+            if request.user.is_staff or request.user.is_superuser or request.user == obj.owner:
                 return True
             return False
         return super().has_object_permission(request, view, obj)
 
 
 class AnnotationCampaignViewSet(
-    viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin, mixins.UpdateModelMixin
+    viewsets.ReadOnlyModelViewSet,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
 ):
     """Model viewset for Annotation campaign"""
 
@@ -74,10 +70,15 @@ class AnnotationCampaignViewSet(
         AnnotationCampaign.objects.select_related(
             "owner__aplose",
             "archive__by_user__aplose",
+            "dataset",
         )
-        .prefetch_related("datasets", "labels_with_acoustic_features", "phases")
+        .prefetch_related(
+            "labels_with_acoustic_features", "phases", "dataset__spectrogram_analysis"
+        )
         .annotate(
-            files_count=Count("datasets__files", distinct=True),
+            files_count=Count(
+                "dataset__spectrogram_analysis__spectrograms", distinct=True
+            ),
         )
         .order_by("name")
     )
@@ -116,8 +117,9 @@ class AnnotationCampaignViewSet(
         """Archive campaign"""
         # pylint: disable=unused-argument
         campaign: AnnotationCampaign = self.get_object()
-        if campaign.owner_id != request.user.id and not (
-            request.user.is_staff or request.user.is_superuser
+        if (
+            campaign.owner_id != request.user.id
+            and not (request.user.is_staff or request.user.is_superuser)
         ):
             return Response(status=status.HTTP_403_FORBIDDEN)
 

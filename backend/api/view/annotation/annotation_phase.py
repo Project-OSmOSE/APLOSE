@@ -1,7 +1,6 @@
 """Annotation campaign DRF-Viewset file"""
 import csv
 
-from backend.api.models.annotation.result import AnnotationResultType
 from django.db import models
 from django.db.models import (
     Q,
@@ -23,19 +22,18 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from backend.api.models import (
-    AnnotationResult,
-    AnnotationResultValidation,
+    AnnotationPhase,
+    Annotation,
+    AnnotationValidation,
+    Spectrogram,
+)
+from backend.api.models import (
     AnnotationTask,
     AnnotationComment,
     AnnotationFileRange,
-    DatasetFile,
-    AnnotationCampaignPhase,
     AnnotationCampaign,
-    Phase,
 )
-from backend.api.serializers.annotation.annotation_campaign import (
-    AnnotationCampaignPhaseSerializer,
-)
+from backend.api.serializers import AnnotationPhaseSerializer
 from backend.aplose.models.user import ExpertiseLevel
 from backend.utils.filters import ModelFilter
 from backend.utils.renderers import CSVRenderer
@@ -83,7 +81,7 @@ class CampaignPhaseAccessFilter(filters.BaseFilterBackend):
                 Q(annotation_campaign__archive__isnull=True)
                 & Exists(
                     AnnotationFileRange.objects.filter(
-                        annotation_campaign_phase_id=OuterRef("pk"),
+                        annotation_phase_id=OuterRef("pk"),
                         annotator_id=request.user.id,
                     )
                 )
@@ -104,37 +102,45 @@ class CampaignPhasePostPatchPermission(permissions.BasePermission):
                 campaign: AnnotationCampaign = campaign.first()
                 if campaign.archive is not None:
                     return False
-                if request.user.is_staff or request.user.is_superuser or request.user == campaign.owner:
+                if (
+                    request.user.is_staff
+                    or request.user.is_superuser
+                    or request.user == campaign.owner
+                ):
                     return True
                 return False
         return super().has_permission(request, view)
 
-    def has_object_permission(self, request, view, obj: AnnotationCampaignPhase):
+    def has_object_permission(self, request, view, obj: AnnotationPhase):
         if request.method in ["POST", "PATCH"]:
             if obj.annotation_campaign.archive:
                 return False
             if not obj.is_open:
                 return False
-            if request.user.is_staff or request.user.is_superuser or request.user == obj.annotation_campaign.owner        :
+            if (
+                request.user.is_staff
+                or request.user.is_superuser
+                or request.user == obj.annotation_campaign.owner
+            ):
                 return True
             return False
         return super().has_object_permission(request, view, obj)
 
 
-class AnnotationCampaignPhaseViewSet(
+class AnnotationPhaseViewSet(
     viewsets.ReadOnlyModelViewSet,
     mixins.CreateModelMixin,
 ):
     """Model viewset for Annotation campaign phase"""
 
-    queryset = AnnotationCampaignPhase.objects.select_related(
+    queryset = AnnotationPhase.objects.select_related(
         "created_by",
         "ended_by",
     ).annotate(
         global_total=Coalesce(
             Subquery(
                 AnnotationFileRange.objects.filter(
-                    annotation_campaign_phase_id=OuterRef("pk"),
+                    annotation_phase_id=OuterRef("pk"),
                 )
                 .annotate(sum=Func(F("files_count"), function="Sum"))
                 .values("sum")
@@ -143,14 +149,14 @@ class AnnotationCampaignPhaseViewSet(
         ),
         global_progress=Subquery(
             AnnotationTask.objects.filter(
-                annotation_campaign_phase_id=OuterRef("pk"),
+                annotation_phase_id=OuterRef("pk"),
                 status=AnnotationTask.Status.FINISHED,
             )
             .annotate(count=Func(F("id"), function="count"))
             .values("count")
         ),
     )
-    serializer_class = AnnotationCampaignPhaseSerializer
+    serializer_class = AnnotationPhaseSerializer
     filter_backends = (ModelFilter, CampaignPhaseAccessFilter)
     permission_classes = (permissions.IsAuthenticated, CampaignPhasePostPatchPermission)
 
@@ -177,7 +183,7 @@ class AnnotationCampaignPhaseViewSet(
                     Subquery(
                         AnnotationFileRange.objects.filter(
                             annotator_id=self.request.user.id,
-                            annotation_campaign_phase_id=OuterRef("pk"),
+                            annotation_phase_id=OuterRef("pk"),
                         )
                         .annotate(sum=Func(F("files_count"), function="Sum"))
                         .values("sum")
@@ -187,7 +193,7 @@ class AnnotationCampaignPhaseViewSet(
                 user_progress=Subquery(
                     AnnotationTask.objects.filter(
                         annotator_id=self.request.user.id,
-                        annotation_campaign_phase_id=OuterRef("pk"),
+                        annotation_phase_id=OuterRef("pk"),
                         status=AnnotationTask.Status.FINISHED,
                     )
                     .annotate(count=Func(F("id"), function="count"))
@@ -196,28 +202,28 @@ class AnnotationCampaignPhaseViewSet(
             )
         return queryset
 
-    def _report_get_results(self) -> QuerySet[AnnotationResult]:
-        phase: AnnotationCampaignPhase = self.get_object()
+    def _report_get_results(self) -> QuerySet[Annotation]:
+        phase: AnnotationPhase = self.get_object()
         campaign = phase.annotation_campaign
         is_box = Case(
-            When(type=AnnotationResultType.WEAK, then=0),
+            When(type=Annotation.Type.WEAK, then=0),
             default=1,
             output_field=models.IntegerField(),
         )
         result_type = Case(
-            When(type=AnnotationResultType.WEAK, then=Value("WEAK")),
-            When(type=AnnotationResultType.POINT, then=Value("POINT")),
-            When(type=AnnotationResultType.BOX, then=Value("BOX")),
+            When(type=Annotation.Type.WEAK, then=Value("WEAK")),
+            When(type=Annotation.Type.POINT, then=Value("POINT")),
+            When(type=Annotation.Type.BOX, then=Value("BOX")),
             default=None,
             output_field=models.CharField(),
         )
         phase_type = Case(
             When(
-                annotation_campaign_phase__phase=Phase.VERIFICATION,
+                annotation_phase__phase=AnnotationPhase.Type.VERIFICATION,
                 then=Value("VERIFICATION"),
             ),
             When(
-                annotation_campaign_phase__phase=Phase.ANNOTATION,
+                annotation_phase__phase=AnnotationPhase.Type.ANNOTATION,
                 then=Value("ANNOTATION"),
             ),
             default=None,
@@ -225,43 +231,44 @@ class AnnotationCampaignPhaseViewSet(
         )
         max_confidence = (
             max(
-                campaign.confidence_indicator_set.confidence_indicators.values_list(
+                campaign.confidence_set.confidence_indicators.values_list(
                     "level", flat=True
                 )
             )
-            if campaign.confidence_indicator_set
+            if campaign.confidence_set
             else 0
         )
         comments = Subquery(
             AnnotationComment.objects.select_related("author")
-            .filter(annotation_result_id=OuterRef("id"))
+            .filter(annotation_id=OuterRef("id"))
             .annotate(data=Concat(F("comment"), Value(" |- "), F("author__username")))
             .values_list("data", flat=True)
         )
         return (
-            AnnotationResult.objects.filter(
-                annotation_campaign_phase__annotation_campaign_id=phase.annotation_campaign_id
+            Annotation.objects.filter(
+                annotation_phase__annotation_campaign_id=phase.annotation_campaign_id
             )
             .select_related(
-                "dataset_file",
-                "dataset_file__dataset",
+                "spectrogram",
                 "annotator",
                 "annotator__aplose",
                 "label",
-                "confidence_indicator",
+                "confidence",
                 "acoustic_features",
                 "detector_configuration__detector",
-                "annotation_campaign_phase",
+                "annotation_phase",
+                "analysis",
+                "analysis__fft",
             )
             .prefetch_related(
                 "comments",
                 "comments__author",
             )
-            .order_by("dataset_file__start", "dataset_file__id", "id")
+            .order_by("spectrogram__start", "spectrogram__id", "id")
             .distinct()
             .annotate(
-                dataset=F("dataset_file__dataset__name"),
-                filename=F("dataset_file__filename"),
+                dataset=F("annotation_phase__annotation_campaign__dataset__name"),
+                filename=F("spectrogram__filename"),
                 annotation=F("label__name"),
                 annotator_expertise=Case(
                     When(
@@ -281,12 +288,12 @@ class AnnotationCampaignPhaseViewSet(
                 ),
                 is_box=is_box,
                 type_label=result_type,
-                confidence_indicator_label=F("confidence_indicator__label"),
+                confidence_indicator_label=F("confidence__label"),
                 confidence_indicator_level=Case(
                     When(
                         confidence_indicator__isnull=False,
                         then=Concat(
-                            F("confidence_indicator__level"),
+                            F("confidence__level"),
                             Value("/"),
                             max_confidence,
                             output_field=models.CharField(),
@@ -327,20 +334,20 @@ class AnnotationCampaignPhaseViewSet(
                     "start_datetime": """
                     SELECT 
                         CASE 
-                            WHEN annotation_results.start_time isnull THEN to_char(f.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
-                            ELSE to_char((f.start + annotation_results.start_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            WHEN api_annotation.start_time isnull THEN to_char(f.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            ELSE to_char((f.start + api_annotation.start_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
                         END
                     FROM dataset_files f
-                    WHERE annotation_results.dataset_file_id = f.id
+                    WHERE api_annotation.dataset_file_id = f.id
                     """,
                     "end_datetime": """
                     SELECT 
                         CASE 
-                            WHEN annotation_results.end_time isnull THEN to_char(f.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
-                            ELSE to_char((f.start + annotation_results.end_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            WHEN api_annotation.end_time isnull THEN to_char(f.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            ELSE to_char((f.start + api_annotation.end_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
                         END
                     FROM dataset_files f
-                    WHERE annotation_results.dataset_file_id = f.id
+                    WHERE api_annotation.dataset_file_id = f.id
                     """,
                 },
             )
@@ -380,29 +387,28 @@ class AnnotationCampaignPhaseViewSet(
                 ),
                 comments=F("comments_data"),
                 start_time=Case(
-                    When(type=AnnotationResultType.WEAK, then=Value(0.0)),
+                    When(type=Annotation.Type.WEAK, then=Value(0.0)),
                     default=F("_start_time"),
                 ),
                 end_time=Case(
-                    When(type=AnnotationResultType.POINT, then=F("_start_time")),
+                    When(type=Annotation.Type.POINT, then=F("_start_time")),
                     When(
-                        type=AnnotationResultType.WEAK,
-                        then=Extract(F("dataset_file__end"), lookup_name="epoch")
-                        - Extract(F("dataset_file__start"), lookup_name="epoch"),
+                        type=Annotation.Type.WEAK,
+                        then=Extract(F("spectrogram__end"), lookup_name="epoch")
+                        - Extract(F("spectrogram__start"), lookup_name="epoch"),
                     ),
                     default=F("_end_time"),
                     output_field=models.FloatField(),
                 ),
                 start_frequency=Case(
-                    When(type=AnnotationResultType.WEAK, then=Value(0.0)),
+                    When(type=Annotation.Type.WEAK, then=Value(0.0)),
                     default=F("_start_frequency"),
                 ),
                 end_frequency=Case(
-                    When(type=AnnotationResultType.POINT, then=F("_start_frequency")),
+                    When(type=Annotation.Type.POINT, then=F("_start_frequency")),
                     When(
-                        type=AnnotationResultType.WEAK,
-                        then=F("dataset_file__dataset__audio_metadatum__dataset_sr")
-                        / 2,
+                        type=Annotation.Type.WEAK,
+                        then=F("analysis__fft__sampling_frequency") / 2,
                     ),
                     default=F("_end_frequency"),
                 ),
@@ -411,16 +417,20 @@ class AnnotationCampaignPhaseViewSet(
         )
 
     def _report_get_task_comments(self) -> QuerySet[AnnotationComment]:
-        phase: AnnotationCampaignPhase = self.get_object()
+        phase: AnnotationPhase = self.get_object()
         return (
             AnnotationComment.objects.filter(
-                annotation_campaign_phase_id=phase.id,
+                annotation_phase_id=phase.id,
                 annotation_result__isnull=True,
             )
-            .select_related("dataset_file", "dataset_file__dataset", "author")
+            .select_related(
+                "spectrogram",
+                "annotation_phase__annotation_campaign__dataset",
+                "author",
+            )
             .annotate(
-                dataset=F("dataset_file__dataset__name"),
-                filename=F("dataset_file__filename"),
+                dataset=F("annotation_phase__annotation_campaign__dataset__name"),
+                filename=F("spectrogram__filename"),
                 annotator=F("author__username"),
                 comments=Concat(F("comment"), Value(" |- "), F("author__username")),
             )
@@ -430,13 +440,13 @@ class AnnotationCampaignPhaseViewSet(
                     SELECT 
                         to_char(f.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
                     FROM dataset_files f
-                    WHERE annotation_comment.dataset_file_id = f.id
+                    WHERE api_annotationcomment.dataset_file_id = f.id
                     """,
                     "end_datetime": """
                     SELECT 
                         to_char(f.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
                     FROM dataset_files f
-                    WHERE annotation_comment.dataset_file_id = f.id
+                    WHERE api_annotationcomment.dataset_file_id = f.id
                     """,
                 },
             )
@@ -451,7 +461,7 @@ class AnnotationCampaignPhaseViewSet(
     def report(self, request, pk: int = None):
         """Download annotation results report csv"""
         # pylint: disable=unused-argument
-        phase: AnnotationCampaignPhase = self.get_object()
+        phase: AnnotationPhase = self.get_object()
         campaign = phase.annotation_campaign
 
         response = HttpResponse(content_type="text/csv")
@@ -459,8 +469,8 @@ class AnnotationCampaignPhaseViewSet(
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
         validate_users = list(
-            AnnotationResultValidation.objects.filter(
-                result__annotation_campaign_phase__annotation_campaign_id=phase.annotation_campaign_id
+            AnnotationValidation.objects.filter(
+                annotation__annotation_phase__annotation_campaign_id=phase.annotation_campaign_id
             )
             .select_related("annotator")
             .order_by("annotator__username")
@@ -470,13 +480,13 @@ class AnnotationCampaignPhaseViewSet(
 
         # CSV
         headers = REPORT_HEADERS
-        if phase.phase == Phase.VERIFICATION:
+        if phase.phase == AnnotationPhase.Type.VERIFICATION:
             headers = headers + validate_users
         writer = csv.DictWriter(response, fieldnames=headers)
         writer.writeheader()
 
         def map_validations(user: str) -> [str, Case]:
-            validation_sub = AnnotationResultValidation.objects.filter(
+            validation_sub = AnnotationValidation.objects.filter(
                 annotator__username=user,
                 result_id=OuterRef("id"),
             )
@@ -518,7 +528,7 @@ class AnnotationCampaignPhaseViewSet(
     def report_status(self, request, pk: int = None):
         """Returns the CSV report on tasks status for the given campaign"""
         # pylint: disable=unused-argument
-        phase: AnnotationCampaignPhase = self.get_object()
+        phase: AnnotationPhase = self.get_object()
         campaign = phase.annotation_campaign
 
         response = HttpResponse(content_type="text/csv")
@@ -527,7 +537,7 @@ class AnnotationCampaignPhaseViewSet(
 
         # Headers
         header = ["dataset", "filename"]
-        file_ranges: QuerySet[AnnotationFileRange] = phase.file_ranges
+        file_ranges: QuerySet[AnnotationFileRange] = phase.annotation_file_ranges
         annotators = (
             file_ranges.values("annotator__username")
             .distinct()
@@ -539,16 +549,16 @@ class AnnotationCampaignPhaseViewSet(
         writer.writeheader()
 
         # Content
-        all_files: QuerySet[DatasetFile] = campaign.get_sorted_files().select_related(
+        all_files: QuerySet[Spectrogram] = campaign.get_sorted_files().select_related(
             "dataset"
         )
-        finished_tasks: QuerySet[AnnotationTask] = phase.tasks.filter(
+        finished_tasks: QuerySet[AnnotationTask] = phase.annotation_tasks.filter(
             status=AnnotationTask.Status.FINISHED,
         )
 
         def map_annotators(user: str) -> [str, Case]:
             task_sub = finished_tasks.filter(
-                dataset_file_id=OuterRef("pk"), annotator__username=user
+                spectrogram_id=OuterRef("pk"), annotator__username=user
             )
             range_sub = file_ranges.filter(
                 from_datetime__gte=OuterRef("start"),
@@ -578,7 +588,7 @@ class AnnotationCampaignPhaseViewSet(
     def end(self, request, pk: int = None):
         """Ends the given phase"""
         # pylint: disable=unused-argument
-        phase: AnnotationCampaignPhase = self.get_object()
+        phase: AnnotationPhase = self.get_object()
         phase.end(self.request.user)
         serializer = self.get_serializer(phase)
         return Response(serializer.data, status=status.HTTP_200_OK)

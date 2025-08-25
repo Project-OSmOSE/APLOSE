@@ -74,7 +74,7 @@ class DatasetViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=["POST"])
     def datawork_import(self, request):
         """Import new datasets from datawork"""
-        if not request.user.is_staff_or_superuser:
+        if not (request.user.is_staff or request.user.is_superuser):
             return HttpResponse("Forbidden", status=403)
 
         try:

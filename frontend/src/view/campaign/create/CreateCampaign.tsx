@@ -103,7 +103,7 @@ export const CreateCampaign: React.FC = () => {
     if (!name || !dataset || spectro_configs.length === 0) {
       const errors: Errors = {};
       if (!name) errors.name = 'Name is required';
-      if (!dataset) errors.datasets = 'Dataset is required';
+      if (!dataset) errors.dataset = 'Dataset is required';
       if (spectro_configs.length === 0) errors.spectro_configs = 'A spectrogram configuration is required';
       setErrors(errors);
       page.current?.scrollTo({ top: 0, left: 0 });
@@ -111,7 +111,7 @@ export const CreateCampaign: React.FC = () => {
     }
     createCampaign({
       name, desc, instructions_url, deadline,
-      datasets: [ dataset.name ],
+      dataset: dataset.name,
       spectro_configs: spectro_configs?.map(s => s.id),
       allow_image_tuning,
       allow_colormap_tuning,
@@ -162,7 +162,7 @@ export const CreateCampaign: React.FC = () => {
           <WarningText>Fail loading datasets:<br/>{ getErrorMessage(datasetsError) }</WarningText> }
 
       { allDatasets && <Fragment>
-          <Select label="Dataset" placeholder="Select a dataset" error={ errors.datasets }
+          <Select label="Dataset" placeholder="Select a dataset" error={ errors.dataset }
                   options={ allDatasets.map(d => ({ value: d.name, label: d.name })) ?? [] } optionsContainer="alert"
                   value={ dataset?.name } disabled={ !allDatasets.length } onValueSelected={ onDatasetChange }
                   required={ true }/>

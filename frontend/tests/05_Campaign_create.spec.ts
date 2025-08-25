@@ -19,7 +19,7 @@ test.describe('Annotator', () => {
       const data = request.postDataJSON() as PostAnnotationCampaign;
       const expectedData: PostAnnotationCampaign = {
         name: CAMPAIGN.name,
-        datasets: [ DATASET.name ],
+        dataset: DATASET.name,
         spectro_configs: DATASET.spectros.map(s => s.id),
         instructions_url: null,
         desc: null,
@@ -51,7 +51,7 @@ test.describe('Annotator', () => {
         instructions_url: CAMPAIGN.instructions_url,
         desc: CAMPAIGN.desc,
         deadline: CAMPAIGN.deadline,
-        datasets: [ DATASET.name ],
+        dataset: DATASET.name,
         spectro_configs: DATASET.spectros.map(s => s.id),
         allow_image_tuning: false,
         allow_colormap_tuning: false,
