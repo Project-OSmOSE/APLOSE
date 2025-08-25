@@ -11,7 +11,7 @@ import { useCampaignStateColor } from "@/features/annotation/annotationCampaign/
 
 export const AnnotationCampaignCard: React.FC<{ campaign: AnnotationCampaign }> = ({ campaign }) => {
   const navigate = useNavigate();
-  const link = useMemo(() => `/annotation-campaign/${ campaign.id }`, [ campaign, ])
+  const link = useMemo(() => `/annotation-campaign/${ campaign.id }/phase/Annotation`, [ campaign, ])
   const color = useCampaignStateColor(campaign.state);
 
   const accessDetail = useCallback(() => navigate(link), [ link ]);

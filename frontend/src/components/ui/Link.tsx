@@ -5,10 +5,10 @@ import { openOutline } from "ionicons/icons";
 import { Button } from "./Button";
 import { To, useNavigate } from "react-router-dom";
 
-export const useAppLink = (appPath?: To | undefined, onClick?: () => void) => {
+export const useAppLink = (appPath?: To | undefined, onClick?: () => void, replace: boolean = false) => {
   const navigate = useNavigate();
   const open = useCallback(() => {
-    if (appPath) navigate(appPath)
+    if (appPath) navigate(appPath, { replace })
     if (onClick) onClick()
   }, [ appPath ])
   const openAux = useCallback(() => window.open(`/app${ appPath }`, "_blank"), [ appPath ])
@@ -18,6 +18,7 @@ export const useAppLink = (appPath?: To | undefined, onClick?: () => void) => {
 export type LinkProps = {
   href?: string | undefined;
   appPath?: To | undefined;
+  replace?: boolean;
   children: ReactNode;
   color?: Color;
   size?: 'small' | 'default' | 'large';
@@ -27,18 +28,19 @@ export type LinkProps = {
   onClick?: () => void;
 } & React.ComponentProps<typeof IonButton>
 export const Link: React.FC<LinkProps> = ({
-                                                 children,
-                                                 color = 'dark',
-                                                 href,
-                                                 size,
-                                                 target,
-                                                 fill = 'clear',
-                                                 appPath,
-                                                 className,
-                                                 onClick,
-                                                 ...props
-                                               }) => {
-  const { open, openAux } = useAppLink(appPath, onClick);
+                                            children,
+                                            color = 'dark',
+                                            href,
+                                            size,
+                                            target,
+                                            fill = 'clear',
+                                            appPath,
+                                            className,
+                                            onClick,
+                                            replace = false,
+                                            ...props
+                                          }) => {
+  const { open, openAux } = useAppLink(appPath, onClick, replace);
 
   if (href !== undefined) return <a style={ { textDecoration: 'none' } } className={ className }
                                     target={ target } rel="noopener, noreferrer"

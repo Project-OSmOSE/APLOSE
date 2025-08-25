@@ -31,7 +31,7 @@ class AnnotationFileRangeListSerializer(serializers.ListSerializer):
         if "force" in self.context and self.context["force"] is True:
             return deleted_ranges
         for file_range in deleted_ranges:
-            if file_range.finished_tasks_count > 0:
+            if file_range.completed_tasks_count > 0:
                 raise serializers.ValidationError(
                     "Cannot delete range with finished tasks",
                     code="invalid_deletion",

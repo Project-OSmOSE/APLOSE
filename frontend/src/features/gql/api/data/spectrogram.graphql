@@ -1,0 +1,88 @@
+query getSpectrogramsFromDates(
+    $fromDatetime: DateTime!
+    $toDatetime: DateTime!
+    $campaignID: ID!,
+    $annotatorID: ID!,
+    $phase: String!,
+    $offset: Int!,
+    $isTaskCompleted: Boolean
+    $hasAnnotations: Boolean
+    $annotatedByAnnotatorID: ID
+    $annotatedByDetectorID: ID
+    $annotatedWithLabel: String
+    $annotatedWithConfidence: String
+    $annotatedWithFeatures: Boolean
+) {
+    allSpectrograms(
+        limit: 20
+        offset: $offset
+        campaignId: $campaignID
+        phaseType: $phase
+        annotatorId: $annotatorID
+        start_Gte: $fromDatetime
+        end_Lte: $toDatetime
+        orderBy: "start"
+        isTaskCompleted: $isTaskCompleted
+        annotatedByAnnotator: $annotatedByAnnotatorID
+        annotatedByDetector: $annotatedByDetectorID
+        hasAnnotations: $hasAnnotations
+        annotatedWithLabel: $annotatedWithLabel
+        annotatedWithConfidence: $annotatedWithConfidence
+        annotatedWithFeatures: $annotatedWithFeatures
+    ) {
+        results {
+            id
+            filename
+            start
+            duration
+        }
+        totalCount
+    }
+}
+
+query getSpectrogramsFromDatesComplement(
+    $campaignID: ID!,
+    $annotatorID: ID!,
+    $phase: String!,
+    $spectrogramIDs: [ID]!
+) {
+    annotatorAnnotations: allAnnotations(
+        annotatorId: $annotatorID
+        annotationCampaignId: $campaignID
+        phaseType: $phase
+        spectrogramId_In: $spectrogramIDs
+    ) {
+        results {
+            type
+            spectrogram {
+                id
+            }
+        }
+    }
+    otherAnnotations: allAnnotations(
+        notAnnotatorId: $annotatorID
+        annotationCampaignId: $campaignID
+        phaseType: $phase
+        spectrogramId_In: $spectrogramIDs
+    ) {
+        results {
+            type
+            spectrogram {
+                id
+            }
+        }
+    }
+    allAnnotationTasks(
+        annotatorId: $annotatorID
+        annotationCampaignId: $campaignID
+        phaseType: $phase
+        spectrogramId_In: $spectrogramIDs
+    ) {
+        results {
+            status
+            spectrogram {
+                id
+            }
+        }
+    }
+}

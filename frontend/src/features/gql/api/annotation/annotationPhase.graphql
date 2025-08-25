@@ -1,0 +1,18 @@
+query getPhase(
+    $campaignID: ID!
+    $phaseType: PhaseTypeEnum!
+) {
+    annotationPhaseForCampaign(
+        campaignId: $campaignID,
+        phaseType: $phaseType
+    ) {
+        annotationCampaign {
+            archive {
+                date
+            }
+        }
+        endedAt
+        phase
+        hasAnnotations
+    }
+}

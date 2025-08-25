@@ -1,0 +1,40 @@
+query getAnnotationSettings(
+    $campaignID: ID!
+    $phaseType: PhaseTypeEnum!
+) {
+    annotationPhaseForCampaign(
+        campaignId: $campaignID,
+        phaseType: $phaseType
+    ) {
+        annotationCampaign {
+            labelSet {
+                labels {
+                    results {
+                        name
+                    }
+                }
+            }
+            confidenceSet {
+                confidenceIndicators {
+                    results {
+                        label
+                    }
+                }
+            }
+            detectors {
+                results {
+                    id
+                    name
+                }
+            }
+            annotators {
+                results {
+                    id
+                    displayName
+                    username
+                }
+            }
+        }
+    }
+
+}

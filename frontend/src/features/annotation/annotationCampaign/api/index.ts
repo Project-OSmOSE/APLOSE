@@ -24,10 +24,6 @@ type GetAnnotationCampaignsFilter = {
 type AnnotationCampaignGlobal = N<GetAnnotationCampaignByIdGlobalQuery['annotationCampaignById']>
 type AnnotationCampaignDetailed = N<GetAnnotationCampaignByIdDetailedQuery['annotationCampaignById']>
 
-enum PhaseType {
-  annotation = "Annotation",
-  verification = "Verification",
-}
 
 enum AnnotationCampaignState {
   open = "Open",
@@ -73,6 +69,5 @@ export {
   type GetAnnotationCampaignsFilter,
   type AnnotationCampaignGlobal,
   type AnnotationCampaignDetailed,
-  PhaseType,
   AnnotationCampaignState,
 }

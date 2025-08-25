@@ -1,4 +1,5 @@
-export function formatTime(rawSeconds: number, withMs: boolean = false): string {
+export function formatTime(rawSeconds?: number, withMs: boolean = false): string {
+  if (!rawSeconds) return ''
   const hours: number = Math.floor(rawSeconds / 3600);
   const minutes: number = Math.floor(rawSeconds / 60) % 60;
   const seconds: number = Math.floor(rawSeconds) % 60;

@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Provider } from "react-redux";
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import './css/bootstrap-4.1.3.min.css';
 import '@ionic/react/css/core.css';
@@ -14,6 +14,7 @@ import { AppStore, useAppSelector } from "@/service/app";
 
 import { AnnotationCampaignList } from "@/view/annotation-campaign";
 import { AnnotationCampaignDetail, AnnotationCampaignInfo } from "@/view/annotation-campaign/[campaignID]";
+import { AnnotationCampaignPhaseDetail } from "@/view/annotation-campaign/[campaignID]/phase/[phaseType]";
 
 import { DatasetList } from '@/view/dataset';
 import { DatasetDetail } from '@/view/dataset/[datasetID]';
@@ -52,7 +53,7 @@ const AppContent: React.FC = () => {
 
   const isConnected = useAppSelector(selectIsConnected)
   // const currentUser = useAppSelector(selectCurrentUser)
-  const from = useLocation()
+  // const from = useLocation()
 
   return (
     <Routes>
@@ -68,7 +69,8 @@ const AppContent: React.FC = () => {
               <Route path=':campaignID'>
                   <Route element={ <AnnotationCampaignDetail/> }>
                       <Route index element={ <AnnotationCampaignInfo/> }/>
-                    {/*<Route path='phase/:phaseID' element={ <AnnotationCampaignPhaseDetail/> }/>*/ }
+
+                      <Route path='phase/:phaseType' element={ <AnnotationCampaignPhaseDetail/> }/>
                   </Route>
 
                 {/*<Route path='phase/:phase'>*/ }
@@ -109,10 +111,10 @@ const AppContent: React.FC = () => {
         {/*    </Route>*/ }
         {/*}*/ }
 
-          <Route path="*" element={ <Navigate to="/annotation-campaign" replace state={ { from } }/> }/>
+        {/*<Route path="*" element={ <Navigate to="/annotation-campaign" replace state={ { from } }/> }/>*/ }
       </Fragment> }
 
-      <Route path="*" element={ <Navigate to="/login" replace state={ { from } }/> }/>
+      {/*<Route path="*" element={ <Navigate to="/login" replace state={ { from } }/> }/>*/ }
     </Routes>
   )
 }

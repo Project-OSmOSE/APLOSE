@@ -10,7 +10,7 @@ export const AnnotationCampaignArchiveButton: React.FC<{
   archive?: any;
   phases?: {
     results: Array<{
-      isFinished?: boolean | null
+      isCompleted?: boolean | null
     } | null>
   } | null,
   isEditAllowed?: boolean | null,
@@ -29,7 +29,7 @@ export const AnnotationCampaignArchiveButton: React.FC<{
         } ]
       })
     }
-    const arePhasesFinished = phases.results.filter(p => p !== null).reduce((previousValue, p) => previousValue && !!p.isFinished, true);
+    const arePhasesFinished = phases.results.filter(p => p !== null).reduce((previousValue, p) => previousValue && !!p.isCompleted, true);
     if (!arePhasesFinished) {
       // If annotators haven't finished yet, ask for confirmation
       return alert.showAlert({

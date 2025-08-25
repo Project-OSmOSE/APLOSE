@@ -18,6 +18,7 @@ from backend.api.models import (
     AnnotationTask,
     AnnotationPhase,
 )
+from backend.aplose.schema import UserNode
 from backend.utils.schema import (
     ApiObjectType,
     AuthenticatedDjangoConnectionField,
@@ -25,6 +26,7 @@ from backend.utils.schema import (
     GraphQLResolve,
 )
 from .annotation_phase import AnnotationPhaseNode
+from .detector import DetectorNode
 from .label import AnnotationLabelNode
 from ..data.spectrogram_analysis import SpectrogramAnalysisNode
 
@@ -69,6 +71,12 @@ class AnnotationCampaignNode(ApiObjectType):
     labels_with_acoustic_features = AuthenticatedDjangoConnectionField(
         AnnotationLabelNode
     )
+    detectors = AuthenticatedDjangoConnectionField(
+        DetectorNode, source="phases__annotations__detector_configuration__detector"
+    )
+    annotators = AuthenticatedDjangoConnectionField(
+        UserNode, source="phases__file_ranges__annotator"
+    )
 
     tasks_count = Int()
     finished_tasks_count = Int()
@@ -98,7 +106,6 @@ class AnnotationCampaignNode(ApiObjectType):
         annotate_state = False
         annotate_is_edit_allowed = False
         for field in fields:
-
             if field.name.value in ["state", "tasksCount"]:
                 cls.annotations = {
                     **cls.annotations,

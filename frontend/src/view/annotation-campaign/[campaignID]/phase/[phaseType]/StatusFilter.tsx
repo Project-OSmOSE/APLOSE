@@ -1,45 +1,46 @@
 import React, { Fragment, useState } from "react";
+import styles from './styles.module.scss'
 import { IonIcon } from "@ionic/react";
 import { funnel, funnelOutline } from "ionicons/icons";
 import { createPortal } from "react-dom";
 import { Modal } from "@/components/ui";
 import { Switch } from "@/components/form";
-import styles from './styles.module.scss'
-import { useFileFilters } from "@/service/slices/filter.ts";
+import { useSpectrogramFilters } from "./filter.ts";
+import { TaskStatus } from "@/features/gql/api";
 
 export const StatusFilter: React.FC<{
   onUpdate: () => void
 }> = ({ onUpdate }) => {
-  const { params, updateParams } = useFileFilters()
+  const { params, updateParams } = useSpectrogramFilters()
   const [ filterModalOpen, setFilterModalOpen ] = useState<boolean>(false);
 
   function setState(option: string) {
-    let is_submitted = undefined;
+    let isTaskCompleted = undefined;
     switch (option) {
-      case 'Created':
-        is_submitted = false;
+      case TaskStatus.created:
+        isTaskCompleted = false;
         break;
-      case 'Finished':
-        is_submitted = true;
+      case TaskStatus.finished:
+        isTaskCompleted = true;
         break;
     }
-    updateParams({ is_submitted })
+    updateParams({ isTaskCompleted })
     onUpdate()
   }
 
-  function valueToBooleanOption(value: boolean | undefined): 'Unset' | 'Created' | 'Finished' {
+  function valueToBooleanOption(value?: boolean | null): 'Unset' | 'Created' | 'Finished' {
     switch (value) {
       case true:
-        return 'Finished';
+        return TaskStatus.finished;
       case false:
-        return 'Created';
-      case undefined:
+        return TaskStatus.created;
+      default:
         return 'Unset';
     }
   }
 
   return <Fragment>
-    { params.is_submitted !== undefined ?
+    { params.isTaskCompleted !== undefined ?
       <IonIcon onClick={ () => setFilterModalOpen(true) } color='primary' icon={ funnel }/> :
       <IonIcon onClick={ () => setFilterModalOpen(true) } color='dark' icon={ funnelOutline }/> }
 
@@ -47,7 +48,7 @@ export const StatusFilter: React.FC<{
                                              onClose={ () => setFilterModalOpen(false) }>
 
       <Switch label='Status' options={ [ 'Unset', 'Created', 'Finished' ] }
-              value={ valueToBooleanOption(params.is_submitted) } onValueSelected={ setState }/>
+              value={ valueToBooleanOption(params.isTaskCompleted) } onValueSelected={ setState }/>
 
     </Modal>, document.body) }
   </Fragment>

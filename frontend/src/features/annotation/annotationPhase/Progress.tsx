@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { PhaseType } from "@/features/annotation/annotationCampaign";
+import { PhaseType } from "@/features/gql/api";
 import { IonNote } from "@ionic/react";
 import { Progress } from "@/components/ui";
 

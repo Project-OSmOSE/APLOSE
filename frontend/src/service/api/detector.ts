@@ -12,7 +12,7 @@ export const DetectorAPI = API.injectEndpoints({
       query: (params) => {
         if (!params) return 'detector/';
         const queryParams: any = {}
-        if (params.campaign) queryParams['configurations__annotation_results__annotation_campaign'] = params.campaign.id
+        if (params.campaignFilter) queryParams['configurations__annotation_results__annotation_campaign'] = params.campaign.id
         return {
           url: `detector/`,
           params: queryParams

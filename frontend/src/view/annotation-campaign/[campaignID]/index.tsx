@@ -13,7 +13,6 @@ import {
   AnnotationCampaignDescription,
   AnnotationCampaignInstructionsButton,
   AnnotationCampaignLabelsWithFeaturesModalButton,
-  PhaseType
 } from "@/features/annotation/annotationCampaign";
 import { getErrorMessage, pluralize } from "@/service/function.ts";
 import { ConfidenceSetDescription } from "@/features/annotation/confidenceSet";
@@ -22,9 +21,10 @@ import { DatasetName } from "@/features/data/dataset";
 import { ArchiveDescription } from "@/features/common/archive";
 import { LabelSetDescription } from "@/features/annotation/labelSet";
 import { LabelsList } from "@/features/annotation/label";
+import { PhaseType } from "@/features/gql/api";
 
 export const AnnotationCampaignDetail: React.FC = () => {
-  const { campaignID, phase } = useParams<{ campaignID: string; phase: string; }>();
+  const { campaignID, phaseType } = useParams<{ campaignID: string; phaseType: string; }>();
   const { data: campaign, error } = AnnotationCampaignAPI.endpoints.getAnnotationCampaignByIDGlobal.useQuery({
     id: campaignID ?? '',
   }, { skip: !campaignID });
@@ -50,20 +50,22 @@ export const AnnotationCampaignDetail: React.FC = () => {
 
         <div className={ styles.tabs }>
             <Link appPath={ `/annotation-campaign/${ campaignID }` }
-                  className={ !phase ? styles.active : undefined }>
+                  replace
+                  className={ !phaseType ? styles.active : undefined }>
                 Information
             </Link>
 
             <Link
                 appPath={ `/annotation-campaign/${ campaignID }/phase/${ PhaseType.annotation }` + (hasAnnotationPhase ? '' : '/new') }
-                className={ phase === PhaseType.annotation ? styles.active : undefined }>
+                replace
+                className={ phaseType === PhaseType.annotation ? styles.active : undefined }>
               { PhaseType.annotation }
             </Link>
 
           { (hasAnnotationPhase || hasVerificationPhase) &&
               <Link
                   appPath={ `/annotation-campaign/${ campaignID }/phase/${ PhaseType.verification }` + (hasVerificationPhase ? '' : '/new') }
-                  className={ phase === PhaseType.verification ? styles.active : undefined }>
+                  className={ phaseType === PhaseType.verification ? styles.active : undefined }>
                 { PhaseType.verification }
               </Link> }
         </div>
@@ -122,7 +124,7 @@ export const AnnotationCampaignInfo: React.FC = () => {
       { campaign.phases?.results.filter(p => p !== null).map(p =>
         <Progress key={ p.phase }
                   label={ p.phase }
-                  value={ p.finishedTasksCount ?? 0 }
+                  value={ p.completedTasksCount ?? 0 }
                   total={ p.tasksCount ?? 0 }/>) }
     </div>
 

@@ -81,7 +81,7 @@ class Annotation(models.Model):
     annotation_phase = models.ForeignKey(
         AnnotationPhase,
         on_delete=models.CASCADE,
-        related_name="results",
+        related_name="annotations",
     )
     annotator = models.ForeignKey(
         User,

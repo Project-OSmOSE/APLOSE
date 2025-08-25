@@ -4,26 +4,26 @@ import { Input } from "@/components/form";
 import { IonIcon } from "@ionic/react";
 import { funnel, funnelOutline } from "ionicons/icons";
 import { createPortal } from "react-dom";
-import { useFileFilters } from "@/service/slices/filter.ts";
+import { useSpectrogramFilters } from "@/view/annotation-campaign/[campaignID]/phase/[phaseType]/filter.ts";
 
 export const DateFilter: React.FC<{
   onUpdate: () => void
 }> = ({ onUpdate }) => {
-  const { params, updateParams } = useFileFilters()
+  const { params, updateParams } = useSpectrogramFilters()
 
-  const hasDateFilter = useMemo(() => !!params.end__gte || !!params.start__lte, [ params ]);
+  const hasDateFilter = useMemo(() => !!params.toDatetime || !!params.fromDatetime, [ params ]);
   const [ filterModalOpen, setFilterModalOpen ] = useState<boolean>(false);
 
   const minDate: string = useMemo(() => {
-    if (!params.end__gte) return '';
-    const date = params.end__gte.split('');
+    if (!params.toDatetime) return '';
+    const date = params.toDatetime.split('');
     date.pop();
     return date.join('');
   }, [ params ]);
 
   const maxDate: string = useMemo(() => {
-    if (!params.start__lte) return '';
-    const date = params.start__lte.split('');
+    if (!params.fromDatetime) return '';
+    const date = params.fromDatetime.split('');
     date.pop();
     return date.join('');
   }, [ params ]);
@@ -44,12 +44,12 @@ export const DateFilter: React.FC<{
   }
 
   function setMin(event: ChangeEvent<HTMLInputElement>) {
-    updateParams({ end__gte: getDateString(event) })
+    updateParams({ toDatetime: getDateString(event) })
     onUpdate()
   }
 
   function setMax(event: ChangeEvent<HTMLInputElement>) {
-    updateParams({ start__lte: getDateString(event) })
+    updateParams({ fromDatetime: getDateString(event) })
     onUpdate()
   }
 

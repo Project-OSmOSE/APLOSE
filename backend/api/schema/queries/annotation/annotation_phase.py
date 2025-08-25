@@ -2,12 +2,17 @@
 from django.db import models
 from django.db.models import QuerySet, Count, Q, When, Case, F, Value
 from django_filters import FilterSet, OrderingFilter
-from graphene import relay, Scalar, Boolean, Int, ID
+from graphene import relay, Scalar, Boolean, Int, ID, ObjectType, Field
 from graphql import GraphQLResolveInfo
 from graphql.language import ast
 
 from backend.api.models import AnnotationPhase, AnnotationTask
-from backend.utils.schema import ApiObjectType
+from backend.utils.schema import (
+    ApiObjectType,
+    GraphQLResolve,
+    GraphQLPermissions,
+    AuthenticatedDjangoConnectionField,
+)
 
 
 class PhaseTypeEnum(Scalar):
@@ -51,13 +56,14 @@ class AnnotationPhaseNode(ApiObjectType):
 
     phase = PhaseTypeEnum()
 
-    is_finished = Boolean()
+    is_completed = Boolean()
+    has_annotations = Boolean()
 
     tasks_count = Int()
-    finished_tasks_count = Int()
+    completed_tasks_count = Int()
 
     user_tasks_count = Int(id=ID())
-    user_finished_tasks_count = Int(id=ID())
+    user_completed_tasks_count = Int(id=ID())
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
@@ -74,22 +80,29 @@ class AnnotationPhaseNode(ApiObjectType):
         fields = cls._get_query_fields(info)
 
         cls._init_queryset_extensions()
-        annotate_is_finished = False
+        annotate_is_completed = False
         for field in fields:
-            if field.name.value == "isFinished":
-                annotate_is_finished = True
+            if field.name.value == "isCompleted":
+                annotate_is_completed = True
 
-            if field.name.value in ["isFinished", "tasksCount"]:
+            if field.name.value == "hasAnnotations":
+                cls.annotations = {
+                    **cls.annotations,
+                    "has_annotations": Q(annotations__isnull=False),
+                }
+                cls.prefetch.append("annotations")
+
+            if field.name.value in ["isCompleted", "tasksCount"]:
                 cls.annotations = {
                     **cls.annotations,
                     "tasks_count": Count("annotation_tasks", distinct=True),
                 }
                 cls.prefetch.append("annotation_tasks")
 
-            if field.name.value in ["isFinished", "finishedTasksCount"]:
+            if field.name.value in ["isCompleted", "completedTasksCount"]:
                 cls.annotations = {
                     **cls.annotations,
-                    "finished_tasks_count": Count(
+                    "completed_tasks_count": Count(
                         "annotation_tasks",
                         filter=Q(
                             annotation_tasks__status=AnnotationTask.Status.FINISHED
@@ -112,12 +125,11 @@ class AnnotationPhaseNode(ApiObjectType):
                 }
                 cls.prefetch.append("annotation_tasks")
 
-            if field.name.value == "userFinishedTasksCount":
-                arguments = cls._get_argument(info, "userFinishedTasksCount")
-                print("userFinishedTasksCount", arguments)
+            if field.name.value == "userCompletedTasksCount":
+                arguments = cls._get_argument(info, "userCompletedTasksCount")
                 cls.annotations = {
                     **cls.annotations,
-                    "user_finished_tasks_count": Count(
+                    "user_completed_tasks_count": Count(
                         "annotation_tasks",
                         filter=Q(
                             annotation_tasks__annotator_id=arguments.get("id"),
@@ -129,12 +141,34 @@ class AnnotationPhaseNode(ApiObjectType):
                 cls.prefetch.append("annotation_tasks")
 
         qs = cls._finalize_queryset(super().get_queryset(queryset, info))
-        if annotate_is_finished:
+        if annotate_is_completed:
             qs = qs.annotate(
-                is_finished=Case(
+                is_completed=Case(
                     When(finished_tasks_count=F("tasks_count"), then=Value(1)),
                     default=Value(0),
                     output_field=models.BooleanField(),
                 ),
             )
         return qs
+
+
+class AnnotationPhaseQuery(ObjectType):  # pylint: disable=too-few-public-methods
+    """AnnotationPhase queries"""
+
+    all_annotation_phases = AuthenticatedDjangoConnectionField(AnnotationPhaseNode)
+
+    annotation_phase_for_campaign = Field(
+        AnnotationPhaseNode,
+        campaign_id=ID(required=True),
+        phase_type=PhaseTypeEnum(required=True),
+    )
+
+    @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
+    def resolve_annotation_campaign_by_id(
+        self, info, campaign_id: int, phase_type: AnnotationPhase.Type
+    ):
+        """Get AnnotationCampaign by id"""
+        return AnnotationPhase.objects.get(
+            annotation_campaign_id=campaign_id,
+            phase=phase_type,
+        )

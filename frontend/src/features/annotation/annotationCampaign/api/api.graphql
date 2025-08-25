@@ -44,6 +44,9 @@ query getAnnotationCampaignByIDGlobal($id: ID!) {
                 phase
             }
         }
+        archive {
+            date
+        }
     }
 }
 
@@ -87,8 +90,8 @@ query getAnnotationCampaignByIDDetailed($id: ID!) {
         phases {
             results {
                 phase
-                isFinished
-                finishedTasksCount
+                isCompleted
+                completedTasksCount
                 tasksCount
             }
         }

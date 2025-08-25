@@ -7,7 +7,7 @@ from .annotation import AnnotationNode
 from .annotation_campaign import AnnotationCampaignNode, AnnotationCampaignQuery
 from .annotation_comment import AnnotationCommentNode
 from .annotation_file_range import AnnotationFileRangeNode
-from .annotation_phase import AnnotationPhaseNode, PhaseTypeEnum
+from .annotation_phase import AnnotationPhaseNode, PhaseTypeEnum, AnnotationPhaseQuery
 from .annotation_task import AnnotationTaskNode
 from .annotation_validation import AnnotationValidationNode
 from .confidence import ConfidenceNode
@@ -19,7 +19,7 @@ from .label_set import LabelSetNode
 
 
 class APIAnnotationQuery(
-    AnnotationCampaignQuery, graphene.ObjectType
+    AnnotationCampaignQuery, AnnotationPhaseQuery, graphene.ObjectType
 ):  # pylint: disable=too-few-public-methods
     """API GraphQL queries"""
 
@@ -29,7 +29,6 @@ class APIAnnotationQuery(
     all_annotation_file_ranges = AuthenticatedDjangoConnectionField(
         AnnotationFileRangeNode
     )
-    all_annotation_phases = AuthenticatedDjangoConnectionField(AnnotationPhaseNode)
     all_annotation_tasks = AuthenticatedDjangoConnectionField(AnnotationTaskNode)
     all_annotation_validations = AuthenticatedDjangoConnectionField(
         AnnotationValidationNode
