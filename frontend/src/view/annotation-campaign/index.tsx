@@ -11,6 +11,7 @@ import { CampaignAPI } from "@/service/api/campaign.ts";
 import { CampaignPhaseAPI } from "@/service/api/campaign-phase.ts";
 import { Deactivatable } from "@/components/ui/Deactivatable.tsx";
 import { useCampaignFilters, useFileFilters } from "@/service/slices/filter.ts";
+import { Head } from "@/components/ui/Page.tsx";
 
 
 export const AnnotationCampaignList: React.FC = () => {
@@ -103,66 +104,75 @@ export const AnnotationCampaignList: React.FC = () => {
   }, [ params ])
 
   return <Fragment>
-    <h2>Annotation Campaigns</h2>
+    <Head title="Annotation campaigns"/>
 
-    <ActionBar search={ params.search }
-               searchPlaceholder="Search campaign name"
-               onSearchChange={ search => updateParams({ search }) }
-               actionButton={ <Link color='primary' fill='outline' appPath='/annotation-campaign/new'>
-                 <IonIcon icon={ addOutline } slot="start"/>
-                 New annotation campaign
-               </Link> }>
+    <div style={ {
+      display: 'grid',
+      height: '100%',
+      gridTemplateRows: 'auto 1fr',
 
-      <IonChip outline={ !params.phases__annotation_file_ranges__annotator_id }
-               onClick={ toggleMyWorkFilter }
-               color={ params.phases__annotation_file_ranges__annotator_id ? 'primary' : 'medium' }>
-        My work
-        { params.phases__annotation_file_ranges__annotator_id && <IonIcon icon={ closeCircle } color='primary'/> }
-      </IonChip>
+    } }>
 
-      <IonChip outline={ params.archive__isnull === undefined }
-               onClick={ toggleArchiveFilter }
-               color={ params.archive__isnull !== undefined ? 'primary' : 'medium' }>
-        Archived{ params.archive__isnull !== undefined && `: ${ params.archive__isnull ? 'False' : 'True' }` }
-        { params.archive__isnull === true && <IonIcon icon={ swapHorizontal }/> }
-        { params.archive__isnull === false && <IonIcon icon={ closeCircle }/> }
-      </IonChip>
+      <ActionBar search={ params.search }
+                 searchPlaceholder="Search campaign name"
+                 onSearchChange={ search => updateParams({ search }) }
+                 actionButton={ <Link color='primary' fill='outline' appPath='/annotation-campaign/new'>
+                   <IonIcon icon={ addOutline } slot="start"/>
+                   New annotation campaign
+                 </Link> }>
 
-      <IonChip outline={ !params.phases__phase }
-               onClick={ toggleModeFilter }
-               color={ params.phases__phase ? 'primary' : 'medium' }>
-        Campaign mode
-        filter{ params.phases__phase && `: ${ params.phases__phase === 'A' ? 'Annotation' : 'Verification' }` }
-        { params.phases__phase === 'A' && <IonIcon icon={ swapHorizontal }/> }
-        { params.phases__phase === 'V' && <IonIcon icon={ closeCircle }/> }
-      </IonChip>
+        <IonChip outline={ !params.phases__annotation_file_ranges__annotator_id }
+                 onClick={ toggleMyWorkFilter }
+                 color={ params.phases__annotation_file_ranges__annotator_id ? 'primary' : 'medium' }>
+          My work
+          { params.phases__annotation_file_ranges__annotator_id && <IonIcon icon={ closeCircle } color='primary'/> }
+        </IonChip>
 
-      <IonChip outline={ !params.owner }
-               onClick={ toggleOnlyMineFilter }
-               color={ params.owner ? 'primary' : 'medium' }>
-        Owned campaigns
-        { params.owner && <IonIcon icon={ closeCircle } color='primary'/> }
-      </IonChip>
+        <IonChip outline={ params.archive__isnull === undefined }
+                 onClick={ toggleArchiveFilter }
+                 color={ params.archive__isnull !== undefined ? 'primary' : 'medium' }>
+          Archived{ params.archive__isnull !== undefined && `: ${ params.archive__isnull ? 'False' : 'True' }` }
+          { params.archive__isnull === true && <IonIcon icon={ swapHorizontal }/> }
+          { params.archive__isnull === false && <IonIcon icon={ closeCircle }/> }
+        </IonChip>
 
-      { (params.owner || params.phases__phase || params.archive__isnull || params.phases__annotation_file_ranges__annotator_id) &&
-          <IonButton fill='clear' color='medium' onClick={ resetFilters }>
-              <IonIcon icon={ refreshOutline } slot='start'/>
-              Reset
-          </IonButton> }
-    </ActionBar>
+        <IonChip outline={ !params.phases__phase }
+                 onClick={ toggleModeFilter }
+                 color={ params.phases__phase ? 'primary' : 'medium' }>
+          Campaign mode
+          filter{ params.phases__phase && `: ${ params.phases__phase === 'A' ? 'Annotation' : 'Verification' }` }
+          { params.phases__phase === 'A' && <IonIcon icon={ swapHorizontal }/> }
+          { params.phases__phase === 'V' && <IonIcon icon={ closeCircle }/> }
+        </IonChip>
 
-    <Deactivatable disabled={ isFetching || isFetchingPhases }
-                   loading={ isFetching || isFetchingPhases }>
-      <div className={ styles.campaignCardsGrid }>
+        <IonChip outline={ !params.owner }
+                 onClick={ toggleOnlyMineFilter }
+                 color={ params.owner ? 'primary' : 'medium' }>
+          Owned campaigns
+          { params.owner && <IonIcon icon={ closeCircle } color='primary'/> }
+        </IonChip>
 
-        { (isFetching || isFetchingPhases) && (!phases || !campaigns) && Array.from(new Array(7)).map((_, i) =>
-          <SkeletonCampaignCard key={ i }/>) }
+        { (params.owner || params.phases__phase || params.archive__isnull || params.phases__annotation_file_ranges__annotator_id) &&
+            <IonButton fill='clear' color='medium' onClick={ resetFilters }>
+                <IonIcon icon={ refreshOutline } slot='start'/>
+                Reset
+            </IonButton> }
+      </ActionBar>
 
-        { phases && campaigns?.map(c => <CampaignCard key={ c.id }
-                                                      phases={ phases.filter(p => p.annotation_campaign === c.id) }
-                                                      campaign={ c }/>) }
-        { !isFetching && campaigns?.length === 0 && <IonNote color="medium">No campaigns</IonNote> }
-      </div>
-    </Deactivatable>
+      <Deactivatable disabled={ isFetching || isFetchingPhases }
+                     loading={ isFetching || isFetchingPhases }>
+        <div className={ styles.campaignCardsGrid }>
+
+          { (isFetching || isFetchingPhases) && (!phases || !campaigns) && Array.from(new Array(7)).map((_, i) =>
+            <SkeletonCampaignCard key={ i }/>) }
+
+          { phases && campaigns?.map(c => <CampaignCard key={ c.id }
+                                                        phases={ phases.filter(p => p.annotation_campaign === c.id) }
+                                                        campaign={ c }/>) }
+          { !isFetching && campaigns?.length === 0 && <IonNote color="medium">No campaigns</IonNote> }
+        </div>
+      </Deactivatable>
+
+    </div>
   </Fragment>
 }
