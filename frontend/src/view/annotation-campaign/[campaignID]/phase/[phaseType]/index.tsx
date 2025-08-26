@@ -40,7 +40,7 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
     phaseID: phase?.id ?? -1,
     ...params
   }, { skip: !phase || !!campaign?.archive });
-  const isEmpty = useMemo(() => error || (files && files.count === 0) || campaign?.archive, [ error, files, campaign ])
+  const isEmpty = useMemo(() => error || !files || files.count === 0 || campaign?.archive, [ error, files, campaign ])
 
   const hasFilters = useMemo(() => Object.values(params).filter(v => v !== undefined).length > 0, [ params ]);
   const isResumeEnabled = useMemo(() => {
