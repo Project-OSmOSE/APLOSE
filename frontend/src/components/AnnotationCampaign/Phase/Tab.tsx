@@ -1,6 +1,5 @@
 import React, { Fragment, useCallback, useMemo } from "react";
 import { Phase } from "@/service/types";
-import { Deactivatable } from "@/components/ui/Deactivatable.tsx";
 import { Link } from "@/components/ui";
 import {
   CreateAnnotationPhaseButton,
@@ -14,12 +13,12 @@ import {
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import styles from './styles.module.scss'
 import { closeOutline } from "ionicons/icons";
-import { IonIcon } from "@ionic/react";
+import { IonIcon, IonSkeletonText } from "@ionic/react";
 import { useAlert } from "@/service/ui";
 
-export const CampaignPhaseTab: React.FC<{ phase: Phase }> = ({ phase: phaseType }) => {
+export const CampaignPhaseTab: React.FC<{ phaseType: Phase }> = ({ phaseType: phaseType }) => {
   const { campaign, hasAdminAccess } = useRetrieveCurrentCampaign()
-  const { phase: currentPhase } = useRetrieveCurrentPhase()
+  const { phaseType: currentPhaseType } = useRetrieveCurrentPhase()
   const { phases, isFetching: isFetchingPhases } = useListPhasesForCurrentCampaign()
   const [ endPhase ] = CampaignPhaseAPI.endpoints.endCampaignPhase.useMutation()
   const phase = useMemo(() => phases?.find(p => p.phase === phaseType), [ phases, phaseType ])
@@ -41,15 +40,19 @@ export const CampaignPhaseTab: React.FC<{ phase: Phase }> = ({ phase: phaseType 
   }, [ phase ]);
 
   if (!campaign) return <Fragment/>
-  return <Deactivatable disabled={ isFetchingPhases } loading={ isFetchingPhases }>
-    { phase && <Link appPath={ `/annotation-campaign/${ campaign.id }/phase/${ phase.phase }` } replace
-                     className={ [ styles.tab, currentPhase?.id === phase.id ? styles.active : undefined ].join(' ') }>
+  if (isFetchingPhases)
+    return <Link appPath={ `/annotation-campaign/${ campaign.id }/phase/${ phaseType }` } replace
+                 className={ [ styles.tab, currentPhaseType === phaseType ? styles.active : undefined ].join(' ') }>
+      <IonSkeletonText animated style={ { width: 96 } }/>
+    </Link>
+  if (phase)
+    return <Link appPath={ `/annotation-campaign/${ campaign.id }/phase/${ phaseType }` } replace
+                 className={ [ styles.tab, currentPhaseType === phaseType ? styles.active : undefined ].join(' ') }>
       { phaseType }
 
-      { hasAdminAccess && phase?.id === currentPhase?.id && !phase?.ended_by &&
+      { hasAdminAccess && currentPhaseType === phaseType && !phase?.ended_by &&
           <IonIcon icon={ closeOutline } slot='end' onClick={ end }/> }
-    </Link> }
-    { !phase && hasAdminAccess && (phaseType === 'Annotation' ? <CreateAnnotationPhaseButton/> :
-      <CreateVerificationPhaseButton/>) }
-  </Deactivatable>
+    </Link>
+  if (!hasAdminAccess) return <Fragment/>
+  return phaseType === 'Annotation' ? <CreateAnnotationPhaseButton/> : <CreateVerificationPhaseButton/>
 }
