@@ -114,6 +114,14 @@ class SpectrogramManager(Manager):  # pylint: disable=too-few-public-methods
         Spectrogram.analysis.through.objects.bulk_create(spectrogram_analysis_rel)
         return spectrograms
 
+    def filter_for_file_range(self, file_range: "AnnotationFileRange"):
+        """Get files for a given file range"""
+        return self.filter(
+            analysis__dataset_id=file_range.annotation_phase.annotation_campaign.dataset_id,
+            start__gte=file_range.from_datetime,
+            end__lte=file_range.to_datetime,
+        )
+
 
 class Spectrogram(AbstractFile, TimeSegment, models.Model):
     """Spectrogram model"""

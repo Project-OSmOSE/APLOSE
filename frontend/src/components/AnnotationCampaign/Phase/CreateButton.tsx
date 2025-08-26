@@ -94,7 +94,7 @@ export const CreateAnnotationPhaseModal: React.FC<{
     }).unwrap()
     const phase = await postPhase({ campaign, phase: 'Annotation' }).unwrap()
     await refetch().unwrap()
-    navigate(`/annotation-campaign/${ campaign?.id }/phase/${ phase.id }`)
+    navigate(`/annotation-campaign/${ campaign?.id }/phase/${ phase.phase }`)
   }, [ campaign, labelSet, confidenceSet, labels_with_acoustic_features, allow_point_annotation ])
 
   if (campaign?.archive) return <Fragment/>
@@ -188,13 +188,13 @@ export const CreateVerificationPhaseButton: React.FC = () => {
     if (!campaign) return;
     const phase = await post({ campaign, phase: 'Verification' }).unwrap()
     await refetch().unwrap()
-    navigate(`/annotation-campaign/${ campaign?.id }/phase/${ phase.id }`)
+    navigate(`/annotation-campaign/${ campaign?.id }/phase/${ phase.phase }`)
   }, [ campaign ])
 
   const createAndImport = useCallback(async () => {
     if (!campaign) return;
     const phase = await post({ campaign, phase: 'Verification' }).unwrap()
-    navigate(`/annotation-campaign/${ campaign?.id }/phase/${ phase.id }/import-annotations`)
+    navigate(`/annotation-campaign/${ campaign?.id }/phase/${ phase.phase }/import-annotations`)
   }, [ campaign ])
 
   const openModal = useCallback(() => {

@@ -12,9 +12,11 @@ class LabelSetSerializer(serializers.ModelSerializer):
     """Serializer meant to output basic LabelSet data (with or without labels)"""
 
     labels = serializers.SlugRelatedField(
-        many=True, queryset=Label.objects.all(), slug_field="name"
+        many=True,
+        queryset=Label.objects.all(),
+        slug_field="name",
     )
 
     class Meta:
         model = LabelSet
-        fields = ["id", "name", "desc", "labels"]
+        fields = "__all__"

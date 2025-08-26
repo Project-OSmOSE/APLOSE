@@ -5,7 +5,6 @@ import { downloadResponseHandler } from "@/service/function.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { skipToken } from "@reduxjs/toolkit/query";
 
 
 export const CampaignPhaseAPI = API.injectEndpoints({
@@ -25,8 +24,11 @@ export const CampaignPhaseAPI = API.injectEndpoints({
       },
       providesTags: phases => (phases ?? []).map(({ id }) => ({ type: 'CampaignPhase' as const, id })),
     }),
-    retrieveCampaignPhase: builder.query<AnnotationCampaignPhase, ID>({
-      query: (id) => `annotation-campaign-phase/${ id }`,
+    retrieveCampaignPhase: builder.query<AnnotationCampaignPhase, {
+      campaignID: ID,
+      phaseType: Phase
+    }>({
+      query: ({ campaignID, phaseType }) => `annotation-campaign/${ campaignID }/phase/${ phaseType }`,
       providesTags: phase => phase ? [ { type: 'CampaignPhase' as const, id: phase.id } ] : [],
     }),
     postCampaignPhase: builder.mutation<AnnotationCampaignPhase, {
@@ -91,14 +93,16 @@ export const useListPhasesForCurrentCampaign = () => {
 }
 
 export const useRetrieveCurrentPhase = () => {
+  const { campaignID, phaseType } = useParams<{ campaignID: string; phaseType?: Phase; }>();
   const { campaign } = useRetrieveCurrentCampaign()
-  const { phaseID } = useParams<{ phaseID?: string }>();
-  const { data, ...info } = CampaignPhaseAPI.endpoints.retrieveCampaignPhase.useQuery(phaseID ?? skipToken)
-  const isEditable = useMemo(() => !campaign?.archive && !data?.ended_by, [ campaign, data ])
+  const { data: phase, ...info } = CampaignPhaseAPI.endpoints.retrieveCampaignPhase.useQuery({
+    campaignID: campaignID ?? '', phaseType: phaseType ?? "Annotation"
+  }, { skip: !campaignID || !phaseType })
+  const isEditable = useMemo(() => !campaign?.archive && !phase?.ended_by, [ campaign, phase ])
   return useMemo(() => ({
-    phaseID,
-    phase: phaseID ? data : undefined,
+    phaseType,
+    phase,
     isEditable,
     ...info,
-  }), [ phaseID, data, isEditable, info, phaseID ])
+  }), [ phaseType, phase, isEditable, info ])
 }

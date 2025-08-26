@@ -36,7 +36,7 @@ export const CampaignCard: React.FC<{
   const navigate = useNavigate();
   const link = useMemo(() => {
     if (phases.length > 0)
-      return `/annotation-campaign/${ campaign.id }/phase/${ phases[0].id }`;
+      return `/annotation-campaign/${ campaign.id }/phase/Annotation`;
     return `/annotation-campaign/${ campaign.id }`
   }, [ campaign, phases ])
 
@@ -51,7 +51,7 @@ export const CampaignCard: React.FC<{
       <div className={ styles.head }>
         <CampaignBadge campaign={ campaign }/>
         <p className={ styles.campaign }>{ campaign.name }</p>
-        <p className={ styles.dataset }>{ campaign.dataset }</p>
+        <p className={ styles.dataset }>{ campaign.dataset.name }</p>
       </div>
 
       <div className={ styles.property }>

@@ -1,6 +1,6 @@
 import { User } from "./user.ts";
 import { Colormap } from '@/service/ui/color.ts';
-import { DatasetFile } from "./data.ts";
+import { Dataset, DatasetFile } from "./data.ts";
 
 export type AnnotationCampaignUsage = 'Create' | 'Check';
 export type Phase = 'Annotation' | 'Verification';
@@ -45,7 +45,7 @@ export type AnnotationCampaign = {
   archive: AnnotationCampaignArchive | null;
   phases: number[]; // pk
 
-  dataset: string
+  dataset: Dataset;
   files_count: number;
 
   /** ID */

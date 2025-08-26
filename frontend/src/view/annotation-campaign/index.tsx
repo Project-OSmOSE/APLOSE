@@ -85,10 +85,10 @@ export const AnnotationCampaignList: React.FC = () => {
   }, [ params ])
 
   const toggleMyWorkFilter = useCallback(() => {
-    if (params.phases__file_ranges__annotator_id) {
-      updateParams({ phases__file_ranges__annotator_id: undefined })
+    if (params.phases__annotation_file_ranges__annotator_id) {
+      updateParams({ phases__annotation_file_ranges__annotator_id: undefined })
     } else {
-      updateParams({ phases__file_ranges__annotator_id: currentUser?.id })
+      updateParams({ phases__annotation_file_ranges__annotator_id: currentUser?.id })
     }
   }, [ params, currentUser ])
 
@@ -97,7 +97,7 @@ export const AnnotationCampaignList: React.FC = () => {
       search: undefined,
       archive__isnull: false,
       phases__phase: undefined,
-      phases__file_ranges__annotator_id: undefined,
+      phases__annotation_file_ranges__annotator_id: undefined,
       owner: undefined,
     })
   }, [ params ])
@@ -113,11 +113,11 @@ export const AnnotationCampaignList: React.FC = () => {
                  New annotation campaign
                </Link> }>
 
-      <IonChip outline={ !params.phases__file_ranges__annotator_id }
+      <IonChip outline={ !params.phases__annotation_file_ranges__annotator_id }
                onClick={ toggleMyWorkFilter }
-               color={ params.phases__file_ranges__annotator_id ? 'primary' : 'medium' }>
+               color={ params.phases__annotation_file_ranges__annotator_id ? 'primary' : 'medium' }>
         My work
-        { params.phases__file_ranges__annotator_id && <IonIcon icon={ closeCircle } color='primary'/> }
+        { params.phases__annotation_file_ranges__annotator_id && <IonIcon icon={ closeCircle } color='primary'/> }
       </IonChip>
 
       <IonChip outline={ params.archive__isnull === undefined }
@@ -144,7 +144,7 @@ export const AnnotationCampaignList: React.FC = () => {
         { params.owner && <IonIcon icon={ closeCircle } color='primary'/> }
       </IonChip>
 
-      { (params.owner || params.phases__phase || params.archive__isnull || params.phases__file_ranges__annotator_id) &&
+      { (params.owner || params.phases__phase || params.archive__isnull || params.phases__annotation_file_ranges__annotator_id) &&
           <IonButton fill='clear' color='medium' onClick={ resetFilters }>
               <IonIcon icon={ refreshOutline } slot='start'/>
               Reset

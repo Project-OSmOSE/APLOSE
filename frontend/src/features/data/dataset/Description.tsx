@@ -3,7 +3,7 @@ import { FadedText, Link } from "@/components/ui";
 
 export const DatasetName: React.FC<{
   name: string
-  id?: string
+  id?: number | string
   labeled?: true
   link?: true
 }> = ({ name, id, labeled, link }) => {

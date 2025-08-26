@@ -173,7 +173,7 @@ class ListFilledAdminAuthenticatedTestCase(AuthenticatedTestCase):
             {
                 "page": 1,
                 "page_size": 100,
-                "annotation_results__acoustic_features__isnull": "false",
+                "annotations__acoustic_features__isnull": "false",
             },
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -185,7 +185,7 @@ class ListFilledAdminAuthenticatedTestCase(AuthenticatedTestCase):
             {
                 "page": 1,
                 "page_size": 100,
-                "annotation_results__acoustic_features__isnull": "true",
+                "annotations__acoustic_features__isnull": "true",
             },
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)

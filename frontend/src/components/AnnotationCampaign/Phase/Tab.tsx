@@ -42,7 +42,7 @@ export const CampaignPhaseTab: React.FC<{ phase: Phase }> = ({ phase: phaseType 
 
   if (!campaign) return <Fragment/>
   return <Deactivatable disabled={ isFetchingPhases } loading={ isFetchingPhases }>
-    { phase && <Link appPath={ `/annotation-campaign/${ campaign.id }/phase/${ phase.id }` }
+    { phase && <Link appPath={ `/annotation-campaign/${ campaign.id }/phase/${ phase.phase }` }
                      className={ [ styles.tab, currentPhase?.id === phase.id ? styles.active : undefined ].join(' ') }>
       { phaseType }
 

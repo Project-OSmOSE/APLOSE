@@ -4,8 +4,8 @@ from typing import Optional
 from django.db import models
 
 from backend.aplose.models import User, AploseUser, ExpertiseLevel
+from backend.utils.models import Enum
 from .acoustic_features import AcousticFeatures
-from .annotation_phase import AnnotationPhase
 from .confidence import Confidence
 from .detector_configuration import DetectorConfiguration
 from .label import Label
@@ -17,7 +17,7 @@ class Annotation(models.Model):
     This table contains the resulting label associations for specific annotation_tasks
     """
 
-    class Type(models.TextChoices):
+    class Type(Enum):
         """Type of annotation result"""
 
         WEAK = ("W", "Weak")
@@ -79,7 +79,7 @@ class Annotation(models.Model):
         Confidence, on_delete=models.SET_NULL, null=True, blank=True
     )
     annotation_phase = models.ForeignKey(
-        AnnotationPhase,
+        "AnnotationPhase",
         on_delete=models.CASCADE,
         related_name="annotations",
     )

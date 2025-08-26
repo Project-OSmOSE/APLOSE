@@ -4,3 +4,5 @@ from .annotation_campaign import (
     AnnotationCampaignPatchSerializer,
 )
 from .annotation_phase import AnnotationPhaseSerializer
+from .file_range import AnnotationFileRangeSerializer
+from .label_set import LabelSetSerializer

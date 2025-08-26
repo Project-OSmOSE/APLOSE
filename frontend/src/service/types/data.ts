@@ -9,7 +9,6 @@ export type Dataset = {
   end_date: string;
   files_count: number;
   type: string;
-  spectros: Array<SpectrogramConfiguration>;
   created_at: string;
   related_channel_configuration: Array<{
     id: number;

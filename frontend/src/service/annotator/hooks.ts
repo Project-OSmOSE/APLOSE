@@ -10,7 +10,7 @@ export const useOpenAnnotator = () => {
   const { params } = useFileFilters()
   const navigate = useNavigate()
 
-  return useCallback((spectrogramID: string) => {
+  return useCallback((spectrogramID: string | number) => {
     const encodedParams = encodeURI(Object.entries(params).map(([ k, v ]) => `${ k }=${ v }`).join('&'));
     navigate(`/annotation-campaign/${ campaignID }/phase/${ phaseID }/file/${ spectrogramID }?${ encodedParams }`);
   }, [ campaignID, phaseID ])

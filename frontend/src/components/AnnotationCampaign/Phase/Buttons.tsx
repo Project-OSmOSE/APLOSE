@@ -39,11 +39,11 @@ export const ResumeButton: React.FC<{
 export const ImportAnnotationsButton: React.FC = () => {
   const { campaignID, hasAdminAccess } = useRetrieveCurrentCampaign()
   const { verificationPhase } = useListPhasesForCurrentCampaign()
-  const { phaseID, phase, isEditable } = useRetrieveCurrentPhase()
+  const { phaseType, phase, isEditable } = useRetrieveCurrentPhase()
 
   const path = useMemo(() => {
-    return `/annotation-campaign/${ campaignID }/phase/${ phaseID }/import-annotations`
-  }, [ campaignID, phaseID ])
+    return `/annotation-campaign/${ campaignID }/phase/${ phaseType }/import-annotations`
+  }, [ campaignID, phaseType ])
 
   if (phase?.phase !== 'Annotation') return <Fragment/>
   if (!verificationPhase) return <Fragment/>
@@ -58,11 +58,11 @@ export const ImportAnnotationsButton: React.FC = () => {
 
 export const ManageAnnotatorsButton: React.FC = () => {
   const { campaignID, hasAdminAccess } = useRetrieveCurrentCampaign()
-  const { phaseID, isEditable } = useRetrieveCurrentPhase()
+  const { phaseType, isEditable } = useRetrieveCurrentPhase()
 
   const path = useMemo(() => {
-    return `/annotation-campaign/${ campaignID }/phase/${ phaseID }/edit-annotators`
-  }, [ campaignID, phaseID ])
+    return `/annotation-campaign/${ campaignID }/phase/${ phaseType }/edit-annotators`
+  }, [ campaignID, phaseType ])
 
   if (!hasAdminAccess) return <Fragment/>
   if (!isEditable) return <Fragment/>

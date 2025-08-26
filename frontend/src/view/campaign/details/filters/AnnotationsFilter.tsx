@@ -1,13 +1,10 @@
 import React, { Fragment, useCallback, useMemo, useState } from "react";
-import styles from './styles.module.scss'
 import { IonIcon } from "@ionic/react";
 import { funnel, funnelOutline } from "ionicons/icons";
 import { createPortal } from "react-dom";
 import { Modal } from "@/components/ui";
 import { Select, Switch } from "@/components/form";
-import {} from './'
-
-
+import styles from './styles.module.scss'
 import { useGetLabelSetForCurrentCampaign } from "@/service/api/label-set.ts";
 import { useGetConfidenceSetForCurrentCampaign } from "@/service/api/confidence-set.ts";
 import { useListDetectorForCurrentCampaign } from "@/service/api/detector.ts";

@@ -16,14 +16,17 @@ from rest_framework.utils.serializer_helpers import ReturnDict
 from backend.api.models import (
     AnnotationCampaign,
     AnnotationFileRange,
+    AnnotationPhase,
 )
 from backend.api.serializers import (
     AnnotationCampaignSerializer,
+    AnnotationPhaseSerializer,
 )
 from backend.api.serializers.annotation.annotation_campaign import (
     AnnotationCampaignPatchSerializer,
 )
 from backend.utils.filters import ModelFilter
+from .annotation_phase import AnnotationPhaseViewSet
 
 
 class CampaignAccessFilter(filters.BaseFilterBackend):
@@ -53,7 +56,11 @@ class CampaignPatchPermission(permissions.BasePermission):
         if request.method == "PATCH":
             if obj.archive is not None:
                 return False
-            if request.user.is_staff or request.user.is_superuser or request.user == obj.owner:
+            if (
+                request.user.is_staff
+                or request.user.is_superuser
+                or request.user == obj.owner
+            ):
                 return True
             return False
         return super().has_object_permission(request, view, obj)
@@ -117,9 +124,8 @@ class AnnotationCampaignViewSet(
         """Archive campaign"""
         # pylint: disable=unused-argument
         campaign: AnnotationCampaign = self.get_object()
-        if (
-            campaign.owner_id != request.user.id
-            and not (request.user.is_staff or request.user.is_superuser)
+        if campaign.owner_id != request.user.id and not (
+            request.user.is_staff or request.user.is_superuser
         ):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -128,5 +134,28 @@ class AnnotationCampaignViewSet(
             self.get_serializer_class()(
                 campaign, context=self.get_serializer_context()
             ).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @action(
+        methods=["GET"],
+        detail=True,
+        url_path="phase/(?P<phase_type>[^/.]+)",
+        url_name="phase",
+    )
+    def get_phase(self, request, pk: int = None, phase_type: str = None):
+        """Get phase of a campaign from its type"""
+        print(pk, phase_type, AnnotationPhase.objects.filter(annotation_campaign_id=pk))
+        try:
+            phase = AnnotationPhaseViewSet.queryset.get(
+                phase=AnnotationPhase.Type.from_label(phase_type),
+                annotation_campaign_id=pk,
+            )
+        except AnnotationPhase.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        print("got phase", phase)
+        return Response(
+            AnnotationPhaseSerializer(phase).data,
             status=status.HTTP_200_OK,
         )

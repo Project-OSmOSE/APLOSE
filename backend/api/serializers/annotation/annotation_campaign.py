@@ -16,6 +16,7 @@ from backend.api.models import (
 from backend.aplose.serializers import UserSerializer
 from backend.utils.serializers import SlugRelatedGetOrCreateField
 from ..common.archive import ArchiveSerializer
+from ..data.dataset import DatasetSerializer
 
 
 class AnnotationCampaignSerializer(serializers.ModelSerializer):
@@ -28,9 +29,7 @@ class AnnotationCampaignSerializer(serializers.ModelSerializer):
         read_only=True,
     )
     allow_point_annotation = serializers.BooleanField(default=False)
-    dataset = serializers.SlugRelatedField(
-        queryset=Dataset.objects.all(), slug_field="name"
-    )
+    dataset = DatasetSerializer()
     analysis = serializers.PrimaryKeyRelatedField(
         queryset=SpectrogramAnalysis.objects.all(), many=True, write_only=True
     )

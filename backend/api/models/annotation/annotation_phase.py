@@ -4,13 +4,14 @@ from django.db import models
 from django.utils import timezone
 
 from backend.aplose.models import User
+from backend.utils.models import Enum
 from .annotation_campaign import AnnotationCampaign
 
 
 class AnnotationPhase(models.Model):
     """Annotation campaign phase"""
 
-    class Type(models.TextChoices):
+    class Type(Enum):
         """Available type of phases of the annotation campaign"""
 
         ANNOTATION = "A", "Annotation"

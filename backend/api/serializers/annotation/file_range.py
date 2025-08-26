@@ -1,17 +1,14 @@
 """Serializer for annotation file range"""
-
 from django.db.models import QuerySet, Q
 from rest_framework import serializers
 
 from backend.api.models import (
     AnnotationFileRange,
-    AnnotationTask,
     AnnotationCampaign,
-    AnnotationCampaignPhase,
+    AnnotationPhase,
 )
 from backend.aplose.models import User
-from backend.utils.serializers import EnumField
-from ..data.file import DatasetFileSerializer
+from ..data.spectrogram import SpectrogramSerializer
 
 
 class AnnotationFileRangeListSerializer(serializers.ListSerializer):
@@ -49,9 +46,7 @@ class AnnotationFileRangeListSerializer(serializers.ListSerializer):
             instance = original_ranges.filter(
                 Q(id=file_range["id"] if "id" in file_range else None)
                 | Q(
-                    annotation_campaign_phase_id=file_range[
-                        "annotation_campaign_phase"
-                    ].id,
+                    annotation_phase_id=file_range["annotation_phase"].id,
                     annotator_id=file_range["annotator"].id,
                     first_file_index=file_range["first_file_index"],
                     last_file_index=file_range["last_file_index"],
@@ -60,7 +55,7 @@ class AnnotationFileRangeListSerializer(serializers.ListSerializer):
             file_range_data = {
                 **file_range,
                 "annotator": file_range["annotator"].id,
-                "annotation_campaign_phase": file_range["annotation_campaign_phase"].id,
+                "annotation_phase": file_range["annotation_phase"].id,
             }
             if instance.exists():
                 # Update
@@ -101,8 +96,8 @@ class AnnotationFileRangeSerializer(serializers.ModelSerializer):
 
     id = serializers.IntegerField(required=False)
     annotator = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    annotation_campaign_phase = serializers.PrimaryKeyRelatedField(
-        queryset=AnnotationCampaignPhase.objects.all()
+    annotation_phase = serializers.PrimaryKeyRelatedField(
+        queryset=AnnotationPhase.objects.all()
     )
 
     # Read only
@@ -111,15 +106,13 @@ class AnnotationFileRangeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AnnotationFileRange
-        exclude = ("from_datetime", "to_datetime")
+        fields = "__all__"
         list_serializer_class = AnnotationFileRangeListSerializer
 
     def check_max_value(self, data: dict):
         """Check file indexes doesn't go higher than campaign has files"""
         max_value_errors = {}
-        campaign: AnnotationCampaign = data[
-            "annotation_campaign_phase"
-        ].annotation_campaign
+        campaign: AnnotationCampaign = data["annotation_phase"].annotation_campaign
         max_files = campaign.get_sorted_files().count()
         if data["first_file_index"] >= max_files:
             max_value_errors = {
@@ -154,24 +147,26 @@ class AnnotationFileRangeSerializer(serializers.ModelSerializer):
         return data
 
 
-class FileRangeDatasetFileSerializer(DatasetFileSerializer):
+class FileRangeSpectrogramSerializer(SpectrogramSerializer):
     """Serializer for dataset file"""
 
     is_submitted = serializers.BooleanField(read_only=True)
     results_count = serializers.IntegerField(read_only=True)
     validated_results_count = serializers.IntegerField(read_only=True)
 
-    class Meta(DatasetFileSerializer.Meta):
+    class Meta(SpectrogramSerializer.Meta):
         pass
 
 
-class AnnotationTaskSerializer(serializers.ModelSerializer):
-    """Serializer for Annotation task"""
-
-    status = EnumField(enum=AnnotationTask.Status)
-    dataset_file = FileRangeDatasetFileSerializer(read_only=True)
-    results_count = serializers.IntegerField(read_only=True)
-
-    class Meta:
-        model = AnnotationTask
-        exclude = ("annotation_campaign", "annotator")
+#
+#
+# class AnnotationTaskSerializer(serializers.ModelSerializer):
+#     """Serializer for Annotation task"""
+#
+#     status = EnumField(enum=AnnotationTask.Status)
+#     dataset_file = FileRangeDatasetFileSerializer(read_only=True)
+#     results_count = serializers.IntegerField(read_only=True)
+#
+#     class Meta:
+#         model = AnnotationTask
+#         exclude = ("annotation_campaign", "annotator")
