@@ -1,4 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react";
+import styles from './styles.module.scss';
 import { useToast } from "@/service/ui";
 import { getErrorMessage } from "@/service/function.ts";
 import {
@@ -15,7 +16,6 @@ import {
 import { IonButton, IonIcon, IonNote, IonSpinner } from "@ionic/react";
 import { analytics, caretDown, caretUp, downloadOutline } from "ionicons/icons";
 import { AnnotationFileRange, User } from "@/service/types";
-import styles from './styles.module.scss';
 import { Progress } from "@/components/ui/Progress.tsx";
 import { useModal } from "@/service/ui/modal.ts";
 import { createPortal } from "react-dom";

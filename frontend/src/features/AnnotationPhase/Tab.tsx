@@ -11,12 +11,12 @@ import {
   useRetrieveCurrentPhase
 } from "@/service/api/campaign-phase.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
-import styles from './styles.module.scss'
+import styles from '../../components/AnnotationCampaign/Phase/styles.module.scss'
 import { closeOutline } from "ionicons/icons";
 import { IonIcon, IonSkeletonText } from "@ionic/react";
 import { useAlert } from "@/service/ui";
 
-export const CampaignPhaseTab: React.FC<{ phaseType: Phase }> = ({ phaseType: phaseType }) => {
+export const PhaseTab: React.FC<{ phaseType: Phase }> = ({ phaseType: phaseType }) => {
   const { campaign, hasAdminAccess } = useRetrieveCurrentCampaign()
   const { phaseType: currentPhaseType } = useRetrieveCurrentPhase()
   const { phases, isFetching: isFetchingPhases } = useListPhasesForCurrentCampaign()

@@ -5,7 +5,7 @@ import { AnnotationFile, AnnotationFileRange } from "@/service/types";
 import { extendDatasetFile } from "@/service/api/dataset.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
 
-export type FileFilter = {
+export type SpectrogramFilter = {
   filename__icontains?: string;
   is_submitted?: boolean;
   with_user_annotations?: boolean;
@@ -51,7 +51,7 @@ export const AnnotationFileRangeAPI = API.injectEndpoints({
       },
       providesTags: [ 'FileRange' ]
     }),
-    listFilesWithPagination: builder.query<PaginatedAnnotationFiles, PaginationParams & FileFilter & {
+    listFilesWithPagination: builder.query<PaginatedAnnotationFiles, PaginationParams & SpectrogramFilter & {
       phaseID: number,
     }>({
       query: ({ phaseID, ...params }) => ({

@@ -15,9 +15,9 @@ import { useAppSelector } from "@/service/app.ts";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
-import { FileFilter } from "@/service/api/annotation-file-range.ts";
+import { SpectrogramFilter } from "@/service/api/annotation-file-range.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
-import { useFileFilters } from "@/service/slices/filter.ts";
+import { useSpectrogramFilters } from "@/service/slices/filter.ts";
 import { extendDatasetFile } from "@/service/api/dataset.ts";
 import { API } from "@/service/api/index.ts";
 import { AnnotatorState } from "@/service/slices/annotator.ts";
@@ -72,7 +72,7 @@ function transformBaseResult(result: AnnotationResult, phase: Phase): Omit<Write
 
 export const AnnotatorAPI = API.injectEndpoints({
   endpoints: builder => ({
-    retrieveAnnotator: builder.query<AnnotatorData, { campaignID: ID, phaseID: ID, fileID: ID } & FileFilter>({
+    retrieveAnnotator: builder.query<AnnotatorData, { campaignID: ID, phaseID: ID, fileID: ID } & SpectrogramFilter>({
       query: ({
                 campaignID,
                 phaseID,
@@ -150,7 +150,7 @@ export const AnnotatorAPI = API.injectEndpoints({
 })
 
 export const useRetrieveAnnotator = (args: { refetchOnMountOrArgChange: boolean } | void) => {
-  const { params } = useFileFilters()
+  const { params } = useSpectrogramFilters()
   const { campaign } = useRetrieveCurrentCampaign()
   const { phase, isEditable: isPhaseEditable } = useRetrieveCurrentPhase()
   const { fileID } = useParams<{ fileID: string }>();

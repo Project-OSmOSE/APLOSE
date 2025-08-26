@@ -1,11 +1,11 @@
 import React, { Fragment, useEffect } from 'react';
-import { useFileFilters } from "@/service/slices/filter.ts";
+import { useSpectrogramFilters } from "@/service/slices/filter.ts";
 import { Head } from "@/components/ui/Page.tsx";
 import { Cards, ListActionBar } from "@/features/AnnotationCampaign";
 
 
 export const AnnotationCampaignList: React.FC = () => {
-  const { clearParams: clearFileFilters } = useFileFilters()
+  const { clearParams: clearFileFilters } = useSpectrogramFilters()
 
   useEffect(() => {
     clearFileFilters()

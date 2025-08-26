@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { AnnotationCampaignInstructionsButton } from "@/features/annotation/annotationCampaign";
 import styles from "@/view/annotation-campaign/[campaignID]/styles.module.scss";
 import { DatasetName } from "@/features/data/dataset";
-import { FadedText } from "@/components/ui";
+import { FadedText, Progress } from "@/components/ui";
 import { SpectrogramAnalysisTable } from "@/features/data/spectrogramAnalysis";
 import { dateToString, pluralize } from "@/service/function.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
@@ -12,7 +12,6 @@ import { useGetConfidenceSetForCurrentCampaign } from "@/service/api/confidence-
 import { AnnotationCampaignArchiveButton } from "@/components/AnnotationCampaign";
 import { IonSpinner } from "@ionic/react";
 import { LabelSetModalButton } from "@/components/AnnotationCampaign/Label/Modal.tsx";
-import { PhaseGlobalProgress } from "@/components/AnnotationCampaign/Phase";
 
 
 export const AnnotationCampaignInfo: React.FC = () => {
@@ -93,7 +92,9 @@ export const AnnotationCampaignInfo: React.FC = () => {
     {/* PROGRESS */ }
     { phases && phases.map(p => <div key={ p.id } className={ styles.bloc }>
       <FadedText>{ p.phase } progress</FadedText>
-      <PhaseGlobalProgress phase={ p } withoutLabel className={ styles.progress }/>
+      <Progress className={ styles.progress }
+                value={ p.global_progress }
+                total={ p.global_total }/>
     </div>) }
   </div>
 }

@@ -1,16 +1,7 @@
 import React, { Fragment, useCallback, useMemo, useState } from "react";
 import styles from './styles.module.scss'
-import {
-  ImportAnnotationsButton,
-  ManageAnnotatorsButton,
-  PhaseGlobalProgress,
-  PhaseUserProgress,
-  ProgressModalButton,
-  ResumeButton
-} from "@/components/AnnotationCampaign/Phase";
-import { IonButton, IonIcon, IonSpinner } from "@ionic/react";
-import { ActionBar } from "@/components/layout";
-import { checkmarkCircle, chevronForwardOutline, ellipseOutline, refreshOutline } from "ionicons/icons";
+import { IonIcon, IonSpinner } from "@ionic/react";
+import { checkmarkCircle, chevronForwardOutline, ellipseOutline } from "ionicons/icons";
 import { Button, Pagination, Table, TableContent, TableDivider, TableHead, WarningText } from "@/components/ui";
 import { getErrorMessage } from "@/service/function.ts";
 import { AnnotationsFilter } from "./AnnotationsFilter.tsx";
@@ -20,11 +11,13 @@ import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { AnnotationFile, AnnotationPhase } from "@/service/types";
 import { AnnotationFileRangeAPI } from "@/service/api/annotation-file-range.ts";
 import { useListPhasesForCurrentCampaign, useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
-import { useFileFilters } from "@/service/slices/filter.ts";
+import { useSpectrogramFilters } from "@/service/slices/filter.ts";
 import { useOpenAnnotator } from "@/service/annotator/hooks.ts";
+import { SpectrogramActionBar } from "@/features/AnnotationPhase/SpectrogramActionBar.tsx";
+import { ImportAnnotationsButton } from "@/features/AnnotationPhase/ImportAnnotationsButton.tsx";
 
 export const AnnotationCampaignPhaseDetail: React.FC = () => {
-  const { params, updateParams, clearParams } = useFileFilters(true)
+  const { params } = useSpectrogramFilters(true)
 
   const { campaign } = useRetrieveCurrentCampaign()
   const { annotationPhase } = useListPhasesForCurrentCampaign()
@@ -36,26 +29,10 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
     phaseID: phase?.id ?? -1,
   }, { refetchOnMountOrArgChange: true, skip: !phase || !!campaign?.archive });
   const { currentData: files, isFetching, error } = AnnotationFileRangeAPI.endpoints.listFilesWithPagination.useQuery({
-    page,
     phaseID: phase?.id ?? -1,
     ...params
   }, { skip: !phase || !!campaign?.archive });
   const isEmpty = useMemo(() => error || !files || files.count === 0 || campaign?.archive, [ error, files, campaign ])
-
-  const hasFilters = useMemo(() => Object.values(params).filter(v => v !== undefined).length > 0, [ params ]);
-  const isResumeEnabled = useMemo(() => {
-    return params.with_user_annotations === undefined && params.filename__icontains === undefined && params.is_submitted === undefined
-  }, [ params ]);
-
-  const updateSearch = useCallback((search: string) => {
-    updateParams({ filename__icontains: search })
-    setPage(1)
-  }, [ updateParams ])
-
-  const resetFilters = useCallback(() => {
-    clearParams()
-    setPage(1)
-  }, [])
 
   const onFilterUpdated = useCallback(() => {
     setPage(1)
@@ -66,27 +43,7 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
 
     <div className={ [ styles.tasks, isEmpty ? styles.empty : '' ].join(' ') }>
 
-      <ActionBar search={ params.filename__icontains }
-                 searchPlaceholder="Search filename"
-                 onSearchChange={ updateSearch }
-                 actionButton={ <div className={ styles.filterButtons }>
-
-                   { hasFilters && <IonButton fill='clear' color='medium' size='small' onClick={ resetFilters }>
-                       <IonIcon icon={ refreshOutline } slot='start'/>
-                       Reset
-                   </IonButton> }
-
-                   <div className={ styles.progress }>
-                     <PhaseUserProgress phase={ phase }/>
-                     <PhaseGlobalProgress phase={ phase }/>
-                     <ProgressModalButton/>
-                   </div>
-
-                   <ManageAnnotatorsButton/>
-                   <ImportAnnotationsButton/>
-
-                   { !error && <ResumeButton files={ files } disabled={ !isResumeEnabled }/> }
-                 </div> }/>
+      <SpectrogramActionBar/>
 
       { phase.phase === 'Verification' && !phase.has_annotations && annotationPhase &&
           <WarningText>

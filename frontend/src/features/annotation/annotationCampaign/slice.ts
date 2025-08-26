@@ -8,7 +8,9 @@ import { MakeOptional } from "@/features/gql/types.generated.ts";
 export type SpectrogramsFilter = MakeOptional<Omit<
   GetSpectrogramsFromDatesQueryVariables,
   'phase' | 'campaignID' | 'annotatorID' | 'offset'
->, 'fromDatetime' | 'toDatetime'>
+>, 'fromDatetime' | 'toDatetime'> & {
+  page: number;
+}
 
 type AnnotationCampaignState = {
   campaignFilter: GetAnnotationCampaignsFilter;
@@ -17,14 +19,14 @@ type AnnotationCampaignState = {
 
 function reset(state: AnnotationCampaignState) {
   state.campaignFilter = {}
-  state.spectrogramFilter = {}
+  state.spectrogramFilter = { page: 1 }
 }
 
 export const AnnotationCampaignSlice = createSlice({
   name: 'AnnotationCampaignSlice',
   initialState: {
     campaignFilter: {},
-    spectrogramFilter: {},
+    spectrogramFilter: { page: 1 },
   } satisfies AnnotationCampaignState as AnnotationCampaignState,
   reducers: {
     updateCampaignFilters: (state: AnnotationCampaignState, { payload }: { payload: GetAnnotationCampaignsFilter }) => {

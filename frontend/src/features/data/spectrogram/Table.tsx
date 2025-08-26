@@ -12,7 +12,7 @@ import { checkmarkCircle, chevronForwardOutline, ellipseOutline } from "ionicons
 import { dateToString, getErrorMessage } from "@/service/function.ts";
 import { formatTime } from "@/service/dataset/spectrogram-configuration/scale";
 import { useNavigate } from "react-router-dom";
-import { useFileFilters } from "@/service/slices/filter.ts";
+import { useSpectrogramFilters } from "@/service/slices/filter.ts";
 import { AnnotationFileRangeAPI } from "@/features/annotation/annotationFileRange";
 
 const useSpectrogramsForCampaign = ({
@@ -114,7 +114,7 @@ const SpectrogramRow: React.FC<SpectrogramForCampaign & { phase: string, campaig
                                                                                                     phase,
                                                                                                   }) => {
   const navigate = useNavigate()
-  const { params } = useFileFilters() // TODO: redo this fileFilters hook as for campaign
+  const { params } = useSpectrogramFilters() // TODO: redo this fileFilters hook as for campaign
   const isFinished = useMemo(() => taskStatus === TaskStatus.finished, [ taskStatus ]);
 
   const access = useCallback(() => {

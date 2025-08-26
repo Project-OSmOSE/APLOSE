@@ -2,16 +2,16 @@ import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
 import { useNavigate } from "react-router-dom";
 import { useCallback } from "react";
-import { useFileFilters } from "@/service/slices/filter.ts";
+import { useSpectrogramFilters } from "@/service/slices/filter.ts";
 
 export const useOpenAnnotator = () => {
   const { campaignID } = useRetrieveCurrentCampaign()
-  const { phaseID } = useRetrieveCurrentPhase()
-  const { params } = useFileFilters()
+  const { phaseType } = useRetrieveCurrentPhase()
+  const { params } = useSpectrogramFilters()
   const navigate = useNavigate()
 
   return useCallback((spectrogramID: string | number) => {
     const encodedParams = encodeURI(Object.entries(params).map(([ k, v ]) => `${ k }=${ v }`).join('&'));
-    navigate(`/annotation-campaign/${ campaignID }/phase/${ phaseID }/file/${ spectrogramID }?${ encodedParams }`);
-  }, [ campaignID, phaseID ])
+    navigate(`/annotation-campaign/${ campaignID }/phase/${ phaseType }/file/${ spectrogramID }?${ encodedParams }`);
+  }, [ campaignID, phaseType ])
 }

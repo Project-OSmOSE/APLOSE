@@ -1,5 +1,2 @@
-export * from './Buttons'
 export * from './CreateButton'
-export * from './Progress'
-export * from './ProgressModal'
-export * from './Tab'
+export * from '../../../features/AnnotationPhase/Tab.tsx'

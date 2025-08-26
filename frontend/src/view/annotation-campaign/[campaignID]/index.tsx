@@ -7,7 +7,7 @@ import { Head } from "@/components/ui/Page.tsx";
 import { dateToString, getErrorMessage } from "@/service/function.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
-import { CampaignPhaseTab } from "@/components/AnnotationCampaign/Phase";
+import { PhaseTab } from "@/components/AnnotationCampaign/Phase";
 import { MailButton } from "@/features/User";
 
 export { AnnotationCampaignInfo } from './InfoTab'
@@ -47,8 +47,8 @@ export const AnnotationCampaignDetail: React.FC = () => {
                 Information
             </Link>
 
-            <CampaignPhaseTab phaseType='Annotation'/>
-            <CampaignPhaseTab phaseType='Verification'/>
+            <PhaseTab phaseType='Annotation'/>
+            <PhaseTab phaseType='Verification'/>
         </div>
 
         <Outlet/>

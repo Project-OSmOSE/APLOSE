@@ -291,7 +291,7 @@ class AnnotationPhaseViewSet(
                 confidence_indicator_label=F("confidence__label"),
                 confidence_indicator_level=Case(
                     When(
-                        confidence_indicator__isnull=False,
+                        confidence__isnull=False,
                         then=Concat(
                             F("confidence__level"),
                             Value("/"),
@@ -300,6 +300,7 @@ class AnnotationPhaseViewSet(
                         ),
                     ),
                     default=None,
+                    output_field=models.CharField(),
                 ),
                 comments_data=comments,
                 signal_quality=Case(
@@ -334,20 +335,20 @@ class AnnotationPhaseViewSet(
                     "start_datetime": """
                     SELECT 
                         CASE 
-                            WHEN api_annotation.start_time isnull THEN to_char(f.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
-                            ELSE to_char((f.start + api_annotation.start_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            WHEN api_annotation.start_time isnull THEN to_char(s.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            ELSE to_char((s.start + api_annotation.start_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
                         END
-                    FROM dataset_files f
-                    WHERE api_annotation.dataset_file_id = f.id
+                    FROM api_spectrogram s
+                    WHERE api_annotation.spectrogram_id = s.id
                     """,
                     "end_datetime": """
                     SELECT 
                         CASE 
-                            WHEN api_annotation.end_time isnull THEN to_char(f.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
-                            ELSE to_char((f.start + api_annotation.end_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            WHEN api_annotation.end_time isnull THEN to_char(s.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            ELSE to_char((s.start + api_annotation.end_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
                         END
-                    FROM dataset_files f
-                    WHERE api_annotation.dataset_file_id = f.id
+                    FROM api_spectrogram s
+                    WHERE api_annotation.spectrogram_id = s.id
                     """,
                 },
             )
@@ -389,6 +390,7 @@ class AnnotationPhaseViewSet(
                 start_time=Case(
                     When(type=Annotation.Type.WEAK, then=Value(0.0)),
                     default=F("_start_time"),
+                    output_field=models.FloatField(),
                 ),
                 end_time=Case(
                     When(type=Annotation.Type.POINT, then=F("_start_time")),
@@ -403,6 +405,7 @@ class AnnotationPhaseViewSet(
                 start_frequency=Case(
                     When(type=Annotation.Type.WEAK, then=Value(0.0)),
                     default=F("_start_frequency"),
+                    output_field=models.FloatField(),
                 ),
                 end_frequency=Case(
                     When(type=Annotation.Type.POINT, then=F("_start_frequency")),
@@ -411,6 +414,7 @@ class AnnotationPhaseViewSet(
                         then=F("analysis__fft__sampling_frequency") / 2,
                     ),
                     default=F("_end_frequency"),
+                    output_field=models.FloatField(),
                 ),
                 type=F("type_label"),
             )
@@ -421,7 +425,7 @@ class AnnotationPhaseViewSet(
         return (
             AnnotationComment.objects.filter(
                 annotation_phase_id=phase.id,
-                annotation_result__isnull=True,
+                annotation__isnull=True,
             )
             .select_related(
                 "spectrogram",
@@ -438,15 +442,15 @@ class AnnotationPhaseViewSet(
                 select={
                     "start_datetime": """
                     SELECT 
-                        to_char(f.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
-                    FROM dataset_files f
-                    WHERE api_annotationcomment.dataset_file_id = f.id
+                        to_char(s.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                    FROM api_spectrogram s
+                    WHERE api_annotationcomment.spectrogram_id = s.id
                     """,
                     "end_datetime": """
                     SELECT 
-                        to_char(f.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
-                    FROM dataset_files f
-                    WHERE api_annotationcomment.dataset_file_id = f.id
+                        to_char(s.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                    FROM api_spectrogram s
+                    WHERE api_annotationcomment.spectrogram_id = s.id
                     """,
                 },
             )
@@ -577,8 +581,8 @@ class AnnotationPhaseViewSet(
 
         writer.writerows(
             list(
-                all_files.values("dataset__name", "filename", "pk")
-                .annotate(dataset=F("dataset__name"), **data)
+                all_files.values("analysis__dataset__name", "filename", "pk")
+                .annotate(dataset=F("analysis__dataset__name"), **data)
                 .values(*header)
             )
         )

@@ -94,11 +94,11 @@ export const useListPhasesForCurrentCampaign = () => {
 
 export const useRetrieveCurrentPhase = () => {
   const { campaignID, phaseType } = useParams<{ campaignID: string; phaseType?: Phase; }>();
-  const { campaign } = useRetrieveCurrentCampaign()
+  const { campaign, hasAdminAccess } = useRetrieveCurrentCampaign()
   const { data: phase, ...info } = CampaignPhaseAPI.endpoints.retrieveCampaignPhase.useQuery({
     campaignID: campaignID ?? '', phaseType: phaseType ?? "Annotation"
   }, { skip: !campaignID || !phaseType })
-  const isEditable = useMemo(() => !campaign?.archive && !phase?.ended_by, [ campaign, phase ])
+  const isEditable = useMemo(() => hasAdminAccess && !campaign?.archive && !phase?.ended_by, [ hasAdminAccess, campaign, phase ])
   return useMemo(() => ({
     phaseType,
     phase,

@@ -1,34 +1,36 @@
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { CampaignFilter } from "@/service/api/campaign.ts";
 import { useAppSearchParams } from "@/service/ui/search.ts";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { AppState, useAppDispatch, useAppSelector } from "@/service/app.ts";
 import { UserAPI } from "@/service/api/user.ts";
 import { AuthAPI } from "@/service/api/auth.ts";
-import { FileFilter } from "@/service/api/annotation-file-range.ts";
+import { SpectrogramFilter as _SpectrogramFilter } from "@/service/api/annotation-file-range.ts";
+
+type SpectrogramFilter = _SpectrogramFilter & { page: number };
 
 type FilterState = {
   campaign: CampaignFilter;
-  file: FileFilter;
+  spectrogram: SpectrogramFilter;
 }
 
 function reset(state: FilterState) {
   state.campaign = {}
-  state.file = {}
+  state.spectrogram = { page: 1 }
 }
 
 export const FilterSlice = createSlice({
   name: 'FilterSlice',
   initialState: {
     campaign: {},
-    file: {},
+    spectrogram: { page: 1 },
   } satisfies FilterState as FilterState,
   reducers: {
     updateCampaignFilters: (state: FilterState, { payload }: { payload: CampaignFilter }) => {
       state.campaign = payload;
     },
-    updateFileFilters: (state: FilterState, { payload }: { payload: FileFilter }) => {
-      state.file = payload;
+    updateSpectrogramFilters: (state: FilterState, { payload }: { payload: SpectrogramFilter }) => {
+      state.spectrogram = payload;
     },
     reset
   },
@@ -73,14 +75,14 @@ export const useCampaignFilters = () => {
   return { params, updateParams }
 }
 
-export const selectFileFilters = createSelector(
+export const selectSpectrogramFilters = createSelector(
   (state: AppState) => state.filter,
-  (state: FilterState) => state.file,
+  (state: FilterState) => state.spectrogram,
 )
 
-export const useFileFilters = (clearOnLoad: boolean = false) => {
-  const { params, updateParams, clearParams } = useAppSearchParams<FileFilter>()
-  const loadedFilters = useAppSelector(selectFileFilters)
+export const useSpectrogramFilters = (clearOnLoad: boolean = false) => {
+  const { params, updateParams: _updateParams } = useAppSearchParams<SpectrogramFilter>()
+  const loadedFilters = useAppSelector(selectSpectrogramFilters)
   const dispatch = useAppDispatch()
 
   useEffect(() => {
@@ -89,8 +91,20 @@ export const useFileFilters = (clearOnLoad: boolean = false) => {
   }, []);
 
   useEffect(() => {
-    dispatch(FilterSlice.actions.updateFileFilters(params))
+    dispatch(FilterSlice.actions.updateSpectrogramFilters(params))
   }, [ params ]);
 
-  return { params, updateParams, clearParams }
+  const updateParams = useCallback((p: Omit<SpectrogramFilter, 'page'>) => {
+    _updateParams({ ...p, page: 1 })
+  }, [])
+
+  const updatePage = useCallback((page: number) => {
+    _updateParams({ ...params, page })
+  }, [ params ])
+
+  const clearParams = useCallback(() => {
+    _updateParams({ page: 1 })
+  }, [])
+
+  return { params, updateParams, updatePage, clearParams }
 }

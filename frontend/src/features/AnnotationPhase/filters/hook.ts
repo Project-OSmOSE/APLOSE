@@ -1,6 +1,6 @@
-import { useAppSearchParams } from "@/service/ui/search.ts";
 import { useCallback, useEffect, useMemo } from "react";
-import { useAppDispatch, useAppSelector } from "@/service/app.ts";
+import { useAppSearchParams } from "@/service/ui/search";
+import { useAppDispatch, useAppSelector } from "@/service/app";
 import {
   AnnotationCampaignSlice,
   selectCampaignSpectrogramFilters,
