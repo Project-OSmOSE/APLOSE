@@ -1,9 +1,9 @@
 import { USERS } from './user';
 import {
   AnnotationCampaign,
-  AnnotationCampaignPhase,
   AnnotationFile,
   AnnotationFileRange,
+  AnnotationPhase,
   ConfidenceIndicator,
   ConfidenceIndicatorSet,
   Detector,
@@ -48,7 +48,7 @@ export const CONFIDENCE = {
   } satisfies ConfidenceIndicatorSet
 }
 
-export const CAMPAIGN_PHASE: AnnotationCampaignPhase = {
+export const CAMPAIGN_PHASE: AnnotationPhase = {
   id: 1,
   phase: 'Annotation',
   created_by: `${ USERS.creator.first_name } ${ USERS.creator.last_name.toUpperCase() }`,

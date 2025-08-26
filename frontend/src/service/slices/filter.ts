@@ -53,12 +53,12 @@ export const useCampaignFilters = () => {
 
     // Load default params
     const updatedFilters = {
-      phases__file_ranges__annotator_id: user.id,
+      phases__annotation_file_ranges__annotator_id: user.id,
       archive__isnull: true,
       ...loadedFilters
     }
-    if (updatedFilters.phases__file_ranges__annotator_id !== user.id) {
-      updatedFilters.phases__file_ranges__annotator_id = user.id
+    if (updatedFilters.phases__annotation_file_ranges__annotator_id !== user.id) {
+      updatedFilters.phases__annotation_file_ranges__annotator_id = user.id
     }
     if (updatedFilters.owner && updatedFilters.owner !== user.id) {
       updatedFilters.owner = user.id

@@ -11,8 +11,8 @@ import { useRetrieveAnnotator } from "@/service/api/annotator.ts";
 import {
   AcousticFeatures,
   AnnotationCampaign,
-  AnnotationCampaignPhase,
   AnnotationComment,
+  AnnotationPhase,
   AnnotationResult,
   AnnotationResultBounds,
   AnnotatorData,
@@ -570,7 +570,7 @@ export const AnnotatorSlice = createSlice({
     onUserUpdated: (state, { payload }: { payload: User }) => {
       state.userID = payload.id;
     },
-    onPhaseUpdated: (state, { payload }: { payload: AnnotationCampaignPhase }) => {
+    onPhaseUpdated: (state, { payload }: { payload: AnnotationPhase }) => {
       state.phaseID = payload.id;
     },
     onConfidenceSetUpdated: (state, { payload }: { payload: ConfidenceIndicatorSet }) => {

@@ -8,7 +8,7 @@ import { KEY_DOWN_EVENT, useEvent } from "@/service/events";
 import { AlphanumericKeys } from "@/consts/shorcuts.const.tsx";
 import { Button, Kbd, TooltipOverlay } from "@/components/ui";
 import { useGetLabelSetForCurrentCampaign } from "@/service/api/label-set.ts";
-import { AnnotationCampaignPhase, LabelSet } from "@/service/types";
+import { AnnotationPhase, LabelSet } from "@/service/types";
 import { AnnotatorSlice, getPresenceLabels } from "@/service/slices/annotator.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
 
@@ -16,7 +16,7 @@ import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
 export const Labels: React.FC = () => {
   const { phase } = useRetrieveCurrentPhase()
   const { labelSet } = useGetLabelSetForCurrentCampaign();
-  const phaseRef = useRef<AnnotationCampaignPhase | undefined>(phase)
+  const phaseRef = useRef<AnnotationPhase | undefined>(phase)
   useEffect(() => {
     phaseRef.current = phase
   }, [ phase ]);

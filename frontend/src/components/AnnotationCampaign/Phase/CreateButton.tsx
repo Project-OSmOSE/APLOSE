@@ -88,7 +88,7 @@ export const CreateAnnotationPhaseModal: React.FC<{
     await patchCampaign({
       id: campaign.id,
       label_set: labelSet === null ? 0 : labelSet?.id,
-      confidence_indicator_set: confidenceSet?.id,
+      confidence_set: confidenceSet?.id,
       labels_with_acoustic_features,
       allow_point_annotation,
     }).unwrap()

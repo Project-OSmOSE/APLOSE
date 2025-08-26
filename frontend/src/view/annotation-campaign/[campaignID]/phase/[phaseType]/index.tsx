@@ -17,7 +17,7 @@ import { AnnotationsFilter } from "./AnnotationsFilter.tsx";
 import { StatusFilter } from "./StatusFilter.tsx";
 import { DateFilter } from "./DateFilter.tsx";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
-import { AnnotationCampaignPhase, AnnotationFile } from "@/service/types";
+import { AnnotationFile, AnnotationPhase } from "@/service/types";
 import { AnnotationFileRangeAPI } from "@/service/api/annotation-file-range.ts";
 import { useListPhasesForCurrentCampaign, useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
 import { useFileFilters } from "@/service/slices/filter.ts";
@@ -140,7 +140,7 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
 }
 
 const TaskItem: React.FC<{
-  phase: AnnotationCampaignPhase;
+  phase: AnnotationPhase;
   file: AnnotationFile;
 }> = ({ phase, file }) => {
   const startDate = useMemo(() => new Date(file.start), [ file.start ]);

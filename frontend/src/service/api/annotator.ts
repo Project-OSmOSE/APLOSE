@@ -2,8 +2,8 @@ import { ID } from '@/service/type.ts';
 import {
   AcousticFeatures,
   AnnotationCampaign,
-  AnnotationCampaignPhase,
   AnnotationComment,
+  AnnotationPhase,
   AnnotationResult,
   AnnotationResultValidations,
   AnnotatorData,
@@ -97,7 +97,7 @@ export const AnnotatorAPI = API.injectEndpoints({
     }),
     postAnnotator: builder.mutation<void, {
       campaign: AnnotationCampaign,
-      phase: AnnotationCampaignPhase,
+      phase: AnnotationPhase,
       fileID: ID,
       results: AnnotationResult[],
       task_comments: AnnotationComment[],
@@ -173,7 +173,7 @@ export const usePostAnnotator = () => {
   const annotator = useAppSelector(state => state.annotator);
   const _annotator = useRef<AnnotatorState>(annotator)
   const _campaign = useRef<AnnotationCampaign | undefined>(campaign)
-  const _phase = useRef<AnnotationCampaignPhase | undefined>(phase)
+  const _phase = useRef<AnnotationPhase | undefined>(phase)
   useEffect(() => {
     _annotator.current = annotator;
   }, [ annotator ]);

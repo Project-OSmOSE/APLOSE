@@ -1,5 +1,5 @@
 import { API } from "@/service/api/index.ts";
-import { AnnotationCampaign, AnnotationCampaignPhase, Phase } from "@/service/types";
+import { AnnotationCampaign, AnnotationPhase, Phase } from "@/service/types";
 import { ID } from "@/service/type.ts";
 import { downloadResponseHandler } from "@/service/function.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
@@ -9,7 +9,7 @@ import { useParams } from "react-router-dom";
 
 export const CampaignPhaseAPI = API.injectEndpoints({
   endpoints: (builder) => ({
-    listCampaignPhase: builder.query<AnnotationCampaignPhase[], {
+    listCampaignPhase: builder.query<AnnotationPhase[], {
       campaigns?: AnnotationCampaign[],
     } | void>({
       query: (arg) => {
@@ -24,14 +24,14 @@ export const CampaignPhaseAPI = API.injectEndpoints({
       },
       providesTags: phases => (phases ?? []).map(({ id }) => ({ type: 'CampaignPhase' as const, id })),
     }),
-    retrieveCampaignPhase: builder.query<AnnotationCampaignPhase, {
+    retrieveCampaignPhase: builder.query<AnnotationPhase, {
       campaignID: ID,
       phaseType: Phase
     }>({
       query: ({ campaignID, phaseType }) => `annotation-campaign/${ campaignID }/phase/${ phaseType }`,
       providesTags: phase => phase ? [ { type: 'CampaignPhase' as const, id: phase.id } ] : [],
     }),
-    postCampaignPhase: builder.mutation<AnnotationCampaignPhase, {
+    postCampaignPhase: builder.mutation<AnnotationPhase, {
       campaign: AnnotationCampaign,
       phase: Phase,
     }>({
@@ -48,7 +48,7 @@ export const CampaignPhaseAPI = API.injectEndpoints({
         { type: "Campaign", id: phase.annotation_campaign },
       ] : [],
     }),
-    endCampaignPhase: builder.mutation<AnnotationCampaignPhase, ID>({
+    endCampaignPhase: builder.mutation<AnnotationPhase, ID>({
       query: (phaseID) => ({
         url: `annotation-campaign-phase/${ phaseID }/end/`,
         method: 'POST',

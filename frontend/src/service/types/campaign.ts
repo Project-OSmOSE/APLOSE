@@ -11,7 +11,7 @@ export type AnnotationCampaignArchive = {
   by_user: User
 }
 
-export type AnnotationCampaignPhase = {
+export type AnnotationPhase = {
   id: number;
   phase: Phase;
   /** Date */

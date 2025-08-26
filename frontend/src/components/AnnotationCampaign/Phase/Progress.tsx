@@ -1,9 +1,9 @@
 import React, { Fragment } from "react";
-import { AnnotationCampaignPhase } from "@/service/types";
+import { AnnotationPhase } from "@/service/types";
 import { Progress } from "@/components/ui";
 
 export const PhaseGlobalProgress: React.FC<{
-  phase: AnnotationCampaignPhase,
+  phase: AnnotationPhase,
   className?: string,
   withoutLabel?: boolean,
 }> = ({ phase, className, withoutLabel = false }) => {
@@ -14,7 +14,7 @@ export const PhaseGlobalProgress: React.FC<{
 }
 
 export const PhaseUserProgress: React.FC<{
-  phase: AnnotationCampaignPhase,
+  phase: AnnotationPhase,
   className?: string
 }> = ({ phase, className }) => {
   if (phase.user_total === 0) return <Fragment/>
