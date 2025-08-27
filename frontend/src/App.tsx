@@ -16,6 +16,7 @@ import { AnnotationCampaignList } from "@/view/annotation-campaign";
 import { AnnotationCampaignDetail, AnnotationCampaignInfo } from "@/view/annotation-campaign/[campaignID]";
 import { AnnotationCampaignPhaseDetail } from "@/view/annotation-campaign/[campaignID]/phase/[phaseType]";
 import { EditAnnotators } from "@/view/annotation-campaign/[campaignID]/phase/[phaseType]/edit-annotators";
+import { AnnotatorPage } from "@/view/annotation-campaign/[campaignID]/phase/[phaseType]/spectrogram/[spectrogramID]";
 import { NewAnnotationCampaign } from "@/view/annotation-campaign/new";
 
 import { DatasetList } from '@/view/dataset';
@@ -64,41 +65,35 @@ const AppContent: React.FC = () => {
       <Route path='login' element={ <Login/> }/>
 
       { isConnected && <Fragment>
-
-          <Route path='annotation-campaign' element={ <AploseSkeleton/> }>
-              <Route index element={ <AnnotationCampaignList/> }/>
-
-              <Route path=':campaignID'>
-                  <Route element={ <AnnotationCampaignDetail/> }>
-                      <Route index element={ <AnnotationCampaignInfo/> }/>
-
-                      <Route path='phase/:phaseType' element={ <AnnotationCampaignPhaseDetail/> }/>
-                  </Route>
-
-                  <Route path='phase/:phaseType'>
-                    {/*    <Route path='new'/> /!*TODO*/ }
-                      <Route path='edit-annotators' element={ <EditAnnotators/> }/>
-                    {/*<Route path='import-annotations' element={ <ImportAnnotations/> }/>*/ }
+          <Route element={ <AploseSkeleton/> }>
+              <Route path='annotation-campaign'>
+                  <Route index element={ <AnnotationCampaignList/> }/>
+                  <Route path='new' element={ <NewAnnotationCampaign/> }/>
+                  <Route path=':campaignID'>
+                      <Route element={ <AnnotationCampaignDetail/> }>
+                          <Route index element={ <AnnotationCampaignInfo/> }/>
+                          <Route path='phase/:phaseType' element={ <AnnotationCampaignPhaseDetail/> }/>
+                      </Route>
+                      <Route path='phase/:phaseType'>
+                          <Route path='edit-annotators' element={ <EditAnnotators/> }/>
+                        {/*<Route path='import-annotations' element={ <ImportAnnotations/> }/>*/ }
+                          <Route path='spectrogram/:spectrogramID' element={ <AnnotatorPage/> }/>
+                      </Route>
                   </Route>
               </Route>
-
-              <Route path='new' element={ <NewAnnotationCampaign/> }/>
           </Route>
 
-          <Route path='dataset' element={ <AploseSkeleton/> }>
+          <Route path='dataset'>
               <Route index element={ <DatasetList/> }/>
               <Route path=':datasetID' element={ <DatasetDetail/> }/>
           </Route>
 
-        {/*<Route path='annotation-campaign/:campaignID/phase/:phaseID/file/:fileID'*/ }
-        {/*       element={ <AnnotatorPage/> }/>*/ }
-
-        {/*<Route element={ <AploseSkeleton/> }>*/ }
+        {/*<Route>*/ }
         {/*    <Route path='account' element={ <Account/> }/>*/ }
         {/*</Route>*/ }
 
         {/*{ currentUser?.is_superuser &&*/ }
-        {/*    <Route path='admin' element={ <AploseSkeleton/> }>*/ }
+        {/*    <Route path='admin'>*/ }
         {/*        <Route path='sql' element={ <SqlQuery/> }/>*/ }
         {/*        <Route path='ontology' element={ <OntologyPage/> }>*/ }
         {/*            <Route path='source'>*/ }

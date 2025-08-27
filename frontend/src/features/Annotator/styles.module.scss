@@ -1,0 +1,281 @@
+.annotator {
+  display: grid;
+  align-items: center;
+  align-content: start;
+  justify-items: center;
+  grid-template-areas:
+          "spectrogram"
+          "blocs"
+  "download";
+  gap: 1rem;
+  grid-template-rows: auto 1fr auto;
+
+  .spectrogramContainer {
+    grid-area: spectrogram;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 0.25rem;
+
+    .spectrogramData,
+    .spectrogramNavigation {
+      display: grid;
+      align-items: center;
+      grid-auto-flow: column;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      justify-items: center;
+
+      .audioNavigation {
+        display: grid;
+        grid-auto-flow: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .spectrogramInfo {
+        display: grid;
+        align-items: center;
+        gap: 0.5rem;
+        grid-auto-flow: column;
+
+        > div {
+          display: flex;
+          flex-direction: row;
+          gap: 0.2rem;
+        }
+
+        input[type=range] {
+          width: 10rem;
+        }
+      }
+
+      .pointerInfo {
+        display: grid;
+        justify-items: center;
+      }
+
+      .campaignInfo {
+        display: grid;
+
+        > div {
+          display: grid;
+          grid-auto-flow: column;
+          align-items: center;
+          gap: 0.5rem;
+          justify-content: start;
+        }
+      }
+
+      > *:last-child {
+        justify-self: end;
+      }
+
+      > *:first-child {
+        justify-self: start;
+      }
+    }
+  }
+
+  .blocContainer {
+    grid-area: blocs;
+    justify-self: stretch;
+    display: grid;
+    padding: 0 2rem;
+    gap: 2rem;
+    grid-template-columns: 32ch 2fr 1fr;
+    grid-template-areas: "current labels confidence" "comments results results";
+  }
+
+  .downloadButtons {
+    grid-area: download;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    grid-auto-flow: column;
+  }
+}
+
+.spectrogramRender {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr auto;
+  grid-template-areas: "y spectrogram" "empty x";
+  overflow-x: scroll;
+  padding-bottom: 1rem;
+
+  .yAxis {
+    grid-area: y;
+    position: sticky;
+    left: 0;
+    background-color: #fff;
+    z-index: 1;
+  }
+
+  .spectrogram {
+    grid-area: spectrogram;
+    user-select: none;
+    touch-action: none;
+    position: relative;
+
+    canvas {
+      display: block;
+
+      &.drawable {
+        cursor: crosshair;
+      }
+    }
+
+    .timeBar {
+      background: black;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      transform: translateX(-50%);
+    }
+  }
+
+  .xAxis {
+    grid-area: x;
+  }
+}
+
+.zoom {
+  cursor: pointer;
+  height: 1.5rem;
+  width: 1.5rem;
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+.navigation {
+  display: grid;
+  align-items: center;
+  grid-auto-flow: column;
+}
+
+.point {
+  height: 2rem;
+  width: 2rem;
+  transform: translate(-50%, -50%);
+  border: none !important;
+
+  .vertical, .horizontal {
+    background: var(--ion-color-base);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 1px;
+  }
+
+  .vertical {
+    height: 2rem;
+    width: 2px;
+  }
+
+  .horizontal {
+    width: 2rem;
+    height: 2px;
+  }
+}
+
+$box-width: 3px;
+
+.header {
+  cursor: default !important;
+  display: grid;
+  pointer-events: all;
+  background: var(--ion-color-base);
+  color: var(--ion-color-contrast);
+  position: absolute;
+  left: 50%;
+  width: calc(100% + 2 * $box-width); /* Box border size */
+  min-width: fit-content;
+
+  &.over {
+    top: 0;
+    transform: translate(-50%, -100%);
+
+    &.stickLeft, &.stickRight {
+      transform: translate(0%, -100%);
+    }
+  }
+
+  &.bellow {
+    bottom: 0;
+    transform: translate(-50%, 100%);
+
+    &.stickLeft, &.stickRight {
+      transform: translate(0%, 100%);
+    }
+  }
+
+  .inner {
+    display: grid;
+    align-items: center;
+    align-content: center;
+    justify-items: center;
+    grid-template-columns: auto auto 1fr auto auto;
+    border-radius: 0.25rem;
+    padding: 0 0.25rem;
+    gap: 0.5rem;
+    white-space: nowrap;
+    position: relative;
+    cursor: default !important;
+
+    > * {
+      font-size: .9rem;
+    }
+
+    .button {
+      cursor: pointer;
+    }
+
+    p {
+      font-size: .75rem;
+    }
+
+    .outlineIcon path {
+      stroke-width: 3rem;
+    }
+  }
+
+  &.stickLeft {
+    left: calc(-1 * $box-width);
+  }
+
+  &.stickRight {
+    left: unset;
+    right: calc(-1 * $box-width);
+  }
+}
+
+.annotation {
+  border-width: $box-width;
+
+  .inner {
+    cursor: crosshair;
+  }
+
+  &.disabled {
+    opacity: 0.75;
+  }
+
+  &.editDisabled {
+    pointer-events: none !important;
+    * {
+      pointer-events: none !important;
+    }
+  }
+}
+
+.labelsButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}

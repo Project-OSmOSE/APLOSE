@@ -12,6 +12,6 @@ export const useOpenAnnotator = () => {
 
   return useCallback((spectrogramID: string | number) => {
     const encodedParams = encodeURI(Object.entries(params).map(([ k, v ]) => `${ k }=${ v }`).join('&'));
-    navigate(`/annotation-campaign/${ campaignID }/phase/${ phaseType }/file/${ spectrogramID }?${ encodedParams }`);
+    navigate(`/annotation-campaign/${ campaignID }/phase/${ phaseType }/spectrogram/${ spectrogramID }?${ encodedParams }`);
   }, [ campaignID, phaseType ])
 }

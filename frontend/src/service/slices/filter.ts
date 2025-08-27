@@ -45,7 +45,7 @@ export const selectCampaignFilters = createSelector(
 )
 
 export const useCampaignFilters = () => {
-  const { params, updateParams } = useAppSearchParams<CampaignFilter>()
+  const { params, updateParams, clearParams } = useAppSearchParams<CampaignFilter>()
   const { data: user } = UserAPI.endpoints.getCurrentUser.useQuery()
   const loadedFilters = useAppSelector(selectCampaignFilters)
   const dispatch = useAppDispatch()
@@ -72,7 +72,7 @@ export const useCampaignFilters = () => {
     dispatch(FilterSlice.actions.updateCampaignFilters(params))
   }, [ params ]);
 
-  return { params, updateParams }
+  return { params, updateParams, clearParams }
 }
 
 export const selectSpectrogramFilters = createSelector(
