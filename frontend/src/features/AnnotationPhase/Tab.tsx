@@ -1,20 +1,18 @@
 import React, { Fragment, useCallback, useMemo } from "react";
+import styles from './styles.module.scss'
 import { Phase } from "@/service/types";
 import { Link } from "@/components/ui";
-import {
-  CreateAnnotationPhaseButton,
-  CreateVerificationPhaseButton
-} from "@/components/AnnotationCampaign/Phase/CreateButton.tsx";
 import {
   CampaignPhaseAPI,
   useListPhasesForCurrentCampaign,
   useRetrieveCurrentPhase
 } from "@/service/api/campaign-phase.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
-import styles from '../../components/AnnotationCampaign/Phase/styles.module.scss'
 import { closeOutline } from "ionicons/icons";
 import { IonIcon, IonSkeletonText } from "@ionic/react";
 import { useAlert } from "@/service/ui";
+import { CreateAnnotationButton } from "./CreateAnnotationButton.tsx";
+import { CreateVerificationButton } from "./CreateVerificationButton.tsx";
 
 export const PhaseTab: React.FC<{ phaseType: Phase }> = ({ phaseType: phaseType }) => {
   const { campaign, hasAdminAccess } = useRetrieveCurrentCampaign()
@@ -54,5 +52,5 @@ export const PhaseTab: React.FC<{ phaseType: Phase }> = ({ phaseType: phaseType 
           <IonIcon icon={ closeOutline } slot='end' onClick={ end }/> }
     </Link>
   if (!hasAdminAccess) return <Fragment/>
-  return phaseType === 'Annotation' ? <CreateAnnotationPhaseButton/> : <CreateVerificationPhaseButton/>
+  return phaseType === 'Annotation' ? <CreateAnnotationButton/> : <CreateVerificationButton/>
 }

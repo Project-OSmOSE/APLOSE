@@ -7,8 +7,8 @@ import { Head } from "@/components/ui/Page.tsx";
 import { dateToString, getErrorMessage } from "@/service/function.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
-import { PhaseTab } from "@/components/AnnotationCampaign/Phase";
 import { MailButton } from "@/features/User";
+import { PhaseTab } from "@/features/AnnotationPhase";
 
 export { AnnotationCampaignInfo } from './InfoTab'
 

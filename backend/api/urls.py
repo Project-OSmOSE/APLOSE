@@ -6,6 +6,7 @@ from backend.api.view import (
     AnnotationPhaseViewSet,
     LabelSetViewSet,
     AnnotationFileRangeViewSet,
+    ConfidenceSetViewSet,
 )
 from backend.api.view.annotation.annotation_campaign import AnnotationCampaignViewSet
 
@@ -25,4 +26,5 @@ api_router.register(
     basename="annotation-file-range",
 )
 api_router.register(r"label-set", LabelSetViewSet, basename="label-set")
+api_router.register(r"confidence-set", ConfidenceSetViewSet, basename="confidence-set")
 api_router.register("download", DownloadViewSet, basename="download")

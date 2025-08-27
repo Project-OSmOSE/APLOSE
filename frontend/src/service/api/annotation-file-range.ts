@@ -42,7 +42,7 @@ export function extendAnnotationFile(file: AnnotationFile): AnnotationFile {
 export const AnnotationFileRangeAPI = API.injectEndpoints({
   endpoints: (builder) => ({
     listFileRange: builder.query<Array<AnnotationFileRange>, {
-      annotation_campaign_phase?: ID,
+      annotation_phase?: ID,
       for_current_user?: boolean,
     }>({
       query: (params) => ({ url: `annotation-file-range/`, params }),
@@ -107,6 +107,6 @@ export const useListFileRangesForCurrentPhase = () => {
   const {
     data,
     ...info
-  } = AnnotationFileRangeAPI.endpoints.listFileRange.useQuery({ annotation_campaign_phase: phase?.id ?? -1 }, { skip: !phase })
+  } = AnnotationFileRangeAPI.endpoints.listFileRange.useQuery({ annotation_phase: phase?.id ?? -1 }, { skip: !phase })
   return useMemo(() => ({ fileRanges: data, ...info, }), [ data, info ])
 }

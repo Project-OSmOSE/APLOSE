@@ -1,24 +1,23 @@
 import React, { Fragment, useCallback, useState } from "react";
+import styles from "./styles.module.scss";
+import { CampaignAPI, PatchAnnotationCampaign, useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { useModal } from "@/service/ui/modal.ts";
-import { useNavigate } from "react-router-dom";
 import { Button, Modal, ModalHeader, WarningText } from "@/components/ui";
 import { IonIcon, IonNote, IonSpinner } from "@ionic/react";
 import { addOutline } from "ionicons/icons";
 import { createPortal } from "react-dom";
-import styles from "./styles.module.scss";
-import { getErrorMessage } from "@/service/function.ts";
-import { FormBloc, Input, Select } from "@/components/form";
-import { LabelSetDisplay } from "@/components/AnnotationCampaign";
-import { CampaignAPI, PatchAnnotationCampaign, useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
-import { CampaignPhaseAPI, useListPhasesForCurrentCampaign } from "@/service/api/campaign-phase.ts";
-import { ConfidenceIndicatorSet, LabelSet } from "@/service/types";
+import { CampaignPhaseAPI } from "@/service/api/campaign-phase.ts";
 import { LabelSetAPI } from "@/service/api/label-set.ts";
 import { ConfidenceSetAPI } from "@/service/api/confidence-set.ts";
-import { useAlert } from "@/service/ui";
+import { useNavigate } from "react-router-dom";
+import { ConfidenceIndicatorSet, LabelSet } from "@/service/types";
+import { FormBloc, Input, Select } from "@/components/form";
+import { getErrorMessage } from "@/service/function.ts";
+import { LabelSetDisplay } from "@/components/AnnotationCampaign";
 
 type Errors = { [key in keyof PatchAnnotationCampaign]?: string }
 
-export const CreateAnnotationPhaseButton: React.FC = () => {
+export const CreateAnnotationButton: React.FC = () => {
   const { campaign } = useRetrieveCurrentCampaign()
   const modal = useModal();
 
@@ -29,11 +28,11 @@ export const CreateAnnotationPhaseButton: React.FC = () => {
       <IonIcon icon={ addOutline } slot="end"/>
     </Button>
 
-    { modal.isOpen && createPortal(<CreateAnnotationPhaseModal onClose={ modal.close }/>, document.body) }
+    { modal.isOpen && createPortal(<CreateAnnotationModal onClose={ modal.close }/>, document.body) }
   </Fragment>
 }
 
-export const CreateAnnotationPhaseModal: React.FC<{
+export const CreateAnnotationModal: React.FC<{
   onClose: () => void;
 }> = ({ onClose }) => {
   const { campaign, isFetching: isFetchingCampaign, refetch } = useRetrieveCurrentCampaign()
@@ -142,7 +141,7 @@ export const CreateAnnotationPhaseModal: React.FC<{
                                        onValueSelected={ onConfidenceSetChange }>
           { confidenceSet && (
             <Fragment>
-              { confidenceSet.desc }
+              { confidenceSet.desc.split('\r\n').map(d => <p key={ d }>{ d }</p>) }
               { confidenceSet.confidence_indicators.map(c => (
                 <p key={ c.level }><b>{ c.level }:</b> { c.label }</p>
               )) }
@@ -173,80 +172,4 @@ export const CreateAnnotationPhaseModal: React.FC<{
       </div>
     </div>
   </Modal>
-}
-
-export const CreateVerificationPhaseButton: React.FC = () => {
-  const { campaign, isFetching: isFetchingCampaign, refetch } = useRetrieveCurrentCampaign()
-  const { phases } = useListPhasesForCurrentCampaign()
-  const [ post, { isLoading: isPostingPhase, error } ] = CampaignPhaseAPI.endpoints.postCampaignPhase.useMutation()
-  const verificationModal = useModal();
-  const annotationModal = useModal();
-  const navigate = useNavigate()
-  const alert = useAlert();
-
-  const create = useCallback(async () => {
-    if (!campaign) return;
-    const phase = await post({ campaign, phase: 'Verification' }).unwrap()
-    await refetch().unwrap()
-    navigate(`/annotation-campaign/${ campaign?.id }/phase/${ phase.phase }`)
-  }, [ campaign ])
-
-  const createAndImport = useCallback(async () => {
-    if (!campaign) return;
-    const phase = await post({ campaign, phase: 'Verification' }).unwrap()
-    navigate(`/annotation-campaign/${ campaign?.id }/phase/${ phase.phase }/import-annotations`)
-  }, [ campaign ])
-
-  const openModal = useCallback(() => {
-    if (!phases) return;
-    if (phases.find(p => p.phase === 'Annotation')) verificationModal.toggle()
-    else {
-      return alert.showAlert({
-        type: 'Warning',
-        message: 'A verification phase is made to check results from the "Annotation" phase. You should first create an "Annotation" phase, either to annotate the dataset or to import detectors annotations on it.',
-        actions: [ {
-          label: 'Create an "Annotation" campaign',
-          callback: annotationModal.toggle
-        } ]
-      })
-    }
-  }, [ phases, verificationModal ])
-
-  if (campaign?.archive || !phases) return <Fragment/>
-  return <Fragment>
-    <Button fill='clear' color='medium' onClick={ openModal }>
-      Verification
-      <IonIcon icon={ addOutline } slot="end"/>
-    </Button>
-
-    { verificationModal.isOpen && createPortal(<Modal onClose={ verificationModal.close } className={ styles.modal }>
-      <ModalHeader title='New verification phase' onClose={ verificationModal.close }/>
-
-      <div className={ styles.content }>
-        <p>In a "Verification" phase, you can validate, reject, or add missing annotations.</p>
-        <p>Annotations come from the "Annotation" phase and may be created manually or imported (e.g., from an automatic
-          detector).</p>
-        { error && <WarningText>{ getErrorMessage(error) }</WarningText> }
-      </div>
-
-      <div className={ styles.buttons }>
-        <Button color="medium" fill='clear' onClick={ verificationModal.close }>
-          Cancel
-        </Button>
-
-        <div className={ styles.buttons }>
-          { (isPostingPhase || isFetchingCampaign) && <IonSpinner/> }
-          <Button color="primary" fill='clear' onClick={ createAndImport }>
-            Create and import annotations
-          </Button>
-          <Button color="primary" fill='solid' onClick={ create }>
-            Create
-          </Button>
-        </div>
-      </div>
-    </Modal>, document.body) }
-
-    { annotationModal.isOpen && createPortal(<CreateAnnotationPhaseModal
-      onClose={ annotationModal.close }/>, document.body) }
-  </Fragment>
 }
