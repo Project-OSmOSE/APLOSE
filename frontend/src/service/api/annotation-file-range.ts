@@ -1,7 +1,7 @@
 import { API } from "@/service/api/index.ts";
 import { useMemo } from "react";
 import { ID, Paginated, PaginationParams } from "@/service/type.ts";
-import { AnnotationFile, AnnotationFileRange } from "@/service/types";
+import { AnnotationFile, AnnotationFileRange, Phase } from "@/service/types";
 import { extendDatasetFile } from "@/service/api/dataset.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
 
@@ -72,13 +72,14 @@ export const AnnotationFileRangeAPI = API.injectEndpoints({
     }),
 
     postFileRange: builder.mutation<Array<AnnotationFileRange>, {
-      phaseID: ID,
+      campaignID: ID,
+      phaseType: Phase,
       filesCount: number,
       data: Array<PostAnnotationFileRange>,
       force?: boolean
     }>({
-      query: ({ phaseID, filesCount, data, force }) => ({
-        url: `annotation-file-range/phase/${ phaseID }/`,
+      query: ({ campaignID, phaseType, filesCount, data, force }) => ({
+        url: `annotation-file-range/campaign/${ campaignID }/phase/${ phaseType }/`,
         method: 'POST',
         body: {
           data: data.map(range => {

@@ -14,6 +14,10 @@ from ..data.spectrogram import SpectrogramSerializer
 class AnnotationFileRangeListSerializer(serializers.ListSerializer):
     """Annotation file range list serializer"""
 
+    def validate(self, attrs):
+        print("list validate", attrs)
+        return super().validate(attrs)
+
     def prepare_deletion(
         self,
         original_ranges: QuerySet[AnnotationFileRange],
@@ -67,8 +71,11 @@ class AnnotationFileRangeListSerializer(serializers.ListSerializer):
                 serializers_list.append(serializer)
             else:
                 # Create
+                print("list create", file_range_data)
                 serializer = AnnotationFileRangeSerializer(data=file_range_data)
+                print("list create", file_range_data, serializer)
                 serializer.is_valid(raise_exception=True)
+                print("list create", "valid")
                 serializers_list.append(serializer)
         return serializers_list
 
@@ -77,6 +84,7 @@ class AnnotationFileRangeListSerializer(serializers.ListSerializer):
         instance: QuerySet[AnnotationFileRange],
         validated_data: list[dict],
     ):
+        print("list update", validated_data)
         # Preparation
         deleted_ranges = self.prepare_deletion(instance, validated_data)
         serializers_list = self.prepare_updates_and_creates(instance, validated_data)
@@ -89,6 +97,10 @@ class AnnotationFileRangeListSerializer(serializers.ListSerializer):
             instances.append(serializer.data)
 
         return AnnotationFileRange.clean_connected_ranges(instances)
+
+    def is_valid(self, *, raise_exception=False):
+        print("list", "is_valid")
+        return super().is_valid(raise_exception=raise_exception)
 
 
 class AnnotationFileRangeSerializer(serializers.ModelSerializer):
@@ -108,6 +120,10 @@ class AnnotationFileRangeSerializer(serializers.ModelSerializer):
         model = AnnotationFileRange
         fields = "__all__"
         list_serializer_class = AnnotationFileRangeListSerializer
+
+    def is_valid(self, *, raise_exception=False):
+        print("is_valid")
+        return super().is_valid(raise_exception=raise_exception)
 
     def check_max_value(self, data: dict):
         """Check file indexes doesn't go higher than campaign has files"""
@@ -139,12 +155,18 @@ class AnnotationFileRangeSerializer(serializers.ModelSerializer):
             )
 
     def validate(self, attrs):
+        print("validate")
         data = super().validate(attrs)
 
         self.check_max_value(attrs)
         self.check_ordered_value(attrs)
 
+        print("validate", data)
         return data
+
+    def create(self, validated_data):
+        print("create", validated_data["annotation_phase"])
+        return super().create(validated_data)
 
 
 class FileRangeSpectrogramSerializer(SpectrogramSerializer):

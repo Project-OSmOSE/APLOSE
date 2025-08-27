@@ -7,6 +7,7 @@ from django.db.models import (
     OuterRef,
     Count,
 )
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status, filters, permissions, mixins
 from rest_framework.decorators import action
 from rest_framework.request import Request
@@ -148,16 +149,11 @@ class AnnotationCampaignViewSet(
     )
     def get_phase(self, request, pk: int = None, phase_type: str = None):
         """Get phase of a campaign from its type"""
-        print(pk, phase_type, AnnotationPhase.objects.filter(annotation_campaign_id=pk))
-        try:
-            phase = AnnotationPhaseViewSet.queryset.get(
-                phase=AnnotationPhase.Type.from_label(phase_type),
-                annotation_campaign_id=pk,
-            )
-        except AnnotationPhase.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        print("got phase", phase)
+        phase = get_object_or_404(
+            AnnotationPhaseViewSet.queryset,
+            phase=AnnotationPhase.Type.from_label(phase_type),
+            annotation_campaign_id=pk,
+        )
         return Response(
             AnnotationPhaseSerializer(phase).data,
             status=status.HTTP_200_OK,

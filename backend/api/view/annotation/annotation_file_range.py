@@ -287,25 +287,39 @@ class AnnotationFileRangeViewSet(viewsets.ReadOnlyModelViewSet):
     @action(
         methods=["POST"],
         detail=False,
-        url_path="phase/(?P<phase_id>[^/.]+)",
+        url_path="campaign/(?P<campaign_id>[^/.]+)/phase/(?P<phase_type>[^/.]+)",
         url_name="phase",
     )
-    def update_for_campaign(
-        self,
-        request,
-        phase_id: int = None,
-    ):
+    def update_for_campaign(self, request, campaign_id: int, phase_type: str):
         """POST an array of annotation file ranges, handle both update and create"""
-
-        phase: AnnotationPhase = get_object_or_404(
+        phase = get_object_or_404(
             AnnotationPhase,
-            id=phase_id,
+            phase=AnnotationPhase.Type.from_label(phase_type),
+            annotation_campaign_id=campaign_id,
         )
+        files = Spectrogram.objects.filter(
+            analysis__annotation_campaigns__id=campaign_id
+        )
+
+        def get_from_to(from_index: int, to_index: int) -> (int, int):
+            from_datetime = files[from_index].start
+            to_datetime = files[to_index].end
+            if from_datetime > to_datetime:
+                from_datetime, to_datetime = to_datetime, from_datetime
+            else:
+                from_datetime, to_datetime = from_datetime, to_datetime
+            return from_datetime, to_datetime
 
         data = [
             {
                 **d,
                 "annotation_phase": phase.id,
+                "from_datetime": get_from_to(
+                    d["first_file_index"], d["last_file_index"]
+                )[0],
+                "to_datetime": get_from_to(d["first_file_index"], d["last_file_index"])[
+                    1
+                ],
             }
             for d in request.data["data"]
         ]
@@ -313,6 +327,7 @@ class AnnotationFileRangeViewSet(viewsets.ReadOnlyModelViewSet):
         if not self.can_user_post_data(data):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
+        print("view", phase)
         serializer = AnnotationFileRangeSerializer(
             phase.annotation_file_ranges,
             data=data,
@@ -321,7 +336,9 @@ class AnnotationFileRangeViewSet(viewsets.ReadOnlyModelViewSet):
             },
             many=True,
         )
+        print("view", "serializer")
         serializer.is_valid(raise_exception=True)
+        print("view", "valid")
         serializer.save()
         return Response(
             AnnotationFileRangeSerializer(

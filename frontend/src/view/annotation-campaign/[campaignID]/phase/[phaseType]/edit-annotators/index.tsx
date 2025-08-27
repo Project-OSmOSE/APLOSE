@@ -1,7 +1,8 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import styles from './styles.module.scss';
 import { useNavigate } from "react-router-dom";
 import { useAlert, useToast } from "@/service/ui";
-import { IonButton, IonIcon, IonNote, IonSpinner } from "@ionic/react";
+import { IonButton, IonIcon, IonNote, IonSkeletonText, IonSpinner } from "@ionic/react";
 import { getErrorMessage, getNewItemID } from "@/service/function.ts";
 import { User } from "@/service/types";
 import { QueryStatus } from "@reduxjs/toolkit/query";
@@ -9,7 +10,6 @@ import { Table, TableContent, TableDivider, TableHead, WarningText } from "@/com
 import { FormBloc, Input, Searchbar } from "@/components/form";
 import { lockClosedOutline, trashBinOutline } from "ionicons/icons";
 import { Item } from "@/types/item.ts";
-import styles from './edit.module.scss';
 import { UserAPI } from "@/service/api/user.ts";
 import { UserGroupAPI } from "@/service/api/user-group.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
@@ -19,6 +19,7 @@ import {
   useListFileRangesForCurrentPhase
 } from "@/service/api/annotation-file-range.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
+import { Head } from "@/components/ui/Page.tsx";
 
 type SearchItem = {
   type: 'user' | 'group';
@@ -33,7 +34,7 @@ export const EditAnnotators: React.FC = () => {
     isFetching: isFetchingCampaign,
     error: errorLoadingCampaign,
   } = useRetrieveCurrentCampaign();
-  const { phaseID, phase } = useRetrieveCurrentPhase()
+  const { phaseType, phase } = useRetrieveCurrentPhase()
   const navigate = useNavigate();
   const toast = useToast();
   const {
@@ -112,20 +113,19 @@ export const EditAnnotators: React.FC = () => {
   }, [])
 
   // Navigation
-  const back = useCallback(() => {
-    navigate(`/annotation-campaign/${ campaignID }/phase/${ phaseID }`)
-  }, [ campaignID, phaseID ])
+  const back = useCallback(() => navigate(-1), [])
 
   // Submit
   const submit = useCallback(() => {
-    if (!phaseID || !campaign) return;
+    if (!phaseType || !campaign || !campaignID) return;
     postFileRanges({
-      phaseID,
+      campaignID,
+      phaseType,
       filesCount: campaign.files_count,
       data: fileRanges,
       force: isForced
     })
-  }, [ fileRanges, phaseID, campaign, isForced ])
+  }, [ fileRanges, campaignID, phaseType, campaign, isForced ])
   useEffect(() => {
     if (errorSubmitting) toast.presentError(errorSubmitting)
   }, [ errorSubmitting ]);
@@ -134,13 +134,16 @@ export const EditAnnotators: React.FC = () => {
   }, [ submissionStatus ]);
 
   return <Fragment>
-    <div className={ styles.title }>
-      <h2>Manage annotators</h2>
-      { campaign && <h5>{ campaign.name }</h5> }
-      { phase && <p>{ phase.phase }</p> }
-    </div>
+
+    <Head title='Manage annotators'
+          subtitle={ campaign ? `${ campaign.name } - ${ phaseType }` :
+            <IonSkeletonText animated style={ { width: 128 } }/> }/>
 
     <FormBloc className={ styles.annotators }>
+
+      <Searchbar placeholder="Search annotator..."
+                 values={ availableUsers.map(a => ({ value: `${ a.type }-${ a.id }`, label: a.display })) }
+                 onValueSelected={ addFileRange }/>
 
       {/* Loading */ }
       { (isFetchingCampaign || isFetchingUsers || isFetchingGroups || isFetchingFileRanges) && <IonSpinner/> }
@@ -153,15 +156,15 @@ export const EditAnnotators: React.FC = () => {
       { errorLoadingFileRanges &&
           <WarningText>Fail loading file ranges:<br/>{ getErrorMessage(errorLoadingFileRanges) }</WarningText> }
 
-      { fileRanges && campaign && allUsers && allGroups && fileRanges.length > 0 &&
-          <Table columns={ 3 }>
-              <TableHead isFirstColumn={ true }>Annotator</TableHead>
-              <TableHead className={ styles.fileRangeHead }>
+      { fileRanges && campaign && allUsers && allGroups &&
+          <Table columns={ 3 } className={ styles.table }>
+              <TableHead isFirstColumn={ true } topSticky>Annotator</TableHead>
+              <TableHead className={ styles.fileRangeHead } topSticky>
                   File range
                   <small>(between 1 and { campaign.files_count })</small>
                   <small className="disabled"><i>Start and end limits are included</i></small>
               </TableHead>
-              <TableHead/>
+              <TableHead topSticky/>
               <TableDivider/>
             { fileRanges.map(range => <AnnotatorRangeLine key={ range.id }
                                                           range={ range }
@@ -180,15 +183,13 @@ export const EditAnnotators: React.FC = () => {
                                                           }) }
                                                           onDelete={ () => removeFileRange(range) }
             />) }
+            { fileRanges.length === 0 && <IonNote color='medium'>No annotators</IonNote> }
           </Table>
       }
 
-      <Searchbar placeholder="Search annotator..."
-                 values={ availableUsers.map(a => ({ value: `${ a.type }-${ a.id }`, label: a.display })) }
-                 onValueSelected={ addFileRange }/>
-
       { phase?.phase === 'Verification' &&
-          <IonNote>To fully verify your annotations, you should have a verification user that is not an annotator or at
+          <IonNote>To fully verify your annotations, you should have a verification user that is not an annotator or
+              at
               least two verification users</IonNote> }
 
       <div className={ styles.buttons }>

@@ -101,7 +101,7 @@ class AnnotationFileRange(models.Model):
     #                      ~Q(id=self.id)
     #                      & Q(
     #                          annotator_id=self.annotator_id,
-    #                          annotation_campaign_phase=self.annotation_campaign_phase,
+    #                          annotation_phase=self.annotation_phase,
     #                          from_datetime__lte=OuterRef("spectrogram__start"),
     #                          to_datetime__gte=OuterRef("spectrogram__end"),
     #                      )
@@ -116,7 +116,7 @@ class AnnotationFileRange(models.Model):
         return (
             AnnotationFileRange.objects.filter(
                 annotator_id=data.annotator,
-                annotation_campaign_phase_id=data.annotation_campaign_phase,
+                annotation_phase_id=data.annotation_phase,
             )
             .exclude(id=data.id)
             .filter(
@@ -130,7 +130,7 @@ class AnnotationFileRange(models.Model):
                     first_file_index__gte=data.first_file_index,
                     last_file_index__lte=data.last_file_index,
                 )
-                # get mixted
+                # get mixed
                 | Q(
                     first_file_index__lte=data.first_file_index,
                     last_file_index__gte=data.first_file_index,

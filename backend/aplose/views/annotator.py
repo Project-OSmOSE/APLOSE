@@ -20,7 +20,7 @@
 #         campaign = AnnotationCampaign.objects.get(pk=campaign_id)
 #         file = DatasetFile.objects.get(pk=file_id)
 #         file_ranges = AnnotationFileRange.objects.filter(
-#             annotation_campaign_phase_id=phase_id,
+#             annotation_phase_id=phase_id,
 #             annotator_id=request.user.id,
 #         )
 #         is_assigned = (
@@ -54,7 +54,7 @@
 #                 request._request
 #             ).data
 #             request._request.GET = {
-#                 "annotation_campaign_phase_id": phase_id,
+#                 "annotation_phase_id": phase_id,
 #                 "dataset_file_id": file_id,
 #                 "annotation_result__isnull": True,
 #                 "for_current_user": True,
@@ -98,7 +98,7 @@
 #                 "current_task_index": current_task_index,
 #                 "total_tasks": total_tasks,
 #                 "is_submitted": AnnotationTask.objects.filter(
-#                     annotation_campaign_phase_id=phase_id,
+#                     annotation_phase_id=phase_id,
 #                     dataset_file_id=file_id,
 #                     annotator_id=request.user.id,
 #                     status=AnnotationTask.Status.FINISHED,
@@ -157,7 +157,7 @@
 #
 #         task, _ = AnnotationTask.objects.get_or_create(
 #             annotator=request.user,
-#             annotation_campaign_phase_id=phase_id,
+#             annotation_phase_id=phase_id,
 #             dataset_file_id=file_id,
 #         )
 #         task.status = AnnotationTask.Status.FINISHED
@@ -165,8 +165,8 @@
 #         if phase.phase == Phase.ANNOTATION:
 #             # Mark as unsubmitted verification task of other users on this file
 #             AnnotationTask.objects.filter(
-#                 annotation_campaign_phase__annotation_campaign=phase.annotation_campaign,
-#                 annotation_campaign_phase__phase=Phase.VERIFICATION,
+#                 annotation_phase__annotation_campaign=phase.annotation_campaign,
+#                 annotation_phase__phase=Phase.VERIFICATION,
 #                 dataset_file_id=file_id,
 #             ).filter(~Q(annotator=request.user)).update(
 #                 status=AnnotationTask.Status.CREATED

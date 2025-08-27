@@ -398,7 +398,7 @@ class Command(management.BaseCommand):
                 last_index = dataset.files.count() - 1
                 file_ranges.append(
                     AnnotationFileRange(
-                        annotation_campaign_phase_id=phase.id,
+                        annotation_phase_id=phase.id,
                         annotator_id=user.id,
                         first_file_index=0,
                         last_file_index=last_index,
@@ -423,12 +423,12 @@ class Command(management.BaseCommand):
                     dataset_file=file,
                     annotator=file_range.annotator,
                     status=AnnotationTask.Status.FINISHED,
-                    annotation_campaign_phase=phase,
+                    annotation_phase=phase,
                 )
                 if randint(1, 3) >= 2:
                     AnnotationComment.objects.create(
                         comment="a comment",
-                        annotation_campaign_phase=phase,
+                        annotation_phase=phase,
                         dataset_file_id=task.dataset_file_id,
                         author_id=task.annotator_id,
                         annotation_result=None,
@@ -457,7 +457,7 @@ class Command(management.BaseCommand):
                 comments.append(
                     AnnotationComment(
                         comment=f"a comment : {result.label.name}",
-                        annotation_campaign_phase_id=result.annotation_campaign_phase_id,
+                        annotation_phase_id=result.annotation_phase_id,
                         dataset_file_id=result.dataset_file_id,
                         author_id=result.annotator_id,
                         annotation_result=result,

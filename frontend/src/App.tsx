@@ -15,6 +15,7 @@ import { AppStore, useAppSelector } from "@/service/app";
 import { AnnotationCampaignList } from "@/view/annotation-campaign";
 import { AnnotationCampaignDetail, AnnotationCampaignInfo } from "@/view/annotation-campaign/[campaignID]";
 import { AnnotationCampaignPhaseDetail } from "@/view/annotation-campaign/[campaignID]/phase/[phaseType]";
+import { EditAnnotators } from "@/view/annotation-campaign/[campaignID]/phase/[phaseType]/edit-annotators";
 import { NewAnnotationCampaign } from "@/view/annotation-campaign/new";
 
 import { DatasetList } from '@/view/dataset';
@@ -74,11 +75,11 @@ const AppContent: React.FC = () => {
                       <Route path='phase/:phaseType' element={ <AnnotationCampaignPhaseDetail/> }/>
                   </Route>
 
-                {/*<Route path='phase/:phase'>*/ }
-                {/*    <Route path='new'/> /!*TODO*/ }
-                {/*<Route path='edit-annotators' element={ <EditAnnotators/> }/>*/ }
-                {/*<Route path='import-annotations' element={ <ImportAnnotations/> }/>*/ }
-                {/*</Route>*/ }
+                  <Route path='phase/:phaseType'>
+                    {/*    <Route path='new'/> /!*TODO*/ }
+                      <Route path='edit-annotators' element={ <EditAnnotators/> }/>
+                    {/*<Route path='import-annotations' element={ <ImportAnnotations/> }/>*/ }
+                  </Route>
               </Route>
 
               <Route path='new' element={ <NewAnnotationCampaign/> }/>
