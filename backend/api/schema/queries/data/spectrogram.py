@@ -1,9 +1,9 @@
 """Spectrogram schema"""
-from django.db.models import QuerySet, Case, When, Value, Exists, Subquery, OuterRef, Q
+import graphene_django_optimizer
+from django.db.models import Exists, Subquery, OuterRef, Q
 from django_filters import FilterSet, OrderingFilter, CharFilter, BooleanFilter
-from graphene import relay, ObjectType, Int, String, Decimal
+from graphene import relay, ObjectType, Int, String, ID
 from graphene_django.filter import GlobalIDFilter
-from graphql import GraphQLResolveInfo
 
 from backend.api.models import (
     Spectrogram,
@@ -162,8 +162,8 @@ class SpectrogramNode(ApiObjectType):
     annotation_tasks = AuthenticatedDjangoConnectionField(AnnotationTaskNode)
 
     task_status = TaskStatusEnum(
-        campaign_id=Decimal(required=True),
-        annotator_id=Decimal(required=True),
+        campaign_id=ID(required=True),
+        annotator_id=ID(required=True),
         phase_type=String(required=True),
     )
 
@@ -176,35 +176,21 @@ class SpectrogramNode(ApiObjectType):
         filterset_class = SpectrogramFilter
         interfaces = (relay.Node,)
 
-    @classmethod
-    def get_queryset(cls, queryset: QuerySet[Spectrogram], info: GraphQLResolveInfo):
-        fields = cls._get_query_fields(info)
-
-        cls._init_queryset_extensions()
-        for field in fields:
-            if field.name.value == "taskStatus":
-                args = cls._get_argument(info, "taskStatus")
-                cls.annotations = {
-                    **cls.annotations,
-                    "task_status": Case(
-                        When(
-                            annotation_tasks__annotation_phase__annotation_campaign_id=args.get(
-                                "campaign_id"
-                            ),
-                            annotation_tasks__annotator_id=args.get("annotator_id"),
-                            annotation_tasks__annotation_phase__phase=args.get(
-                                "phase_type"
-                            ),
-                            annotation_tasks__status=AnnotationTask.Status.FINISHED,
-                            then=Value(AnnotationTask.Status.FINISHED),
-                        ),
-                        default=Value(AnnotationTask.Status.CREATED),
-                    ),
-                }
-                cls.prefetch.append("annotation_tasks")
-                cls.prefetch.append("annotation_tasks__annotation_phase")
-
-        return cls._finalize_queryset(super().get_queryset(queryset, info))
+    @graphene_django_optimizer.resolver_hints(
+        prefetch_related=(
+            "annotation_tasks",
+            "annotation_tasks__annotation_phase",
+        ),
+    )
+    def resolve_task_status(
+        root, info, campaign_id: int, annotator_id: int, phase_type
+    ):
+        task = root.annotation_tasks.get(
+            annotation_phase__annotation_campaign_id=campaign_id,
+            annotator_id=annotator_id,
+            annotation_phase__phase=phase_type,
+        )
+        return task.status if task is not None else AnnotationTask.Status.CREATED
 
 
 class SpectrogramQuery(ObjectType):  # pylint: disable=too-few-public-methods

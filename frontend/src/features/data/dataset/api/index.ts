@@ -9,7 +9,7 @@ import { DefinitionsFromApi, OverrideResultType } from "@reduxjs/toolkit/query";
 
 type N<T> = NonNullable<T>
 
-const Tags = [ 'Dataset', 'ImportDataset', 'DetailedDataset', 'DatasetChannelConfiguration' ]
+const Tags = [ 'Dataset', 'ImportDataset', 'DetailedDataset', 'DatasetChannelConfiguration', 'DatasetsAndAnalysis' ]
 type TagType = typeof Tags[number]
 
 type Dataset = N<N<N<GetDatasetsQuery['allDatasets']>['results']>[number]>
@@ -41,6 +41,9 @@ const enhancedAPI = api.enhanceEndpoints<TagType, apiType>({
       },
       providesTags: [ 'Dataset' ],
     },
+    getDatasetsAndAnalysis: {
+      providesTags: [ 'DatasetsAndAnalysis' ],
+    },
     getAvailableDatasetsForImport: {
       transformResponse(response: GetAvailableDatasetsForImportQuery) {
         return (response?.allDatasetsAvailableForImport?.filter(r => r !== null) ?? [])?.map(d => ({
@@ -65,7 +68,7 @@ const enhancedAPI = api.enhanceEndpoints<TagType, apiType>({
       providesTags: (result, error, { id }) => [ { type: 'DatasetChannelConfiguration', id } ]
     },
     postDatasetForImport: {
-      invalidatesTags: [ 'Dataset' ]
+      invalidatesTags: [ 'Dataset', 'DatasetsAndAnalysis' ]
     }
   }
 })

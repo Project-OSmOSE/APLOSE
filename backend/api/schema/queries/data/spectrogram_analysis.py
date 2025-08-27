@@ -2,6 +2,7 @@
 from os import listdir
 from os.path import join, isfile, exists
 
+import graphene_django_optimizer
 from django.conf import settings
 from django.db.models import Count, Min, Max
 from django_filters import OrderingFilter, FilterSet, NumberFilter
@@ -45,7 +46,7 @@ class SpectrogramAnalysisFilter(FilterSet):
             "annotation_campaigns__id": ["exact", "in"],
         }
 
-    order_by = OrderingFilter(fields=("created_at",))
+    order_by = OrderingFilter(fields=("created_at", "name"))
 
 
 class SpectrogramAnalysisNode(ApiObjectType):
@@ -66,29 +67,14 @@ class SpectrogramAnalysisNode(ApiObjectType):
 
     @classmethod
     def get_queryset(cls, queryset, info):
-        fields = cls._get_query_fields(info)
-
-        cls._init_queryset_extensions()
-        for field in fields:
-            if field.name.value == "filesCount":
-                cls.annotations = {
-                    **cls.annotations,
-                    "files_count": Count("spectrograms", distinct=True),
-                }
-                cls.prefetch.append("spectrograms")
-            if field.name.value == "start":
-                cls.annotations = {
-                    **cls.annotations,
-                    "start": Min("spectrograms__start"),
-                }
-                cls.prefetch.append("spectrograms")
-            if field.name.value == "end":
-                cls.annotations = {
-                    **cls.annotations,
-                    "end": Max("spectrograms__end"),
-                }
-                cls.prefetch.append("spectrograms")
-        return cls._finalize_queryset(super().get_queryset(queryset, info))
+        return graphene_django_optimizer.query(
+            queryset.prefetch_related("spectrograms",).annotate(
+                files_count=Count("spectrograms", distinct=True),
+                start=Min("spectrograms__start"),
+                end=Max("spectrograms__end"),
+            ),
+            info,
+        )
 
 
 class ImportSpectrogramAnalysisType(

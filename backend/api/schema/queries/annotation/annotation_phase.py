@@ -1,4 +1,5 @@
 """AnnotationPhase schema"""
+import graphene_django_optimizer
 from django.db import models
 from django.db.models import QuerySet, Count, Q, When, Case, F, Value
 from django_filters import FilterSet, OrderingFilter
@@ -62,8 +63,8 @@ class AnnotationPhaseNode(ApiObjectType):
     tasks_count = Int()
     completed_tasks_count = Int()
 
-    user_tasks_count = Int(id=ID())
-    user_completed_tasks_count = Int(id=ID())
+    user_tasks_count = Int()
+    user_completed_tasks_count = Int()
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
@@ -76,80 +77,42 @@ class AnnotationPhaseNode(ApiObjectType):
     def get_queryset(
         cls, queryset: QuerySet[AnnotationPhase], info: GraphQLResolveInfo
     ):
-
-        fields = cls._get_query_fields(info)
-
-        cls._init_queryset_extensions()
-        annotate_is_completed = False
-        for field in fields:
-            if field.name.value == "isCompleted":
-                annotate_is_completed = True
-
-            if field.name.value == "hasAnnotations":
-                cls.annotations = {
-                    **cls.annotations,
-                    "has_annotations": Q(annotations__isnull=False),
-                }
-                cls.prefetch.append("annotations")
-
-            if field.name.value in ["isCompleted", "tasksCount"]:
-                cls.annotations = {
-                    **cls.annotations,
-                    "tasks_count": Count("annotation_tasks", distinct=True),
-                }
-                cls.prefetch.append("annotation_tasks")
-
-            if field.name.value in ["isCompleted", "completedTasksCount"]:
-                cls.annotations = {
-                    **cls.annotations,
-                    "completed_tasks_count": Count(
-                        "annotation_tasks",
-                        filter=Q(
-                            annotation_tasks__status=AnnotationTask.Status.FINISHED
-                        ),
-                        distinct=True,
+        return graphene_django_optimizer.query(
+            queryset.prefetch_related(
+                "annotations",
+                "annotation_tasks",
+            )
+            .annotate(
+                has_annotations=Q(annotations__isnull=False),
+                tasks_count=Count("annotation_tasks", distinct=True),
+                completed_tasks_count=Count(
+                    "annotation_tasks",
+                    filter=Q(annotation_tasks__status=AnnotationTask.Status.FINISHED),
+                    distinct=True,
+                ),
+                user_tasks_count=Count(
+                    "annotation_tasks",
+                    filter=Q(annotation_tasks__annotator_id=info.context.user.id),
+                    distinct=True,
+                ),
+                user_completed_tasks_count=Count(
+                    "annotation_tasks",
+                    filter=Q(
+                        annotation_tasks__annotator_id=info.context.user.id,
+                        annotation_tasks__status=AnnotationTask.Status.FINISHED,
                     ),
-                }
-                cls.prefetch.append("annotation_tasks")
-
-            if field.name.value == "userTasksCount":
-                arguments = cls._get_argument(info, "userTasksCount")
-                print("userTasksCount", arguments)
-                cls.annotations = {
-                    **cls.annotations,
-                    "user_tasks_count": Count(
-                        "annotation_tasks",
-                        filter=Q(annotation_tasks__annotator_id=arguments.get("id")),
-                        distinct=True,
-                    ),
-                }
-                cls.prefetch.append("annotation_tasks")
-
-            if field.name.value == "userCompletedTasksCount":
-                arguments = cls._get_argument(info, "userCompletedTasksCount")
-                cls.annotations = {
-                    **cls.annotations,
-                    "user_completed_tasks_count": Count(
-                        "annotation_tasks",
-                        filter=Q(
-                            annotation_tasks__annotator_id=arguments.get("id"),
-                            annotation_tasks__status=AnnotationTask.Status.FINISHED,
-                        ),
-                        distinct=True,
-                    ),
-                }
-                cls.prefetch.append("annotation_tasks")
-
-        qs = cls._finalize_queryset(super().get_queryset(queryset, info))
-        if annotate_is_completed:
-            qs = qs.annotate(
+                    distinct=True,
+                ),
+            )
+            .annotate(
                 is_completed=Case(
                     When(finished_tasks_count=F("tasks_count"), then=Value(1)),
                     default=Value(0),
                     output_field=models.BooleanField(),
                 ),
-            )
-        return qs
+            ),
+            info,
+        )
 
 
 class AnnotationPhaseQuery(ObjectType):  # pylint: disable=too-few-public-methods

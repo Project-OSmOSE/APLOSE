@@ -8,8 +8,10 @@ from django.db.models import QuerySet
 from graphene import ID
 from graphene_django import DjangoObjectType
 from graphene_django.views import GraphQLView
-from graphene_django_pagination import DjangoPaginationConnectionField
-from graphql import GraphQLResolveInfo, GraphQLError, FieldNode
+from graphene_django_pagination import (
+    DjangoPaginationConnectionField,
+)
+from graphql import GraphQLResolveInfo, GraphQLError
 from rest_framework import status, permissions
 from rest_framework.decorators import (
     permission_classes,
@@ -131,10 +133,6 @@ class ApiObjectType(DjangoObjectType):
 
     id = ID(required=True)
 
-    annotations = {}
-    prefetch = []
-    select = []
-
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
         abstract = True
@@ -143,44 +141,6 @@ class ApiObjectType(DjangoObjectType):
     def get_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
         """Resolve Queryset"""
         return gql_optimizer.query(queryset, info)
-
-    @classmethod
-    def _get_query_fields(cls, info) -> list[FieldNode]:
-        query_fields = info.field_nodes[0].selection_set.selections
-        if "results" in [f.name.value for f in query_fields]:
-            query_fields = query_fields[0].selection_set.selections
-        return list(query_fields)
-
-    @classmethod
-    def _get_argument(cls, info: GraphQLResolveInfo, field_name: str) -> dict:
-        fields = [f for f in cls._get_query_fields(info) if f.name.value == field_name]
-        if len(fields) == 0:
-            return None
-
-        field: FieldNode = fields[0]
-        arguments = {}
-        for a in field.arguments:
-            if a.value.kind == "variable":
-                arguments[a.name.value] = info.variable_values.get(a.value.name.value)
-            else:
-                arguments[a.name.value] = a.value.value
-        return arguments
-
-    @classmethod
-    def _init_queryset_extensions(cls):
-        """Initialize select, prefetch and annotations"""
-        cls.annotations = {}
-        cls.prefetch = []
-        cls.select = []
-
-    @classmethod
-    def _finalize_queryset(cls, queryset: QuerySet):
-        """Finalize queryset select, prefetch, annotation"""
-        return (
-            queryset.select_related(*cls.select)
-            .prefetch_related(*cls.prefetch)
-            .annotate(**cls.annotations)
-        )
 
 
 class DRFAuthenticatedGraphQLView(GraphQLView):

@@ -31,6 +31,62 @@ class AnnotationCampaignSerializer(serializers.ModelSerializer):
     allow_point_annotation = serializers.BooleanField(default=False)
     dataset = DatasetSerializer()
     analysis = serializers.PrimaryKeyRelatedField(
+        queryset=SpectrogramAnalysis.objects.all(), many=True
+    )
+    owner = UserSerializer(read_only=True)
+    confidence_set = serializers.PrimaryKeyRelatedField(
+        queryset=ConfidenceSet.objects.all(), required=False, allow_null=True
+    )
+    archive = ArchiveSerializer(read_only=True)
+
+    files_count = serializers.IntegerField(read_only=True)
+    phases = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = AnnotationCampaign
+        fields = "__all__"
+        read_only = True
+
+    def validate_spectro_configs_in_dataset(self, attrs: dict) -> None:
+        """Validates that chosen spectros correspond to chosen datasets"""
+        spectro_configs: list[SpectrogramAnalysis] = attrs["analysis"]
+        dataset: Dataset = attrs["datasets"]
+        bad_vals = []
+        for spectro in spectro_configs:
+            if spectro not in dataset.spectrogram_analysis:
+                bad_vals.append(str(spectro))
+        if bad_vals:
+            error = f"{bad_vals} not valid ids for spectro configs of given datasets ({dataset})"
+            raise serializers.ValidationError({"spectro_configs": error})
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        attrs["owner"] = self.context["request"].user
+        if (
+            "deadline" in attrs
+            and attrs["deadline"] is not None
+            and attrs["deadline"] < datetime.now(tz=pytz.UTC).date()
+        ):
+            raise serializers.ValidationError(
+                {"deadline": "Deadline date should be in the future."},
+                code="min_value",
+            )
+        self.validate_spectro_configs_in_dataset(attrs)
+        return attrs
+
+
+class AnnotationCampaignPostSerializer(serializers.ModelSerializer):
+    """Serializer for annotation campaign creation"""
+
+    label_set = serializers.PrimaryKeyRelatedField(read_only=True)
+    labels_with_acoustic_features = SlugRelatedGetOrCreateField(
+        slug_field="name",
+        many=True,
+        read_only=True,
+    )
+    allow_point_annotation = serializers.BooleanField(default=False)
+    dataset = serializers.PrimaryKeyRelatedField(queryset=Dataset.objects.all())
+    analysis = serializers.PrimaryKeyRelatedField(
         queryset=SpectrogramAnalysis.objects.all(), many=True, write_only=True
     )
     owner = UserSerializer(read_only=True)
@@ -45,6 +101,7 @@ class AnnotationCampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnnotationCampaign
         fields = "__all__"
+        write_only = True
 
     def validate_spectro_configs_in_dataset(self, attrs: dict) -> None:
         """Validates that chosen spectros correspond to chosen datasets"""
@@ -98,6 +155,7 @@ class AnnotationCampaignPatchSerializer(serializers.Serializer):
 
     class Meta:
         fields = "__all__"
+        write_only = True
 
     def run_validation(self, data: dict = empty):
         if "label_set" in data and data.get("label_set") == 0:

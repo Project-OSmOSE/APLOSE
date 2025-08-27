@@ -14,6 +14,24 @@ query getDatasets {
     }
 }
 
+query getDatasetsAndAnalysis {
+    allDatasets(orderBy: "name") {
+        results {
+            id
+            name
+            spectrogramAnalysis(orderBy: "name") {
+                results {
+                    id
+                    name
+                    colormap {
+                        name
+                    }
+                }
+            }
+        }
+    }
+}
+
 query getAvailableDatasetsForImport {
     allDatasetsAvailableForImport {
         name

@@ -15,6 +15,7 @@ import { AppStore, useAppSelector } from "@/service/app";
 import { AnnotationCampaignList } from "@/view/annotation-campaign";
 import { AnnotationCampaignDetail, AnnotationCampaignInfo } from "@/view/annotation-campaign/[campaignID]";
 import { AnnotationCampaignPhaseDetail } from "@/view/annotation-campaign/[campaignID]/phase/[phaseType]";
+import { NewAnnotationCampaign } from "@/view/annotation-campaign/new";
 
 import { DatasetList } from '@/view/dataset';
 import { DatasetDetail } from '@/view/dataset/[datasetID]';
@@ -80,7 +81,7 @@ const AppContent: React.FC = () => {
                 {/*</Route>*/ }
               </Route>
 
-            {/*<Route path='new' element={ <CreateCampaign/> }/>*/ }
+              <Route path='new' element={ <NewAnnotationCampaign/> }/>
           </Route>
 
           <Route path='dataset' element={ <AploseSkeleton/> }>

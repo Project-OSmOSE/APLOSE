@@ -1,26 +1,19 @@
-import React, { ChangeEvent, Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import styles from './create.module.scss'
-import { ChipsInput, FormBloc, Input, Select, Textarea } from "@/components/form";
-import { Dataset, SpectrogramConfiguration } from "@/service/types";
-import { IonButton, IonNote, IonSpinner } from "@ionic/react";
-import { getErrorMessage } from "@/service/function.ts";
+import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import styles from './styles.module.scss'
+import { FormBloc, Input, Select, Textarea } from "@/components/form";
+import { IonButton, IonSpinner } from "@ionic/react";
 import { useToast } from "@/service/ui";
 import { useNavigate } from "react-router-dom";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Colormap, COLORMAP_GREYS, COLORMAPS } from "@/service/ui/color.ts";
-import { WarningText } from "@/components/ui";
-import { DatasetAPI } from "@/service/api/dataset.ts";
 import { CampaignAPI, PostAnnotationCampaign } from "@/service/api/campaign.ts";
+import { DatasetSelect } from "@/features/data/dataset/Select.tsx";
+import { ID } from "@/service/type.ts";
 
 type Errors = { [key in keyof PostAnnotationCampaign]?: string }
 
-export const CreateCampaign: React.FC = () => {
+export const NewAnnotationCampaign: React.FC = () => {
 
-  const {
-    data: allDatasets,
-    isFetching: isFetchingDatasets,
-    error: datasetsError
-  } = DatasetAPI.endpoints.listDataset.useQuery();
   const [ createCampaign, {
     data: createdCampaign,
     isLoading: isSubmittingCampaign,
@@ -55,18 +48,9 @@ export const CreateCampaign: React.FC = () => {
   }, [])
 
   // Data
-  const [ dataset, setDataset ] = useState<Dataset | undefined>();
-  const [ spectro_configs, setSpectroConfigs ] = useState<Array<SpectrogramConfiguration>>([]);
-  const onDatasetChange = useCallback((value: number | string | undefined) => {
-    const d = allDatasets?.find(d => d.name === value);
-    setDataset(d)
-    setSpectroConfigs(d?.spectros ?? [])
-    setErrors(prev => ({ ...prev, datasets: undefined }))
-  }, [ allDatasets ])
-  const onSpectroConfigsChange = useCallback((selection: Array<string | number>) => {
-    setSpectroConfigs(dataset?.spectros.filter(s => selection.indexOf(s.id) > -1) ?? [])
-    setErrors(prev => ({ ...prev, spectro_configs: undefined }))
-  }, [ dataset?.spectros ])
+  const [ datasetID, setDatasetID ] = useState<ID | undefined>();
+  const [ analysisIDs, setAnalysisIDs ] = useState<ID[]>([]);
+  const [ analysisColormaps, setAnalysisColormaps ] = useState<string[]>([]);
 
   // Spectrogram tuning
   const [ allow_image_tuning, setAllowImageTuning ] = useState<boolean>(false);
@@ -94,31 +78,29 @@ export const CreateCampaign: React.FC = () => {
     setColormapInvertedDefault(prev => !prev)
     setErrors(prev => ({ ...prev, colormap_inverted_default: undefined }))
   }, [ setColormapInvertedDefault, setErrors ])
-  const isColormapEditable = useMemo(() => {
-    return spectro_configs?.map((config) => config.colormap).includes("Greys");
-  }, [ spectro_configs ]);
+  const isColormapEditable = useMemo(() => analysisColormaps.includes("Greys"), [ analysisColormaps ]);
 
   // Submit
   const submit = useCallback(() => {
-    if (!name || !dataset || spectro_configs.length === 0) {
+    if (!name || !datasetID || analysisIDs.length === 0) {
       const errors: Errors = {};
       if (!name) errors.name = 'Name is required';
-      if (!dataset) errors.dataset = 'Dataset is required';
-      if (spectro_configs.length === 0) errors.spectro_configs = 'A spectrogram configuration is required';
+      if (!datasetID) errors.dataset = 'Dataset is required';
+      if (analysisIDs.length === 0) errors.spectro_configs = 'An analysis is required';
       setErrors(errors);
       page.current?.scrollTo({ top: 0, left: 0 });
       return;
     }
     createCampaign({
       name, desc, instructions_url, deadline,
-      dataset: dataset.name,
-      spectro_configs: spectro_configs?.map(s => s.id),
+      dataset: datasetID,
+      spectro_configs: analysisIDs,
       allow_image_tuning,
       allow_colormap_tuning,
       colormap_default,
       colormap_inverted_default
     })
-  }, [ name, desc, instructions_url, deadline, dataset, spectro_configs, allow_image_tuning, allow_colormap_tuning, colormap_default, colormap_inverted_default ])
+  }, [ name, desc, instructions_url, deadline, datasetID, analysisIDs, allow_image_tuning, allow_colormap_tuning, colormap_default, colormap_inverted_default ])
   useEffect(() => {
     if (errorSubmittingCampaign) {
       toast.presentError(errorSubmittingCampaign)
@@ -155,29 +137,12 @@ export const CreateCampaign: React.FC = () => {
 
     {/* Dataset & Spectro config */ }
     <FormBloc label="Data">
-
-      { isFetchingDatasets && <IonSpinner/> }
-
-      { datasetsError &&
-          <WarningText>Fail loading datasets:<br/>{ getErrorMessage(datasetsError) }</WarningText> }
-
-      { allDatasets && <Fragment>
-          <Select label="Dataset" placeholder="Select a dataset" error={ errors.dataset }
-                  options={ allDatasets.map(d => ({ value: d.name, label: d.name })) ?? [] } optionsContainer="alert"
-                  value={ dataset?.name } disabled={ !allDatasets.length } onValueSelected={ onDatasetChange }
-                  required={ true }/>
-        { allDatasets.length === 0 && <IonNote>You should first import a dataset</IonNote> }
-
-        { dataset && <ChipsInput label="Spectrogram configurations" error={ errors.spectro_configs }
-                                 disabled={ !dataset.spectros?.length }
-                                 items={ dataset?.spectros.map((c: any) => ({
-                                   value: c.id,
-                                   label: `${ c.name } (${ c.colormap })`
-                                 })) ?? [] }
-                                 activeItemsValues={ spectro_configs.map(s => s.id) }
-                                 setActiveItemsValues={ onSpectroConfigsChange }
-                                 required={ true }/> }
-      </Fragment> }
+      <DatasetSelect selectAnalysis
+                     errors={ errors }
+                     clearError={ e => setErrors(prev => ({ ...prev, [e]: undefined })) }
+                     onDatasetSelected={ setDatasetID }
+                     onAnalysisSelected={ setAnalysisIDs }
+                     onAnalysisColormapsChanged={ setAnalysisColormaps }/>
     </FormBloc>
 
     {/* Spectrogram tuning */ }

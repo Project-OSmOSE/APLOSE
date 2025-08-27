@@ -26,10 +26,11 @@ export function extendCampaign(campaign: AnnotationCampaign): AnnotationCampaign
 }
 
 export type PostAnnotationCampaign = Pick<AnnotationCampaign,
-  'name' | 'desc' | 'instructions_url' | 'deadline' | 'dataset' |
+  'name' | 'desc' | 'instructions_url' | 'deadline' |
   'allow_image_tuning' | 'allow_colormap_tuning' | 'colormap_default' | 'colormap_inverted_default'
 > & {
-  spectro_configs: ID[]
+  analysis: ID[],
+  dataset: ID,
 }
 
 export type PatchAnnotationCampaign = Optionable<Pick<AnnotationCampaign,

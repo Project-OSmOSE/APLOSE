@@ -24,6 +24,7 @@ from backend.api.serializers import (
 )
 from backend.api.serializers.annotation.annotation_campaign import (
     AnnotationCampaignPatchSerializer,
+    AnnotationCampaignPostSerializer,
 )
 from backend.utils.filters import ModelFilter
 from .annotation_phase import AnnotationPhaseViewSet
@@ -97,6 +98,8 @@ class AnnotationCampaignViewSet(
     def get_serializer_class(self):
         if self.request.method == "PATCH":
             return AnnotationCampaignPatchSerializer
+        if self.request.method == "POST":
+            return AnnotationCampaignPostSerializer
         return super().get_serializer_class()
 
     @transaction.atomic()

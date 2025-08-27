@@ -6,6 +6,11 @@ export type GetDatasetsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 export type GetDatasetsQuery = { __typename?: 'Query', allDatasets?: { __typename?: 'DatasetNodeNodeConnection', results: Array<{ __typename?: 'DatasetNode', id: string, name: string, description?: string | null, createdAt: any, legacy: boolean, analysisCount?: number | null, filesCount?: number | null, start?: any | null, end?: any | null } | null> } | null };
 
+export type GetDatasetsAndAnalysisQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type GetDatasetsAndAnalysisQuery = { __typename?: 'Query', allDatasets?: { __typename?: 'DatasetNodeNodeConnection', results: Array<{ __typename?: 'DatasetNode', id: string, name: string, spectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', results: Array<{ __typename?: 'SpectrogramAnalysisNode', id: string, name: string, colormap: { __typename?: 'ColormapNode', name: string } } | null> } | null } | null> } | null };
+
 export type GetAvailableDatasetsForImportQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
@@ -48,6 +53,25 @@ export const GetDatasetsDocument = `
       filesCount
       start
       end
+    }
+  }
+}
+    `;
+export const GetDatasetsAndAnalysisDocument = `
+    query getDatasetsAndAnalysis {
+  allDatasets(orderBy: "name") {
+    results {
+      id
+      name
+      spectrogramAnalysis(orderBy: "name") {
+        results {
+          id
+          name
+          colormap {
+            name
+          }
+        }
+      }
     }
   }
 }
@@ -131,6 +155,9 @@ const injectedRtkApi = gqlAPI.injectEndpoints({
   endpoints: (build) => ({
     getDatasets: build.query<GetDatasetsQuery, GetDatasetsQueryVariables | void>({
       query: (variables) => ({ document: GetDatasetsDocument, variables })
+    }),
+    getDatasetsAndAnalysis: build.query<GetDatasetsAndAnalysisQuery, GetDatasetsAndAnalysisQueryVariables | void>({
+      query: (variables) => ({ document: GetDatasetsAndAnalysisDocument, variables })
     }),
     getAvailableDatasetsForImport: build.query<GetAvailableDatasetsForImportQuery, GetAvailableDatasetsForImportQueryVariables | void>({
       query: (variables) => ({ document: GetAvailableDatasetsForImportDocument, variables })

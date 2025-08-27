@@ -4,8 +4,9 @@ from os import listdir
 from os.path import isfile, join, exists
 from pathlib import Path
 
+import graphene_django_optimizer
 from django.conf import settings
-from django.db.models import Count, Min, QuerySet, Max
+from django.db.models import Min, QuerySet, Max, Count
 from django_filters import FilterSet, OrderingFilter
 from graphene import (
     relay,
@@ -49,7 +50,7 @@ class DatasetFilter(FilterSet):
         model = Dataset
         fields = {}
 
-    order_by = OrderingFilter(fields=("created_at",))
+    order_by = OrderingFilter(fields=("created_at", "name"))
 
 
 class DatasetNode(ApiObjectType):
@@ -74,37 +75,18 @@ class DatasetNode(ApiObjectType):
 
     @classmethod
     def get_queryset(cls, queryset: QuerySet[Dataset], info: GraphQLResolveInfo):
-        fields = cls._get_query_fields(info)
-
-        cls._init_queryset_extensions()
-        for field in fields:
-            if field.name.value == "analysisCount":
-                cls.annotations = {
-                    **cls.annotations,
-                    "analysis_count": Count("spectrogram_analysis", distinct=True),
-                }
-                cls.prefetch.append("spectrogram_analysis")
-            if field.name.value == "filesCount":
-                cls.annotations = {
-                    **cls.annotations,
-                    "files_count": Count(
-                        "spectrogram_analysis__spectrograms", distinct=True
-                    ),
-                }
-                cls.prefetch.append("spectrogram_analysis__spectrograms")
-            if field.name.value == "start":
-                cls.annotations = {
-                    **cls.annotations,
-                    "start": Min("spectrogram_analysis__spectrograms__start"),
-                }
-                cls.prefetch.append("spectrogram_analysis__spectrograms")
-            if field.name.value == "end":
-                cls.annotations = {
-                    **cls.annotations,
-                    "end": Max("spectrogram_analysis__spectrograms__end"),
-                }
-                cls.prefetch.append("spectrogram_analysis__spectrograms")
-        return cls._finalize_queryset(super().get_queryset(queryset, info))
+        return graphene_django_optimizer.query(
+            queryset.prefetch_related(
+                "spectrogram_analysis",
+                "spectrogram_analysis__spectrograms",
+            ).annotate(
+                analysisCount=Count("spectrogram_analysis", distinct=True),
+                files_count=Count("spectrogram_analysis__spectrograms", distinct=True),
+                start=Min("spectrogram_analysis__spectrograms__start"),
+                end=Max("spectrogram_analysis__spectrograms__end"),
+            ),
+            info,
+        )
 
 
 class ImportDatasetType(ObjectType):  # pylint: disable=too-few-public-methods
