@@ -86,7 +86,7 @@ export const NewAnnotationCampaign: React.FC = () => {
       const errors: Errors = {};
       if (!name) errors.name = 'Name is required';
       if (!datasetID) errors.dataset = 'Dataset is required';
-      if (analysisIDs.length === 0) errors.spectro_configs = 'An analysis is required';
+      if (analysisIDs.length === 0) errors.analysis = 'An analysis is required';
       setErrors(errors);
       page.current?.scrollTo({ top: 0, left: 0 });
       return;
@@ -94,7 +94,7 @@ export const NewAnnotationCampaign: React.FC = () => {
     createCampaign({
       name, desc, instructions_url, deadline,
       dataset: datasetID,
-      spectro_configs: analysisIDs,
+      analysis: analysisIDs,
       allow_image_tuning,
       allow_colormap_tuning,
       colormap_default,

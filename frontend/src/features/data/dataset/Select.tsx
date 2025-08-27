@@ -9,7 +9,7 @@ import { PostAnnotationCampaign } from "@/service/api/campaign.ts";
 import { ID } from "@/service/type.ts";
 import { ImportAnalysisButton } from "@/features/data/spectrogramAnalysis/import";
 
-type Error = { [key in keyof Pick<PostAnnotationCampaign, 'dataset' | 'spectro_configs'>]?: string }
+type Error = { [key in keyof Pick<PostAnnotationCampaign, 'dataset' | 'analysis'>]?: string }
 
 export const DatasetSelect: React.FC<{
   errors: Error,
@@ -46,7 +46,7 @@ export const DatasetSelect: React.FC<{
   const updateAnalysisSelection = useCallback((selection: Array<string | number>) => {
     setSelectedAnalysis(selection)
     if (onAnalysisSelected) onAnalysisSelected(selection)
-    clearError('spectro_configs')
+    clearError('analysis')
   }, [ setSelectedAnalysis, onAnalysisSelected, clearError ]);
   useEffect(() => {
     if (!onAnalysisColormapsChanged) return;
@@ -84,7 +84,7 @@ export const DatasetSelect: React.FC<{
 
     { selectAnalysis && <Fragment>
         <ChipsInput label="Analysis"
-                    error={ errors.spectro_configs }
+                    error={ errors.analysis }
                     disabled={ analysisItems.length === 0 }
                     items={ analysisItems }
                     activeItemsValues={ selectedAnalysis }

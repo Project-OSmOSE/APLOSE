@@ -47,33 +47,6 @@ class AnnotationCampaignSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only = True
 
-    def validate_spectro_configs_in_dataset(self, attrs: dict) -> None:
-        """Validates that chosen spectros correspond to chosen datasets"""
-        spectro_configs: list[SpectrogramAnalysis] = attrs["analysis"]
-        dataset: Dataset = attrs["datasets"]
-        bad_vals = []
-        for spectro in spectro_configs:
-            if spectro not in dataset.spectrogram_analysis:
-                bad_vals.append(str(spectro))
-        if bad_vals:
-            error = f"{bad_vals} not valid ids for spectro configs of given datasets ({dataset})"
-            raise serializers.ValidationError({"spectro_configs": error})
-
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        attrs["owner"] = self.context["request"].user
-        if (
-            "deadline" in attrs
-            and attrs["deadline"] is not None
-            and attrs["deadline"] < datetime.now(tz=pytz.UTC).date()
-        ):
-            raise serializers.ValidationError(
-                {"deadline": "Deadline date should be in the future."},
-                code="min_value",
-            )
-        self.validate_spectro_configs_in_dataset(attrs)
-        return attrs
-
 
 class AnnotationCampaignPostSerializer(serializers.ModelSerializer):
     """Serializer for annotation campaign creation"""
@@ -105,15 +78,15 @@ class AnnotationCampaignPostSerializer(serializers.ModelSerializer):
 
     def validate_spectro_configs_in_dataset(self, attrs: dict) -> None:
         """Validates that chosen spectros correspond to chosen datasets"""
-        spectro_configs: list[SpectrogramAnalysis] = attrs["analysis"]
-        dataset: Dataset = attrs["datasets"]
+        analysis_list: list[SpectrogramAnalysis] = attrs["analysis"]
+        dataset: Dataset = attrs["dataset"]
         bad_vals = []
-        for spectro in spectro_configs:
-            if spectro not in dataset.spectrogram_analysis:
-                bad_vals.append(str(spectro))
+        for analysis in analysis_list:
+            if analysis not in dataset.spectrogram_analysis.all():
+                bad_vals.append(str(analysis))
         if bad_vals:
             error = f"{bad_vals} not valid ids for spectro configs of given datasets ({dataset})"
-            raise serializers.ValidationError({"spectro_configs": error})
+            raise serializers.ValidationError({"analysis": error})
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
