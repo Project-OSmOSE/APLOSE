@@ -78,13 +78,13 @@ export type PointResult = BaseAnnotationResult & PointBounds
 export type BoxResult = BaseAnnotationResult & BoxBounds
 
 export type AnnotatorData = {
+  file: DatasetFile;
   is_submitted: boolean;
   is_assigned: boolean; // Is the user allowed to edit this file
-  campaignID: number;
-  userID: number
-  file: DatasetFile;
-  results: Array<AnnotationResult>;
   task_comments: Array<AnnotationComment>;
+  results: Array<AnnotationResult>;
+
+
   previous_file_id: number | null;
   next_file_id: number | null;
 
@@ -92,4 +92,8 @@ export type AnnotatorData = {
   total_tasks: number;
   current_task_index_in_filter: number;
   total_tasks_in_filter: number;
+
+
+  campaignID: number;
+  userID: number
 }

@@ -23,7 +23,7 @@ class AnnotationValidation(models.Model):
         on_delete=models.CASCADE,
         related_name="annotation_results_validation",
     )
-    is_valid = models.BooleanField(null=True, blank=True)
+    is_valid = models.BooleanField()
 
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated_at = models.DateTimeField(auto_now=True)

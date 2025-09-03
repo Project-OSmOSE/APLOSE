@@ -1,31 +1,14 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styles from './styles.module.scss';
-import { useAppDispatch, useAppSelector } from '@/service/app.ts';
 import { Textarea } from "@/components/form";
 import { IonButton, IonIcon } from "@ionic/react";
 import { chatbubbleEllipses, chatbubbleOutline, trashBinOutline } from "ionicons/icons";
-import { AnnotatorSlice } from "@/service/slices/annotator.ts";
+import { useAnnotatorAnnotations, useCommentsForAnnotator } from "@/features/Annotator";
 
 
 export const Comment: React.FC = () => {
-
-  const dispatch = useAppDispatch();
-  const {
-    focusedCommentID,
-    results,
-    task_comments,
-    focusedResultID,
-  } = useAppSelector(state => state.annotator)
-
-  const currentComment = useMemo(() => {
-    if (!focusedResultID) return task_comments?.find(c => c.id === focusedCommentID)?.comment;
-    return results?.find(r => r.id === focusedResultID)?.comments.find(c => c.id === focusedCommentID)?.comment;
-  }, [ results, focusedCommentID ])
-
-  const taskCommentExists = useMemo(() => {
-    if (!task_comments) return false;
-    return task_comments.filter(c => c.comment.trim().length > 0).length > 0;
-  }, [ task_comments ]);
+  const { comment, removeCurrent, updateCurrent } = useCommentsForAnnotator()
+  const { blur } = useAnnotatorAnnotations()
 
   return (
     <div className={ [ styles.bloc, styles.comments ].join(' ') }>
@@ -36,12 +19,10 @@ export const Comment: React.FC = () => {
                   rows={ 5 }
                   placeholder="Enter your comment"
                   style={ { resize: 'none' } }
-                  value={ currentComment ?? '' }
-                  onChange={ e => dispatch(AnnotatorSlice.actions.updateFocusComment(e.target.value)) }/>
+                  value={ comment?.comment ?? '' }
+                  onChange={ e => updateCurrent(e.target.value) }/>
 
-        <IonButton color='danger' size='small'
-                   className={ styles.removeButton }
-                   onClick={ () => dispatch(AnnotatorSlice.actions.removeFocusComment()) }>
+        <IonButton color='danger' size='small' className={ styles.removeButton } onClick={ removeCurrent }>
           Remove
           <IonIcon slot='end' icon={ trashBinOutline }/>
         </IonButton>
@@ -49,11 +30,9 @@ export const Comment: React.FC = () => {
 
 
       <div className={ styles.footer }>
-        <IonButton fill='clear' color='medium'
-                   onClick={ () => dispatch(AnnotatorSlice.actions.focusTask()) }>
+        <IonButton fill='clear' color='medium' onClick={ blur }>
           Task Comment
-          <IonIcon slot='end'
-                   icon={ taskCommentExists ? chatbubbleEllipses : chatbubbleOutline }/>
+          <IonIcon slot='end' icon={ comment ? chatbubbleEllipses : chatbubbleOutline }/>
         </IonButton>
       </div>
     </div>

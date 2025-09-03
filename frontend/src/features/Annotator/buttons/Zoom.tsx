@@ -1,33 +1,17 @@
 import React, { Fragment } from "react";
 import styles from '../styles.module.scss'
-import { useAppDispatch, useAppSelector } from '@/service/app.ts';
 import { MdZoomIn, MdZoomOut } from "react-icons/md";
-import { useCurrentConfiguration } from '@/service/annotator/spectrogram';
-import { AnnotatorSlice } from "@/service/slices/annotator.ts";
+import { useAnnotatorInput } from "@/features/Annotator";
 
 export const ZoomButton: React.FC = () => {
+  const { zoom, zoomInLevel, zoomOutLevel, zoomIn, zoomOut } = useAnnotatorInput();
 
-  const {
-    zoomLevel,
-  } = useAppSelector(state => state.annotator.userPreferences);
-  const dispatch = useAppDispatch()
-
-  const currentConfiguration = useCurrentConfiguration();
-
-  function zoomIn() {
-    dispatch(AnnotatorSlice.actions.zoom({ direction: 'in' }))
-  }
-
-  function zoomOut() {
-    dispatch(AnnotatorSlice.actions.zoom({ direction: 'out' }))
-  }
-
+  if (!zoomInLevel && !zoomOutLevel) return <Fragment/>
   return <Fragment>
-    <MdZoomOut className={ [ styles.zoom, zoomLevel > 1 ? '' : styles.disabled ].join(' ') }
+    <MdZoomOut className={ [ styles.zoom, zoomOutLevel ? '' : styles.disabled ].join(' ') }
                onClick={ zoomOut }/>
-    <MdZoomIn
-      className={ [ styles.zoom, (zoomLevel * 2) <= (2 ** ((currentConfiguration?.zoom_level ?? 1) - 1)) ? '' : styles.disabled ].join(' ') }
-      onClick={ zoomIn }/>
-    <p>{ zoomLevel }x</p>
+    <MdZoomIn className={ [ styles.zoom, zoomInLevel ? '' : styles.disabled ].join(' ') }
+              onClick={ zoomIn }/>
+    <p>{ zoom }x</p>
   </Fragment>
 }

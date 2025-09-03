@@ -7,11 +7,11 @@ import { getUserOnLoginMiddleware } from "@/service/api/user.ts";
 import { logoutOn401Listener } from "@/service/api/auth.ts";
 import { AuthSlice } from "@/service/slices/auth.ts";
 import { FilterSlice } from "@/service/slices/filter.ts";
-import { AnnotatorSlice } from "@/service/slices/annotator.ts";
 import { ImportAnnotationsSlice } from "@/service/slices/import-annotations.ts";
 import { SettingsSlice } from "@/service/slices/settings.ts";
 import { gqlAPI } from "@/features/gql/baseApi.ts";
 import { AnnotationCampaignSlice } from "@/features/annotation/annotationCampaign";
+import { AnnotatorSlice } from "@/features/Annotator";
 
 export const AppStore = configureStore({
   reducer: {

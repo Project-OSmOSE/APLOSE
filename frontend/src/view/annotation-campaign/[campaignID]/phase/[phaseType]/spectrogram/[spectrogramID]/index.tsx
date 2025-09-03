@@ -1,30 +1,26 @@
 import React, { Fragment, useCallback, useEffect } from "react";
 import styles from "./styles.module.scss";
-import { UserAPI } from "@/service/api/user.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
-import { useRetrieveAnnotator } from "@/service/api/annotator.ts";
-import { useAnnotatorSliceSetup, useCanNavigate } from "@/service/slices/annotator.ts";
-import { useAppDispatch, useAppSelector } from "@/service/app.ts";
+import { useAppDispatch } from "@/service/app.ts";
 import { API } from "@/service/api";
 import { Footer, Header } from "@/components/layout";
 import { Link, Progress } from "@/components/ui";
 import { IonIcon, IonNote } from "@ionic/react";
 import { helpBuoyOutline } from "ionicons/icons";
 import { IoCheckmarkCircleOutline, IoChevronForwardOutline } from "react-icons/io5";
-import { Annotator } from "@/features/Annotator";
+import { Annotator, useAnnotatorNavigation, useAnnotatorQuery, useAnnotatorUI } from "@/features/Annotator";
+import { AnnotationTaskStatus } from "@/features/gql/types.generated.ts";
 
 export const AnnotatorPage: React.FC = () => {
-  UserAPI.endpoints.getCurrentUser.useQuery()
   const { campaignID, campaign } = useRetrieveCurrentCampaign()
   const { phaseType, phase } = useRetrieveCurrentPhase()
-  const { data, isEditable } = useRetrieveAnnotator();
-  useAnnotatorSliceSetup()
+  const { data, canEdit } = useAnnotatorQuery();
   const dispatch = useAppDispatch()
 
-  const pointerPosition = useAppSelector(state => state.annotator.ui.pointerPosition);
+  const { pointerPosition } = useAnnotatorUI()
 
-  const canNavigate = useCanNavigate()
+  const { canNavigate } = useAnnotatorNavigation()
 
   useEffect(() => {
     if (pointerPosition) { // Disable scroll
@@ -62,17 +58,18 @@ export const AnnotatorPage: React.FC = () => {
             </Fragment> }>
       { data && campaign && <div className={ styles.info }>
           <p>
-            { campaign.name } <IoChevronForwardOutline/> { data.file.filename } { data.is_submitted &&
+            { campaign.name }
+              <IoChevronForwardOutline/> { data.spectrogramById?.filename } { data.annotationTask?.status === AnnotationTaskStatus.Finished &&
               <IoCheckmarkCircleOutline/> }
           </p>
-        { isEditable &&
+        { canEdit && data.annotationTaskIndexes?.total &&
             <Progress label='Position'
                       className={ styles.progress }
-                      value={ data.current_task_index + 1 }
-                      total={ data.total_tasks }/> }
+                      value={ (data.annotationTaskIndexes.current ?? 0) + 1 }
+                      total={ data.annotationTaskIndexes.total }/> }
         { campaign?.archive ? <IonNote>You cannot annotate an archived campaign.</IonNote> :
           phase?.ended_by ? <IonNote>You cannot annotate an ended phase.</IonNote> :
-            !data.is_assigned ? <IonNote>You are not assigned to annotate this file.</IonNote> :
+            !data.annotationFileRange ? <IonNote>You are not assigned to annotate this file.</IonNote> :
               <Fragment/>
         }
       </div> }

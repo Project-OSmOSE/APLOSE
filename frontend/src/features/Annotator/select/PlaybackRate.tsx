@@ -1,21 +1,18 @@
-import React, { Fragment, MutableRefObject } from "react";
-import { useAppSelector } from '@/service/app.ts';
-import { useAudioService } from "@/service/ui/audio.ts";
+import React, { Fragment, MutableRefObject, useCallback } from "react";
 import { Select } from "@/components/form";
+import { useAnnotatorInput } from "@/features/Annotator";
 
 const AVAILABLE_RATES: Array<number> = [ 0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0 ];
 
 
 export const PlaybackRateSelect: React.FC<{ player: MutableRefObject<HTMLAudioElement | null> }> = ({ player }) => {
+  const { audioSpeed, setAudioSpeed: _setAudioSpeed } = useAnnotatorInput()
 
-  const audioSpeed = useAppSelector(state => state.annotator.userPreferences.audioSpeed);
-
-  const audioService = useAudioService(player)
-
-  const onSelect = (value: string | number | undefined) => {
-    if (!value) return;
-    audioService.setAudioSpeed(+value)
-  }
+  const setAudioSpeed = useCallback((value: string | number | undefined) => {
+    const rate = +(value ?? 1.0);
+    if (player?.current) player.current.playbackRate = rate;
+    _setAudioSpeed(rate)
+  }, [ player, _setAudioSpeed ])
 
   if (!player || player.current?.preservesPitch === undefined) return <Fragment/>
   return <Select placeholder='Select playback rate'
@@ -26,5 +23,5 @@ export const PlaybackRateSelect: React.FC<{ player: MutableRefObject<HTMLAudioEl
                  value={ audioSpeed }
                  required={ true }
                  optionsContainer='popover'
-                 onValueSelected={ onSelect }/>
+                 onValueSelected={ setAudioSpeed }/>
 }

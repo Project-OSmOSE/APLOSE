@@ -1,18 +1,22 @@
 import React, { Fragment, useMemo } from "react";
 import styles from './styles.module.scss';
-import { useCurrentAnnotation } from '@/service/annotator/spectrogram';
 import { IonNote } from "@ionic/react";
-import { ConfidenceInfo, FrequencyInfo, LabelInfo, TimeInfo } from "@/features/Annotator/bloc/Annotation.tsx";
+import { ConfidenceInfo, FrequencyInfo, LabelInfo, TimeInfo } from "./Annotation";
+import { selectAnnotationID, selectAnnotations, useAnnotatorAnnotations } from "@/features/Annotator";
+import { useAppSelector } from "@/service/app.ts";
 
 
 export const CurrentAnnotation: React.FC = () => {
-  const { annotation } = useCurrentAnnotation();
+  const annotations = useAppSelector(selectAnnotations);
+  const annotationID = useAppSelector(selectAnnotationID);
+  const { annotation } = useAnnotatorAnnotations()
 
   const isRemoved = useMemo(() => {
-    if (!annotation) return false;
-    if (annotation.updated_to.length > 0) return false;
-    return annotation.validations.some(validation => !validation.is_valid)
-  }, [ annotation ])
+    if (!annotationID) return false;
+    if (!annotation?.validations) return false;
+    if (annotations.some(a => a.isUpdateOfId === annotationID)) return false;
+    return annotation.validations?.results.some(v => !v?.isValid)
+  }, [ annotationID, annotation, annotations ])
 
   return (
     <div className={ [ styles.bloc, styles.current ].join(' ') }>
@@ -25,10 +29,10 @@ export const CurrentAnnotation: React.FC = () => {
 
           { isRemoved && <IonNote>You removed this annotation</IonNote> }
 
-            <LabelInfo annotation={ annotation }/>
-            <ConfidenceInfo annotation={ annotation }/>
-            <TimeInfo annotation={ annotation }/>
-            <FrequencyInfo annotation={ annotation }/>
+            <LabelInfo { ...annotation }/>
+            <ConfidenceInfo { ...annotation }/>
+            <TimeInfo { ...annotation }/>
+            <FrequencyInfo { ...annotation }/>
 
         </Fragment> }
       </div>

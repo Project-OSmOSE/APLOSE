@@ -1,5 +1,8 @@
-import { LinearScaleService } from "./linear.service.ts";
-import { AbstractScale, Step, LinearScale } from '@/service/dataset/spectrogram-configuration/scale';
+import { LinearScaleNode } from "@/features/gql/types.generated.ts";
+import { LinearScaleService } from "./linear.scale";
+import { AbstractScale, Step } from './type';
+
+type LinearScale = Pick<LinearScaleNode, 'minValue' | 'maxValue' | 'ratio'>
 
 export class MultiLinearScaleService implements AbstractScale {
 
@@ -8,23 +11,19 @@ export class MultiLinearScaleService implements AbstractScale {
   constructor(private pixelHeight: number,
               innerScales: Array<LinearScale>,) {
     let previousRatio = 0
-    const data = [...innerScales].sort((a, b) => a.ratio - b.ratio)
+    const data = [ ...innerScales ].sort((a, b) => a.ratio - b.ratio)
     for (const scale of data) {
       // Go through scale with ascending ratio (since ratio correspond to the scale max frequency position)
-      if (innerScales.some(otherScale => otherScale.min_value < scale.min_value && otherScale.max_value > scale.min_value))
+      if (innerScales.some(otherScale => otherScale.minValue < scale.minValue && otherScale.maxValue > scale.minValue))
         throw new Error('Given scales are conflicting!')
-      if (innerScales.some(otherScale => otherScale.min_value < scale.max_value && otherScale.max_value > scale.max_value))
+      if (innerScales.some(otherScale => otherScale.minValue < scale.maxValue && otherScale.maxValue > scale.maxValue))
         throw new Error('Given scales are conflicting!')
       if (scale.ratio === 0)
         throw new Error('Cannot have a ratio of 0!')
 
       this.innerScales.push({
         scale,
-        service: new LinearScaleService(
-          pixelHeight * (scale.ratio - previousRatio),
-          scale.max_value,
-          scale.min_value
-        )
+        service: new LinearScaleService(pixelHeight * (scale.ratio - previousRatio), scale)
       })
       previousRatio = scale.ratio;
     }
@@ -55,8 +54,8 @@ export class MultiLinearScaleService implements AbstractScale {
 
       for (const step of scaleSteps) {
         if (array.find(s => s.value === step.value)) continue;
-        if (step.value === scale.scale.max_value
-          && this.innerScales.some(s => s.scale.min_value === scale.scale.max_value)) {
+        if (step.value === scale.scale.maxValue
+          && this.innerScales.some(s => s.scale.minValue === scale.scale.maxValue)) {
           array.push({
             ...step,
             additionalValue: step.value,
@@ -64,8 +63,8 @@ export class MultiLinearScaleService implements AbstractScale {
           })
           continue;
         }
-        if (step.value === scale.scale.min_value
-          && this.innerScales.some(s => s.scale.max_value === scale.scale.min_value))
+        if (step.value === scale.scale.minValue
+          && this.innerScales.some(s => s.scale.maxValue === scale.scale.minValue))
           continue;
         const existingPosition = array.find(s => s.position === step.position && s.correspondingRatio === step.correspondingRatio);
         if (existingPosition) {
@@ -92,31 +91,34 @@ export class MultiLinearScaleService implements AbstractScale {
       .map(s => s.scale)
       .filter(s => s.ratio >= minScale.ratio && s.ratio <= maxScale.ratio)
       .sort((a, b) => a.ratio - b.ratio);
-    let previousMax = minScale.max_value;
+    let previousMax = minScale.maxValue;
     for (const scale of scalesBetween) {
-      if (scale.max_value === previousMax) continue;
-      if (scale.min_value !== previousMax) return false;
-      previousMax = scale.max_value;
+      if (scale.maxValue === previousMax) continue;
+      if (scale.minValue !== previousMax) return false;
+      previousMax = scale.maxValue;
     }
     return true;
   }
 
-  private getScaleForValue(value: number, force: boolean=true): { service: LinearScaleService, scale: LinearScale } | undefined {
+  private getScaleForValue(value: number, force: boolean = true): {
+    service: LinearScaleService,
+    scale: LinearScale
+  } | undefined {
     // Scale including value
-    let correspondingScale = this.innerScales.find(s => s.scale.min_value <= value && s.scale.max_value >= value);
+    let correspondingScale = this.innerScales.find(s => s.scale.minValue <= value && s.scale.maxValue >= value);
 
     if (!correspondingScale && force) {
       // Search out of the scale
-      const absoluteMin = Math.min(...this.innerScales.map(s => s.scale.min_value))
-      const absoluteMax = Math.max(...this.innerScales.map(s => s.scale.max_value))
+      const absoluteMin = Math.min(...this.innerScales.map(s => s.scale.minValue))
+      const absoluteMax = Math.max(...this.innerScales.map(s => s.scale.maxValue))
       if (value < absoluteMin) {
-        correspondingScale = this.innerScales.find(s => s.scale.min_value === absoluteMin);
+        correspondingScale = this.innerScales.find(s => s.scale.minValue === absoluteMin);
       } else if (value > absoluteMax)
-        correspondingScale = this.innerScales.find(s => s.scale.max_value === absoluteMax);
+        correspondingScale = this.innerScales.find(s => s.scale.maxValue === absoluteMax);
       else {
         // Value between 2 scales
-        const directUp = Math.min(...this.innerScales.filter(s => s.scale.min_value > value).map(s => s.scale.min_value))
-        correspondingScale = this.innerScales.find(s => s.scale.min_value === directUp);
+        const directUp = Math.min(...this.innerScales.filter(s => s.scale.minValue > value).map(s => s.scale.minValue))
+        correspondingScale = this.innerScales.find(s => s.scale.minValue === directUp);
       }
     }
 

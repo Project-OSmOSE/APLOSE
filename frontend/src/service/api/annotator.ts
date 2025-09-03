@@ -7,20 +7,17 @@ import {
   AnnotationResult,
   AnnotationResultValidations,
   AnnotatorData,
-  DetectorConfiguration,
-  Phase
+  DetectorConfiguration
 } from "@/service/types";
 import { useParams } from "react-router-dom";
 import { useAppSelector } from "@/service/app.ts";
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import { skipToken } from "@reduxjs/toolkit/query";
+import { useCallback, useEffect, useRef } from "react";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { SpectrogramFilter } from "@/service/api/annotation-file-range.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
-import { useSpectrogramFilters } from "@/service/slices/filter.ts";
 import { extendDatasetFile } from "@/service/api/dataset.ts";
 import { API } from "@/service/api/index.ts";
-import { AnnotatorState } from "@/service/slices/annotator.ts";
+import { AnnotatorState } from "@/features/Annotator";
 
 type WriteAnnotationResult =
   Omit<AnnotationResult, "id" | "comments" | "validations" | "dataset_file" | "confidence_indicator" | "detector_configuration" | 'type' | 'updated_to'>
@@ -37,38 +34,6 @@ type WriteAnnotationResult =
 type WriteAnnotationComment =
   Omit<AnnotationComment, "id" | "annotation_result" | "annotation_campaign" | "author" | "dataset_file">
   & { id?: number; }
-
-function transformCommentsForWriting(comments: AnnotationComment[]): WriteAnnotationComment[] {
-  return comments.filter(c => c.comment.trim().length > 0).map(c => ({
-    id: c.id > -1 ? c.id : undefined,
-    comment: c.comment.trim()
-  }))
-}
-
-function transformBaseResult(result: AnnotationResult, phase: Phase): Omit<WriteAnnotationResult, 'is_update_of'> {
-  const validations = result.validations.map(v => ({
-    is_valid: v.is_valid,
-    id: v.id > -1 ? v.id : undefined,
-  }))
-  if (phase === 'Verification' && validations.length === 0) {
-    validations.push({ id: undefined, is_valid: true })
-  }
-  return {
-    id: result.id > -1 ? result.id : undefined,
-    comments: transformCommentsForWriting(result.comments),
-    validations,
-    confidence_indicator: result.confidence_indicator ?? undefined,
-    detector_configuration: result.detector_configuration ?? undefined,
-    label: result.label,
-    start_time: result.start_time,
-    end_time: result.end_time,
-    start_frequency: result.start_frequency,
-    end_frequency: result.end_frequency,
-    acoustic_features: result.acoustic_features,
-    annotation_campaign_phase: result.annotation_campaign_phase,
-    annotator: result.annotator
-  }
-}
 
 export const AnnotatorAPI = API.injectEndpoints({
   endpoints: builder => ({
@@ -99,39 +64,17 @@ export const AnnotatorAPI = API.injectEndpoints({
       campaign: AnnotationCampaign,
       phase: AnnotationPhase,
       fileID: ID,
-      results: AnnotationResult[],
-      task_comments: AnnotationComment[],
+      results: WriteAnnotationResult[],
+      task_comments: WriteAnnotationComment[],
       sessionStart: Date,
     }>({
       query: ({ campaign, phase, fileID, results, task_comments, sessionStart }) => {
-
-        // Results
-        const post_results: WriteAnnotationResult[] = []
-        const updates: AnnotationResult[] = []
-        for (const r of results) {
-          post_results.push({
-            ...transformBaseResult(r, phase.phase),
-            is_update_of: null,
-          })
-          updates.push(...r.updated_to)
-        }
-        for (const update of updates) {
-          post_results.push({
-            ...transformBaseResult(update, phase.phase),
-            is_update_of: results.find(r => r.updated_to.some(u => u.id === update.id))?.id ?? null,
-            validations: []
-          })
-        }
-
-        // Task comments
-        const post_task_comments: WriteAnnotationComment[] = transformCommentsForWriting(task_comments)
-
         return {
           url: `annotator/campaign/${ campaign.id }/phase/${ phase.id }/file/${ fileID }/`,
           method: 'POST',
           body: {
-            results: post_results,
-            task_comments: post_task_comments,
+            results,
+            task_comments,
             session: {
               start: sessionStart.toISOString(),
               end: (new Date()).toISOString(),
@@ -149,50 +92,74 @@ export const AnnotatorAPI = API.injectEndpoints({
   })
 })
 
-export const useRetrieveAnnotator = (args: { refetchOnMountOrArgChange: boolean } | void) => {
-  const { params } = useSpectrogramFilters()
-  const { campaign } = useRetrieveCurrentCampaign()
-  const { phase, isEditable: isPhaseEditable } = useRetrieveCurrentPhase()
-  const { fileID } = useParams<{ fileID: string }>();
-  // const filters = useAppSelector(selectFileFilters)
-  const { data, ...info } = AnnotatorAPI.endpoints.retrieveAnnotator.useQuery(
-    (campaign && phase && fileID) ?
-      { campaignID: campaign.id, phaseID: phase.id, fileID, ...params }
-      : skipToken, {
-      refetchOnMountOrArgChange: args?.refetchOnMountOrArgChange
-    });
-
-  const isEditable = useMemo(() => isPhaseEditable && data?.is_assigned, [ isPhaseEditable, data ])
-  return useMemo(() => ({ data, isEditable, ...info, }), [ data, isEditable, info ])
-}
-
 export const usePostAnnotator = () => {
   const { campaign } = useRetrieveCurrentCampaign()
   const { phase } = useRetrieveCurrentPhase()
+  const { spectrogramID } = useParams<{ spectrogramID: string }>();
   const [ _post ] = AnnotatorAPI.endpoints.postAnnotator.useMutation()
-  const annotator = useAppSelector(state => state.annotator);
-  const _annotator = useRef<AnnotatorState>(annotator)
+  const slice: AnnotatorState = useAppSelector(state => state.AnnotatorSlice);
+  const _slice = useRef<AnnotatorState>(slice)
   const _campaign = useRef<AnnotationCampaign | undefined>(campaign)
   const _phase = useRef<AnnotationPhase | undefined>(phase)
+  const _spectrogramID = useRef<string | undefined>(spectrogramID)
   useEffect(() => {
-    _annotator.current = annotator;
-  }, [ annotator ]);
+    _slice.current = slice;
+  }, [ slice ]);
   useEffect(() => {
     _campaign.current = campaign;
   }, [ campaign ]);
   useEffect(() => {
     _phase.current = phase;
   }, [ phase ]);
+  useEffect(() => {
+    _spectrogramID.current = spectrogramID;
+  }, [ spectrogramID ]);
 
   return useCallback(() => {
-    if (!_campaign.current || !_phase.current || !_annotator.current.file) return;
+    if (!_campaign.current || !_phase.current || !_spectrogramID.current) return;
     return _post({
       campaign: _campaign.current,
       phase: _phase.current,
-      fileID: _annotator.current.file.id,
-      results: _annotator.current.results ?? [],
-      task_comments: _annotator.current.task_comments ?? [],
-      sessionStart: new Date(_annotator.current.sessionStart),
+      fileID: _spectrogramID.current,
+      results: _slice.current.annotations.map(a => ({
+        id: +a.id > -1 ? +a.id : undefined,
+        annotator: a.annotator ? +a.annotator.id : null,
+        detector_configuration: a.detectorConfiguration ? {
+          id: +a.detectorConfiguration.id,
+          detector: a.detectorConfiguration.detector.name,
+          configuration: a.detectorConfiguration.configuration ?? ''
+        } : undefined,
+        start_time: typeof a.startTime === 'number' ? a.startTime : null,
+        end_time: typeof a.endTime === 'number' ? a.endTime : null,
+        start_frequency: typeof a.startFrequency === 'number' ? a.startFrequency : null,
+        end_frequency: typeof a.endFrequency === 'number' ? a.endFrequency : null,
+        is_update_of: a.isUpdateOfId ? +a.isUpdateOfId : null,
+        label: a.label.name,
+        confidence_indicator: a.confidence?.label,
+        annotation_campaign_phase: +a.annotationPhase.id,
+        comments: _slice.current.comments.filter(c => c.annotationId === a.id).map(c => ({
+          id: +c.id > -1 ? +c.id : undefined,
+          comment: c.comment,
+        } as WriteAnnotationComment)),
+        acoustic_features: a.acousticFeatures ? {
+          start_frequency: a.acousticFeatures.startFrequency ?? null,
+          end_frequency: a.acousticFeatures.endFrequency ?? null,
+          trend: a.acousticFeatures.trend ?? null,
+          has_harmonics: a.acousticFeatures.hasHarmonics ?? null,
+          relative_min_frequency_count: a.acousticFeatures.relativeMinFrequencyCount ?? null,
+          relative_max_frequency_count: a.acousticFeatures.relativeMaxFrequencyCount ?? null,
+          steps_count: a.acousticFeatures.stepsCount ?? null,
+        } : null,
+        validations: a.validations?.results.filter(v => v !== null).map(v => ({
+          id: +v.id > -1 ? +v.id : undefined,
+          is_valid: v.isValid
+        })) ?? (_phase.current?.phase === "Verification" ? [ { id: undefined, is_valid: true } ] : []),
+      } satisfies WriteAnnotationResult)),
+      task_comments: _slice.current.comments.filter(c => c.annotationId === null).map(c => ({
+        id: +c.id > -1 ? +c.id : undefined,
+        comment: c.comment,
+      } as WriteAnnotationComment)),
+      sessionStart: new Date(_slice.current.__utils.sessionStart ?? Date.now()),
     }).unwrap()
-  }, [ _post, _campaign.current, _phase.current, _annotator.current ])
+  }, [ _post, _campaign.current, _phase.current, _slice.current, _spectrogramID.current ])
 }

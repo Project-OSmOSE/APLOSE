@@ -19,6 +19,8 @@ class LinearScaleNode(ApiObjectType):
 class MultiLinearScaleNode(ApiObjectType):
     """MultiLinearScale schema"""
 
+    inner_scales = AuthenticatedDjangoConnectionField(LinearScaleNode)
+
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
         model = MultiLinearScale

@@ -3,7 +3,7 @@ import * as Types from '../../../gql/types.generated';
 import { gqlAPI } from '@/features/gql/baseApi.ts';
 export type GetSpectrogramAnalysisQueryVariables = Types.Exact<{
   datasetID?: Types.InputMaybe<Types.Scalars['Decimal']['input']>;
-  annotationCampaignID?: Types.InputMaybe<Types.Scalars['Decimal']['input']>;
+  annotationCampaignID?: Types.InputMaybe<Types.Scalars['ID']['input']>;
 }>;
 
 
@@ -29,11 +29,11 @@ export type PostAnalysisForImportMutation = { __typename?: 'Mutation', importSpe
 
 
 export const GetSpectrogramAnalysisDocument = `
-    query getSpectrogramAnalysis($datasetID: Decimal, $annotationCampaignID: Decimal) {
+    query getSpectrogramAnalysis($datasetID: Decimal, $annotationCampaignID: ID) {
   allSpectrogramAnalysis(
     orderBy: "-createdAt"
     datasetId: $datasetID
-    annotationCampaigns_Id: $annotationCampaignID
+    annotationCampaignId: $annotationCampaignID
   ) {
     results {
       id

@@ -1,17 +1,17 @@
-import React, { Fragment, MutableRefObject, useCallback, useMemo, useState } from 'react';
+import React, { Fragment, MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from '../../styles.module.scss';
 import { ExtendedDiv } from '@/components/ui/ExtendedDiv';
 import { IoChatbubbleEllipses, IoChatbubbleOutline, IoPlayCircle, IoSwapHorizontal, IoTrashBin } from 'react-icons/io5';
-import { useAppDispatch } from '@/service/app.ts';
-import { AnnotationResult } from '@/service/types';
-import { useAudioService } from "@/service/ui/audio.ts";
 import { Kbd, TooltipOverlay } from "@/components/ui";
-import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
-import { AnnotatorSlice } from "@/service/slices/annotator.ts";
-import { UserAPI } from "@/service/api/user.ts";
 import { KEY_DOWN_EVENT, useEvent } from "@/service/events";
-import { useRetrieveAnnotator } from "@/service/api/annotator.ts";
 import { AnnotationLabelUpdateModal } from "../../modal";
+import {
+  Annotation,
+  useAnnotatorAnnotations,
+  useAnnotatorAudio,
+  useAnnotatorQuery,
+  useCommentsForAnnotator
+} from "@/features/Annotator";
 
 export const AnnotationHeader: React.FC<{
   active: boolean;
@@ -21,31 +21,27 @@ export const AnnotationHeader: React.FC<{
   onValidateMove?(): void;
   setIsMouseHover?: (isMouseHover: boolean) => void;
   className?: string;
-  annotation: AnnotationResult,
+  annotation: Annotation,
   audioPlayer: MutableRefObject<HTMLAudioElement | null>;
 }> = ({ active, top, onTopMove, onLeftMove, setIsMouseHover, onValidateMove, className, annotation, audioPlayer }) => {
-  const { data } = useRetrieveAnnotator();
+  const { data } = useAnnotatorQuery();
+  const { focus, getAnnotationUpdate } = useAnnotatorAnnotations()
 
-  const dispatch = useAppDispatch();
   const _setIsMouseHover = useCallback((value: boolean) => {
     if (!setIsMouseHover) return;
     setIsMouseHover(value);
   }, [ setIsMouseHover, ])
-  const label: string = useMemo(() => {
-    let label = annotation.label
-    if (annotation.updated_to.length > 0) label = annotation.updated_to[0].label;
-    return label;
-  }, [ annotation ]);
+  const finalAnnotation = useMemo(() => getAnnotationUpdate(annotation) ?? annotation, [ annotation, getAnnotationUpdate ])
 
   const headerStickSideClass = useMemo(() => {
-    if (!data || annotation.type === 'Weak') return ''
-    const end = annotation.type === 'Box' ? annotation.end_time : annotation.start_time;
-    if (end > (data.file.duration * 0.9))
+    if (!data?.spectrogramById || annotation.type === 'Weak') return ''
+    const end = annotation.type === 'Box' ? annotation.endTime! : annotation.startTime!;
+    if (end > (data.spectrogramById.duration! * 0.9))
       return styles.stickRight
-    if (annotation.start_time < (data.file.duration * 0.1))
+    if (annotation.startTime! < (data.spectrogramById.duration! * 0.1))
       return styles.stickLeft
     return ''
-  }, [ annotation, data?.file ])
+  }, [ annotation, data ])
 
   return <ExtendedDiv draggable={ active }
                       onTopMove={ onTopMove } onLeftMove={ onLeftMove }
@@ -55,13 +51,13 @@ export const AnnotationHeader: React.FC<{
                       onMouseLeave={ () => _setIsMouseHover(false) }
                       className={ [ styles.header, headerStickSideClass, className, top < 24 ? styles.bellow : styles.over ].join(' ') }
                       innerClassName={ styles.inner }
-                      onClick={ () => dispatch(AnnotatorSlice.actions.focusResult(annotation.id)) }>
+                      onClick={ () => focus(annotation) }>
 
     <PlayButton annotation={ annotation } audioPlayer={ audioPlayer }/>
 
     <CommentInfo annotation={ annotation }/>
 
-    <p>{ label }</p>
+    <p>{ finalAnnotation.label.name }</p>
 
     <UpdateLabelButton annotation={ annotation }/>
 
@@ -72,58 +68,60 @@ export const AnnotationHeader: React.FC<{
 
 export const PlayButton: React.FC<{
   audioPlayer: MutableRefObject<HTMLAudioElement | null>;
-  annotation: AnnotationResult;
+  annotation: Annotation;
 }> = ({ annotation, audioPlayer }) => {
-  const audioService = useAudioService(audioPlayer);
+  const { play } = useAnnotatorAudio(audioPlayer);
   return (
     <TooltipOverlay tooltipContent={ <p>Play the audio of the annotation</p> }>
-      <IoPlayCircle className={ styles.button } onClick={ () => audioService.play(annotation) }/>
+      <IoPlayCircle className={ styles.button } onClick={ () => play(annotation) }/>
     </TooltipOverlay>
   )
 }
 
-export const CommentInfo: React.FC<{ annotation: AnnotationResult; }> = ({ annotation }) => {
-  if (annotation.comments.length > 0) return <IoChatbubbleEllipses/>
+export const CommentInfo: React.FC<{ annotation: Annotation; }> = ({ annotation }) => {
+  const { getCommentForAnnotation } = useCommentsForAnnotator()
+  const comment = useMemo(() => getCommentForAnnotation(annotation), [ getCommentForAnnotation, annotation ]);
+  if (comment) return <IoChatbubbleEllipses/>
   else return (
     <TooltipOverlay tooltipContent={ <p>No comments</p> }><IoChatbubbleOutline
       className={ styles.outlineIcon }/></TooltipOverlay>
   )
 }
 
-export const UpdateLabelButton: React.FC<{ annotation: AnnotationResult; }> = ({ annotation }) => {
+export const UpdateLabelButton: React.FC<{ annotation: Annotation; }> = ({ annotation }) => {
   const [ isModalOpen, setIsModalOpen ] = useState<boolean>(false);
+  const { focus } = useAnnotatorAnnotations()
+
+  const updateLabel = useCallback(() => {
+    focus(annotation);
+    setIsModalOpen(true)
+  }, [ annotation, focus, setIsModalOpen ])
 
   return (<Fragment>
       <TooltipOverlay tooltipContent={ <p>Update the label</p> }>
         {/* 'update-box' class is for playwright tests*/ }
         <IoSwapHorizontal className={ [ styles.button, 'update-box' ].join(' ') }
-                          onClick={ () => setIsModalOpen(true) }/>
+                          onClick={ updateLabel }/>
       </TooltipOverlay>
 
-      <AnnotationLabelUpdateModal annotation={ annotation }
-                                  isModalOpen={ isModalOpen }
+      <AnnotationLabelUpdateModal isModalOpen={ isModalOpen }
                                   setIsModalOpen={ setIsModalOpen }/>
     </Fragment>
   )
 }
 
-export const TrashButton: React.FC<{ annotation: AnnotationResult; }> = ({ annotation }) => {
-  const { phase } = useRetrieveCurrentPhase()
-  const { data: user } = UserAPI.endpoints.getCurrentUser.useQuery()
-  const dispatch = useAppDispatch();
+export const TrashButton: React.FC<{ annotation: Annotation; }> = ({ annotation }) => {
+  const { remove } = useAnnotatorAnnotations()
 
-  const remove = useCallback(() => {
-    if (phase?.phase === 'Annotation' || annotation.annotator === user?.id) {
-      dispatch(AnnotatorSlice.actions.removeResult(annotation.id));
-    } else {
-      dispatch(AnnotatorSlice.actions.invalidateResult(annotation.id));
-    }
-  }, [ phase, annotation, user ])
+  const annotationRef = useRef<Annotation>(annotation);
+  useEffect(() => {
+    annotationRef.current = annotation;
+  }, [ annotation ]);
 
   const onKbdEvent = useCallback((event: KeyboardEvent) => {
     switch (event.code) {
       case 'Delete':
-        remove()
+        remove(annotationRef.current)
         break;
     }
   }, [ remove ])
@@ -132,7 +130,7 @@ export const TrashButton: React.FC<{ annotation: AnnotationResult; }> = ({ annot
   return (
     <TooltipOverlay tooltipContent={ <p><Kbd keys='delete'/> Remove the annotation</p> }>
       {/* 'remove-box' class is for playwright tests*/ }
-      <IoTrashBin className={ [ styles.button, 'remove-box' ].join(' ') } onClick={ remove }/>
+      <IoTrashBin className={ [ styles.button, 'remove-box' ].join(' ') } onClick={ () => remove(annotation) }/>
     </TooltipOverlay>
   )
 }

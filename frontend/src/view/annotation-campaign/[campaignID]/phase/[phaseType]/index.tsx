@@ -12,9 +12,9 @@ import { AnnotationFile, AnnotationPhase } from "@/service/types";
 import { AnnotationFileRangeAPI } from "@/service/api/annotation-file-range.ts";
 import { useListPhasesForCurrentCampaign, useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
 import { useSpectrogramFilters } from "@/service/slices/filter.ts";
-import { useOpenAnnotator } from "@/service/annotator/hooks.ts";
 import { SpectrogramActionBar } from "@/features/AnnotationPhase/SpectrogramActionBar.tsx";
 import { ImportAnnotationsButton } from "@/features/AnnotationPhase/ImportAnnotationsButton.tsx";
+import { useAnnotatorNavigation } from "@/features/Annotator";
 
 export const AnnotationCampaignPhaseDetail: React.FC = () => {
   const { params } = useSpectrogramFilters(true)
@@ -102,11 +102,7 @@ const TaskItem: React.FC<{
 }> = ({ phase, file }) => {
   const startDate = useMemo(() => new Date(file.start), [ file.start ]);
   const duration = useMemo(() => new Date(new Date(file.end).getTime() - startDate.getTime()), [ file.end, file.start ]);
-  const openAnnotator = useOpenAnnotator()
-
-  function access() {
-    openAnnotator(file.id)
-  }
+  const { openAnnotator } = useAnnotatorNavigation()
 
   return <Fragment>
     <TableContent isFirstColumn={ true } disabled={ file.is_submitted }>{ file.filename }</TableContent>
@@ -122,7 +118,8 @@ const TaskItem: React.FC<{
           <IonIcon icon={ ellipseOutline } className={ styles.statusIcon } color='medium'/> }
     </TableContent>
     <TableContent disabled={ file.is_submitted }>
-      <Button color='dark' fill='clear' size='small' className={ styles.submit } onClick={ access }>
+      <Button color='dark' fill='clear' size='small' className={ styles.submit }
+              onClick={ () => openAnnotator(file.id) }>
         <IonIcon icon={ chevronForwardOutline } color='primary' slot='icon-only'/>
       </Button>
     </TableContent>

@@ -1,26 +1,30 @@
 import React, { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react';
 import styles from '../../styles.module.scss'
 import { ExtendedDiv } from '@/components/ui/ExtendedDiv';
-import { useAxis } from '@/service/annotator/spectrogram/scale';
-import { AbstractScale } from '@/service/dataset/spectrogram-configuration/scale';
-import { PointResult } from '@/service/types';
-import { useAppDispatch, useAppSelector } from '@/service/app.ts';
-import { useGetLabelSetForCurrentCampaign } from "@/service/api/label-set.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
-import { AnnotatorSlice } from "@/service/slices/annotator.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { AnnotationHeader } from './Headers';
+import {
+  AbstractScale,
+  Annotation,
+  useAnnotatorAnnotations,
+  useAnnotatorLabel,
+  useAnnotatorUI,
+  useAxis
+} from "@/features/Annotator";
 
 export const Point: React.FC<{
-  annotation: PointResult
+  annotation: Annotation
   audioPlayer: MutableRefObject<HTMLAudioElement | null>;
 }> = ({ annotation, audioPlayer }) => {
+  const { annotationID, getAnnotationUpdate, update } = useAnnotatorAnnotations()
+  const { isAnnotationDisabled } = useAnnotatorUI()
+  const { labels } = useAnnotatorLabel()
+  const finalAnnotation = useMemo(() => {
+    return getAnnotationUpdate(annotation) ?? annotation
+  }, [ annotation, getAnnotationUpdate ])
   const { campaign } = useRetrieveCurrentCampaign();
   const { phase } = useRetrieveCurrentPhase()
-  const { labelSet } = useGetLabelSetForCurrentCampaign();
-  // Data
-  const { focusedResultID, isSelectingFrequency } = useAppSelector(state => state.annotator);
-  const dispatch = useAppDispatch();
 
   // Scales
   const { xAxis, yAxis } = useAxis()
@@ -34,16 +38,12 @@ export const Point: React.FC<{
   }, [ yAxis ]);
 
   // Annotation time/freq bounds
-  const _start_time = useRef<number | null>(annotation.start_time);
-  const _start_frequency = useRef<number | null>(annotation.start_frequency);
+  const _startTime = useRef<number | null | undefined>(finalAnnotation.startTime);
+  const _startFrequency = useRef<number | null | undefined>(finalAnnotation.startFrequency);
   useEffect(() => {
-    _start_time.current = annotation.start_time;
-    _start_frequency.current = annotation.start_frequency;
-    if (annotation.updated_to.length > 0) {
-      _start_time.current = annotation.updated_to[0].start_time;
-      _start_frequency.current = annotation.updated_to[0].start_frequency;
-    }
-  }, [ annotation.start_time, annotation.start_frequency ]);
+    _startTime.current = finalAnnotation.startTime;
+    _startFrequency.current = finalAnnotation.startFrequency;
+  }, [ finalAnnotation.startTime, finalAnnotation.startFrequency ]);
 
 
   // Coords bounds
@@ -60,32 +60,29 @@ export const Point: React.FC<{
     updateLeft()
     updateTop()
   }, []);
-  useEffect(() => updateLeft, [ _xAxis.current, _start_time.current ]);
-  useEffect(() => updateTop, [ _yAxis.current, _start_frequency.current ]);
+  useEffect(() => updateLeft, [ _xAxis.current, _startTime.current ]);
+  useEffect(() => updateTop, [ _yAxis.current, _startFrequency.current ]);
   useEffect(() => setTop(_top.current), [ _top.current ]);
   useEffect(() => setLeft(_left.current), [ _left.current ]);
 
   // Memo
   const colorClassName: string = useMemo(() => {
-    if (!labelSet) return '';
-    let label = annotation.label
-    if (annotation.updated_to.length > 0) label = annotation.updated_to[0].label;
-    return `ion-color-${ labelSet.labels.indexOf(label) % 10 }`
-  }, [ labelSet, annotation ]);
+    return `ion-color-${ labels.map(l => l.name).indexOf(finalAnnotation.label.name) % 10 }`
+  }, [ labels, finalAnnotation ]);
   const isActive = useMemo(() => {
     if (campaign?.archive) return false;
     if (phase?.ended_at) return false;
-    return annotation.id === focusedResultID
-  }, [ campaign, phase, annotation.id, focusedResultID ]);
+    return annotation.id === annotationID
+  }, [ campaign, phase, annotation.id, annotationID, ]);
 
   function updateLeft() {
-    if (_start_time.current === null) return;
-    _left.current = _xAxis.current.valueToPosition(_start_time.current);
+    if (typeof _startTime.current !== 'number') return;
+    _left.current = _xAxis.current.valueToPosition(_startTime.current);
   }
 
   function updateTop() {
-    if (_start_frequency.current === null) return;
-    _top.current = _yAxis.current.valueToPosition(_start_frequency.current);
+    if (typeof _startFrequency.current !== 'number') return;
+    _top.current = _yAxis.current.valueToPosition(_startFrequency.current);
   }
 
   function onTopMove(movement: number) {
@@ -98,19 +95,15 @@ export const Point: React.FC<{
 
   function onValidateMove() {
     if (!phase) return;
-    dispatch(AnnotatorSlice.actions.updateFocusResultBounds({
-      newBounds: {
-        type: 'Point',
-        start_time: _xAxis.current.positionToValue(_left.current),
-        end_time: null,
-        start_frequency: _yAxis.current.positionToValue(_top.current),
-        end_frequency: null,
-      },
-      phase: phase.phase
-    }))
+    update(annotation, {
+      startTime: _xAxis.current.positionToValue(_left.current),
+      endTime: null,
+      startFrequency: _yAxis.current.positionToValue(_top.current),
+      endFrequency: null,
+    })
   }
 
-  return <ExtendedDiv draggable={ isActive && !isSelectingFrequency }
+  return <ExtendedDiv draggable={ isActive && !isAnnotationDisabled }
                       top={ top }
                       left={ left }
                       onUp={ onValidateMove }
@@ -122,18 +115,18 @@ export const Point: React.FC<{
                         styles.point,
                         colorClassName,
                         isActive ? '' : styles.disabled,
-                        isSelectingFrequency ? styles.editDisabled : ''
+                        isAnnotationDisabled ? styles.editDisabled : ''
                       ].join(' ') }>
 
     { (isMouseHover || isActive) &&
-        <AnnotationHeader active={ isActive && !isSelectingFrequency }
+        <AnnotationHeader active={ isActive && !isAnnotationDisabled }
                           onTopMove={ onTopMove }
                           onLeftMove={ onLeftMove }
                           onValidateMove={ onValidateMove }
                           top={ top }
                           className={ [
                             colorClassName,
-                            isSelectingFrequency ? styles.editDisabled : ''
+                            isAnnotationDisabled ? styles.editDisabled : ''
                           ].join(' ') }
                           annotation={ annotation }
                           audioPlayer={ audioPlayer }/> }

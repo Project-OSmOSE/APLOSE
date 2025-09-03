@@ -9,8 +9,8 @@ import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
 import { Button, Link, Progress, TooltipOverlay } from "@/components/ui";
 import { AnnotationFileRangeAPI } from "@/service/api/annotation-file-range.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
-import { useOpenAnnotator } from "@/service/annotator/hooks.ts";
 import { ImportAnnotationsButton } from "./ImportAnnotationsButton";
+import { useAnnotatorNavigation } from "@/features/Annotator";
 
 export const SpectrogramActionBar: React.FC = () => {
   const { params, updateParams, clearParams } = useSpectrogramFilters(true)
@@ -20,7 +20,7 @@ export const SpectrogramActionBar: React.FC = () => {
     phaseID: phase?.id ?? -1,
     ...params
   }, { skip: !phase || !!campaign?.archive });
-  const openAnnotator = useOpenAnnotator()
+  const { openAnnotator } = useAnnotatorNavigation()
 
   const updateSearch = useCallback((search: string) => {
     updateParams({ filename__icontains: search })

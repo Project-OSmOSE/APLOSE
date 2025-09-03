@@ -6,7 +6,7 @@ export type GetSpectrogramsFromDatesQueryVariables = Types.Exact<{
   toDatetime: Types.Scalars['DateTime']['input'];
   campaignID: Types.Scalars['ID']['input'];
   annotatorID: Types.Scalars['ID']['input'];
-  phase: Types.Scalars['String']['input'];
+  phase: Types.AnnotationPhaseType;
   offset: Types.Scalars['Int']['input'];
   isTaskCompleted?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
   hasAnnotations?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
@@ -18,21 +18,21 @@ export type GetSpectrogramsFromDatesQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetSpectrogramsFromDatesQuery = { __typename?: 'Query', allSpectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount?: number | null, results: Array<{ __typename?: 'SpectrogramNode', id: string, filename: string, start: any, duration?: number | null } | null> } | null };
+export type GetSpectrogramsFromDatesQuery = { __typename?: 'Query', allSpectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount?: number | null, results: Array<{ __typename?: 'SpectrogramNode', id: string, filename: string, start: any, duration: number } | null> } | null };
 
 export type GetSpectrogramsFromDatesComplementQueryVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
   annotatorID: Types.Scalars['ID']['input'];
-  phase: Types.Scalars['String']['input'];
+  phase: Types.AnnotationPhaseType;
   spectrogramIDs: Array<Types.InputMaybe<Types.Scalars['ID']['input']>> | Types.InputMaybe<Types.Scalars['ID']['input']>;
 }>;
 
 
-export type GetSpectrogramsFromDatesComplementQuery = { __typename?: 'Query', annotatorAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', type: Types.ApiAnnotationTypeChoices, spectrogram?: { __typename?: 'SpectrogramNode', id: string } | null } | null> } | null, otherAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', type: Types.ApiAnnotationTypeChoices, spectrogram?: { __typename?: 'SpectrogramNode', id: string } | null } | null> } | null, allAnnotationTasks?: { __typename?: 'AnnotationTaskNodeNodeConnection', results: Array<{ __typename?: 'AnnotationTaskNode', status?: any | null, spectrogram: { __typename?: 'SpectrogramNode', id: string } } | null> } | null };
+export type GetSpectrogramsFromDatesComplementQuery = { __typename?: 'Query', annotatorAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', type: Types.AnnotationType, spectrogram: { __typename?: 'SpectrogramNode', id: string } } | null> } | null, otherAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', type: Types.AnnotationType, spectrogram: { __typename?: 'SpectrogramNode', id: string } } | null> } | null, allAnnotationTasks?: { __typename?: 'AnnotationTaskNodeNodeConnection', results: Array<{ __typename?: 'AnnotationTaskNode', status?: Types.AnnotationTaskStatus | null, spectrogram: { __typename?: 'SpectrogramNode', id: string } } | null> } | null };
 
 
 export const GetSpectrogramsFromDatesDocument = `
-    query getSpectrogramsFromDates($fromDatetime: DateTime!, $toDatetime: DateTime!, $campaignID: ID!, $annotatorID: ID!, $phase: String!, $offset: Int!, $isTaskCompleted: Boolean, $hasAnnotations: Boolean, $annotatedByAnnotatorID: ID, $annotatedByDetectorID: ID, $annotatedWithLabel: String, $annotatedWithConfidence: String, $annotatedWithFeatures: Boolean) {
+    query getSpectrogramsFromDates($fromDatetime: DateTime!, $toDatetime: DateTime!, $campaignID: ID!, $annotatorID: ID!, $phase: AnnotationPhaseType!, $offset: Int!, $isTaskCompleted: Boolean, $hasAnnotations: Boolean, $annotatedByAnnotatorID: ID, $annotatedByDetectorID: ID, $annotatedWithLabel: String, $annotatedWithConfidence: String, $annotatedWithFeatures: Boolean) {
   allSpectrograms(
     limit: 20
     offset: $offset
@@ -61,7 +61,7 @@ export const GetSpectrogramsFromDatesDocument = `
 }
     `;
 export const GetSpectrogramsFromDatesComplementDocument = `
-    query getSpectrogramsFromDatesComplement($campaignID: ID!, $annotatorID: ID!, $phase: String!, $spectrogramIDs: [ID]!) {
+    query getSpectrogramsFromDatesComplement($campaignID: ID!, $annotatorID: ID!, $phase: AnnotationPhaseType!, $spectrogramIDs: [ID]!) {
   annotatorAnnotations: allAnnotations(
     annotatorId: $annotatorID
     annotationCampaignId: $campaignID

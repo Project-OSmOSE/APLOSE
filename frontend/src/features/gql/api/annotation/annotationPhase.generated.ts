@@ -3,15 +3,15 @@ import * as Types from '../../types.generated';
 import { gqlAPI } from '@/features/gql/baseApi.ts';
 export type GetPhaseQueryVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
-  phaseType: Types.Scalars['PhaseTypeEnum']['input'];
+  phaseType: Types.AnnotationPhaseType;
 }>;
 
 
-export type GetPhaseQuery = { __typename?: 'Query', annotationPhaseForCampaign?: { __typename?: 'AnnotationPhaseNode', endedAt?: any | null, phase?: any | null, hasAnnotations?: boolean | null, annotationCampaign: { __typename?: 'AnnotationCampaignNode', archive?: { __typename?: 'ArchiveNode', date: any } | null } } | null };
+export type GetPhaseQuery = { __typename?: 'Query', annotationPhaseForCampaign?: { __typename?: 'AnnotationPhaseNode', endedAt?: any | null, phase?: Types.AnnotationPhaseType | null, hasAnnotations?: boolean | null, annotationCampaign: { __typename?: 'AnnotationCampaignNode', archive?: { __typename?: 'ArchiveNode', date: any } | null } } | null };
 
 
 export const GetPhaseDocument = `
-    query getPhase($campaignID: ID!, $phaseType: PhaseTypeEnum!) {
+    query getPhase($campaignID: ID!, $phaseType: AnnotationPhaseType!) {
   annotationPhaseForCampaign(campaignId: $campaignID, phaseType: $phaseType) {
     annotationCampaign {
       archive {

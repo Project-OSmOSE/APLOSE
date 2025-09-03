@@ -327,7 +327,6 @@ class AnnotationFileRangeViewSet(viewsets.ReadOnlyModelViewSet):
         if not self.can_user_post_data(data):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-        print("view", phase)
         serializer = AnnotationFileRangeSerializer(
             phase.annotation_file_ranges,
             data=data,
@@ -336,9 +335,7 @@ class AnnotationFileRangeViewSet(viewsets.ReadOnlyModelViewSet):
             },
             many=True,
         )
-        print("view", "serializer")
         serializer.is_valid(raise_exception=True)
-        print("view", "valid")
         serializer.save()
         return Response(
             AnnotationFileRangeSerializer(

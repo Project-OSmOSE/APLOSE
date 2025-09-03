@@ -1,42 +1,49 @@
-import React, { Fragment, useMemo } from "react";
+import React, { ChangeEvent, Fragment, useCallback } from "react";
 import { Input } from "@/components/form";
-import { useAppDispatch, useAppSelector } from "@/service/app.ts";
 import { IonButton, IonIcon } from "@ionic/react";
 import { contrastOutline, sunnyOutline } from "ionicons/icons";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
-import { AnnotatorSlice } from "@/service/slices/annotator.ts";
+import { useAnnotatorInput } from "@/features/Annotator";
 
 export const SpectrogramImage: React.FC = () => {
   const { campaign } = useRetrieveCurrentCampaign()
-  const dispatch = useAppDispatch();
 
-  const changeAllowed = useMemo(() => campaign?.allow_image_tuning, [ campaign ]);
-  const brightness = useAppSelector(state => state.annotator.userPreferences.brightness);
-  const contrast = useAppSelector(state => state.annotator.userPreferences.contrast);
+  const { brightness, setBrightness, contrast, setContrast } = useAnnotatorInput()
 
-  if (!changeAllowed) return;
+  const onBrightnessChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setBrightness(event.target.valueAsNumber)
+  }, [ setBrightness ])
+  const resetBrightness = useCallback(() => {
+    setBrightness(50)
+  }, [ setBrightness ])
 
+  const onContrastChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setContrast(event.target.valueAsNumber)
+  }, [ setContrast ])
+  const resetContrast = useCallback(() => {
+    setContrast(50)
+  }, [ setContrast ])
+
+  if (!campaign?.allow_image_tuning) return;
   return <Fragment>
     <div>
-      <IonButton color="primary" fill="default" onClick={ () => dispatch(AnnotatorSlice.actions.setBrightness(50)) }>
+      <IonButton color="primary" fill="default" onClick={ resetBrightness }>
         <IonIcon icon={ sunnyOutline } slot="icon-only"/>
       </IonButton>
       <Input type="range" name="brightness-range" min="0" max="100" value={ brightness }
-             onChange={ (evt) => dispatch(AnnotatorSlice.actions.setBrightness(evt.target.valueAsNumber)) }
-             onDoubleClick={ () => dispatch(AnnotatorSlice.actions.setBrightness(50)) }/>
+             onChange={ onBrightnessChange } onDoubleClick={ resetBrightness }/>
       <Input type="number" name="brightness" min="0" max="100" value={ brightness }
-             onChange={ (evt) => dispatch(AnnotatorSlice.actions.setBrightness(evt.target.valueAsNumber)) }/>
+             onChange={ onBrightnessChange }/>
     </div>
 
     <div>
-      <IonButton color="primary" fill="default" onClick={ () => dispatch(AnnotatorSlice.actions.setContrast(50)) }>
+      <IonButton color="primary" fill="default" onClick={ resetContrast }>
         <IonIcon icon={ contrastOutline } slot="icon-only"/>
       </IonButton>
       <Input type="range" name="contrast-range" min="0" max="100" value={ contrast }
-             onChange={ (evt) => dispatch(AnnotatorSlice.actions.setContrast(evt.target.valueAsNumber)) }
-             onDoubleClick={ () => dispatch(AnnotatorSlice.actions.setContrast(50)) }/>
+             onChange={ onContrastChange } onDoubleClick={ resetContrast }/>
       <Input type="number" name="contrast" min="0" max="100" value={ contrast }
-             onChange={ (evt) => dispatch(AnnotatorSlice.actions.setContrast(evt.target.valueAsNumber)) }/>
+             onChange={ onContrastChange }/>
     </div>
   </Fragment>;
 }

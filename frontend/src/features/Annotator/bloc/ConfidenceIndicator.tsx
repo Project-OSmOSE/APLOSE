@@ -1,26 +1,26 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import styles from './styles.module.scss';
-import { useAppDispatch, useAppSelector } from '@/service/app.ts';
 import { IonChip, IonIcon } from "@ionic/react";
 import { checkmarkOutline } from "ionicons/icons";
 import { TooltipOverlay } from "@/components/ui";
-import { useGetConfidenceSetForCurrentCampaign } from "@/service/api/confidence-set.ts";
-import { AnnotatorSlice } from "@/service/slices/annotator.ts";
-import { ConfidenceIndicator as Confidence } from "@/service/types";
+import { useAnnotatorConfidence, useAnnotatorQuery } from "@/features/Annotator";
+import { ConfidenceNode } from "@/features/gql/types.generated.ts";
 
 
 export const ConfidenceIndicator: React.FC = () => {
-  const { confidenceSet } = useGetConfidenceSetForCurrentCampaign();
+  const { data } = useAnnotatorQuery();
+  const indicators = useMemo(() => {
+    return data?.annotationCampaignConfidenceSet?.confidenceIndicators?.results.filter(c => c !== null) ?? []
+  }, [ data ]);
 
-  if (!confidenceSet) return <div/>;
-
+  if (!data?.annotationCampaignConfidenceSet) return <div/>;
   return (
-    <TooltipOverlay title='Description' tooltipContent={ <p>{ confidenceSet.desc }</p> }>
+    <TooltipOverlay title='Description' tooltipContent={ <p>{ data.annotationCampaignConfidenceSet.desc }</p> }>
       <div className={ [ styles.bloc, styles.confidence ].join(' ') }>
         <h6 className={ styles.header }>Confidence indicator</h6>
         <div className={ [ styles.body, styles.center ].join(' ') }>
-          { confidenceSet.confidence_indicators.map((confidence, key) => (
-            <Indicator key={ key } indicator={ confidence }/>
+          { indicators.map(confidence => (
+            <Indicator key={ confidence.label } { ...confidence }/>
           )) }
         </div>
       </div>
@@ -28,27 +28,14 @@ export const ConfidenceIndicator: React.FC = () => {
   )
 }
 
-const Indicator: React.FC<{ indicator: Confidence }> = ({ indicator }) => {
-
-
-  const dispatch = useAppDispatch();
-  const {
-    focusedConfidenceLabel,
-  } = useAppSelector(state => state.annotator)
-
-  const [ active, setActive ] = useState<boolean>(focusedConfidenceLabel === indicator.label);
-  useEffect(() => {
-    setActive(focusedConfidenceLabel === indicator.label)
-  }, [ focusedConfidenceLabel ]);
-
-  const onClick = useCallback(() => {
-    dispatch(AnnotatorSlice.actions.focusConfidence(indicator.label))
-  }, [ indicator ])
+const Indicator: React.FC<Pick<ConfidenceNode, 'label'>> = ({ label }) => {
+  const { selected, select } = useAnnotatorConfidence()
+  const active = useMemo<boolean>(() => selected === label, [ selected, label ]);
 
   return <IonChip color="primary"
-                  onClick={ onClick }
+                  onClick={ () => select({ label }) }
                   className={ active ? styles.active : 'void' }> {/* 'void' className need to be sure the className change when item is not active anymore */ }
-    { indicator.label }
+    { label }
     { active && <IonIcon src={ checkmarkOutline } color="light"/> }
   </IonChip>
 }

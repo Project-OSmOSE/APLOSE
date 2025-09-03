@@ -1,39 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Select } from "@/components/form";
-import { useCurrentConfiguration } from "@/service/annotator/spectrogram";
-import { useAppDispatch, useAppSelector } from "@/service/app.ts";
 import { Colormap, COLORMAP_GREYS, COLORMAPS } from "@/service/ui/color.ts";
 import { IonButton, IonIcon } from "@ionic/react";
 import { invertModeSharp } from "ionicons/icons";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
-import { AnnotatorSlice } from "@/service/slices/annotator.ts";
+import { useAnnotatorInput } from "@/features/Annotator";
 
 export const ColormapConfiguration: React.FC = () => {
   const { campaign } = useRetrieveCurrentCampaign()
-  const dispatch = useAppDispatch();
+  const {
+    analysis,
+    colormap,
+    invertedColormap,
+    setColormap, invertColormap,
+  } = useAnnotatorInput();
 
   const [ changeAllowed, setChangeAllowed ] = useState<boolean>(false);
 
-  const currentConfiguration = useCurrentConfiguration();
-  const colormap = useAppSelector(state => state.annotator.userPreferences.colormap);
-  const colormapInverted = useAppSelector(state => state.annotator.userPreferences.colormapInverted);
-
   useEffect(() => {
-    const computedAllowed: boolean = !!campaign?.allow_colormap_tuning && !!currentConfiguration && currentConfiguration.colormap === COLORMAP_GREYS
+    const computedAllowed: boolean = !!campaign?.allow_colormap_tuning && !!analysis && analysis.colormap.name === COLORMAP_GREYS
     setChangeAllowed(computedAllowed)
     if (computedAllowed) {
-      dispatch(AnnotatorSlice.actions.setColormap(colormap ?? campaign?.colormap_default ?? COLORMAP_GREYS))
-      dispatch(AnnotatorSlice.actions.setColormapInverted(colormapInverted ?? campaign?.colormap_inverted_default ?? false))
+      setColormap(colormap ?? campaign?.colormap_default ?? COLORMAP_GREYS)
+      if (invertedColormap ?? campaign?.colormap_inverted_default ?? false !== invertedColormap) invertColormap()
     }
-  }, [ campaign, currentConfiguration ])
+  }, [ campaign, analysis ])
+
+  const onSelect = useCallback((value: number | string | undefined) => {
+    setColormap(value as Colormap)
+  }, [ setColormap ])
 
   if (!changeAllowed) return;
-
-  const onSelect = (value: number | string | undefined) => {
-    dispatch(AnnotatorSlice.actions.setColormap(value as Colormap))
-    dispatch(AnnotatorSlice.actions.setColormapInverted(false))
-  }
-
   return <div>
     {/* Colormap selection */ }
     <Select required={ true } value={ colormap }
@@ -45,9 +42,10 @@ export const ColormapConfiguration: React.FC = () => {
             })) }/>
 
     {/* Colormap inversion */ }
-    <IonButton color="primary" fill={ colormapInverted ? "outline" : "default" }
-               className={ colormapInverted ? "inverted" : "" }
-               onClick={ () => dispatch(AnnotatorSlice.actions.setColormapInverted(!colormapInverted)) }>
+    <IonButton color="primary"
+               fill={ invertedColormap ? "outline" : "default" }
+               className={ invertedColormap ? "inverted" : "" }
+               onClick={ invertColormap }>
       <IonIcon icon={ invertModeSharp } slot={ "icon-only" }/>
     </IonButton>
   </div>;

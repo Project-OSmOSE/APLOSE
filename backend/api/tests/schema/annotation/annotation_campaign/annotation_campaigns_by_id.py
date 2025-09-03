@@ -65,7 +65,6 @@ class AnnotationCampaignsByIDTestCase(GraphQLTestCase):
     def _test_get_by_id_archived(self, username: str):
         self.client.login(username=username, password="osmose29")
         response = self.query(QUERY, variables=ARCHIVED_VARIABLES)
-        print(response.content)
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["annotationCampaignById"]

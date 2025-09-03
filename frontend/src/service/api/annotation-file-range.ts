@@ -9,10 +9,10 @@ export type SpectrogramFilter = {
   filename__icontains?: string;
   is_submitted?: boolean;
   with_user_annotations?: boolean;
+  acoustic_features__isnull?: boolean;
   label__name?: string;
   confidence_indicator__label?: string;
   detector_configuration__detector__name?: string;
-  acoustic_features__isnull?: boolean;
   end__gte?: string;
   start__lte?: string;
 }

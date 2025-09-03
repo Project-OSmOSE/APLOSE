@@ -3,7 +3,7 @@ query getSpectrogramsFromDates(
     $toDatetime: DateTime!
     $campaignID: ID!,
     $annotatorID: ID!,
-    $phase: String!,
+    $phase: AnnotationPhaseType!,
     $offset: Int!,
     $isTaskCompleted: Boolean
     $hasAnnotations: Boolean
@@ -43,7 +43,7 @@ query getSpectrogramsFromDates(
 query getSpectrogramsFromDatesComplement(
     $campaignID: ID!,
     $annotatorID: ID!,
-    $phase: String!,
+    $phase: AnnotationPhaseType!,
     $spectrogramIDs: [ID]!
 ) {
     annotatorAnnotations: allAnnotations(

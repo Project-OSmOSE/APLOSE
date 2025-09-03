@@ -3,22 +3,21 @@ import styles from '../styles.module.scss'
 import { useNavigate } from "react-router-dom";
 import { IonButton, IonIcon } from "@ionic/react";
 import { caretBack, caretForward } from "ionicons/icons";
-import { useAppSelector } from '@/service/app.ts';
 import { useToast } from "@/service/ui";
 import { Kbd, TooltipOverlay } from "@/components/ui";
 import { KEY_DOWN_EVENT, useEvent } from "@/service/events";
-import { useCanNavigate } from "@/service/slices/annotator.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
-import { usePostAnnotator, useRetrieveAnnotator } from "@/service/api/annotator.ts";
-import { useOpenAnnotator } from "@/service/annotator/hooks.ts";
+import { usePostAnnotator } from "@/service/api/annotator.ts";
+import { useAnnotatorNavigation, useAnnotatorQuery, useAnnotatorUI } from "@/features/Annotator";
 
 
 export const NavigationButtons: React.FC = () => {
-  const { data, isEditable } = useRetrieveAnnotator();
+  const { data, canEdit } = useAnnotatorQuery();
   const { campaignID } = useRetrieveCurrentCampaign()
   const { phaseType } = useRetrieveCurrentPhase()
-  const openAnnotator = useOpenAnnotator()
+  const { openAnnotator } = useAnnotatorNavigation()
+  const { didSeeAllFile: _didSeeAllFile } = useAnnotatorUI()
 
   // Services
   const navigate = useNavigate();
@@ -26,18 +25,13 @@ export const NavigationButtons: React.FC = () => {
   const toast = useToast();
 
   // Data
-  const {
-    didSeeAllFile: _didSeeAllFile,
-  } = useAppSelector(state => state.annotator);
 
-  const previous_file_id = useRef<number | null>(data?.previous_file_id ?? null);
+  const previous_file_id = useRef<string | undefined | null>(data?.spectrogramPrevNext?.previousId);
+  const next_file_id = useRef<string | undefined | null>(data?.spectrogramPrevNext?.nextId);
   useEffect(() => {
-    previous_file_id.current = data?.previous_file_id ?? null;
-  }, [ data?.previous_file_id ]);
-  const next_file_id = useRef<number | null>(data?.next_file_id ?? null);
-  useEffect(() => {
-    next_file_id.current = data?.next_file_id ?? null;
-  }, [ data?.next_file_id ]);
+    previous_file_id.current = data?.spectrogramPrevNext?.previousId;
+    next_file_id.current = data?.spectrogramPrevNext?.nextId;
+  }, [ data ]);
   const didSeeAllFile = useRef<boolean>(_didSeeAllFile);
   useEffect(() => {
     didSeeAllFile.current = _didSeeAllFile;
@@ -45,7 +39,7 @@ export const NavigationButtons: React.FC = () => {
 
   const isSubmitting = useRef<boolean>(false);
 
-  const canNavigate = useCanNavigate()
+  const { canNavigate } = useAnnotatorNavigation()
 
   function onKbdEvent(event: KeyboardEvent) {
     switch (event.code) {
@@ -95,7 +89,7 @@ export const NavigationButtons: React.FC = () => {
     if (await canNavigate()) openAnnotator(next_file_id.current)
   }
 
-  if (!isEditable) return <div/>
+  if (!canEdit) return <div/>
   return (
     <div className={ styles.navigation }>
       <TooltipOverlay title='Shortcut' tooltipContent={ <p><Kbd keys='left'/> : Load previous recording</p> }>

@@ -1,53 +1,54 @@
 import React, { Fragment, MouseEvent, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from './styles.module.scss';
-import { useAppDispatch, useAppSelector } from '@/service/app.ts';
 import { IonChip, IonIcon } from '@ionic/react';
 import { checkmarkOutline, closeCircle, eyeOffOutline, eyeOutline } from 'ionicons/icons';
 import { useAlert } from "@/service/ui";
 import { KEY_DOWN_EVENT, useEvent } from "@/service/events";
 import { AlphanumericKeys } from "@/consts/shorcuts.const.tsx";
 import { Button, Kbd, TooltipOverlay } from "@/components/ui";
-import { useGetLabelSetForCurrentCampaign } from "@/service/api/label-set.ts";
-import { AnnotationPhase, LabelSet } from "@/service/types";
-import { AnnotatorSlice, getPresenceLabels } from "@/service/slices/annotator.ts";
+import { AnnotationPhase } from "@/service/types";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
+import { useAnnotatorAnnotations, useAnnotatorLabel, useAnnotatorUI } from "@/features/Annotator";
+import { AnnotationLabelNode } from "@/features/gql/types.generated.ts";
 
 
 export const Labels: React.FC = () => {
+  const {
+    selected,
+    select,
+    labels,
+    presenceLabelNames,
+  } = useAnnotatorLabel()
+  const {
+    hiddenLabels,
+    showLabels
+  } = useAnnotatorUI()
+  //
   const { phase } = useRetrieveCurrentPhase()
-  const { labelSet } = useGetLabelSetForCurrentCampaign();
   const phaseRef = useRef<AnnotationPhase | undefined>(phase)
   useEffect(() => {
     phaseRef.current = phase
   }, [ phase ]);
 
-  const {
-    results,
-    focusedLabel,
-    ui
-  } = useAppSelector(state => state.annotator);
-  const presenceLabels = useMemo(() => getPresenceLabels(results), [ results ])
-  const dispatch = useAppDispatch()
-
-  const _focused = useRef<string | undefined>(focusedLabel);
+  const _selected = useRef<string | undefined>(selected);
   useEffect(() => {
-    _focused.current = focusedLabel;
-  }, [ focusedLabel ]);
+    _selected.current = selected;
+  }, [ selected ]);
 
-  const _labelSet = useRef<LabelSet | undefined>(labelSet);
+  const _labels = useRef<Pick<AnnotationLabelNode, 'name'>[]>(labels);
   useEffect(() => {
-    _labelSet.current = labelSet;
-  }, [ labelSet ]);
+    _labels.current = labels;
+  }, [ labels ]);
 
 
-  const _presenceLabels = useRef<string[]>(presenceLabels);
+  const _presenceLabelNames = useRef<string[]>(presenceLabelNames);
   useEffect(() => {
-    _presenceLabels.current = presenceLabels;
-  }, [ presenceLabels ]);
+    _presenceLabelNames.current = presenceLabelNames;
+  }, [ presenceLabelNames ]);
 
   function onKbdEvent(event: KeyboardEvent) {
-    if (!_labelSet.current || !phaseRef.current) return;
-    const active_alphanumeric_keys = AlphanumericKeys[0].slice(0, _labelSet.current.labels.length);
+    if (!_labels.current || !phaseRef.current) return;
+    const active_alphanumeric_keys = AlphanumericKeys[0].slice(0, _labels.current.length);
 
     if (event.key === "'") {
       event.preventDefault();
@@ -56,108 +57,99 @@ export const Labels: React.FC = () => {
     for (const i in active_alphanumeric_keys) {
       if (event.key !== AlphanumericKeys[0][i] && event.key !== AlphanumericKeys[1][i]) continue;
 
-      const calledLabel = _labelSet.current.labels[i];
-      if (_focused.current === calledLabel) continue;
-      if (!_presenceLabels.current.includes(calledLabel)) {
-        dispatch(AnnotatorSlice.actions.addPresenceResult({ label: calledLabel, phaseID: phaseRef.current.id }));
-      } else {
-        dispatch(AnnotatorSlice.actions.focusTask())
-        dispatch(AnnotatorSlice.actions.focusLabel(calledLabel))
-      }
+      const label = _labels.current[i];
+      if (_selected.current === label.name) continue;
+      select(label)
     }
   }
 
   useEvent(KEY_DOWN_EVENT, onKbdEvent);
-
-  const showAll = useCallback(() => {
-    dispatch(AnnotatorSlice.actions.showAllLabels())
-  }, [])
 
   // 'label' class is for playwright tests
   return (
     <div className={ [ styles.bloc, styles.labels, 'label' ].join(' ') }>
       <h6 className={ styles.header }>
         Labels
-        { ui.hiddenLabels.length > 0 && <Button onClick={ showAll }
-                                                fill="clear"
-                                                className={ styles.showButton }>Show all</Button> }
+        { hiddenLabels.length > 0 && <Button onClick={ () => showLabels(labels) }
+                                             fill="clear"
+                                             className={ styles.showButton }>Show all</Button> }
       </h6>
       <div className={ styles.body }>
-        { labelSet?.labels.map((label, key) => <LabelItem label={ label } key={ key } index={ key }/>) }
+        { labels.map((label, key) => <LabelItem label={ label } key={ key } index={ key }/>) }
       </div>
     </div>
   )
 }
 
-export const LabelItem: React.FC<{ label: string, index: number }> = ({ label, index }) => {
-  const { phase } = useRetrieveCurrentPhase()
-  const { labelSet } = useGetLabelSetForCurrentCampaign();
+export const LabelItem: React.FC<{ label: Pick<AnnotationLabelNode, 'name'>, index: number }> = ({ label, index }) => {
   const {
-    results,
-    focusedLabel,
-    ui
-  } = useAppSelector(state => state.annotator);
-  const isUsed = useMemo(() => getPresenceLabels(results).includes(label), [ results, label ])
-  const isHidden = useMemo(() => ui.hiddenLabels.includes(label), [ ui.hiddenLabels, label ])
+    labels,
+    presenceLabelNames,
+    selected, select,
+    getWeakAnnotation
+  } = useAnnotatorLabel()
+  const {
+    hiddenLabels, showLabels, hideLabels
+  } = useAnnotatorUI()
+  const {
+    annotations,
+    remove: _remove
+  } = useAnnotatorAnnotations()
+  const isUsed = useMemo(() => presenceLabelNames.includes(label.name), [ presenceLabelNames, label ])
+  const isHidden = useMemo(() => hiddenLabels.includes(label.name), [ hiddenLabels, label ])
   const color = useMemo(() => (index % 10).toString(), [ index ])
-  const buttonColor = useMemo(() => focusedLabel === label ? undefined : color, [ color, focusedLabel, label ])
-  const dispatch = useAppDispatch()
+  const buttonColor = useMemo(() => selected === label.name ? undefined : color, [ color, selected, label ])
   const [ className, setClassName ] = useState<string>('');
   const alert = useAlert();
 
   useEffect(() => {
-    if (!focusedLabel || focusedLabel !== label) setClassName('')
+    if (selected !== label.name) setClassName('')
     else setClassName(styles.activeLabel)
-  }, [ focusedLabel, label ])
+  }, [ selected, label ])
 
-  const select = useCallback(() => {
-    if (!phase) return;
-    if (isUsed) {
-      dispatch(AnnotatorSlice.actions.focusLabel(label));
-    } else {
-      dispatch(AnnotatorSlice.actions.addPresenceResult({ label, phaseID: phase.id }));
-      dispatch(AnnotatorSlice.actions.focusLabel(label));
-    }
-  }, [ label, phase, isUsed ])
-
-  const hideAllButCurrent = useCallback(() => {
-    dispatch(AnnotatorSlice.actions.hideLabels(labelSet?.labels ?? []));
-    dispatch(AnnotatorSlice.actions.showLabel(label));
-  }, [ label, labelSet ])
 
   const show = useCallback((event: MouseEvent) => {
     event.stopPropagation();
-    if (event.ctrlKey) hideAllButCurrent()
-    else dispatch(AnnotatorSlice.actions.showLabel(label));
-  }, [ label, hideAllButCurrent ])
+    if (event.ctrlKey) {
+      // Hide all but current
+      hideLabels(labels)
+    }
+    showLabels([ label ])
+  }, [ label, showLabels, hideLabels, labels ])
 
   const hide = useCallback((event: MouseEvent) => {
     event.stopPropagation();
-    if (event.ctrlKey) hideAllButCurrent()
-    else dispatch(AnnotatorSlice.actions.hideLabel(label));
-  }, [ label, hideAllButCurrent ])
+    if (event.ctrlKey) {
+      // Hide all but current
+      hideLabels(labels)
+      showLabels([ label ])
+    } else hideLabels([ label ])
+  }, [ label, hideLabels, labels ])
 
   const remove = useCallback((event: MouseEvent) => {
     event.stopPropagation();
-    if (!isUsed || !results) return;
+    if (!isUsed) return;
     // if annotations exists with this label: wait for confirmation
     alert.showAlert({
       type: 'Warning',
-      message: `You are about to remove ${ results.filter(r => r.label === label).length } annotations using "${ label }" label. Are you sure?`,
+      message: `You are about to remove ${ annotations.filter(a => a.label.name === label.name).length } annotations using "${ label.name }" label. Are you sure?`,
       actions: [ {
-        label: `Remove "${ label }" annotations`,
-        callback: () => dispatch(AnnotatorSlice.actions.removePresence(label))
+        label: `Remove "${ label.name }" annotations`,
+        callback: () => {
+          const weak = getWeakAnnotation(label)
+          if (weak) _remove(weak)
+        },
       } ]
     })
-  }, [ label, isUsed, results ])
+  }, [ label, isUsed, annotations ])
 
   return (
     <IonChip outline={ !isUsed }
              className={ className }
-             onClick={ select }
+             onClick={ () => select(label) }
              color={ color }>
-      { focusedLabel === label && <IonIcon src={ checkmarkOutline }/> }
-      <LabelTooltipOverlay id={ index }><p>{ label }</p></LabelTooltipOverlay>
+      { selected === label.name && <IonIcon src={ checkmarkOutline }/> }
+      <LabelTooltipOverlay id={ index }><p>{ label.name }</p></LabelTooltipOverlay>
 
       { isUsed && <div className={ styles.labelButtons }>
           <TooltipOverlay

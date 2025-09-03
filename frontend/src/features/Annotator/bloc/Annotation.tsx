@@ -1,103 +1,115 @@
 import React, { Fragment, useMemo } from "react";
 import styles from "./styles.module.scss";
-import { AnnotationResult } from "@/service/types";
 import { IoAnalyticsOutline, IoChevronForwardOutline, IoPricetagOutline, IoTimeOutline } from "react-icons/io5";
-import { formatTime } from "@/service/dataset/spectrogram-configuration/scale";
+import { formatTime } from "@/service/function";
 import { FaHandshake } from "react-icons/fa6";
+import { useAnnotatorAnnotations } from "@/features/Annotator";
+import { AnnotationLabelNode, AnnotationNode, AnnotationType, ConfidenceNode } from "@/features/gql/types.generated.ts";
 
-export const LabelInfo: React.FC<{
-  annotation: AnnotationResult
-}> = ({ annotation }) => {
-  const corrected_label = useMemo(() => {
-    if (!annotation) return undefined
-    if (annotation.updated_to.length > 0 && annotation.updated_to[0].label !== annotation.label) return annotation.updated_to[0].label;
+export const LabelInfo: React.FC<Pick<AnnotationNode, 'id' | 'type'> & {
+  label: Pick<AnnotationLabelNode, 'name'>
+}> = ({ id, type, label }) => {
+  const { correctedAnnotation } = useAnnotatorAnnotations(id)
+
+  const correctedLabel = useMemo(() => {
+    if (correctedAnnotation?.label.name !== label.name) return correctedAnnotation?.label.name;
     return undefined
-  }, [ annotation ])
+  }, [ correctedAnnotation, id, label ])
+
   return <div className={ styles.bounds }>
     <IoPricetagOutline className={ styles.mainIcon }/>
 
-    <p className={ corrected_label ? 'disabled' : undefined }>
-      { annotation.label }
-      <span>{ annotation.type === 'Weak' ? ` (Weak)` : '' }</span>
+    <p className={ correctedLabel ? 'disabled' : undefined }>
+      { label.name }
+      <span>{ type === AnnotationType.Weak ? ` (Weak)` : '' }</span>
     </p>
 
-    { corrected_label && <p>{ corrected_label }</p> }
+    { correctedLabel && <p>{ correctedLabel }</p> }
   </div>
 }
 
-export const TimeInfo: React.FC<{
-  annotation: AnnotationResult
-}> = ({ annotation }) => {
-  const corrected_start_time = useMemo(() => {
-    if (!annotation) return undefined
-    if (annotation.updated_to.length > 0 && annotation.updated_to[0].start_time !== annotation.start_time) return annotation.updated_to[0].start_time;
-    return undefined
-  }, [ annotation ])
-  const corrected_end_time = useMemo(() => {
-    if (!annotation) return undefined
-    if (annotation.updated_to.length > 0 && annotation.updated_to[0].end_time !== annotation.end_time) return annotation.updated_to[0].end_time;
-    return undefined
-  }, [ annotation ])
-  const isCorrected = useMemo(() => corrected_start_time || corrected_end_time, [ corrected_start_time, corrected_end_time ])
+export const ConfidenceInfo: React.FC<{
+  confidence?: Pick<ConfidenceNode, 'label'> | null
+}> = ({ confidence }) => (
+  <div className={ styles.bounds }>
+    <FaHandshake className={ styles.mainIcon }/>
+    <p>{ confidence ? confidence.label : '-' }</p>
+  </div>
+)
 
-  if (annotation.type === 'Weak') return <Fragment/>
+export const TimeInfo: React.FC<Pick<AnnotationNode, 'id' | 'type' | 'startTime' | 'endTime'>> = ({
+                                                                                                    id,
+                                                                                                    type,
+                                                                                                    startTime,
+                                                                                                    endTime
+                                                                                                  }) => {
+  const { correctedAnnotation } = useAnnotatorAnnotations(id)
+
+  const correctedStartTime = useMemo(() => {
+    if (correctedAnnotation?.startTime !== correctedAnnotation) return correctedAnnotation?.startTime;
+    return undefined
+  }, [ correctedAnnotation, id, startTime ])
+  const correctedEndTime = useMemo(() => {
+    if (correctedAnnotation?.endTime !== endTime) return correctedAnnotation?.endTime;
+    return undefined
+  }, [ correctedAnnotation, id, endTime ])
+  const isCorrected = useMemo(() => correctedStartTime || correctedEndTime, [ correctedStartTime, correctedEndTime ])
+
+  if (type === AnnotationType.Weak) return <Fragment/>
   return <div className={ styles.bounds }>
     <IoTimeOutline className={ styles.mainIcon }/>
 
     <p className={ isCorrected ? 'disabled' : undefined }>
-      { formatTime(annotation.start_time, true) }
-      { annotation.type === 'Box' && <Fragment>
-          &nbsp;<IoChevronForwardOutline/> { formatTime(annotation.end_time, true) }
+      { formatTime(startTime!, true) }
+      { type === AnnotationType.Box && <Fragment>
+          &nbsp;<IoChevronForwardOutline/> { formatTime(endTime!, true) }
       </Fragment> }
     </p>
 
     { isCorrected && <p>
-      { formatTime(corrected_start_time ?? annotation.start_time, true) }
-      { annotation.type === 'Box' && <Fragment>
-          &nbsp;<IoChevronForwardOutline/> { formatTime(corrected_end_time ?? annotation.end_time, true) }
+      { formatTime(correctedStartTime ?? startTime!, true) }
+      { type === AnnotationType.Box && <Fragment>
+          &nbsp;<IoChevronForwardOutline/> { formatTime(correctedEndTime ?? endTime!, true) }
       </Fragment> }
     </p> }
   </div>
 }
 
-export const FrequencyInfo: React.FC<{
-  annotation: AnnotationResult
-}> = ({ annotation }) => {
-  const corrected_start_frequency = useMemo(() => {
-    if (!annotation) return undefined
-    if (annotation.updated_to.length > 0 && annotation.updated_to[0].start_frequency !== annotation.start_frequency) return annotation.updated_to[0].start_frequency;
-    return undefined
-  }, [ annotation ])
-  const corrected_end_frequency = useMemo(() => {
-    if (!annotation) return undefined
-    if (annotation.updated_to.length > 0 && annotation.updated_to[0].end_frequency !== annotation.end_frequency) return annotation.updated_to[0].end_frequency;
-    return undefined
-  }, [ annotation ])
-  const isCorrected = useMemo(() => corrected_start_frequency || corrected_end_frequency, [ corrected_start_frequency, corrected_end_frequency ])
+export const FrequencyInfo: React.FC<Pick<AnnotationNode, 'id' | 'type' | 'startFrequency' | 'endFrequency'>> = ({
+                                                                                                                   id,
+                                                                                                                   type,
+                                                                                                                   startFrequency,
+                                                                                                                   endFrequency
+                                                                                                                 }) => {
+  const { correctedAnnotation } = useAnnotatorAnnotations(id)
 
-  if (annotation.type === 'Weak') return <Fragment/>
+  const correctedStartFrequency = useMemo(() => {
+    if (correctedAnnotation?.startFrequency !== startFrequency) return correctedAnnotation?.startFrequency;
+    return undefined
+  }, [ correctedAnnotation, id, startFrequency ])
+  const correcteEndFrequency = useMemo(() => {
+    if (correctedAnnotation?.endFrequency !== endFrequency) return correctedAnnotation?.endFrequency;
+    return undefined
+  }, [ correctedAnnotation, id, endFrequency ])
+
+  const isCorrected = useMemo(() => correctedStartFrequency || correcteEndFrequency, [ correctedStartFrequency, correcteEndFrequency ])
+
+  if (type === AnnotationType.Weak) return <Fragment/>
   return <div className={ styles.bounds }>
     <IoAnalyticsOutline className={ styles.mainIcon }/>
 
     <p className={ isCorrected ? 'disabled' : undefined }>
-      { annotation.start_frequency?.toFixed(2) }Hz
-      { annotation.type === 'Box' && <Fragment>
-          &nbsp;<IoChevronForwardOutline/> { annotation.end_frequency.toFixed(2) }Hz
+      { startFrequency!.toFixed(2) }Hz
+      { type === AnnotationType.Box && <Fragment>
+          &nbsp;<IoChevronForwardOutline/> { endFrequency!.toFixed(2) }Hz
       </Fragment> }
     </p>
 
     { isCorrected && <p>
-      { (corrected_start_frequency ?? annotation.start_frequency)?.toFixed(2) }Hz
-      { annotation.type === 'Box' && <Fragment>
-          &nbsp;<IoChevronForwardOutline/> { (corrected_end_frequency ?? annotation.end_frequency).toFixed(2) }Hz
+      { (correctedStartFrequency ?? startFrequency!).toFixed(2) }Hz
+      { type === AnnotationType.Box && <Fragment>
+          &nbsp;<IoChevronForwardOutline/> { (correcteEndFrequency ?? endFrequency!).toFixed(2) }Hz
       </Fragment> }
     </p> }
   </div>
 }
-
-export const ConfidenceInfo: React.FC<{ annotation: AnnotationResult }> = ({ annotation }) => (
-  <div className={ styles.bounds }>
-    <FaHandshake className={ styles.mainIcon }/>
-    <p>{ (annotation.confidence_indicator !== '') ? annotation.confidence_indicator : '-' }</p>
-  </div>
-)

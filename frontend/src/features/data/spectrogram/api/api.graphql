@@ -1,7 +1,7 @@
 query getSpectrogramsForCampaign(
     $campaignID: ID!,
     $annotatorID: ID!,
-    $phase: String!,
+    $phase: AnnotationPhaseType!,
     $offset: Int!
 ) {
     allSpectrograms(
@@ -25,7 +25,7 @@ query getSpectrogramsForCampaign(
 query getSpectrogramsForCampaignComplementary(
     $campaignID: ID!,
     $annotatorID: ID!,
-    $phase: String!,
+    $phase: AnnotationPhaseType!,
     $spectroIds: [ID]!
 ) {
     annotatorAnnotations: allAnnotations(

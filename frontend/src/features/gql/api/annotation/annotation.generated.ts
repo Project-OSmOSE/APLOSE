@@ -3,7 +3,7 @@ import * as Types from '../../types.generated';
 import { gqlAPI } from '@/features/gql/baseApi.ts';
 export type GetAnnotationSettingsQueryVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
-  phaseType: Types.Scalars['PhaseTypeEnum']['input'];
+  phaseType: Types.AnnotationPhaseType;
 }>;
 
 
@@ -11,7 +11,7 @@ export type GetAnnotationSettingsQuery = { __typename?: 'Query', annotationPhase
 
 
 export const GetAnnotationSettingsDocument = `
-    query getAnnotationSettings($campaignID: ID!, $phaseType: PhaseTypeEnum!) {
+    query getAnnotationSettings($campaignID: ID!, $phaseType: AnnotationPhaseType!) {
   annotationPhaseForCampaign(campaignId: $campaignID, phaseType: $phaseType) {
     annotationCampaign {
       labelSet {

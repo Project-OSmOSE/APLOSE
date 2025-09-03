@@ -1,6 +1,6 @@
 query getAnnotationSettings(
     $campaignID: ID!
-    $phaseType: PhaseTypeEnum!
+    $phaseType: AnnotationPhaseType!
 ) {
     annotationPhaseForCampaign(
         campaignId: $campaignID,

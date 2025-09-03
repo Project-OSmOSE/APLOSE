@@ -1,25 +1,23 @@
-import React, { useEffect, useImperativeHandle, useRef } from "react";
-import { LinearScale, Step } from '@/service/dataset/spectrogram-configuration/scale';
-import { useYAxis, Y_WIDTH } from '@/service/annotator/spectrogram/scale';
-import { useCurrentConfiguration, useSpectrogramDimensions } from '@/service/annotator/spectrogram/hook.ts';
+import React, { useCallback, useEffect, useImperativeHandle, useRef } from "react";
 import { AxisRef } from "./XAxis";
+import { Step, useAnnotatorInput, useSpectrogram, useYAxis, Y_WIDTH } from "@/features/Annotator";
 
 export const YAxis = React.forwardRef<AxisRef, {
   className?: string;
 }>(({ className }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { height } = useSpectrogram()
+  const { analysis } = useAnnotatorInput()
 
   useImperativeHandle(ref, () => ({
     toDataURL: (type?: string, quality?: any) => canvasRef.current?.toDataURL(type, quality)
   }), [ canvasRef.current ]);
 
   const yAxis = useYAxis()
-  const { height } = useSpectrogramDimensions()
-  const currentConfiguration = useCurrentConfiguration()
 
   useEffect(() => display(), [ canvasRef, yAxis ]);
 
-  const display = (): void => {
+  const display = useCallback((): void => {
     const canvas = canvasRef.current
     const context = canvas?.getContext('2d');
     if (!canvas || !context || !height) return;
@@ -45,10 +43,7 @@ export const YAxis = React.forwardRef<AxisRef, {
       if (existingStep) {
         existingStep.additionalValue = step.value;
       } else {
-        realSteps.push({
-          ...step,
-          position: y
-        })
+        realSteps.push({ ...step, position: y })
       }
     }
     for (const step of realSteps) {
@@ -61,7 +56,7 @@ export const YAxis = React.forwardRef<AxisRef, {
         tickWidth = 15;
         tickHeight = 2;
       }
-      const allBorders = currentConfiguration?.multi_linear_frequency_scale?.inner_scales.flatMap((s: LinearScale) => [ s.min_value, s.max_value ]) ?? []
+      const allBorders = analysis?.legacyConfiguration?.multiLinearFrequencyScale?.innerScales?.results.filter(s => s !== null).flatMap(s => [ s.minValue, s.maxValue ]) ?? []
       if (allBorders.includes(step.value)) {
         tickHeight = 4;
         tickWidth = 15;
@@ -85,14 +80,14 @@ export const YAxis = React.forwardRef<AxisRef, {
         context.fillText(frequencyToString(step.value), 0, y);
       }
     }
-  }
+  }, [ height, yAxis, analysis ])
 
-  const frequencyToString = (value: number): string => {
+  const frequencyToString = useCallback((value: number): string => {
     if (value < 1000) return value.toString()
     let newValue: string | number = value / 1000;
     if (newValue % 1 > 0) newValue = newValue.toFixed(1)
     return `${ newValue }k`;
-  }
+  }, [])
 
   return <canvas ref={ canvasRef }
                  width={ Y_WIDTH }

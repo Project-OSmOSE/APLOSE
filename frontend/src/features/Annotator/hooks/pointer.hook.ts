@@ -1,14 +1,12 @@
-import { useEffect, useRef } from 'react';
-import { useSpectrogramDimensions } from '@/service/annotator/spectrogram';
-import { useAxis } from '@/service/annotator/spectrogram/scale';
-import { AbstractScale } from "@/service/dataset/spectrogram-configuration/scale";
+import { useCallback, useEffect, useRef } from "react";
+import { AbstractScale, useAxis, useSpectrogram } from "@/features/Annotator";
 
 type Position = { clientX: number, clientY: number }
 
-export const usePointerService = () => {
+export const useAnnotatorPointer = () => {
 
   const { xAxis, yAxis } = useAxis();
-  const { height, width } = useSpectrogramDimensions();
+  const { height, width } = useSpectrogram();
 
   const _xAxis = useRef<AbstractScale>(xAxis);
   useEffect(() => {
@@ -30,21 +28,21 @@ export const usePointerService = () => {
     _height.current = height
   }, [ height ]);
 
-  function isSpectroCanvas(element: Element): boolean {
+  const isSpectroCanvas = useCallback((element: Element): boolean => {
     return element instanceof HTMLCanvasElement
       && element.height === Math.floor(_height.current)
       && element.width === Math.floor(_width.current)
-  }
+  }, [])
 
-  function isOverCanvas(e: Position): boolean {
+  const isHoverCanvas = useCallback((e: Position): boolean => {
     return document.elementsFromPoint(e.clientX, e.clientY).some(isSpectroCanvas);
-  }
+  }, [ isSpectroCanvas ])
 
-  function getCanvas(): HTMLCanvasElement | undefined {
+  const getCanvas = useCallback((): HTMLCanvasElement | undefined => {
     return [ ...document.getElementsByTagName('canvas') ].find(isSpectroCanvas) as HTMLCanvasElement;
-  }
+  }, [ isSpectroCanvas ])
 
-  function getCoords(e: Position, corrected: boolean = true): { x: number, y: number } | undefined {
+  const getCoords = useCallback((e: Position, corrected: boolean = true): { x: number, y: number } | undefined => {
     const canvas = getCanvas();
     if (!canvas) return;
     const bounds = canvas.getBoundingClientRect();
@@ -56,16 +54,16 @@ export const usePointerService = () => {
         y: Math.min(Math.max(0, y), bounds.height),
       }
     } else return { x, y }
-  }
+  }, [ getCanvas ])
 
-  function getFreqTime(e: Position): { frequency: number, time: number } | undefined {
+  const getFreqTime = useCallback((e: Position): { frequency: number, time: number } | undefined => {
     const coords = getCoords(e);
     if (!coords) return;
     return {
       frequency: _yAxis.current.positionToValue(coords.y),
       time: _xAxis.current.positionToValue(coords.x),
     }
-  }
+  }, [ getCoords ]);
 
-  return { isHoverCanvas: isOverCanvas, getCoords, getFreqTime }
+  return { isHoverCanvas, getCoords, getFreqTime }
 }

@@ -1,12 +1,19 @@
-import { AbstractScale, Step } from '@/service/dataset/spectrogram-configuration/scale';
+import { LinearScaleNode } from "@/features/gql/types.generated.ts";
+import { AbstractScale, Step } from "./type";
+
+type LineaScale = Pick<LinearScaleNode, 'maxValue'> & Partial<Pick<LinearScaleNode, 'minValue'>>
 
 export class LinearScaleService implements AbstractScale {
 
   private MIN_SMALL_STEPS_RANGE_PX = 14;
   private MIN_BIG_STEPS_RANGE_PX = 30;
 
+  get min(): number {
+    return this.scale.minValue ?? 0
+  }
+
   get range(): number {
-    return this.maxValue - this.minValue;
+    return this.scale.maxValue - this.min;
   }
 
   public get height(): number {
@@ -14,13 +21,12 @@ export class LinearScaleService implements AbstractScale {
   }
 
   constructor(private pixelHeight: number,
-              private maxValue: number,
-              private minValue: number = 0,) {
-    if (minValue > maxValue) throw `Incorrect scale range: min=${ minValue } and max=${ maxValue }`;
+              public scale: LineaScale) {
+    if (scale.minValue && scale.minValue > scale.maxValue) throw `Incorrect scale range: min=${ scale.minValue } and max=${ scale.maxValue }`;
   }
 
   valueToPosition(value: number): number {
-    return this.crossProduct(value - this.minValue, this.range, this.pixelHeight);
+    return this.crossProduct(value - this.min, this.range, this.pixelHeight);
   }
 
   valuesToPositionRange(min: number, max: number): number {
@@ -28,7 +34,7 @@ export class LinearScaleService implements AbstractScale {
   }
 
   positionToValue(position: number): number {
-    return this.minValue + this.crossProduct(position, this.pixelHeight, this.range);
+    return this.min + this.crossProduct(position, this.pixelHeight, this.range);
   }
 
   positionsToRange(min: number, max: number): number {
@@ -42,26 +48,26 @@ export class LinearScaleService implements AbstractScale {
     const array = new Array<Step>();
 
     const innerSteps = Math.max(1, this.getNumber(1, smallStepsRange.toString().length))
-    for (let value = Math.floor(this.minValue / innerSteps) * innerSteps;
-         value <= Math.round(this.maxValue / innerSteps) * innerSteps; value += innerSteps) {
-      if (value < this.minValue || value > this.maxValue) continue;
+    for (let value = Math.floor(this.min / innerSteps) * innerSteps;
+         value <= Math.round(this.scale.maxValue / innerSteps) * innerSteps; value += innerSteps) {
+      if (value < this.min || value > this.scale.maxValue) continue;
       const position: number = Math.floor(this.valueToPosition(value));
       if (value % bigStepsRange === 0)
         array.push({ position, value, importance: 'big' })
       else if (smallStepsRange > 0 && value % smallStepsRange === 0)
         array.push({ position, value, importance: 'small' })
     }
-    if (!array.filter(s => s.importance === 'big').some(s => s.value === this.minValue)) {
+    if (!array.filter(s => s.importance === 'big').some(s => s.value === this.min)) {
       array.push({
-        position: Math.floor(this.valueToPosition(this.minValue)),
-        value: this.minValue,
+        position: Math.floor(this.valueToPosition(this.min)),
+        value: this.min,
         importance: 'big'
       })
     }
-    if (!array.filter(s => s.importance === 'big').some(s => s.value === this.maxValue)) {
+    if (!array.filter(s => s.importance === 'big').some(s => s.value === this.scale.maxValue)) {
       array.push({
-        position: Math.floor(this.valueToPosition(this.maxValue)),
-        value: this.maxValue,
+        position: Math.floor(this.valueToPosition(this.scale.maxValue)),
+        value: this.scale.maxValue,
         importance: 'big'
       })
     }
@@ -69,8 +75,8 @@ export class LinearScaleService implements AbstractScale {
   }
 
   isRangeContinuouslyOnScale(min: number, max: number): boolean {
-    return min >= this.minValue && max >= this.minValue
-      && min <= this.maxValue && max <= this.maxValue
+    return min >= this.min && max >= this.min
+      && min <= this.scale.maxValue && max <= this.scale.maxValue
   }
 
   private getMinBigStepsRange(): number {

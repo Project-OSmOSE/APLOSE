@@ -7,17 +7,16 @@ from django_filters import (
     FilterSet,
     NumberFilter,
     BooleanFilter,
-    ChoiceFilter,
     OrderingFilter,
     CharFilter,
 )
 from graphene import relay, ObjectType, Int, ID, Field, String, Boolean
+from graphene_django.filter import TypedFilter
 from graphql import GraphQLResolveInfo
 
 from backend.api.models import (
     AnnotationCampaign,
     AnnotationTask,
-    AnnotationPhase,
 )
 from backend.aplose.schema import UserNode
 from backend.utils.schema import (
@@ -26,7 +25,7 @@ from backend.utils.schema import (
     GraphQLPermissions,
     GraphQLResolve,
 )
-from .annotation_phase import AnnotationPhaseNode
+from .annotation_phase import AnnotationPhaseNode, AnnotationPhaseType
 from .detector import DetectorNode
 from .label import AnnotationLabelNode
 from ..data.spectrogram_analysis import SpectrogramAnalysisNode
@@ -42,9 +41,9 @@ class AnnotationCampaignFilter(FilterSet):
     is_archived = BooleanFilter(
         field_name="archive", lookup_expr="isnull", exclude=True
     )
-    phase_type = ChoiceFilter(
+    phase_type = TypedFilter(
+        input_type=AnnotationPhaseType,
         field_name="phases__phase",
-        choices=AnnotationPhase.Type.choices,
         lookup_expr="exact",
     )
     search = CharFilter(method="search_filter", label="search")

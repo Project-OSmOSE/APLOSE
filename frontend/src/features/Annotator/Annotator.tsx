@@ -1,13 +1,9 @@
-import React, { Fragment, useCallback, useEffect, useMemo, useRef } from "react";
+import React, { Fragment, useCallback, useEffect, useRef } from "react";
 import styles from './styles.module.scss';
 import { IonSpinner } from "@ionic/react";
 import { FadedText, WarningText } from "@/components/ui";
-import { getErrorMessage } from "@/service/function.ts";
+import { formatTime, getErrorMessage } from "@/service/function";
 import { useAppDispatch, useAppSelector } from "@/service/app.ts";
-import { formatTime } from "@/service/dataset/spectrogram-configuration/scale";
-import { useCurrentConfiguration } from '@/service/annotator/spectrogram';
-import { Colormap } from '@/service/ui/color.ts';
-import { useRetrieveAnnotator } from "@/service/api/annotator.ts";
 import { SettingsSlice } from "@/service/slices/settings.ts";
 import { Input } from "@/components/form";
 import { AudioPlayer } from "./AudioPlayer";
@@ -20,27 +16,23 @@ import {
 } from "./buttons";
 import { ColormapConfiguration, NFFTSelect, PlaybackRateSelect } from "./select";
 import { SpectrogramImage } from './input';
-import { Comment, ConfidenceIndicator, CurrentAnnotation, Labels, Results } from './bloc';
+import { Annotations, Comment, ConfidenceIndicator, CurrentAnnotation, Labels } from './bloc';
 import { SpectrogramRender } from "./spectrogram";
+import { selectAudio, useAnnotatorInput, useAnnotatorQuery, useAnnotatorUI } from "@/features/Annotator";
 
 
 export const Annotator: React.FC = () => {
-  const { colormap } = useAppSelector(state => state.annotator.userPreferences);
-  const currentConfiguration = useCurrentConfiguration();
-  const { isFetching, error, data, isEditable } = useRetrieveAnnotator({
+  const { isFetching, error, data, canEdit } = useAnnotatorQuery({
     refetchOnMountOrArgChange: true
   })
-  const colormapClass: Colormap = useMemo(() => {
-    if (!currentConfiguration) return "Greys";
-    if (currentConfiguration.colormap !== "Greys") return currentConfiguration.colormap;
-    return colormap ?? "Greys";
-  }, [ colormap, currentConfiguration ]);
+  const { usedColormap: colormapClass } = useAnnotatorInput(); // TODO: check use
+
   const { disableSpectrogramResize } = useAppSelector(state => state.settings);
   const dispatch = useAppDispatch()
 
   // State
-  const pointerPosition = useAppSelector(state => state.annotator.ui.pointerPosition);
-  const audio = useAppSelector(state => state.annotator.audio)
+  const { pointerPosition } = useAnnotatorUI()
+  const audio = useAppSelector(selectAudio)
 
   // Refs
   const localIsPaused = useRef<boolean>(true);
@@ -66,7 +58,7 @@ export const Annotator: React.FC = () => {
 
     <AudioPlayer ref={ audioPlayerRef }/>
 
-    { !isFetching && data && <Fragment>
+    { !isFetching && data?.spectrogramById && <Fragment>
         <div className={ styles.spectrogramContainer }>
             <div className={ styles.spectrogramData }>
                 <div className={ styles.spectrogramInfo }>
@@ -80,19 +72,15 @@ export const Annotator: React.FC = () => {
                   { pointerPosition && <Fragment>
                       <FadedText>Pointer</FadedText>
                       <p>{ pointerPosition.frequency.toFixed(2) }Hz
-                          / { formatTime(pointerPosition.time, data.file.duration < 60) }</p>
+                          / { formatTime(pointerPosition.time, (data.spectrogramById.duration ?? 0) < 60) }</p>
 
                   </Fragment> }
                 </div>
 
                 <div className={ styles.campaignInfo }>
                     <div>
-                        <FadedText>Sampling:</FadedText>
-                        <p>{ data.file.dataset_sr }Hz</p>
-                    </div>
-                    <div>
                         <FadedText>Date:</FadedText>
-                        <p>{ new Date(data.file.start).toUTCString() }</p>
+                        <p>{ new Date(data.spectrogramById.start).toUTCString() }</p>
                     </div>
                 </div>
             </div>
@@ -107,18 +95,20 @@ export const Annotator: React.FC = () => {
 
                 <NavigationButtons/>
 
-                <p>{ formatTime(audio.time, data.file.duration < 60) }&nbsp;/&nbsp;{ formatTime(data.file.duration) }</p>
+                <p>{ data.spectrogramById.duration && <Fragment>
+                  { formatTime(audio.time, data.spectrogramById.duration < 60) }&nbsp;/&nbsp;{ formatTime(data.spectrogramById.duration) }
+                </Fragment> }</p>
             </div>
         </div>
 
         <div
             className={ styles.blocContainer }>
-          { isEditable && <Fragment>
+          { canEdit && <Fragment>
               <CurrentAnnotation/>
               <Labels/>
               <ConfidenceIndicator/>
               <Comment/>
-              <Results onSelect={ r => spectrogramRenderRef.current?.onResultSelected(r) }/>
+              <Annotations onSelect={ r => spectrogramRenderRef.current?.onResultSelected(r) }/>
           </Fragment> }
         </div>
 

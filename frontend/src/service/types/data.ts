@@ -1,5 +1,5 @@
 import { Colormap } from '@/service/ui/color.ts';
-import { LinearScale, MultiLinearScale } from "@/service/dataset/spectrogram-configuration/scale";
+import { LinearScale, MultiLinearScale } from "@/features/Annotator";
 
 export type Dataset = {
   id: number;

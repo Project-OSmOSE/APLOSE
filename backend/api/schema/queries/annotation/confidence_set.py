@@ -1,15 +1,21 @@
 """ConfidenceSet schema"""
-from graphene import relay
+from django.db.models import F
+from graphene import relay, ObjectType, Field, ID
 
-from backend.api.models import ConfidenceSet
-from backend.utils.schema import ApiObjectType, AuthenticatedDjangoConnectionField
+from backend.api.models import ConfidenceSet, AnnotationCampaign
+from backend.utils.schema import (
+    ApiObjectType,
+    AuthenticatedDjangoConnectionField,
+    GraphQLPermissions,
+    GraphQLResolve,
+)
 from .confidence import ConfidenceNode
 
 
 class ConfidenceSetNode(ApiObjectType):
     """ConfidenceSet schema"""
 
-    confidenceIndicators = AuthenticatedDjangoConnectionField(ConfidenceNode)
+    confidence_indicators = AuthenticatedDjangoConnectionField(ConfidenceNode)
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
@@ -17,3 +23,27 @@ class ConfidenceSetNode(ApiObjectType):
         fields = "__all__"
         filter_fields = "__all__"
         interfaces = (relay.Node,)
+
+    def resolve_confidence_indicators(self, info):
+        """Resolve confidence indicators with default"""
+        # d: ConfidenceSet
+        # d.confidence_indicators.annotate(is_default=F("set_relations__is_default"))
+
+        return self.confidence_indicators.annotate(is_default=F("set_relations__is_default"))
+
+
+class ConfidenceSetQuery(ObjectType):  # pylint: disable=too-few-public-methods
+    """ConfidenceSet queries"""
+
+    all_confidence_sets = AuthenticatedDjangoConnectionField(ConfidenceSetNode)
+
+    annotation_campaign_confidence_set = Field(
+        ConfidenceSetNode, annotation_campaign_id=ID(required=True)
+    )
+
+    @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
+    def resolve_annotation_campaign_confidence_set(
+        self, info, annotation_campaign_id: int
+    ):
+        """Get confidence set of the designated campaign"""
+        return AnnotationCampaign.objects.get(id=annotation_campaign_id).confidence_set

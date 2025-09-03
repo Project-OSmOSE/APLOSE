@@ -4,26 +4,26 @@ import { gqlAPI } from '@/features/gql/baseApi.ts';
 export type GetSpectrogramsForCampaignQueryVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
   annotatorID: Types.Scalars['ID']['input'];
-  phase: Types.Scalars['String']['input'];
+  phase: Types.AnnotationPhaseType;
   offset: Types.Scalars['Int']['input'];
 }>;
 
 
-export type GetSpectrogramsForCampaignQuery = { __typename?: 'Query', allSpectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount?: number | null, results: Array<{ __typename?: 'SpectrogramNode', id: string, filename: string, start: any, duration?: number | null } | null> } | null };
+export type GetSpectrogramsForCampaignQuery = { __typename?: 'Query', allSpectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount?: number | null, results: Array<{ __typename?: 'SpectrogramNode', id: string, filename: string, start: any, duration: number } | null> } | null };
 
 export type GetSpectrogramsForCampaignComplementaryQueryVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
   annotatorID: Types.Scalars['ID']['input'];
-  phase: Types.Scalars['String']['input'];
+  phase: Types.AnnotationPhaseType;
   spectroIds: Array<Types.InputMaybe<Types.Scalars['ID']['input']>> | Types.InputMaybe<Types.Scalars['ID']['input']>;
 }>;
 
 
-export type GetSpectrogramsForCampaignComplementaryQuery = { __typename?: 'Query', annotatorAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', type: Types.ApiAnnotationTypeChoices, spectrogram?: { __typename?: 'SpectrogramNode', id: string } | null } | null> } | null, otherAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', type: Types.ApiAnnotationTypeChoices, spectrogram?: { __typename?: 'SpectrogramNode', id: string } | null } | null> } | null, allAnnotationTasks?: { __typename?: 'AnnotationTaskNodeNodeConnection', results: Array<{ __typename?: 'AnnotationTaskNode', status?: any | null, spectrogram: { __typename?: 'SpectrogramNode', id: string } } | null> } | null };
+export type GetSpectrogramsForCampaignComplementaryQuery = { __typename?: 'Query', annotatorAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', type: Types.AnnotationType, spectrogram: { __typename?: 'SpectrogramNode', id: string } } | null> } | null, otherAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', type: Types.AnnotationType, spectrogram: { __typename?: 'SpectrogramNode', id: string } } | null> } | null, allAnnotationTasks?: { __typename?: 'AnnotationTaskNodeNodeConnection', results: Array<{ __typename?: 'AnnotationTaskNode', status?: Types.AnnotationTaskStatus | null, spectrogram: { __typename?: 'SpectrogramNode', id: string } } | null> } | null };
 
 
 export const GetSpectrogramsForCampaignDocument = `
-    query getSpectrogramsForCampaign($campaignID: ID!, $annotatorID: ID!, $phase: String!, $offset: Int!) {
+    query getSpectrogramsForCampaign($campaignID: ID!, $annotatorID: ID!, $phase: AnnotationPhaseType!, $offset: Int!) {
   allSpectrograms(
     limit: 20
     offset: $offset
@@ -43,7 +43,7 @@ export const GetSpectrogramsForCampaignDocument = `
 }
     `;
 export const GetSpectrogramsForCampaignComplementaryDocument = `
-    query getSpectrogramsForCampaignComplementary($campaignID: ID!, $annotatorID: ID!, $phase: String!, $spectroIds: [ID]!) {
+    query getSpectrogramsForCampaignComplementary($campaignID: ID!, $annotatorID: ID!, $phase: AnnotationPhaseType!, $spectroIds: [ID]!) {
   annotatorAnnotations: allAnnotations(
     annotatorId: $annotatorID
     annotationCampaignId: $campaignID

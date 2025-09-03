@@ -1,19 +1,22 @@
 import React, { Fragment, MutableRefObject, useEffect, useMemo, useRef, useState } from 'react'
 import styles from '../../styles.module.scss'
-import { useAppDispatch, useAppSelector } from '@/service/app.ts';
-import { BoxResult } from '@/service/types';
 import { ExtendedDiv } from '@/components/ui/ExtendedDiv';
-import { useAxis } from '@/service/annotator/spectrogram/scale';
-import { AbstractScale, formatTime } from "@/service/dataset/spectrogram-configuration/scale";
+import { formatTime } from "@/service/function";
+import {
+  AbstractScale,
+  Annotation,
+  useAnnotatorAnnotations,
+  useAnnotatorLabel,
+  useAnnotatorUI,
+  useAxis
+} from "@/features/Annotator";
 import { MOUSE_DOWN_EVENT } from "@/service/events";
-import { useGetLabelSetForCurrentCampaign } from "@/service/api/label-set.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
-import { AnnotatorSlice } from "@/service/slices/annotator.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { AnnotationHeader } from './Headers';
 
 type RegionProps = {
-  annotation: BoxResult,
+  annotation: Annotation,
   audioPlayer: MutableRefObject<HTMLAudioElement | null>;
 };
 
@@ -22,12 +25,14 @@ export const Box: React.FC<RegionProps> = ({
                                              annotation,
                                              audioPlayer
                                            }) => {
+  const { annotationID, getAnnotationUpdate, update } = useAnnotatorAnnotations()
+  const { isAnnotationDisabled } = useAnnotatorUI()
+  const { labels } = useAnnotatorLabel()
+  const finalAnnotation = useMemo(() => {
+    return getAnnotationUpdate(annotation) ?? annotation
+  }, [ annotation, getAnnotationUpdate ])
   const { campaign } = useRetrieveCurrentCampaign();
   const { phase } = useRetrieveCurrentPhase()
-  // Data
-  const { labelSet } = useGetLabelSetForCurrentCampaign();
-  const { focusedResultID, isSelectingFrequency } = useAppSelector(state => state.annotator);
-  const dispatch = useAppDispatch();
 
   // Scales
   const { xAxis, yAxis } = useAxis()
@@ -41,22 +46,16 @@ export const Box: React.FC<RegionProps> = ({
   }, [ yAxis ]);
 
   // Annotation time/freq bounds
-  const _start_time = useRef<number | null>(annotation.start_time);
-  const _end_time = useRef<number | null>(annotation.end_time);
-  const _start_frequency = useRef<number | null>(annotation.start_frequency);
-  const _end_frequency = useRef<number | null>(annotation.end_frequency);
+  const _startTime = useRef<number | null | undefined>(finalAnnotation.startTime);
+  const _endTime = useRef<number | null | undefined>(finalAnnotation.endTime);
+  const _startFrequency = useRef<number | null | undefined>(finalAnnotation.startFrequency);
+  const _endFrequency = useRef<number | null | undefined>(finalAnnotation.endFrequency);
   useEffect(() => {
-    _start_time.current = annotation.start_time;
-    _end_time.current = annotation.end_time;
-    _start_frequency.current = annotation.start_frequency;
-    _end_frequency.current = annotation.end_frequency;
-    if (annotation.updated_to.length > 0) {
-      _start_time.current = annotation.updated_to[0].start_time;
-      _end_time.current = annotation.updated_to[0].end_time;
-      _start_frequency.current = annotation.updated_to[0].start_frequency;
-      _end_frequency.current = annotation.updated_to[0].end_frequency;
-    }
-  }, [ annotation ]);
+    _startTime.current = finalAnnotation.startTime;
+    _endTime.current = finalAnnotation.endTime;
+    _startFrequency.current = finalAnnotation.startFrequency;
+    _endFrequency.current = finalAnnotation.endFrequency;
+  }, [ finalAnnotation ]);
 
   // Coords bounds
   const _left = useRef<number>(0);
@@ -78,45 +77,42 @@ export const Box: React.FC<RegionProps> = ({
     updateTop()
     updateHeight()
   }, []);
-  useEffect(() => updateLeft, [ _xAxis.current, _start_time.current ]);
-  useEffect(() => updateWidth, [ _xAxis.current, _start_time.current, _end_time.current ]);
-  useEffect(() => updateTop, [ _yAxis.current, _end_frequency.current ]);
-  useEffect(() => updateHeight, [ _yAxis.current, _start_frequency.current, _end_frequency.current ]);
+  useEffect(() => updateLeft, [ _xAxis.current, _startTime.current ]);
+  useEffect(() => updateWidth, [ _xAxis.current, _startTime.current, _endTime.current ]);
+  useEffect(() => updateTop, [ _yAxis.current, _endFrequency.current ]);
+  useEffect(() => updateHeight, [ _yAxis.current, _startFrequency.current, _endFrequency.current ]);
 
   // Memo
   const colorClassName: string = useMemo(() => {
-    if (!labelSet) return '';
-    let label = annotation.label
-    if (annotation.updated_to.length > 0) label = annotation.updated_to[0].label;
-    return `ion-color-${ labelSet.labels.indexOf(label) % 10 }`
-  }, [ labelSet, annotation ]);
+    return `ion-color-${ labels.map(l => l.name).indexOf(finalAnnotation.label.name) % 10 }`
+  }, [ labels, finalAnnotation ]);
   const isActive = useMemo(() => {
     if (campaign?.archive) return false;
     if (phase?.ended_at) return false;
-    return annotation.id === focusedResultID
-  }, [ campaign, phase, annotation.id, focusedResultID ]);
+    return annotation.id === annotationID
+  }, [ campaign, phase, annotation.id, annotationID, ]);
 
   function updateLeft() {
-    if (_start_time.current === null) return;
-    _left.current = _xAxis.current.valueToPosition(_start_time.current);
+    if (typeof _startTime.current !== 'number') return;
+    _left.current = _xAxis.current.valueToPosition(_startTime.current);
     setLeft(_left.current)
   }
 
   function updateTop() {
-    if (_end_frequency.current === null) return;
-    _top.current = _yAxis.current.valueToPosition(_end_frequency.current);
+    if (typeof _endFrequency.current !== 'number') return;
+    _top.current = _yAxis.current.valueToPosition(_endFrequency.current);
     setTop(_top.current)
   }
 
   function updateWidth() {
-    if (_start_time.current === null || _end_time.current === null) return;
-    _width.current = _xAxis.current.valuesToPositionRange(_start_time.current, _end_time.current);
+    if (typeof _startTime.current !== 'number' || typeof _endTime.current !== 'number') return;
+    _width.current = _xAxis.current.valuesToPositionRange(_startTime.current, _endTime.current);
     setWidth(_width.current)
   }
 
   function updateHeight() {
-    if (_start_frequency.current === null || _end_frequency.current === null) return;
-    _height.current = _yAxis.current.valuesToPositionRange(_start_frequency.current, _end_frequency.current);
+    if (typeof _startFrequency.current !== 'number' || typeof _endFrequency.current !== 'number') return;
+    _height.current = _yAxis.current.valuesToPositionRange(_startFrequency.current, _endFrequency.current);
     setHeight(_height.current)
   }
 
@@ -142,22 +138,19 @@ export const Box: React.FC<RegionProps> = ({
 
   function onValidateMove() {
     if (!phase) return;
-    let end_frequency = _yAxis.current.positionToValue(_top.current);
-    let start_frequency = _yAxis.current.positionToValue(_top.current + _height.current);
-    let start_time = _xAxis.current.positionToValue(_left.current);
-    let end_time = _xAxis.current.positionToValue(_left.current + _width.current);
-    if (_start_time.current && formatTime(start_time, true) === formatTime(_start_time.current, true)) start_time = _start_time.current;
-    if (_end_time.current && formatTime(end_time, true) === formatTime(_end_time.current, true)) end_time = _end_time.current;
-    if (_start_frequency.current && _start_frequency.current.toFixed(2) === start_frequency.toFixed(2)) start_frequency = _start_frequency.current;
-    if (_end_frequency.current && _end_frequency.current.toFixed(2) === end_frequency.toFixed(2)) end_frequency = _end_frequency.current;
-    dispatch(AnnotatorSlice.actions.updateFocusResultBounds({
-      newBounds: { type: 'Box', end_frequency, start_frequency, start_time, end_time },
-      phase: phase.phase
-    }))
+    let endFrequency = _yAxis.current.positionToValue(_top.current);
+    let startFrequency = _yAxis.current.positionToValue(_top.current + _height.current);
+    let startTime = _xAxis.current.positionToValue(_left.current);
+    let endTime = _xAxis.current.positionToValue(_left.current + _width.current);
+    if (_startTime.current && formatTime(startTime, true) === formatTime(_startTime.current, true)) startTime = _startTime.current;
+    if (_endTime.current && formatTime(endTime, true) === formatTime(_endTime.current, true)) endTime = _endTime.current;
+    if (_startFrequency.current && _startFrequency.current.toFixed(2) === startFrequency.toFixed(2)) startFrequency = _startFrequency.current;
+    if (_endFrequency.current && _endFrequency.current.toFixed(2) === endFrequency.toFixed(2)) endFrequency = _endFrequency.current;
+    update(annotation, { startTime, endTime, startFrequency, endFrequency })
   }
 
   if (top === null || left === null || height === null || width === null) return <Fragment/>
-  return <ExtendedDiv resizable={ isActive && !isSelectingFrequency }
+  return <ExtendedDiv resizable={ isActive && !isAnnotationDisabled }
                       top={ top } height={ height }
                       left={ left } width={ width }
                       onUp={ onValidateMove }
@@ -172,11 +165,11 @@ export const Box: React.FC<RegionProps> = ({
                         styles.annotation,
                         colorClassName,
                         isActive ? '' : styles.disabled,
-                        isSelectingFrequency ? styles.editDisabled : ''
+                        isAnnotationDisabled ? styles.editDisabled : ''
                       ].join(' ') }>
 
     { (isMouseHover || isActive) &&
-        <AnnotationHeader active={ isActive && !isSelectingFrequency }
+        <AnnotationHeader active={ isActive && !isAnnotationDisabled }
                           onTopMove={ onTopMove }
                           onLeftMove={ onLeftMove }
                           onValidateMove={ onValidateMove }
@@ -184,7 +177,7 @@ export const Box: React.FC<RegionProps> = ({
                           setIsMouseHover={ setIsMouseHover }
                           className={ [
                             colorClassName,
-                            isSelectingFrequency ? styles.editDisabled : ''
+                            isAnnotationDisabled ? styles.editDisabled : ''
                           ].join(' ') }
                           annotation={ annotation }
                           audioPlayer={ audioPlayer }/> }

@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/service/app.ts";
 import { Progress, WarningText } from "@/components/ui";
 import { IonButton, IonNote, IonSpinner } from "@ionic/react";
-import { formatTime } from "@/service/dataset/spectrogram-configuration/scale";
+import { formatTime } from "@/service/function";
 import styles from "@/view/campaign/edit/edit.module.scss";
 import { useNavigate } from "react-router-dom";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";

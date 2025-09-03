@@ -1,13 +1,8 @@
 """AnnotationPhase schema"""
-import graphene_django_optimizer
-from django.db import models
-from django.db.models import QuerySet, Count, Q, When, Case, F, Value
 from django_filters import FilterSet, OrderingFilter
-from graphene import relay, Scalar, Boolean, Int, ID, ObjectType, Field
-from graphql import GraphQLResolveInfo
-from graphql.language import ast
+from graphene import relay, Boolean, Int, ID, ObjectType, Field, Enum
 
-from backend.api.models import AnnotationPhase, AnnotationTask
+from backend.api.models import AnnotationPhase
 from backend.utils.schema import (
     ApiObjectType,
     GraphQLResolve,
@@ -16,29 +11,11 @@ from backend.utils.schema import (
 )
 
 
-class PhaseTypeEnum(Scalar):
-    # pylint: disable=missing-class-docstring
+class AnnotationPhaseType(Enum):
+    """From AnnotationPhase.Type"""
 
-    @staticmethod
-    def serialize(value):
-        """Serialize enum"""
-        return AnnotationPhase.Type(value).label
-
-    @staticmethod
-    def parse_literal(node, _variables=None):
-        """Parse literal"""
-        if isinstance(node, ast.StringValueNode):
-            index = AnnotationPhase.Type.labels.index(node.value)
-            value = AnnotationPhase.Type.values[index]
-            return AnnotationPhase.Type(value)
-        return None
-
-    @staticmethod
-    def parse_value(value):
-        """Parse value"""
-        index = AnnotationPhase.Type.labels.index(value)
-        value = AnnotationPhase.Type.values[index]
-        return AnnotationPhase.Type(value)
+    Annotation = "A"
+    Verification = "V"
 
 
 class AnnotationPhaseFilter(FilterSet):
@@ -55,7 +32,7 @@ class AnnotationPhaseFilter(FilterSet):
 class AnnotationPhaseNode(ApiObjectType):
     """AnnotationPhase schema"""
 
-    phase = PhaseTypeEnum()
+    phase = AnnotationPhaseType()
 
     is_completed = Boolean()
     has_annotations = Boolean()
@@ -73,46 +50,39 @@ class AnnotationPhaseNode(ApiObjectType):
         filterset_class = AnnotationPhaseFilter
         interfaces = (relay.Node,)
 
-    @classmethod
-    def get_queryset(
-        cls, queryset: QuerySet[AnnotationPhase], info: GraphQLResolveInfo
-    ):
-        return graphene_django_optimizer.query(
-            queryset.prefetch_related(
-                "annotations",
-                "annotation_tasks",
-            )
-            .annotate(
-                has_annotations=Q(annotations__isnull=False),
-                tasks_count=Count("annotation_tasks", distinct=True),
-                completed_tasks_count=Count(
-                    "annotation_tasks",
-                    filter=Q(annotation_tasks__status=AnnotationTask.Status.FINISHED),
-                    distinct=True,
-                ),
-                user_tasks_count=Count(
-                    "annotation_tasks",
-                    filter=Q(annotation_tasks__annotator_id=info.context.user.id),
-                    distinct=True,
-                ),
-                user_completed_tasks_count=Count(
-                    "annotation_tasks",
-                    filter=Q(
-                        annotation_tasks__annotator_id=info.context.user.id,
-                        annotation_tasks__status=AnnotationTask.Status.FINISHED,
-                    ),
-                    distinct=True,
-                ),
-            )
-            .annotate(
-                is_completed=Case(
-                    When(finished_tasks_count=F("tasks_count"), then=Value(1)),
-                    default=Value(0),
-                    output_field=models.BooleanField(),
-                ),
-            ),
-            info,
-        )
+    # @classmethod
+    # def get_queryset(
+    #     cls, queryset: QuerySet[AnnotationPhase], info: GraphQLResolveInfo
+    # ):
+    #     return (
+    #         graphene_django_optimizer.query(
+    #             queryset.prefetch_related("annotations", "annotation_tasks",).annotate(
+    #                 has_annotations=Q(annotations__isnull=False),
+    #                 tasks_count=Count("annotation_tasks", distinct=True),
+    #                 completed_tasks_count=Count(
+    #                     "annotation_tasks",
+    #                     filter=Q(
+    #                         annotation_tasks__status=AnnotationTask.Status.FINISHED
+    #                     ),
+    #                     distinct=True,
+    #                 ),
+    #                 user_tasks_count=Count(
+    #                     "annotation_tasks",
+    #                     filter=Q(annotation_tasks__annotator_id=info.context.user.id),
+    #                     distinct=True,
+    #                 ),
+    #                 user_completed_tasks_count=Count(
+    #                     "annotation_tasks",
+    #                     filter=Q(
+    #                         annotation_tasks__annotator_id=info.context.user.id,
+    #                         annotation_tasks__status=AnnotationTask.Status.FINISHED,
+    #                     ),
+    #                     distinct=True,
+    #                 ),
+    #             ),
+    #             info,
+    #         )
+    #     )
 
 
 class AnnotationPhaseQuery(ObjectType):  # pylint: disable=too-few-public-methods
@@ -123,15 +93,15 @@ class AnnotationPhaseQuery(ObjectType):  # pylint: disable=too-few-public-method
     annotation_phase_for_campaign = Field(
         AnnotationPhaseNode,
         campaign_id=ID(required=True),
-        phase_type=PhaseTypeEnum(required=True),
+        phase_type=AnnotationPhaseType(required=True),
     )
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     def resolve_annotation_campaign_by_id(
-        self, info, campaign_id: int, phase_type: AnnotationPhase.Type
+        self, info, campaign_id: int, phase_type: AnnotationPhaseType
     ):
         """Get AnnotationCampaign by id"""
         return AnnotationPhase.objects.get(
             annotation_campaign_id=campaign_id,
-            phase=phase_type,
+            phase=phase_type.value,
         )

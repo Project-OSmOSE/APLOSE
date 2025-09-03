@@ -1,9 +1,13 @@
 """Spectrogram schema"""
 import graphene_django_optimizer
+from django.conf import settings
 from django.db.models import Exists, Subquery, OuterRef, Q
 from django_filters import FilterSet, OrderingFilter, CharFilter, BooleanFilter
-from graphene import relay, ObjectType, Int, String, ID
-from graphene_django.filter import GlobalIDFilter
+from graphene import relay, ObjectType, Int, ID, Field, String, Boolean
+from graphene_django.filter import GlobalIDFilter, TypedFilter
+from graphql import GraphQLResolveInfo
+from osekit.core_api.spectro_dataset import SpectroDataset
+from rest_framework.request import Request
 
 from backend.api.models import (
     Spectrogram,
@@ -11,10 +15,20 @@ from backend.api.models import (
     AnnotationFileRange,
     AnnotationPhase,
     Annotation,
+    SpectrogramAnalysis,
 )
-from backend.utils.schema import ApiObjectType, AuthenticatedDjangoConnectionField
+from backend.api.view.annotation.annotation_file_range import (
+    AnnotationFileRangeFilesFilter,
+)
+from backend.utils.schema import (
+    ApiObjectType,
+    AuthenticatedDjangoConnectionField,
+    GraphQLResolve,
+    GraphQLPermissions,
+)
 from ..annotation.annotation import AnnotationNode
-from ..annotation.annotation_task import AnnotationTaskNode, TaskStatusEnum
+from ..annotation.annotation_phase import AnnotationPhaseType
+from ..annotation.annotation_task import AnnotationTaskNode, AnnotationTaskStatus
 
 
 class SpectrogramFilter(FilterSet):
@@ -24,7 +38,7 @@ class SpectrogramFilter(FilterSet):
         field_name="analysis__annotation_campaigns__id",
         lookup_expr="exact",
     )
-    phase_type = CharFilter(method="fake_filter")
+    phase_type = TypedFilter(input_type=AnnotationPhaseType, method="fake_filter")
     annotator_id = GlobalIDFilter(method="fake_filter")
 
     is_task_completed = BooleanFilter(method="fake_filter")
@@ -161,13 +175,16 @@ class SpectrogramNode(ApiObjectType):
     annotations = AuthenticatedDjangoConnectionField(AnnotationNode)
     annotation_tasks = AuthenticatedDjangoConnectionField(AnnotationTaskNode)
 
-    task_status = TaskStatusEnum(
+    task_status = AnnotationTaskStatus(
         campaign_id=ID(required=True),
         annotator_id=ID(required=True),
-        phase_type=String(required=True),
+        phase_type=AnnotationPhaseType(required=True),
     )
 
-    duration = Int()
+    path = String(analysis_id=ID(required=True), required=True)
+    audio_path = String(analysis_id=ID(required=True), required=True)
+
+    duration = Int(required=True)
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
@@ -183,17 +200,140 @@ class SpectrogramNode(ApiObjectType):
         ),
     )
     def resolve_task_status(
-        root, info, campaign_id: int, annotator_id: int, phase_type
+        root, info, campaign_id: int, annotator_id: int, phase_type: AnnotationPhaseType
     ):
         task = root.annotation_tasks.get(
             annotation_phase__annotation_campaign_id=campaign_id,
             annotator_id=annotator_id,
-            annotation_phase__phase=phase_type,
+            annotation_phase__phase=phase_type.value,
         )
         return task.status if task is not None else AnnotationTask.Status.CREATED
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_path(root, info, analysis_id):
+        analysis: SpectrogramAnalysis = root.analysis.get(id=analysis_id)
+
+        if analysis.dataset.legacy:
+            folder = f"{analysis.fft.nfft}_{analysis.fft.window_size}_{analysis.fft.overlap*100}"
+            if analysis.legacy_configuration is not None:
+                if analysis.legacy_configuration.linear_frequency_scale is not None:
+                    folder = f"{folder}_{analysis.legacy_configuration.linear_frequency_scale.name}"
+                if (
+                    analysis.legacy_configuration.multi_linear_frequency_scale
+                    is not None
+                ):
+                    folder = f"{folder}_{analysis.legacy_configuration.multi_linear_frequency_scale.name}"
+            return (
+                settings.STATIC_URL
+                / analysis.dataset.path
+                / settings.DATASET_SPECTRO_FOLDER
+                / analysis.dataset.get_config_folder()
+                / folder
+                / f"{root.filename}.{root.format.name}"
+            )
+        else:
+            spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
+            spectro_dataset_path = str(spectro_dataset.folder).split("\\dataset\\")[1]
+            return (
+                settings.STATIC_URL
+                / settings.DATASET_EXPORT_PATH
+                / spectro_dataset_path
+                / "spectrogram"
+                / f"{root.filename}.{root.format.name}"
+            )
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_audio_path(root, info, analysis_id):
+        analysis: SpectrogramAnalysis = root.analysis.get(id=analysis_id)
+
+        if analysis.dataset.legacy:
+            return (
+                settings.STATIC_URL
+                / analysis.dataset.path
+                / settings.DATASET_FILES_FOLDER
+                / analysis.dataset.get_config_folder()
+                / f"{root.filename}.wav"
+            )
+        else:
+            spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
+            audio_path = str(
+                spectro_dataset.data[root.filename].audio_data.files[0].path
+            ).split("\\dataset\\")[1]
+            return settings.STATIC_URL / settings.DATASET_EXPORT_PATH / audio_path
+
+
+class PrevNextNode(ObjectType):
+    previous_id = ID()
+    next_id = ID()
 
 
 class SpectrogramQuery(ObjectType):  # pylint: disable=too-few-public-methods
     """Spectrogram queries"""
 
     all_spectrograms = AuthenticatedDjangoConnectionField(SpectrogramNode)
+
+    spectrogram_by_id = Field(SpectrogramNode, id=ID(required=True))
+
+    spectrogram_prev_next = Field(
+        PrevNextNode,
+        campaign_id=ID(required=True),
+        annotator_id=ID(required=True),
+        spectrogram_id=ID(required=True),
+        phase_type=AnnotationPhaseType(required=True),
+        filename__icontain=String(name="filename__icontain"),
+        is_submitted=Boolean(name="is_submitted"),
+        with_user_annotations=Boolean(name="with_user_annotations"),
+        label__name=String(name="label__name"),
+        confidence_indicator__label=String(name="confidence_indicator__label"),
+        detector_configuration__detector__name=String(
+            name="detector_configuration__detector__name"
+        ),
+        acoustic_features__isnull=Boolean(name="acoustic_features__isnull"),
+        end__gte=String(name="end__gte"),
+        start__lte=String(name="start__lte"),
+    )
+
+    @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
+    def resolve_spectrogram_by_id(
+        self, info, id: int
+    ):  # pylint: disable=redefined-builtin
+        """Get AnnotationCampaign by id"""
+        return SpectrogramNode.get_node(info, id)
+
+    @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
+    def resolve_spectrogram_prev_next(
+        self,
+        info: GraphQLResolveInfo,
+        campaign_id: int,
+        annotator_id: int,
+        spectrogram_id: int,
+        phase_type: AnnotationPhaseType,
+        **kwargs,
+    ):  # pylint: disable=redefined-builtin
+        """Get AnnotationCampaign by id"""
+        current_file: Spectrogram = Spectrogram.objects.get(id=spectrogram_id)
+        phase: AnnotationPhase = AnnotationPhase.objects.get(
+            annotation_campaign_id=campaign_id, phase=phase_type.value
+        )
+
+        file_ranges = AnnotationFileRange.objects.filter(
+            annotation_phase_id=phase.id,
+            annotator_id=annotator_id,
+        )
+        request: Request = info.context
+        request._request.GET = kwargs
+        filtered_files = AnnotationFileRangeFilesFilter().filter_queryset(
+            request, file_ranges, self
+        )
+        previous_file: Spectrogram = filtered_files.filter(
+            Q(start__lt=current_file.start)
+            | Q(start=current_file.start, id__lt=current_file.id)
+        ).last()
+        next_file: Spectrogram = filtered_files.filter(
+            Q(start__gt=current_file.start)
+            | Q(start=current_file.start, id__gt=current_file.id)
+        ).first()
+        return {
+            "previous_id": previous_file.id if previous_file is not None else None,
+            "next_id": next_file.id if next_file is not None else None,
+        }

@@ -9,7 +9,7 @@ from backend.api.tests.schema.data.spectrogram_analysis.all_spectrogram_analysis
 )
 
 QUERY = """
-query ($userID: ID!, $annotatorID: Decimal, $ownerID: Decimal, $isArchived: Boolean, $phase: String, $search: String) {
+query ($userID: ID!, $annotatorID: Decimal, $ownerID: Decimal, $isArchived: Boolean, $phase: AnnotationPhaseType, $search: String) {
   allAnnotationCampaigns(
     annotatorId: $annotatorID
     ownerId: $ownerID

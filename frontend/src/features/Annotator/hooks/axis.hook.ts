@@ -1,41 +1,33 @@
-import { useCurrentConfiguration, useSpectrogramDimensions } from '../hook.ts';
 import { useCallback, useMemo } from 'react';
-import { LinearScaleService } from './linear.service.ts';
-import { MultiLinearScaleService } from '@/service/annotator/spectrogram/scale/multi-linear.service.ts';
-import { AbstractScale } from '@/service/dataset/spectrogram-configuration/scale';
-import { useRetrieveAnnotator } from "@/service/api/annotator.ts";
+import { AbstractScale, LinearScaleService, MultiLinearScaleService } from './scales';
+import { useSpectrogram } from "./spectrogram.hook";
+import { useAnnotatorInput } from "./input.hook";
+import { useAnnotatorQuery } from "./query.hook";
 
 export const useXAxis = (): AbstractScale => {
-  const { width } = useSpectrogramDimensions()
-  const { data } = useRetrieveAnnotator()
-  return useMemo(() => new LinearScaleService(width, data?.file.duration ?? 0), [ width, data?.file ])
+  const { width } = useSpectrogram()
+  const { data } = useAnnotatorQuery()
+  return useMemo(() => new LinearScaleService(width, { maxValue: data?.spectrogramById?.duration ?? 0 }), [ width, data?.spectrogramById ])
 }
 
 export const useYAxis = (): AbstractScale => {
-  const currentConfiguration = useCurrentConfiguration()
-  const { height } = useSpectrogramDimensions()
-  const { data } = useRetrieveAnnotator()
+  const { analysis } = useAnnotatorInput()
+  const { height } = useSpectrogram()
   const scale = useMemo(() => {
-    if (currentConfiguration?.linear_frequency_scale) {
+    if (analysis?.legacyConfiguration?.linearFrequencyScale) {
       return new LinearScaleService(
         height,
-        currentConfiguration?.linear_frequency_scale.max_value,
-        currentConfiguration?.linear_frequency_scale.min_value
+        analysis.legacyConfiguration.linearFrequencyScale
       )
     }
-    if (currentConfiguration?.multi_linear_frequency_scale) {
+    if (analysis?.legacyConfiguration?.multiLinearFrequencyScale) {
       return new MultiLinearScaleService(
         height,
-        currentConfiguration?.multi_linear_frequency_scale.inner_scales
+        analysis.legacyConfiguration.multiLinearFrequencyScale.innerScales?.results.filter(s => s !== null) ?? []
       )
     }
-    return new LinearScaleService(height, data?.file.maxFrequency ?? 0)
-  }, [
-    currentConfiguration?.linear_frequency_scale,
-    currentConfiguration?.multi_linear_frequency_scale,
-    data?.file.maxFrequency,
-    height
-  ]);
+    return new LinearScaleService(height, { maxValue: analysis?.fft.samplingFrequency ?? 0 })
+  }, [ analysis, height ]);
 
   const valueToPosition = useCallback((value: number) => {
     let position = height - scale.valueToPosition(value);
@@ -59,7 +51,7 @@ export const useYAxis = (): AbstractScale => {
 
   const isRangeContinuouslyOnScale = useCallback(scale.isRangeContinuouslyOnScale.bind(scale), [ scale ])
   const getSteps = useCallback(scale.getSteps.bind(scale), [ scale ])
-  
+
   return useMemo(() => ({
     valueToPosition,
     valuesToPositionRange,

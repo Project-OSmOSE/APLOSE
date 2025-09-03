@@ -1,7 +1,7 @@
 query getFileRangeDates(
     $campaignID: ID!,
     $annotatorID: ID!,
-    $phase: String!,
+    $phase: AnnotationPhaseType!,
 ) {
     allAnnotationFileRanges(
         annotationCampaignId: $campaignID
