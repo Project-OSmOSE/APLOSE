@@ -1,5 +1,5 @@
 import { API_URL, ESSENTIAL, expect, expectNoRequestsOnAction, test } from './utils';
-import { CAMPAIGN, DATASET } from './fixtures';
+import { CAMPAIGN } from './fixtures';
 import { Mock } from './utils/services';
 import { PostAnnotationCampaign } from "../src/service/api/campaign";
 
@@ -19,8 +19,8 @@ test.describe('Annotator', () => {
       const data = request.postDataJSON() as PostAnnotationCampaign;
       const expectedData: PostAnnotationCampaign = {
         name: CAMPAIGN.name,
-        dataset: DATASET.name,
-        spectro_configs: DATASET.spectros.map(s => s.id),
+        dataset: "1",
+        analysis: [ "1" ],
         instructions_url: null,
         desc: null,
         deadline: null,
@@ -51,8 +51,8 @@ test.describe('Annotator', () => {
         instructions_url: CAMPAIGN.instructions_url,
         desc: CAMPAIGN.desc,
         deadline: CAMPAIGN.deadline,
-        dataset: DATASET.name,
-        spectro_configs: DATASET.spectros.map(s => s.id),
+        dataset: "1",
+        analysis: [ "1" ],
         allow_image_tuning: false,
         allow_colormap_tuning: false,
         colormap_default: null,
@@ -85,8 +85,8 @@ test.describe('Annotator', () => {
     await page.campaign.create.go('annotator', { empty: true });
 
     await test.step('Cannot select a dataset if none is imported', async () => {
-      await expect(page.getByRole('button', { name: 'Select a dataset' })).toBeDisabled();
-      await expect(page.getByText('You should first import a dataset')).toBeVisible();
+      await expect(page.getByText('No datasets')).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Import dataset' })).toBeEnabled();
     })
 
     await test.step('Cannot submit empty form', async () => {

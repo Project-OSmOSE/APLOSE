@@ -1,34 +1,120 @@
 import * as Types from '../../../gql/types.generated';
 
 import { gqlAPI } from '@/features/gql/baseApi.ts';
+
 export type GetDatasetsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type GetDatasetsQuery = { __typename?: 'Query', allDatasets?: { __typename?: 'DatasetNodeNodeConnection', results: Array<{ __typename?: 'DatasetNode', id: string, name: string, description?: string | null, createdAt: any, legacy: boolean, analysisCount?: number | null, filesCount?: number | null, start?: any | null, end?: any | null } | null> } | null };
+export type GetDatasetsQuery = {
+  __typename?: 'Query',
+  allDatasets?: {
+    __typename?: 'DatasetNodeNodeConnection',
+    results: Array<{
+      __typename?: 'DatasetNode',
+      id: string,
+      name: string,
+      description?: string | null,
+      createdAt: any,
+      legacy: boolean,
+      analysisCount?: number | null,
+      filesCount?: number | null,
+      start?: any | null,
+      end?: any | null
+    } | null>
+  } | null
+};
 
 export type GetDatasetsAndAnalysisQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type GetDatasetsAndAnalysisQuery = { __typename?: 'Query', allDatasets?: { __typename?: 'DatasetNodeNodeConnection', results: Array<{ __typename?: 'DatasetNode', id: string, name: string, spectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', results: Array<{ __typename?: 'SpectrogramAnalysisNode', id: string, name: string, colormap: { __typename?: 'ColormapNode', name: string } } | null> } | null } | null> } | null };
+export type GetDatasetsAndAnalysisQuery = {
+  __typename?: 'Query',
+  allDatasets?: {
+    __typename?: 'DatasetNodeNodeConnection',
+    results: Array<{
+      __typename?: 'DatasetNode',
+      id: string,
+      name: string,
+      spectrogramAnalysis?: {
+        __typename?: 'SpectrogramAnalysisNodeNodeConnection',
+        results: Array<{
+          __typename?: 'SpectrogramAnalysisNode',
+          id: string,
+          name: string,
+          colormap: { __typename?: 'ColormapNode', name: string }
+        } | null>
+      } | null
+    } | null>
+  } | null
+};
 
 export type GetAvailableDatasetsForImportQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type GetAvailableDatasetsForImportQuery = { __typename?: 'Query', allDatasetsAvailableForImport?: Array<{ __typename?: 'ImportDatasetType', name: string, path: string, legacy?: boolean | null, analysis?: Array<{ __typename?: 'ImportSpectrogramAnalysisType', name: string, path: string } | null> | null } | null> | null };
+export type GetAvailableDatasetsForImportQuery = {
+  __typename?: 'Query',
+  allDatasetsAvailableForImport?: Array<{
+    __typename?: 'ImportDatasetType',
+    name: string,
+    path: string,
+    legacy?: boolean | null,
+    analysis?: Array<{ __typename?: 'ImportSpectrogramAnalysisType', name: string, path: string } | null> | null
+  } | null> | null
+};
 
 export type GetDatasetByIdQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
 }>;
 
 
-export type GetDatasetByIdQuery = { __typename?: 'Query', datasetById?: { __typename?: 'DatasetNode', name: string, path: string, description?: string | null, start?: any | null, end?: any | null, createdAt: any, legacy: boolean, owner: { __typename?: 'UserNode', displayName?: string | null } } | null };
+export type GetDatasetByIdQuery = {
+  __typename?: 'Query',
+  datasetById?: {
+    __typename?: 'DatasetNode',
+    name: string,
+    path: string,
+    description?: string | null,
+    start?: any | null,
+    end?: any | null,
+    createdAt: any,
+    legacy: boolean,
+    owner: { __typename?: 'UserNode', displayName?: string | null }
+  } | null
+};
 
 export type GetDatasetChannelConfigurationsByIdQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
 }>;
 
 
-export type GetDatasetChannelConfigurationsByIdQuery = { __typename?: 'Query', datasetById?: { __typename?: 'DatasetNode', relatedChannelConfigurations?: { __typename?: 'ChannelConfigurationNodeNodeConnection', results: Array<{ __typename?: 'ChannelConfigurationNode', deployment: { __typename?: 'DeploymentNode', name?: string | null, campaign?: { __typename?: 'CampaignNode', name: string } | null, site?: { __typename?: 'SiteNode', name: string } | null, project: { __typename?: 'ProjectNodeOverride', name: string } }, recorderSpecification?: { __typename?: 'ChannelConfigurationRecorderSpecificationNode', recorder: { __typename?: 'EquipmentNode', serialNumber: string, model: string }, hydrophone: { __typename?: 'EquipmentNode', serialNumber: string, model: string } } | null, detectorSpecification?: { __typename?: 'ChannelConfigurationDetectorSpecificationNode', detector: { __typename?: 'EquipmentNode', serialNumber: string, model: string } } | null } | null> } | null } | null };
+export type GetDatasetChannelConfigurationsByIdQuery = {
+  __typename?: 'Query',
+  datasetById?: {
+    __typename?: 'DatasetNode',
+    relatedChannelConfigurations?: {
+      __typename?: 'ChannelConfigurationNodeNodeConnection',
+      results: Array<{
+        __typename?: 'ChannelConfigurationNode',
+        deployment: {
+          __typename?: 'DeploymentNode',
+          name?: string | null,
+          campaign?: { __typename?: 'CampaignNode', name: string } | null,
+          site?: { __typename?: 'SiteNode', name: string } | null,
+          project: { __typename?: 'ProjectNodeOverride', name: string }
+        },
+        recorderSpecification?: {
+          __typename?: 'ChannelConfigurationRecorderSpecificationNode',
+          recorder: { __typename?: 'EquipmentNode', serialNumber: string, model: string },
+          hydrophone: { __typename?: 'EquipmentNode', serialNumber: string, model: string }
+        } | null,
+        detectorSpecification?: {
+          __typename?: 'ChannelConfigurationDetectorSpecificationNode',
+          detector: { __typename?: 'EquipmentNode', serialNumber: string, model: string }
+        } | null
+      } | null>
+    } | null
+  } | null
+};
 
 export type PostDatasetForImportMutationVariables = Types.Exact<{
   name: Types.Scalars['String']['input'];
@@ -37,7 +123,10 @@ export type PostDatasetForImportMutationVariables = Types.Exact<{
 }>;
 
 
-export type PostDatasetForImportMutation = { __typename?: 'Mutation', importDataset?: { __typename?: 'ImportDatasetMutation', ok: boolean } | null };
+export type PostDatasetForImportMutation = {
+  __typename?: 'Mutation',
+  importDataset?: { __typename?: 'ImportDatasetMutation', ok: boolean } | null
+};
 
 
 export const GetDatasetsDocument = `

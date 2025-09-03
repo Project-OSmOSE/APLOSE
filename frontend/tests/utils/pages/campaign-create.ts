@@ -2,7 +2,7 @@ import { Locator, Page, test } from '@playwright/test';
 import { Mock } from '../services';
 import { CAMPAIGN, DATASET, UserType } from '../../fixtures';
 import { CampaignListPage } from './campaign-list';
-import { selectInAlert } from '../functions';
+import { interceptGQL, selectInAlert } from '../functions';
 
 
 export class CampaignCreatePage {
@@ -19,11 +19,8 @@ export class CampaignCreatePage {
   async go(as: UserType, options?: { empty?: boolean, withErrors?: boolean, loadDetectors?: boolean }): Promise<void> {
     await test.step('Navigate to Campaign create', async () => {
       await this.list.go(as)
-      await this.mock.datasets(options?.empty)
-      await this.mock.users(options?.empty)
-      await this.mock.detectors(!(options?.loadDetectors ?? false))
-      await this.mock.resultImport()
       await this.list.createButton.click();
+      await interceptGQL(this.page, { getDatasetsAndAnalysis: options?.empty ? 'empty' : 'filled' })
       await this.mock.campaignCreate(options?.withErrors);
       await this.mock.campaignDetail(options?.empty);
     });

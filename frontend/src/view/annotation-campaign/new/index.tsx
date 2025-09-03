@@ -89,8 +89,10 @@ export const NewAnnotationCampaign: React.FC = () => {
       if (analysisIDs.length === 0) errors.analysis = 'An analysis is required';
       setErrors(errors);
       page.current?.scrollTo({ top: 0, left: 0 });
+      console.log('submit go errors', JSON.stringify(errors), JSON.stringify(analysisIDs))
       return;
     }
+    console.log('submit')
     createCampaign({
       name, desc, instructions_url, deadline,
       dataset: datasetID,

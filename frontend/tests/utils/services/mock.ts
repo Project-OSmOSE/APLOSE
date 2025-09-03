@@ -24,6 +24,7 @@ import {
   GetAvailableDatasetsForImportQuery,
   GetDatasetByIdQuery,
   GetDatasetChannelConfigurationsByIdQuery,
+  GetDatasetsAndAnalysisQuery,
   GetDatasetsQuery
 } from "../../../src/features/data/dataset/api/api.generated";
 import {
@@ -31,6 +32,7 @@ import {
   GetSpectrogramAnalysisQuery
 } from "../../../src/features/data/spectrogramAnalysis/api/api.generated";
 import { GetAnnotationCampaignsQuery } from "../../../src/features/annotation/annotationCampaign/api/api.generated";
+import { COLORMAP_GREYS } from "../../../src/service/ui/color";
 
 type Response = {
   status: number,
@@ -87,8 +89,8 @@ export class Mock {
         desc: [ Mock.getError('desc') ],
         instructions_url: [ Mock.getError('instructions_url') ],
         deadline: [ Mock.getError('deadline') ],
-        datasets: [ Mock.getError('datasets') ],
-        spectro_configs: [ Mock.getError('spectro_configs') ],
+        dataset: [ Mock.getError('datasets') ],
+        analysis: [ Mock.getError('spectro_configs') ],
         usage: [ Mock.getError('usage') ],
         label_set: [ Mock.getError('label_set') ],
         confidence_indicator_set: [ Mock.getError('confidence_indicator_set') ],
@@ -273,6 +275,30 @@ export const MOCK_QUERIES: {
         }
       }
     } as GetDatasetByIdQuery
+  },
+  getDatasetsAndAnalysis: {
+    empty: {
+      allDatasets: { results: [] }
+    } as GetDatasetsAndAnalysisQuery,
+    filled: {
+      allDatasets: {
+        results: [
+          {
+            id: '1',
+            name: 'Test dataset',
+            spectrogramAnalysis: {
+              results: [
+                {
+                  id: '1',
+                  name: 'Test analysis',
+                  colormap: { name: COLORMAP_GREYS }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    } as GetDatasetsAndAnalysisQuery
   },
 
   getAvailableSpectrogramAnalysisForImport: {

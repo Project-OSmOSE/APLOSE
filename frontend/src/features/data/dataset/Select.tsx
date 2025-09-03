@@ -28,12 +28,6 @@ export const DatasetSelect: React.FC<{
   }, [ data ])
 
   const [ selectedDatasetID, setSelectedDatasetID ] = useState<string | undefined>();
-  const selectDataset = useCallback((value: string | number | undefined) => {
-    setSelectedDatasetID(typeof value === 'number' ? value.toString() : value);
-    onDatasetSelected(value);
-    setSelectedAnalysis([])
-    clearError('dataset')
-  }, [ setSelectedDatasetID, clearError ]);
 
   const analysisItems = useMemo(() => {
     return data?.allDatasets?.results.find(d => d?.id === selectedDatasetID)
@@ -43,11 +37,20 @@ export const DatasetSelect: React.FC<{
       })) ?? []
   }, [ data, selectedDatasetID ])
   const [ selectedAnalysis, setSelectedAnalysis ] = useState<ID[]>([]);
+
   const updateAnalysisSelection = useCallback((selection: Array<string | number>) => {
     setSelectedAnalysis(selection)
     if (onAnalysisSelected) onAnalysisSelected(selection)
     clearError('analysis')
   }, [ setSelectedAnalysis, onAnalysisSelected, clearError ]);
+
+  const selectDataset = useCallback((value: string | number | undefined) => {
+    setSelectedDatasetID(typeof value === 'number' ? value.toString() : value);
+    onDatasetSelected(value);
+    updateAnalysisSelection(data?.allDatasets?.results.find(d => d?.id == value)?.spectrogramAnalysis?.results.filter(a => a !== null).map(a => a.id) ?? [])
+    clearError('dataset')
+  }, [ setSelectedDatasetID, clearError, updateAnalysisSelection ]);
+
   useEffect(() => {
     if (!onAnalysisColormapsChanged) return;
     onAnalysisColormapsChanged(
