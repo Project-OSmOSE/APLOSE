@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FormBloc, Input } from "@/components/form";
 import { IonButton, IonSpinner } from "@ionic/react";
-import styles from "@/view/auth/auth.module.scss";
+import styles from "./styles.module.scss";
 import { useToast } from "@/service/ui";
 import { getErrorMessage } from "@/service/function.ts";
 import { UserAPI } from "@/service/api/user.ts";
@@ -18,7 +18,7 @@ export const UpdatePassword: React.FC = () => {
   const [ oldPassword, setOldPassword ] = useState<string>('');
   const [ newPassword, setNewPassword ] = useState<string>('');
   const [ newPasswordConfirm, setNewPasswordConfirm ] = useState<string>('');
-  const [ errors, setErrors ] = useState<{new_password?: string[], old_password?: string[]}>({});
+  const [ errors, setErrors ] = useState<{ new_password?: string[], old_password?: string[] }>({});
 
 
   useEffect(() => {
@@ -28,8 +28,8 @@ export const UpdatePassword: React.FC = () => {
       try {
         toast.presentError(e)
         setErrors(JSON.parse(e))
+      } catch { /* empty */
       }
-      catch { /* empty */ }
     }
   }, [ passwordError ]);
 

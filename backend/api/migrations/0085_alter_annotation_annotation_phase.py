@@ -7,13 +7,17 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0084_migrate_to_osekit'),
+        ("api", "0084_migrate_to_osekit"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='annotation',
-            name='annotation_phase',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='annotations', to='api.annotationphase'),
+            model_name="annotation",
+            name="annotation_phase",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="annotations",
+                to="api.annotationphase",
+            ),
         ),
     ]

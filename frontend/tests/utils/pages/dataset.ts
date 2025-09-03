@@ -3,6 +3,7 @@ import { MockType, Modal, UI } from '../services';
 import { UserType } from '../../fixtures';
 import { CampaignListPage } from './campaign-list';
 import { interceptGQL } from "../functions";
+import { expect } from "../index";
 
 export class DatasetPage {
 
@@ -15,7 +16,11 @@ export class DatasetPage {
     await test.step('Navigate to Datasets', async () => {
       await this.campaignList.go(as);
       await interceptGQL(this.page, { getDatasets: type })
-      await this.page.getByRole('button', { name: 'Datasets' }).click()
+      await Promise.all([
+        this.page.waitForResponse('**/graphql'),
+        this.page.getByRole('button', { name: 'Datasets' }).click(),
+      ])
+      await expect(this.page.getByRole('heading', { name: 'Datasets' })).toBeVisible();
     });
   }
 

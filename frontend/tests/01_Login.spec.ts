@@ -14,6 +14,7 @@ test('Login - Success', ESSENTIAL, async ({ page }) => {
   await page.login.fillForm();
   await page.mock.userSelf('annotator')
   const request = await page.login.submit({ status: 200, submitAction: 'button' });
+  await page.mock.userSelf('annotator')
   expect(await request.postDataJSON()).toEqual({
     username: AUTH.username,
     password: AUTH.password
@@ -26,6 +27,7 @@ test('Login - Success with Enter key', ESSENTIAL, async ({ page }) => {
   await page.login.fillForm();
   await page.mock.userSelf('annotator')
   const request = await page.login.submit({ status: 200, submitAction: 'enterKey' });
+  await page.mock.userSelf('annotator')
   expect(await request.postDataJSON()).toEqual({
     username: AUTH.username,
     password: AUTH.password

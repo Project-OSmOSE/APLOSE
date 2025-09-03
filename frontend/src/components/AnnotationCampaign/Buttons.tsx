@@ -1,11 +1,7 @@
 import React, { Fragment, useCallback } from "react";
 import { IonButton, IonIcon } from "@ionic/react";
-import { archiveOutline, helpBuoyOutline } from "ionicons/icons";
+import { archiveOutline } from "ionicons/icons";
 import { useAlert } from "@/service/ui";
-import { Link } from "@/components/ui";
-import { createPortal } from "react-dom";
-import { useModal } from "@/service/ui/modal.ts";
-import { AcquisitionModal } from "./modals/AcquisitionModal.tsx";
 import { CampaignAPI, useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { useListPhasesForCurrentCampaign } from "@/service/api/campaign-phase.ts";
 
@@ -47,23 +43,4 @@ export const AnnotationCampaignArchiveButton: React.FC = () => {
     <IonIcon icon={ archiveOutline } slot='start'/>
     Archive
   </IonButton>
-}
-
-export const AnnotationCampaignInstructionsButton: React.FC = () => {
-  const { campaign } = useRetrieveCurrentCampaign()
-  if (!campaign?.instructions_url) return <Fragment/>
-  return <Link color='warning' fill='outline' href={ campaign?.instructions_url }>
-    <IonIcon icon={ helpBuoyOutline } slot="start"/>
-    Instructions
-  </Link>
-}
-
-export const AnnotationCampaignAcquisitionModalButton: React.FC = () => {
-  const modal = useModal()
-  return <Fragment>
-    <IonButton fill='outline' color='medium' className='ion-text-wrap' onClick={ modal.toggle }>
-      Acquisition information
-    </IonButton>
-    { modal.isOpen && createPortal(<AcquisitionModal onClose={ modal.toggle }/>, document.body) }
-  </Fragment>
 }

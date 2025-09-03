@@ -1,6 +1,8 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { QueryParams } from "@/service/type.ts";
+import { AppState, useAppDispatch, useAppSelector } from "@/service/app.ts";
+import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 
 export const useSearchedData = <T>({ items, search, mapping, sortField, sortDirection }: {
   items: T[],
@@ -35,16 +37,26 @@ export const useSearchedData = <T>({ items, search, mapping, sortField, sortDire
   }, [ mapping, items, search, sortField, sortDirection ])
 }
 
-export const useAppSearchParams = <T extends QueryParams>(): {
+export const useAppSearchParams = <T extends QueryParams>(
+  selector: (state: AppState) => T,
+  update: ActionCreatorWithPayload<T>,
+): {
   updateParams: (update: Partial<T>) => void;
   clearParams: () => void;
-  params: T
+  params: T,
+
 } => {
   const [ searchParams, setSearchParams ] = useSearchParams();
+  const params = useAppSelector(selector)
+  const dispatch = useAppDispatch()
 
-  const params = useMemo(() => {
+  useEffect(() => {
+    dispatch(update(toJSON(searchParams)))
+  }, [ searchParams ]);
+
+  const toJSON = useCallback((urlSearchParams: URLSearchParams): T => {
     const params = {} as any
-    for (const [ key, value ] of searchParams.entries()) {
+    for (const [ key, value ] of urlSearchParams.entries()) {
       try {
         params[key] = JSON.parse(value);
       } catch {
@@ -52,26 +64,24 @@ export const useAppSearchParams = <T extends QueryParams>(): {
       }
     }
     return params
-  }, [ searchParams ])
+  }, [])
 
-  const updateParams = useCallback((update: Partial<T>) => {
-    setSearchParams(prev => {
-      for (const [ key, value ] of Object.entries(update)) {
-        if (value !== undefined) prev.set(key, value);
-        else prev.delete(key);
-      }
-      return prev
-    })
-  }, [ setSearchParams ])
+  const updateParams = useCallback((newParams: Partial<T>) => {
+    for (const [ key, value ] of Object.entries(newParams)) {
+      if (value !== undefined) searchParams.set(key, value);
+      else searchParams.delete(key);
+    }
+    setSearchParams(searchParams)
+    dispatch(update(toJSON(searchParams)))
+  }, [ setSearchParams, searchParams, update ])
 
   const clearParams = useCallback(() => {
-    setSearchParams(prev => {
-      for (const key of prev.keys()) {
-        prev.delete(key);
-      }
-      return prev
-    })
-  }, [ setSearchParams ])
+    for (const key of searchParams.keys()) {
+      searchParams.delete(key);
+    }
+    setSearchParams(searchParams)
+    dispatch(update(toJSON(searchParams)))
+  }, [ setSearchParams, searchParams ])
 
   return { params, updateParams, clearParams }
 }

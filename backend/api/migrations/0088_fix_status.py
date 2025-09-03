@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunSQL(
             """
-                UPDATE postgres.public.api_annotationtask
+                UPDATE public.api_annotationtask
                 SET status = 'F'
                 WHERE status='S'
           """,

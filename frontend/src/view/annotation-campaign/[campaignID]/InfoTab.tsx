@@ -42,7 +42,7 @@ export const AnnotationCampaignInfo: React.FC = () => {
       <DatasetName { ...campaign.dataset } labeled link/>
       {/*<AnnotationCampaignAcquisitionModalButton/>*/ }
       <FadedText>Analysis</FadedText>
-      <SpectrogramAnalysisTable annotationCampaignID={ campaign.id }/>
+      <SpectrogramAnalysisTable annotationCampaignID={ campaign.id.toString() }/>
     </div>
 
     {/* ANNOTATION */ }

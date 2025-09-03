@@ -45,8 +45,9 @@ export const DatasetTable: React.FC = () => {
   }
 
 
-  if (!datasets || datasets.length === 0) return <IonNote color='medium' style={ { textAlign: 'center' } }>No
-    datasets</IonNote>
+  if (!datasets || datasets.length === 0) return <IonNote color='medium' style={ { textAlign: 'center' } }>
+    No datasets
+  </IonNote>
 
   return <Table columns={ 9 }>
     { heads }

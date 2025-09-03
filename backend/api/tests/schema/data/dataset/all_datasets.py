@@ -9,15 +9,24 @@ QUERY = """
 query {
     allDatasets(orderBy: "-createdAt" ) {
         results {
-          id
-          name
-          description
-          createdAt
-          legacy
-          analysisCount
-          filesCount
-          start
-          end
+            id
+            name
+            description
+            createdAt
+            legacy
+            analysisCount
+            filesCount
+            start
+            end
+            spectrogramAnalysis(orderBy: "name") {
+                results {
+                    id
+                    name
+                    colormap {
+                        name
+                    }
+                }
+            }
         }
     }
 }
@@ -51,3 +60,9 @@ class AllDatasetsTestCase(GraphQLTestCase):
         self.assertEqual(content[0]["filesCount"], 11)
         self.assertEqual(content[0]["start"], "2012-10-03T10:00:00+00:00")
         self.assertEqual(content[0]["end"], "2012-10-03T20:15:00+00:00")
+        self.assertEqual(
+            content[0]["spectrogramAnalysis"]["results"][0]["name"], "spectro_config1"
+        )
+        self.assertEqual(
+            content[0]["spectrogramAnalysis"]["results"][0]["colormap"]["name"], "Greys"
+        )

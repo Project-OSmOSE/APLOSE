@@ -9,7 +9,7 @@ export const DatasetName: React.FC<{
 }> = ({ name, id, labeled, link }) => {
   if (link && id) return <Fragment>
     { labeled && <FadedText>Dataset</FadedText> }
-    <Link appPath={ `/dataset/${ id }` } color='primary'>{ name }</Link>
+    <Link appPath={ `/dataset/${ id }/` } color='primary'>{ name }</Link>
   </Fragment>
 
   return <div>

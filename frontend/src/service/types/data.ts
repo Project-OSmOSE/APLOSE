@@ -29,15 +29,6 @@ export type Dataset = {
   }>
 }
 
-export type ImportDataset = {
-  dataset: string;
-  name: string; // = dataset
-  path: string;
-  spectro_duration: string;
-  dataset_sr: string;
-  file_type: string;
-}
-
 export interface DatasetFile {
   id: number;
   start: string; // Datetime
@@ -47,10 +38,6 @@ export interface DatasetFile {
   dataset_sr: number; // read only
   audio_url: string;
   dataset_name: string; // read only
-
-  // Front only
-  duration: number;
-  maxFrequency: number;
 }
 
 export interface SpectrogramConfiguration {

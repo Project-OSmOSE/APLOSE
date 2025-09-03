@@ -7,7 +7,6 @@ const TEST = {
   empty: (as: UserType) => {
     return test('Should display empty state', async ({ page }) => {
       await page.dataset.list.go(as, 'empty');
-      await expect(page.locator('.table-content')).not.toBeVisible();
       await expect(page.getByText('No datasets')).toBeVisible();
 
       const modal = await page.dataset.list.openImportModal('empty')

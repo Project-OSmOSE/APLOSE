@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Provider } from "react-redux";
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import './css/bootstrap-4.1.3.min.css';
 import '@ionic/react/css/core.css';
@@ -21,6 +21,8 @@ import { NewAnnotationCampaign } from "@/view/annotation-campaign/new";
 
 import { DatasetList } from '@/view/dataset';
 import { DatasetDetail } from '@/view/dataset/[datasetID]';
+
+import { Account } from '@/view/account'
 
 
 import { Home } from "@/view/home/Home.tsx";
@@ -56,7 +58,8 @@ const AppContent: React.FC = () => {
 
   const isConnected = useAppSelector(selectIsConnected)
   // const currentUser = useAppSelector(selectCurrentUser)
-  // const from = useLocation()
+
+  const from = useLocation()
 
   return (
     <Routes>
@@ -81,16 +84,17 @@ const AppContent: React.FC = () => {
                       </Route>
                   </Route>
               </Route>
+
+              <Route path='dataset'>
+                  <Route index element={ <DatasetList/> }/>
+                  <Route path=':datasetID' element={ <DatasetDetail/> }/>
+              </Route>
+
+              <Route path='account' element={ <Account/> }/>
+
+              <Route path="" element={ <Navigate to="/annotation-campaign" replace state={ { from } }/> }/>
           </Route>
 
-          <Route path='dataset'>
-              <Route index element={ <DatasetList/> }/>
-              <Route path=':datasetID' element={ <DatasetDetail/> }/>
-          </Route>
-
-        {/*<Route>*/ }
-        {/*    <Route path='account' element={ <Account/> }/>*/ }
-        {/*</Route>*/ }
 
         {/*{ currentUser?.is_superuser &&*/ }
         {/*    <Route path='admin'>*/ }
@@ -108,10 +112,9 @@ const AppContent: React.FC = () => {
         {/*    </Route>*/ }
         {/*}*/ }
 
-        {/*<Route path="*" element={ <Navigate to="/annotation-campaign" replace state={ { from } }/> }/>*/ }
       </Fragment> }
 
-      {/*<Route path="*" element={ <Navigate to="/login" replace state={ { from } }/> }/>*/ }
+      <Route path="*" element={ <Navigate to="/login" replace state={ { from } }/> }/>
     </Routes>
   )
 }

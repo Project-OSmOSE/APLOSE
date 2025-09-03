@@ -2,12 +2,12 @@ import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { CampaignFilter } from "@/service/api/campaign.ts";
 import { useAppSearchParams } from "@/service/ui/search.ts";
 import { useCallback, useEffect } from "react";
-import { AppState, useAppDispatch, useAppSelector } from "@/service/app.ts";
+import { AppState } from "@/service/app.ts";
 import { UserAPI } from "@/service/api/user.ts";
 import { AuthAPI } from "@/service/api/auth.ts";
 import { SpectrogramFilter as _SpectrogramFilter } from "@/service/api/annotation-file-range.ts";
 
-type SpectrogramFilter = _SpectrogramFilter & { page: number };
+type SpectrogramFilter = _SpectrogramFilter
 
 type FilterState = {
   campaign: CampaignFilter;
@@ -16,14 +16,14 @@ type FilterState = {
 
 function reset(state: FilterState) {
   state.campaign = {}
-  state.spectrogram = { page: 1 }
+  state.spectrogram = {}
 }
 
 export const FilterSlice = createSlice({
   name: 'FilterSlice',
   initialState: {
     campaign: {},
-    spectrogram: { page: 1 },
+    spectrogram: {},
   } satisfies FilterState as FilterState,
   reducers: {
     updateCampaignFilters: (state: FilterState, { payload }: { payload: CampaignFilter }) => {
@@ -45,19 +45,26 @@ export const selectCampaignFilters = createSelector(
 )
 
 export const useCampaignFilters = () => {
-  const { params, updateParams, clearParams } = useAppSearchParams<CampaignFilter>()
+  const { params, updateParams, clearParams } = useAppSearchParams<CampaignFilter>(
+    selectCampaignFilters,
+    FilterSlice.actions.updateCampaignFilters,
+  )
   const { data: user } = UserAPI.endpoints.getCurrentUser.useQuery()
-  const loadedFilters = useAppSelector(selectCampaignFilters)
-  const dispatch = useAppDispatch()
 
   useEffect(() => {
-    if (!user) return;
+    init()
+  }, [ user ]);
 
-    // Load default params
+  useEffect(() => {
+    init()
+  }, []);
+
+  const init = useCallback(() => {
+    if (!user) return;
     const updatedFilters = {
       phases__annotation_file_ranges__annotator_id: user.id,
       archive__isnull: true,
-      ...loadedFilters
+      ...params
     }
     if (updatedFilters.phases__annotation_file_ranges__annotator_id !== user.id) {
       updatedFilters.phases__annotation_file_ranges__annotator_id = user.id
@@ -66,11 +73,7 @@ export const useCampaignFilters = () => {
       updatedFilters.owner = user.id
     }
     updateParams(updatedFilters)
-  }, [ user ]);
-
-  useEffect(() => {
-    dispatch(FilterSlice.actions.updateCampaignFilters(params))
-  }, [ params ]);
+  }, [ params, user, updateParams ])
 
   return { params, updateParams, clearParams }
 }
@@ -81,30 +84,15 @@ export const selectSpectrogramFilters = createSelector(
 )
 
 export const useSpectrogramFilters = (clearOnLoad: boolean = false) => {
-  const { params, updateParams: _updateParams } = useAppSearchParams<SpectrogramFilter>()
-  const loadedFilters = useAppSelector(selectSpectrogramFilters)
-  const dispatch = useAppDispatch()
+  const { params, updateParams, clearParams } = useAppSearchParams<SpectrogramFilter>(
+    selectSpectrogramFilters,
+    FilterSlice.actions.updateSpectrogramFilters
+  )
 
   useEffect(() => {
     if (!clearOnLoad) return;
-    updateParams(loadedFilters)
+    updateParams(params)
   }, []);
 
-  useEffect(() => {
-    dispatch(FilterSlice.actions.updateSpectrogramFilters(params))
-  }, [ params ]);
-
-  const updateParams = useCallback((p: Omit<SpectrogramFilter, 'page'>) => {
-    _updateParams({ ...p, page: 1 })
-  }, [])
-
-  const updatePage = useCallback((page: number) => {
-    _updateParams({ ...params, page })
-  }, [ params ])
-
-  const clearParams = useCallback(() => {
-    _updateParams({ page: 1 })
-  }, [])
-
-  return { params, updateParams, updatePage, clearParams }
+  return { params, updateParams, clearParams }
 }

@@ -7,20 +7,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0085_alter_annotation_annotation_phase'),
+        ("api", "0085_alter_annotation_annotation_phase"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='annotation',
-            name='spectrogram',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='annotations', to='api.spectrogram'),
+            model_name="annotation",
+            name="spectrogram",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="annotations",
+                to="api.spectrogram",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='annotation',
-            name='analysis',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='annotations', to='api.spectrogramanalysis'),
+            model_name="annotation",
+            name="analysis",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="annotations",
+                to="api.spectrogramanalysis",
+            ),
             preserve_default=False,
         ),
         migrations.RunSQL(
@@ -33,9 +43,13 @@ class Migration(migrations.Migration):
             reverse_sql="",
         ),
         migrations.AlterField(
-            model_name='annotation',
-            name='analysis',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='annotations', to='api.spectrogramanalysis'),
+            model_name="annotation",
+            name="analysis",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="annotations",
+                to="api.spectrogramanalysis",
+            ),
             preserve_default=False,
         ),
     ]

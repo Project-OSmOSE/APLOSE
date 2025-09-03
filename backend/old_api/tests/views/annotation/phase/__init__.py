@@ -11,14 +11,6 @@ from .end import (
     EndAdminAuthenticatedTestCase,
     EndCampaignOwnerAuthenticatedTestCase,
 )
-from .list import (
-    ListFilledBaseUserNoCampaignAuthenticatedTestCase,
-    ListFilledBaseUserAuthenticatedTestCase,
-    ListFilledCampaignOwnerAuthenticatedTestCase,
-    ListFilledAdminAuthenticatedTestCase,
-    ListEmpyAdminAuthenticatedTestCase,
-    ListUnauthenticatedTestCase,
-)
 from .report import (
     ReportFilledPhaseOwnerAuthenticatedTestCase,
     ReportFilledBaseUserNoPhaseAuthenticatedTestCase,

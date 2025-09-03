@@ -23,6 +23,7 @@ import { AnnotationCampaign, AnnotationFile, Phase } from '../../../src/service/
 import {
   GetAvailableDatasetsForImportQuery,
   GetDatasetByIdQuery,
+  GetDatasetChannelConfigurationsByIdQuery,
   GetDatasetsQuery
 } from "../../../src/features/data/dataset/api/api.generated";
 import {
@@ -356,6 +357,34 @@ export const MOCK_QUERIES: {
         ]
       }
     } as GetAnnotationCampaignsQuery
+  },
+
+  getDatasetChannelConfigurationsByID: {
+    empty: {
+      datasetById: null
+    } as GetDatasetChannelConfigurationsByIdQuery,
+    filled: {
+      datasetById: {
+        relatedChannelConfigurations: {
+          results: [
+            {
+              deployment: {
+                name: 'Test deployment',
+                campaign: {
+                  name: 'Phase 1'
+                },
+                site: {
+                  name: 'Site A'
+                },
+                project: {
+                  name: 'Test Project',
+                }
+              }
+            }
+          ]
+        }
+      }
+    } as GetDatasetChannelConfigurationsByIdQuery
   },
 }
 export const MOCK_MUTATIONS: {

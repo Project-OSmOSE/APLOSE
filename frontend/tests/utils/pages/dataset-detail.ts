@@ -17,6 +17,7 @@ export class DatasetDetailPage {
       await interceptGQL(this.page, {
         getDatasetByID: 'filled',
         getSpectrogramAnalysis: type,
+        getDatasetChannelConfigurationsByID: type,
       })
       await this.page.getByText('Test dataset').click()
     });

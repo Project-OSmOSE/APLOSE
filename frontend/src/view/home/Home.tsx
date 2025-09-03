@@ -1,6 +1,6 @@
 import React, { Fragment, useMemo, useState } from "react";
-import { Footer, Header } from "@/components/layout";
 import styles from './home.module.scss';
+import { Footer, Header } from "@/components/layout";
 import { IonButton, IonIcon } from "@ionic/react";
 import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
 import { createPortal } from "react-dom";

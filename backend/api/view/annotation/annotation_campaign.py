@@ -93,7 +93,7 @@ class AnnotationCampaignViewSet(
     )
     serializer_class = AnnotationCampaignSerializer
     filter_backends = (ModelFilter, CampaignAccessFilter, filters.SearchFilter)
-    search_fields = ("name",)
+    search_fields = ("name", "dataset__name")
     permission_classes = (permissions.IsAuthenticated, CampaignPatchPermission)
 
     def get_serializer_class(self):

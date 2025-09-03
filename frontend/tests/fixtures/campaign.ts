@@ -74,7 +74,7 @@ export const CAMPAIGN = {
   label_set: LABEL.set.id,
   confidence_set: CONFIDENCE.set.id,
   instructions_url: 'testurl.fr',
-  datasets: [ DATASET.name ],
+  dataset: DATASET,
   labels_with_acoustic_features: [ LABEL.withFeatures ],
   archive: null,
   phases: [ CAMPAIGN_PHASE.id ],
@@ -87,7 +87,6 @@ export const CAMPAIGN = {
 const start = new Date();
 const end = new Date(start.toISOString());
 end.setTime(start.getTime() + 10_000);
-const duration = end.getTime() - start.getTime()
 
 export const FILE_RANGE = {
   unsubmittedFile: {
@@ -102,8 +101,6 @@ export const FILE_RANGE = {
     size: 0,
     audio_url: '',
     validated_results_count: 0,
-    duration,
-    maxFrequency: DATASET_SR / 2
   } satisfies AnnotationFile,
   submittedFile: {
     id: 2,
@@ -117,8 +114,6 @@ export const FILE_RANGE = {
     size: 0,
     audio_url: '',
     validated_results_count: 0,
-    duration,
-    maxFrequency: DATASET_SR / 2
   } satisfies AnnotationFile,
   range: {
     id: 1,

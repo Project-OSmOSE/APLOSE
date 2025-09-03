@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FormBloc, Input } from "@/components/form";
 import { IonButton, IonSpinner } from "@ionic/react";
-import styles from "@/view/auth/auth.module.scss";
+import styles from "./styles.module.scss";
 import { useToast } from "@/service/ui";
 import { getErrorMessage } from "@/service/function.ts";
 import { UserAPI } from "@/service/api/user.ts";
@@ -17,11 +17,11 @@ export const UpdateEmail: React.FC = () => {
   const toast = useToast();
 
   const [ email, setEmail ] = useState<string>(currentUser?.email ?? '');
-  const [ errors, setErrors ] = useState<{email?: string[]}>({});
+  const [ errors, setErrors ] = useState<{ email?: string[] }>({});
 
   useEffect(() => {
     setEmail(currentUser?.email ?? '')
-  }, [currentUser]);
+  }, [ currentUser ]);
 
   useEffect(() => {
     if (patchError) {
@@ -30,8 +30,8 @@ export const UpdateEmail: React.FC = () => {
       try {
         toast.presentError(e)
         setErrors(JSON.parse(e))
+      } catch { /* empty */
       }
-      catch { /* empty */ }
     }
   }, [ patchError ]);
 

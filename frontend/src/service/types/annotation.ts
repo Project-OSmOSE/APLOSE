@@ -74,7 +74,6 @@ export type AnnotationResultBounds = WeakBounds | PointBounds | BoxBounds
 
 export type AnnotationResult = BaseAnnotationResult & AnnotationResultBounds
 export type WeakResult = BaseAnnotationResult & WeakBounds
-export type PointResult = BaseAnnotationResult & PointBounds
 export type BoxResult = BaseAnnotationResult & BoxBounds
 
 export type AnnotatorData = {

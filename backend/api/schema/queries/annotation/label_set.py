@@ -29,7 +29,9 @@ class LabelSetQuery(ObjectType):  # pylint: disable=too-few-public-methods
 
     all_label_sets = AuthenticatedDjangoConnectionField(LabelSetNode)
 
-    annotation_campaign_label_set = Field(LabelSetNode, annotation_campaign_id=ID(required=True))
+    annotation_campaign_label_set = Field(
+        LabelSetNode, annotation_campaign_id=ID(required=True)
+    )
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     def resolve_annotation_campaign_label_set(self, info, annotation_campaign_id: int):

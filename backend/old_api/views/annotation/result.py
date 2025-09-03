@@ -228,9 +228,8 @@ class AnnotationResultViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         phase = get_object_or_404(
             AnnotationCampaignPhase, id=phase_id, annotation_campaign_id=campaign_id
         )
-        if (
-            phase.annotation_campaign.owner_id != request.user.id
-            and not (request.user.is_staff or request.user.is_superuser)
+        if phase.annotation_campaign.owner_id != request.user.id and not (
+            request.user.is_staff or request.user.is_superuser
         ):
             return Response(status=status.HTTP_403_FORBIDDEN)
 

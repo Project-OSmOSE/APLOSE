@@ -29,7 +29,9 @@ class ConfidenceSetNode(ApiObjectType):
         # d: ConfidenceSet
         # d.confidence_indicators.annotate(is_default=F("set_relations__is_default"))
 
-        return self.confidence_indicators.annotate(is_default=F("set_relations__is_default"))
+        return self.confidence_indicators.annotate(
+            is_default=F("set_relations__is_default")
+        )
 
 
 class ConfidenceSetQuery(ObjectType):  # pylint: disable=too-few-public-methods

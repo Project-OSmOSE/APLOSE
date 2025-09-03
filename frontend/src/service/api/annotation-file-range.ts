@@ -2,7 +2,6 @@ import { API } from "@/service/api/index.ts";
 import { useMemo } from "react";
 import { ID, Paginated, PaginationParams } from "@/service/type.ts";
 import { AnnotationFile, AnnotationFileRange, Phase } from "@/service/types";
-import { extendDatasetFile } from "@/service/api/dataset.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
 
 export type SpectrogramFilter = {
@@ -32,13 +31,6 @@ export function extendFileRange(range: AnnotationFileRange): AnnotationFileRange
   }
 }
 
-export function extendAnnotationFile(file: AnnotationFile): AnnotationFile {
-  return {
-    ...file,
-    ...extendDatasetFile(file)
-  }
-}
-
 export const AnnotationFileRangeAPI = API.injectEndpoints({
   endpoints: (builder) => ({
     listFileRange: builder.query<Array<AnnotationFileRange>, {
@@ -65,7 +57,7 @@ export const AnnotationFileRangeAPI = API.injectEndpoints({
         return {
           ...paginatedFiles,
           pageCount: Math.ceil(paginatedFiles.count / (arg.page_size ?? FILES_PAGE_SIZE)),
-          results: [ ...paginatedFiles.results ].map(extendAnnotationFile)
+          results: [ ...paginatedFiles.results ]
         }
       },
       providesTags: [ 'FileRangeFiles' ]

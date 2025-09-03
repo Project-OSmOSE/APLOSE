@@ -6,16 +6,50 @@ from backend.api.tests.fixtures import DATA_FIXTURES
 
 QUERY = """
 query getDatasetByID($id: ID!) {
-  datasetById(id: $id) {
-    name
-    createdAt
-    legacy
-    start
-    end
-    owner {
-      displayName
+    datasetById(id: $id) {
+        name
+        createdAt
+        legacy
+        path
+        description
+        start
+        end
+        owner {
+            displayName
+        }
+        relatedChannelConfigurations {
+            results {
+                deployment {
+                    name
+                    campaign {
+                        name
+                    }
+                    site {
+                        name
+                    }
+                    project {
+                        name
+                    }
+                }
+                recorderSpecification {
+                    recorder {
+                        serialNumber
+                        model
+                    }
+                    hydrophone {
+                        serialNumber
+                        model
+                    }
+                }
+                detectorSpecification {
+                    detector {
+                        serialNumber
+                        model
+                    }
+                }
+            }
+        }
     }
-  }
 }
 """
 
@@ -42,5 +76,7 @@ class DatasetByIdTestCase(GraphQLTestCase):
 
         content = json.loads(response.content)["data"]["datasetById"]
         self.assertEqual(content["name"], "gliderSPAmsDemo")
+        self.assertEqual(content["path"], "gliderSPAmsDemo")
         self.assertEqual(content["start"], "2012-10-03T10:00:00+00:00")
         self.assertEqual(content["end"], "2012-10-03T20:15:00+00:00")
+        self.assertEqual(len(content["relatedChannelConfigurations"]["results"]), 0)

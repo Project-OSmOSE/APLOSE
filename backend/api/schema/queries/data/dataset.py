@@ -80,7 +80,7 @@ class DatasetNode(ApiObjectType):
                 "spectrogram_analysis",
                 "spectrogram_analysis__spectrograms",
             ).annotate(
-                analysisCount=Count("spectrogram_analysis", distinct=True),
+                analysis_count=Count("spectrogram_analysis", distinct=True),
                 files_count=Count("spectrogram_analysis__spectrograms", distinct=True),
                 start=Min("spectrogram_analysis__spectrograms__start"),
                 end=Max("spectrogram_analysis__spectrograms__end"),

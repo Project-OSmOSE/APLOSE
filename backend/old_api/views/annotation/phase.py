@@ -104,7 +104,11 @@ class CampaignPhasePostPatchPermission(permissions.BasePermission):
                 campaign: AnnotationCampaign = campaign.first()
                 if campaign.archive is not None:
                     return False
-                if request.user.is_staff or request.user.is_superuser or request.user == campaign.owner:
+                if (
+                    request.user.is_staff
+                    or request.user.is_superuser
+                    or request.user == campaign.owner
+                ):
                     return True
                 return False
         return super().has_permission(request, view)
@@ -115,7 +119,11 @@ class CampaignPhasePostPatchPermission(permissions.BasePermission):
                 return False
             if not obj.is_open:
                 return False
-            if request.user.is_staff or request.user.is_superuser or request.user == obj.annotation_campaign.owner        :
+            if (
+                request.user.is_staff
+                or request.user.is_superuser
+                or request.user == obj.annotation_campaign.owner
+            ):
                 return True
             return False
         return super().has_object_permission(request, view, obj)

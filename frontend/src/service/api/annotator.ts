@@ -6,16 +6,13 @@ import {
   AnnotationPhase,
   AnnotationResult,
   AnnotationResultValidations,
-  AnnotatorData,
   DetectorConfiguration
 } from "@/service/types";
 import { useParams } from "react-router-dom";
 import { useAppSelector } from "@/service/app.ts";
 import { useCallback, useEffect, useRef } from "react";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
-import { SpectrogramFilter } from "@/service/api/annotation-file-range.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
-import { extendDatasetFile } from "@/service/api/dataset.ts";
 import { API } from "@/service/api/index.ts";
 import { AnnotatorState } from "@/features/Annotator";
 
@@ -37,29 +34,6 @@ type WriteAnnotationComment =
 
 export const AnnotatorAPI = API.injectEndpoints({
   endpoints: builder => ({
-    retrieveAnnotator: builder.query<AnnotatorData, { campaignID: ID, phaseID: ID, fileID: ID } & SpectrogramFilter>({
-      query: ({
-                campaignID,
-                phaseID,
-                fileID,
-                ...params
-              }) => ({
-        url: `annotator/campaign/${ campaignID }/phase/${ phaseID }/file/${ fileID }/`,
-        params
-      }),
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      providesTags: (result, error, arg) => [ {
-        type: 'Annotator',
-        id: `${ arg.campaignID }-${ arg.phaseID }-${ arg.fileID }`
-      } ],
-      transformResponse(data: AnnotatorData): AnnotatorData {
-        return {
-          ...data,
-          file: extendDatasetFile(data.file)
-        }
-      }
-    }),
     postAnnotator: builder.mutation<void, {
       campaign: AnnotationCampaign,
       phase: AnnotationPhase,
