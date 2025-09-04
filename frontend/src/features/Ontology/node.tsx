@@ -1,13 +1,14 @@
 import React, { useMemo } from "react";
 import { Handle, NodeProps, Position } from "@xyflow/react";
-import styles from './ontology.module.scss'
-import { Sound, Source } from "@/features/metadatax/ontology/api";
+import styles from './styles.module.scss'
 import { IonNote } from "@ionic/react";
 import { useParams } from "react-router-dom";
+import { OntologyItem } from "./type.ts";
 
-type Props = NodeProps & { data: Source | Sound; type: any }
 
-export const SourceNode: React.FC<Props> = ({ data }) => {
+type Props = NodeProps & { data: OntologyItem; type: any }
+
+export const OntologyNode: React.FC<Props> = ({ data }) => {
   const { id } = useParams<{ id?: string }>()
 
   const selected = useMemo(() => data.id.toString() === id, [ data.id, id ])

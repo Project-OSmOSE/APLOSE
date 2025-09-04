@@ -14,14 +14,13 @@ import {
 import { useCallback } from "react";
 import { FinalConnectionState, InternalNodeBase } from "@xyflow/system";
 import '@xyflow/react/dist/style.css'
+import { NewNode } from "../type.ts";
 
-export const NODE_ORIGIN: [ number, number ] = [ 0.5, 0 ];
-
-export type NewNode<NodeType extends Record<string, unknown>> = {
-  parentNode: Node<NodeType>;
-}
-
-export const useOntologyTreeFlow = <NodeType extends { id?: string; parent?: { id?: string } | null }>({ patch, del, onNew }: {
+export const useOntologyTreeFlow = <NodeType extends { id?: string; parent?: { id?: string } | null }>({
+                                                                                                         patch,
+                                                                                                         del,
+                                                                                                         onNew
+                                                                                                       }: {
   patch: (value: NodeType) => void,
   del: (value: NodeType) => void,
   onNew: (info: NewNode<NodeType>) => void

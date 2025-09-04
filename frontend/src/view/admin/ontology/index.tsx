@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./ontology.module.scss";
+import styles from "./styles.module.scss";
 import { Tab, Tabs } from "@/components/ui";
 import { Outlet, useLocation } from "react-router-dom";
 

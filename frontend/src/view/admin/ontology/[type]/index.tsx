@@ -1,21 +1,24 @@
-import React, { useCallback, useEffect, useMemo } from "react";
-import styles from './ontology.module.scss'
+import React, { useCallback, useEffect } from "react";
+import styles from './styles.module.scss'
+import { Navigate, Outlet, useNavigate, useParams } from "react-router-dom";
 import { Background, Controls, Node, ReactFlow, useOnSelectionChange } from "@xyflow/react";
-import { NewNode, NODE_ORIGIN, useOntologyTreeFlow } from "@/features/metadatax/ontology/flow.hook.ts";
-import { OntologyAPI, Sound, Source } from "@/features/metadatax/ontology/api";
+import { SoundNode, SourceNode } from "@/features/gql/types.generated.ts";
+import {
+  NewNode,
+  NODE_ORIGIN,
+  NODE_TYPES,
+  OntologyAPI,
+  useGetInitialNodes,
+  useOntologyTreeFlow
+} from "@/features/Ontology";
 
-import { NODE_TYPES, useGetInitialNodes } from "@/features/metadatax/ontology/initNodes.hook.ts";
-import { Panel } from './panel.tsx'
-import { useLocation, useNavigate } from "react-router-dom";
 
-type DataType = Omit<Source | Sound, '__typename'>
+type DataType = Pick<SoundNode | SourceNode, 'id' | 'englishName'> & {
+  parent?: Pick<SoundNode | SourceNode, 'id'> | null
+}
 
 export const OntologyTab: React.FC = () => {
-  const location = useLocation()
-  const type: 'source' | 'sound' | undefined = useMemo(() => {
-    if (location.pathname.includes('source')) return 'source';
-    if (location.pathname.includes('sound')) return 'sound';
-  }, [ location ])
+  const { type } = useParams<{ type: 'source' | 'sound' | string }>();
 
   const { data: initialSources } = OntologyAPI.endpoints.getAllSources.useQuery({}, { skip: type !== 'source' });
   const [ createSource ] = OntologyAPI.endpoints.createSource.useMutation();
@@ -27,7 +30,9 @@ export const OntologyTab: React.FC = () => {
   const [ updateSound ] = OntologyAPI.endpoints.updateSound.useMutation();
   const [ deleteSound ] = OntologyAPI.endpoints.deleteSound.useMutation();
 
-  const getInitialNodes = useGetInitialNodes(type === 'source' ? initialSources : type === 'sound' ? initialSounds : undefined);
+  const getInitialNodes = useGetInitialNodes(
+    (type === 'source' ? initialSources?.allSources?.results.filter(s => s !== null) :
+      type === 'sound' ? initialSounds?.allSounds?.results.filter(s => s !== null) : undefined) ?? undefined);
   const navigate = useNavigate()
 
   const onNewNode = useCallback(async (info: NewNode<DataType>) => {
@@ -91,6 +96,7 @@ export const OntologyTab: React.FC = () => {
   }, [ initialSources, initialSounds, type ]);
 
 
+  if (type !== 'source' && type !== 'sound') return <Navigate to="/annotation-campaign" replace/>
   return <div className={ styles.tabContent }>
     <ReactFlow nodes={ nodes }
                nodeTypes={ NODE_TYPES }
@@ -110,6 +116,6 @@ export const OntologyTab: React.FC = () => {
       <Controls showInteractive={ false }/>
     </ReactFlow>
 
-    <Panel/>
+    <Outlet/>
   </div>
 }

@@ -1,4 +1,4 @@
-import * as Types from '../../../gql/types.generated';
+import * as Types from '../../gql/types.generated';
 
 import { gqlAPI } from '@/features/gql/baseApi.ts';
 export type GetAllSoundsQueryVariables = Types.Exact<{ [key: string]: never; }>;

@@ -6,7 +6,7 @@ import { keymap } from "@codemirror/view";
 import { Button, Kbd, Pagination, Table, TableContent, TableDivider, TableHead, WarningText } from "@/components/ui";
 import { Prec } from "@codemirror/state";
 import { getErrorMessage } from "@/service/function.ts";
-import styles from './sql.module.scss'
+import styles from './styles.module.scss'
 import { UserAPI } from "@/service/api/user.ts";
 import { SQLAPI } from "@/service/api/sql.ts";
 

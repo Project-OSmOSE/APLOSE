@@ -1,19 +1,17 @@
 import { useCallback, useMemo } from "react";
 import { Edge, Node } from "@xyflow/react";
-import { SourceNode } from "./node.tsx";
-import { Sound, Source } from "@/features/metadatax/ontology/api";
+import { OntologyItem } from "../type.ts";
 
 const COLUMN_SIZE = 256;
 const ROW_GAP = 32;
 
-type DataType = Omit<Source | Sound, '__typename'>
 
-export const useGetInitialNodes = (data: DataType[] | undefined) => {
+export const useGetInitialNodes = (data: OntologyItem[] | undefined) => {
   const ROOT = useMemo(() => ({
     id: '-1',
     englishName: 'Root',
     parent: null,
-  } as DataType), [])
+  } as OntologyItem), [])
   const calculateWordDimensions = useCallback((text: string) => {
     const div = document.createElement('div');
     div.setAttribute('style', `
@@ -36,22 +34,22 @@ export const useGetInitialNodes = (data: DataType[] | undefined) => {
     return dimensions;
   }, [])
 
-  const compareSource = useCallback((a: DataType, b: DataType) => a.englishName.localeCompare(b.englishName), []);
+  const compareSource = useCallback((a: OntologyItem, b: OntologyItem) => a.englishName.localeCompare(b.englishName), []);
 
-  const getNodeBase = useCallback((source: DataType): Omit<Node<DataType>, 'position'> => ({
+  const getNodeBase = useCallback((source: OntologyItem): Omit<Node<OntologyItem>, 'position'> => ({
     id: source.id.toString(),
-    type: 'source',
+    type: 'ontology',
     data: source,
   }), [])
 
 
-  const getNode = useCallback((source: DataType = ROOT, column: number = -1, y: number = 0): {
-    nodes: Node<DataType>[],
-    edges: Edge<Node<DataType>>[],
+  const getNode = useCallback((source: OntologyItem = ROOT, column: number = -1, y: number = 0): {
+    nodes: Node<OntologyItem>[],
+    edges: Edge<Node<OntologyItem>>[],
     height: number
   } => {
-    const nodes: Node<DataType>[] = []
-    const edges: Edge<Node<DataType>>[] = []
+    const nodes: Node<OntologyItem>[] = []
+    const edges: Edge<Node<OntologyItem>>[] = []
     let height = calculateWordDimensions(source.englishName).height
     const parentID = source.parent?.id ?? ROOT.id
 
@@ -106,5 +104,3 @@ export const useGetInitialNodes = (data: DataType[] | undefined) => {
 
   return getNode;
 }
-
-export const NODE_TYPES = { source: SourceNode }
