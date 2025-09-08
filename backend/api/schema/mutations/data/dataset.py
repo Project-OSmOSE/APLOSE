@@ -44,7 +44,7 @@ class ImportDatasetMutation(Mutation):
             name=name,
             path=path,
             owner=info.context.user,
-            legacy=legacy,
+            legacy=legacy or False,
         )
         if legacy:
             datasets_csv_path: WindowsPath = (

@@ -127,6 +127,7 @@ class SpectrogramAnalysisManager(Manager):  # pylint: disable=too-few-public-met
             overlap=1 - (sd.fft.hop / sd.fft.win.size),
             sampling_frequency=sd.fft.fs,
             scaling=sd.fft.scaling,
+            legacy=False,
         )
         return SpectrogramAnalysis.objects.create(
             dataset=dataset,

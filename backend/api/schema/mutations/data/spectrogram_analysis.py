@@ -36,7 +36,7 @@ class ImportSpectrogramAnalysisMutation(Mutation):
             name=kwargs.pop("dataset_name"),
             path=kwargs.pop("dataset_path"),
             owner=info.context.user,
-            legacy=kwargs.pop("legacy"),
+            legacy=kwargs.pop("legacy") or False,
         )
         name = kwargs.pop("name")
         path = kwargs.pop("path")
