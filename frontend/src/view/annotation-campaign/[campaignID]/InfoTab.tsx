@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { AnnotationCampaignInstructionsButton } from "@/features/annotation/annotationCampaign";
-import styles from "@/view/annotation-campaign/[campaignID]/styles.module.scss";
+import styles from "./styles.module.scss";
 import { DatasetName } from "@/features/data/dataset";
 import { FadedText, Progress } from "@/components/ui";
 import { SpectrogramAnalysisTable } from "@/features/data/spectrogramAnalysis";
