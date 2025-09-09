@@ -97,7 +97,7 @@ class ImportDatasetMutation(Mutation):
                     )
 
         else:
-            json_path = join(path, "dataset.json")
+            json_path = join(settings.DATASET_IMPORT_FOLDER, path, "dataset.json")
             d = OSEkitDataset.from_json(Path(json_path))
             for [analysis, d] in d.datasets.items():
                 if d["class"] != SpectroDataset.__name__:

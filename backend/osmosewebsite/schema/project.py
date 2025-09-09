@@ -1,5 +1,4 @@
 """Project graphql definitions"""
-import graphene
 from graphene import relay
 
 from backend.osmosewebsite.models import Project
@@ -8,8 +7,6 @@ from backend.utils.schema import ApiObjectType
 
 class WebsiteProjectNode(ApiObjectType):
     """Project node"""
-
-    id = graphene.ID(required=True)
 
     class Meta:
         # pylint: disable=missing-docstring, too-few-public-methods

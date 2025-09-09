@@ -1,5 +1,5 @@
 query getPhase(
-    $campaignID: ID!
+    $campaignID: PK!
     $phaseType: AnnotationPhaseType!
 ) {
     annotationPhaseForCampaign(

@@ -9,7 +9,7 @@ from backend.utils.schema import ApiObjectType
 class UserNode(ApiObjectType):
     """User node"""
 
-    display_name = String()
+    display_name = String(required=True)
 
     class Meta:
         # pylint: disable=too-few-public-methods, missing-class-docstring

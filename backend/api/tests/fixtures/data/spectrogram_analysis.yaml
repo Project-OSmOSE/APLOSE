@@ -7,10 +7,9 @@
     owner: 1
     path: spectro_config1
     dataset: 1
-    data_duration: # TODO!
+    data_duration: 10.0
     fft: 1
     colormap: 1
-    legacy_configuration: 1
     dynamic_min: 0
     dynamic_max: 0
     start_date: 2010-08-19
@@ -26,10 +25,9 @@
     owner: 1
     path: spectro_config2
     dataset: 1
-    data_duration: # TODO!
+    data_duration: 10.0
     fft: 2
     colormap: 1
-    legacy_configuration: 2
     dynamic_min: 0
     dynamic_max: 0
     start_date: 2013-08-19
@@ -45,10 +43,9 @@
     owner: 1
     path: spectro_config3
     dataset: 2
-    data_duration: # TODO!
+    data_duration: 10.0
     fft: 2
     colormap: 1
-    legacy_configuration: 3
     dynamic_min: 0
     dynamic_max: 0
     start_date: 2013-08-19

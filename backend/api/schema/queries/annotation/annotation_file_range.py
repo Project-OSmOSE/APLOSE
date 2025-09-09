@@ -1,7 +1,7 @@
 """AnnotationFileRange schema"""
 from django_filters import FilterSet
-from graphene import relay, ObjectType, ID, Field
-from graphene_django.filter import GlobalIDFilter, TypedFilter
+from graphene import relay, ObjectType, Field
+from graphene_django.filter import TypedFilter
 
 from backend.api.models import AnnotationFileRange, Spectrogram
 from backend.utils.schema import (
@@ -9,6 +9,8 @@ from backend.utils.schema import (
     GraphQLResolve,
     GraphQLPermissions,
     AuthenticatedDjangoConnectionField,
+    PKFilter,
+    PK,
 )
 from .annotation_phase import AnnotationPhaseType
 
@@ -16,13 +18,9 @@ from .annotation_phase import AnnotationPhaseType
 class AnnotationFileRangeFilter(FilterSet):
     """AnnotationFileRange filters"""
 
-    annotator_id = GlobalIDFilter(
-        field_name="annotator_id", lookup_expr="exact", exclude=False
-    )
-    annotation_campaign_id = GlobalIDFilter(
-        field_name="annotation_phase__annotation_campaign",
-        lookup_expr="exact",
-        exclude=False,
+    annotator_id = PKFilter(field_name="annotator_id")
+    annotation_campaign_id = PKFilter(
+        field_name="annotation_phase__annotation_campaign"
     )
     phase_type = TypedFilter(
         input_type=AnnotationPhaseType,
@@ -56,9 +54,9 @@ class AnnotationFileRangeQuery(ObjectType):  # pylint: disable=too-few-public-me
     )
     annotation_file_range = Field(
         AnnotationFileRangeNode,
-        spectrogram_id=ID(required=True),
-        annotator_id=ID(required=True),
-        annotation_campaign_id=ID(required=True),
+        spectrogram_id=PK(required=True),
+        annotator_id=PK(required=True),
+        annotation_campaign_id=PK(required=True),
         phase_type=AnnotationPhaseType(required=True),
     )
 

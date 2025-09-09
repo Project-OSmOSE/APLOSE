@@ -1,7 +1,7 @@
 query getAnnotator(
-    $spectrogramID: ID!
-    $campaignID: ID!
-    $annotatorID: ID!
+    $spectrogramID: PK!
+    $campaignID: PK!
+    $annotatorID: PK!
     $phaseType: AnnotationPhaseType!
     $filename__icontain: String
     $label__name: String
@@ -41,7 +41,7 @@ query getAnnotator(
         total
     }
     spectrogramById(id: $spectrogramID) {
-        id
+        pk
         start
         duration
         filename
@@ -60,7 +60,7 @@ query getAnnotator(
         annotatorId: $annotatorID
         spectrogramId: $spectrogramID
     ) {
-        id
+        pk
     }
     allAnnotationComments(
         annotationCampaignId: $campaignID
@@ -69,10 +69,10 @@ query getAnnotator(
         spectrogramId: $spectrogramID
     ) {
         results {
-            id
+            pk
             comment
             author {
-                id
+                pk
                 displayName
             }
             annotationId
@@ -86,12 +86,12 @@ query getAnnotator(
         phaseType: $phaseType
     ) {
         results {
-            id
+            pk
             annotationPhase {
-                id
+                pk
             }
             annotator {
-                id
+                pk
                 displayName
             }
             type
@@ -124,12 +124,12 @@ query getAnnotator(
         phaseType: Annotation
     ) {
         results {
-            id
+            pk
             annotationPhase {
-                id
+                pk
             }
             annotator {
-                id
+                pk
                 displayName
             }
             type
@@ -144,15 +144,15 @@ query getAnnotator(
                 label
             }
             validations(
-                annotator: $annotatorID
+                annotatorId: $annotatorID
             ) {
                 results {
-                    id
+                    pk
                     isValid
                 }
             }
             detectorConfiguration {
-                id
+                pk
                 detector {
                     name
                 }
@@ -173,7 +173,7 @@ query getAnnotator(
         annotationCampaignId: $campaignID
     ) {
         results {
-            id
+            pk
             name
             colormap {
                 name
@@ -222,8 +222,8 @@ query getAnnotator(
 }
 
 query getSpectrogramPath (
-    $spectrogramID: ID!
-    $analysisID: ID!
+    $spectrogramID: PK!
+    $analysisID: PK!
 ) {
     spectrogramById(id: $spectrogramID) {
         filename

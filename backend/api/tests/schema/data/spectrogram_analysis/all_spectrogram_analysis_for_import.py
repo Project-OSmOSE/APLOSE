@@ -10,7 +10,7 @@ from graphene_django.utils.testing import GraphQLTestCase
 IMPORT_FIXTURES = settings.FIXTURE_DIRS[1] / "data" / "dataset" / "list_to_import"
 
 QUERY = """
-query ($datasetID: ID!) {
+query ($datasetID: PK!) {
     allSpectrogramAnalysisForImport(datasetId: $datasetID) {
         name
         path

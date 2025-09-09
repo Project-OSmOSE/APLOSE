@@ -1,12 +1,12 @@
 """LabelSet schema"""
-from graphene import relay, ObjectType, Field, ID
+from graphene import relay, ObjectType, Field
 
 from backend.api.models import LabelSet, AnnotationCampaign
 from backend.utils.schema import (
     ApiObjectType,
     AuthenticatedDjangoConnectionField,
     GraphQLResolve,
-    GraphQLPermissions,
+    GraphQLPermissions, PK,
 )
 from .label import AnnotationLabelNode
 
@@ -30,7 +30,7 @@ class LabelSetQuery(ObjectType):  # pylint: disable=too-few-public-methods
     all_label_sets = AuthenticatedDjangoConnectionField(LabelSetNode)
 
     annotation_campaign_label_set = Field(
-        LabelSetNode, annotation_campaign_id=ID(required=True)
+        LabelSetNode, annotation_campaign_id=PK(required=True)
     )
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)

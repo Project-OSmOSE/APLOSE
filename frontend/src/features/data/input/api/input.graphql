@@ -1,0 +1,19 @@
+# Dataset
+
+query getDatasetsAndAnalysis {
+    allDatasets(orderBy: "name") {
+        results {
+            pk
+            name
+            spectrogramAnalysis(orderBy: "name") {
+                results {
+                    pk
+                    name
+                    colormap {
+                        name
+                    }
+                }
+            }
+        }
+    }
+}

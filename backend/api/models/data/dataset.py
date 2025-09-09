@@ -24,7 +24,6 @@ class DatasetManager(Manager):  # pylint: disable=too-few-public-methods
                 Dataset.objects.get(
                     name=name,
                     path=path,
-                    legacy=legacy,
                 ),
                 False,
             )

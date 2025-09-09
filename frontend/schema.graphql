@@ -710,6 +710,7 @@ type Query {
     files_Id_In: [ID]
     storages_Id: Decimal
     storages_Id_In: [ID]
+    datasetId: PK
   ): ChannelConfigurationNodeNodeConnection
   channelConfigurationById(id: ID!): ChannelConfigurationNode
   allChannelConfigurationsDetectorSpecifications(
@@ -1066,7 +1067,7 @@ type Query {
     last: Int
     id: ID
   ): WebsiteProjectNodeNodeConnection
-  websiteProjetById(pk: ID!): WebsiteProjectNode
+  websiteProjetById(pk: PK!): WebsiteProjectNode
   allUsers(
     """Query limit"""
     limit: Int
@@ -1106,14 +1107,13 @@ type Query {
     after: String
     first: Int
     last: Int
-    datasetId: Decimal
-    datasetId_In: [ID]
-    annotationCampaignId: ID
+    annotationCampaignId: PK
+    datasetId: PK
 
     """Ordering"""
     orderBy: String
   ): SpectrogramAnalysisNodeNodeConnection
-  allSpectrogramAnalysisForImport(datasetId: ID!): [ImportSpectrogramAnalysisType]
+  allSpectrogramAnalysisForImport(datasetId: PK!): [ImportSpectrogramAnalysisType]
   allSpectrograms(
     """Query limit"""
     limit: Int
@@ -1137,13 +1137,13 @@ type Query {
     end_Lte: DateTime
     end_Gt: DateTime
     end_Gte: DateTime
-    campaignId: ID
+    campaignId: PK
     phaseType: AnnotationPhaseType
-    annotatorId: ID
+    annotatorId: PK
     isTaskCompleted: Boolean
     hasAnnotations: Boolean
-    annotatedByAnnotator: ID
-    annotatedByDetector: ID
+    annotatedByAnnotator: PK
+    annotatedByDetector: PK
     annotatedWithLabel: String
     annotatedWithConfidence: String
     annotatedWithFeatures: Boolean
@@ -1151,8 +1151,8 @@ type Query {
     """Ordering"""
     orderBy: String
   ): SpectrogramNodeNodeConnection
-  spectrogramById(id: ID!): SpectrogramNode
-  spectrogramPrevNext(campaignId: ID!, annotatorId: ID!, spectrogramId: ID!, phaseType: AnnotationPhaseType!, filename__icontain: String, is_submitted: Boolean, with_user_annotations: Boolean, label__name: String, confidence_indicator__label: String, detector_configuration__detector__name: String, acoustic_features__isnull: Boolean, end__gte: String, start__lte: String): PrevNextNode
+  spectrogramById(id: PK!): SpectrogramNode
+  spectrogramPrevNext(campaignId: PK!, annotatorId: PK!, spectrogramId: PK!, phaseType: AnnotationPhaseType!, filename__icontain: String, is_submitted: Boolean, with_user_annotations: Boolean, label__name: String, confidence_indicator__label: String, detector_configuration__detector__name: String, acoustic_features__isnull: Boolean, end__gte: String, start__lte: String): PrevNextNode
   allLinearScales(
     """Query limit"""
     limit: Int
@@ -1239,7 +1239,7 @@ type Query {
     """Ordering"""
     orderBy: String
   ): DatasetNodeNodeConnection
-  datasetById(id: ID!): DatasetNode
+  datasetByPk(pk: PK!): DatasetNode
   allDatasetsAvailableForImport: [ImportDatasetType]
   allColormaps(
     """Query limit"""
@@ -1289,7 +1289,7 @@ type Query {
     description: String
     labels: ID
   ): LabelSetNodeNodeConnection
-  annotationCampaignLabelSet(annotationCampaignId: ID!): LabelSetNode
+  annotationCampaignLabelSet(annotationCampaignId: PK!): LabelSetNode
   allConfidenceSets(
     """Query limit"""
     limit: Int
@@ -1307,7 +1307,7 @@ type Query {
     desc: String
     confidenceIndicators: ID
   ): ConfidenceSetNodeNodeConnection
-  annotationCampaignConfidenceSet(annotationCampaignId: ID!): ConfidenceSetNode
+  annotationCampaignConfidenceSet(annotationCampaignId: PK!): ConfidenceSetNode
   allAnnotationFileRanges(
     """Query limit"""
     limit: Int
@@ -1321,11 +1321,11 @@ type Query {
     after: String
     first: Int
     last: Int
-    annotatorId: ID
-    annotationCampaignId: ID
+    annotatorId: PK
+    annotationCampaignId: PK
     phaseType: AnnotationPhaseType
   ): AnnotationFileRangeNodeNodeConnection
-  annotationFileRange(spectrogramId: ID!, annotatorId: ID!, annotationCampaignId: ID!, phaseType: AnnotationPhaseType!): AnnotationFileRangeNode
+  annotationFileRange(spectrogramId: PK!, annotatorId: PK!, annotationCampaignId: PK!, phaseType: AnnotationPhaseType!): AnnotationFileRangeNode
   allAnnotationTasks(
     """Query limit"""
     limit: Int
@@ -1339,14 +1339,14 @@ type Query {
     after: String
     first: Int
     last: Int
-    spectrogramId: ID
-    spectrogramId_In: [ID]
-    annotatorId: ID
-    annotationCampaignId: ID
+    annotatorId: PK
+    spectrogramId: PK
+    spectrogramId_In: [PK]
+    annotationCampaignId: PK
     phaseType: AnnotationPhaseType
   ): AnnotationTaskNodeNodeConnection
-  annotationTask(spectrogramId: ID!, annotatorId: ID!, annotationCampaignId: ID!, phaseType: AnnotationPhaseType!): AnnotationTaskNode
-  annotationTaskIndexes(spectrogramId: ID!, annotatorId: ID!, annotationCampaignId: ID!, phaseType: AnnotationPhaseType!): AnnotationTaskIndexesNode
+  annotationTask(spectrogramId: PK!, annotatorId: PK!, annotationCampaignId: PK!, phaseType: AnnotationPhaseType!): AnnotationTaskNode
+  annotationTaskIndexes(spectrogramId: PK!, annotatorId: PK!, annotationCampaignId: PK!, phaseType: AnnotationPhaseType!): AnnotationTaskIndexesNode
   allAnnotationPhases(
     """Query limit"""
     limit: Int
@@ -1364,7 +1364,7 @@ type Query {
     """Ordering"""
     orderBy: String
   ): AnnotationPhaseNodeNodeConnection
-  annotationPhaseForCampaign(campaignId: ID!, phaseType: AnnotationPhaseType!): AnnotationPhaseNode
+  annotationPhaseForCampaign(campaignId: PK!, phaseType: AnnotationPhaseType!): AnnotationPhaseNode
   allAnnotationCampaigns(
     """Query limit"""
     limit: Int
@@ -1378,8 +1378,8 @@ type Query {
     after: String
     first: Int
     last: Int
-    annotatorId: Decimal
-    ownerId: Decimal
+    annotatorId: PK
+    ownerId: PK
     isArchived: Boolean
     phaseType: AnnotationPhaseType
 
@@ -1389,7 +1389,7 @@ type Query {
     """Ordering"""
     orderBy: String
   ): AnnotationCampaignNodeNodeConnection
-  annotationCampaignById(id: ID!): AnnotationCampaignNode
+  annotationCampaignById(id: PK!): AnnotationCampaignNode
   allAcousticFeatures(
     """Query limit"""
     limit: Int
@@ -1424,12 +1424,12 @@ type Query {
     after: String
     first: Int
     last: Int
-    spectrogramId: ID
-    spectrogramId_In: [ID]
-    annotationCampaignId: ID
+    annotationCampaignId: PK
     phaseType: AnnotationPhaseType
-    annotatorId: ID
-    notAnnotatorId: ID
+    spectrogramId: PK
+    spectrogramId_In: [PK]
+    annotatorId: PK
+    notAnnotatorId: PK
   ): AnnotationNodeNodeConnection
   allAnnotationComments(
     """Query limit"""
@@ -1444,9 +1444,9 @@ type Query {
     after: String
     first: Int
     last: Int
-    authorId: ID
-    annotationCampaignId: ID
-    spectrogramId: ID
+    authorId: PK
+    annotationCampaignId: PK
+    spectrogramId: PK
     phaseType: AnnotationPhaseType
   ): AnnotationCommentNodeNodeConnection
   allAnnotationValidations(
@@ -1462,11 +1462,7 @@ type Query {
     after: String
     first: Int
     last: Int
-    annotation: ID
-    annotator: ID
-    isValid: Boolean
-    createdAt: DateTime
-    lastUpdatedAt: DateTime
+    annotatorId: PK
   ): AnnotationValidationNodeNodeConnection
   allConfidences(
     """Query limit"""
@@ -2017,7 +2013,7 @@ type DeploymentNode implements Node {
   Optional description of deployment and recovery conditions (weather, technical issues,...).
   """
   description: String
-  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, deploymentId: ID, deploymentId_In: [ID], continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, files_Id: Decimal, files_Id_In: [ID], storages_Id: Decimal, storages_Id_In: [ID]): ChannelConfigurationNodeConnection!
+  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, deploymentId: ID, deploymentId_In: [ID], continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, files_Id: Decimal, files_Id_In: [ID], storages_Id: Decimal, storages_Id_In: [ID], datasetId: PK): ChannelConfigurationNodeConnection!
 
   """Related deployment"""
   mobilePositions(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], deploymentId: ID, deploymentId_In: [ID], datetime: DateTime, datetime_Lt: DateTime, datetime_Lte: DateTime, datetime_Gt: DateTime, datetime_Gte: DateTime, longitude: Float, longitude_Lt: Float, longitude_Lte: Float, longitude_Gt: Float, longitude_Gte: Float, latitude: Float, latitude_Lt: Float, latitude_Lte: Float, latitude_Gt: Float, latitude_Gte: Float, depth: Float, depth_Lt: Float, depth_Lte: Float, depth_Gt: Float, depth_Gte: Float, heading: Float, heading_Lt: Float, heading_Lte: Float, heading_Gt: Float, heading_Gte: Float, pitch: Float, pitch_Lt: Float, pitch_Lte: Float, pitch_Gt: Float, pitch_Gte: Float, roll: Float, roll_Lt: Float, roll_Lte: Float, roll_Gt: Float, roll_Gte: Float): DeploymentMobilePositionNodeConnection!
@@ -2139,7 +2135,7 @@ type EquipmentNode implements Node {
   channelConfigurationDetectorSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], detectorId: ID, detectorId_In: [ID], labels_Id: Decimal, labels_Id_In: [ID], channelConfiguration_Id: Decimal, channelConfiguration_Id_In: [ID], outputFormats: String): ChannelConfigurationDetectorSpecificationNodeConnection!
   channelConfigurationRecorderSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], hydrophoneId: ID, hydrophoneId_In: [ID], recorderId: ID, recorderId_In: [ID], channelConfiguration_Id: Decimal, channelConfiguration_Id_In: [ID], recordingFormats: String): ChannelConfigurationRecorderSpecificationNodeConnection!
   channelConfigurationHydrophoneSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], hydrophoneId: ID, hydrophoneId_In: [ID], recorderId: ID, recorderId_In: [ID], channelConfiguration_Id: Decimal, channelConfiguration_Id_In: [ID], recordingFormats: String): ChannelConfigurationRecorderSpecificationNodeConnection!
-  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, deploymentId: ID, deploymentId_In: [ID], continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, files_Id: Decimal, files_Id_In: [ID], storages_Id: Decimal, storages_Id_In: [ID]): ChannelConfigurationNodeConnection!
+  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, deploymentId: ID, deploymentId_In: [ID], continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, files_Id: Decimal, files_Id_In: [ID], storages_Id: Decimal, storages_Id_In: [ID], datasetId: PK): ChannelConfigurationNodeConnection!
 }
 
 type StorageSpecificationNode implements Node {
@@ -2273,10 +2269,12 @@ type DetectorNodeEdge {
 
 """Detector schema"""
 type DetectorNode implements Node {
+  """The ID of the object"""
   id: ID!
   name: String!
   specification: AcousticDetectorSpecificationNode
   configurations(offset: Int, before: String, after: String, first: Int, last: Int, configuration: String, detector: ID): DetectorConfigurationNodeConnection!
+  pk: PK!
 }
 
 type DetectorConfigurationNodeConnection {
@@ -2298,10 +2296,12 @@ type DetectorConfigurationNodeEdge {
 
 """DetectorConfiguration schema"""
 type DetectorConfigurationNode implements Node {
+  """The ID of the object"""
   id: ID!
   configuration: String
   detector: DetectorNode!
-  annotations(offset: Int, before: String, after: String, first: Int, last: Int, spectrogramId: ID, spectrogramId_In: [ID], annotationCampaignId: ID, phaseType: AnnotationPhaseType, annotatorId: ID, notAnnotatorId: ID): AnnotationNodeConnection!
+  annotations(offset: Int, before: String, after: String, first: Int, last: Int, annotationCampaignId: PK, phaseType: AnnotationPhaseType, spectrogramId: PK, spectrogramId_In: [PK], annotatorId: PK, notAnnotatorId: PK): AnnotationNodeConnection!
+  pk: PK!
 }
 
 type AnnotationNodeConnection {
@@ -2323,6 +2323,7 @@ type AnnotationNodeEdge {
 
 """Annotation schema"""
 type AnnotationNode implements Node {
+  """The ID of the object"""
   id: ID!
   type: AnnotationType!
   startTime: Float
@@ -2345,8 +2346,8 @@ type AnnotationNode implements Node {
   isUpdateOf: AnnotationNode
   createdAt: DateTime!
   lastUpdatedAt: DateTime!
-  updatedTo(offset: Int, before: String, after: String, first: Int, last: Int, spectrogramId: ID, spectrogramId_In: [ID], annotationCampaignId: ID, phaseType: AnnotationPhaseType, annotatorId: ID, notAnnotatorId: ID): AnnotationNodeConnection!
-  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, authorId: ID, annotationCampaignId: ID, spectrogramId: ID, phaseType: AnnotationPhaseType): AnnotationCommentNodeConnection!
+  updatedTo(offset: Int, before: String, after: String, first: Int, last: Int, annotationCampaignId: PK, phaseType: AnnotationPhaseType, spectrogramId: PK, spectrogramId_In: [PK], annotatorId: PK, notAnnotatorId: PK): AnnotationNodeConnection!
+  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, authorId: PK, annotationCampaignId: PK, spectrogramId: PK, phaseType: AnnotationPhaseType): AnnotationCommentNodeConnection!
   validations(
     """Query limit"""
     limit: Int
@@ -2360,14 +2361,11 @@ type AnnotationNode implements Node {
     after: String
     first: Int
     last: Int
-    annotation: ID
-    annotator: ID
-    isValid: Boolean
-    createdAt: DateTime
-    lastUpdatedAt: DateTime
+    annotatorId: PK
   ): AnnotationValidationNodeNodeConnection
-  annotatorId: ID!
-  isUpdateOfId: ID
+  pk: PK!
+  annotatorId: PK!
+  isUpdateOfId: PK
 }
 
 """From Annotation.Type"""
@@ -2379,10 +2377,11 @@ enum AnnotationType {
 
 """Label schema"""
 type AnnotationLabelNode implements Node {
+  """The ID of the object"""
   id: ID!
   name: String!
   metadataxLabel: LabelNode
-  annotationSet(offset: Int, before: String, after: String, first: Int, last: Int, spectrogramId: ID, spectrogramId_In: [ID], annotationCampaignId: ID, phaseType: AnnotationPhaseType, annotatorId: ID, notAnnotatorId: ID): AnnotationNodeConnection!
+  annotationSet(offset: Int, before: String, after: String, first: Int, last: Int, annotationCampaignId: PK, phaseType: AnnotationPhaseType, spectrogramId: PK, spectrogramId_In: [PK], annotatorId: PK, notAnnotatorId: PK): AnnotationNodeConnection!
   labelsetSet(offset: Int, before: String, after: String, first: Int, last: Int, name: String, description: String, labels: ID): LabelSetNodeConnection!
   annotationcampaignSet(
     offset: Int
@@ -2390,8 +2389,8 @@ type AnnotationLabelNode implements Node {
     after: String
     first: Int
     last: Int
-    annotatorId: Decimal
-    ownerId: Decimal
+    annotatorId: PK
+    ownerId: PK
     isArchived: Boolean
     phaseType: AnnotationPhaseType
 
@@ -2401,7 +2400,11 @@ type AnnotationLabelNode implements Node {
     """Ordering"""
     orderBy: String
   ): AnnotationCampaignNodeConnection!
+  pk: PK!
 }
+
+"""Django Primary key"""
+scalar PK
 
 """From AnnotationPhase.Type"""
 enum AnnotationPhaseType {
@@ -2428,6 +2431,7 @@ type LabelSetNodeEdge {
 
 """LabelSet schema"""
 type LabelSetNode implements Node {
+  """The ID of the object"""
   id: ID!
   name: String!
   description: String
@@ -2453,8 +2457,8 @@ type LabelSetNode implements Node {
     after: String
     first: Int
     last: Int
-    annotatorId: Decimal
-    ownerId: Decimal
+    annotatorId: PK
+    ownerId: PK
     isArchived: Boolean
     phaseType: AnnotationPhaseType
 
@@ -2464,6 +2468,7 @@ type LabelSetNode implements Node {
     """Ordering"""
     orderBy: String
   ): AnnotationCampaignNodeConnection!
+  pk: PK!
 }
 
 type AnnotationLabelNodeNodeConnection {
@@ -2494,6 +2499,7 @@ type AnnotationCampaignNodeEdge {
 
 """AnnotationCampaign schema"""
 type AnnotationCampaignNode implements Node {
+  """The ID of the object"""
   id: ID!
   createdAt: DateTime!
   name: String!
@@ -2532,9 +2538,8 @@ type AnnotationCampaignNode implements Node {
     after: String
     first: Int
     last: Int
-    datasetId: Decimal
-    datasetId_In: [ID]
-    annotationCampaignId: ID
+    annotationCampaignId: PK
+    datasetId: PK
 
     """Ordering"""
     orderBy: String
@@ -2563,6 +2568,7 @@ type AnnotationCampaignNode implements Node {
     """Ordering"""
     orderBy: String
   ): AnnotationPhaseNodeNodeConnection
+  pk: PK!
   detectors(
     """Query limit"""
     limit: Int
@@ -2615,6 +2621,7 @@ type AnnotationCampaignNode implements Node {
 
 """Dataset schema"""
 type DatasetNode implements Node {
+  """The ID of the object"""
   id: ID!
   createdAt: DateTime!
   name: String!
@@ -2686,9 +2693,8 @@ type DatasetNode implements Node {
     after: String
     first: Int
     last: Int
-    datasetId: Decimal
-    datasetId_In: [ID]
-    annotationCampaignId: ID
+    annotationCampaignId: PK
+    datasetId: PK
 
     """Ordering"""
     orderBy: String
@@ -2699,8 +2705,8 @@ type DatasetNode implements Node {
     after: String
     first: Int
     last: Int
-    annotatorId: Decimal
-    ownerId: Decimal
+    annotatorId: PK
+    ownerId: PK
     isArchived: Boolean
     phaseType: AnnotationPhaseType
 
@@ -2710,6 +2716,7 @@ type DatasetNode implements Node {
     """Ordering"""
     orderBy: String
   ): AnnotationCampaignNodeConnection!
+  pk: PK!
   analysisCount: Int
   filesCount: Int
   start: DateTime
@@ -2718,6 +2725,7 @@ type DatasetNode implements Node {
 
 """User node"""
 type UserNode implements Node {
+  """The ID of the object"""
   id: ID!
   password: String!
   lastLogin: DateTime
@@ -2757,25 +2765,24 @@ type UserNode implements Node {
     after: String
     first: Int
     last: Int
-    datasetId: Decimal
-    datasetId_In: [ID]
-    annotationCampaignId: ID
+    annotationCampaignId: PK
+    datasetId: PK
 
     """Ordering"""
     orderBy: String
   ): SpectrogramAnalysisNodeConnection!
-  annotations(offset: Int, before: String, after: String, first: Int, last: Int, spectrogramId: ID, spectrogramId_In: [ID], annotationCampaignId: ID, phaseType: AnnotationPhaseType, annotatorId: ID, notAnnotatorId: ID): AnnotationNodeConnection!
+  annotations(offset: Int, before: String, after: String, first: Int, last: Int, annotationCampaignId: PK, phaseType: AnnotationPhaseType, spectrogramId: PK, spectrogramId_In: [PK], annotatorId: PK, notAnnotatorId: PK): AnnotationNodeConnection!
   archives(offset: Int, before: String, after: String, first: Int, last: Int, date: DateTime, byUser: ID): ArchiveNodeConnection!
-  annotationTasks(offset: Int, before: String, after: String, first: Int, last: Int, spectrogramId: ID, spectrogramId_In: [ID], annotatorId: ID, annotationCampaignId: ID, phaseType: AnnotationPhaseType): AnnotationTaskNodeConnection!
-  annotationFileRanges(offset: Int, before: String, after: String, first: Int, last: Int, annotatorId: ID, annotationCampaignId: ID, phaseType: AnnotationPhaseType): AnnotationFileRangeNodeConnection!
+  annotationTasks(offset: Int, before: String, after: String, first: Int, last: Int, annotatorId: PK, spectrogramId: PK, spectrogramId_In: [PK], annotationCampaignId: PK, phaseType: AnnotationPhaseType): AnnotationTaskNodeConnection!
+  annotationFileRanges(offset: Int, before: String, after: String, first: Int, last: Int, annotatorId: PK, annotationCampaignId: PK, phaseType: AnnotationPhaseType): AnnotationFileRangeNodeConnection!
   annotationcampaignSet(
     offset: Int
     before: String
     after: String
     first: Int
     last: Int
-    annotatorId: Decimal
-    ownerId: Decimal
+    annotatorId: PK
+    ownerId: PK
     isArchived: Boolean
     phaseType: AnnotationPhaseType
 
@@ -2805,9 +2812,10 @@ type UserNode implements Node {
     """Ordering"""
     orderBy: String
   ): AnnotationPhaseNodeConnection!
-  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, authorId: ID, annotationCampaignId: ID, spectrogramId: ID, phaseType: AnnotationPhaseType): AnnotationCommentNodeConnection!
-  annotationResultsValidation(offset: Int, before: String, after: String, first: Int, last: Int, annotation: ID, annotator: ID, isValid: Boolean, createdAt: DateTime, lastUpdatedAt: DateTime): AnnotationValidationNodeConnection!
-  displayName: String
+  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, authorId: PK, annotationCampaignId: PK, spectrogramId: PK, phaseType: AnnotationPhaseType): AnnotationCommentNodeConnection!
+  annotationResultsValidation(offset: Int, before: String, after: String, first: Int, last: Int, annotatorId: PK): AnnotationValidationNodeConnection!
+  pk: PK!
+  displayName: String!
 }
 
 type DatasetNodeConnection {
@@ -2846,6 +2854,7 @@ type SpectrogramAnalysisNodeEdge {
 
 """SpectrogramAnalysis schema"""
 type SpectrogramAnalysisNode implements Node {
+  """The ID of the object"""
   id: ID!
   createdAt: DateTime!
   name: String!
@@ -2887,13 +2896,13 @@ type SpectrogramAnalysisNode implements Node {
     end_Lte: DateTime
     end_Gt: DateTime
     end_Gte: DateTime
-    campaignId: ID
+    campaignId: PK
     phaseType: AnnotationPhaseType
-    annotatorId: ID
+    annotatorId: PK
     isTaskCompleted: Boolean
     hasAnnotations: Boolean
-    annotatedByAnnotator: ID
-    annotatedByDetector: ID
+    annotatedByAnnotator: PK
+    annotatedByDetector: PK
     annotatedWithLabel: String
     annotatedWithConfidence: String
     annotatedWithFeatures: Boolean
@@ -2901,15 +2910,15 @@ type SpectrogramAnalysisNode implements Node {
     """Ordering"""
     orderBy: String
   ): SpectrogramNodeNodeConnection
-  annotations(offset: Int, before: String, after: String, first: Int, last: Int, spectrogramId: ID, spectrogramId_In: [ID], annotationCampaignId: ID, phaseType: AnnotationPhaseType, annotatorId: ID, notAnnotatorId: ID): AnnotationNodeConnection!
+  annotations(offset: Int, before: String, after: String, first: Int, last: Int, annotationCampaignId: PK, phaseType: AnnotationPhaseType, spectrogramId: PK, spectrogramId_In: [PK], annotatorId: PK, notAnnotatorId: PK): AnnotationNodeConnection!
   annotationCampaigns(
     offset: Int
     before: String
     after: String
     first: Int
     last: Int
-    annotatorId: Decimal
-    ownerId: Decimal
+    annotatorId: PK
+    ownerId: PK
     isArchived: Boolean
     phaseType: AnnotationPhaseType
 
@@ -2919,6 +2928,7 @@ type SpectrogramAnalysisNode implements Node {
     """Ordering"""
     orderBy: String
   ): AnnotationCampaignNodeConnection!
+  pk: PK!
   filesCount: Int
   start: DateTime
   end: DateTime
@@ -2926,6 +2936,7 @@ type SpectrogramAnalysisNode implements Node {
 
 """FFT schema"""
 type FFTNode implements Node {
+  """The ID of the object"""
   id: ID!
   nfft: Int!
   window: String
@@ -2940,17 +2951,18 @@ type FFTNode implements Node {
     after: String
     first: Int
     last: Int
-    datasetId: Decimal
-    datasetId_In: [ID]
-    annotationCampaignId: ID
+    annotationCampaignId: PK
+    datasetId: PK
 
     """Ordering"""
     orderBy: String
   ): SpectrogramAnalysisNodeConnection!
+  pk: PK!
 }
 
 """Colormap schema"""
 type ColormapNode implements Node {
+  """The ID of the object"""
   id: ID!
   name: String!
   spectrogramAnalysis(
@@ -2959,17 +2971,18 @@ type ColormapNode implements Node {
     after: String
     first: Int
     last: Int
-    datasetId: Decimal
-    datasetId_In: [ID]
-    annotationCampaignId: ID
+    annotationCampaignId: PK
+    datasetId: PK
 
     """Ordering"""
     orderBy: String
   ): SpectrogramAnalysisNodeConnection!
+  pk: PK!
 }
 
 """LegacySpectrogramConfiguration schema"""
 type LegacySpectrogramConfigurationNode implements Node {
+  """The ID of the object"""
   id: ID!
   folder: String!
   audioFilesSubtypes: [String!]
@@ -2994,18 +3007,19 @@ type LegacySpectrogramConfigurationNode implements Node {
     after: String
     first: Int
     last: Int
-    datasetId: Decimal
-    datasetId_In: [ID]
-    annotationCampaignId: ID
+    annotationCampaignId: PK
+    datasetId: PK
 
     """Ordering"""
     orderBy: String
   ): SpectrogramAnalysisNodeConnection!
+  pk: PK!
   scaleName: String
 }
 
 """LinearScale schema"""
 type LinearScaleNode implements Node {
+  """The ID of the object"""
   id: ID!
   name: String
   ratio: Float!
@@ -3013,6 +3027,7 @@ type LinearScaleNode implements Node {
   maxValue: Float!
   outerScales(offset: Int, before: String, after: String, first: Int, last: Int, name: String, innerScales: ID): MultiLinearScaleNodeConnection!
   legacyspectrogramconfigurationSet(offset: Int, before: String, after: String, first: Int, last: Int): LegacySpectrogramConfigurationNodeConnection!
+  pk: PK!
 }
 
 type MultiLinearScaleNodeConnection {
@@ -3034,6 +3049,7 @@ type MultiLinearScaleNodeEdge {
 
 """MultiLinearScale schema"""
 type MultiLinearScaleNode implements Node {
+  """The ID of the object"""
   id: ID!
   name: String
   innerScales(
@@ -3055,6 +3071,7 @@ type MultiLinearScaleNode implements Node {
     maxValue: Float
   ): LinearScaleNodeNodeConnection
   legacyspectrogramconfigurationSet(offset: Int, before: String, after: String, first: Int, last: Int): LegacySpectrogramConfigurationNodeConnection!
+  pk: PK!
 }
 
 type LinearScaleNodeNodeConnection {
@@ -3096,6 +3113,7 @@ type SpectrogramNodeNodeConnection {
 
 """Spectrogram schema"""
 type SpectrogramNode implements Node {
+  """The ID of the object"""
   id: ID!
   format: FileFormatNode!
   filename: String!
@@ -3107,9 +3125,8 @@ type SpectrogramNode implements Node {
     after: String
     first: Int
     last: Int
-    datasetId: Decimal
-    datasetId_In: [ID]
-    annotationCampaignId: ID
+    annotationCampaignId: PK
+    datasetId: PK
 
     """Ordering"""
     orderBy: String
@@ -3127,12 +3144,12 @@ type SpectrogramNode implements Node {
     after: String
     first: Int
     last: Int
-    spectrogramId: ID
-    spectrogramId_In: [ID]
-    annotationCampaignId: ID
+    annotationCampaignId: PK
     phaseType: AnnotationPhaseType
-    annotatorId: ID
-    notAnnotatorId: ID
+    spectrogramId: PK
+    spectrogramId_In: [PK]
+    annotatorId: PK
+    notAnnotatorId: PK
   ): AnnotationNodeNodeConnection
   annotationTasks(
     """Query limit"""
@@ -3147,16 +3164,17 @@ type SpectrogramNode implements Node {
     after: String
     first: Int
     last: Int
-    spectrogramId: ID
-    spectrogramId_In: [ID]
-    annotatorId: ID
-    annotationCampaignId: ID
+    annotatorId: PK
+    spectrogramId: PK
+    spectrogramId_In: [PK]
+    annotationCampaignId: PK
     phaseType: AnnotationPhaseType
   ): AnnotationTaskNodeNodeConnection
-  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, authorId: ID, annotationCampaignId: ID, spectrogramId: ID, phaseType: AnnotationPhaseType): AnnotationCommentNodeConnection!
-  taskStatus(campaignId: ID!, annotatorId: ID!, phaseType: AnnotationPhaseType!): AnnotationTaskStatus
-  path(analysisId: ID!): String!
-  audioPath(analysisId: ID!): String!
+  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, authorId: PK, annotationCampaignId: PK, spectrogramId: PK, phaseType: AnnotationPhaseType): AnnotationCommentNodeConnection!
+  pk: PK!
+  taskStatus(campaignId: PK!, annotatorId: PK!, phaseType: AnnotationPhaseType!): AnnotationTaskStatus
+  path(analysisId: PK!): String!
+  audioPath(analysisId: PK!): String!
   duration: Int!
 }
 
@@ -3186,13 +3204,13 @@ type FileFormatNode implements Node {
     end_Lte: DateTime
     end_Gt: DateTime
     end_Gte: DateTime
-    campaignId: ID
+    campaignId: PK
     phaseType: AnnotationPhaseType
-    annotatorId: ID
+    annotatorId: PK
     isTaskCompleted: Boolean
     hasAnnotations: Boolean
-    annotatedByAnnotator: ID
-    annotatedByDetector: ID
+    annotatedByAnnotator: PK
+    annotatedByDetector: PK
     annotatedWithLabel: String
     annotatedWithConfidence: String
     annotatedWithFeatures: Boolean
@@ -3240,7 +3258,7 @@ type FileNode implements Node {
   """Total number of bytes of the audio file (in bytes)."""
   fileSize: BigInt
   accessibility: AccessibilityEnum
-  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, deploymentId: ID, deploymentId_In: [ID], continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, files_Id: Decimal, files_Id_In: [ID], storages_Id: Decimal, storages_Id_In: [ID]): ChannelConfigurationNodeConnection!
+  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, deploymentId: ID, deploymentId_In: [ID], continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, files_Id: Decimal, files_Id_In: [ID], storages_Id: Decimal, storages_Id_In: [ID], datasetId: PK): ChannelConfigurationNodeConnection!
 }
 
 type AudioPropertiesNode implements Node {
@@ -3484,11 +3502,13 @@ type AnnotationTaskNodeNodeConnection {
 
 """AnnotationTask schema"""
 type AnnotationTaskNode implements Node {
+  """The ID of the object"""
   id: ID!
   status: AnnotationTaskStatus
   annotationPhase: AnnotationPhaseNode!
   annotator: UserNode!
   spectrogram: SpectrogramNode!
+  pk: PK!
 }
 
 """From AnnotationTask.Status"""
@@ -3499,6 +3519,7 @@ enum AnnotationTaskStatus {
 
 """AnnotationPhase schema"""
 type AnnotationPhaseNode implements Node {
+  """The ID of the object"""
   id: ID!
   phase: AnnotationPhaseType
   annotationCampaign: AnnotationCampaignNode!
@@ -3506,10 +3527,11 @@ type AnnotationPhaseNode implements Node {
   createdBy: UserNode!
   endedAt: DateTime
   endedBy: UserNode
-  annotations(offset: Int, before: String, after: String, first: Int, last: Int, spectrogramId: ID, spectrogramId_In: [ID], annotationCampaignId: ID, phaseType: AnnotationPhaseType, annotatorId: ID, notAnnotatorId: ID): AnnotationNodeConnection!
-  annotationTasks(offset: Int, before: String, after: String, first: Int, last: Int, spectrogramId: ID, spectrogramId_In: [ID], annotatorId: ID, annotationCampaignId: ID, phaseType: AnnotationPhaseType): AnnotationTaskNodeConnection!
-  annotationFileRanges(offset: Int, before: String, after: String, first: Int, last: Int, annotatorId: ID, annotationCampaignId: ID, phaseType: AnnotationPhaseType): AnnotationFileRangeNodeConnection!
-  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, authorId: ID, annotationCampaignId: ID, spectrogramId: ID, phaseType: AnnotationPhaseType): AnnotationCommentNodeConnection!
+  annotations(offset: Int, before: String, after: String, first: Int, last: Int, annotationCampaignId: PK, phaseType: AnnotationPhaseType, spectrogramId: PK, spectrogramId_In: [PK], annotatorId: PK, notAnnotatorId: PK): AnnotationNodeConnection!
+  annotationTasks(offset: Int, before: String, after: String, first: Int, last: Int, annotatorId: PK, spectrogramId: PK, spectrogramId_In: [PK], annotationCampaignId: PK, phaseType: AnnotationPhaseType): AnnotationTaskNodeConnection!
+  annotationFileRanges(offset: Int, before: String, after: String, first: Int, last: Int, annotatorId: PK, annotationCampaignId: PK, phaseType: AnnotationPhaseType): AnnotationFileRangeNodeConnection!
+  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, authorId: PK, annotationCampaignId: PK, spectrogramId: PK, phaseType: AnnotationPhaseType): AnnotationCommentNodeConnection!
+  pk: PK!
   isCompleted: Boolean
   hasAnnotations: Boolean
   tasksCount: Int
@@ -3554,6 +3576,7 @@ type AnnotationFileRangeNodeEdge {
 
 """AnnotationFileRange schema"""
 type AnnotationFileRangeNode implements Node {
+  """The ID of the object"""
   id: ID!
   firstFileIndex: Int!
   lastFileIndex: Int!
@@ -3562,6 +3585,7 @@ type AnnotationFileRangeNode implements Node {
   filesCount: Int!
   annotator: UserNode!
   annotationPhase: AnnotationPhaseNode!
+  pk: PK!
 }
 
 type AnnotationCommentNodeConnection {
@@ -3583,6 +3607,7 @@ type AnnotationCommentNodeEdge {
 
 """AnnotationComment schema"""
 type AnnotationCommentNode implements Node {
+  """The ID of the object"""
   id: ID!
   comment: String!
   annotation: AnnotationNode
@@ -3590,7 +3615,8 @@ type AnnotationCommentNode implements Node {
   author: UserNode!
   spectrogram: SpectrogramNode!
   createdAt: DateTime!
-  annotationId: ID
+  pk: PK!
+  annotationId: PK
 }
 
 type ArchiveNodeConnection {
@@ -3612,10 +3638,12 @@ type ArchiveNodeEdge {
 
 """Archive schema"""
 type ArchiveNode implements Node {
+  """The ID of the object"""
   id: ID!
   date: DateTime!
   byUser: UserNode
   annotationCampaign: AnnotationCampaignNode
+  pk: PK!
 }
 
 type AnnotationPhaseNodeConnection {
@@ -3654,12 +3682,14 @@ type AnnotationValidationNodeEdge {
 
 """AnnotationValidation schema"""
 type AnnotationValidationNode implements Node {
+  """The ID of the object"""
   id: ID!
   annotation: AnnotationNode!
   annotator: UserNode!
   isValid: Boolean!
   createdAt: DateTime!
   lastUpdatedAt: DateTime!
+  pk: PK!
 }
 
 type ChannelConfigurationNodeNodeConnection {
@@ -3682,6 +3712,7 @@ type SpectrogramAnalysisNodeNodeConnection {
 
 """ConfidenceSet schema"""
 type ConfidenceSetNode implements Node {
+  """The ID of the object"""
   id: ID!
   name: String!
   desc: String
@@ -3707,8 +3738,8 @@ type ConfidenceSetNode implements Node {
     after: String
     first: Int
     last: Int
-    annotatorId: Decimal
-    ownerId: Decimal
+    annotatorId: PK
+    ownerId: PK
     isArchived: Boolean
     phaseType: AnnotationPhaseType
 
@@ -3718,6 +3749,7 @@ type ConfidenceSetNode implements Node {
     """Ordering"""
     orderBy: String
   ): AnnotationCampaignNodeConnection!
+  pk: PK!
 }
 
 type ConfidenceNodeNodeConnection {
@@ -3731,11 +3763,13 @@ type ConfidenceNodeNodeConnection {
 
 """Confidence schema"""
 type ConfidenceNode implements Node {
+  """The ID of the object"""
   id: ID!
   label: String!
   level: Int!
-  annotationSet(offset: Int, before: String, after: String, first: Int, last: Int, spectrogramId: ID, spectrogramId_In: [ID], annotationCampaignId: ID, phaseType: AnnotationPhaseType, annotatorId: ID, notAnnotatorId: ID): AnnotationNodeConnection!
+  annotationSet(offset: Int, before: String, after: String, first: Int, last: Int, annotationCampaignId: PK, phaseType: AnnotationPhaseType, spectrogramId: PK, spectrogramId_In: [PK], annotatorId: PK, notAnnotatorId: PK): AnnotationNodeConnection!
   confidenceIndicatorSets(offset: Int, before: String, after: String, first: Int, last: Int, name: String, desc: String, confidenceIndicators: ID): ConfidenceSetNodeConnection!
+  pk: PK!
   isDefault: Boolean
 }
 
@@ -3797,6 +3831,7 @@ enum ApiAnnotationAnnotatorExpertiseLevelChoices {
 
 """AcousticFeatures schema"""
 type AcousticFeaturesNode implements Node {
+  """The ID of the object"""
   id: ID!
 
   """[Hz] Frequency at the beginning of the signal"""
@@ -3818,6 +3853,7 @@ type AcousticFeaturesNode implements Node {
   """Number of steps (flat segment) in the signal"""
   stepsCount: Int
   annotation: AnnotationNode
+  pk: PK!
 }
 
 """From AcousticFeatures.SignalTrend"""
@@ -3903,6 +3939,7 @@ type SiteNodeEdge {
 
 """Project node"""
 type WebsiteProjectNode implements Node {
+  """The ID of the object"""
   id: ID!
   title: String!
   intro: String!
@@ -3912,6 +3949,7 @@ type WebsiteProjectNode implements Node {
   thumbnail: String!
   otherContacts: [String!]
   metadataxProject: ProjectNodeOverride
+  pk: PK!
 }
 
 type SoundNodeConnection {
@@ -4309,8 +4347,8 @@ type ImportSpectrogramAnalysisType {
 }
 
 type PrevNextNode {
-  previousId: ID
-  nextId: ID
+  previousId: PK
+  nextId: PK
 }
 
 type MultiLinearScaleNodeNodeConnection {
@@ -4517,10 +4555,10 @@ type Mutation {
   deleteSound(id: ID): DeleteSoundMutation
 
   """Archive annotation campaign mutation"""
-  archiveAnnotationCampaign(id: ID!): ArchiveAnnotationCampaignMutation
+  archiveAnnotationCampaign(id: PK!): ArchiveAnnotationCampaignMutation
 
   """Update annotation campaign labels with features mutation"""
-  updateAnnotationCampaignLabelsWithFeatures(id: ID!, labelsWithAcousticFeatures: [String]!): UpdateAnnotationCampaignLabelsWithFeaturesMutation
+  updateAnnotationCampaignLabelsWithFeatures(id: PK!, labelsWithAcousticFeatures: [String]!): UpdateAnnotationCampaignLabelsWithFeaturesMutation
 
   """"Import spectrogram analysis mutation"""
   importSpectrogramAnalysis(datasetName: String!, datasetPath: String!, legacy: Boolean, name: String!, path: String!): ImportSpectrogramAnalysisMutation

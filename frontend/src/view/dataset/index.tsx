@@ -1,11 +1,14 @@
 import React, { Fragment } from 'react';
-import { DatasetTable, ImportDatasetButton } from "@/features/data/dataset";
+
 import { Head } from "@/components/ui/Page.tsx";
+
+import { DatasetTable } from "@/features/data/display";
+import { ImportDatasetModalButton } from "@/features/data/import";
 
 
 export const DatasetList: React.FC = () => (<Fragment>
     <Head title='Datasets'>
-      <ImportDatasetButton/>
+      <ImportDatasetModalButton/>
     </Head>
 
     <DatasetTable/>

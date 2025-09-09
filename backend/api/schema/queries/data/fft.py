@@ -12,7 +12,7 @@ class FFTNode(ApiObjectType):
         # pylint: disable=missing-class-docstring, too-few-public-methods
         model = FFT
         fields = "__all__"
-        filter_fields = "__all__"
+        filter_fields = {}
         interfaces = (relay.Node,)
 
 

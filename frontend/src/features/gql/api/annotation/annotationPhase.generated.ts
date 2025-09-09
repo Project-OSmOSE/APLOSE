@@ -2,7 +2,7 @@ import * as Types from '../../types.generated';
 
 import { gqlAPI } from '@/features/gql/baseApi.ts';
 export type GetPhaseQueryVariables = Types.Exact<{
-  campaignID: Types.Scalars['ID']['input'];
+  campaignID: Types.Scalars['PK']['input'];
   phaseType: Types.AnnotationPhaseType;
 }>;
 
@@ -11,7 +11,7 @@ export type GetPhaseQuery = { __typename?: 'Query', annotationPhaseForCampaign?:
 
 
 export const GetPhaseDocument = `
-    query getPhase($campaignID: ID!, $phaseType: AnnotationPhaseType!) {
+    query getPhase($campaignID: PK!, $phaseType: AnnotationPhaseType!) {
   annotationPhaseForCampaign(campaignId: $campaignID, phaseType: $phaseType) {
     annotationCampaign {
       archive {

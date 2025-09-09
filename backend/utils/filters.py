@@ -34,3 +34,4 @@ def get_boolean_query_param(request: Request, label: str) -> Optional[bool]:
     if isinstance(param, str):
         return param.lower() == "true"
     return False
+

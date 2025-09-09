@@ -2,9 +2,9 @@ import * as Types from '../../gql/types.generated';
 
 import { gqlAPI } from '@/features/gql/baseApi.ts';
 export type GetAnnotatorQueryVariables = Types.Exact<{
-  spectrogramID: Types.Scalars['ID']['input'];
-  campaignID: Types.Scalars['ID']['input'];
-  annotatorID: Types.Scalars['ID']['input'];
+  spectrogramID: Types.Scalars['PK']['input'];
+  campaignID: Types.Scalars['PK']['input'];
+  annotatorID: Types.Scalars['PK']['input'];
   phaseType: Types.AnnotationPhaseType;
   filename__icontain?: Types.InputMaybe<Types.Scalars['String']['input']>;
   label__name?: Types.InputMaybe<Types.Scalars['String']['input']>;
@@ -18,11 +18,11 @@ export type GetAnnotatorQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetAnnotatorQuery = { __typename?: 'Query', spectrogramPrevNext?: { __typename?: 'PrevNextNode', previousId?: string | null, nextId?: string | null } | null, annotationTaskIndexes?: { __typename?: 'AnnotationTaskIndexesNode', current?: number | null, total?: number | null } | null, spectrogramById?: { __typename?: 'SpectrogramNode', id: string, start: any, duration: number, filename: string } | null, annotationTask?: { __typename?: 'AnnotationTaskNode', status?: Types.AnnotationTaskStatus | null } | null, annotationFileRange?: { __typename?: 'AnnotationFileRangeNode', id: string } | null, allAnnotationComments?: { __typename?: 'AnnotationCommentNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCommentNode', id: string, comment: string, annotationId?: string | null, createdAt: any, author: { __typename?: 'UserNode', id: string, displayName?: string | null } } | null> } | null, userAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', id: string, type: Types.AnnotationType, startTime?: number | null, endTime?: number | null, startFrequency?: number | null, endFrequency?: number | null, isUpdateOfId?: string | null, annotationPhase: { __typename?: 'AnnotationPhaseNode', id: string }, annotator?: { __typename?: 'UserNode', id: string, displayName?: string | null } | null, label: { __typename?: 'AnnotationLabelNode', name: string }, confidence?: { __typename?: 'ConfidenceNode', label: string } | null, acousticFeatures?: { __typename?: 'AcousticFeaturesNode', startFrequency?: number | null, endFrequency?: number | null, hasHarmonics?: boolean | null, relativeMinFrequencyCount?: number | null, relativeMaxFrequencyCount?: number | null, stepsCount?: number | null, trend?: Types.SignalTrendType | null } | null } | null> } | null, otherAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', id: string, type: Types.AnnotationType, startTime?: number | null, endTime?: number | null, startFrequency?: number | null, endFrequency?: number | null, annotationPhase: { __typename?: 'AnnotationPhaseNode', id: string }, annotator?: { __typename?: 'UserNode', id: string, displayName?: string | null } | null, label: { __typename?: 'AnnotationLabelNode', name: string }, confidence?: { __typename?: 'ConfidenceNode', label: string } | null, validations?: { __typename?: 'AnnotationValidationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationValidationNode', id: string, isValid: boolean } | null> } | null, detectorConfiguration?: { __typename?: 'DetectorConfigurationNode', id: string, configuration?: string | null, detector: { __typename?: 'DetectorNode', name: string } } | null, acousticFeatures?: { __typename?: 'AcousticFeaturesNode', startFrequency?: number | null, endFrequency?: number | null, hasHarmonics?: boolean | null, relativeMinFrequencyCount?: number | null, relativeMaxFrequencyCount?: number | null, stepsCount?: number | null, trend?: Types.SignalTrendType | null } | null } | null> } | null, allSpectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', results: Array<{ __typename?: 'SpectrogramAnalysisNode', id: string, name: string, colormap: { __typename?: 'ColormapNode', name: string }, fft: { __typename?: 'FFTNode', nfft: number, windowSize: number, overlap: any, samplingFrequency: number }, legacyConfiguration?: { __typename?: 'LegacySpectrogramConfigurationNode', scaleName?: string | null, zoomLevel: number, linearFrequencyScale?: { __typename?: 'LinearScaleNode', minValue: number, maxValue: number } | null, multiLinearFrequencyScale?: { __typename?: 'MultiLinearScaleNode', innerScales?: { __typename?: 'LinearScaleNodeNodeConnection', results: Array<{ __typename?: 'LinearScaleNode', minValue: number, maxValue: number, ratio: number } | null> } | null } | null } | null } | null> } | null, annotationCampaignLabelSet?: { __typename?: 'LabelSetNode', labels?: { __typename?: 'AnnotationLabelNodeNodeConnection', results: Array<{ __typename?: 'AnnotationLabelNode', name: string } | null> } | null } | null, annotationCampaignConfidenceSet?: { __typename?: 'ConfidenceSetNode', desc?: string | null, confidenceIndicators?: { __typename?: 'ConfidenceNodeNodeConnection', results: Array<{ __typename?: 'ConfidenceNode', label: string, isDefault?: boolean | null } | null> } | null } | null };
+export type GetAnnotatorQuery = { __typename?: 'Query', spectrogramPrevNext?: { __typename?: 'PrevNextNode', previousId?: any | null, nextId?: any | null } | null, annotationTaskIndexes?: { __typename?: 'AnnotationTaskIndexesNode', current?: number | null, total?: number | null } | null, spectrogramById?: { __typename?: 'SpectrogramNode', pk: any, start: any, duration: number, filename: string } | null, annotationTask?: { __typename?: 'AnnotationTaskNode', status?: Types.AnnotationTaskStatus | null } | null, annotationFileRange?: { __typename?: 'AnnotationFileRangeNode', pk: any } | null, allAnnotationComments?: { __typename?: 'AnnotationCommentNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCommentNode', pk: any, comment: string, annotationId?: any | null, createdAt: any, author: { __typename?: 'UserNode', pk: any, displayName: string } } | null> } | null, userAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', pk: any, type: Types.AnnotationType, startTime?: number | null, endTime?: number | null, startFrequency?: number | null, endFrequency?: number | null, isUpdateOfId?: any | null, annotationPhase: { __typename?: 'AnnotationPhaseNode', pk: any }, annotator?: { __typename?: 'UserNode', pk: any, displayName: string } | null, label: { __typename?: 'AnnotationLabelNode', name: string }, confidence?: { __typename?: 'ConfidenceNode', label: string } | null, acousticFeatures?: { __typename?: 'AcousticFeaturesNode', startFrequency?: number | null, endFrequency?: number | null, hasHarmonics?: boolean | null, relativeMinFrequencyCount?: number | null, relativeMaxFrequencyCount?: number | null, stepsCount?: number | null, trend?: Types.SignalTrendType | null } | null } | null> } | null, otherAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', pk: any, type: Types.AnnotationType, startTime?: number | null, endTime?: number | null, startFrequency?: number | null, endFrequency?: number | null, annotationPhase: { __typename?: 'AnnotationPhaseNode', pk: any }, annotator?: { __typename?: 'UserNode', pk: any, displayName: string } | null, label: { __typename?: 'AnnotationLabelNode', name: string }, confidence?: { __typename?: 'ConfidenceNode', label: string } | null, validations?: { __typename?: 'AnnotationValidationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationValidationNode', pk: any, isValid: boolean } | null> } | null, detectorConfiguration?: { __typename?: 'DetectorConfigurationNode', pk: any, configuration?: string | null, detector: { __typename?: 'DetectorNode', name: string } } | null, acousticFeatures?: { __typename?: 'AcousticFeaturesNode', startFrequency?: number | null, endFrequency?: number | null, hasHarmonics?: boolean | null, relativeMinFrequencyCount?: number | null, relativeMaxFrequencyCount?: number | null, stepsCount?: number | null, trend?: Types.SignalTrendType | null } | null } | null> } | null, allSpectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', results: Array<{ __typename?: 'SpectrogramAnalysisNode', pk: any, name: string, colormap: { __typename?: 'ColormapNode', name: string }, fft: { __typename?: 'FFTNode', nfft: number, windowSize: number, overlap: any, samplingFrequency: number }, legacyConfiguration?: { __typename?: 'LegacySpectrogramConfigurationNode', scaleName?: string | null, zoomLevel: number, linearFrequencyScale?: { __typename?: 'LinearScaleNode', minValue: number, maxValue: number } | null, multiLinearFrequencyScale?: { __typename?: 'MultiLinearScaleNode', innerScales?: { __typename?: 'LinearScaleNodeNodeConnection', results: Array<{ __typename?: 'LinearScaleNode', minValue: number, maxValue: number, ratio: number } | null> } | null } | null } | null } | null> } | null, annotationCampaignLabelSet?: { __typename?: 'LabelSetNode', labels?: { __typename?: 'AnnotationLabelNodeNodeConnection', results: Array<{ __typename?: 'AnnotationLabelNode', name: string } | null> } | null } | null, annotationCampaignConfidenceSet?: { __typename?: 'ConfidenceSetNode', desc?: string | null, confidenceIndicators?: { __typename?: 'ConfidenceNodeNodeConnection', results: Array<{ __typename?: 'ConfidenceNode', label: string, isDefault?: boolean | null } | null> } | null } | null };
 
 export type GetSpectrogramPathQueryVariables = Types.Exact<{
-  spectrogramID: Types.Scalars['ID']['input'];
-  analysisID: Types.Scalars['ID']['input'];
+  spectrogramID: Types.Scalars['PK']['input'];
+  analysisID: Types.Scalars['PK']['input'];
 }>;
 
 
@@ -30,7 +30,7 @@ export type GetSpectrogramPathQuery = { __typename?: 'Query', spectrogramById?: 
 
 
 export const GetAnnotatorDocument = `
-    query getAnnotator($spectrogramID: ID!, $campaignID: ID!, $annotatorID: ID!, $phaseType: AnnotationPhaseType!, $filename__icontain: String, $label__name: String, $confidence_indicator__label: String, $detector_configuration__detector__name: String, $end__gte: String, $start__lte: String, $is_submitted: Boolean, $with_user_annotations: Boolean, $acoustic_features__isnull: Boolean) {
+    query getAnnotator($spectrogramID: PK!, $campaignID: PK!, $annotatorID: PK!, $phaseType: AnnotationPhaseType!, $filename__icontain: String, $label__name: String, $confidence_indicator__label: String, $detector_configuration__detector__name: String, $end__gte: String, $start__lte: String, $is_submitted: Boolean, $with_user_annotations: Boolean, $acoustic_features__isnull: Boolean) {
   spectrogramPrevNext(
     campaignId: $campaignID
     phaseType: $phaseType
@@ -59,7 +59,7 @@ export const GetAnnotatorDocument = `
     total
   }
   spectrogramById(id: $spectrogramID) {
-    id
+    pk
     start
     duration
     filename
@@ -78,7 +78,7 @@ export const GetAnnotatorDocument = `
     annotatorId: $annotatorID
     spectrogramId: $spectrogramID
   ) {
-    id
+    pk
   }
   allAnnotationComments(
     annotationCampaignId: $campaignID
@@ -87,10 +87,10 @@ export const GetAnnotatorDocument = `
     spectrogramId: $spectrogramID
   ) {
     results {
-      id
+      pk
       comment
       author {
-        id
+        pk
         displayName
       }
       annotationId
@@ -104,12 +104,12 @@ export const GetAnnotatorDocument = `
     phaseType: $phaseType
   ) {
     results {
-      id
+      pk
       annotationPhase {
-        id
+        pk
       }
       annotator {
-        id
+        pk
         displayName
       }
       type
@@ -142,12 +142,12 @@ export const GetAnnotatorDocument = `
     phaseType: Annotation
   ) {
     results {
-      id
+      pk
       annotationPhase {
-        id
+        pk
       }
       annotator {
-        id
+        pk
         displayName
       }
       type
@@ -161,14 +161,14 @@ export const GetAnnotatorDocument = `
       confidence {
         label
       }
-      validations(annotator: $annotatorID) {
+      validations(annotatorId: $annotatorID) {
         results {
-          id
+          pk
           isValid
         }
       }
       detectorConfiguration {
-        id
+        pk
         detector {
           name
         }
@@ -187,7 +187,7 @@ export const GetAnnotatorDocument = `
   }
   allSpectrogramAnalysis(annotationCampaignId: $campaignID) {
     results {
-      id
+      pk
       name
       colormap {
         name
@@ -236,7 +236,7 @@ export const GetAnnotatorDocument = `
 }
     `;
 export const GetSpectrogramPathDocument = `
-    query getSpectrogramPath($spectrogramID: ID!, $analysisID: ID!) {
+    query getSpectrogramPath($spectrogramID: PK!, $analysisID: PK!) {
   spectrogramById(id: $spectrogramID) {
     filename
     path(analysisId: $analysisID)

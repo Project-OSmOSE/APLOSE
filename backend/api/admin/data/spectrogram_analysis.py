@@ -19,7 +19,6 @@ class SpectrogramAnalysisAdmin(admin.ModelAdmin):
         "data_duration",
         "fft",
         "colormap",
-        "legacy_configuration",
         "dynamic",
         "start_date",
         "end_date",

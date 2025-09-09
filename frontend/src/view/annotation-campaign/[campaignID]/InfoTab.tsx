@@ -1,17 +1,19 @@
 import React, { Fragment } from "react";
+import { IonSpinner } from "@ionic/react";
+
+import { DatasetName, SpectrogramAnalysisTable } from "@/features/data/display";
+
 import { AnnotationCampaignInstructionsButton } from "@/features/annotation/annotationCampaign";
-import styles from "./styles.module.scss";
-import { DatasetName } from "@/features/data/dataset";
 import { FadedText, Progress } from "@/components/ui";
-import { SpectrogramAnalysisTable } from "@/features/data/spectrogramAnalysis";
 import { dateToString, pluralize } from "@/service/function.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { useListPhasesForCurrentCampaign } from "@/service/api/campaign-phase.ts";
 import { useGetLabelSetForCurrentCampaign } from "@/service/api/label-set.ts";
 import { useGetConfidenceSetForCurrentCampaign } from "@/service/api/confidence-set.ts";
 import { AnnotationCampaignArchiveButton } from "@/components/AnnotationCampaign";
-import { IonSpinner } from "@ionic/react";
 import { LabelSetModalButton } from "@/components/AnnotationCampaign/Label/Modal.tsx";
+
+import styles from "./styles.module.scss";
 
 
 export const AnnotationCampaignInfo: React.FC = () => {
@@ -42,7 +44,7 @@ export const AnnotationCampaignInfo: React.FC = () => {
       <DatasetName { ...campaign.dataset } labeled link/>
       {/*<AnnotationCampaignAcquisitionModalButton/>*/ }
       <FadedText>Analysis</FadedText>
-      <SpectrogramAnalysisTable annotationCampaignID={ campaign.id.toString() }/>
+      <SpectrogramAnalysisTable annotationCampaignPK={ campaign.id }/>
     </div>
 
     {/* ANNOTATION */ }

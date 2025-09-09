@@ -30,7 +30,8 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
   }, { refetchOnMountOrArgChange: true, skip: !phase || !!campaign?.archive });
   const { currentData: files, isFetching, error } = AnnotationFileRangeAPI.endpoints.listFilesWithPagination.useQuery({
     phaseID: phase?.id ?? -1,
-    ...params
+    ...params,
+    page
   }, { skip: !phase || !!campaign?.archive });
   const isEmpty = useMemo(() => error || !files || files.count === 0 || campaign?.archive, [ error, files, campaign ])
 

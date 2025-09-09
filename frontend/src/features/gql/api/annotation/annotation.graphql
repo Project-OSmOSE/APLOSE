@@ -1,5 +1,5 @@
 query getAnnotationSettings(
-    $campaignID: ID!
+    $campaignID: PK!
     $phaseType: AnnotationPhaseType!
 ) {
     annotationPhaseForCampaign(
@@ -23,13 +23,13 @@ query getAnnotationSettings(
             }
             detectors {
                 results {
-                    id
+                    pk
                     name
                 }
             }
             annotators {
                 results {
-                    id
+                    pk
                     displayName
                     username
                 }

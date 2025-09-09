@@ -1,0 +1,36 @@
+# Channel configurations
+
+query getChannelConfigurations($datasetPK: PK) {
+    allChannelConfigurations(datasetId: $datasetPK) {
+        results {
+            deployment {
+                name
+                campaign {
+                    name
+                }
+                site {
+                    name
+                }
+                project {
+                    name
+                }
+            }
+            recorderSpecification {
+                recorder {
+                    serialNumber
+                    model
+                }
+                hydrophone {
+                    serialNumber
+                    model
+                }
+            }
+            detectorSpecification {
+                detector {
+                    serialNumber
+                    model
+                }
+            }
+        }
+    }
+}

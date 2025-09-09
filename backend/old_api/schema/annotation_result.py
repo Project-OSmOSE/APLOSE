@@ -1,10 +1,9 @@
 """AnnotationResult graphql definitions"""
-import graphene
 from django_filters import FilterSet, NumberFilter
 from graphene import relay
-from graphene_django import DjangoObjectType
 
 from backend.api.models import AnnotationResult
+from backend.utils.schema import ApiObjectType
 
 
 class AnnotationResultFilter(FilterSet):
@@ -22,10 +21,8 @@ class AnnotationResultFilter(FilterSet):
         }
 
 
-class AnnotationResultNode(DjangoObjectType):
+class AnnotationResultNode(ApiObjectType):
     """Annotation result node"""
-
-    id = graphene.ID(required=True)
 
     class Meta:
         # pylint: disable=missing-docstring, too-few-public-methods

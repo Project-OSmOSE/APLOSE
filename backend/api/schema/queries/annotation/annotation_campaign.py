@@ -5,12 +5,11 @@ from django.db.models import QuerySet, Count, Q, Case, When, F, Value
 from django.db.models.functions import Now
 from django_filters import (
     FilterSet,
-    NumberFilter,
     BooleanFilter,
     OrderingFilter,
     CharFilter,
 )
-from graphene import relay, ObjectType, Int, ID, Field, String, Boolean
+from graphene import relay, ObjectType, Int, Field, String, Boolean
 from graphene_django.filter import TypedFilter
 from graphql import GraphQLResolveInfo
 
@@ -24,6 +23,8 @@ from backend.utils.schema import (
     AuthenticatedDjangoConnectionField,
     GraphQLPermissions,
     GraphQLResolve,
+    PKFilter,
+    PK,
 )
 from .annotation_phase import AnnotationPhaseNode, AnnotationPhaseType
 from .detector import DetectorNode
@@ -34,10 +35,8 @@ from ..data.spectrogram_analysis import SpectrogramAnalysisNode
 class AnnotationCampaignFilter(FilterSet):
     """AnnotationCampaign filters"""
 
-    annotator_id = NumberFilter(
-        field_name="phases__annotation_file_ranges__annotator_id", lookup_expr="exact"
-    )
-    owner_id = NumberFilter(lookup_expr="exact")
+    annotator_id = PKFilter(field_name="phases__annotation_file_ranges__annotator_id")
+    owner_id = PKFilter()
     is_archived = BooleanFilter(
         field_name="archive", lookup_expr="isnull", exclude=True
     )
@@ -160,7 +159,7 @@ class AnnotationCampaignQuery(ObjectType):  # pylint: disable=too-few-public-met
         AnnotationCampaignNode
     )
 
-    annotation_campaign_by_id = Field(AnnotationCampaignNode, id=ID(required=True))
+    annotation_campaign_by_id = Field(AnnotationCampaignNode, id=PK(required=True))
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     def resolve_annotation_campaign_by_id(

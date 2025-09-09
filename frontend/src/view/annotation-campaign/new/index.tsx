@@ -1,14 +1,17 @@
 import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import styles from './styles.module.scss'
-import { FormBloc, Input, Select, Textarea } from "@/components/form";
-import { IonButton, IonSpinner } from "@ionic/react";
-import { useToast } from "@/service/ui";
 import { useNavigate } from "react-router-dom";
+import { IonButton, IonSpinner } from "@ionic/react";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { Colormap, COLORMAP_GREYS, COLORMAPS } from "@/service/ui/color.ts";
+
+import { Colormap, COLORMAP_GREYS, COLORMAPS, useToast } from "@/service/ui";
+import { FormBloc, Input, Select, Textarea } from "@/components/form";
+
+import { DatasetSelect } from "@/features/data/input";
+
 import { CampaignAPI, PostAnnotationCampaign } from "@/service/api/campaign.ts";
-import { DatasetSelect } from "@/features/data/dataset/Select.tsx";
 import { ID } from "@/service/type.ts";
+
+import styles from './styles.module.scss'
 
 type Errors = { [key in keyof PostAnnotationCampaign]?: string }
 

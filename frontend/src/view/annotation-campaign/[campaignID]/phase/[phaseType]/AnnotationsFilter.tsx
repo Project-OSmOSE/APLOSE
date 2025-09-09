@@ -8,6 +8,7 @@ import { Select, Switch } from "@/components/form";
 import { AnnotationAPI, PhaseType } from "@/features/gql/api";
 import { useParams } from "react-router-dom";
 import { useSpectrogramFilters } from "./filter.ts";
+import { AnnotationPhaseType } from "@/features/gql/types.generated.ts";
 
 const BOOLEAN_OPTIONS = [ 'Unset', 'With', 'Without' ]
 type BooleanOption = typeof BOOLEAN_OPTIONS[number];
@@ -16,10 +17,10 @@ const useAnnotationSettings = () => {
   const {
     campaignID,
     phaseType
-  } = useParams<{ campaignID: string; phaseType: PhaseType }>();
+  } = useParams<{ campaignID: string; phaseType: AnnotationPhaseType }>();
   return AnnotationAPI.endpoints.getAnnotationSettings.useQuery({
     campaignID: campaignID ?? '',
-    phaseType: phaseType ?? '',
+    phaseType: phaseType ?? AnnotationPhaseType.Annotation,
   }, {
     skip: !phaseType || !campaignID
   })
@@ -164,7 +165,7 @@ const DetectorSelect: React.FC<{
   const detectors = useMemo(() => data?.annotationPhaseForCampaign?.annotationCampaign.detectors?.results, [ data ])
   const detectorItems = useMemo(() => detectors?.filter(d => d !== null).map(d => ({
     label: d.name,
-    value: d.id
+    value: d.pk
   })) ?? [], [ detectors ])
   const { params, updateParams } = useSpectrogramFilters()
 
@@ -194,7 +195,7 @@ const AnnotatorSelect: React.FC<{
   const annotators = useMemo(() => data?.annotationPhaseForCampaign?.annotationCampaign.annotators?.results, [ data ])
   const annotatorItems = useMemo(() => annotators?.filter(a => a !== null).map(a => ({
     label: a.displayName ?? a.username,
-    value: a.id
+    value: a.pk
   })) ?? [], [ annotators ])
   const { params, updateParams } = useSpectrogramFilters()
 

@@ -5,7 +5,11 @@ from django_filters import NumberFilter
 from graphene import relay, Field
 from graphene_django.debug import DjangoDebug
 from graphene_django_pagination import DjangoPaginationConnectionField
-from metadatax.acquisition.models import Deployment, Project
+from metadatax.acquisition.models import Deployment, Project, ChannelConfiguration
+from metadatax.acquisition.schema import (
+    ChannelConfigurationNode as MxChannelConfigurationNode,
+    ChannelConfigurationFilter as MxChannelConfigurationFilter,
+)
 from metadatax.acquisition.schema.deployment import (
     DeploymentNode as MetadataxDeploymentNode,
     DeploymentFilter as MetadataxDeploymentFilter,
@@ -17,6 +21,7 @@ from metadatax.schema import Mutation as MetadataxMutation, Query as MetadataxQu
 from .api.schema import APIQuery, APIMutation
 from .aplose.schema import AploseQuery
 from .osmosewebsite.schema import OSmOSEWebsiteQuery, WebsiteProjectNode
+from .utils.schema import PKFilter
 
 
 class DeploymentFilter(MetadataxDeploymentFilter):
@@ -51,6 +56,22 @@ class ProjectNodeOverride(MetadataxProjectNode):
         interfaces = (relay.Node,)
 
 
+class ChannelConfigurationFilterSet(MxChannelConfigurationFilter):
+
+    dataset_id = PKFilter(field_name="datasets__id")
+
+    class Meta(MxChannelConfigurationFilter.Meta):
+        pass
+
+
+class ChannelConfigurationNode(MxChannelConfigurationNode):
+    class Meta:
+        model = ChannelConfiguration
+        fields = "__all__"
+        filterset_class = ChannelConfigurationFilterSet
+        interfaces = (relay.Node,)
+
+
 class Query(
     APIQuery,
     AploseQuery,
@@ -65,6 +86,9 @@ class Query(
     # pylint: disable=too-few-public-methods
 
     all_deployments = DjangoPaginationConnectionField(DeploymentNode)
+    all_channel_configurations = DjangoPaginationConnectionField(
+        ChannelConfigurationNode, filterset_class=ChannelConfigurationFilterSet
+    )
     all_projects = DjangoPaginationConnectionField(ProjectNodeOverride)
 
 

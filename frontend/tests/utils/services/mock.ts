@@ -33,6 +33,7 @@ import {
 } from "../../../src/features/data/spectrogramAnalysis/api/api.generated";
 import { GetAnnotationCampaignsQuery } from "../../../src/features/annotation/annotationCampaign/api/api.generated";
 import { COLORMAP_GREYS } from "../../../src/service/ui/color";
+import { AnnotationPhaseType } from "../../../src/features/gql/types.generated";
 
 type Response = {
   status: number,
@@ -215,7 +216,7 @@ export const MOCK_QUERIES: {
   getAvailableDatasetsForImport: {
     empty: {
       allDatasetsAvailableForImport: []
-    } as GetAvailableDatasetsForImportQuery,
+    } satisfies GetAvailableDatasetsForImportQuery as GetAvailableDatasetsForImportQuery,
     filled: {
       allDatasetsAvailableForImport: [ {
         name: 'Test import dataset',
@@ -231,19 +232,19 @@ export const MOCK_QUERIES: {
           }
         ]
       } ]
-    } as GetAvailableDatasetsForImportQuery
+    } satisfies GetAvailableDatasetsForImportQuery as GetAvailableDatasetsForImportQuery
   },
   getDatasets: {
     empty: {
       allDatasets: {
         results: []
       }
-    } as GetDatasetsQuery,
+    } satisfies GetDatasetsQuery as GetDatasetsQuery,
     filled: {
       allDatasets: {
         results: [
           {
-            id: '1',
+            pk: 1,
             name: 'Test dataset',
             legacy: true,
             createdAt: new Date().toISOString(),
@@ -255,14 +256,14 @@ export const MOCK_QUERIES: {
           }
         ]
       }
-    } as GetDatasetsQuery
+    } satisfies GetDatasetsQuery as GetDatasetsQuery
   },
   getDatasetByID: {
     empty: {
-      datasetById: undefined
-    } as GetDatasetByIdQuery,
+      datasetByPk: undefined
+    } satisfies GetDatasetByIdQuery as GetDatasetByIdQuery,
     filled: {
-      datasetById: {
+      datasetByPk: {
         name: 'Test dataset',
         path: 'test/dataset',
         description: "Coastal audio recordings",
@@ -274,22 +275,22 @@ export const MOCK_QUERIES: {
           displayName: 'John Doe'
         }
       }
-    } as GetDatasetByIdQuery
+    } satisfies GetDatasetByIdQuery as GetDatasetByIdQuery
   },
   getDatasetsAndAnalysis: {
     empty: {
       allDatasets: { results: [] }
-    } as GetDatasetsAndAnalysisQuery,
+    } satisfies GetDatasetsAndAnalysisQuery as GetDatasetsAndAnalysisQuery,
     filled: {
       allDatasets: {
         results: [
           {
-            id: '1',
+            pk: 1,
             name: 'Test dataset',
             spectrogramAnalysis: {
               results: [
                 {
-                  id: '1',
+                  pk: 1,
                   name: 'Test analysis',
                   colormap: { name: COLORMAP_GREYS }
                 }
@@ -298,13 +299,13 @@ export const MOCK_QUERIES: {
           }
         ]
       }
-    } as GetDatasetsAndAnalysisQuery
+    } satisfies GetDatasetsAndAnalysisQuery as GetDatasetsAndAnalysisQuery
   },
 
   getAvailableSpectrogramAnalysisForImport: {
     empty: {
       allSpectrogramAnalysisForImport: []
-    } as GetAvailableSpectrogramAnalysisForImportQuery,
+    } satisfies GetAvailableSpectrogramAnalysisForImportQuery as GetAvailableSpectrogramAnalysisForImportQuery,
     filled: {
       allSpectrogramAnalysisForImport: [
         {
@@ -316,19 +317,19 @@ export const MOCK_QUERIES: {
           path: 'Test analysis 2',
         }
       ]
-    } as GetAvailableSpectrogramAnalysisForImportQuery
+    } satisfies GetAvailableSpectrogramAnalysisForImportQuery as GetAvailableSpectrogramAnalysisForImportQuery
   },
   getSpectrogramAnalysis: {
     empty: {
       allSpectrogramAnalysis: {
         results: []
       }
-    } as GetSpectrogramAnalysisQuery,
+    } satisfies GetSpectrogramAnalysisQuery as GetSpectrogramAnalysisQuery,
     filled: {
       allSpectrogramAnalysis: {
         results: [
           {
-            id: '1',
+            pk: 1,
             name: 'Test analysis',
             description: "Coastal audio recordings",
             createdAt: new Date().toISOString(),
@@ -346,7 +347,7 @@ export const MOCK_QUERIES: {
           }
         ]
       }
-    } as GetSpectrogramAnalysisQuery
+    } satisfies GetSpectrogramAnalysisQuery as GetSpectrogramAnalysisQuery
   },
 
   getAnnotationCampaigns: {
@@ -354,16 +355,16 @@ export const MOCK_QUERIES: {
       allAnnotationCampaigns: {
         results: []
       }
-    } as GetAnnotationCampaignsQuery,
+    } satisfies GetAnnotationCampaignsQuery as GetAnnotationCampaignsQuery,
     filled: {
       allAnnotationCampaigns: {
         results: [
           {
-            id: '1',
+            pk: 1,
             name: 'Test campaign',
             deadline,
             archive: {
-              id: '1'
+              pk: 1
             },
             dataset: {
               name: 'Test dataset'
@@ -375,22 +376,22 @@ export const MOCK_QUERIES: {
             phases: {
               results: [
                 {
-                  phase: 'Annotation'
+                  phase: AnnotationPhaseType.Annotation
                 }
               ]
             }
           }
         ]
       }
-    } as GetAnnotationCampaignsQuery
+    } satisfies GetAnnotationCampaignsQuery as GetAnnotationCampaignsQuery
   },
 
   getDatasetChannelConfigurationsByID: {
     empty: {
-      datasetById: null
-    } as GetDatasetChannelConfigurationsByIdQuery,
+      datasetByPk: null
+    } satisfies GetDatasetChannelConfigurationsByIdQuery as GetDatasetChannelConfigurationsByIdQuery,
     filled: {
-      datasetById: {
+      datasetByPk: {
         relatedChannelConfigurations: {
           results: [
             {
@@ -410,7 +411,7 @@ export const MOCK_QUERIES: {
           ]
         }
       }
-    } as GetDatasetChannelConfigurationsByIdQuery
+    } satisfies GetDatasetChannelConfigurationsByIdQuery as GetDatasetChannelConfigurationsByIdQuery
   },
 }
 export const MOCK_MUTATIONS: {

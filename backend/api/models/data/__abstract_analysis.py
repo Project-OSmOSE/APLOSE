@@ -14,7 +14,7 @@ class AbstractAnalysis(AbstractDataset, models.Model):
     def __str__(self):
         return self.name
 
-    start_date = models.DateField(null=True, blank=True)
-    end_date = models.DateField(null=True, blank=True)
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
 
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)

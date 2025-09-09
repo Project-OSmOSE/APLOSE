@@ -2,8 +2,8 @@ import * as Types from '../../types.generated';
 
 import { gqlAPI } from '@/features/gql/baseApi.ts';
 export type GetFileRangeDatesQueryVariables = Types.Exact<{
-  campaignID: Types.Scalars['ID']['input'];
-  annotatorID: Types.Scalars['ID']['input'];
+  campaignID: Types.Scalars['PK']['input'];
+  annotatorID: Types.Scalars['PK']['input'];
   phase: Types.AnnotationPhaseType;
 }>;
 
@@ -12,7 +12,7 @@ export type GetFileRangeDatesQuery = { __typename?: 'Query', allAnnotationFileRa
 
 
 export const GetFileRangeDatesDocument = `
-    query getFileRangeDates($campaignID: ID!, $annotatorID: ID!, $phase: AnnotationPhaseType!) {
+    query getFileRangeDates($campaignID: PK!, $annotatorID: PK!, $phase: AnnotationPhaseType!) {
   allAnnotationFileRanges(
     annotationCampaignId: $campaignID
     annotatorId: $annotatorID

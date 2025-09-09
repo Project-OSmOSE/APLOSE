@@ -74,6 +74,12 @@ const AppContent: React.FC = () => {
       <Route path='login' element={ <Login/> }/>
 
       { isConnected && <Route element={ <AploseSkeleton/> }>
+
+          <Route path='dataset'>
+              <Route index element={ <DatasetList/> }/>
+              <Route path=':datasetID' element={ <DatasetDetail/> }/>
+          </Route>
+
           <Route path='annotation-campaign'>
               <Route index element={ <AnnotationCampaignList/> }/>
               <Route path='new' element={ <NewAnnotationCampaign/> }/>
@@ -88,11 +94,6 @@ const AppContent: React.FC = () => {
                       <Route path='spectrogram/:spectrogramID' element={ <AnnotatorPage/> }/>
                   </Route>
               </Route>
-          </Route>
-
-          <Route path='dataset'>
-              <Route index element={ <DatasetList/> }/>
-              <Route path=':datasetID' element={ <DatasetDetail/> }/>
           </Route>
 
           <Route path='account' element={ <Account/> }/>

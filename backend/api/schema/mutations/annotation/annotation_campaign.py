@@ -5,7 +5,6 @@ from django.db.models import QuerySet, Q
 from graphene import (
     ObjectType,
     Mutation,
-    ID,
     Boolean,
     List,
     String,
@@ -18,6 +17,9 @@ from backend.utils.schema import (
     GraphQLPermissions,
     NotFoundError,
     ForbiddenError,
+)
+from backend.utils.schema import (
+    PK,
 )
 
 
@@ -45,13 +47,13 @@ class ArchiveAnnotationCampaignMutation(
 
     class Arguments:
         # pylint: disable=too-few-public-methods, missing-class-docstring
-        id = ID(required=True)
+        id = PK(required=True)
 
     ok = Boolean(required=True)
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     @transaction.atomic
-    def mutate(self, info, id):  # pylint: disable=redefined-builtin
+    def mutate(self, info, id: int):  # pylint: disable=redefined-builtin
         """Archive annotation campaign at current date by request user"""
         campaign, user = get_campaign_and_user(info, id)
         campaign.do_archive(user)
@@ -63,7 +65,7 @@ class UpdateAnnotationCampaignLabelsWithFeaturesMutation(Mutation):
 
     class Arguments:
         # pylint: disable=too-few-public-methods, missing-class-docstring
-        id = ID(required=True)
+        id = PK(required=True)
         labels_with_acoustic_features = List(String, required=True)
 
     ok = Boolean(required=True)
@@ -71,7 +73,7 @@ class UpdateAnnotationCampaignLabelsWithFeaturesMutation(Mutation):
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     @transaction.atomic
     def mutate(
-        self, info, id, labels_with_acoustic_features: [str]
+        self, info, id: int, labels_with_acoustic_features: [str]
     ):  # pylint: disable=redefined-builtin
         """Update annotation campaign labels with features mutation"""
         campaign: AnnotationCampaign

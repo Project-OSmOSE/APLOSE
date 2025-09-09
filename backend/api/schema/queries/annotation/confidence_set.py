@@ -1,6 +1,6 @@
 """ConfidenceSet schema"""
 from django.db.models import F
-from graphene import relay, ObjectType, Field, ID
+from graphene import relay, ObjectType, Field
 
 from backend.api.models import ConfidenceSet, AnnotationCampaign
 from backend.utils.schema import (
@@ -8,6 +8,7 @@ from backend.utils.schema import (
     AuthenticatedDjangoConnectionField,
     GraphQLPermissions,
     GraphQLResolve,
+    PK,
 )
 from .confidence import ConfidenceNode
 
@@ -40,7 +41,7 @@ class ConfidenceSetQuery(ObjectType):  # pylint: disable=too-few-public-methods
     all_confidence_sets = AuthenticatedDjangoConnectionField(ConfidenceSetNode)
 
     annotation_campaign_confidence_set = Field(
-        ConfidenceSetNode, annotation_campaign_id=ID(required=True)
+        ConfidenceSetNode, annotation_campaign_id=PK(required=True)
     )
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)

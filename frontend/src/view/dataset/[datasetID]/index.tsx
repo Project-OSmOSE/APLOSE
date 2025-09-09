@@ -1,60 +1,52 @@
-import React, { Fragment, useMemo } from 'react';
+import React, { Fragment } from 'react';
 import { useParams } from "react-router-dom";
-import { DatasetAPI, DatasetImportNote, DatasetTimeInfo } from "@/features/data/dataset";
-import { Head } from "@/components/ui/Page.tsx";
 import { IonSpinner } from "@ionic/react";
-import { WarningText } from "@/components/ui";
+
 import { getErrorMessage } from "@/service/function.ts";
-import { SpectrogramAnalysisTable } from "@/features/data/spectrogramAnalysis";
-import { ImportAnalysisButton } from "@/features/data/spectrogramAnalysis/import";
-import { DatasetChannelConfigurationTable } from "@/features/data/dataset/ChannelConfigurationTable.tsx";
+import { WarningText } from "@/components/ui";
+
+import { DatasetHead, DatasetInfoCreation, SpectrogramAnalysisTable } from "@/features/data/display";
+import { DisplayDataAPI } from "@/features/data/display/api";
+import { ImportAnalysisModalButton } from "@/features/data/import";
+import { ChannelConfigurationTable } from "@/features/metadatax/acquisition/display";
 
 
 export const DatasetDetail: React.FC = () => {
   const { datasetID } = useParams<{ datasetID: string }>()
 
-  const { data: dataset, isLoading, error } = DatasetAPI.endpoints.getDatasetByID.useQuery({
-    id: datasetID ?? '',
+  const { data, isLoading, error } = DisplayDataAPI.endpoints.getDatasetByPk.useQuery({
+    pk: datasetID ?? -1,
   }, { skip: !datasetID })
 
-  const head = useMemo(() => (
-    <Head title={ dataset?.name }
-          subtitle={ dataset?.path }
-          canGoBack>
-      { dataset?.description && <p>{ dataset.description }</p> }
-      { dataset && <DatasetTimeInfo dataset={ dataset }/> }
-    </Head>
-  ), [ dataset ]);
-
   if (isLoading) return <Fragment>
-    { head }
+    <DatasetHead/>
     <IonSpinner/>
   </Fragment>
 
   if (error) return <Fragment>
-    { head }
+    <DatasetHead/>
     <WarningText>{ getErrorMessage(error) }</WarningText>
   </Fragment>
 
-  if (!dataset) return <Fragment>
-    { head }
+  if (!data?.datasetByPk) return <Fragment>
+    <DatasetHead/>
     <WarningText>Dataset not found</WarningText>
   </Fragment>
 
   return <Fragment>
-    { head }
+    <DatasetHead/>
 
     <div style={ { overflowX: 'hidden', display: 'grid', gap: '4rem' } }>
 
-      <DatasetChannelConfigurationTable id={ datasetID }/>
+      <ChannelConfigurationTable datasetPK={ +datasetID! }/>
 
       <div style={ { overflowX: 'hidden', display: 'grid', gap: '1rem' } }>
-        <SpectrogramAnalysisTable datasetID={ datasetID }/>
+        <SpectrogramAnalysisTable datasetPK={ +datasetID! }/>
 
-        <ImportAnalysisButton/>
+        <ImportAnalysisModalButton/>
       </div>
     </div>
 
-    <DatasetImportNote dataset={ dataset }/>
+    <DatasetInfoCreation/>
   </Fragment>
 }

@@ -5,7 +5,7 @@ from os.path import join, isfile, exists
 import graphene_django_optimizer
 from django.conf import settings
 from django.db.models import Count, Min, Max
-from django_filters import OrderingFilter, FilterSet, NumberFilter
+from django_filters import OrderingFilter, FilterSet
 from graphene import (
     relay,
     ObjectType,
@@ -14,9 +14,7 @@ from graphene import (
     Int,
     DateTime,
     List,
-    ID,
 )
-from graphene_django.filter import GlobalIDFilter
 from osekit.public_api.dataset import (
     Dataset as OSEkitDataset,
     SpectroDataset as OSEkitSpectroDataset,
@@ -29,6 +27,8 @@ from backend.utils.schema import (
     ApiObjectType,
     GraphQLPermissions,
     GraphQLResolve,
+    PK,
+    PKFilter,
 )
 from .spectrogram import SpectrogramNode
 
@@ -36,18 +36,13 @@ from .spectrogram import SpectrogramNode
 class SpectrogramAnalysisFilter(FilterSet):
     """SpectrogramAnalysis filters"""
 
-    dataset_id = NumberFilter()
-    annotation_campaign_id = GlobalIDFilter(
-        field_name="annotation_campaigns__id",
-        lookup_expr="exact",
-    )
+    annotation_campaign_id = PKFilter(field_name="annotation_campaigns__id")
+    dataset_id = PKFilter(field_name="dataset_id")
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
         model = SpectrogramAnalysis
-        fields = {
-            "dataset_id": ["exact", "in"],
-        }
+        fields = {}
 
     order_by = OrderingFilter(fields=("created_at", "name"))
 
@@ -164,7 +159,7 @@ class SpectrogramAnalysisQuery(ObjectType):  # pylint: disable=too-few-public-me
     )
 
     all_spectrogram_analysis_for_import = List(
-        ImportSpectrogramAnalysisType, dataset_id=ID(required=True)
+        ImportSpectrogramAnalysisType, dataset_id=PK(required=True)
     )
 
     @GraphQLResolve(permission=GraphQLPermissions.STAFF_OR_SUPERUSER)

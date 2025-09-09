@@ -1,15 +1,19 @@
 """GraphQL types"""
 import graphene_django_optimizer
 from django.db.models import QuerySet
-from graphene import ID
+from graphene import Int
 from graphene_django import DjangoObjectType
 from graphql import GraphQLResolveInfo
+
+
+class PK(Int):
+    """Django Primary key"""
 
 
 class ApiObjectType(DjangoObjectType):
     """Dataset schema"""
 
-    id = ID(required=True)
+    pk = PK(required=True)
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods

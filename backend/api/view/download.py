@@ -2,6 +2,7 @@
 import io
 import zipfile
 
+from dateutil import parser
 from django.http import HttpResponse
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -47,30 +48,29 @@ class DownloadViewSet(ViewSet):
             else:
                 zip_file.writestr(
                     "create_analyse.py",
-                    data=f"""
-                    import numpy as np
-                    from osekit.public_api.analysis import Analysis, AnalysisType
-                    from pandas import Timestamp, Timedelta
-                    from scipy.signal import ShortTimeFFT
-                    
-                    fft = ShortTimeFFT(
-                        mfft={analysis.fft.nfft},
-                        win=np.array({list(int(item) for item in analysis.fft.window)}),
-                        hop={round(analysis.fft.window_size * (1 - analysis.fft.overlap))},
-                        fs={analysis.fft.sampling_frequency},
-                        scale_to={analysis.fft.scaling if analysis.fft.scaling in ["magnitude", "psd"] else None},
-                    )
-                    
-                    Analysis(
-                        analysis_type=AnalysisType.SPECTROGRAM,  # Spectro only
-                        begin=Timestamp.fromisoformat({analysis.start_date.isoformat()}),
-                        end=Timestamp.fromisoformat({analysis.end_date.isoformat()}),
-                        data_duration=Timedelta(f"{analysis.data_duration}s"),
-                        sample_rate={analysis.fft.sampling_frequency},
-                        name="{analysis.name}",
-                        fft=fft,
-                        colormap={analysis.colormap.name},
-                    )
+                    data=f"""import numpy as np
+from osekit.public_api.analysis import Analysis, AnalysisType
+from pandas import Timestamp, Timedelta
+from scipy.signal import ShortTimeFFT
+
+fft = ShortTimeFFT(
+    mfft={analysis.fft.nfft},
+    win=np.array({list(int(item) for item in analysis.fft.window) if analysis.fft.window else []}),
+    hop={round(analysis.fft.window_size * (1 - analysis.fft.overlap))},
+    fs={analysis.fft.sampling_frequency},
+    scale_to={analysis.fft.scaling if analysis.fft.scaling in ["magnitude", "psd"] else None},
+)
+
+analysis = Analysis(
+    analysis_type=AnalysisType.SPECTROGRAM,  # Spectro only
+    begin=Timestamp.fromisoformat("{parser.parse(analysis.start_date.isoformat()).isoformat()}").tz_localize(0),
+    end=Timestamp.fromisoformat("{parser.parse(analysis.end_date.isoformat()).isoformat()}").tz_localize(0),
+    data_duration=Timedelta(f"{analysis.data_duration}s"),
+    sample_rate={analysis.fft.sampling_frequency},
+    name="{analysis.name}",
+    fft=fft,
+    colormap="{analysis.colormap.name}",
+)
                     """.encode(
                         "utf-8"
                     ),

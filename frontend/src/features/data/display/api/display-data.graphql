@@ -1,0 +1,64 @@
+# Datasets
+
+query getDatasets {
+    allDatasets(orderBy: "-createdAt") {
+        results {
+            pk
+            name
+            description
+            createdAt
+            legacy
+            analysisCount
+            filesCount
+            start
+            end
+        }
+    }
+}
+
+query getDatasetByPk($pk: PK!) {
+    datasetByPk(pk: $pk) {
+        pk
+        name
+        path
+        description
+        start
+        end
+        createdAt
+        legacy
+        owner {
+            displayName
+        }
+    }
+}
+
+# Spectrogram analysis
+
+query getSpectrogramAnalysis(
+    $datasetPK: PK
+    $annotationCampaignPK: PK
+) {
+    allSpectrogramAnalysis(
+        orderBy: "-createdAt"
+        datasetId: $datasetPK
+        annotationCampaignId: $annotationCampaignPK
+    ) {
+        results {
+            pk
+            name
+            description
+            createdAt
+            legacy
+            filesCount
+            start
+            end
+            dataDuration
+            fft {
+                samplingFrequency
+                nfft
+                windowSize
+                overlap
+            }
+        }
+    }
+}

@@ -9,7 +9,7 @@ QUERY = """
 query {
     allDatasets(orderBy: "-createdAt" ) {
         results {
-            id
+            pk
             name
             description
             createdAt
@@ -20,7 +20,7 @@ query {
             end
             spectrogramAnalysis(orderBy: "name") {
                 results {
-                    id
+                    pk
                     name
                     colormap {
                         name

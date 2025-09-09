@@ -4,35 +4,35 @@ import { gqlAPI } from '@/features/gql/baseApi.ts';
 export type GetSpectrogramsFromDatesQueryVariables = Types.Exact<{
   fromDatetime: Types.Scalars['DateTime']['input'];
   toDatetime: Types.Scalars['DateTime']['input'];
-  campaignID: Types.Scalars['ID']['input'];
-  annotatorID: Types.Scalars['ID']['input'];
+  campaignID: Types.Scalars['PK']['input'];
+  annotatorID: Types.Scalars['PK']['input'];
   phase: Types.AnnotationPhaseType;
   offset: Types.Scalars['Int']['input'];
   isTaskCompleted?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
   hasAnnotations?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
-  annotatedByAnnotatorID?: Types.InputMaybe<Types.Scalars['ID']['input']>;
-  annotatedByDetectorID?: Types.InputMaybe<Types.Scalars['ID']['input']>;
+  annotatedByAnnotatorID?: Types.InputMaybe<Types.Scalars['PK']['input']>;
+  annotatedByDetectorID?: Types.InputMaybe<Types.Scalars['PK']['input']>;
   annotatedWithLabel?: Types.InputMaybe<Types.Scalars['String']['input']>;
   annotatedWithConfidence?: Types.InputMaybe<Types.Scalars['String']['input']>;
   annotatedWithFeatures?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
 }>;
 
 
-export type GetSpectrogramsFromDatesQuery = { __typename?: 'Query', allSpectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount?: number | null, results: Array<{ __typename?: 'SpectrogramNode', id: string, filename: string, start: any, duration: number } | null> } | null };
+export type GetSpectrogramsFromDatesQuery = { __typename?: 'Query', allSpectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount?: number | null, results: Array<{ __typename?: 'SpectrogramNode', pk: any, filename: string, start: any, duration: number } | null> } | null };
 
 export type GetSpectrogramsFromDatesComplementQueryVariables = Types.Exact<{
-  campaignID: Types.Scalars['ID']['input'];
-  annotatorID: Types.Scalars['ID']['input'];
+  campaignID: Types.Scalars['PK']['input'];
+  annotatorID: Types.Scalars['PK']['input'];
   phase: Types.AnnotationPhaseType;
-  spectrogramIDs: Array<Types.InputMaybe<Types.Scalars['ID']['input']>> | Types.InputMaybe<Types.Scalars['ID']['input']>;
+  spectrogramIDs: Array<Types.InputMaybe<Types.Scalars['PK']['input']>> | Types.InputMaybe<Types.Scalars['PK']['input']>;
 }>;
 
 
-export type GetSpectrogramsFromDatesComplementQuery = { __typename?: 'Query', annotatorAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', type: Types.AnnotationType, spectrogram: { __typename?: 'SpectrogramNode', id: string } } | null> } | null, otherAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', type: Types.AnnotationType, spectrogram: { __typename?: 'SpectrogramNode', id: string } } | null> } | null, allAnnotationTasks?: { __typename?: 'AnnotationTaskNodeNodeConnection', results: Array<{ __typename?: 'AnnotationTaskNode', status?: Types.AnnotationTaskStatus | null, spectrogram: { __typename?: 'SpectrogramNode', id: string } } | null> } | null };
+export type GetSpectrogramsFromDatesComplementQuery = { __typename?: 'Query', annotatorAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', type: Types.AnnotationType, spectrogram: { __typename?: 'SpectrogramNode', pk: any } } | null> } | null, otherAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', type: Types.AnnotationType, spectrogram: { __typename?: 'SpectrogramNode', pk: any } } | null> } | null, allAnnotationTasks?: { __typename?: 'AnnotationTaskNodeNodeConnection', results: Array<{ __typename?: 'AnnotationTaskNode', status?: Types.AnnotationTaskStatus | null, spectrogram: { __typename?: 'SpectrogramNode', pk: any } } | null> } | null };
 
 
 export const GetSpectrogramsFromDatesDocument = `
-    query getSpectrogramsFromDates($fromDatetime: DateTime!, $toDatetime: DateTime!, $campaignID: ID!, $annotatorID: ID!, $phase: AnnotationPhaseType!, $offset: Int!, $isTaskCompleted: Boolean, $hasAnnotations: Boolean, $annotatedByAnnotatorID: ID, $annotatedByDetectorID: ID, $annotatedWithLabel: String, $annotatedWithConfidence: String, $annotatedWithFeatures: Boolean) {
+    query getSpectrogramsFromDates($fromDatetime: DateTime!, $toDatetime: DateTime!, $campaignID: PK!, $annotatorID: PK!, $phase: AnnotationPhaseType!, $offset: Int!, $isTaskCompleted: Boolean, $hasAnnotations: Boolean, $annotatedByAnnotatorID: PK, $annotatedByDetectorID: PK, $annotatedWithLabel: String, $annotatedWithConfidence: String, $annotatedWithFeatures: Boolean) {
   allSpectrograms(
     limit: 20
     offset: $offset
@@ -51,7 +51,7 @@ export const GetSpectrogramsFromDatesDocument = `
     annotatedWithFeatures: $annotatedWithFeatures
   ) {
     results {
-      id
+      pk
       filename
       start
       duration
@@ -61,7 +61,7 @@ export const GetSpectrogramsFromDatesDocument = `
 }
     `;
 export const GetSpectrogramsFromDatesComplementDocument = `
-    query getSpectrogramsFromDatesComplement($campaignID: ID!, $annotatorID: ID!, $phase: AnnotationPhaseType!, $spectrogramIDs: [ID]!) {
+    query getSpectrogramsFromDatesComplement($campaignID: PK!, $annotatorID: PK!, $phase: AnnotationPhaseType!, $spectrogramIDs: [PK]!) {
   annotatorAnnotations: allAnnotations(
     annotatorId: $annotatorID
     annotationCampaignId: $campaignID
@@ -71,7 +71,7 @@ export const GetSpectrogramsFromDatesComplementDocument = `
     results {
       type
       spectrogram {
-        id
+        pk
       }
     }
   }
@@ -84,7 +84,7 @@ export const GetSpectrogramsFromDatesComplementDocument = `
     results {
       type
       spectrogram {
-        id
+        pk
       }
     }
   }
@@ -97,7 +97,7 @@ export const GetSpectrogramsFromDatesComplementDocument = `
     results {
       status
       spectrogram {
-        id
+        pk
       }
     }
   }

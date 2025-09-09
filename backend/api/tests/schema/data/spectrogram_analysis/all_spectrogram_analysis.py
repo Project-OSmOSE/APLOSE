@@ -3,13 +3,13 @@ import json
 from graphene_django.utils import GraphQLTestCase
 
 from backend.api.models import Dataset
-from backend.api.tests.fixtures import DATA_FIXTURES
+from backend.api.tests.fixtures import ALL_FIXTURES
 
 QUERY = """
-query ($datasetID: Decimal, $annotationCampaignID: Decimal) {
-    allSpectrogramAnalysis(orderBy: "-createdAt", datasetId: $datasetID, annotationCampaigns_Id: $annotationCampaignID) {
+query ($datasetID: PK, $annotationCampaignID: PK) {
+    allSpectrogramAnalysis(orderBy: "-createdAt", datasetId: $datasetID, annotationCampaignId: $annotationCampaignID) {
         results {
-            id
+            pk
             name
             description
             createdAt
@@ -31,12 +31,15 @@ query ($datasetID: Decimal, $annotationCampaignID: Decimal) {
 FOR_DATASET_VARIABLE = {
     "datasetID": 1,
 }
+FOR_CAMPAIGN_VARIABLE = {
+    "annotationCampaignID": 1,
+}
 
 
 class AllSpectrogramAnalysisTestCase(GraphQLTestCase):
 
     GRAPHQL_URL = "/api/graphql"
-    fixtures = ["users", *DATA_FIXTURES]
+    fixtures = ALL_FIXTURES
 
     def tearDown(self):
         """Logout when tests ends"""
@@ -48,7 +51,7 @@ class AllSpectrogramAnalysisTestCase(GraphQLTestCase):
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
-    def test_connected(self):
+    def test_connected_dataset_filter(self):
         self.client.login(username="user1", password="osmose29")
         response = self.query(QUERY, variables=FOR_DATASET_VARIABLE)
         self.assertResponseNoErrors(response)
@@ -58,6 +61,20 @@ class AllSpectrogramAnalysisTestCase(GraphQLTestCase):
             "results"
         ]
         self.assertEqual(len(content), dataset.spectrogram_analysis.count())
+        self.assertEqual(content[0]["name"], "spectro_config1")
+        self.assertEqual(content[0]["filesCount"], 11)
+        self.assertEqual(content[0]["start"], "2012-10-03T10:00:00+00:00")
+        self.assertEqual(content[0]["end"], "2012-10-03T20:15:00+00:00")
+
+    def test_connected_campaign_filter(self):
+        self.client.login(username="user1", password="osmose29")
+        response = self.query(QUERY, variables=FOR_CAMPAIGN_VARIABLE)
+        self.assertResponseNoErrors(response)
+
+        content = json.loads(response.content)["data"]["allSpectrogramAnalysis"][
+            "results"
+        ]
+        self.assertEqual(len(content), 1)
         self.assertEqual(content[0]["name"], "spectro_config1")
         self.assertEqual(content[0]["filesCount"], 11)
         self.assertEqual(content[0]["start"], "2012-10-03T10:00:00+00:00")

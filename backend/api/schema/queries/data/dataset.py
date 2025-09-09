@@ -16,7 +16,6 @@ from graphene import (
     Boolean,
     ObjectType,
     Int,
-    ID,
     Field,
     DateTime,
 )
@@ -33,6 +32,7 @@ from backend.utils.schema import (
     ApiObjectType,
     GraphQLResolve,
     GraphQLPermissions,
+    PK,
 )
 from .spectrogram_analysis import (
     ImportSpectrogramAnalysisType,
@@ -169,12 +169,12 @@ class DatasetQuery(ObjectType):
 
     all_datasets = AuthenticatedDjangoConnectionField(DatasetNode)
 
-    dataset_by_id = Field(DatasetNode, id=ID(required=True))
+    dataset_by_pk = Field(DatasetNode, pk=PK(required=True))
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
-    def resolve_dataset_by_id(self, info, id: int):  # pylint: disable=redefined-builtin
+    def resolve_dataset_by_pk(self, info, pk: int):  # pylint: disable=redefined-builtin
         """Get dataset by id"""
-        return DatasetNode.get_node(info, id)
+        return DatasetNode.get_node(info, pk)
 
     all_datasets_available_for_import = List(ImportDatasetType)
 

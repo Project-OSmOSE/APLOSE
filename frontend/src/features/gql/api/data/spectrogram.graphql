@@ -1,14 +1,14 @@
 query getSpectrogramsFromDates(
     $fromDatetime: DateTime!
     $toDatetime: DateTime!
-    $campaignID: ID!,
-    $annotatorID: ID!,
+    $campaignID: PK!,
+    $annotatorID: PK!,
     $phase: AnnotationPhaseType!,
     $offset: Int!,
     $isTaskCompleted: Boolean
     $hasAnnotations: Boolean
-    $annotatedByAnnotatorID: ID
-    $annotatedByDetectorID: ID
+    $annotatedByAnnotatorID: PK
+    $annotatedByDetectorID: PK
     $annotatedWithLabel: String
     $annotatedWithConfidence: String
     $annotatedWithFeatures: Boolean
@@ -31,7 +31,7 @@ query getSpectrogramsFromDates(
         annotatedWithFeatures: $annotatedWithFeatures
     ) {
         results {
-            id
+            pk
             filename
             start
             duration
@@ -41,10 +41,10 @@ query getSpectrogramsFromDates(
 }
 
 query getSpectrogramsFromDatesComplement(
-    $campaignID: ID!,
-    $annotatorID: ID!,
+    $campaignID: PK!,
+    $annotatorID: PK!,
     $phase: AnnotationPhaseType!,
-    $spectrogramIDs: [ID]!
+    $spectrogramIDs: [PK]!
 ) {
     annotatorAnnotations: allAnnotations(
         annotatorId: $annotatorID
@@ -55,7 +55,7 @@ query getSpectrogramsFromDatesComplement(
         results {
             type
             spectrogram {
-                id
+                pk
             }
         }
     }
@@ -68,7 +68,7 @@ query getSpectrogramsFromDatesComplement(
         results {
             type
             spectrogram {
-                id
+                pk
             }
         }
     }
@@ -81,7 +81,7 @@ query getSpectrogramsFromDatesComplement(
         results {
             status
             spectrogram {
-                id
+                pk
             }
         }
     }

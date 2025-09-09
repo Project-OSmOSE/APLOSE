@@ -3,8 +3,8 @@ import graphene_django_optimizer
 from django.conf import settings
 from django.db.models import Exists, Subquery, OuterRef, Q
 from django_filters import FilterSet, OrderingFilter, CharFilter, BooleanFilter
-from graphene import relay, ObjectType, Int, ID, Field, String, Boolean
-from graphene_django.filter import GlobalIDFilter, TypedFilter
+from graphene import relay, ObjectType, Int, Field, String, Boolean
+from graphene_django.filter import TypedFilter
 from graphql import GraphQLResolveInfo
 from osekit.core_api.spectro_dataset import SpectroDataset
 from rest_framework.request import Request
@@ -25,6 +25,8 @@ from backend.utils.schema import (
     AuthenticatedDjangoConnectionField,
     GraphQLResolve,
     GraphQLPermissions,
+    PKFilter,
+    PK,
 )
 from ..annotation.annotation import AnnotationNode
 from ..annotation.annotation_phase import AnnotationPhaseType
@@ -34,17 +36,14 @@ from ..annotation.annotation_task import AnnotationTaskNode, AnnotationTaskStatu
 class SpectrogramFilter(FilterSet):
     """Spectrogram filters"""
 
-    campaign_id = GlobalIDFilter(
-        field_name="analysis__annotation_campaigns__id",
-        lookup_expr="exact",
-    )
+    campaign_id = PKFilter(field_name="analysis__annotation_campaigns__id")
     phase_type = TypedFilter(input_type=AnnotationPhaseType, method="fake_filter")
-    annotator_id = GlobalIDFilter(method="fake_filter")
+    annotator_id = PKFilter(method="fake_filter")
 
     is_task_completed = BooleanFilter(method="fake_filter")
     has_annotations = BooleanFilter(method="fake_filter")
-    annotated_by_annotator = GlobalIDFilter(method="fake_filter")
-    annotated_by_detector = GlobalIDFilter(method="fake_filter")
+    annotated_by_annotator = PKFilter(method="fake_filter")
+    annotated_by_detector = PKFilter(method="fake_filter")
     annotated_with_label = CharFilter(method="fake_filter")
     annotated_with_confidence = CharFilter(method="fake_filter")
     annotated_with_features = BooleanFilter(method="fake_filter")
@@ -176,13 +175,13 @@ class SpectrogramNode(ApiObjectType):
     annotation_tasks = AuthenticatedDjangoConnectionField(AnnotationTaskNode)
 
     task_status = AnnotationTaskStatus(
-        campaign_id=ID(required=True),
-        annotator_id=ID(required=True),
+        campaign_id=PK(required=True),
+        annotator_id=PK(required=True),
         phase_type=AnnotationPhaseType(required=True),
     )
 
-    path = String(analysis_id=ID(required=True), required=True)
-    audio_path = String(analysis_id=ID(required=True), required=True)
+    path = String(analysis_id=PK(required=True), required=True)
+    audio_path = String(analysis_id=PK(required=True), required=True)
 
     duration = Int(required=True)
 
@@ -210,7 +209,7 @@ class SpectrogramNode(ApiObjectType):
         return task.status if task is not None else AnnotationTask.Status.CREATED
 
     @graphene_django_optimizer.resolver_hints()
-    def resolve_path(root, info, analysis_id):
+    def resolve_path(root, info, analysis_id: int):
         analysis: SpectrogramAnalysis = root.analysis.get(id=analysis_id)
 
         if analysis.dataset.legacy:
@@ -243,7 +242,7 @@ class SpectrogramNode(ApiObjectType):
             )
 
     @graphene_django_optimizer.resolver_hints()
-    def resolve_audio_path(root, info, analysis_id):
+    def resolve_audio_path(root, info, analysis_id: int):
         analysis: SpectrogramAnalysis = root.analysis.get(id=analysis_id)
 
         if analysis.dataset.legacy:
@@ -263,8 +262,8 @@ class SpectrogramNode(ApiObjectType):
 
 
 class PrevNextNode(ObjectType):
-    previous_id = ID()
-    next_id = ID()
+    previous_id = PK()
+    next_id = PK()
 
 
 class SpectrogramQuery(ObjectType):  # pylint: disable=too-few-public-methods
@@ -272,13 +271,13 @@ class SpectrogramQuery(ObjectType):  # pylint: disable=too-few-public-methods
 
     all_spectrograms = AuthenticatedDjangoConnectionField(SpectrogramNode)
 
-    spectrogram_by_id = Field(SpectrogramNode, id=ID(required=True))
+    spectrogram_by_id = Field(SpectrogramNode, id=PK(required=True))
 
     spectrogram_prev_next = Field(
         PrevNextNode,
-        campaign_id=ID(required=True),
-        annotator_id=ID(required=True),
-        spectrogram_id=ID(required=True),
+        campaign_id=PK(required=True),
+        annotator_id=PK(required=True),
+        spectrogram_id=PK(required=True),
         phase_type=AnnotationPhaseType(required=True),
         filename__icontain=String(name="filename__icontain"),
         is_submitted=Boolean(name="is_submitted"),

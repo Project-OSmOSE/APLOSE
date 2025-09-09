@@ -10,6 +10,7 @@ class LegacySpectrogramConfigurationAdmin(admin.ModelAdmin):
 
     list_display = (
         "id",
+        "spectrogram_analysis",
         "folder",
         "zoom_level",
         "spectrogram_normalization",
@@ -24,3 +25,6 @@ class LegacySpectrogramConfigurationAdmin(admin.ModelAdmin):
         "linear_frequency_scale",
         "multi_linear_frequency_scale",
     )
+    search_fields = [
+        "spectrogram_analysis__dataset__name",
+    ]

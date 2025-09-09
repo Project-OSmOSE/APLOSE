@@ -1,6 +1,5 @@
 import { useAppSearchParams } from "@/service/ui/search.ts";
-import { useCallback, useEffect, useMemo } from "react";
-import { useAppDispatch, useAppSelector } from "@/service/app.ts";
+import { useCallback, useMemo } from "react";
 import {
   AnnotationCampaignSlice,
   selectCampaignSpectrogramFilters,
@@ -8,18 +7,10 @@ import {
 } from "@/features/annotation/annotationCampaign";
 
 export const useSpectrogramFilters = () => {
-  const { params, updateParams: _updateParams } = useAppSearchParams<SpectrogramsFilter>()
-
-  const loadedFilters = useAppSelector(selectCampaignSpectrogramFilters)
-  const dispatch = useAppDispatch()
-
-  useEffect(() => {
-    updateParams(loadedFilters)
-  }, []);
-
-  useEffect(() => {
-    dispatch(AnnotationCampaignSlice.actions.updateSpectrogramFilters(params))
-  }, [ params ]);
+  const { params, updateParams: _updateParams } = useAppSearchParams<SpectrogramsFilter>(
+    selectCampaignSpectrogramFilters,
+    AnnotationCampaignSlice.actions.updateSpectrogramFilters
+  )
 
   const hasFilters = useMemo(() => Object.values(params).filter(v => !!v).length > 0, [ params ])
 

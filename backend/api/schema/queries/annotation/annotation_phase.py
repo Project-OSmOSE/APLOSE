@@ -1,6 +1,6 @@
 """AnnotationPhase schema"""
 from django_filters import FilterSet, OrderingFilter
-from graphene import relay, Boolean, Int, ID, ObjectType, Field, Enum
+from graphene import relay, Boolean, Int, ObjectType, Field, Enum
 
 from backend.api.models import AnnotationPhase
 from backend.utils.schema import (
@@ -8,6 +8,7 @@ from backend.utils.schema import (
     GraphQLResolve,
     GraphQLPermissions,
     AuthenticatedDjangoConnectionField,
+    PK,
 )
 
 
@@ -92,7 +93,7 @@ class AnnotationPhaseQuery(ObjectType):  # pylint: disable=too-few-public-method
 
     annotation_phase_for_campaign = Field(
         AnnotationPhaseNode,
-        campaign_id=ID(required=True),
+        campaign_id=PK(required=True),
         phase_type=AnnotationPhaseType(required=True),
     )
 
