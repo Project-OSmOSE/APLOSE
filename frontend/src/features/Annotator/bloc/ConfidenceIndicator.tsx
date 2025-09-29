@@ -4,7 +4,7 @@ import { IonChip, IonIcon } from "@ionic/react";
 import { checkmarkOutline } from "ionicons/icons";
 import { TooltipOverlay } from "@/components/ui";
 import { useAnnotatorConfidence, useAnnotatorQuery } from "@/features/Annotator";
-import { ConfidenceNode } from "@/features/gql/types.generated.ts";
+import { ConfidenceNode } from "@/features/_utils_/gql/types.generated.ts";
 
 
 export const ConfidenceIndicator: React.FC = () => {

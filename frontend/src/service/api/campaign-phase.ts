@@ -18,7 +18,7 @@ export const CampaignPhaseAPI = API.injectEndpoints({
           if (arg.campaigns) params.annotation_campaign_id__in = JSON.stringify(arg.campaigns.map(c => c.id))
         }
         return {
-          url: `annotation-campaign-phase/`,
+          url: `annotation-phase/`,
           params,
         }
       },
@@ -28,7 +28,7 @@ export const CampaignPhaseAPI = API.injectEndpoints({
       campaignID: ID,
       phaseType: Phase
     }>({
-      query: ({ campaignID, phaseType }) => `annotation-campaign/${ campaignID }/phase/${ phaseType }`,
+      query: ({ campaignID, phaseType }) => `annotation-campaign/${ campaignID }/phase/${ phaseType }/`,
       providesTags: phase => phase ? [ { type: 'CampaignPhase' as const, id: phase.id } ] : [],
     }),
     postCampaignPhase: builder.mutation<AnnotationPhase, {
@@ -36,7 +36,7 @@ export const CampaignPhaseAPI = API.injectEndpoints({
       phase: Phase,
     }>({
       query: ({ campaign, phase }) => ({
-        url: 'annotation-campaign-phase/',
+        url: 'annotation-phase/',
         method: 'POST',
         body: {
           phase,
@@ -50,7 +50,7 @@ export const CampaignPhaseAPI = API.injectEndpoints({
     }),
     endCampaignPhase: builder.mutation<AnnotationPhase, ID>({
       query: (phaseID) => ({
-        url: `annotation-campaign-phase/${ phaseID }/end/`,
+        url: `annotation-phase/${ phaseID }/end/`,
         method: 'POST',
       }),
       invalidatesTags: phase => phase ? [ { type: "CampaignPhase", id: phase.id }, 'Campaign' ] : [ 'Campaign' ],
@@ -60,7 +60,7 @@ export const CampaignPhaseAPI = API.injectEndpoints({
       filename: string;
     }>({
       query: ({ phaseID, filename }) => ({
-        url: `annotation-campaign-phase/${ phaseID }/report/`,
+        url: `annotation-phase/${ phaseID }/report/`,
         params: { filename },
         responseHandler: downloadResponseHandler
       }),
@@ -70,7 +70,7 @@ export const CampaignPhaseAPI = API.injectEndpoints({
       filename: string;
     }>({
       query: ({ phaseID, filename }) => ({
-        url: `annotation-campaign-phase/${ phaseID }/report-status/`,
+        url: `annotation-phase/${ phaseID }/report-status/`,
         params: { filename },
         responseHandler: downloadResponseHandler
       }),

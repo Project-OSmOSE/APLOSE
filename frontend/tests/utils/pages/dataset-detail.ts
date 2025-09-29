@@ -15,9 +15,9 @@ export class DatasetDetailPage {
     await test.step('Navigate to Dataset detail', async () => {
       await this.datasetList.go(as, 'filled');
       await interceptGQL(this.page, {
-        getDatasetByID: 'filled',
+        getDatasetByPk: 'filled',
         getSpectrogramAnalysis: type,
-        getDatasetChannelConfigurationsByID: type,
+        getChannelConfigurations: type,
       })
       await this.page.getByText('Test dataset').click()
     });

@@ -103,6 +103,20 @@ class AnnotationCampaign(models.Model):
             "start", "id"
         )
 
+    @transaction.atomic
+    def update_labels_with_acoustic_features(self, new_labels: [str]):
+        """Update labels with acoustic features"""
+        removed_labels = self.labels_with_acoustic_features.filter(
+            ~Q(name__in=new_labels)
+        )
+        for label in removed_labels:
+            self.labels_with_acoustic_features.remove(label)
+
+        added_labels = self.label_set.labels.filter(name__in=new_labels)
+        for label in added_labels:
+            if not self.labels_with_acoustic_features.filter(name=label.name).exists():
+                self.labels_with_acoustic_features.add(label)
+
 
 class AnnotationCampaignAnalysis(models.Model):
     """AnnotationCampaign <> Analysis manyToMany relation table"""

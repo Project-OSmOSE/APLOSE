@@ -96,10 +96,10 @@ export const usePostAnnotator = () => {
       phase: _phase.current,
       fileID: _spectrogramID.current,
       results: _slice.current.annotations.map(a => ({
-        id: +a.id > -1 ? +a.id : undefined,
-        annotator: a.annotator ? +a.annotator.id : null,
+        id: +a.pk > -1 ? +a.pk : undefined,
+        annotator: a.annotator ? +a.annotator.pk : null,
         detector_configuration: a.detectorConfiguration ? {
-          id: +a.detectorConfiguration.id,
+          id: +a.detectorConfiguration.pk,
           detector: a.detectorConfiguration.detector.name,
           configuration: a.detectorConfiguration.configuration ?? ''
         } : undefined,
@@ -110,9 +110,9 @@ export const usePostAnnotator = () => {
         is_update_of: a.isUpdateOfId ? +a.isUpdateOfId : null,
         label: a.label.name,
         confidence_indicator: a.confidence?.label,
-        annotation_campaign_phase: +a.annotationPhase.id,
-        comments: _slice.current.comments.filter(c => c.annotationId === a.id).map(c => ({
-          id: +c.id > -1 ? +c.id : undefined,
+        annotation_campaign_phase: +a.annotationPhase.pk,
+        comments: _slice.current.comments.filter(c => c.annotationId === a.pk).map(c => ({
+          id: +c.pk > -1 ? +c.pk : undefined,
           comment: c.comment,
         } as WriteAnnotationComment)),
         acoustic_features: a.acousticFeatures ? {
@@ -125,12 +125,12 @@ export const usePostAnnotator = () => {
           steps_count: a.acousticFeatures.stepsCount ?? null,
         } : null,
         validations: a.validations?.results.filter(v => v !== null).map(v => ({
-          id: +v.id > -1 ? +v.id : undefined,
+          id: +v.pk > -1 ? +v.pk : undefined,
           is_valid: v.isValid
         })) ?? (_phase.current?.phase === "Verification" ? [ { id: undefined, is_valid: true } ] : []),
       } satisfies WriteAnnotationResult)),
       task_comments: _slice.current.comments.filter(c => c.annotationId === null).map(c => ({
-        id: +c.id > -1 ? +c.id : undefined,
+        id: +c.pk > -1 ? +c.pk : undefined,
         comment: c.comment,
       } as WriteAnnotationComment)),
       sessionStart: new Date(_slice.current.__utils.sessionStart ?? Date.now()),

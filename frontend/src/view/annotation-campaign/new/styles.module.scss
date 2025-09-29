@@ -12,6 +12,7 @@
   position: relative;
   scrollbar-gutter: stable;
   scroll-behavior: smooth;
+  width: 100%;
 
   > * {
     width: min(100%, 40rem);

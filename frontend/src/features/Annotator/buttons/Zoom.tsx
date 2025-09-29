@@ -9,9 +9,9 @@ export const ZoomButton: React.FC = () => {
   if (!zoomInLevel && !zoomOutLevel) return <Fragment/>
   return <Fragment>
     <MdZoomOut className={ [ styles.zoom, zoomOutLevel ? '' : styles.disabled ].join(' ') }
-               onClick={ zoomOut }/>
+               onClick={ () => zoomOut() }/>
     <MdZoomIn className={ [ styles.zoom, zoomInLevel ? '' : styles.disabled ].join(' ') }
-              onClick={ zoomIn }/>
+              onClick={ () => zoomIn() }/>
     <p>{ zoom }x</p>
   </Fragment>
 }

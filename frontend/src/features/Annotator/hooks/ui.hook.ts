@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@/service/app";
 import { AnnotatorSlice, selectUI } from "../slice";
-import { AnnotationLabelNode } from "@/features/gql/types.generated.ts";
+import { AnnotationLabelNode } from "@/features/_utils_/gql/types.generated.ts";
 
 export const useAnnotatorUI = () => {
   const {

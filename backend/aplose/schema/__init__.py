@@ -1,11 +1,20 @@
 """APLOSE queries"""
 from graphene import ObjectType
 
-from backend.aplose.schema.user import UserNode
-from backend.utils.schema import AuthenticatedDjangoConnectionField
+from backend.aplose.schema.user import UserQuery, UserMutation
+from backend.aplose.schema.user_group import UserGroupQuery
 
 
-class AploseQuery(ObjectType):  # pylint: disable=too-few-public-methods
+class AploseQuery(
+    UserQuery,
+    UserGroupQuery,
+    ObjectType,
+):  # pylint: disable=too-few-public-methods
     """APLOSE queries"""
 
-    all_users = AuthenticatedDjangoConnectionField(UserNode)
+
+class AploseMutation(
+    UserMutation,
+    ObjectType,
+):  # pylint: disable=too-few-public-methods
+    """APLOSE mutations"""

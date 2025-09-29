@@ -8,8 +8,8 @@ export const NFFTSelect: React.FC = () => {
   useEffect(() => {
     if (!analysisID || analysis || allAnalysis.length === 0) return;
     const baseScaleAnalysis = allAnalysis.find(a => !a.legacyConfiguration?.scaleName);
-    const minID = Math.min(...allAnalysis.map(a => +a.id))?.toString();
-    if (minID) setAnalysisID(baseScaleAnalysis?.id ?? minID)
+    const minID = Math.min(...allAnalysis.map(a => +a.pk))?.toString();
+    if (minID) setAnalysisID(baseScaleAnalysis?.pk ?? minID)
   }, [ analysisID, allAnalysis, analysis, setAnalysisID ]);
 
   const options = useMemo(() => {
@@ -18,14 +18,14 @@ export const NFFTSelect: React.FC = () => {
       label += ` | winsize: ${ a.fft.windowSize }`
       label += ` | overlap: ${ a.fft.overlap }`
       label += ` | scale: ${ a.legacyConfiguration?.scaleName ?? 'Default' }`
-      return { value: a.id, label }
+      return { value: a.pk, label }
     })
   }, [ allAnalysis ]);
 
   const select = useCallback((value: string | number | undefined) => {
     if (value === undefined) return;
-    const analysis = allAnalysis.find(a => a.id === (typeof value === 'number' ? value.toString() : value))
-    if (analysis) setAnalysisID(analysis.id)
+    const analysis = allAnalysis.find(a => a.pk === (typeof value === 'number' ? value.toString() : value))
+    if (analysis) setAnalysisID(analysis.pk)
   }, [ allAnalysis, setAnalysisID ])
 
   if (!allAnalysis.length) return <Fragment/>

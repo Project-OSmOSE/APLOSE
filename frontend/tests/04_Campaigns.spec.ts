@@ -1,5 +1,5 @@
-import { ESSENTIAL, expect, test } from './utils';
-import { CAMPAIGN } from "./fixtures";
+import { ESSENTIAL, expect, interceptGQL, test } from './utils';
+import { AnnotationPhaseType } from "../src/features/_utils_/gql/types.generated";
 
 
 test.describe('Annotator', () => {
@@ -23,47 +23,56 @@ test.describe('Annotator', () => {
 
   test('Can filter campaigns', async ({ page }) => {
     await page.campaign.list.go('annotator');
+    await expect(page.getByText('Archived: False')).toBeVisible() // Filters are initialized
+    await interceptGQL(page, {
+      listCampaignsAndPhases: 'filled'
+    }, 4)
 
     await test.step('Search', async () => {
       await page.mock.campaigns()
-      await Promise.all([
-        page.waitForRequest(/.*\/api\/annotation-campaign\/?\?.*search/g),
-        page.campaign.list.search(CAMPAIGN.name),
+      const [ request ] = await Promise.all([
+        page.waitForRequest('**/graphql'),
+        page.campaign.list.search('Test campaign'),
       ])
+      expect(request.postDataJSON().variables.search).toEqual('Test campaign')
     })
 
     // TODO: fix following step
     //  Not working because the request has already been made and the view recover it from RTK cache
-    //  await test.step('Remove My work filter', async () => {
-    //    await page.mock.campaigns()
-    //    await Promise.all([
-    //      page.waitForRequest(/\/api\/annotation-campaign\/\?((?!annotator).)*$/g),
-    //      page.getByText('My work').click()
-    //    ])
-    //  })
+    await test.step('Remove My work filter', async () => {
+      await page.mock.campaigns()
+      const [ request ] = await Promise.all([
+        page.waitForRequest('**/graphql'),
+        page.getByText('My work').click()
+      ])
+      expect(request.postDataJSON().variables.annotatorID).toEqual(undefined)
+    })
 
     await test.step('Add Only archived filter', async () => {
       await page.mock.campaigns()
-      await Promise.all([
-        page.waitForRequest(/\/api\/annotation-campaign\/x?\?.*archive__isnull=false.*$/g),
+      const [ request ] = await Promise.all([
+        page.waitForRequest('**/graphql'),
         page.getByText('Archived: False').click()
       ])
+      expect(request.postDataJSON().variables.isArchived).toBeTruthy()
     })
 
     await test.step('Add Has verification filter', async () => {
       await page.mock.campaigns()
-      await Promise.all([
-        page.waitForRequest(/\/api\/annotation-campaign\/?\?.*?phases__phase=V/g),
+      const [ request ] = await Promise.all([
+        page.waitForRequest('**/graphql'),
         page.getByText('Has verification').click()
       ])
+      expect(request.postDataJSON().variables.phase).toEqual(AnnotationPhaseType.Verification)
     })
 
     await test.step('Add Owned campaigns filter', async () => {
       await page.mock.campaigns()
-      await Promise.all([
-        page.waitForRequest(/\/api\/annotation-campaign\/?\?.*?owner/g),
+      const [ request ] = await Promise.all([
+        page.waitForRequest('**/graphql'),
         page.getByText('Owned campaigns').click()
       ])
+      expect(request.postDataJSON().variables.ownerPk).toEqual(1)
     })
   })
 })

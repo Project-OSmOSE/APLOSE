@@ -22,19 +22,19 @@ export const useCommentsForAnnotator = () => {
     }
     if (comment) {
       dispatch(AnnotatorSlice.actions.assignComment({
-        id: comment.id,
+        pk: comment.pk,
         partialUpdate: { comment: content }
       }))
     } else {
       dispatch(AnnotatorSlice.actions.addComment({
         comment: content,
-        id: (Math.min(0, ...allComments.map(a => +a.id)) - 1).toString(),
+        pk: (Math.min(0, ...allComments.map(a => +a.pk)) - 1).toString(),
       }))
     }
   }, [ comment, allComments, removeCurrent ])
 
-  const getCommentForAnnotation = useCallback((annotation: Pick<Annotation, 'id'>) => {
-    return allComments.find(c => c.annotationId === annotation.id)
+  const getCommentForAnnotation = useCallback((annotation: Pick<Annotation, 'pk'>) => {
+    return allComments.find(c => c.annotationId === annotation.pk)
   }, [ allComments, ])
 
   return {

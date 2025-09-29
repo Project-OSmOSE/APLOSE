@@ -22,6 +22,7 @@
     display: grid;
     gap: 1rem;
     align-content: start;
+    align-items: start;
     grid-template-rows: auto 1fr;
     min-height: 0;
     max-height: 100%;
@@ -44,4 +45,10 @@
   > * {
     overflow: visible !important;
   }
+}
+
+.dateFilterModal {
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  column-gap: 0.5rem !important;
 }

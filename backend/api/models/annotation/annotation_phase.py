@@ -1,6 +1,6 @@
 """Phase model"""
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 
 from backend.aplose.models import User
@@ -53,6 +53,7 @@ class AnnotationPhase(models.Model):
             return True
         return False
 
+    @transaction.atomic
     def end(self, user: User):
         """End the phase"""
         self.ended_at = timezone.now()

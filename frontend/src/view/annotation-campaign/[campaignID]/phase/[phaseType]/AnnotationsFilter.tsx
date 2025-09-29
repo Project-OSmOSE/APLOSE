@@ -7,8 +7,10 @@ import { Modal } from "@/components/ui";
 import { Select, Switch } from "@/components/form";
 import { AnnotationAPI, PhaseType } from "@/features/gql/api";
 import { useParams } from "react-router-dom";
-import { useSpectrogramFilters } from "./filter.ts";
-import { AnnotationPhaseType } from "@/features/gql/types.generated.ts";
+import { AnnotationPhaseType, ConfidenceNode } from "@/features/_utils_/gql/types.generated.ts";
+import { useSpectrogramFilters } from "@/service/slices/filter.ts";
+import { LabelSelect } from '@/features/annotation'
+import { useCurrentUser } from "@/features/auth/api";
 
 const BOOLEAN_OPTIONS = [ 'Unset', 'With', 'Without' ]
 type BooleanOption = typeof BOOLEAN_OPTIONS[number];
@@ -29,56 +31,63 @@ const useAnnotationSettings = () => {
 export const AnnotationsFilter: React.FC<{
   onUpdate: () => void
 }> = ({ onUpdate }) => {
+  const { campaignID, phaseType } = useParams<{ campaignID: string; phaseType?: AnnotationPhaseType; }>();
+  const { user } = useCurrentUser();
   const { params, updateParams } = useSpectrogramFilters()
 
   const [ filterModalOpen, setFilterModalOpen ] = useState<boolean>(false);
 
-  const booleanOptionToValue = useCallback((option: BooleanOption): boolean | undefined => {
+  const booleanOptionToValue = useCallback((option: BooleanOption, reversed?: true): boolean | undefined => {
     switch (option) {
       case 'With':
-        return true;
+        return !reversed;
       case 'Without':
-        return false;
+        return !!reversed;
       case 'Unset':
         return undefined;
     }
   }, [])
 
-  const valueToBooleanOption = useCallback((value?: boolean | null): BooleanOption => {
+  const valueToBooleanOption = useCallback((value?: boolean | null, reversed?: true): BooleanOption => {
     switch (value) {
       case true:
-        return 'With';
+        return reversed ? 'Without' : 'With';
       case false:
-        return 'Without';
+        return reversed ? 'With' : 'Without';
       default:
         return 'Unset';
     }
   }, [])
 
   const setHasAnnotations = useCallback((option: BooleanOption) => {
-    const hasAnnotations = booleanOptionToValue(option);
-    if (hasAnnotations && params.hasAnnotations) return;
+    const with_user_annotations = booleanOptionToValue(option);
+    if (with_user_annotations && params.with_user_annotations) return;
     updateParams({
-      hasAnnotations,
-      annotatedWithConfidence: undefined,
-      annotatedWithLabel: undefined,
-      annotatedByDetectorID: undefined,
-      annotatedByAnnotatorID: undefined,
-      annotatedWithFeatures: undefined,
+      with_user_annotations,
+      confidence_indicator__label: undefined,
+      label__name: undefined,
+      detector_configuration__detector_id: undefined,
+      annotator_id: undefined,
+      acoustic_features__isnull: undefined
     })
     onUpdate()
   }, [ params, updateParams ])
 
   const setAcousticFeatures = useCallback((option: BooleanOption) => {
     updateParams({
-      hasAnnotations: true,
-      annotatedWithFeatures: booleanOptionToValue(option),
+      with_user_annotations: true,
+      acoustic_features__isnull: booleanOptionToValue(option, true),
     })
     onUpdate()
   }, [ updateParams ])
 
+  const setLabel = useCallback((label: string | undefined) => {
+    updateParams({ with_user_annotations: true, label__name: label })
+    onUpdate()
+  }, [ updateParams ])
+
   return <Fragment>
-    { params.hasAnnotations ?
+    { params.with_user_annotations ?
       <IonIcon onClick={ () => setFilterModalOpen(true) } color='primary' icon={ funnel }/> :
       <IonIcon onClick={ () => setFilterModalOpen(true) } color='dark' icon={ funnelOutline }/> }
 
@@ -86,46 +95,31 @@ export const AnnotationsFilter: React.FC<{
                                              onClose={ () => setFilterModalOpen(false) }>
 
       <Switch label='Annotations' options={ BOOLEAN_OPTIONS }
-              value={ valueToBooleanOption(params.hasAnnotations) }
+              value={ valueToBooleanOption(params.with_user_annotations) }
               onValueSelected={ setHasAnnotations }/>
 
-      <LabelSelect onUpdate={ onUpdate }/>
+      <LabelSelect placeholder='Filter by label'
+                   selected={ params.label__name }
+                   filter={ {
+                     campaignPK: campaignID,
+                     // Need labels of both phases for verification phase because this phase:
+                     //  - includes annotation from the "Annotation" phase
+                     //  - includes annotation from all annotators of the "Annotation" phase
+                     phase: phaseType === 'Annotation' ? phaseType : undefined,
+                     userPK: phaseType === 'Annotation' ? user?.pk : undefined,
+                   } }
+                   onSelected={ setLabel }/>
+
       <ConfidenceSelect onUpdate={ onUpdate }/>
       <DetectorSelect onUpdate={ onUpdate }/>
       <AnnotatorSelect onUpdate={ onUpdate }/>
 
       <Switch label='Acoustic features' options={ BOOLEAN_OPTIONS }
-              value={ valueToBooleanOption(params.annotatedWithFeatures) }
+              value={ valueToBooleanOption(params.acoustic_features__isnull, true) }
               onValueSelected={ setAcousticFeatures }/>
 
     </Modal>, document.body) }
   </Fragment>
-}
-
-const LabelSelect: React.FC<{
-  onUpdate: () => void
-}> = ({ onUpdate }) => {
-  const { data } = useAnnotationSettings()
-  const labelSet = useMemo(() => data?.annotationPhaseForCampaign?.annotationCampaign.labelSet, [ data ])
-  const labelItems = useMemo(() => labelSet?.labels?.results.filter(l => l !== null).map(l => ({
-    label: l.name,
-    value: l.name
-  })) ?? [], [ labelSet ])
-  const { params, updateParams } = useSpectrogramFilters()
-
-  const setLabel = useCallback((label: number | string | undefined) => {
-    updateParams({
-      hasAnnotations: true,
-      annotatedWithLabel: typeof label === 'number' ? label.toString() : label,
-    })
-    onUpdate()
-  }, [ updateParams ])
-
-  if (!labelSet) return <Fragment/>
-  return <Select label='Label' placeholder='Filter by label' optionsContainer='popover'
-                 options={ labelItems }
-                 value={ params.annotatedWithLabel ?? undefined }
-                 onValueSelected={ setLabel }/>
 }
 
 const ConfidenceSelect: React.FC<{
@@ -133,7 +127,7 @@ const ConfidenceSelect: React.FC<{
 }> = ({ onUpdate }) => {
   const { data } = useAnnotationSettings()
   const confidenceSet = useMemo(() => data?.annotationPhaseForCampaign?.annotationCampaign.confidenceSet, [ data ])
-  const confidenceItems = useMemo(() => confidenceSet?.confidenceIndicators?.results.filter(i => i !== null).map(i => ({
+  const confidenceItems = useMemo(() => confidenceSet?.confidenceIndicators?.results.filter(i => i !== null).map((i: Partial<ConfidenceNode>) => ({
     label: i.label,
     value: i.label
   })) ?? [], [ confidenceSet ])
@@ -141,8 +135,8 @@ const ConfidenceSelect: React.FC<{
 
   const setConfidence = useCallback((label: number | string | undefined) => {
     updateParams({
-      hasAnnotations: true,
-      annotatedWithConfidence: typeof label === 'number' ? label.toString() : label,
+      with_user_annotations: true,
+      confidence_indicator__label: typeof label === 'number' ? label.toString() : label,
     })
     onUpdate()
   }, [ updateParams ])
@@ -151,7 +145,7 @@ const ConfidenceSelect: React.FC<{
   if (!confidenceSet?.confidenceIndicators) return <Fragment/>
   return <Select label='Confidence' placeholder='Filter by confidence' optionsContainer='popover'
                  options={ confidenceItems }
-                 value={ params.annotatedWithConfidence ?? undefined }
+                 value={ params.confidence_indicator__label ?? undefined }
                  onValueSelected={ setConfidence }/>
 }
 
@@ -171,8 +165,8 @@ const DetectorSelect: React.FC<{
 
   const setDetector = useCallback((value: number | string | undefined) => {
     updateParams({
-      hasAnnotations: true,
-      annotatedByDetectorID: typeof value === 'number' ? value.toString() : value,
+      with_user_annotations: true,
+      detector_configuration__detector_id: value,
     })
     onUpdate()
   }, [ updateParams ])
@@ -181,7 +175,7 @@ const DetectorSelect: React.FC<{
   if (phaseType !== PhaseType.verification || !detectors || detectors.length === 0) return <Fragment/>
   return <Select label='Detectors' placeholder='Filter by detector' optionsContainer='popover'
                  options={ detectorItems }
-                 value={ params.annotatedByDetectorID ?? undefined }
+                 value={ params.detector_configuration__detector_id ?? undefined }
                  onValueSelected={ setDetector }/>
 }
 
@@ -201,8 +195,8 @@ const AnnotatorSelect: React.FC<{
 
   const setAnnotator = useCallback((value: number | string | undefined) => {
     updateParams({
-      hasAnnotations: true,
-      annotatedByAnnotatorID: typeof value === 'number' ? value.toString() : value,
+      with_user_annotations: true,
+      annotator_id: value,
     })
     onUpdate()
   }, [ updateParams ])
@@ -211,6 +205,6 @@ const AnnotatorSelect: React.FC<{
   if (phaseType !== PhaseType.verification || !annotators || annotators.length === 0) return <Fragment/>
   return <Select label='Annotators' placeholder='Filter by annotator' optionsContainer='popover'
                  options={ annotatorItems }
-                 value={ params.annotatedByAnnotatorID ?? undefined }
+                 value={ params.annotator_id ?? undefined }
                  onValueSelected={ setAnnotator }/>
 }

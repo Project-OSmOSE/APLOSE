@@ -1,6 +1,6 @@
 import { errors, expect } from './fixture';
 import { Page, Request, Route } from 'playwright-core';
-import { MOCK, MockType } from "./services";
+import { MOCK, MockType, QueryName } from "./services";
 
 // https://github.com/microsoft/playwright/issues/13284#issuecomment-2299013936
 export async function expectNoRequestsOnAction(page: Page,
@@ -35,7 +35,7 @@ type CalledWith = Record<string, unknown>;
 // requests are to us). Interceptions are per-operation, so multiple can be
 // registered for different operations without overwriting one-another.
 type Operations = {
-  [key in string]: MockType
+  [key in QueryName]: MockType
 }
 
 export async function interceptGQL(

@@ -1,12 +1,12 @@
 import React, { Fragment } from "react";
 import { IonButton, IonIcon } from "@ionic/react";
 import { downloadOutline } from "ionicons/icons";
-import { UserAPI } from "@/service/api/user.ts";
 import { useAnnotatorAudio } from "@/features/Annotator";
+import { useCurrentUser } from "@/features/auth/api";
 
 export const AudioDownloadButton: React.FC = () => {
   const { audioPath } = useAnnotatorAudio()
-  const { data: user } = UserAPI.endpoints.getCurrentUser.useQuery();
+  const { user } = useCurrentUser();
 
   const download = () => {
     if (!audioPath) return;
@@ -18,7 +18,7 @@ export const AudioDownloadButton: React.FC = () => {
     link.click();
   }
 
-  if (!audioPath || !user?.is_staff) return <Fragment/>
+  if (!audioPath || !user?.isAdmin) return <Fragment/>
   return <IonButton color='medium' size='small' fill='outline'
                     onClick={ download }>
     <IonIcon icon={ downloadOutline } slot="start"/>

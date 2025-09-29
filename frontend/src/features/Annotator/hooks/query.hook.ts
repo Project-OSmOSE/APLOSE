@@ -1,15 +1,15 @@
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useSpectrogramFilters } from "@/service/slices/filter.ts";
-import { UserAPI } from "@/service/api/user.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
 import { AnnotatorAPI } from "../api";
-import { AnnotationPhaseType } from "@/features/gql/types.generated.ts";
+import { AnnotationPhaseType } from "@/features/_utils_/gql/types.generated.ts";
+import { useCurrentUser } from "@/features/auth/api";
 
 export const useAnnotatorQuery = (args: { refetchOnMountOrArgChange: boolean } | void) => {
   const { params } = useSpectrogramFilters()
-  const { data: user } = UserAPI.endpoints.getCurrentUser.useQuery()
+  const { user } = useCurrentUser();
   const { campaignID } = useRetrieveCurrentCampaign()
   const { phaseType, isEditable } = useRetrieveCurrentPhase()
   const { spectrogramID } = useParams<{ spectrogramID: string }>();
@@ -19,7 +19,7 @@ export const useAnnotatorQuery = (args: { refetchOnMountOrArgChange: boolean } |
     campaignID: campaignID ?? '',
     phaseType: AnnotationPhaseType[phaseType ?? 'Annotation'],
     spectrogramID: spectrogramID ?? '',
-    annotatorID: user?.id?.toString() ?? '',
+    annotatorID: user?.pk?.toString() ?? '',
   }, {
     skip: !campaignID || !phaseType || !spectrogramID || !user,
     refetchOnMountOrArgChange: args?.refetchOnMountOrArgChange

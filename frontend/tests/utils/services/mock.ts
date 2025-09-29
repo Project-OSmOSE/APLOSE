@@ -22,18 +22,20 @@ import { Paginated } from '../../../src/service/type';
 import { AnnotationCampaign, AnnotationFile, Phase } from '../../../src/service/types';
 import {
   GetAvailableDatasetsForImportQuery,
-  GetDatasetByIdQuery,
-  GetDatasetChannelConfigurationsByIdQuery,
-  GetDatasetsAndAnalysisQuery,
-  GetDatasetsQuery
-} from "../../../src/features/data/dataset/api/api.generated";
+  GetAvailableSpectrogramAnalysisForImportQuery
+} from "../../../src/features/data/import/api/import-data.generated";
 import {
-  GetAvailableSpectrogramAnalysisForImportQuery,
+  GetDatasetByPkQuery,
+  GetDatasetsQuery,
   GetSpectrogramAnalysisQuery
-} from "../../../src/features/data/spectrogramAnalysis/api/api.generated";
-import { GetAnnotationCampaignsQuery } from "../../../src/features/annotation/annotationCampaign/api/api.generated";
+} from "../../../src/features/data/display/api/display-data.generated";
+import { GetDatasetsAndAnalysisQuery } from "../../../src/features/data/input/api/input.generated";
 import { COLORMAP_GREYS } from "../../../src/service/ui/color";
-import { AnnotationPhaseType } from "../../../src/features/gql/types.generated";
+import {
+  GetChannelConfigurationsQuery
+} from "../../../src/features/metadatax/acquisition/display/api/display-acquisition.generated";
+import { ListCampaignsAndPhasesQuery } from "../../../src/features/annotation/api/annotation.generated";
+import { AnnotationPhaseType } from "../../../src/features/_utils_/gql/types.generated";
 
 type Response = {
   status: number,
@@ -205,10 +207,8 @@ export class Mock {
   }
 }
 
-
-const _deadline = new Date()
-_deadline.setTime(0)
-const deadline = _deadline.toISOString().split('T')[0]
+const deadline = new Date()
+deadline.setTime(0)
 
 export const MOCK_QUERIES: {
   [key in string]: { [key in MockType]: any }
@@ -258,12 +258,13 @@ export const MOCK_QUERIES: {
       }
     } satisfies GetDatasetsQuery as GetDatasetsQuery
   },
-  getDatasetByID: {
+  getDatasetByPk: {
     empty: {
       datasetByPk: undefined
-    } satisfies GetDatasetByIdQuery as GetDatasetByIdQuery,
+    } satisfies GetDatasetByPkQuery as GetDatasetByPkQuery,
     filled: {
       datasetByPk: {
+        pk: 1,
         name: 'Test dataset',
         path: 'test/dataset',
         description: "Coastal audio recordings",
@@ -275,7 +276,7 @@ export const MOCK_QUERIES: {
           displayName: 'John Doe'
         }
       }
-    } satisfies GetDatasetByIdQuery as GetDatasetByIdQuery
+    } satisfies GetDatasetByPkQuery as GetDatasetByPkQuery
   },
   getDatasetsAndAnalysis: {
     empty: {
@@ -350,69 +351,64 @@ export const MOCK_QUERIES: {
     } satisfies GetSpectrogramAnalysisQuery as GetSpectrogramAnalysisQuery
   },
 
-  getAnnotationCampaigns: {
+  getChannelConfigurations: {
     empty: {
-      allAnnotationCampaigns: {
-        results: []
+      allChannelConfigurations: null
+    } satisfies GetChannelConfigurationsQuery as GetChannelConfigurationsQuery,
+    filled: {
+      allChannelConfigurations: {
+        results: [
+          {
+            deployment: {
+              name: 'Test deployment',
+              campaign: {
+                name: 'Phase 1'
+              },
+              site: {
+                name: 'Site A'
+              },
+              project: {
+                name: 'Test Project',
+              }
+            }
+          }
+        ]
       }
-    } satisfies GetAnnotationCampaignsQuery as GetAnnotationCampaignsQuery,
+    } satisfies GetChannelConfigurationsQuery as GetChannelConfigurationsQuery
+  },
+
+  listCampaignsAndPhases: {
+    empty: {
+      allAnnotationCampaigns: null,
+      allAnnotationPhases: null,
+    } satisfies ListCampaignsAndPhasesQuery as ListCampaignsAndPhasesQuery,
     filled: {
       allAnnotationCampaigns: {
         results: [
           {
             pk: 1,
             name: 'Test campaign',
-            deadline,
-            archive: {
-              pk: 1
-            },
-            dataset: {
-              name: 'Test dataset'
-            },
-            finishedTasksCount: 50,
+            datasetName: 'Test dataset',
+            isArchived: false,
+            deadline: deadline.toISOString().split('T')[0],
+          }
+        ]
+      },
+      allAnnotationPhases: {
+        results: [
+          {
+            pk: 1,
+            annotationCampaignPk: 1,
+            phase: AnnotationPhaseType.Annotation,
+            completedTasksCount: 50,
             tasksCount: 100,
-            userFinishedTasksCount: 5,
+            userCompletedTasksCount: 5,
             userTasksCount: 10,
-            phases: {
-              results: [
-                {
-                  phase: AnnotationPhaseType.Annotation
-                }
-              ]
-            }
           }
         ]
       }
-    } satisfies GetAnnotationCampaignsQuery as GetAnnotationCampaignsQuery
-  },
-
-  getDatasetChannelConfigurationsByID: {
-    empty: {
-      datasetByPk: null
-    } satisfies GetDatasetChannelConfigurationsByIdQuery as GetDatasetChannelConfigurationsByIdQuery,
-    filled: {
-      datasetByPk: {
-        relatedChannelConfigurations: {
-          results: [
-            {
-              deployment: {
-                name: 'Test deployment',
-                campaign: {
-                  name: 'Phase 1'
-                },
-                site: {
-                  name: 'Site A'
-                },
-                project: {
-                  name: 'Test Project',
-                }
-              }
-            }
-          ]
-        }
-      }
-    } satisfies GetDatasetChannelConfigurationsByIdQuery as GetDatasetChannelConfigurationsByIdQuery
-  },
+    } satisfies ListCampaignsAndPhasesQuery as ListCampaignsAndPhasesQuery
+  }
 }
 export const MOCK_MUTATIONS: {
   [key in string]: { empty: Record<string, never> }

@@ -3,22 +3,20 @@ import { IonSpinner } from "@ionic/react";
 
 import { DatasetName, SpectrogramAnalysisTable } from "@/features/data/display";
 
-import { AnnotationCampaignInstructionsButton } from "@/features/annotation/annotationCampaign";
+import { AnnotationCampaignInstructionsButton } from "@/features/annotation/components";
 import { FadedText, Progress } from "@/components/ui";
 import { dateToString, pluralize } from "@/service/function.ts";
-import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
-import { useListPhasesForCurrentCampaign } from "@/service/api/campaign-phase.ts";
 import { useGetLabelSetForCurrentCampaign } from "@/service/api/label-set.ts";
 import { useGetConfidenceSetForCurrentCampaign } from "@/service/api/confidence-set.ts";
 import { AnnotationCampaignArchiveButton } from "@/components/AnnotationCampaign";
 import { LabelSetModalButton } from "@/components/AnnotationCampaign/Label/Modal.tsx";
 
 import styles from "./styles.module.scss";
+import { useCurrentAnnotationCampaign } from "@/features/annotation/api";
 
 
 export const AnnotationCampaignInfo: React.FC = () => {
-  const { campaign } = useRetrieveCurrentCampaign()
-  const { phases } = useListPhasesForCurrentCampaign()
+  const { campaign, phases } = useCurrentAnnotationCampaign()
   const { labelSet, isLoading: isLoadingLabelSet } = useGetLabelSetForCurrentCampaign();
   const { confidenceSet, isLoading: isLoadingConfidenceSet } = useGetConfidenceSetForCurrentCampaign();
 
@@ -41,14 +39,14 @@ export const AnnotationCampaignInfo: React.FC = () => {
 
     {/* DATA */ }
     <div className={ styles.bloc }>
-      <DatasetName { ...campaign.dataset } labeled link/>
+      <DatasetName name={ campaign.dataset.name } pk={ campaign.dataset.id } labeled link/>
       {/*<AnnotationCampaignAcquisitionModalButton/>*/ }
       <FadedText>Analysis</FadedText>
       <SpectrogramAnalysisTable annotationCampaignPK={ campaign.id }/>
     </div>
 
     {/* ANNOTATION */ }
-    { campaign?.phases.length > 0 && <Fragment>
+    { phases.length > 0 && <Fragment>
         <div className={ styles.bloc }>
           { (isLoadingLabelSet || isLoadingConfidenceSet) && <IonSpinner/> }
           { !isLoadingLabelSet && <Fragment>
@@ -62,10 +60,10 @@ export const AnnotationCampaignInfo: React.FC = () => {
             </div> }
               <div>
                   <FadedText>
-                      Label{ pluralize(campaign.labels_with_acoustic_features) } with acoustic features
+                      Label{ pluralize(campaign.labelsWithAcousticFeatures?.results) } with acoustic features
                   </FadedText>
-                { campaign.labels_with_acoustic_features.length > 0 ?
-                  <p>{ campaign.labels_with_acoustic_features.join(', ') }</p>
+                { campaign.labelsWithAcousticFeatures && campaign.labelsWithAcousticFeatures.results.filter(r => r !== null).length > 0 ?
+                  <p>{ campaign.labelsWithAcousticFeatures?.results.filter(r => r !== null).map(l => l.name).join(', ') }</p>
                   : <p>No labels with features</p> }
               </div>
           </Fragment> }
@@ -92,11 +90,11 @@ export const AnnotationCampaignInfo: React.FC = () => {
     </Fragment> }
 
     {/* PROGRESS */ }
-    { phases && phases.map(p => <div key={ p.id } className={ styles.bloc }>
+    { phases && phases.map(p => <div key={ p.pk } className={ styles.bloc }>
       <FadedText>{ p.phase } progress</FadedText>
       <Progress className={ styles.progress }
-                value={ p.global_progress }
-                total={ p.global_total }/>
+                value={ p.completedTasksCount }
+                total={ p.tasksCount }/>
     </div>) }
   </div>
 }

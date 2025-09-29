@@ -1,4 +1,4 @@
-import { LinearScaleNode } from "@/features/gql/types.generated.ts";
+import { LinearScaleNode } from "@/features/_utils_/gql/types.generated.ts";
 import { LinearScaleService } from "./linear.scale";
 import { AbstractScale, Step } from './type';
 

@@ -1,0 +1,150 @@
+# Annotation Campaign & Phase
+
+query listCampaignsAndPhases(
+    $isArchived: Boolean
+    $phase: AnnotationPhaseType
+    $ownerPk: PK
+    $annotatorPk: PK
+    $search: String
+) {
+    allAnnotationCampaigns(
+        isArchived: $isArchived
+        phaseType: $phase
+        ownerPk: $ownerPk
+        annotatorPk: $annotatorPk
+        search: $search
+    ) {
+        results {
+            pk
+            name
+            datasetName
+            deadline
+            isArchived
+        }
+    }
+    allAnnotationPhases(
+        isCampaignArchived: $isArchived
+        phaseType: $phase
+        campaignOwnerPk: $ownerPk
+        annotatorPk: $annotatorPk
+        search: $search
+    ) {
+        results {
+            pk
+            phase
+            userTasksCount
+            userCompletedTasksCount
+            tasksCount
+            completedTasksCount
+            annotationCampaignPk
+        }
+    }
+}
+
+query getCampaign($pk: PK!) {
+    annotationCampaignByPk(pk: $pk) {
+        pk
+        isArchived
+        canManage
+        labelsWithAcousticFeatures {
+            results {
+                name
+            }
+        }
+        owner {
+            pk
+        }
+    }
+    allAnnotationPhases(campaignPk: $pk) {
+        results {
+            pk
+            phase
+            completedTasksCount
+            tasksCount
+            isOpen
+
+        }
+    }
+}
+
+# campaignPk is used to invalidate getCampaign tags
+# noinspection GraphQLSchemaValidation
+mutation endPhase($pk: PK!, $campaignPk: PK!) {
+    endAnnotationPhase(pk: $pk) {
+        ok
+    }
+}
+
+mutation createVerificationPhase($campaignPk: PK!) {
+    createAnnotationPhase(campaignPk: $campaignPk, type: Verification) {
+        pk
+    }
+}
+
+mutation createAnnotationPhase(
+    $campaignPk: PK!
+    $labelsWithAcousticFeatures: [String]!
+    $labelSetPk: PK!
+    $confidenceSetPk: PK!
+    $allowPointAnnotation: Boolean!
+) {
+    createAnnotationPhase(campaignPk: $campaignPk, type: Annotation) {
+        pk
+    }
+    updateAnnotationCampaign(
+        pk: $campaignPk
+        labelsWithAcousticFeatures: $labelsWithAcousticFeatures
+        labelSetPk: $labelSetPk
+        confidenceSetPk: $confidenceSetPk
+        allowPointAnnotation: $allowPointAnnotation
+    ) {
+        ok
+    }
+}
+
+# Label & Confidence
+
+query getLabels(
+    $campaignPK: PK
+    $phase: AnnotationPhaseType
+    $userPK: PK
+) {
+    allAnnotationLabels(
+        usedInAnnotationsOfCampaign: $campaignPK
+        usedInAnnotationsOfPhase: $phase
+        usedInAnnotationsByUser: $userPK
+    ) {
+        results {
+            name
+        }
+    }
+}
+
+query getLabelsAndConfidenceSets {
+    allLabelSets {
+        results {
+            pk
+            name
+            description
+            labels {
+                results {
+                    name
+                }
+            }
+        }
+    }
+
+    allConfidenceSets {
+        results {
+            pk
+            name
+            desc
+            confidenceIndicators {
+                results {
+                    label
+                    level
+                }
+            }
+        }
+    }
+}

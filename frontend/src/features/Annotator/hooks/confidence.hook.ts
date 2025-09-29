@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { ConfidenceNode } from "@/features/gql/types.generated.ts";
+import { ConfidenceNode } from "@/features/_utils_/gql/types.generated.ts";
 import { useAppDispatch, useAppSelector } from "@/service/app.ts";
 import { AnnotatorSlice, selectConfidenceChoice } from "../slice.ts";
 import { useAnnotatorQuery } from "./query.hook";

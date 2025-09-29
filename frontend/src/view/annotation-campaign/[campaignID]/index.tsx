@@ -1,6 +1,5 @@
 import React, { Fragment } from "react";
 import styles from "./styles.module.scss";
-import { Outlet } from "react-router-dom";
 import { IonSkeletonText } from "@ionic/react";
 import { FadedText, Link, WarningText } from "@/components/ui";
 import { Head } from "@/components/ui/Page.tsx";
@@ -8,7 +7,9 @@ import { dateToString, getErrorMessage } from "@/service/function.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
 import { MailButton } from "@/features/User";
-import { PhaseTab } from "@/features/AnnotationPhase";
+import { AnnotationPhaseTab } from "@/features/annotation";
+import { AnnotationPhaseType } from "@/features/_utils_";
+import { Outlet } from "react-router-dom";
 
 export { AnnotationCampaignInfo } from './InfoTab'
 
@@ -47,8 +48,8 @@ export const AnnotationCampaignDetail: React.FC = () => {
                 Information
             </Link>
 
-            <PhaseTab phaseType='Annotation'/>
-            <PhaseTab phaseType='Verification'/>
+            <AnnotationPhaseTab phaseType={ AnnotationPhaseType.Annotation }/>
+            <AnnotationPhaseTab phaseType={ AnnotationPhaseType.Verification }/>
         </div>
 
         <Outlet/>

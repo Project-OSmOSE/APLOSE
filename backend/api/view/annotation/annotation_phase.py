@@ -3,7 +3,6 @@ import csv
 
 from django.db import models
 from django.db.models import (
-    Q,
     F,
     Value,
     Case,
@@ -33,6 +32,7 @@ from backend.api.models import (
     AnnotationFileRange,
     AnnotationCampaign,
 )
+from backend.api.schema.context_filters import AnnotationPhaseContextFilter
 from backend.api.serializers import AnnotationPhaseSerializer
 from backend.aplose.models.user import ExpertiseLevel
 from backend.utils.filters import ModelFilter
@@ -73,20 +73,7 @@ class CampaignPhaseAccessFilter(filters.BaseFilterBackend):
     """Filter campaign phase access base on user"""
 
     def filter_queryset(self, request: Request, queryset, view):
-        if request.user.is_staff or request.user.is_superuser:
-            return queryset
-        return queryset.filter(
-            Q(annotation_campaign__owner_id=request.user.id)
-            | (
-                Q(annotation_campaign__archive__isnull=True)
-                & Exists(
-                    AnnotationFileRange.objects.filter(
-                        annotation_phase_id=OuterRef("pk"),
-                        annotator_id=request.user.id,
-                    )
-                )
-            )
-        )
+        return AnnotationPhaseContextFilter.get_queryset(request)
 
 
 class CampaignPhasePostPatchPermission(permissions.BasePermission):

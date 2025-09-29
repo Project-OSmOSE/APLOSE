@@ -4,17 +4,17 @@ import { IoAnalyticsOutline, IoChevronForwardOutline, IoPricetagOutline, IoTimeO
 import { formatTime } from "@/service/function";
 import { FaHandshake } from "react-icons/fa6";
 import { useAnnotatorAnnotations } from "@/features/Annotator";
-import { AnnotationLabelNode, AnnotationNode, AnnotationType, ConfidenceNode } from "@/features/gql/types.generated.ts";
+import { AnnotationLabelNode, AnnotationNode, AnnotationType, ConfidenceNode } from "@/features/_utils_/gql/types.generated.ts";
 
-export const LabelInfo: React.FC<Pick<AnnotationNode, 'id' | 'type'> & {
+export const LabelInfo: React.FC<Pick<AnnotationNode, 'pk' | 'type'> & {
   label: Pick<AnnotationLabelNode, 'name'>
-}> = ({ id, type, label }) => {
-  const { correctedAnnotation } = useAnnotatorAnnotations(id)
+}> = ({ pk, type, label }) => {
+  const { getAnnotationUpdate } = useAnnotatorAnnotations()
 
   const correctedLabel = useMemo(() => {
-    if (correctedAnnotation?.label.name !== label.name) return correctedAnnotation?.label.name;
+    if (getAnnotationUpdate({ pk })?.label.name !== label.name) return getAnnotationUpdate({ pk })?.label.name;
     return undefined
-  }, [ correctedAnnotation, id, label ])
+  }, [ getAnnotationUpdate, pk, label ])
 
   return <div className={ styles.bounds }>
     <IoPricetagOutline className={ styles.mainIcon }/>
@@ -37,22 +37,24 @@ export const ConfidenceInfo: React.FC<{
   </div>
 )
 
-export const TimeInfo: React.FC<Pick<AnnotationNode, 'id' | 'type' | 'startTime' | 'endTime'>> = ({
-                                                                                                    id,
+export const TimeInfo: React.FC<Pick<AnnotationNode, 'pk' | 'type' | 'startTime' | 'endTime'>> = ({
+                                                                                                    pk,
                                                                                                     type,
                                                                                                     startTime,
                                                                                                     endTime
                                                                                                   }) => {
-  const { correctedAnnotation } = useAnnotatorAnnotations(id)
+  const { getAnnotationUpdate } = useAnnotatorAnnotations()
 
   const correctedStartTime = useMemo(() => {
-    if (correctedAnnotation?.startTime !== correctedAnnotation) return correctedAnnotation?.startTime;
+    if (getAnnotationUpdate({ pk })?.startTime !== startTime) return getAnnotationUpdate({ pk })?.startTime;
     return undefined
-  }, [ correctedAnnotation, id, startTime ])
+  }, [ getAnnotationUpdate, pk, startTime ])
+
   const correctedEndTime = useMemo(() => {
-    if (correctedAnnotation?.endTime !== endTime) return correctedAnnotation?.endTime;
+    if (getAnnotationUpdate({ pk })?.endTime !== endTime) return getAnnotationUpdate({ pk })?.endTime;
     return undefined
-  }, [ correctedAnnotation, id, endTime ])
+  }, [ getAnnotationUpdate, pk, endTime ])
+
   const isCorrected = useMemo(() => correctedStartTime || correctedEndTime, [ correctedStartTime, correctedEndTime ])
 
   if (type === AnnotationType.Weak) return <Fragment/>
@@ -75,22 +77,22 @@ export const TimeInfo: React.FC<Pick<AnnotationNode, 'id' | 'type' | 'startTime'
   </div>
 }
 
-export const FrequencyInfo: React.FC<Pick<AnnotationNode, 'id' | 'type' | 'startFrequency' | 'endFrequency'>> = ({
-                                                                                                                   id,
+export const FrequencyInfo: React.FC<Pick<AnnotationNode, 'pk' | 'type' | 'startFrequency' | 'endFrequency'>> = ({
+                                                                                                                   pk,
                                                                                                                    type,
                                                                                                                    startFrequency,
                                                                                                                    endFrequency
                                                                                                                  }) => {
-  const { correctedAnnotation } = useAnnotatorAnnotations(id)
+  const { getAnnotationUpdate } = useAnnotatorAnnotations()
 
   const correctedStartFrequency = useMemo(() => {
-    if (correctedAnnotation?.startFrequency !== startFrequency) return correctedAnnotation?.startFrequency;
+    if (getAnnotationUpdate({ pk })?.startFrequency !== startFrequency) return getAnnotationUpdate({ pk })?.startFrequency;
     return undefined
-  }, [ correctedAnnotation, id, startFrequency ])
+  }, [ getAnnotationUpdate, pk, startFrequency ])
   const correcteEndFrequency = useMemo(() => {
-    if (correctedAnnotation?.endFrequency !== endFrequency) return correctedAnnotation?.endFrequency;
+    if (getAnnotationUpdate({ pk })?.endFrequency !== endFrequency) return getAnnotationUpdate({ pk })?.endFrequency;
     return undefined
-  }, [ correctedAnnotation, id, endFrequency ])
+  }, [ getAnnotationUpdate, pk, endFrequency ])
 
   const isCorrected = useMemo(() => correctedStartFrequency || correcteEndFrequency, [ correctedStartFrequency, correcteEndFrequency ])
 

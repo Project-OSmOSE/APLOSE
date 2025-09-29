@@ -5,14 +5,13 @@ import { IonButton, IonIcon } from '@ionic/react';
 import { DocumentationButton } from "@/components/ui";
 import { closeOutline, menuOutline } from "ionicons/icons";
 import { Link } from "@/components/ui/Link.tsx";
-import { UserAPI } from "@/service/api/user.ts";
 import { AuthAPI } from "@/service/api/auth.ts";
+import { useCurrentUser } from "@/features/auth/api";
 
 export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
   const [ isOpen, setIsOpen ] = useState<boolean>(false);
   const [ logout ] = AuthAPI.endpoints.logout.useMutation()
-
-  const { data: currentUser } = UserAPI.endpoints.getCurrentUser.useQuery()
+  const { user } = useCurrentUser()
 
   const toggleOpening = useCallback(() => {
     setIsOpen(previous => !previous);
@@ -41,20 +40,19 @@ export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
           <Link appPath='/annotation-campaign' onClick={ close }>
             Annotation campaigns
           </Link>
-          { (currentUser?.is_staff || currentUser?.is_superuser) && <Fragment>
+          { user?.isAdmin && <Fragment>
               <Link appPath='/dataset' onClick={ close }>Datasets</Link>
           </Fragment> }
         </div>
 
-        { (currentUser?.is_staff || currentUser?.is_superuser) && <Fragment>
+        { user?.isAdmin && <Fragment>
             <Link href="/backend/admin" target="_blank" color='medium'>Admin</Link>
         </Fragment> }
 
         <DocumentationButton/>
 
-        { currentUser?.is_superuser &&
-            <Link appPath='/admin/ontology/source' color='medium' onClick={ close }>Ontology</Link> }
-        { currentUser?.is_superuser && <Link appPath='/admin/sql' color='medium' onClick={ close }>SQL query</Link> }
+        { user?.isSuperuser && <Link appPath='/admin/ontology/source' color='medium' onClick={ close }>Ontology</Link> }
+        { user?.isSuperuser && <Link appPath='/admin/sql' color='medium' onClick={ close }>SQL query</Link> }
 
         <Link appPath='/account' color='medium' onClick={ close }>Account</Link>
 

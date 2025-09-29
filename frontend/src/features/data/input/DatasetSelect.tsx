@@ -33,7 +33,7 @@ export const DatasetSelect: React.FC<{
     return data?.allDatasets?.results.find(d => d?.pk === selectedDatasetID)
       ?.spectrogramAnalysis?.results.filter(r => r !== null).map(a => ({
         value: a.pk,
-        label: a.name
+        label: `${ a.name } (${ a.colormap.name })`
       })) ?? []
   }, [ data, selectedDatasetID ])
   const [ selectedAnalysis, setSelectedAnalysis ] = useState<number[]>([]);

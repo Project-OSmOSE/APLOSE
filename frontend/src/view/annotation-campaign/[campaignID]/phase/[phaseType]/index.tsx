@@ -7,33 +7,33 @@ import { getErrorMessage } from "@/service/function.ts";
 import { AnnotationsFilter } from "./AnnotationsFilter.tsx";
 import { StatusFilter } from "./StatusFilter.tsx";
 import { DateFilter } from "./DateFilter.tsx";
-import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { AnnotationFile, AnnotationPhase } from "@/service/types";
 import { AnnotationFileRangeAPI } from "@/service/api/annotation-file-range.ts";
-import { useListPhasesForCurrentCampaign, useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
+import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
 import { useSpectrogramFilters } from "@/service/slices/filter.ts";
 import { SpectrogramActionBar } from "@/features/AnnotationPhase/SpectrogramActionBar.tsx";
 import { ImportAnnotationsButton } from "@/features/AnnotationPhase/ImportAnnotationsButton.tsx";
 import { useAnnotatorNavigation } from "@/features/Annotator";
+import { useCurrentAnnotationCampaign } from "@/features/annotation/api";
+import { AnnotationPhaseType } from "@/features/_utils_";
 
 export const AnnotationCampaignPhaseDetail: React.FC = () => {
   const { params } = useSpectrogramFilters(true)
+  const { campaign, phases } = useCurrentAnnotationCampaign()
 
-  const { campaign } = useRetrieveCurrentCampaign()
-  const { annotationPhase } = useListPhasesForCurrentCampaign()
   const { phase } = useRetrieveCurrentPhase()
   const [ page, setPage ] = useState<number>(1);
 
   AnnotationFileRangeAPI.endpoints.listFilesWithPagination.useQuery({
     page: 1,
     phaseID: phase?.id ?? -1,
-  }, { refetchOnMountOrArgChange: true, skip: !phase || !!campaign?.archive });
+  }, { refetchOnMountOrArgChange: true, skip: !phase || !!campaign?.isArchived });
   const { currentData: files, isFetching, error } = AnnotationFileRangeAPI.endpoints.listFilesWithPagination.useQuery({
     phaseID: phase?.id ?? -1,
     ...params,
     page
-  }, { skip: !phase || !!campaign?.archive });
-  const isEmpty = useMemo(() => error || !files || files.count === 0 || campaign?.archive, [ error, files, campaign ])
+  }, { skip: !phase || !!campaign?.isArchived });
+  const isEmpty = useMemo(() => error || !files || files.count === 0 || campaign?.isArchived, [ error, files, campaign ])
 
   const onFilterUpdated = useCallback(() => {
     setPage(1)
@@ -46,7 +46,7 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
 
       <SpectrogramActionBar/>
 
-      { phase.phase === 'Verification' && !phase.has_annotations && annotationPhase &&
+      { phase.phase === 'Verification' && !phase.has_annotations && phases.some(p => p?.phase === AnnotationPhaseType.Verification) &&
           <WarningText>
               Your campaign doesn't have any annotations to check
               <ImportAnnotationsButton/>
@@ -90,7 +90,7 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
       { isFetching && <IonSpinner/> }
       { error && <WarningText>{ getErrorMessage(error) }</WarningText> }
       { files && files.count === 0 && <p>You have no files to annotate.</p> }
-      { campaign?.archive ? <p>The campaign is archived. No more annotation can be done.</p> :
+      { campaign?.isArchived ? <p>The campaign is archived. No more annotation can be done.</p> :
         (phase?.ended_by && <p>The phase is ended. No more annotation can be done.</p>) }
 
     </div>

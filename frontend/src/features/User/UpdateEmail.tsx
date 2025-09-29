@@ -4,24 +4,28 @@ import { IonButton, IonSpinner } from "@ionic/react";
 import styles from "./styles.module.scss";
 import { useToast } from "@/service/ui";
 import { getErrorMessage } from "@/service/function.ts";
-import { UserAPI } from "@/service/api/user.ts";
+import { useCurrentUser, useUpdateCurrentUser } from "@/features/auth/api";
 
 export const UpdateEmail: React.FC = () => {
-  const { data: currentUser } = UserAPI.endpoints.getCurrentUser.useQuery();
-  const [ patchUser, {
-    isLoading: isSubmitting,
-    error: patchError,
-    isSuccess: isPatchSuccessful
-  } ] = UserAPI.endpoints.patchUser.useMutation();
+  const { user } = useCurrentUser();
+  const {
+    updateCurrentUser,
+    data: {
+      isLoading: isSubmitting,
+      error: patchError,
+      formErrors,
+      isSuccess: isPatchSuccessful
+    }
+  } = useUpdateCurrentUser();
 
   const toast = useToast();
 
-  const [ email, setEmail ] = useState<string>(currentUser?.email ?? '');
+  const [ email, setEmail ] = useState<string>(user?.email ?? '');
   const [ errors, setErrors ] = useState<{ email?: string[] }>({});
 
   useEffect(() => {
-    setEmail(currentUser?.email ?? '')
-  }, [ currentUser ]);
+    setEmail(user?.email ?? '')
+  }, [ user ]);
 
   useEffect(() => {
     if (patchError) {
@@ -36,6 +40,14 @@ export const UpdateEmail: React.FC = () => {
   }, [ patchError ]);
 
   useEffect(() => {
+    if (formErrors) {
+      setErrors({
+        email: formErrors.find(e => e.field === 'email')?.messages
+      })
+    }
+  }, [ formErrors ]);
+
+  useEffect(() => {
     if (isPatchSuccessful) {
       toast.presentSuccess('You email have been changed')
     }
@@ -43,7 +55,7 @@ export const UpdateEmail: React.FC = () => {
 
   function submit() {
     setErrors({})
-    patchUser({ email })
+    updateCurrentUser({ email })
   }
 
   return <FormBloc label='Update email'>

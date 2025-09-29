@@ -105,7 +105,7 @@ export const Select: React.FC<SelectProperties> = ({
     }
     return getOptions().find(o => o.value === value) ?? { value: -9, label: placeholder }
   }, [ value, parentOptions, required, hasSelectedItem, placeholder ])
-  const buttonId = useMemo(() => `button-${ placeholder.toLowerCase().replace(' ', '-') }`, [ placeholder ])
+  const buttonId = useMemo(() => `button-${ placeholder.toLowerCase().replaceAll(' ', '-') }`, [ placeholder ])
 
   const parentClasses = [ styles.select, className ]
   if (label) parentClasses.push(styles.hasLabel)

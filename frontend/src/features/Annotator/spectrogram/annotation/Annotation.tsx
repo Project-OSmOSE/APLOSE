@@ -2,7 +2,7 @@ import React, { Fragment, MutableRefObject, useMemo } from "react";
 import { Box } from "./Box";
 import { Point } from './Point';
 import { Annotation as _Annotation, useAnnotatorAnnotations, useAnnotatorUI } from "@/features/Annotator";
-import { AnnotationType } from "@/features/gql/types.generated.ts";
+import { AnnotationType } from "@/features/_utils_/gql/types.generated.ts";
 
 export const Annotation: React.FC<{
   annotation: _Annotation,

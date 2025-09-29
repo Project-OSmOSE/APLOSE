@@ -4,6 +4,7 @@ import { Item } from "@/types/item.ts";
 
 export function getErrorMessage(error: FetchBaseQueryError | SerializedError | unknown | string | undefined): string | undefined {
   if (!error) return undefined;
+  console.log("DEBUG", typeof error, error)
   if (typeof error === 'string') return error;
   if ((error as SerializedError).message) return (error as SerializedError).message;
   if ((error as FetchBaseQueryError).status === 500) return '[500] Internal server error';
@@ -49,7 +50,8 @@ export async function downloadResponseHandler(response: Response) {
   downloadFile(filename, type, await response.text())
 }
 
-export function pluralize(data: any[]) {
+export function pluralize(data?: any[]) {
+  if (!data) return ''
   return data.length > 1 ? 's' : ''
 }
 

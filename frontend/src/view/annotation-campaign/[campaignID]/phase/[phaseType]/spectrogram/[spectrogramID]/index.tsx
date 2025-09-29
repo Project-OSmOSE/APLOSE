@@ -10,7 +10,7 @@ import { IonIcon, IonNote } from "@ionic/react";
 import { helpBuoyOutline } from "ionicons/icons";
 import { IoCheckmarkCircleOutline, IoChevronForwardOutline } from "react-icons/io5";
 import { Annotator, useAnnotatorNavigation, useAnnotatorQuery, useAnnotatorUI } from "@/features/Annotator";
-import { AnnotationTaskStatus } from "@/features/gql/types.generated.ts";
+import { AnnotationTaskStatus } from "@/features/_utils_/gql/types.generated.ts";
 
 export const AnnotatorPage: React.FC = () => {
   const { campaignID, campaign } = useRetrieveCurrentCampaign()

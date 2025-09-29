@@ -14,25 +14,25 @@ import {
   DetectorConfigurationNode,
   DetectorNode,
   UserNode,
-} from "@/features/gql/types.generated.ts";
-import { UserAPI } from "@/service/api/user.ts";
+} from "@/features/_utils_/gql/types.generated.ts";
+import { AuthQueryAPI } from "@/features/auth/api";
 
 export type AnnotatorState = {
-  annotations: Array<Pick<AnnotationNode, 'id' | 'type' | 'startTime' | 'startFrequency' | 'endTime' | 'endFrequency' | 'isUpdateOfId'> & {
-    annotator?: Pick<UserNode, 'id' | 'displayName'> | null,
-    detectorConfiguration?: Pick<DetectorConfigurationNode, 'id' | 'configuration'> & {
+  annotations: Array<Pick<AnnotationNode, 'pk' | 'type' | 'startTime' | 'startFrequency' | 'endTime' | 'endFrequency' | 'isUpdateOfId'> & {
+    annotator?: Pick<UserNode, 'pk' | 'displayName'> | null,
+    detectorConfiguration?: Pick<DetectorConfigurationNode, 'pk' | 'configuration'> & {
       detector: Pick<DetectorNode, 'name'>
     } | null,
     label: Pick<AnnotationLabelNode, 'name'>,
     confidence?: Pick<ConfidenceNode, 'label'> | null,
     validations?: {
-      results: Array<Pick<AnnotationValidationNode, 'id' | 'isValid'> | null>
+      results: Array<Pick<AnnotationValidationNode, 'pk' | 'isValid'> | null>
     } | null,
-    acousticFeatures?: Omit<AcousticFeaturesNode, 'id' | 'annotation' | '__typename'>,
-    annotationPhase: Pick<AnnotationPhaseNode, 'id'>,
+    acousticFeatures?: Omit<AcousticFeaturesNode, 'id' | 'pk' | 'annotation' | '__typename'>,
+    annotationPhase: Pick<AnnotationPhaseNode, 'pk'>,
   }>,
-  comments: Array<Pick<AnnotationCommentNode, 'id' | 'comment' | 'annotationId'> & {
-    author: Pick<UserNode, 'id' | 'displayName'> | null,
+  comments: Array<Pick<AnnotationCommentNode, 'pk' | 'comment' | 'annotationId'> & {
+    author: Pick<UserNode, 'pk' | 'displayName'> | null,
   }>,
   input: {
     colormap?: Colormap;
@@ -62,7 +62,7 @@ export type AnnotatorState = {
   },
   __utils: {
     phase: AnnotationPhaseType,
-    annotator?: Pick<UserNode, 'id' | 'displayName'> | null, // TODO: check this is really used
+    annotator?: Pick<UserNode, 'pk' | 'displayName'> | null, // TODO: check this is really used
     sessionStart?: number;
     campaignID?: string,
   }
@@ -96,13 +96,13 @@ const initialState: AnnotatorState = {
 
 export type Annotation = AnnotatorState['annotations'][number];
 export type AddAnnotation =
-  Partial<Omit<Annotation, 'id' | 'annotator' | 'detectorConfiguration'>>
-  & Pick<Annotation, 'id' | 'type' | 'label' | 'annotationPhase'>
-export type UpdateAnnotation = Partial<Omit<Annotation, 'id' | 'annotator' | 'type' | 'detectorConfiguration'>>
+  Partial<Omit<Annotation, 'pk' | 'annotator' | 'detectorConfiguration'>>
+  & Pick<Annotation, 'pk' | 'type' | 'label' | 'annotationPhase'>
+export type UpdateAnnotation = Partial<Omit<Annotation, 'pk' | 'annotator' | 'type' | 'detectorConfiguration'>>
 
 export type Comment = AnnotatorState['comments'][number];
 export type UpdateComment = Pick<Comment, 'comment'>;
-export type AddComment = Pick<Comment, 'id' | 'comment'>;
+export type AddComment = Pick<Comment, 'pk' | 'comment'>;
 
 export const AnnotatorSlice = createSlice({
   name: 'AnnotatorSlice',
@@ -111,33 +111,33 @@ export const AnnotatorSlice = createSlice({
     // Annotations
     assignAnnotation: (state, action: {
       payload: {
-        id: string;
+        pk: string;
         partialUpdate: UpdateAnnotation
       }
     }) => {
-      state.annotations = state.annotations.map(a => a.id === action.payload.id ? { ...a, ...action.payload.partialUpdate } : a);
+      state.annotations = state.annotations.map(a => a.pk === action.payload.pk ? { ...a, ...action.payload.partialUpdate } : a);
       state.ui.hasChanged = true
     },
     addAnnotation: (state, action: { payload: AddAnnotation }) => {
       state.annotations = [ ...state.annotations, {
         ...action.payload,
-        id: (Math.min(0, ...state.annotations.map(a => +a.id)) - 1).toString(),
+        pk: (Math.min(0, ...state.annotations.map(a => +a.pk)) - 1).toString(),
         annotator: state.__utils.annotator
       } ]
       state.ui.hasChanged = true
     },
-    removeAnnotation: (state, action: { payload: Pick<Annotation, 'id'> }) => {
-      state.annotations = state.annotations.filter(a => a.id !== action.payload.id)
+    removeAnnotation: (state, action: { payload: Pick<Annotation, 'pk'> }) => {
+      state.annotations = state.annotations.filter(a => a.pk !== action.payload.pk)
       state.ui.hasChanged = true
     },
     // Comments
     assignComment: (state, action: {
       payload: {
-        id: string;
+        pk: string;
         partialUpdate: UpdateComment
       }
     }) => {
-      state.comments = state.comments.map(a => a.id === action.payload.id ? { ...a, ...action.payload.partialUpdate } : a);
+      state.comments = state.comments.map(a => a.pk === action.payload.pk ? { ...a, ...action.payload.partialUpdate } : a);
       state.ui.hasChanged = true
     },
     addComment: (state, action: { payload: AddComment }) => {
@@ -147,8 +147,8 @@ export const AnnotatorSlice = createSlice({
       } ]
       state.ui.hasChanged = true
     },
-    removeComment: (state, action: { payload: Pick<Comment, 'id'> }) => {
-      state.comments = state.comments.filter(a => a.id !== action.payload.id)
+    removeComment: (state, action: { payload: Pick<Comment, 'pk'> }) => {
+      state.comments = state.comments.filter(a => a.pk !== action.payload.pk)
       state.ui.hasChanged = true
     },
     // Input
@@ -200,11 +200,11 @@ export const AnnotatorSlice = createSlice({
         comments: (payload.allAnnotationComments?.results ?? []).filter(c => c !== null),
         input: state.__utils.campaignID === arg.originalArgs.campaignID ? {
           ...state.input,
-          annotationID: defaultAnnotation?.id,
+          annotationID: defaultAnnotation?.pk,
           labelName: defaultAnnotation?.label.name,
           confidenceLabel: defaultAnnotation?.confidence?.label ??
             (confidences.find(c => c?.isDefault) ?? confidences.find(c => c !== null))?.label,
-          analysisID: payload.allSpectrogramAnalysis?.results.filter(r => r !== null).reverse().pop()?.id,
+          analysisID: payload.allSpectrogramAnalysis?.results.filter(r => r !== null).reverse().pop()?.pk,
           brightness: 50,
           contrast: 50,
         } : initialState.input,
@@ -221,11 +221,8 @@ export const AnnotatorSlice = createSlice({
 
     })
 
-    builder.addMatcher(UserAPI.endpoints.getCurrentUser.matchFulfilled, (state: AnnotatorState, { payload }) => {
-      state.__utils.annotator = {
-        id: payload.id.toString(),
-        displayName: payload.display_name
-      }
+    builder.addMatcher(AuthQueryAPI.endpoints.getCurrentUser.matchFulfilled, (state: AnnotatorState, { payload }) => {
+      state.__utils.annotator = payload.currentUser
     })
   }
 })

@@ -24,6 +24,7 @@ graphene-django = "^3.2.3"
 graphene-django-pagination = {url = "https://github.com/instruct-br/graphene-django-pagination/archive/master.zip"}
 django-filter = ">=2"
 graphene-django-optimizer = "^0.10.0"
+django-graphene-auth = "^1.1.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"

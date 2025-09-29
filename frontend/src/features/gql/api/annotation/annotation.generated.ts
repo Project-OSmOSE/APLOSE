@@ -1,6 +1,6 @@
-import * as Types from '../../types.generated';
+import * as Types from '../../../_utils_/gql/types.generated';
 
-import { gqlAPI } from '@/features/gql/baseApi.ts';
+import { gqlAPI } from '@/features/_utils_/gql/baseApi.ts';
 export type GetAnnotationSettingsQueryVariables = Types.Exact<{
   campaignID: Types.Scalars['PK']['input'];
   phaseType: Types.AnnotationPhaseType;

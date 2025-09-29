@@ -2,7 +2,7 @@ import { Locator, Page, test } from '@playwright/test';
 import { UserType } from '../../fixtures';
 import { LoginPage } from './login';
 import { Mock, MockType } from '../services';
-import { expect } from "../index";
+import { expect, interceptGQL } from "../index";
 
 export class CampaignListPage {
 
@@ -22,11 +22,14 @@ export class CampaignListPage {
   async go(as: UserType, type: MockType = 'filled') {
     await test.step('Navigate to Campaigns', async () => {
       await this.mock.userSelf(as)
-      await this.mock.campaigns(type === 'empty')
+      await interceptGQL(this.page, {
+        listCampaignsAndPhases: type
+      })
       await this.login.login(as)
-      await this.mock.campaigns(type === 'empty')
+      await interceptGQL(this.page, {
+        listCampaignsAndPhases: type
+      }, 2)
       await expect(this.page.getByRole('heading', { name: 'Annotation campaigns' })).toBeVisible()
-      await expect(this.page.getByText('Archived: False')).toBeVisible() // Filters are initialized
     });
   }
 

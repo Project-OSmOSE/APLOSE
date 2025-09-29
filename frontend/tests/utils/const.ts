@@ -22,10 +22,10 @@ export const API_URL = {
     archive: /\/api\/annotation-campaign\/-?\d\/archive\/?/g,
   },
   phase: {
-    list: /\/api\/annotation-campaign-phase\/?\?/g,
-    detail: /\/api\/annotation-campaign-phase\/\d\/?/g,
-    report: /\/api\/annotation-campaign-phase\/-?\d\/report/g,
-    reportStatus: /\/api\/annotation-campaign-phase\/-?\d\/report-status/g
+    list: /\/api\/annotation-phase\/?\?/g,
+    detail: /\/api\/annotation-phase\/\d\/?/g,
+    report: /\/api\/annotation-phase\/-?\d\/report/g,
+    reportStatus: /\/api\/annotation-phase\/-?\d\/report-status/g
   },
   dataset: {
     list: '/api/dataset/',
@@ -55,8 +55,8 @@ export const API_URL = {
     detail: /\/api\/label-set\/-?\d\/?/g,
   },
   confidence: {
-    list: /\/api\/confidence-indicator\/?/g,
-    detail: /\/api\/confidence-indicator\/-?\d\/?/g,
+    list: /\/api\/confidence-set\/?/g,
+    detail: /\/api\/confidence-set\/-?\d\/?/g,
   },
   annotator: /api\/annotator\/campaign\/-?\d\/phase\/-?\d\/file\/-?\d/g,
   result: {

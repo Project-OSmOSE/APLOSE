@@ -2,9 +2,6 @@
 
 from django.db import transaction
 from django.db.models import (
-    Q,
-    Exists,
-    OuterRef,
     Count,
 )
 from django.shortcuts import get_object_or_404
@@ -16,9 +13,9 @@ from rest_framework.utils.serializer_helpers import ReturnDict
 
 from backend.api.models import (
     AnnotationCampaign,
-    AnnotationFileRange,
     AnnotationPhase,
 )
+from backend.api.schema.context_filters import AnnotationCampaignContextFilter
 from backend.api.serializers import (
     AnnotationCampaignSerializer,
     AnnotationPhaseSerializer,
@@ -35,20 +32,7 @@ class CampaignAccessFilter(filters.BaseFilterBackend):
     """Filter campaign access base on user"""
 
     def filter_queryset(self, request: Request, queryset, view):
-        if request.user.is_staff or request.user.is_superuser:
-            return queryset
-        return queryset.filter(
-            Q(owner_id=request.user.id)
-            | (
-                Q(archive__isnull=True)
-                & Exists(
-                    AnnotationFileRange.objects.filter(
-                        annotation_phase__annotation_campaign_id=OuterRef("pk"),
-                        annotator_id=request.user.id,
-                    )
-                )
-            )
-        )
+        return AnnotationCampaignContextFilter.get_queryset(request)
 
 
 class CampaignPatchPermission(permissions.BasePermission):

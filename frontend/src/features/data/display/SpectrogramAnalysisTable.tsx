@@ -23,7 +23,7 @@ export const SpectrogramAnalysisTable: React.FC<{
 
   if (isLoading) return <IonSpinner/>
   if (error) <WarningText>{ getErrorMessage(error) }</WarningText>
-  if (!analysis) return <IonNote color='medium'>No spectrogram analysis</IonNote>
+  if (!analysis || analysis.length === 0) return <IonNote color='medium'>No spectrogram analysis</IonNote>
 
   return <Table columns={ 12 }>
     <TableHead topSticky isFirstColumn={ true }>

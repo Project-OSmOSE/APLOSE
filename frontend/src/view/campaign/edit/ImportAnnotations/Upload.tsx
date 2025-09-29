@@ -12,7 +12,7 @@ import { ImportAnnotationsSlice } from "@/service/slices/import-annotations.ts";
 
 export const Upload: React.FC = () => {
   const { campaignID } = useRetrieveCurrentCampaign();
-  const { phaseID, phase } = useRetrieveCurrentPhase()
+  const { phaseType, phase } = useRetrieveCurrentPhase()
   const { verificationPhase } = useListPhasesForCurrentCampaign()
   const { upload: uploadInfo, detectors, file } = useAppSelector(state => state.resultImport)
   const navigate = useNavigate();
@@ -20,8 +20,8 @@ export const Upload: React.FC = () => {
 
   const back = useCallback(() => {
     if (verificationPhase) navigate(`/annotation-campaign/${ campaignID }/phase/${ verificationPhase.id }`)
-    else navigate(`/annotation-campaign/${ campaignID }/phase/${ phaseID }`)
-  }, [ campaignID, verificationPhase, phaseID ])
+    else navigate(`/annotation-campaign/${ campaignID }/phase/${ phaseType }`)
+  }, [ campaignID, verificationPhase, phaseType ])
 
   const { upload } = useUploadAnnotationChunk(back)
   const reset = useCallback(() => {

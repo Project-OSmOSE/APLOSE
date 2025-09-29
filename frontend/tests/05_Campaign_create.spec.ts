@@ -19,8 +19,8 @@ test.describe('Annotator', () => {
       const data = request.postDataJSON() as PostAnnotationCampaign;
       const expectedData: PostAnnotationCampaign = {
         name: CAMPAIGN.name,
-        dataset: "1",
-        analysis: [ "1" ],
+        dataset: 1,
+        analysis: [ 1 ],
         instructions_url: null,
         desc: null,
         deadline: null,
@@ -39,6 +39,7 @@ test.describe('Annotator', () => {
     await page.campaign.create.go('annotator');
     await page.campaign.create.fillGlobal({ complete: true });
     await page.campaign.create.fillData();
+    await page.campaign.create.fillColormap();
     const [ campaignRequest, ] = await Promise.all([
       page.waitForRequest(API_URL.campaign.create),
       page.campaign.create.createButton.click()
@@ -51,12 +52,12 @@ test.describe('Annotator', () => {
         instructions_url: CAMPAIGN.instructions_url,
         desc: CAMPAIGN.desc,
         deadline: CAMPAIGN.deadline,
-        dataset: "1",
-        analysis: [ "1" ],
-        allow_image_tuning: false,
-        allow_colormap_tuning: false,
-        colormap_default: null,
-        colormap_inverted_default: null,
+        dataset: 1,
+        analysis: [ 1 ],
+        allow_image_tuning: true,
+        allow_colormap_tuning: true,
+        colormap_default: 'hsv',
+        colormap_inverted_default: true,
       }
       expect(campaignData).toEqual(expectedCampaign);
     })

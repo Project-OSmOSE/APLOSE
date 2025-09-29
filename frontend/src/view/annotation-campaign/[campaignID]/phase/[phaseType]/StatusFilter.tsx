@@ -5,8 +5,8 @@ import { funnel, funnelOutline } from "ionicons/icons";
 import { createPortal } from "react-dom";
 import { Modal } from "@/components/ui";
 import { Switch } from "@/components/form";
-import { useSpectrogramFilters } from "./filter.ts";
 import { TaskStatus } from "@/features/gql/api";
+import { useSpectrogramFilters } from "@/service/slices/filter.ts";
 
 export const StatusFilter: React.FC<{
   onUpdate: () => void
@@ -15,16 +15,16 @@ export const StatusFilter: React.FC<{
   const [ filterModalOpen, setFilterModalOpen ] = useState<boolean>(false);
 
   function setState(option: string) {
-    let isTaskCompleted = undefined;
+    let is_submitted = undefined;
     switch (option) {
       case TaskStatus.created:
-        isTaskCompleted = false;
+        is_submitted = false;
         break;
       case TaskStatus.finished:
-        isTaskCompleted = true;
+        is_submitted = true;
         break;
     }
-    updateParams({ isTaskCompleted })
+    updateParams({ is_submitted })
     onUpdate()
   }
 
@@ -40,7 +40,7 @@ export const StatusFilter: React.FC<{
   }
 
   return <Fragment>
-    { params.isTaskCompleted !== undefined ?
+    { params.is_submitted !== undefined ?
       <IonIcon onClick={ () => setFilterModalOpen(true) } color='primary' icon={ funnel }/> :
       <IonIcon onClick={ () => setFilterModalOpen(true) } color='dark' icon={ funnelOutline }/> }
 
@@ -48,7 +48,7 @@ export const StatusFilter: React.FC<{
                                              onClose={ () => setFilterModalOpen(false) }>
 
       <Switch label='Status' options={ [ 'Unset', 'Created', 'Finished' ] }
-              value={ valueToBooleanOption(params.isTaskCompleted) } onValueSelected={ setState }/>
+              value={ valueToBooleanOption(params.is_submitted) } onValueSelected={ setState }/>
 
     </Modal>, document.body) }
   </Fragment>

@@ -1,7 +1,8 @@
 import { API_URL, ESSENTIAL, expect, Page, Request, test } from './utils';
-import { AUDIO_METADATA, CAMPAIGN, CAMPAIGN_PHASE, CONFIDENCE, LABEL, SPECTROGRAM_CONFIGURATION } from './fixtures';
+import { CAMPAIGN, CAMPAIGN_PHASE, CONFIDENCE, LABEL, USERS } from './fixtures';
 import { LabelModal } from './utils/pages';
 import { PatchAnnotationCampaign } from "../src/service/api/campaign";
+import { dateToString } from "../src/service/function";
 
 // Utils
 
@@ -17,18 +18,6 @@ const STEP = {
     await expect(modal.updateButton).toBeEnabled();
     await modal.close()
   }),
-  accessDownloadCSV: async (page: Page) => {
-    await test.step('Access spectrogram configuration download', async () => {
-      const modal = await page.campaign.detail.openSpectrogramModal();
-      await expect(modal.downloadButton).toBeEnabled();
-      await modal.close()
-    })
-    await test.step('Access audio metadata download', async () => {
-      const modal = await page.campaign.detail.openAudioModal();
-      await expect(modal.downloadButton).toBeEnabled();
-      await modal.close()
-    })
-  },
 }
 
 // Tests
@@ -39,10 +28,15 @@ test.describe('Annotator', () => {
     await page.campaign.detail.go('annotator');
     await page.getByRole('button', { name: 'Information' }).click();
     await expect(page.getByRole('heading', { name: CAMPAIGN.name })).toBeVisible();
-    await expect(page.getByText(`Created on ${ new Date(CAMPAIGN.created_at).toLocaleDateString() } by ${ CAMPAIGN.owner.display_name }`)).toBeVisible();
+    await expect(page.getByText(`Created on ${ dateToString(CAMPAIGN.created_at) } by ${ CAMPAIGN.owner.display_name }`)).toBeVisible();
     await expect(page.getByText(CAMPAIGN.desc)).toBeVisible();
-    await expect(page.getByText(new Date(CAMPAIGN.deadline).toLocaleDateString())).toBeVisible();
+    await expect(page.getByText(dateToString(CAMPAIGN.deadline))).toBeVisible();
     await expect(page.getByRole('button', { name: CAMPAIGN_PHASE.phase, exact: true })).toBeVisible();
+
+    await test.step('Can copy owner email', async () => {
+      await page.locator('p').filter({ hasText: 'Created on ' }).getByRole('button').click()
+      await expect(page.getByText(`${ USERS.creator.display_name } email address`)).toBeVisible();
+    })
 
     await test.step('Cannot archive', async () => {
       await expect(page.campaign.detail.archiveButton).not.toBeVisible();
@@ -70,43 +64,18 @@ test.describe('Annotator', () => {
     })
   })
 
-  test('Spectrogram configuration', async ({ page }) => {
+  test('Data', async ({ page }) => {
     await page.campaign.detail.go('annotator');
     await page.getByRole('button', { name: 'Information' }).click();
-    const modal = await page.campaign.detail.openSpectrogramModal();
-    await expect(modal.getByText(`NFFT${ SPECTROGRAM_CONFIGURATION.nfft }`)).toBeVisible();
-
-    await test.step('Cannot download', async () => {
-      await expect(modal.downloadButton).not.toBeVisible()
-    })
-  })
-
-  test('Audio metadata', async ({ page }) => {
-    await page.campaign.detail.go('annotator');
-    await page.getByRole('button', { name: 'Information' }).click();
-    const modal = await page.campaign.detail.openAudioModal();
-    await expect(modal.getByText(`Files subtypes${ AUDIO_METADATA.files_subtypes }`)).toBeVisible();
-
-    await test.step('Cannot download', async () => {
-      await expect(modal.downloadButton).not.toBeVisible()
-    })
+    await expect(page.getByText("Test analysis")).toBeVisible()
+    await page.getByRole("button", { name: "Test dataset" }).click()
+    await page.waitForURL(`/app/dataset/1/`)
   })
 
   test('Empty', ESSENTIAL, async ({ page }) => {
     await page.campaign.detail.go('annotator', { empty: true });
     await page.getByRole('button', { name: 'Information' }).click();
-
-    await test.step('Spectrogram configurations', async () => {
-      const modal = await page.campaign.detail.openSpectrogramModal();
-      await expect(modal.getByText('No spectrogram configuration')).toBeVisible();
-      await modal.close()
-    })
-
-    await test.step('Audio metadata', async () => {
-      const modal = await page.campaign.detail.openAudioModal();
-      await expect(modal.getByText('No metadata')).toBeVisible();
-      await modal.close()
-    })
+    await expect(page.getByText('No spectrogram analysis')).toBeVisible();
   })
 })
 
@@ -164,43 +133,11 @@ test.describe('Campaign creator', () => {
     })
   })
 
-  test('Can download spectrogram configuration', async ({ page }) => {
-    await page.campaign.detail.go('creator');
-    await page.getByRole('button', { name: 'Information' }).click();
-    const modal = await page.campaign.detail.openSpectrogramModal()
-    await Promise.all([
-      page.waitForRequest(API_URL.spectrogram.export),
-      modal.downloadButton.click(),
-    ])
-  })
-
-  test('Can download audio metadata', async ({ page }) => {
-    await page.campaign.detail.go('creator');
-    await page.getByRole('button', { name: 'Information' }).click();
-    const modal = await page.campaign.detail.openAudioModal();
-    await Promise.all([
-      page.waitForRequest(API_URL.audio.export),
-      modal.downloadButton.click(),
-    ])
-  })
-
-  test('Empty', async ({ page }) => {
+  test('Empty', ESSENTIAL, async ({ page }) => {
     await page.campaign.detail.go('creator', { empty: true });
     await page.getByRole('button', { name: 'Information' }).click();
-
-    await test.step('Spectrogram configurations', async () => {
-      const modal = await page.campaign.detail.openSpectrogramModal();
-      await expect(modal.downloadButton).not.toBeVisible();
-      await modal.close()
-    })
-
-    await test.step('Audio metadata', async () => {
-      const modal = await page.campaign.detail.openAudioModal();
-      await expect(modal.downloadButton).not.toBeVisible();
-      await modal.close()
-    })
+    await expect(page.getByText('No spectrogram analysis')).toBeVisible();
   })
-
 })
 
 test('Staff', async ({ page }) => {
@@ -208,7 +145,6 @@ test('Staff', async ({ page }) => {
   await page.getByRole('button', { name: 'Information' }).click();
 
   await STEP.accessArchive(page)
-  await STEP.accessDownloadCSV(page)
   await STEP.accessLabelUpdate(page)
 })
 
@@ -217,6 +153,5 @@ test('Superuser', ESSENTIAL, async ({ page }) => {
   await page.getByRole('button', { name: 'Information' }).click();
 
   await STEP.accessArchive(page)
-  await STEP.accessDownloadCSV(page)
   await STEP.accessLabelUpdate(page)
 })

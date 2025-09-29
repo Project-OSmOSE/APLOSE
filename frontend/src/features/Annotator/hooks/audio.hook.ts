@@ -38,7 +38,7 @@ export const useAnnotatorAudio = (player?: MutableRefObject<HTMLAudioElement | n
   function onKbdEvent(event: KeyboardEvent) {
     if (event.code === 'Space') {
       event.preventDefault();
-      playPause(annotations?.find(r => r.id === annotationID));
+      playPause(annotations?.find(r => r.pk === annotationID));
     }
   }
 

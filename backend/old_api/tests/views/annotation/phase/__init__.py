@@ -1,16 +1,4 @@
 """Campaign phase tests"""
-from .create import (
-    CreateUnauthenticatedTestCase,
-    CreateCampaignOwnerAuthenticatedTestCase,
-    CreateBaseUserAuthenticatedTestCase,
-    CreateAdminAuthenticatedTestCase,
-)
-from .end import (
-    EndUnauthenticatedTestCase,
-    EndBaseUserAuthenticatedTestCase,
-    EndAdminAuthenticatedTestCase,
-    EndCampaignOwnerAuthenticatedTestCase,
-)
 from .report import (
     ReportFilledPhaseOwnerAuthenticatedTestCase,
     ReportFilledBaseUserNoPhaseAuthenticatedTestCase,

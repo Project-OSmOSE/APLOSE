@@ -6,26 +6,26 @@ const config: CodegenConfig = {
   ignoreNoDocuments: true,
   watch: true,
   generates: {
-    'src/features/gql/types.generated.ts': {
+    'src/features/_utils_/gql/types.generated.ts': {
       plugins: [ 'typescript' ],
     },
     'src/': {
       preset: 'near-operation-file',
       presetConfig: {
-        baseTypesPath: '/features/gql/types.generated.ts',
+        baseTypesPath: '/features/_utils_/gql/types.generated.ts',
       },
       plugins: [
         'typescript-operations',
         {
           'typescript-rtk-query': {
-            importBaseApiFrom: '@/features/gql/baseApi.ts',
+            importBaseApiFrom: '@/features/_utils_/gql/baseApi.ts',
             importBaseApiAlternateName: 'gqlAPI',
           }
         }
       ],
     },
     '.introspection.json': {
-      plugins: ['introspection']
+      plugins: [ 'introspection' ]
     }
   },
 }

@@ -9,42 +9,35 @@ from backend.api.tests.schema.data.spectrogram_analysis.all_spectrogram_analysis
 )
 
 QUERY = """
-query ($userID: DjangoID!, $annotatorID: DjangoID, $ownerID: DjangoID, $isArchived: Boolean, $phase: AnnotationPhaseType, $search: String) {
-  allAnnotationCampaigns(
-    annotatorId: $annotatorID
-    ownerId: $ownerID
-    isArchived: $isArchived
-    phaseType: $phase
-    search: $search
-    orderBy: "name"
-  ) {
-    results {
-      name
-      deadline
-      tasksCount
-      finishedTasksCount
-      userTasksCount(id: $userID)
-      userFinishedTasksCount(id: $userID)
-      dataset {
-        name
-      }
-      archive {
-        id
-      }
-      phases {
+query (
+    $isArchived: Boolean
+    $phase: AnnotationPhaseType
+    $ownerPk: PK
+    $annotatorPk: PK
+    $search: String
+) {
+    allAnnotationCampaigns(
+        isArchived: $isArchived
+        phaseType: $phase
+        ownerPk: $ownerPk
+        annotatorPk: $annotatorPk
+        search: $search
+    ) {
         results {
-          phase
+            pk
+            name
+            datasetName
+            deadline
+            isArchived
         }
-      }
     }
-  }
 }
 """
 VARIABLES = {
-    "annotatorID": None,
-    "ownerID": None,
     "isArchived": None,
     "phase": None,
+    "ownerPk": None,
+    "annotatorPk": None,
     "search": None,
 }
 
@@ -63,7 +56,6 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
             QUERY,
             variables={
                 **VARIABLES,
-                "userID": 1,
             },
         )
         self.assertResponseHasErrors(response)
@@ -76,7 +68,6 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
             QUERY,
             variables={
                 **VARIABLES,
-                "userID": 1,
             },
         )
         self.assertResponseNoErrors(response)
@@ -87,7 +78,6 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.assertEqual(len(content), AnnotationCampaign.objects.count())
         self.assertEqual(content[0]["name"], "Test DCLDE LF campaign")
         self.assertEqual(content[1]["name"], "Test RTF campaign")
-        self.assertEqual(content[1]["phases"]["results"][0]["phase"], "Annotation")
 
     def test_connected_owner(self):
         self.client.login(username="user1", password="osmose29")
@@ -95,7 +85,6 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
             QUERY,
             variables={
                 **VARIABLES,
-                "userID": 3,
             },
         )
         self.assertResponseNoErrors(response)
@@ -106,7 +95,6 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.assertEqual(len(content), 4)
         self.assertEqual(content[0]["name"], "Test DCLDE LF campaign")
         self.assertEqual(content[1]["name"], "Test RTF campaign")
-        self.assertEqual(content[1]["phases"]["results"][0]["phase"], "Annotation")
 
     def test_connected_empty_user(self):
         self.client.login(username="user4", password="osmose29")
@@ -114,7 +102,6 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
             QUERY,
             variables={
                 **VARIABLES,
-                "userID": 6,
             },
         )
         self.assertResponseNoErrors(response)
@@ -130,8 +117,7 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
             QUERY,
             variables={
                 **VARIABLES,
-                "userID": 1,
-                "ownerID": 3,
+                "ownerPk": 3,
             },
         )
         self.assertResponseNoErrors(response)
@@ -142,7 +128,6 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.assertEqual(len(content), 4)
         self.assertEqual(content[0]["name"], "Test DCLDE LF campaign")
         self.assertEqual(content[1]["name"], "Test RTF campaign")
-        self.assertEqual(content[1]["phases"]["results"][0]["phase"], "Annotation")
 
     def test_connected_admin_filter_annotator(self):
         self.client.login(username="admin", password="osmose29")
@@ -150,8 +135,7 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
             QUERY,
             variables={
                 **VARIABLES,
-                "userID": 1,
-                "annotatorID": 1,
+                "annotatorPk": 1,
             },
         )
         self.assertResponseNoErrors(response)
@@ -167,7 +151,7 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.client.login(username="admin", password="osmose29")
         response = self.query(
             QUERY,
-            variables={**VARIABLES, "userID": 1, "isArchived": True},
+            variables={**VARIABLES, "isArchived": True},
         )
         self.assertResponseNoErrors(response)
 
@@ -181,7 +165,7 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.client.login(username="admin", password="osmose29")
         response = self.query(
             QUERY,
-            variables={**VARIABLES, "userID": 1, "phase": "V"},
+            variables={**VARIABLES, "phase": "Verification"},
         )
         self.assertResponseNoErrors(response)
 
@@ -195,7 +179,7 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.client.login(username="admin", password="osmose29")
         response = self.query(
             QUERY,
-            variables={**VARIABLES, "userID": 1, "search": "RTF"},
+            variables={**VARIABLES, "search": "RTF"},
         )
         self.assertResponseNoErrors(response)
 
@@ -209,7 +193,7 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.client.login(username="admin", password="osmose29")
         response = self.query(
             QUERY,
-            variables={**VARIABLES, "userID": 1, "search": "glider"},
+            variables={**VARIABLES, "search": "glider"},
         )
         self.assertResponseNoErrors(response)
 

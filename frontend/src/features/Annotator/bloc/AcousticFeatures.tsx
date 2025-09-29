@@ -20,7 +20,7 @@ import {
   useAnnotatorUI,
   useXAxis
 } from "@/features/Annotator";
-import { AnnotationType, SignalTrendType } from "@/features/gql/types.generated.ts";
+import { AnnotationType, SignalTrendType } from "@/features/_utils_/gql/types.generated.ts";
 
 export const AcousticFeatures: React.FC = () => {
   const { focus, annotation, updateFeatures, removeFeatures, update } = useAnnotatorAnnotations()

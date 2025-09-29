@@ -15,17 +15,18 @@ import {
 } from "@/components/ui";
 import { IonButton, IonIcon, IonNote, IonSpinner } from "@ionic/react";
 import { analytics, caretDown, caretUp, downloadOutline } from "ionicons/icons";
-import { AnnotationFileRange, User } from "@/service/types";
+import { AnnotationFileRange } from "@/service/types";
 import { Progress } from "@/components/ui/Progress.tsx";
 import { useModal } from "@/service/ui/modal.ts";
 import { createPortal } from "react-dom";
-import { UserAPI } from "@/service/api/user.ts";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { CampaignPhaseAPI, useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
 import { useListFileRangesForCurrentPhase } from "@/service/api/annotation-file-range.ts";
+import { useUsers } from "@/features/auth/api";
+import { UserNode } from "@/features/_utils_";
 
 type Progression = {
-  user: User;
+  user: Pick<UserNode, 'pk' | 'displayName' | 'expertise'>;
   ranges: Array<AnnotationFileRange>;
   progress: number; // [0-1]
 }
@@ -53,7 +54,7 @@ export const ProgressModal: React.FC<{
   const { campaign, hasAdminAccess } = useRetrieveCurrentCampaign()
   const { phase } = useRetrieveCurrentPhase()
   const toast = useToast();
-  const { data: users, isFetching: isLoadingUsers, error: userError } = UserAPI.endpoints.listUser.useQuery();
+  const { users, isFetching: isLoadingUsers, error: userError } = useUsers();
   const { fileRanges, isFetching: isLoadingFileRanges, error: fileRangeError } = useListFileRangesForCurrentPhase();
   const [ downloadStatus, { error: statusError } ] = CampaignPhaseAPI.endpoints.downloadCampaignPhaseStatus.useMutation()
   const [ downloadReport, { error: reportError } ] = CampaignPhaseAPI.endpoints.downloadCampaignPhaseReport.useMutation()
@@ -65,11 +66,11 @@ export const ProgressModal: React.FC<{
     if (!fileRanges || !users) return;
     const progression = new Array<Progression>();
     for (const range of fileRanges) {
-      let progress: Progression | undefined = progression.find(p => p.user.id === range.annotator);
+      let progress: Progression | undefined = progression.find(p => p.user.pk === range.annotator);
       if (progress) {
         progress.ranges.push(range);
       } else {
-        const user = users.find(u => u.id === range.annotator)!
+        const user = users.find(u => u.pk === range.annotator)!
         progress = {
           user,
           ranges: [ range ],
@@ -124,7 +125,7 @@ export const ProgressModal: React.FC<{
     let comparison = 0;
     switch (sort.entry) {
       case "Annotator":
-        comparison = a.user.display_name_with_expertise.toLowerCase().localeCompare(b.user.display_name_with_expertise.toLowerCase());
+        comparison = a.user.displayName.toLowerCase().localeCompare(b.user.displayName.toLowerCase());
         break;
       case "Progress":
         comparison = a.progress - b.progress;
@@ -169,10 +170,11 @@ export const ProgressModal: React.FC<{
 
             { progress.sort(sortProgress).map(p => {
               return (
-                <Fragment key={ p.user.display_name_with_expertise }>
+                <Fragment key={ p.user.displayName }>
                   <TableDivider/>
                   <TableContent
-                    isFirstColumn={ true }>{ p.user.display_name_with_expertise }</TableContent>
+                    isFirstColumn={ true }>{ p.user.displayName }&nbsp;{ p.user.expertise &&
+                      <Fragment>( { p.user.expertise } )</Fragment> }</TableContent>
                   <TableContent className={ styles.progressContent }>
                     <div>
                       { p.ranges.map(r => (

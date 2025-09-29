@@ -1,6 +1,6 @@
-import * as Types from '../../gql/types.generated';
+import * as Types from '../../_utils_/gql/types.generated';
 
-import { gqlAPI } from '@/features/gql/baseApi.ts';
+import { gqlAPI } from '@/features/_utils_/gql/baseApi.ts';
 export type GetAnnotatorQueryVariables = Types.Exact<{
   spectrogramID: Types.Scalars['PK']['input'];
   campaignID: Types.Scalars['PK']['input'];

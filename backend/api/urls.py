@@ -16,9 +16,9 @@ api_router.register(
     r"annotation-campaign", AnnotationCampaignViewSet, basename="annotation-campaign"
 )
 api_router.register(
-    r"annotation-campaign-phase",
+    r"annotation-phase",
     AnnotationPhaseViewSet,
-    basename="annotation-campaign-phase",
+    basename="annotation-phase",
 )
 api_router.register(
     r"annotation-file-range",

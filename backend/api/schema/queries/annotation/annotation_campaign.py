@@ -1,23 +1,28 @@
 """AnnotationCampaign schema"""
 import graphene_django_optimizer
-from django.db import models
-from django.db.models import QuerySet, Count, Q, Case, When, F, Value
-from django.db.models.functions import Now
+from django.db.models import (
+    QuerySet,
+    Q,
+    ExpressionWrapper,
+    CharField,
+    F,
+    BooleanField,
+    Value,
+)
 from django_filters import (
     FilterSet,
     BooleanFilter,
     OrderingFilter,
     CharFilter,
 )
-from graphene import relay, ObjectType, Int, Field, String, Boolean
+from graphene import relay, ObjectType, Field, String, Boolean
 from graphene_django.filter import TypedFilter
 from graphql import GraphQLResolveInfo
 
 from backend.api.models import (
     AnnotationCampaign,
-    AnnotationTask,
 )
-from backend.aplose.schema import UserNode
+from backend.aplose.schema.user import UserNode
 from backend.utils.schema import (
     ApiObjectType,
     AuthenticatedDjangoConnectionField,
@@ -30,13 +35,14 @@ from .annotation_phase import AnnotationPhaseNode, AnnotationPhaseType
 from .detector import DetectorNode
 from .label import AnnotationLabelNode
 from ..data.spectrogram_analysis import SpectrogramAnalysisNode
+from ...context_filters import AnnotationCampaignContextFilter
 
 
 class AnnotationCampaignFilter(FilterSet):
     """AnnotationCampaign filters"""
 
-    annotator_id = PKFilter(field_name="phases__annotation_file_ranges__annotator_id")
-    owner_id = PKFilter()
+    annotator_pk = PKFilter(field_name="phases__annotation_file_ranges__annotator_id")
+    owner_pk = PKFilter(field_name="owner_id")
     is_archived = BooleanFilter(
         field_name="archive", lookup_expr="isnull", exclude=True
     )
@@ -65,6 +71,9 @@ class AnnotationCampaignFilter(FilterSet):
 class AnnotationCampaignNode(ApiObjectType):
     """AnnotationCampaign schema"""
 
+    dataset_name = Field(String, required=True)
+    is_archived = Field(Boolean, required=True)
+
     phases = AuthenticatedDjangoConnectionField(AnnotationPhaseNode)
     analysis = AuthenticatedDjangoConnectionField(SpectrogramAnalysisNode)
     labels_with_acoustic_features = AuthenticatedDjangoConnectionField(
@@ -77,15 +86,7 @@ class AnnotationCampaignNode(ApiObjectType):
         UserNode, source="phases__file_ranges__annotator"
     )
 
-    tasks_count = Int()
-    finished_tasks_count = Int()
-
-    user_tasks_count = Int()
-    user_finished_tasks_count = Int()
-
-    state = String()
-
-    is_edit_allowed = Boolean()
+    can_manage = Field(Boolean, required=True)
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
@@ -98,54 +99,20 @@ class AnnotationCampaignNode(ApiObjectType):
     def get_queryset(
         cls, queryset: QuerySet[AnnotationCampaign], info: GraphQLResolveInfo
     ):
+        queryset = AnnotationCampaignContextFilter.get_queryset(info.context)
         return graphene_django_optimizer.query(
-            queryset.prefetch_related(
-                "phases",
-                "phases__annotation_tasks",
-                "archive",
-            )
-            .annotate(
-                tasks_count=Count("phases__annotation_tasks", distinct=True),
-                finished_tasks_count=Count(
-                    "phases__annotation_tasks",
-                    filter=Q(
-                        phases__annotation_tasks__status=AnnotationTask.Status.FINISHED
-                    ),
-                    distinct=True,
+            queryset.select_related("dataset").annotate(
+                dataset_name=ExpressionWrapper(
+                    F("dataset__name"), output_field=CharField()
                 ),
-                user_tasks_count=Count(
-                    "phases__annotation_tasks",
-                    filter=Q(
-                        phases__annotation_tasks__annotator_id=info.context.user.id
-                    ),
-                    distinct=True,
+                is_archived=ExpressionWrapper(
+                    ~Q(archive_id=None), output_field=BooleanField()
                 ),
-                user_finished_tasks_count=Count(
-                    "phases__annotation_tasks",
-                    filter=Q(
-                        phases__annotation_tasks__annotator_id=info.context.user.id,
-                        phases__annotation_tasks__status=AnnotationTask.Status.FINISHED,
-                    ),
-                    distinct=True,
-                ),
-            )
-            .annotate(
-                state=Case(
-                    When(archive__isnull=False, then=Value("Archived")),
-                    When(finished_tasks_count=F("tasks_count"), then=Value("Finished")),
-                    When(deadline__lte=Now(), then=Value("Due date")),
-                    default=Value("Open"),
-                    output_field=models.CharField(
-                        choices=["Archived", "Finished", "Due date", "Open"]
-                    ),
-                ),
-                is_edit_allowed=Case(
-                    When(archive__isnull=False, then=Value(False)),
-                    When(owner_id=info.context.user.id),
-                    default=Value(
-                        info.context.user.is_staff or info.context.user.is_superuser
-                    ),
-                    output_field=models.BooleanField(),
+                can_manage=ExpressionWrapper(
+                    Q(owner_id=info.context.user.id)
+                    | Value(info.context.user.is_staff)
+                    | Value(info.context.user.is_superuser),
+                    output_field=BooleanField(),
                 ),
             ),
             info,
@@ -159,11 +126,9 @@ class AnnotationCampaignQuery(ObjectType):  # pylint: disable=too-few-public-met
         AnnotationCampaignNode
     )
 
-    annotation_campaign_by_id = Field(AnnotationCampaignNode, id=PK(required=True))
+    annotation_campaign_by_pk = Field(AnnotationCampaignNode, pk=PK(required=True))
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
-    def resolve_annotation_campaign_by_id(
-        self, info, id: int
-    ):  # pylint: disable=redefined-builtin
+    def resolve_annotation_campaign_by_pk(self, info, pk: int):
         """Get AnnotationCampaign by id"""
-        return AnnotationCampaignNode.get_node(info, id)
+        return AnnotationCampaignNode.get_node(info, pk)

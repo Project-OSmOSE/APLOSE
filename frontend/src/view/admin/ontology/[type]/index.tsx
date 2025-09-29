@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import styles from './styles.module.scss'
 import { Navigate, Outlet, useNavigate, useParams } from "react-router-dom";
 import { Background, Controls, Node, ReactFlow, useOnSelectionChange } from "@xyflow/react";
-import { SoundNode, SourceNode } from "@/features/gql/types.generated.ts";
+import { SoundNode, SourceNode } from "@/features/_utils_/gql/types.generated.ts";
 import {
   NewNode,
   NODE_ORIGIN,

@@ -89,8 +89,8 @@ export const Box: React.FC<RegionProps> = ({
   const isActive = useMemo(() => {
     if (campaign?.archive) return false;
     if (phase?.ended_at) return false;
-    return annotation.id === annotationID
-  }, [ campaign, phase, annotation.id, annotationID, ]);
+    return annotation.pk === annotationID
+  }, [ campaign, phase, annotation.pk, annotationID, ]);
 
   function updateLeft() {
     if (typeof _startTime.current !== 'number') return;

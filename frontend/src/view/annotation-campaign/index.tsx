@@ -1,15 +1,9 @@
-import React, { Fragment, useEffect } from 'react';
-import { useSpectrogramFilters } from "@/service/slices/filter.ts";
+import React, { Fragment } from 'react';
 import { Head } from "@/components/ui/Page.tsx";
-import { Cards, ListActionBar } from "@/features/AnnotationCampaign";
+import { AnnotationCampaignListFilterActionBar, Cards } from "@/features/annotation/components";
 
 
 export const AnnotationCampaignList: React.FC = () => {
-  const { clearParams: clearFileFilters } = useSpectrogramFilters()
-
-  useEffect(() => {
-    clearFileFilters()
-  }, []);
 
   return <Fragment>
     <Head title="Annotation campaigns"/>
@@ -22,7 +16,7 @@ export const AnnotationCampaignList: React.FC = () => {
       gap: '1rem',
     } }>
 
-      <ListActionBar/>
+      <AnnotationCampaignListFilterActionBar/>
 
       <Cards/>
 

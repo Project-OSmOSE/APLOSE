@@ -25,7 +25,7 @@ export const useAnnotatorInput = () => {
     return data?.allSpectrogramAnalysis?.results.filter(a => a !== null) ?? []
   }, [ data ])
   const analysis = useMemo(() => {
-    return allAnalysis.find(a => a.id === analysisID)
+    return allAnalysis.find(a => a.pk === analysisID)
   }, [ allAnalysis ])
 
   // Zoom

@@ -45,4 +45,14 @@ export class CampaignCreatePage {
     })
   }
 
+  async fillColormap() {
+    return test.step('Campaign colormap', async () => {
+      await this.page.getByText('Allow brigthness / contrast modification').click();
+      await this.page.getByText('Allow colormap modification').click();
+      await this.page.getByRole('button', { name: 'Greys' }).click();
+      await this.page.locator('#options').getByText('hsv').click();
+      await this.page.getByText('Invert default colormap').click();
+    })
+  }
+
 }

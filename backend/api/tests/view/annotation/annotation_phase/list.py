@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase
 
 from backend.api.tests.fixtures import ALL_FIXTURES
 
-URL = reverse("annotation-campaign-phase-list")
+URL = reverse("annotation-phase-list")
 
 
 class ListAnnotationPhasesTestCase(APITestCase):
@@ -55,6 +55,17 @@ class ListAnnotationPhasesTestCase(APITestCase):
         self.assertEqual(response.data[1]["annotation_campaign"], 2)
         self.assertEqual(response.data[2]["annotation_campaign"], 3)
         self.assertEqual(response.data[2]["user_total"], 0)
+
+    def test_connected_for_campaign(self):
+        self.client.login(username="admin", password="osmose29")
+        response = self.client.get(
+            URL,
+            {"annotation_campaign_id": 1},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["annotation_campaign"], 1)
 
 
 class ListEmptyAnnotationPhasesTestCase(APITestCase):

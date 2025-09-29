@@ -10,6 +10,6 @@ export const LoadInformation: React.FC = () => {
   if (file.state === 'loaded') return <Fragment/>;
   return <IonNote color="medium">
     The imported CSV should only contain annotations related to this campaign
-    dataset: { campaign?.datasets.join(', ') }
+    dataset: { campaign?.dataset?.name }
   </IonNote>
 }

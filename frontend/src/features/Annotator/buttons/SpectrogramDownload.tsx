@@ -1,16 +1,16 @@
 import React, { Fragment, MutableRefObject, useCallback, useState } from "react";
 import { IonButton, IonIcon, IonSpinner } from "@ionic/react";
 import { downloadOutline } from "ionicons/icons";
-import { UserAPI } from "@/service/api/user.ts";
 import { SpectrogramRender } from "../spectrogram";
 import { useAnnotatorInput, useAnnotatorQuery } from "@/features/Annotator";
+import { useCurrentUser } from "@/features/auth/api";
 
 export const SpectrogramDownloadButton: React.FC<{
   render: MutableRefObject<SpectrogramRender | null>
 }> = ({ render }) => {
   const { data } = useAnnotatorQuery()
   const { zoom } = useAnnotatorInput()
-  const { data: user } = UserAPI.endpoints.getCurrentUser.useQuery();
+  const { user } = useCurrentUser();
 
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
 
@@ -30,7 +30,7 @@ export const SpectrogramDownloadButton: React.FC<{
     setIsLoading(false);
   }, [ zoom ])
 
-  if (!data?.spectrogramById || !user?.is_staff) return <Fragment/>
+  if (!data?.spectrogramById || !user?.isAdmin) return <Fragment/>
   return <IonButton color='medium' size='small' fill='outline'
                     onClick={ download }>
     <IonIcon icon={ downloadOutline } slot="start"/>

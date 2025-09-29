@@ -451,18 +451,60 @@ Django = ">=1.11"
 
 [[package]]
 name = "django-filter"
-version = "21.1"
+version = "23.5"
 description = "Django-filter is a reusable Django application for allowing users to filter querysets dynamically."
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "django-filter-23.5.tar.gz", hash = "sha256:67583aa43b91fe8c49f74a832d95f4d8442be628fd4c6d65e9f811f5153a4e5c"},
+    {file = "django_filter-23.5-py3-none-any.whl", hash = "sha256:99122a201d83860aef4fe77758b69dda913e874cc5e0eaa50a86b0b18d708400"},
+]
+
+[package.dependencies]
+Django = ">=3.2"
+
+[[package]]
+name = "django-graphene-auth"
+version = "1.1.1"
+description = "Graphql and relay authentication with Graphene for Django."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "django-graphene-auth-1.1.1.tar.gz", hash = "sha256:15835885c743935c814ea976b38daf41e86716ee6c3e3576a902d78da494d5ab"},
+    {file = "django_graphene_auth-1.1.1-py2.py3-none-any.whl", hash = "sha256:1976e3816dc3e4010fc95dd9b01f57d760bccb10f91da31d6caada14839444e4"},
+]
+
+[package.dependencies]
+Django = ">=3.2"
+django-filter = ">=23.5"
+django-graphql-jwt = "0.4.0"
+graphene = ">=3.3"
+graphene-django = ">=3.1.6"
+PyJWT = ">=2.8.0"
+
+[[package]]
+name = "django-graphql-jwt"
+version = "0.4.0"
+description = "JSON Web Token for Django GraphQL."
 optional = false
 python-versions = ">=3.6"
 groups = ["main"]
 files = [
-    {file = "django-filter-21.1.tar.gz", hash = "sha256:632a251fa8f1aadb4b8cceff932bb52fe2f826dd7dfe7f3eac40e5c463d6836e"},
-    {file = "django_filter-21.1-py3-none-any.whl", hash = "sha256:f4a6737a30104c98d2e2a5fb93043f36dd7978e0c7ddc92f5998e85433ea5063"},
+    {file = "django_graphql_jwt-0.4.0-py3-none-any.whl", hash = "sha256:5823aa8ac9bf0b7a6e3b2febd029598b332c41fe9043d89900c116fcecd23f5e"},
+    {file = "django_graphql_jwt-0.4.0.tar.gz", hash = "sha256:537972519f0deeec7a0e4a306ddfed1fe385266ef61c9f78c54cd04ac01a171e"},
 ]
 
 [package.dependencies]
-Django = ">=2.2"
+django = ">=2.0"
+graphene = ">=2.1.5"
+graphene-django = ">=2.0.0"
+pyjwt = ">=2,<3"
+
+[package.extras]
+doc = ["sphinx"]
+test = ["black", "codecov", "cryptography", "flake8", "isort", "pytest", "pytest-cov", "pytest-django"]
 
 [[package]]
 name = "django-model-prefix"
@@ -2190,4 +2232,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "0f23aba3935cc41020df5015c9a412025ef9c4c7e1930d1ac57ccdd53a02ee6d"
+content-hash = "37e29036beece95fdbaaa29605dc9236d1c08c566b6ded1ff0cf6b7f5b0d2535"

@@ -1,18 +1,12 @@
 import { API } from "@/service/api/index.ts";
 import { AnnotationCampaign } from "@/service/types";
-import { extendUser, UserAPI } from "@/service/api/user.ts";
+import { extendUser } from "@/service/api/user.ts";
 import { ID, Optionable } from "@/service/type.ts";
 import { useParams } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useMemo } from "react";
+import { useCurrentUser } from "@/features/auth/api";
 
-export type CampaignFilter = {
-  archive__isnull?: boolean;
-  phases__phase?: 'A' | 'V';
-  owner?: number;
-  phases__annotation_file_ranges__annotator_id?: number;
-  search?: string;
-}
 
 export function extendCampaign(campaign: AnnotationCampaign): AnnotationCampaign {
   return {
@@ -39,16 +33,6 @@ export type PatchAnnotationCampaign = Optionable<Pick<AnnotationCampaign,
 
 export const CampaignAPI = API.injectEndpoints({
   endpoints: (builder) => ({
-    listCampaign: builder.query<Array<AnnotationCampaign>, CampaignFilter>({
-      query: (params) => ({ url: `annotation-campaign/`, params }),
-      transformResponse(campaigns: Array<AnnotationCampaign>): Array<AnnotationCampaign> {
-        return [ ...campaigns ].map(extendCampaign)
-      },
-      providesTags: campaigns => campaigns ? [ ...campaigns.map(({ id }) => ({
-        type: 'Campaign' as const,
-        id
-      })), 'Campaign' ] : [ 'Campaign' ]
-    }),
     retrieveCampaign: builder.query<AnnotationCampaign, ID>({
       query: (id) => `annotation-campaign/${ id }/`,
       transformResponse: extendCampaign,
@@ -92,11 +76,11 @@ export const CampaignAPI = API.injectEndpoints({
 export const useRetrieveCurrentCampaign = () => {
   const { campaignID } = useParams<{ campaignID: string; }>();
   const { data: campaign, ...info } = CampaignAPI.endpoints.retrieveCampaign.useQuery(campaignID ?? skipToken)
-  const { data: user } = UserAPI.endpoints.getCurrentUser.useQuery();
+  const { user } = useCurrentUser();
   return useMemo(() => ({
     campaignID,
     campaign,
     ...info,
-    hasAdminAccess: !!user && (user.is_staff || user.is_superuser || campaign?.owner?.id === user.id),
+    hasAdminAccess: !!user && (user.isAdmin || campaign?.owner?.id === user.pk), // campaign.canManage on GQL
   }), [ campaignID, campaign, info ])
 }

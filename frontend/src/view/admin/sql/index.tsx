@@ -7,12 +7,12 @@ import { Button, Kbd, Pagination, Table, TableContent, TableDivider, TableHead, 
 import { Prec } from "@codemirror/state";
 import { getErrorMessage } from "@/service/function.ts";
 import styles from './styles.module.scss'
-import { UserAPI } from "@/service/api/user.ts";
 import { SQLAPI } from "@/service/api/sql.ts";
+import { useCurrentUser } from "@/features/auth/api";
 
 
 export const SqlQuery: React.FC = () => {
-  const { data: user } = UserAPI.endpoints.getCurrentUser.useQuery();
+  const { user } = useCurrentUser();
   const { data: schema } = SQLAPI.endpoints.sqlSchema.useQuery();
   const [ run, { data: results, error } ] = SQLAPI.endpoints.postSQL.useMutation();
 
@@ -71,7 +71,7 @@ export const SqlQuery: React.FC = () => {
     downloadLink.click();
   }, [ results ])
 
-  if (!user || !user.is_superuser) return <Fragment/>
+  if (!user || !user.isSuperuser) return <Fragment/>
   return <div className={ styles.page }>
 
     <h2>SQL Query</h2>

@@ -8,7 +8,6 @@ import { Button, Modal, ModalHeader, Table, TableContent, TableDivider } from "@
 import { createPortal } from "react-dom";
 import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
-import { UserAPI } from "@/service/api/user.ts";
 import { ConfidenceInfo, FrequencyInfo, LabelInfo, TimeInfo } from "./Annotation";
 import { AnnotationLabelUpdateModal } from "../modal";
 import { Annotation, useAnnotatorAnnotations } from "@/features/Annotator";
@@ -21,8 +20,9 @@ import {
   ConfidenceNode,
   DetectorNode,
   UserNode
-} from "@/features/gql/types.generated.ts";
+} from "@/features/_utils_/gql/types.generated.ts";
 import { useCommentsForAnnotator } from "@/features/Annotator/hooks/comments.hook.ts";
+import { useCurrentUser } from "@/features/auth/api";
 
 
 export const Annotations: React.FC<{
@@ -62,7 +62,7 @@ const AnnotationRow: React.FC<{
   onSelect: (annotation: Annotation) => void;
 }> = ({ annotation, onSelect }) => {
   const { annotationID, focus } = useAnnotatorAnnotations();
-  const isActive = useMemo(() => annotation.id === annotationID ? styles.active : undefined, [ annotation.id, annotationID ])
+  const isActive = useMemo(() => annotation.pk === annotationID ? styles.active : undefined, [ annotation.pk, annotationID ])
   const onClick = useCallback(() => {
     focus(annotation)
     onSelect(annotation)
@@ -85,7 +85,7 @@ type ResultItemProps = {
   onClick: () => void;
 }
 
-const ResultTimeInfo: React.FC<Pick<AnnotationNode, 'id' | 'type' | 'startTime' | 'endTime'> & ResultItemProps> = ({
+const ResultTimeInfo: React.FC<Pick<AnnotationNode, 'pk' | 'type' | 'startTime' | 'endTime'> & ResultItemProps> = ({
                                                                                                                      className,
                                                                                                                      onClick,
                                                                                                                      ...annotation
@@ -96,7 +96,7 @@ const ResultTimeInfo: React.FC<Pick<AnnotationNode, 'id' | 'type' | 'startTime' 
   </TableContent>
 }
 
-const ResultFrequencyInfo: React.FC<Pick<AnnotationNode, 'id' | 'type' | 'startFrequency' | 'endFrequency'> & ResultItemProps> = ({
+const ResultFrequencyInfo: React.FC<Pick<AnnotationNode, 'pk' | 'type' | 'startFrequency' | 'endFrequency'> & ResultItemProps> = ({
                                                                                                                                     className,
                                                                                                                                     onClick,
                                                                                                                                     ...annotation
@@ -107,7 +107,7 @@ const ResultFrequencyInfo: React.FC<Pick<AnnotationNode, 'id' | 'type' | 'startF
   </TableContent>
 }
 
-const ResultLabelInfo: React.FC<Pick<AnnotationNode, 'id' | 'type'> & {
+const ResultLabelInfo: React.FC<Pick<AnnotationNode, 'pk' | 'type'> & {
   label: Pick<AnnotationLabelNode, 'name'>
 } & ResultItemProps> = ({ className, onClick, ...annotation }) => (
   <TableContent
@@ -131,30 +131,30 @@ const ResultConfidenceInfo: React.FC<{
 }
 
 const ResultDetectorInfo: React.FC<{
-  annotator?: Pick<UserNode, 'id' | 'displayName'> | null,
+  annotator?: Pick<UserNode, 'pk' | 'displayName'> | null,
   detectorConfiguration?: {
     detector: Pick<DetectorNode, 'name'>
   } | null,
 } & ResultItemProps> = ({ className, onClick, detectorConfiguration, annotator }) => {
   const { phaseType } = useRetrieveCurrentPhase()
-  const { data: user } = UserAPI.endpoints.getCurrentUser.useQuery()
+  const { user } = useCurrentUser();
   if (phaseType === AnnotationPhaseType.Annotation) return <Fragment/>
   if (detectorConfiguration) return <TableContent className={ className } onClick={ onClick }>
     <RiRobot2Fill/>
     <p>{ detectorConfiguration.detector.name }</p>
   </TableContent>
-  return <TableContent className={ [ className, annotator === user?.id ? 'disabled' : '' ].join(' ') }
+  return <TableContent className={ [ className, annotator === user?.pk ? 'disabled' : '' ].join(' ') }
                        onClick={ onClick }>
     <RiUser3Fill/>
-    <p>{ user?.display_name }</p>
+    <p>{ user?.displayName }</p>
   </TableContent>
 }
 
-const ResultCommentInfo: React.FC<Pick<AnnotationNode, 'id'> & ResultItemProps> = ({ id, className, onClick }) => {
+const ResultCommentInfo: React.FC<Pick<AnnotationNode, 'pk'> & ResultItemProps> = ({ pk, className, onClick }) => {
   const { allComments } = useCommentsForAnnotator()
   const comments = useMemo(() => {
-    return allComments.filter(c => c.annotationId === id) ?? []
-  }, [ allComments, id ])
+    return allComments.filter(c => c.annotationId === pk) ?? []
+  }, [ allComments, pk ])
   return (
     <TableContent className={ className } onClick={ onClick }>
       { comments.length > 0 ? <IoChatbubbleEllipses/> : <IoChatbubbleOutline/> }
@@ -162,18 +162,18 @@ const ResultCommentInfo: React.FC<Pick<AnnotationNode, 'id'> & ResultItemProps> 
   )
 }
 
-const ResultValidationButton: React.FC<Pick<AnnotationNode, 'id' | 'type'> & {
+const ResultValidationButton: React.FC<Pick<AnnotationNode, 'pk' | 'type'> & {
   label: Pick<AnnotationLabelNode, 'name'>;
   confidence?: Pick<ConfidenceNode, 'label'> | null;
-  annotator?: Pick<UserNode, 'id'> | null,
+  annotator?: Pick<UserNode, 'pk'> | null,
   validations?: {
-    results: Array<Pick<AnnotationValidationNode, 'id' | 'isValid'> | null>
+    results: Array<Pick<AnnotationValidationNode, 'pk' | 'isValid'> | null>
   } | null,
 } & ResultItemProps> = ({ className, onClick, ...annotation }) => {
   const [ isModalOpen, setIsModalOpen ] = useState<boolean>(false);
   const [ isLabelModalOpen, setIsLabelModalOpen ] = useState<boolean>(false);
   const { phaseType } = useRetrieveCurrentPhase()
-  const { data: user } = UserAPI.endpoints.getCurrentUser.useQuery()
+  const { user } = useCurrentUser();
   const validation = useMemo(() => {
     if (!annotation.validations?.results || annotation.validations.results.filter(v => v !== null).length === 0) return true;
     else return annotation.validations.results.some(v => v?.isValid);
@@ -213,7 +213,7 @@ const ResultValidationButton: React.FC<Pick<AnnotationNode, 'id' | 'type'> & {
   }, [ annotation, remove ]);
 
   if (phaseType !== AnnotationPhaseType.Verification) return <Fragment/>
-  if (annotation.annotator?.id === user?.id) return <TableContent className={ className } onClick={ onClick }/>
+  if (annotation.annotator?.pk === user?.pk) return <TableContent className={ className } onClick={ onClick }/>
   return <TableContent className={ className } onClick={ onClick }>
     <IonButton className="validate"
                color={ validation ? 'success' : 'medium' }

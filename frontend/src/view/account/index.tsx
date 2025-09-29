@@ -4,11 +4,11 @@ import { FadedText, WarningText } from "@/components/ui";
 import { IonSpinner } from "@ionic/react";
 import { getErrorMessage } from "@/service/function.ts";
 import { FormBloc } from "@/components/form";
-import { UserAPI } from "@/service/api/user.ts";
 import { UpdateEmail, UpdatePassword } from "@/features/User";
+import { useCurrentUser } from "@/features/auth/api";
 
 export const Account: React.FC = () => {
-  const { data: currentUser, isLoading, error } = UserAPI.endpoints.getCurrentUser.useQuery();
+  const { user, isLoading, error } = useCurrentUser();
 
   return <div className={ styles.page }>
     <h2>Account</h2>
@@ -16,11 +16,11 @@ export const Account: React.FC = () => {
     { isLoading && <IonSpinner/> }
     { error && <WarningText>{ getErrorMessage(error) }</WarningText> }
 
-    { currentUser && <div className={ styles.content }>
+    { user && <div className={ styles.content }>
         <FormBloc>
             <div>
                 <FadedText>Username</FadedText>
-                <p>{ currentUser.username }</p>
+                <p>{ user.username }</p>
             </div>
         </FormBloc>
 

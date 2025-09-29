@@ -36,7 +36,7 @@ import {
   useSpectrogramDisplay,
   Y_WIDTH,
 } from "@/features/Annotator";
-import { AnnotationType } from "@/features/gql/types.generated.ts";
+import { AnnotationType } from "@/features/_utils_/gql/types.generated.ts";
 import { useAnnotatorAudio } from "@/features/Annotator/hooks/audio.hook.ts";
 
 

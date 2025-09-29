@@ -5,7 +5,7 @@ import {
   AnnotationType,
   AnnotationValidationNode,
   ConfidenceNode
-} from "@/features/gql/types.generated.ts";
+} from "@/features/_utils_/gql/types.generated.ts";
 import { useAppDispatch, useAppSelector } from "@/service/app.ts";
 import {
   AddAnnotation,
@@ -15,18 +15,18 @@ import {
   selectAnnotations,
   UpdateAnnotation
 } from "../slice.ts";
-import { UserAPI } from "@/service/api/user.ts";
 import { useAnnotatorQuery } from "./query.hook";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
+import { useCurrentUser } from "@/features/auth/api";
 
 export const useAnnotatorAnnotations = () => {
   const { data } = useAnnotatorQuery()
   const { phaseType, phase } = useRetrieveCurrentPhase()
-  const { data: user } = UserAPI.endpoints.getCurrentUser.useQuery()
+  const { user } = useCurrentUser();
   const annotations = useAppSelector(selectAnnotations);
   const annotationID = useAppSelector(selectAnnotationID);
   const annotation = useMemo(() => {
-    return annotations.find(a => a?.id === annotationID)
+    return annotations.find(a => a?.pk === annotationID)
   }, [ annotations, annotationID ]);
   const { confidenceLabel } = useAppSelector(state => state.AnnotatorSlice.input);
   const dispatch = useAppDispatch();
@@ -45,16 +45,16 @@ export const useAnnotatorAnnotations = () => {
   }, [])
 
   const updateValidations = useCallback((isValid: boolean, validations?: {
-    results: Array<Pick<AnnotationValidationNode, 'id' | 'isValid'> | null>
+    results: Array<Pick<AnnotationValidationNode, 'pk' | 'isValid'> | null>
   } | null): {
-    results: Array<Pick<AnnotationValidationNode, 'id' | 'isValid'>>
+    results: Array<Pick<AnnotationValidationNode, 'pk' | 'isValid'>>
   } => {
     let results = (validations?.results ?? []).filter(r => r !== null);
     if (results.length > 0) {
       results = results.map(v => ({ ...v, isValid }))
     } else {
       results.push({
-        id: (Math.min(0, ...annotations.flatMap(a => (a.validations?.results ?? []).filter(v => v !== null).map(v => +v.id))) - 1)?.toString(),
+        pk: (Math.min(0, ...annotations.flatMap(a => (a.validations?.results ?? []).filter(v => v !== null).map(v => +v.pk))) - 1)?.toString(),
         isValid
       })
     }
@@ -70,35 +70,35 @@ export const useAnnotatorAnnotations = () => {
     }));
   }, [])
 
-  const getAnnotationUpdate = useCallback(({ id }: Pick<AnnotationNode, 'id'>) => {
-    return annotations.find(a => a.isUpdateOfId === id)
+  const getAnnotationUpdate = useCallback(({ pk }: Pick<AnnotationNode, 'pk'>) => {
+    return annotations.find(a => a.isUpdateOfId === pk)
   }, [ annotations ])
-  const correctedAnnotation = useMemo(() => annotationID ? getAnnotationUpdate({ id: annotationID }) : undefined, [ annotations, annotationID, getAnnotationUpdate ])
+  const correctedAnnotation = useMemo(() => annotationID ? getAnnotationUpdate({ pk: annotationID }) : undefined, [ annotations, annotationID, getAnnotationUpdate ])
 
-  const focus = useCallback(({ id, label, confidence }: Pick<Annotation, 'id' | 'label' | 'confidence'>) => {
+  const focus = useCallback(({ pk, label, confidence }: Pick<Annotation, 'pk' | 'label' | 'confidence'>) => {
     dispatch(AnnotatorSlice.actions.setInput({
-      annotationID: id,
+      annotationID: pk,
       labelName: label.name,
       confidenceLabel: confidence?.label
     }));
   }, [])
 
-  const validate = useCallback((annotation: Pick<AnnotationNode, 'id' | 'type'> & {
+  const validate = useCallback((annotation: Pick<AnnotationNode, 'pk' | 'type'> & {
     label: Pick<AnnotationLabelNode, 'name'>;
     confidence?: Pick<ConfidenceNode, 'label'> | null;
     validations?: {
-      results: Array<Pick<AnnotationValidationNode, 'id' | 'isValid'> | null>
+      results: Array<Pick<AnnotationValidationNode, 'pk' | 'isValid'> | null>
     } | null
   }) => {
     dispatch(AnnotatorSlice.actions.assignAnnotation({
-      id: annotation.id,
+      pk: annotation.pk,
       partialUpdate: { validations: updateValidations(true, annotation.validations) }
     }));
     if (annotation.type === AnnotationType.Weak) {
       const strongAnnotations = annotations.filter(a => a.type !== AnnotationType.Weak && a.label.name === annotation.label.name);
       for (const a of strongAnnotations) {
         dispatch(AnnotatorSlice.actions.assignAnnotation({
-          id: a.id,
+          pk: a.pk,
           partialUpdate: { validations: updateValidations(true, a.validations) }
         }));
       }
@@ -106,15 +106,15 @@ export const useAnnotatorAnnotations = () => {
     focus(annotation)
   }, [ focus, annotations ])
 
-  const invalidate = useCallback((annotation: Pick<AnnotationNode, 'id' | 'type'> & {
+  const invalidate = useCallback((annotation: Pick<AnnotationNode, 'pk' | 'type'> & {
     label: Pick<AnnotationLabelNode, 'name'>;
     confidence?: Pick<ConfidenceNode, 'label'> | null;
     validations?: {
-      results: Array<Pick<AnnotationValidationNode, 'id' | 'isValid'> | null>
+      results: Array<Pick<AnnotationValidationNode, 'pk' | 'isValid'> | null>
     } | null
   }) => {
     dispatch(AnnotatorSlice.actions.assignAnnotation({
-      id: annotation.id,
+      pk: annotation.pk,
       partialUpdate: { validations: updateValidations(false, annotation.validations) }
     }));
     const otherStrongValidAnnotations = annotations.filter(a => {
@@ -126,30 +126,30 @@ export const useAnnotatorAnnotations = () => {
     const weakAnnotation = annotations.find(a => a.type === AnnotationType.Weak && a.label.name === annotation.label.name);
     if (annotation.type !== AnnotationType.Weak && otherStrongValidAnnotations.length === 0 && weakAnnotation) {
       dispatch(AnnotatorSlice.actions.assignAnnotation({
-        id: weakAnnotation.id,
+        pk: weakAnnotation.pk,
         partialUpdate: { validations: updateValidations(false, weakAnnotation.validations) }
       }));
     }
     focus(annotation)
   }, [ focus, annotations ])
 
-  const add = useCallback((annotation: Omit<AddAnnotation, 'id' | 'annotationPhase'>) => {
+  const add = useCallback((annotation: Omit<AddAnnotation, 'pk' | 'annotationPhase'>) => {
     if (!phase) return;
     const newAnnotation: AddAnnotation = {
       ...annotation,
       annotationPhase: {
-        id: phase.id.toString()
+        pk: phase.id.toString()
       },
-      id: (Math.min(0, ...annotations.map(a => +a.id)) - 1).toString()
+      pk: (Math.min(0, ...annotations.map(a => +a.pk)) - 1).toString()
     }
     dispatch(AnnotatorSlice.actions.addAnnotation(newAnnotation))
     focus(newAnnotation)
   }, [ annotations, focus, phase ])
 
   const remove = useCallback((annotation: Annotation) => {
-    if (phaseType === "Annotation" || annotation.annotator?.id === user?.id) {
+    if (phaseType === "Annotation" || annotation.annotator?.pk === user?.pk) {
       dispatch(AnnotatorSlice.actions.removeAnnotation(annotation))
-      const weak = annotations.find(a => a.type === AnnotationType.Weak && a.label.name === annotation.label.name && a.id !== annotation.id);
+      const weak = annotations.find(a => a.type === AnnotationType.Weak && a.label.name === annotation.label.name && a.pk !== annotation.pk);
       if (weak) focus(weak)
       else blur()
     } else {
@@ -162,8 +162,8 @@ export const useAnnotatorAnnotations = () => {
     partialUpdate: UpdateAnnotation
   ) => {
     if (annotation.type === AnnotationType.Weak) return;
-    if (phaseType === "Annotation" || annotation.annotator?.id === user?.id) {
-      dispatch(AnnotatorSlice.actions.assignAnnotation({ id: annotation.id, partialUpdate }))
+    if (phaseType === "Annotation" || annotation.annotator?.pk === user?.pk) {
+      dispatch(AnnotatorSlice.actions.assignAnnotation({ pk: annotation.pk, partialUpdate }))
       if (partialUpdate.label?.name && !annotations.find(a => a.label.name === partialUpdate.label!.name && a.type === AnnotationType.Weak)) {
         add({
           type: AnnotationType.Weak,
@@ -183,7 +183,7 @@ export const useAnnotatorAnnotations = () => {
         validate(annotation)
       } else {
         if (initialUpdateAnnotation) {
-          dispatch(AnnotatorSlice.actions.assignAnnotation({ id: initialUpdateAnnotation.id, partialUpdate }))
+          dispatch(AnnotatorSlice.actions.assignAnnotation({ pk: initialUpdateAnnotation.pk, partialUpdate }))
         } else {
           add(updateAnnotation)
         }
@@ -199,18 +199,18 @@ export const useAnnotatorAnnotations = () => {
   ) => {
     if (annotation.type === AnnotationType.Weak) return;
     dispatch(AnnotatorSlice.actions.assignAnnotation({
-      id: annotation.id, partialUpdate: {
+      pk: annotation.pk, partialUpdate: {
         acousticFeatures: {
           ...(annotation.acousticFeatures ?? {}),
           ...partialUpdate
         }
       }
     }))
-  }, [ update ])
+  }, [ update, annotations ])
   const removeFeatures = useCallback((annotation: Annotation) => {
     if (annotation.type === AnnotationType.Weak) return;
     dispatch(AnnotatorSlice.actions.assignAnnotation({
-      id: annotation.id,
+      pk: annotation.pk,
       partialUpdate: { acousticFeatures: undefined }
     }))
   }, [ update ])

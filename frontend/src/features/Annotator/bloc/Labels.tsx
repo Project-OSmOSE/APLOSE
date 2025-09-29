@@ -9,7 +9,7 @@ import { Button, Kbd, TooltipOverlay } from "@/components/ui";
 import { AnnotationPhase } from "@/service/types";
 import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
 import { useAnnotatorAnnotations, useAnnotatorLabel, useAnnotatorUI } from "@/features/Annotator";
-import { AnnotationLabelNode } from "@/features/gql/types.generated.ts";
+import { AnnotationLabelNode } from "@/features/_utils_/gql/types.generated.ts";
 
 
 export const Labels: React.FC = () => {

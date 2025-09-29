@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import logo from "/images/ode_logo_192x192.png";
 import styles from './layout.module.scss'
 import { useAppSelector } from "@/service/app.ts";
-import { selectCurrentUser } from "@/service/api/user.ts";
+import { selectCurrentUser } from "@/features/auth/api";
 
 export const Header: React.FC<{
   buttons?: ReactNode;
@@ -17,7 +17,7 @@ export const Header: React.FC<{
 
   const [ isOpen, setIsOpen ] = useState<boolean>(false);
   const user = useAppSelector(selectCurrentUser)
-  const navigate = useNavigate ();
+  const navigate = useNavigate();
 
   function toggleOpening() {
     setIsOpen(previous => !previous);

@@ -1,6 +1,6 @@
 import { MutableRefObject, useCallback, useEffect, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { AnnotationType } from "@/features/gql/types.generated.ts";
+import { AnnotationType } from "@/features/_utils_/gql/types.generated.ts";
 import { colorSpectro, interpolate } from "@/service/ui/color.ts";
 import { buildErrorMessage } from "@/service/function.ts";
 import { useToast } from "@/service/ui";

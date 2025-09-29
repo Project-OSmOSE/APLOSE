@@ -19,7 +19,7 @@ from metadatax.acquisition.schema.project import ProjectNode as MetadataxProject
 from metadatax.schema import Mutation as MetadataxMutation, Query as MetadataxQuery
 
 from .api.schema import APIQuery, APIMutation
-from .aplose.schema import AploseQuery
+from .aplose.schema import AploseQuery, AploseMutation
 from .osmosewebsite.schema import OSmOSEWebsiteQuery, WebsiteProjectNode
 from .utils.schema import PKFilter
 
@@ -94,6 +94,7 @@ class Query(
 
 class Mutation(
     APIMutation,
+    AploseMutation,
     MetadataxMutation,
     graphene.ObjectType,
 ):  # pylint: disable=too-few-public-methods

@@ -1068,6 +1068,20 @@ type Query {
     id: ID
   ): WebsiteProjectNodeNodeConnection
   websiteProjetById(pk: PK!): WebsiteProjectNode
+  allUserGroups(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): UserGroupNodeNodeConnection
   allUsers(
     """Query limit"""
     limit: Int
@@ -1081,19 +1095,8 @@ type Query {
     after: String
     first: Int
     last: Int
-    password: String
-    lastLogin: DateTime
-    isSuperuser: Boolean
-    groups: [ID]
-    userPermissions: [ID]
-    username: String
-    firstName: String
-    lastName: String
-    email: String
-    isStaff: Boolean
-    isActive: Boolean
-    dateJoined: DateTime
   ): UserNodeNodeConnection
+  currentUser: UserNode
   allSpectrogramAnalysis(
     """Query limit"""
     limit: Int
@@ -1214,13 +1217,6 @@ type Query {
     after: String
     first: Int
     last: Int
-    nfft: Int
-    window: String
-    windowSize: Int
-    overlap: Decimal
-    samplingFrequency: Int
-    scaling: String
-    legacy: Boolean
   ): FFTNodeNodeConnection
   allDatasets(
     """Query limit"""
@@ -1360,6 +1356,14 @@ type Query {
     after: String
     first: Int
     last: Int
+    isCampaignArchived: Boolean
+    campaignPk: PK
+    campaignOwnerPk: PK
+    annotatorPk: PK
+    phaseType: AnnotationPhaseType
+
+    """search"""
+    search: String
 
     """Ordering"""
     orderBy: String
@@ -1378,8 +1382,8 @@ type Query {
     after: String
     first: Int
     last: Int
-    annotatorId: PK
-    ownerId: PK
+    annotatorPk: PK
+    ownerPk: PK
     isArchived: Boolean
     phaseType: AnnotationPhaseType
 
@@ -1389,7 +1393,7 @@ type Query {
     """Ordering"""
     orderBy: String
   ): AnnotationCampaignNodeNodeConnection
-  annotationCampaignById(id: PK!): AnnotationCampaignNode
+  annotationCampaignByPk(pk: PK!): AnnotationCampaignNode
   allAcousticFeatures(
     """Query limit"""
     limit: Int
@@ -1525,8 +1529,9 @@ type Query {
     after: String
     first: Int
     last: Int
-    name: String
-    metadataxLabel: ID
+    usedInAnnotationsOfCampaign: PK
+    usedInAnnotationsOfPhase: AnnotationPhaseType
+    usedInAnnotationsByUser: PK
   ): AnnotationLabelNodeNodeConnection
   _debug: DjangoDebug
 }
@@ -1566,7 +1571,7 @@ type LabelNode implements Node {
   description: String
   children(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], sourceId: ID, sourceId_In: [ID], soundId: ID, soundId_In: [ID], parentId: ID, parentId_In: [ID], children_Id: Decimal, children_Id_In: [ID], nickname: String, nickname_Icontains: String, acousticDetectors_Id: Decimal, acousticDetectors_Id_In: [ID], channelConfigurationDetectorSpecifications_Id: Decimal, channelConfigurationDetectorSpecifications_Id_In: [ID], shape: SignalShapeEnum, plurality: SignalPluralityEnum, minFrequency: Int, minFrequency_Lt: Int, minFrequency_Lte: Int, minFrequency_Gt: Int, minFrequency_Gte: Int, maxFrequency: Int, maxFrequency_Lt: Int, maxFrequency_Lte: Int, maxFrequency_Gt: Int, maxFrequency_Gte: Int, meanDuration: Float, meanDuration_Lt: Float, meanDuration_Lte: Float, meanDuration_Gt: Float, meanDuration_Gte: Float, labels_Id: Decimal): LabelNodeConnection!
   acousticDetectors(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], equipment_Id: Decimal, equipment_Id_In: [ID], detectedLabels_Id: Decimal, detectedLabels_Id_In: [ID], minFrequency: Int, minFrequency_Lt: Int, minFrequency_Lte: Int, minFrequency_Gt: Int, minFrequency_Gte: Int, maxFrequency: Int, maxFrequency_Lt: Int, maxFrequency_Lte: Int, maxFrequency_Gt: Int, maxFrequency_Gte: Int, algorithmName: String, algorithmName_Icontains: String): AcousticDetectorSpecificationNodeConnection!
-  labelSet(offset: Int, before: String, after: String, first: Int, last: Int, name: String, metadataxLabel: ID): AnnotationLabelNodeConnection!
+  labelSet(offset: Int, before: String, after: String, first: Int, last: Int, usedInAnnotationsOfCampaign: PK, usedInAnnotationsOfPhase: AnnotationPhaseType, usedInAnnotationsByUser: PK): AnnotationLabelNodeConnection!
   channelConfigurationDetectorSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], detectorId: ID, detectorId_In: [ID], labels_Id: Decimal, labels_Id_In: [ID], channelConfiguration_Id: Decimal, channelConfiguration_Id_In: [ID], outputFormats: String): ChannelConfigurationDetectorSpecificationNodeConnection!
 }
 
@@ -2389,8 +2394,8 @@ type AnnotationLabelNode implements Node {
     after: String
     first: Int
     last: Int
-    annotatorId: PK
-    ownerId: PK
+    annotatorPk: PK
+    ownerPk: PK
     isArchived: Boolean
     phaseType: AnnotationPhaseType
 
@@ -2448,8 +2453,9 @@ type LabelSetNode implements Node {
     after: String
     first: Int
     last: Int
-    name: String
-    metadataxLabel: ID
+    usedInAnnotationsOfCampaign: PK
+    usedInAnnotationsOfPhase: AnnotationPhaseType
+    usedInAnnotationsByUser: PK
   ): AnnotationLabelNodeNodeConnection
   annotationcampaignSet(
     offset: Int
@@ -2457,8 +2463,8 @@ type LabelSetNode implements Node {
     after: String
     first: Int
     last: Int
-    annotatorId: PK
-    ownerId: PK
+    annotatorPk: PK
+    ownerPk: PK
     isArchived: Boolean
     phaseType: AnnotationPhaseType
 
@@ -2520,8 +2526,9 @@ type AnnotationCampaignNode implements Node {
     after: String
     first: Int
     last: Int
-    name: String
-    metadataxLabel: ID
+    usedInAnnotationsOfCampaign: PK
+    usedInAnnotationsOfPhase: AnnotationPhaseType
+    usedInAnnotationsByUser: PK
   ): AnnotationLabelNodeNodeConnection
   allowPointAnnotation: Boolean!
   dataset: DatasetNode!
@@ -2564,11 +2571,21 @@ type AnnotationCampaignNode implements Node {
     after: String
     first: Int
     last: Int
+    isCampaignArchived: Boolean
+    campaignPk: PK
+    campaignOwnerPk: PK
+    annotatorPk: PK
+    phaseType: AnnotationPhaseType
+
+    """search"""
+    search: String
 
     """Ordering"""
     orderBy: String
   ): AnnotationPhaseNodeNodeConnection
   pk: PK!
+  datasetName: String!
+  isArchived: Boolean!
   detectors(
     """Query limit"""
     limit: Int
@@ -2598,25 +2615,8 @@ type AnnotationCampaignNode implements Node {
     after: String
     first: Int
     last: Int
-    password: String
-    lastLogin: DateTime
-    isSuperuser: Boolean
-    groups: [ID]
-    userPermissions: [ID]
-    username: String
-    firstName: String
-    lastName: String
-    email: String
-    isStaff: Boolean
-    isActive: Boolean
-    dateJoined: DateTime
   ): UserNodeNodeConnection
-  tasksCount: Int
-  finishedTasksCount: Int
-  userTasksCount: Int
-  userFinishedTasksCount: Int
-  state: String
-  isEditAllowed: Boolean
+  canManage: Boolean!
 }
 
 """Dataset schema"""
@@ -2705,8 +2705,8 @@ type DatasetNode implements Node {
     after: String
     first: Int
     last: Int
-    annotatorId: PK
-    ownerId: PK
+    annotatorPk: PK
+    ownerPk: PK
     isArchived: Boolean
     phaseType: AnnotationPhaseType
 
@@ -2727,7 +2727,6 @@ type DatasetNode implements Node {
 type UserNode implements Node {
   """The ID of the object"""
   id: ID!
-  password: String!
   lastLogin: DateTime
 
   """
@@ -2749,6 +2748,7 @@ type UserNode implements Node {
   """
   isActive: Boolean!
   dateJoined: DateTime!
+  annotatorGroups(offset: Int, before: String, after: String, first: Int, last: Int): UserGroupNodeConnection!
   datasetSet(
     offset: Int
     before: String
@@ -2781,8 +2781,8 @@ type UserNode implements Node {
     after: String
     first: Int
     last: Int
-    annotatorId: PK
-    ownerId: PK
+    annotatorPk: PK
+    ownerPk: PK
     isArchived: Boolean
     phaseType: AnnotationPhaseType
 
@@ -2798,6 +2798,14 @@ type UserNode implements Node {
     after: String
     first: Int
     last: Int
+    isCampaignArchived: Boolean
+    campaignPk: PK
+    campaignOwnerPk: PK
+    annotatorPk: PK
+    phaseType: AnnotationPhaseType
+
+    """search"""
+    search: String
 
     """Ordering"""
     orderBy: String
@@ -2808,6 +2816,14 @@ type UserNode implements Node {
     after: String
     first: Int
     last: Int
+    isCampaignArchived: Boolean
+    campaignPk: PK
+    campaignOwnerPk: PK
+    annotatorPk: PK
+    phaseType: AnnotationPhaseType
+
+    """search"""
+    search: String
 
     """Ordering"""
     orderBy: String
@@ -2816,6 +2832,51 @@ type UserNode implements Node {
   annotationResultsValidation(offset: Int, before: String, after: String, first: Int, last: Int, annotatorId: PK): AnnotationValidationNodeConnection!
   pk: PK!
   displayName: String!
+  isAdmin: Boolean!
+  expertise: ExpertiseLevel
+}
+
+type UserGroupNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [UserGroupNodeEdge]!
+}
+
+"""A Relay edge containing a `UserGroupNode` and its cursor."""
+type UserGroupNodeEdge {
+  """The item at the end of the edge"""
+  node: UserGroupNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""User group node"""
+type UserGroupNode implements Node {
+  """The ID of the object"""
+  id: ID!
+  name: String!
+  annotators(offset: Int, before: String, after: String, first: Int, last: Int): UserNodeConnection!
+  pk: PK!
+}
+
+type UserNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [UserNodeEdge]!
+}
+
+"""A Relay edge containing a `UserNode` and its cursor."""
+type UserNodeEdge {
+  """The item at the end of the edge"""
+  node: UserNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
 }
 
 type DatasetNodeConnection {
@@ -2861,8 +2922,8 @@ type SpectrogramAnalysisNode implements Node {
   description: String
   path: String!
   legacy: Boolean!
-  startDate: Date
-  endDate: Date
+  startDate: DateTime
+  endDate: DateTime
   owner: UserNode!
   dataset: DatasetNode!
 
@@ -2870,9 +2931,9 @@ type SpectrogramAnalysisNode implements Node {
   dataDuration: Float
   fft: FFTNode!
   colormap: ColormapNode!
-  legacyConfiguration: LegacySpectrogramConfigurationNode
   dynamicMin: Float!
   dynamicMax: Float!
+  legacyConfiguration: LegacySpectrogramConfigurationNode
   spectrograms(
     """Query limit"""
     limit: Int
@@ -2917,8 +2978,8 @@ type SpectrogramAnalysisNode implements Node {
     after: String
     first: Int
     last: Int
-    annotatorId: PK
-    ownerId: PK
+    annotatorPk: PK
+    ownerPk: PK
     isArchived: Boolean
     phaseType: AnnotationPhaseType
 
@@ -2939,7 +3000,6 @@ type FFTNode implements Node {
   """The ID of the object"""
   id: ID!
   nfft: Int!
-  window: String
   windowSize: Int!
   overlap: Decimal!
   samplingFrequency: Int!
@@ -2984,6 +3044,7 @@ type ColormapNode implements Node {
 type LegacySpectrogramConfigurationNode implements Node {
   """The ID of the object"""
   id: ID!
+  spectrogramAnalysis: SpectrogramAnalysisNode!
   folder: String!
   audioFilesSubtypes: [String!]
   channelCount: Int
@@ -3001,18 +3062,6 @@ type LegacySpectrogramConfigurationNode implements Node {
   gainDb: Float
   linearFrequencyScale: LinearScaleNode
   multiLinearFrequencyScale: MultiLinearScaleNode
-  spectrogramAnalysis(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-    annotationCampaignId: PK
-    datasetId: PK
-
-    """Ordering"""
-    orderBy: String
-  ): SpectrogramAnalysisNodeConnection!
   pk: PK!
   scaleName: String
 }
@@ -3521,7 +3570,7 @@ enum AnnotationTaskStatus {
 type AnnotationPhaseNode implements Node {
   """The ID of the object"""
   id: ID!
-  phase: AnnotationPhaseType
+  phase: AnnotationPhaseType!
   annotationCampaign: AnnotationCampaignNode!
   createdAt: DateTime!
   createdBy: UserNode!
@@ -3532,12 +3581,14 @@ type AnnotationPhaseNode implements Node {
   annotationFileRanges(offset: Int, before: String, after: String, first: Int, last: Int, annotatorId: PK, annotationCampaignId: PK, phaseType: AnnotationPhaseType): AnnotationFileRangeNodeConnection!
   annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, authorId: PK, annotationCampaignId: PK, spectrogramId: PK, phaseType: AnnotationPhaseType): AnnotationCommentNodeConnection!
   pk: PK!
-  isCompleted: Boolean
-  hasAnnotations: Boolean
-  tasksCount: Int
-  completedTasksCount: Int
-  userTasksCount: Int
-  userCompletedTasksCount: Int
+  annotationCampaignPk: Int!
+  isCompleted: Boolean!
+  isOpen: Boolean!
+  hasAnnotations: Boolean!
+  tasksCount: Int!
+  completedTasksCount: Int!
+  userTasksCount: Int!
+  userCompletedTasksCount: Int!
 }
 
 type AnnotationTaskNodeConnection {
@@ -3692,6 +3743,13 @@ type AnnotationValidationNode implements Node {
   pk: PK!
 }
 
+"""From ExpertiseLevel"""
+enum ExpertiseLevel {
+  Expert
+  Average
+  Novice
+}
+
 type ChannelConfigurationNodeNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfoExtra!
@@ -3738,8 +3796,8 @@ type ConfidenceSetNode implements Node {
     after: String
     first: Int
     last: Int
-    annotatorId: PK
-    ownerId: PK
+    annotatorPk: PK
+    ownerPk: PK
     isArchived: Boolean
     phaseType: AnnotationPhaseType
 
@@ -4340,6 +4398,15 @@ type WebsiteProjectNodeNodeConnection {
   totalCount: Int
 }
 
+type UserGroupNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [UserGroupNode]!
+  totalCount: Int
+}
+
 """Type for import dataset"""
 type ImportSpectrogramAnalysisType {
   name: String!
@@ -4554,6 +4621,21 @@ type Mutation {
   postSound(input: PostSoundMutationInput!): PostSoundMutationPayload
   deleteSound(id: ID): DeleteSoundMutation
 
+  """Update password mutation"""
+  userUpdatePassword(input: UpdatePasswordMutationInput!): UpdatePasswordMutationPayload
+
+  """Update user mutation"""
+  currentUserUpdate(input: UpdateUserMutationInput!): UpdateUserMutationPayload
+
+  """Archive annotation phase mutation"""
+  endAnnotationPhase(pk: PK!): EndAnnotationPhaseMutation
+
+  """Create annotation phase of type "Verification" mutation"""
+  createAnnotationPhase(campaignPk: PK!, type: AnnotationPhaseType!): CreateAnnotationPhase
+
+  """Update annotation campaign labels with features mutation"""
+  updateAnnotationCampaign(allowPointAnnotation: Boolean, confidenceSetPk: PK, labelSetPk: PK, labelsWithAcousticFeatures: [String], pk: PK!): UpdateAnnotationCampaign
+
   """Archive annotation campaign mutation"""
   archiveAnnotationCampaign(id: PK!): ArchiveAnnotationCampaignMutation
 
@@ -4633,6 +4715,48 @@ input PostSoundMutationInput {
 
 type DeleteSoundMutation {
   ok: Boolean
+}
+
+"""Update password mutation"""
+type UpdatePasswordMutationPayload {
+  oldPassword: String!
+  newPassword: String!
+  errors: [ErrorType]
+  clientMutationId: String
+}
+
+input UpdatePasswordMutationInput {
+  oldPassword: String!
+  newPassword: String!
+  clientMutationId: String
+}
+
+"""Update user mutation"""
+type UpdateUserMutationPayload {
+  user: UserNode
+  errors: [ErrorType!]!
+  clientMutationId: String
+}
+
+input UpdateUserMutationInput {
+  email: String
+  id: ID
+  clientMutationId: String
+}
+
+"""Archive annotation phase mutation"""
+type EndAnnotationPhaseMutation {
+  ok: Boolean!
+}
+
+"""Create annotation phase of type "Verification" mutation"""
+type CreateAnnotationPhase {
+  pk: PK!
+}
+
+"""Update annotation campaign labels with features mutation"""
+type UpdateAnnotationCampaign {
+  ok: Boolean!
 }
 
 """Archive annotation campaign mutation"""

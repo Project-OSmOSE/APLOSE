@@ -108,7 +108,7 @@ export const useUploadAnnotationChunk = (onFulfilled: () => void) => {
     doImport({
       campaignID: campaign.id,
       phaseID: phase.id,
-      datasetName: campaign.datasets![0],
+      datasetName: campaign.dataset.name,
       detectors_map: detectorsMap,
       data: [ file.header, ...chunkRows ],
       force_datetime: force?.force_datetime,

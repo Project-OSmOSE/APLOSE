@@ -11,7 +11,8 @@ export type SpectrogramFilter = {
   acoustic_features__isnull?: boolean;
   label__name?: string;
   confidence_indicator__label?: string;
-  detector_configuration__detector__name?: string;
+  detector_configuration__detector_id?: ID;
+  annotator_id?: ID;
   end__gte?: string;
   start__lte?: string;
 }

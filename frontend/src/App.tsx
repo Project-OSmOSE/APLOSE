@@ -37,7 +37,7 @@ import { AlertProvider } from "@/service/ui/alert";
 import { AploseSkeleton } from "@/components/layout";
 import { selectIsConnected } from "@/service/slices/auth.ts";
 import { ReactFlowProvider } from "@xyflow/react";
-import { selectCurrentUser } from "@/service/api/user.ts";
+import { selectCurrentUser } from "@/features/auth/api";
 
 
 setupIonicReact({
@@ -98,7 +98,7 @@ const AppContent: React.FC = () => {
 
           <Route path='account' element={ <Account/> }/>
 
-        { currentUser?.is_superuser &&
+        { currentUser?.isSuperuser &&
             <Route path='admin'>
                 <Route path='sql' element={ <SqlQuery/> }/>
                 <Route path='ontology' element={ <OntologyPage/> }>

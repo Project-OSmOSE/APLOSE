@@ -3,7 +3,7 @@ import styles from "../styles.module.scss";
 import { createPortal } from "react-dom";
 import { Button, Modal, ModalHeader } from "@/components/ui";
 import { IonNote } from "@ionic/react";
-import { AnnotationLabelNode } from "@/features/gql/types.generated.ts";
+import { AnnotationLabelNode } from "@/features/_utils_/gql/types.generated.ts";
 import { useAnnotatorAnnotations, useAnnotatorQuery } from "@/features/Annotator";
 
 export const AnnotationLabelUpdateModal: React.FC<{

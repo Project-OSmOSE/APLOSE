@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { AnnotationLabelNode, AnnotationType } from "@/features/gql/types.generated.ts";
+import { AnnotationLabelNode, AnnotationType } from "@/features/_utils_/gql/types.generated.ts";
 import { useAppSelector } from "@/service/app.ts";
 import { selectLabelChoice } from "../slice.ts";
 import { useAnnotatorQuery } from "./query.hook";
