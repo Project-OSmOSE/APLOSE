@@ -214,7 +214,7 @@ deadline.setTime(0)
 export function getCurrentUserMock(as: UserType) {
   return {
     currentUser: {
-      pk: USERS[as],
+      pk: USERS[as].id,
       isAdmin: USERS[as].is_staff || USERS[as].is_superuser,
       username: USERS[as].username,
       email: USERS[as].email,

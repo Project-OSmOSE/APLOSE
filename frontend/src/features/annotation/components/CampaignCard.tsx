@@ -7,7 +7,7 @@ import { crop } from "ionicons/icons";
 import { dateToString, getErrorMessage, pluralize } from "@/service/function.ts";
 import { Progress, SkeletonProgress, WarningText } from "@/components/ui";
 import styles from "./styles.module.scss";
-import { AnnotationAPI } from "../api";
+import { useListCampaignsAndPhasesQuery } from "../api";
 import { useCampaignFilters } from "../hooks";
 import { useCurrentUser } from "@/features/auth/api";
 
@@ -18,7 +18,7 @@ export const Cards: React.FC = () => {
     data,
     isFetching,
     error
-  } = AnnotationAPI.endpoints.listCampaignsAndPhases.useQuery(params, { skip: !user });
+  } = useListCampaignsAndPhasesQuery(params, { skip: !user });
   const campaigns = useMemo(() => {
     return data?.allAnnotationCampaigns?.results.filter(r => r !== null).map(c => ({
       ...c,

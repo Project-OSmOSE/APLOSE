@@ -58,6 +58,7 @@ export const {
   useEndPhaseMutation,
   useCreateVerificationPhaseMutation,
   useCreateAnnotationPhaseMutation,
+  useListCampaignsAndPhasesQuery,
 } = AnnotationAPI
 
 export const useCurrentAnnotationCampaign = () => {

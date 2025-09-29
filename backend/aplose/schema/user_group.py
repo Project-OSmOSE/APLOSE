@@ -15,7 +15,7 @@ class UserGroupNode(ApiObjectType):
     class Meta:
         # pylint: disable=too-few-public-methods, missing-class-docstring
         model = AnnotatorGroup
-        exclude = ("password",)
+        fields = "__all__"
         filter_fields = {}
         interfaces = (relay.Node,)
 
