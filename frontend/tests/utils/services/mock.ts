@@ -36,6 +36,7 @@ import {
 } from "../../../src/features/metadatax/acquisition/display/api/display-acquisition.generated";
 import { ListCampaignsAndPhasesQuery } from "../../../src/features/annotation/api/annotation.generated";
 import { AnnotationPhaseType } from "../../../src/features/_utils_/gql/types.generated";
+import { GetCurrentUserQuery } from "../../../src/features/auth/api/auth.generated";
 
 type Response = {
   status: number,
@@ -210,6 +211,33 @@ export class Mock {
 const deadline = new Date()
 deadline.setTime(0)
 
+export function getCurrentUserMock(as: UserType) {
+  return {
+    currentUser: {
+      pk: USERS[as],
+      isAdmin: USERS[as].is_staff || USERS[as].is_superuser,
+      username: USERS[as].username,
+      email: USERS[as].email,
+      isSuperuser: USERS[as].is_superuser,
+      displayName: USERS[as].first_name + ' ' + USERS[as].last_name,
+    }
+  } satisfies GetCurrentUserQuery as GetCurrentUserQuery
+}
+
+const datasetByPk = {
+  pk: 1,
+  name: 'Test dataset',
+  path: 'test/dataset',
+  description: "Coastal audio recordings",
+  start: "2021-08-02T00:00:00Z",
+  end: "2022-07-13T06:00:00Z",
+  createdAt: new Date().toISOString(),
+  legacy: true,
+  owner: {
+    displayName: 'John Doe'
+  }
+}
+
 export const MOCK_QUERIES: {
   [key in string]: { [key in MockType]: any }
 } = {
@@ -262,21 +290,7 @@ export const MOCK_QUERIES: {
     empty: {
       datasetByPk: undefined
     } satisfies GetDatasetByPkQuery as GetDatasetByPkQuery,
-    filled: {
-      datasetByPk: {
-        pk: 1,
-        name: 'Test dataset',
-        path: 'test/dataset',
-        description: "Coastal audio recordings",
-        start: "2021-08-02T00:00:00Z",
-        end: "2022-07-13T06:00:00Z",
-        createdAt: new Date().toISOString(),
-        legacy: true,
-        owner: {
-          displayName: 'John Doe'
-        }
-      }
-    } satisfies GetDatasetByPkQuery as GetDatasetByPkQuery
+    filled: { datasetByPk } satisfies GetDatasetByPkQuery as GetDatasetByPkQuery
   },
   getDatasetsAndAnalysis: {
     empty: {
@@ -317,7 +331,8 @@ export const MOCK_QUERIES: {
           name: 'Test analysis 2',
           path: 'Test analysis 2',
         }
-      ]
+      ],
+      datasetByPk
     } satisfies GetAvailableSpectrogramAnalysisForImportQuery as GetAvailableSpectrogramAnalysisForImportQuery
   },
   getSpectrogramAnalysis: {
@@ -408,7 +423,7 @@ export const MOCK_QUERIES: {
         ]
       }
     } satisfies ListCampaignsAndPhasesQuery as ListCampaignsAndPhasesQuery
-  }
+  },
 }
 export const MOCK_MUTATIONS: {
   [key in string]: { empty: Record<string, never> }

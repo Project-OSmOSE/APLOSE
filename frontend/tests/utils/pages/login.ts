@@ -3,6 +3,7 @@ import { API_URL } from '../const';
 import { Mock } from '../services';
 import { AUTH, UserType } from '../../fixtures';
 import { HomePage } from "./home";
+import { interceptGQL } from "../functions";
 
 export class LoginPage {
 
@@ -41,10 +42,8 @@ export class LoginPage {
 
   async login(as: UserType) {
     await this.go()
-    await this.mock.userSelf(as);
+    await interceptGQL(this.page, {}, as)
     await this.fillForm()
-    await this.mock.userSelf(as)
     await this.submit({ status: 200, submitAction: 'button' })
-    await this.mock.userSelf(as)
   }
 }

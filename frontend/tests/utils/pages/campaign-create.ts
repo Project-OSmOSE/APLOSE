@@ -2,7 +2,7 @@ import { Locator, Page, test } from '@playwright/test';
 import { Mock } from '../services';
 import { CAMPAIGN, DATASET, UserType } from '../../fixtures';
 import { CampaignListPage } from './campaign-list';
-import { interceptGQL, selectInAlert } from '../functions';
+import { oldInterceptGQL, selectInAlert } from '../functions';
 
 
 export class CampaignCreatePage {
@@ -20,7 +20,7 @@ export class CampaignCreatePage {
     await test.step('Navigate to Campaign create', async () => {
       await this.list.go(as)
       await this.list.createButton.click();
-      await interceptGQL(this.page, { getDatasetsAndAnalysis: options?.empty ? 'empty' : 'filled' })
+      await oldInterceptGQL(this.page, { getDatasetsAndAnalysis: options?.empty ? 'empty' : 'filled' })
       await this.mock.campaignCreate(options?.withErrors);
       await this.mock.campaignDetail(options?.empty);
     });

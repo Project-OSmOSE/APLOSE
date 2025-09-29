@@ -18,7 +18,7 @@ export class DatasetDetailPage {
         getDatasetByPk: 'filled',
         getSpectrogramAnalysis: type,
         getChannelConfigurations: type,
-      })
+      }, as)
       await this.page.getByText('Test dataset').click()
     });
   }

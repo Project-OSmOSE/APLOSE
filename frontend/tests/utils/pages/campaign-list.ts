@@ -1,7 +1,7 @@
 import { Locator, Page, test } from '@playwright/test';
 import { UserType } from '../../fixtures';
 import { LoginPage } from './login';
-import { Mock, MockType } from '../services';
+import { MockType } from '../services';
 import { expect, interceptGQL } from "../index";
 
 export class CampaignListPage {
@@ -15,20 +15,15 @@ export class CampaignListPage {
   }
 
   constructor(private page: Page,
-              private login = new LoginPage(page),
-              private mock = new Mock(page)) {
+              private login = new LoginPage(page)) {
   }
 
   async go(as: UserType, type: MockType = 'filled') {
     await test.step('Navigate to Campaigns', async () => {
-      await this.mock.userSelf(as)
       await interceptGQL(this.page, {
         listCampaignsAndPhases: type
-      })
+      }, as)
       await this.login.login(as)
-      await interceptGQL(this.page, {
-        listCampaignsAndPhases: type
-      }, 2)
       await expect(this.page.getByRole('heading', { name: 'Annotation campaigns' })).toBeVisible()
     });
   }

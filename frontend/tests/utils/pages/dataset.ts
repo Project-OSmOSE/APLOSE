@@ -14,8 +14,10 @@ export class DatasetPage {
 
   async go(as: UserType, type: MockType = 'filled') {
     await test.step('Navigate to Datasets', async () => {
+      await interceptGQL(this.page, {
+        getDatasets: type
+      }, as)
       await this.campaignList.go(as);
-      await interceptGQL(this.page, { getDatasets: type })
       await Promise.all([
         this.page.waitForResponse('**/graphql'),
         this.page.getByRole('button', { name: 'Datasets' }).click(),
@@ -25,7 +27,9 @@ export class DatasetPage {
   }
 
   async openImportModal(type: MockType = 'filled'): Promise<DatasetImportModal> {
-    await interceptGQL(this.page, { getAvailableDatasetsForImport: type })
+    await interceptGQL(this.page, {
+      getAvailableDatasetsForImport: type
+    })
     return DatasetImportModal.get(this)
   }
 

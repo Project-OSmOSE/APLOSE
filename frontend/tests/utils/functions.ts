@@ -1,6 +1,7 @@
 import { errors, expect } from './fixture';
 import { Page, Request, Route } from 'playwright-core';
-import { MOCK, MockType, QueryName } from "./services";
+import { getCurrentUserMock, MOCK, MockType, QueryName } from "./services";
+import { UserType } from "../fixtures";
 
 // https://github.com/microsoft/playwright/issues/13284#issuecomment-2299013936
 export async function expectNoRequestsOnAction(page: Page,
@@ -41,7 +42,7 @@ type Operations = {
 export async function interceptGQL(
   page: Page,
   operations: Operations,
-  times: number = Object.keys(operations).length
+  as?: UserType | null,
 ): Promise<CalledWith[]> {
   // A list of GQL variables which the handler has been called with.
   const reqs: CalledWith[] = [];
@@ -52,6 +53,52 @@ export async function interceptGQL(
 
     // Pass along to the previous handler in the chain if the request
     // is for a different operation.
+    if (req.operationName === "getCurrentUser" && as !== undefined) {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ data: as === null ? {} : getCurrentUserMock(as) }),
+      });
+    }
+    if (!Object.keys(operations).includes(req.operationName)) {
+      return route.fallback();
+    }
+
+    // Store what variables we called the API with.
+    reqs.push(req.variables);
+
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: MOCK[req.operationName][operations[req.operationName]] }),
+    });
+  });
+
+  return reqs;
+}
+
+export async function oldInterceptGQL(
+  page: Page,
+  operations: Operations,
+  as?: UserType | null,
+  times: number = Object.keys(operations).length + (as !== undefined ? 1 : 0)
+): Promise<CalledWith[]> {
+  // A list of GQL variables which the handler has been called with.
+  const reqs: CalledWith[] = [];
+
+  // Register a new handler which intercepts all GQL requests.
+  await page.route('**/graphql', function (route: Route) {
+    const req = route.request().postDataJSON();
+
+    // Pass along to the previous handler in the chain if the request
+    // is for a different operation.
+    if (req.operationName === "getCurrentUser" && as !== undefined) {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ data: as === null ? {} : getCurrentUserMock(as) }),
+      });
+    }
     if (!Object.keys(operations).includes(req.operationName)) {
       return route.fallback();
     }

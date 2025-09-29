@@ -11,7 +11,6 @@ import {
 } from './pages';
 import { Mock } from './services';
 import { CampaignImportAnnotationsPage } from "./pages/campaign-import-annotations";
-import { interceptGQL } from "./functions";
 import { Route } from "playwright-core";
 import { DatasetDetailPage } from "./pages/dataset-detail";
 
@@ -40,15 +39,10 @@ export interface Page extends PageBase, PageExtension {
 // Declare the types of your fixtures.
 type Fixture = {
   page: Page;
-  interceptGQL: typeof interceptGQL;
 };
 
 export * from '@playwright/test';
 export const test = testBase.extend<Fixture>({
-  // eslint-disable-next-line no-empty-pattern
-  interceptGQL: async ({}, use) => {
-    await use(interceptGQL);
-  },
   page: async ({ page }, use) => {
     // Block all BFF requests from making it through to the 'real'
     // dependency. If we get this far it means we've forgotten to register a
