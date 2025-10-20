@@ -1,6 +1,6 @@
 import React, { Fragment, useMemo } from 'react';
 import { IonIcon, IonNote, IonSpinner } from '@ionic/react';
-import { downloadOutline } from 'ionicons/icons';
+import { downloadOutline } from 'ionicons/icons/index.js';
 
 import { dateToString } from '@/service/function';
 import { Link, Table, TableContent, TableDivider, TableHead, WarningText } from '@/components/ui';
@@ -18,7 +18,7 @@ export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVari
   const analysis = useMemo(() => data?.allSpectrogramAnalysis?.results.filter(r => r !== null).map(r => r!), [ data ])
 
   if (isLoading) return <IonSpinner/>
-  if (error) <WarningText error={ error }/>
+  if (error) return <WarningText error={ error }/>
   if (!analysis || analysis.length === 0) return <IonNote color="medium">No spectrogram analysis</IonNote>
 
   return <Table columns={ 12 }>

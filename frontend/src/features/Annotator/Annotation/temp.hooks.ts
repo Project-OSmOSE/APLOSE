@@ -1,4 +1,4 @@
-import { useAppDispatch, useAppSelector } from '@/features';
+import { useAppDispatch, useAppSelector } from '@/features/App';
 import { MouseEvent, PointerEvent, useCallback, useEffect, useRef } from 'react';
 import { selectTempAnnotation, setTempAnnotation, type TempAnnotation } from './slice';
 import { useFrequencyAxis, useTimeAxis } from '@/features/Annotator/Axis';

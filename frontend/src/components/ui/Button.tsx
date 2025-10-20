@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { chevronBackOutline } from 'ionicons/icons';
+import { chevronBackOutline } from 'ionicons/icons/index.js';
 import { TooltipOverlay } from './Tooltip';
 import { Link } from './Link';
 

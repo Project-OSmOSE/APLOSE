@@ -9,7 +9,7 @@ export const client = new GraphQLClient(`/api/graphql`)
 function prepareGqlHeaders(headers: Headers) {
   headers = prepareHeaders(headers);
 
-  // Set Accept
+  // Set "Accept" header
   headers.set('Accept', 'application/json, multipart/mixed')
 
   return headers

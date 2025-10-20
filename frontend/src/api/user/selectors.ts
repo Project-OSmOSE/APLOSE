@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { AppState } from '@/features';
+import { AppState } from '@/features/App';
 import { UserGqlAPI } from './api';
 
 

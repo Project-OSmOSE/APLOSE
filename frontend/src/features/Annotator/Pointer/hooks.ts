@@ -3,7 +3,7 @@ import { useAnnotatorWindow } from '@/features/Annotator/Canvas';
 import { useFrequencyAxis, useTimeAxis } from '@/features/Annotator/Axis';
 import type { ScaleService } from '@/components/ui';
 import { clearPosition, type Position, selectPosition, setPosition, type TimeFreqPosition } from './slice';
-import { useAppDispatch, useAppSelector } from '@/features';
+import { useAppDispatch, useAppSelector } from '@/features/App';
 import { useAnnotatorCanvasContext } from '@/features/Annotator/Canvas/context';
 
 export const useAnnotatorPointer = () => {

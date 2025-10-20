@@ -4,7 +4,7 @@ import { ConfidenceSelect } from '@/features/Confidence';
 import { LabelSelect } from '@/features/Labels';
 import { BooleanSwitch } from '@/components/form';
 import { IonIcon } from '@ionic/react';
-import { funnel, funnelOutline } from 'ionicons/icons';
+import { funnel, funnelOutline } from 'ionicons/icons/index.js';
 import { createPortal } from 'react-dom';
 import styles from './styles.module.scss';
 import { Modal, useModal } from '@/components/ui';

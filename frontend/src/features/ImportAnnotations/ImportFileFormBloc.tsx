@@ -6,7 +6,7 @@ import styles from './styles.module.scss'
 import { ACCEPT_CSV_MIME_TYPE, ACCEPT_CSV_SEPARATOR, IMPORT_ANNOTATIONS_COLUMNS } from '@/consts/csv';
 import { useCurrentCampaign } from '@/api';
 import { WarningText } from '@/components/ui';
-import { cloudUploadOutline, refreshOutline } from 'ionicons/icons';
+import { cloudUploadOutline, refreshOutline } from 'ionicons/icons/index.js';
 
 export const ImportAnnotationsFormBloc: React.FC = () => {
   const { campaign } = useCurrentCampaign()

@@ -12,7 +12,7 @@ import {
   SearchbarInputEventDetail,
 } from '@ionic/react';
 import { IonRadioGroupCustomEvent } from '@ionic/core/dist/types/components';
-import { caretDown, caretUp } from 'ionicons/icons';
+import { caretDown, caretUp } from 'ionicons/icons/index.js';
 import { AUX_CLICK_EVENT, CLICK_EVENT, useEvent, useFilter } from '@/features/UX';
 import { Modal, ModalFooter, ModalHeader, usePopover } from '@/components/ui';
 import styles from './form.module.scss'

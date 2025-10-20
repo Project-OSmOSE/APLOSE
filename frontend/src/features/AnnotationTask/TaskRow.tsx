@@ -8,9 +8,8 @@ import {
 import React, { Fragment, useMemo } from 'react';
 import { Button, TableContent, TableDivider } from '@/components/ui';
 import { IonIcon } from '@ionic/react';
-import { checkmarkCircle, chevronForwardOutline, ellipseOutline } from 'ionicons/icons';
-import styles from '@/view/annotation-campaign/[campaignID]/phase/[phaseType]/styles.module.scss';
-import { useAnnotatorCanNavigate } from '@/features/Annotator';
+import { checkmarkCircle, chevronForwardOutline, ellipseOutline } from 'ionicons/icons/index.js';
+import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 
 export const TaskRow: React.FC<{
   task: Pick<AnnotationTaskNode, 'status'>
@@ -19,7 +18,7 @@ export const TaskRow: React.FC<{
   validatedAnnotations: Pick<AnnotationNodeNodeConnection, 'totalCount'>;
 }> = ({ task, spectrogram, annotations, validatedAnnotations }) => {
   const { phase } = useCurrentPhase()
-  const { openAnnotator } = useAnnotatorNavigation()
+  const { openAnnotator } = useOpenAnnotator()
 
   const submitted = useMemo(() => task.status === AnnotationTaskStatus.Finished, [ task ])
   const start = useMemo(() => new Date(spectrogram.start), [ spectrogram ])
@@ -34,12 +33,12 @@ export const TaskRow: React.FC<{
         <TableContent disabled={ submitted }>{ validatedAnnotations.totalCount }</TableContent> }
     <TableContent disabled={ submitted }>
       { submitted &&
-          <IonIcon icon={ checkmarkCircle } className={ styles.statusIcon } color="primary"/> }
+          <IonIcon icon={ checkmarkCircle } color="primary"/> }
       { !submitted &&
-          <IonIcon icon={ ellipseOutline } className={ styles.statusIcon } color="medium"/> }
+          <IonIcon icon={ ellipseOutline } color="medium"/> }
     </TableContent>
     <TableContent disabled={ submitted }>
-      <Button color="dark" fill="clear" size="small" className={ styles.submit }
+      <Button color="dark" fill="clear" size="small"
               onClick={ () => openAnnotator(spectrogram.id) }>
         <IonIcon icon={ chevronForwardOutline } color="primary" slot="icon-only"/>
       </Button>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { IonChip, IonIcon, IonNote } from '@ionic/react';
-import { closeCircle } from 'ionicons/icons';
+import { closeCircle } from 'ionicons/icons/index.js';
 import styles from './form.module.scss'
 import { Item } from './types';
 import { Label } from './Label';

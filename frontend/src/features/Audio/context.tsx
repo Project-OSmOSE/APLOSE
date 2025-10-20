@@ -93,7 +93,6 @@ export const AudioProvider: React.FC<AudioContextProvider> = ({ children }) => {
     _setPlaybackRate(playbackRate)
     if (elementRef.current) {
       elementRef.current.playbackRate = playbackRate;
-      // @ts-expect-error: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/preservesPitch
       elementRef.current.preservesPitch = false;
     }
   }, [ _setPlaybackRate ])
@@ -109,7 +108,6 @@ export const AudioProvider: React.FC<AudioContextProvider> = ({ children }) => {
     _setState('pause')
     if (elementRef.current) {
       elementRef.current.playbackRate = playbackRate;
-      // @ts-expect-error: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/preservesPitch
       elementRef.current.preservesPitch = false;
       elementRef.current.volume = 1.0;
       _setDuration(elementRef.current.duration)

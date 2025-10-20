@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { ActionCreatorWithPayload } from '@reduxjs/toolkit';
-import { AppState, useAppDispatch, useAppSelector } from '@/features';
+import { AppState, useAppDispatch, useAppSelector } from '@/features/App';
 import { AnnotationPhaseType } from '@/api';
 
 type BaseType = string | number | boolean | null

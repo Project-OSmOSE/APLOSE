@@ -1,11 +1,11 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState } from 'react';
 import styles from './styles.module.scss'
-import { IonIcon } from "@ionic/react";
-import { funnel, funnelOutline } from "ionicons/icons";
-import { createPortal } from "react-dom";
-import { Modal } from "@/components/ui";
-import { Switch } from "@/components/form";
-import { AnnotationTaskStatus, useAllTasksFilters } from "@/api";
+import { IonIcon } from '@ionic/react';
+import { funnel, funnelOutline } from 'ionicons/icons/index.js';
+import { createPortal } from 'react-dom';
+import { Modal } from '@/components/ui';
+import { Switch } from '@/components/form';
+import { AnnotationTaskStatus, useAllTasksFilters } from '@/api';
 
 export const StatusFilter: React.FC<{
   onUpdate: () => void
@@ -31,13 +31,13 @@ export const StatusFilter: React.FC<{
 
   return <Fragment>
     { params.status !== undefined ?
-      <IonIcon onClick={ () => setFilterModalOpen(true) } color='primary' icon={ funnel }/> :
-      <IonIcon onClick={ () => setFilterModalOpen(true) } color='dark' icon={ funnelOutline }/> }
+      <IonIcon onClick={ () => setFilterModalOpen(true) } color="primary" icon={ funnel }/> :
+      <IonIcon onClick={ () => setFilterModalOpen(true) } color="dark" icon={ funnelOutline }/> }
 
     { filterModalOpen && createPortal(<Modal className={ styles.filterModal }
                                              onClose={ () => setFilterModalOpen(false) }>
 
-      <Switch label='Status' options={ [ 'Unset', 'Created', 'Finished' ] }
+      <Switch label="Status" options={ [ 'Unset', 'Created', 'Finished' ] }
               value={ valueToBooleanOption(params.status) }
               onValueSelected={ setState }/>
 

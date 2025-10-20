@@ -15,7 +15,7 @@ export const ChannelConfigurationTable: React.FC<{ datasetID: string }> = ({ dat
   } = useAllChannelConfigurations({ datasetID });
 
   if (isLoading) return <IonSpinner/>
-  if (error) <WarningText error={ error }/>
+  if (error) return <WarningText error={ error }/>
   if (!allChannelConfigurations || allChannelConfigurations.length === 0)
     return <IonNote color="medium">No acquisition information</IonNote>
 

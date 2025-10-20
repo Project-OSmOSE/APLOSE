@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
-import { archiveOutline } from 'ionicons/icons';
+import { archiveOutline } from 'ionicons/icons/index.js';
 import { useAlert } from '@/components/ui';
 import { useArchiveCampaign, useCurrentCampaign } from '@/api';
 

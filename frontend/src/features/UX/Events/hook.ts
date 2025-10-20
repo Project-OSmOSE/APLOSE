@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Signal } from 'signal-ts';
-import { useAppSelector } from '@/features';
+import { useAppSelector } from '@/features/App';
 import {
   AUX_CLICK_EVENT,
   CLICK_EVENT,

@@ -13,7 +13,7 @@ import { restAPI } from '@/api/baseRestApi';
 
 export const AppStore = configureStore({
   reducer: {
-    [EventSlice.reducerPath]: EventSlice.reducer,
+    event: EventSlice.reducer,
 
     auth: AuthSlice.reducer,
     [gqlAPI.reducerPath]: gqlAPI.reducer,

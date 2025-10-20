@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import styles from './styles.module.scss';
 import { Kbd, TooltipOverlay } from '@/components/ui';
 import { IonButton, IonIcon } from '@ionic/react';
-import { caretBack, caretForward } from 'ionicons/icons';
+import { caretBack, caretForward } from 'ionicons/icons/index.js';
 import { useAnnotationTask } from '@/api';
 import { useAnnotatorCanNavigate, useOpenAnnotator } from './hooks';
 import { KEY_DOWN_EVENT, useEvent } from '@/features/UX/Events';

@@ -1,4 +1,4 @@
-import { ConfigEnv, UserConfig } from 'vite';
+import { ConfigEnv, type UserConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { execSync } from 'child_process';
 import { resolve } from 'node:path'
@@ -27,10 +27,6 @@ export default (_: ConfigEnv): UserConfig => {
       alias: [
         { find: '@', replacement: resolve(__dirname, './src') },
       ],
-    },
-    test: {
-      globals: true,
-      environment: 'jsdom',
     },
   }
 };

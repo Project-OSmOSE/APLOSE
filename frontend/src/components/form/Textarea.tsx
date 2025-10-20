@@ -1,6 +1,6 @@
 import React, { TextareaHTMLAttributes } from 'react';
 import { IonNote } from '@ionic/react';
-import { useAppDispatch } from '@/features';
+import { useAppDispatch } from '@/features/App';
 import { EventSlice } from '@/features/UX/Events';
 import styles from './form.module.scss'
 import { Label } from './Label';

@@ -1,12 +1,12 @@
-import React, { useCallback } from "react";
-import { Button } from "@/components/ui";
-import { IonIcon } from "@ionic/react";
-import { helpOutline } from "ionicons/icons";
+import React, { useCallback } from 'react';
+import { Button } from '@/components/ui';
+import { IonIcon } from '@ionic/react';
+import { helpOutline } from 'ionicons/icons/index.js';
 
 export const GenerateDatasetHelpButton: React.FC = () => {
   const open = useCallback(() => window.open('/doc/user/campaign-creator/generate-dataset', '_blank'), [])
-  return <Button fill='clear' color='warning' onClick={ open }>
+  return <Button fill="clear" color="warning" onClick={ open }>
     Help
-    <IonIcon icon={ helpOutline } slot='end'/>
+    <IonIcon icon={ helpOutline } slot="end"/>
   </Button>
 }

@@ -1,4 +1,4 @@
-import { useAppDispatch, useAppSelector } from '@/features';
+import { useAppDispatch, useAppSelector } from '@/features/App';
 import { focus, selectAllConfidences, selectFocus } from './slice'
 import { useCallback, useMemo } from 'react';
 

@@ -9,7 +9,7 @@ import './css/app.css';
 
 import { IonApp, setupIonicReact } from '@ionic/react';
 
-import { StoreProvider, useAppSelector } from '@/features';
+import { StoreProvider, useAppSelector } from '@/features/App';
 
 import { AnnotationCampaignList } from '@/view/annotation-campaign';
 import { AnnotationCampaignDetail, AnnotationCampaignInfo } from '@/view/annotation-campaign/[campaignID]';
@@ -32,7 +32,7 @@ import { OntologyPanel } from '@/view/admin/ontology/[type]/[id]';
 import { Home } from '@/view/home/Home';
 import { Login } from '@/view/auth';
 import { useLoadEventService } from '@/features/UX/Events';
-import { AlertProvider } from '@/components/ui/alert';
+import { AlertProvider } from '@/components/ui/Alert';
 import { AploseSkeleton } from '@/components/layout';
 import { selectIsConnected } from '@/features/Auth';
 import { ReactFlowProvider } from '@xyflow/react';

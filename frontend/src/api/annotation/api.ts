@@ -2,16 +2,16 @@ import { restAPI } from '@/api/baseRestApi';
 import { AnnotationPhaseType, type ImportAnnotation, PostAnnotation } from '@/api';
 
 const keys: (keyof ImportAnnotation)[] = [
-  'id',
   'start_time',
   'end_time',
   'start_frequency',
   'end_frequency',
-  'label',
-  'confidence',
+  'label__name',
+  'confidence__label',
+  'confidence__level',
   'analysis',
-  'detector_configuration',
-  'spectrogram',
+  'detector__name',
+  'detector_configuration__configuration',
 ];
 
 export const AnnotationRestAPI = restAPI.injectEndpoints({

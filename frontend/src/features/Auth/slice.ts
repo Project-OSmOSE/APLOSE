@@ -1,7 +1,7 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { loginFulfilled, logoutFulfilled } from '@/api';
 import { getTokenFromCookie, Token } from './utils';
-import { AppState } from '@/features';
+import { AppState } from '@/features/App';
 
 type AuthState = {
   isConnected: boolean,

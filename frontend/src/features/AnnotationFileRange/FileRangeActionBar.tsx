@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styles from './styles.module.scss';
 import { IonButton, IonIcon } from '@ionic/react';
-import { peopleOutline, playOutline, refreshOutline } from 'ionicons/icons';
+import { peopleOutline, playOutline, refreshOutline } from 'ionicons/icons/index.js';
 import { ActionBar, Button, Link, Progress, TooltipOverlay } from '@/components/ui';
 import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
 import { useAllAnnotationTasks, useAllTasksFilters, useCurrentPhase } from '@/api';

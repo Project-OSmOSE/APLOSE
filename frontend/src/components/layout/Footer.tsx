@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { IonIcon, IonNote } from '@ionic/react';
-import { logoGithub, mailOutline } from 'ionicons/icons';
+import { logoGithub, mailOutline } from 'ionicons/icons/index.js';
 import { Link } from '@/components/ui';
 import { CONTACT_MAIL, CONTACT_URI, GITHUB_URL, OSMOSE_URL } from '@/consts/links';
 import logo from '/images/ode_logo_192x192.png';

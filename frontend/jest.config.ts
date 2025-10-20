@@ -14,12 +14,13 @@ const config: Config = {
   testRegex: '/.*/.*\\.(test|spec)?\\.(ts|tsx)$',
   moduleFileExtensions: [ 'ts', 'tsx', 'js', 'jsx', 'json', 'node' ],
   roots: [
-    SRC_PATH
+    SRC_PATH,
   ],
   moduleNameMapper: {
-    "/app/(.*)": "<rootDir>/public/$1",
-    "@/(.*)": "<rootDir>/src/$1",
-  }
+    '\\.(css|less|scss)$': '<rootDir>/tests/__Mock__/styleMock.js',
+    '/app/(.*)': '<rootDir>/public/$1',
+    '@/(.*)': '<rootDir>/src/$1',
+  },
 };
 
 export default config;

@@ -13,6 +13,7 @@
     "types": [
       "node"
     ],
+    "esModuleInterop": true,
     /* Bundler mode */
     "moduleResolution": "node",
     "allowImportingTsExtensions": true,

@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonBadge, IonIcon, IonNote, IonSkeletonText } from '@ionic/react';
 import { Color } from '@ionic/core';
-import { crop } from 'ionicons/icons';
+import { crop } from 'ionicons/icons/index.js';
 
 import { dateToString, pluralize } from '@/service/function';
 import { Progress, SkeletonProgress, WarningText } from '@/components/ui';

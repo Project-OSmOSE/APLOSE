@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { getErrorMessage } from '@/service/function';
 import { Button, Link, useToast } from '@/components/ui';
 import { NON_FILTERED_KEY_DOWN_EVENT, useEvent } from '@/features/UX/Events';
-import { useAppSelector } from '@/features';
+import { useAppSelector } from '@/features/App';
 import { selectIsConnected } from '@/features/Auth';
 import { useLogin } from '@/api';
 

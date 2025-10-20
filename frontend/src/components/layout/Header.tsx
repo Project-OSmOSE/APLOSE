@@ -1,9 +1,9 @@
 import React, { ReactNode, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonButton, IonIcon } from '@ionic/react';
-import { closeOutline, menuOutline } from 'ionicons/icons';
+import { closeOutline, menuOutline } from 'ionicons/icons/index.js';
 import { DocumentationButton } from '@/components/ui';
-import { useAppSelector } from '@/features';
+import { useAppSelector } from '@/features/App';
 import { selectCurrentUser } from '@/api';
 import logo from '/images/ode_logo_192x192.png';
 import styles from './layout.module.scss'

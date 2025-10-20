@@ -1,4 +1,4 @@
-import { useAppDispatch, useAppSelector } from '@/features';
+import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectFocus, selectHiddenLabels, setHiddenLabels } from './slice'
 import { useCurrentCampaign } from '@/api';
 import { useCallback, useMemo } from 'react';

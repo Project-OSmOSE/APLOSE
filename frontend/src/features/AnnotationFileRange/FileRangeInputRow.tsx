@@ -3,7 +3,7 @@ import { TableContent, TableDivider, useAlert } from '@/components/ui';
 import styles from '@/view/annotation-campaign/[campaignID]/phase/[phaseType]/edit-annotators/styles.module.scss';
 import { Input } from '@/components/form';
 import { IonButton, IonIcon } from '@ionic/react';
-import { lockClosedOutline, trashBinOutline } from 'ionicons/icons';
+import { lockClosedOutline, trashBinOutline } from 'ionicons/icons/index.js';
 import { AnnotationFileRangeInput, ErrorType, useCurrentCampaign, UserNode } from '@/api';
 
 type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {

@@ -13,7 +13,7 @@ import { RiRobot2Fill, RiUser3Fill } from 'react-icons/ri';
 import { IoChatbubbleEllipses, IoChatbubbleOutline } from 'react-icons/io5';
 import { InvalidateAnnotationModal } from '@/features/Annotator/Annotation/InvalidateAnnotationModal';
 import { IonButton, IonIcon } from '@ionic/react';
-import { checkmarkOutline, closeOutline } from 'ionicons/icons';
+import { checkmarkOutline, closeOutline } from 'ionicons/icons/index.js';
 import { useNavParams } from '@/features/UX';
 
 export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation }) => {

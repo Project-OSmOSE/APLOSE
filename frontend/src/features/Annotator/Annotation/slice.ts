@@ -86,9 +86,6 @@ export const AnnotatorAnnotationSlice = createSlice({
     setTempAnnotation: (state, action: { payload: TempAnnotation }) => {
       state.tempAnnotation = action.payload
     },
-    clearTempAnnotation: (state) => {
-      state.tempAnnotation = undefined
-    },
   },
   extraReducers: builder => {
     builder.addCase(setAnalysis, (state: AnnotationState, action: { payload: Analysis }) => {
@@ -133,5 +130,4 @@ export const {
   updateAnnotation,
   removeAnnotation,
   setTempAnnotation,
-  clearTempAnnotation,
 } = AnnotatorAnnotationSlice.actions

@@ -30,9 +30,6 @@ export const AnnotatorLabelSlice = createSlice({
     setHiddenLabels: (state, action: { payload: string[] }) => {
       state.hiddenLabels = action.payload;
     },
-    focusLabel: (state, action: { payload: string }) => {
-      state.focus = action.payload
-    },
   },
   extraReducers: builder => {
     builder.addCase(focusAnnotation, (state: LabelState, action: { payload: Annotation }) => {
@@ -60,19 +57,16 @@ export const AnnotatorLabelSlice = createSlice({
     })
   },
   selectors: {
-    selectAllLabels: state => state.allLabels,
     selectHiddenLabels: state => state.hiddenLabels,
     selectFocus: state => state.focus,
   },
 })
 
 export const {
-  selectAllLabels,
   selectHiddenLabels,
   selectFocus,
 } = AnnotatorLabelSlice.selectors
 
 export const {
   setHiddenLabels,
-  focusLabel,
 } = AnnotatorLabelSlice.actions

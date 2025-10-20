@@ -1,6 +1,6 @@
 import React, { Fragment, MouseEvent, useCallback, useMemo } from 'react';
 import { IonChip, IonIcon } from '@ionic/react';
-import { checkmarkOutline, closeCircle, eyeOffOutline, eyeOutline } from 'ionicons/icons';
+import { checkmarkOutline, closeCircle, eyeOffOutline, eyeOutline } from 'ionicons/icons/index.js';
 import styles from './styles.module.scss';
 import { Kbd, TooltipOverlay, useAlert } from '@/components/ui';
 import { useAnnotatorLabel } from './hooks';

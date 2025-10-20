@@ -7,7 +7,7 @@ const baseQueryWithHeaders = fetchBaseQuery({
   prepareHeaders: prepareHeaders,
 })
 
-const baseQueryWithReauth: BaseQueryFn<
+const baseQueryWithReAuth: BaseQueryFn<
   string | FetchArgs,
   unknown,
   FetchBaseQueryError
@@ -25,6 +25,6 @@ export const restAPI = createApi({
     'SQL',
     'Collaborator',
   ],
-  baseQuery: baseQueryWithReauth,
+  baseQuery: baseQueryWithReAuth,
   endpoints: () => ({}),
 })

@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { IonButton, IonChip, IonIcon } from '@ionic/react';
-import { addOutline, closeCircle, refreshOutline, swapHorizontal } from 'ionicons/icons';
+import { addOutline, closeCircle, refreshOutline, swapHorizontal } from 'ionicons/icons/index.js';
 import { AnnotationPhaseType, useAllCampaignsFilters, useCurrentUser } from '@/api';
 import { ActionBar, Link } from '@/components/ui';
 

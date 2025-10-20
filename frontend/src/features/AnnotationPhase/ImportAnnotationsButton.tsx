@@ -1,7 +1,7 @@
 import React, { Fragment, useMemo } from 'react';
 import { Link, TooltipOverlay } from '@/components/ui';
 import { IonIcon } from '@ionic/react';
-import { cloudDownloadOutline } from 'ionicons/icons';
+import { cloudDownloadOutline } from 'ionicons/icons/index.js';
 import { useCurrentCampaign } from '@/api';
 import { useNavParams } from '@/features/UX';
 

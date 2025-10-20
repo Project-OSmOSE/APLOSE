@@ -1,5 +1,5 @@
 import { useCallback, useMemo, WheelEvent } from 'react';
-import { useAppDispatch, useAppSelector } from '@/features';
+import { useAppDispatch, useAppSelector } from '@/features/App';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 import { Point, selectZoom, selectZoomOrigin, setZoom, setZoomOrigin } from './slice'
 import { useAnnotatorPointer } from '@/features/Annotator/Pointer';

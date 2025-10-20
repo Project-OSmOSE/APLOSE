@@ -1,5 +1,5 @@
 import { useAnnotatorAnnotation } from '@/features/Annotator/Annotation';
-import { useAppDispatch, useAppSelector } from '@/features';
+import { useAppDispatch, useAppSelector } from '@/features/App';
 import { addTaskComment, Comment, removeTaskComment, selectTaskComments, updateTaskComment } from './slice';
 import { useCallback, useMemo } from 'react';
 import type { Annotation } from '@/features/Annotator/Annotation/slice';

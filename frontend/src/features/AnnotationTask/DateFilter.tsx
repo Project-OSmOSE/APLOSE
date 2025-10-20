@@ -1,11 +1,11 @@
-import React, { ChangeEvent, Fragment, useCallback, useMemo, useState } from "react";
-import { Button, Modal } from "@/components/ui";
-import { Input } from "@/components/form";
-import { IonIcon } from "@ionic/react";
-import { closeOutline, funnel, funnelOutline } from "ionicons/icons";
-import { createPortal } from "react-dom";
-import { useAllTasksFilters } from "@/api";
-import styles from "./styles.module.scss"
+import React, { ChangeEvent, Fragment, useCallback, useMemo, useState } from 'react';
+import { Button, Modal } from '@/components/ui';
+import { Input } from '@/components/form';
+import { IonIcon } from '@ionic/react';
+import { closeOutline, funnel, funnelOutline } from 'ionicons/icons/index.js';
+import { createPortal } from 'react-dom';
+import { useAllTasksFilters } from '@/api';
+import styles from './styles.module.scss'
 
 export const DateFilter: React.FC<{
   onUpdate: () => void
@@ -65,8 +65,8 @@ export const DateFilter: React.FC<{
 
   return <Fragment>
     { hasDateFilter ?
-      <IonIcon onClick={ () => setFilterModalOpen(true) } color='primary' icon={ funnel }/> :
-      <IonIcon onClick={ () => setFilterModalOpen(true) } color='dark' icon={ funnelOutline }/> }
+      <IonIcon onClick={ () => setFilterModalOpen(true) } color="primary" icon={ funnel }/> :
+      <IonIcon onClick={ () => setFilterModalOpen(true) } color="dark" icon={ funnelOutline }/> }
 
     { filterModalOpen && createPortal(<Modal className={ styles.dateFilterModal }
                                              onClose={ () => setFilterModalOpen(false) }>

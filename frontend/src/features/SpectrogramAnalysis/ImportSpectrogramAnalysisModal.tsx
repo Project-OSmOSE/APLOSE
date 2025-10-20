@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { Modal, ModalFooter, ModalHeader, useModal } from '@/components/ui';
 import { IonButton, IonIcon, IonNote, IonSearchbar, IonSpinner, SearchbarInputEventDetail } from '@ionic/react';
-import { downloadOutline } from 'ionicons/icons';
+import { downloadOutline } from 'ionicons/icons/index.js';
 import { createPortal } from 'react-dom';
 import { ImportSpectrogramAnalysisType, useAvailableSpectrogramAnalysisForImport } from '@/api';
 import { GenerateDatasetHelpButton } from '@/features/Dataset';

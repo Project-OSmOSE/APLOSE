@@ -67,7 +67,7 @@ export const useAnnotatorCanvas = () => {
     if (!freqDataURL) throw new Error('Cannot recover frequency dataURL');
     const freqImg = new Image();
 
-    // Get time scale
+    // Get timescale
     const timeDataURL = xAxisCanvas?.toDataURL('image/png');
     if (!timeDataURL) throw new Error('Cannot recover time dataURL');
     const timeImg = new Image();

@@ -2,7 +2,7 @@ import React, { Fragment, HTMLAttributeAnchorTarget, ReactNode, useCallback } fr
 import { To, useNavigate } from 'react-router-dom';
 import { IonButton, IonIcon } from '@ionic/react';
 import { Color } from '@ionic/core';
-import { openOutline } from 'ionicons/icons';
+import { openOutline } from 'ionicons/icons/index.js';
 import { Button } from './Button';
 
 export type LinkProps = {

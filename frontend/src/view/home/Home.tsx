@@ -2,11 +2,11 @@ import React, { Fragment, useMemo, useState } from 'react';
 import styles from './home.module.scss';
 import { Footer, Header } from '@/components/layout';
 import { IonButton, IonIcon } from '@ionic/react';
-import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
+import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons/index.js';
 import { createPortal } from 'react-dom';
 import { Button, DocumentationButton, Link } from '@/components/ui';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '@/features';
+import { useAppSelector } from '@/features/App';
 import { selectIsConnected } from '@/features/Auth';
 import { CollaboratorRestAPI } from '@/api/collaborator';
 

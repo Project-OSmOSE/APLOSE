@@ -3,7 +3,7 @@ import { Bloc } from '@/components/ui';
 import styles from './styles.module.scss'
 import { Textarea } from '@/components/form';
 import { IonButton, IonIcon } from '@ionic/react';
-import { trashBinOutline } from 'ionicons/icons';
+import { trashBinOutline } from 'ionicons/icons/index.js';
 import { useAnnotatorComment } from './hooks';
 
 export const CommentBloc: React.FC = () => {

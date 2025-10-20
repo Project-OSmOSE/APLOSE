@@ -1,6 +1,6 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { type ListCampaignsAndPhasesQueryVariables } from './annotation-campaign.generated'
-import { AppState } from '@/features';
+import { AppState } from '@/features/App';
 import { logoutFulfilled } from '@/api';
 
 export type AllCampaignFilters = ListCampaignsAndPhasesQueryVariables

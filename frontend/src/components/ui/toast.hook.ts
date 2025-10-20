@@ -1,5 +1,5 @@
 import { useIonToast } from '@ionic/react';
-import { closeCircle } from 'ionicons/icons';
+import { closeCircle } from 'ionicons/icons/index.js';
 import { ToastButton } from '@ionic/core/dist/types/components/toast/toast-interface';
 import { getErrorMessage } from '@/service/function';
 import { useLocation } from 'react-router-dom';

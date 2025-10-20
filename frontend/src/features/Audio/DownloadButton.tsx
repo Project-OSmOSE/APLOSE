@@ -1,15 +1,15 @@
-import React, { Fragment } from "react";
-import { IonButton, IonIcon } from "@ionic/react";
-import { downloadOutline } from "ionicons/icons";
-import { useCurrentUser } from "@/api";
-import { useAudio } from "./hook";
+import React, { Fragment } from 'react';
+import { IonButton, IonIcon } from '@ionic/react';
+import { downloadOutline } from 'ionicons/icons/index.js';
+import { useCurrentUser } from '@/api';
+import { useAudio } from './hook';
 
 export const AudioDownloadButton: React.FC = () => {
   const audio = useAudio()
   const { user } = useCurrentUser();
 
   if (!audio.source || !user?.isAdmin) return <Fragment/>
-  return <IonButton color='medium' size='small' fill='outline'
+  return <IonButton color="medium" size="small" fill="outline"
                     onClick={ audio.download }>
     <IonIcon icon={ downloadOutline } slot="start"/>
     Download audio

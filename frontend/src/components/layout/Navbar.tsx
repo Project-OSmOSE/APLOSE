@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
-import { closeOutline, menuOutline } from 'ionicons/icons';
+import { closeOutline, menuOutline } from 'ionicons/icons/index.js';
 import { useCurrentUser, useLogout } from '@/api';
 import { DocumentationButton, Link } from '@/components/ui';
 import styles from './layout.module.scss';

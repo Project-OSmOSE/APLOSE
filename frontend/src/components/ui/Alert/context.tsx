@@ -1,7 +1,7 @@
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Alert as AlertType } from './type';
-import { Alert } from './alert';
-import { useAppDispatch } from '@/features';
+import { Alert } from './Alert';
+import { useAppDispatch } from '@/features/App';
 import { EventSlice } from '@/features/UX/Events';
 
 // Based on https://medium.com/@mayankvishwakarma.dev/building-an-alert-provider-in-react-using-context-and-custom-hooks-7c90931de088

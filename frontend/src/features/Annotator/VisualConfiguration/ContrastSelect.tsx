@@ -1,9 +1,9 @@
-import React, { Fragment } from "react";
-import { IonButton, IonIcon } from "@ionic/react";
-import { contrastOutline } from "ionicons/icons";
-import { Input } from "@/components/form";
+import React, { Fragment } from 'react';
+import { IonButton, IonIcon } from '@ionic/react';
+import { contrastOutline } from 'ionicons/icons/index.js';
+import { Input } from '@/components/form';
 import { useAnnotatorVisualConfiguration } from './hooks'
-import { useCurrentCampaign } from "@/api";
+import { useCurrentCampaign } from '@/api';
 
 export const ContrastSelect: React.FC = () => {
   const { campaign } = useCurrentCampaign()

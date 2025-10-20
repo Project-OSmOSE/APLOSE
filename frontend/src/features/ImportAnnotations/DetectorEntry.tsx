@@ -3,7 +3,7 @@ import { useImportAnnotationsContext } from '@/features/ImportAnnotations/contex
 import { useAllDetectors } from '@/api/detector';
 import styles from './styles.module.scss';
 import { CheckboxChangeEventDetail, IonCheckbox, IonIcon, IonNote } from '@ionic/react';
-import { alertOutline } from 'ionicons/icons';
+import { alertOutline } from 'ionicons/icons/index.js';
 import { Select } from '@/components/form';
 
 export const DetectorEntry: React.FC<{

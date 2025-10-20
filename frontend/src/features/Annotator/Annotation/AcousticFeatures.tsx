@@ -4,7 +4,7 @@ import { ExtendedDiv, Table, TableContent, TableDivider, TableHead } from '@/com
 import { Input, type Item, Select } from '@/components/form';
 import { IonButton, IonCheckbox, IonIcon, IonNote } from '@ionic/react';
 import { IoRemoveCircleOutline } from 'react-icons/io5';
-import { createOutline } from 'ionicons/icons';
+import { createOutline } from 'ionicons/icons/index.js';
 import { CLICK_EVENT } from '@/features/UX/Events';
 import { SignalTrends } from '@/service/types';
 import { AnnotationType, SignalTrendType, useAnnotationTask, useCurrentCampaign, useCurrentPhase } from '@/api';

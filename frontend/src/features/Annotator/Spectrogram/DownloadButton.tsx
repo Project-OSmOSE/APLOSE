@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { IonButton, IonIcon, IonSpinner } from '@ionic/react';
-import { downloadOutline } from 'ionicons/icons';
+import { downloadOutline } from 'ionicons/icons/index.js';
 import { useAnnotationTask, useCurrentUser } from '@/api';
 import { useAnnotatorCanvas } from '@/features/Annotator/Canvas';
 import { useAnnotatorZoom } from '@/features/Annotator/Zoom';

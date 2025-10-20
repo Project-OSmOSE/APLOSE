@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { IonIcon, IonSkeletonText } from '@ionic/react';
-import { addOutline, closeOutline } from 'ionicons/icons';
+import { addOutline, closeOutline } from 'ionicons/icons/index.js';
 import { Button, Link, useAlert, useModal } from '@/components/ui';
 import { AnnotationPhaseType, useCurrentCampaign, useEndPhase } from '@/api';
 import { AnnotationPhaseCreateAnnotationModal, AnnotationPhaseCreateVerificationModal } from './PhaseCreateModal'

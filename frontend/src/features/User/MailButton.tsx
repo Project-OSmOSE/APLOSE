@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
-import { mailOutline } from 'ionicons/icons';
+import { mailOutline } from 'ionicons/icons/index.js';
 import { useToast } from '@/components/ui';
 import { UserNode } from '@/api';
 

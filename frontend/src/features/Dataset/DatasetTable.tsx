@@ -25,7 +25,7 @@ export const DatasetTable: React.FC = () => {
     </Fragment>
   }, [ isFetching ])
 
-  if (error) <WarningText error={ error }/>
+  if (error) return <WarningText error={ error }/>
 
   if (isFetching) {
     const skeletons = Array.from(new Array(7));

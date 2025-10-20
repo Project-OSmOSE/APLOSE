@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { IonChip, IonIcon } from '@ionic/react';
 import styles from './styles.module.scss';
-import { checkmarkOutline } from 'ionicons/icons';
+import { checkmarkOutline } from 'ionicons/icons/index.js';
 import { useAnnotatorConfidence } from './hooks';
 import { useAnnotatorAnnotation } from '@/features/Annotator/Annotation';
 

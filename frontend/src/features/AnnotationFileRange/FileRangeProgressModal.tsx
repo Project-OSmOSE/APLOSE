@@ -15,7 +15,7 @@ import {
   WarningText,
 } from '@/components/ui';
 import { IonButton, IonIcon, IonNote, IonSpinner } from '@ionic/react';
-import { analytics, caretDown, caretUp, downloadOutline } from 'ionicons/icons';
+import { analytics, caretDown, caretUp, downloadOutline } from 'ionicons/icons/index.js';
 import { createPortal } from 'react-dom';
 import {
   AnnotationFileRangeNode,
