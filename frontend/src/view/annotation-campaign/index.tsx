@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
-import { Head } from "@/components/ui/Page.tsx";
-import { AnnotationCampaignListFilterActionBar, Cards } from "@/features/annotation/components";
+import { Head } from '@/components/ui';
+import { AnnotationCampaignListFilterActionBar, Cards } from '@/features/AnnotationCampaign';
 
 
 export const AnnotationCampaignList: React.FC = () => {
@@ -12,7 +12,7 @@ export const AnnotationCampaignList: React.FC = () => {
       display: 'grid',
       maxHeight: '100%',
       gridTemplateRows: 'auto 1fr',
-      overflow: "hidden",
+      overflow: 'hidden',
       gap: '1rem',
     } }>
 

@@ -1,10 +1,12 @@
 import React from 'react';
-import { Footer, Navbar } from "@/components/layout";
+import { Outlet } from 'react-router-dom';
+import { useNavParams } from '@/features/UX';
+import { Footer } from './Footer';
+import { Navbar } from './Navbar';
 import styles from './layout.module.scss';
-import { Outlet, useParams } from "react-router-dom";
 
 export const AploseSkeleton: React.FC = () => {
-  const { spectrogramID } = useParams<{ spectrogramID: string }>()
+  const { spectrogramID } = useNavParams()
 
   if (spectrogramID) return <Outlet/>
   return (

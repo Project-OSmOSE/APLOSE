@@ -1,0 +1,33 @@
+.spectrogramWindow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr auto;
+  grid-template-areas: "y spectrogram" "empty x";
+  overflow-x: scroll;
+  padding-bottom: 1rem;
+
+  .spectrogram {
+    grid-area: spectrogram;
+    user-select: none;
+    touch-action: none;
+    position: relative;
+
+    canvas {
+      display: block;
+
+      &.drawable {
+        cursor: crosshair;
+      }
+    }
+  }
+}
+
+.timeBar {
+  background: black;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+}
+

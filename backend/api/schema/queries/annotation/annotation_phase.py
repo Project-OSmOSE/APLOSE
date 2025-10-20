@@ -2,7 +2,7 @@
 import graphene_django_optimizer
 from django.db.models import QuerySet, Q, Count
 from django_filters import FilterSet, OrderingFilter, BooleanFilter, CharFilter
-from graphene import relay, Boolean, Int, ObjectType, Field, Enum, NonNull
+from graphene import relay, Boolean, Int, Field, Enum, NonNull
 from graphene_django.filter import TypedFilter
 from graphql import GraphQLResolveInfo
 
@@ -10,10 +10,6 @@ from backend.api.models import AnnotationPhase, AnnotationTask
 from backend.api.schema.context_filters import AnnotationPhaseContextFilter
 from backend.utils.schema import (
     ApiObjectType,
-    GraphQLResolve,
-    GraphQLPermissions,
-    AuthenticatedDjangoConnectionField,
-    PK,
     PKFilter,
 )
 
@@ -111,26 +107,4 @@ class AnnotationPhaseNode(ApiObjectType):
                 ),
             ),
             info,
-        )
-
-
-class AnnotationPhaseQuery(ObjectType):  # pylint: disable=too-few-public-methods
-    """AnnotationPhase queries"""
-
-    all_annotation_phases = AuthenticatedDjangoConnectionField(AnnotationPhaseNode)
-
-    annotation_phase_for_campaign = Field(
-        AnnotationPhaseNode,
-        campaign_id=PK(required=True),
-        phase_type=AnnotationPhaseType(required=True),
-    )
-
-    @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
-    def resolve_annotation_campaign_by_id(
-        self, info, campaign_id: int, phase_type: AnnotationPhaseType
-    ):
-        """Get AnnotationCampaign by id"""
-        return AnnotationPhase.objects.get(
-            annotation_campaign_id=campaign_id,
-            phase=phase_type.value,
         )

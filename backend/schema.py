@@ -21,7 +21,7 @@ from metadatax.schema import Mutation as MetadataxMutation, Query as MetadataxQu
 from .api.schema import APIQuery, APIMutation
 from .aplose.schema import AploseQuery, AploseMutation
 from .osmosewebsite.schema import OSmOSEWebsiteQuery, WebsiteProjectNode
-from .utils.schema import PKFilter
+from .utils.schema.filters import IDFilter
 
 
 class DeploymentFilter(MetadataxDeploymentFilter):
@@ -58,7 +58,7 @@ class ProjectNodeOverride(MetadataxProjectNode):
 
 class ChannelConfigurationFilterSet(MxChannelConfigurationFilter):
 
-    dataset_id = PKFilter(field_name="datasets__id")
+    dataset_id = IDFilter(field_name="datasets__id")
 
     class Meta(MxChannelConfigurationFilter.Meta):
         pass

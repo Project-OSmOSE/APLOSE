@@ -38,8 +38,6 @@ class ConfidenceSetNode(ApiObjectType):
 class ConfidenceSetQuery(ObjectType):  # pylint: disable=too-few-public-methods
     """ConfidenceSet queries"""
 
-    all_confidence_sets = AuthenticatedDjangoConnectionField(ConfidenceSetNode)
-
     annotation_campaign_confidence_set = Field(
         ConfidenceSetNode, annotation_campaign_id=PK(required=True)
     )

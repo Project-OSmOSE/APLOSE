@@ -1,11 +1,10 @@
-import React from "react";
+import React from 'react';
 import styles from './styles.module.scss'
-import { FadedText, WarningText } from "@/components/ui";
-import { IonSpinner } from "@ionic/react";
-import { getErrorMessage } from "@/service/function.ts";
-import { FormBloc } from "@/components/form";
-import { UpdateEmail, UpdatePassword } from "@/features/User";
-import { useCurrentUser } from "@/features/auth/api";
+import { FadedText, WarningText } from '@/components/ui';
+import { IonSpinner } from '@ionic/react';
+import { FormBloc } from '@/components/form';
+import { UpdateEmail, UpdatePassword } from '@/features/User';
+import { useCurrentUser } from '@/api';
 
 export const Account: React.FC = () => {
   const { user, isLoading, error } = useCurrentUser();
@@ -14,7 +13,7 @@ export const Account: React.FC = () => {
     <h2>Account</h2>
 
     { isLoading && <IonSpinner/> }
-    { error && <WarningText>{ getErrorMessage(error) }</WarningText> }
+    { error && <WarningText error={ error }/> }
 
     { user && <div className={ styles.content }>
         <FormBloc>

@@ -30,7 +30,7 @@ from backend.utils.schema import (
 )
 from ..annotation.annotation import AnnotationNode
 from ..annotation.annotation_phase import AnnotationPhaseType
-from ..annotation.annotation_task import AnnotationTaskNode, AnnotationTaskStatus
+from ..annotation.annotation_task import AnnotationTaskStatus
 
 
 class SpectrogramFilter(FilterSet):
@@ -172,7 +172,7 @@ class SpectrogramNode(ApiObjectType):
     """Spectrogram schema"""
 
     annotations = AuthenticatedDjangoConnectionField(AnnotationNode)
-    annotation_tasks = AuthenticatedDjangoConnectionField(AnnotationTaskNode)
+    # annotation_tasks = AuthenticatedDjangoConnectionField(AnnotationTaskNode)
 
     task_status = AnnotationTaskStatus(
         campaign_id=PK(required=True),

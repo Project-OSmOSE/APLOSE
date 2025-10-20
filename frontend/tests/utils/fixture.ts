@@ -7,12 +7,12 @@ import {
   CampaignListPage,
   DatasetPage,
   HomePage,
-  LoginPage
+  LoginPage,
 } from './pages';
 import { Mock } from './services';
-import { CampaignImportAnnotationsPage } from "./pages/campaign-import-annotations";
-import { Route } from "playwright-core";
-import { DatasetDetailPage } from "./pages/dataset-detail";
+import { CampaignImportAnnotationsPage } from './pages/campaign-import-annotations';
+import { Route } from 'playwright-core';
+import { DatasetDetailPage } from './pages/dataset-detail';
 
 interface PageExtension {
   readonly mock: Mock;
@@ -51,7 +51,7 @@ export const test = testBase.extend<Fixture>({
       route.abort('blockedbyclient');
     });
 
-    await use(Object.assign(page, {
+    const extension: PageExtension = {
       mock: new Mock(page),
 
       home: new HomePage(page),
@@ -68,7 +68,9 @@ export const test = testBase.extend<Fixture>({
         edit: new CampaignEditPage(page),
         import: new CampaignImportAnnotationsPage(page),
       },
-    } satisfies PageExtension))
+    }
+
+    await use(Object.assign(page, extension))
   },
 });
 

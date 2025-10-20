@@ -18,7 +18,6 @@ class EnumField(serializers.ChoiceField):
         return self.enum(value).label
 
     def to_internal_value(self, data):
-
         index = self.enum.labels.index(data)
         value = self.enum.values[index]
         try:

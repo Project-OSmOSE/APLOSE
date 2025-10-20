@@ -2,7 +2,8 @@ import { Locator, Page, test } from '@playwright/test';
 import { Mock } from '../services';
 import { CAMPAIGN, DATASET, UserType } from '../../fixtures';
 import { CampaignListPage } from './campaign-list';
-import { oldInterceptGQL, selectInAlert } from '../functions';
+import { selectInAlert } from '../functions';
+import { interceptGQL } from '../mock';
 
 
 export class CampaignCreatePage {
@@ -20,7 +21,7 @@ export class CampaignCreatePage {
     await test.step('Navigate to Campaign create', async () => {
       await this.list.go(as)
       await this.list.createButton.click();
-      await oldInterceptGQL(this.page, { getDatasetsAndAnalysis: options?.empty ? 'empty' : 'filled' })
+      await interceptGQL(this.page, { listDatasetsAndAnalysis: options?.empty ? 'empty' : 'filled' })
       await this.mock.campaignCreate(options?.withErrors);
       await this.mock.campaignDetail(options?.empty);
     });

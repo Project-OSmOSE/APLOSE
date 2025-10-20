@@ -1,5 +1,3 @@
-export type Token = string | undefined;
-
 export type User = {
   id: number,
   username: string,
@@ -16,12 +14,6 @@ export type User = {
 }
 
 export type ExpertiseLevel =
-  "Expert" |
-  "Average" |
-  "Novice";
-
-export type UserGroup = {
-  readonly id: number,
-  readonly name: string,
-  readonly annotators: User[]
-}
+  'Expert' |
+  'Average' |
+  'Novice';

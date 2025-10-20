@@ -1,14 +1,14 @@
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useMemo, useState } from 'react';
 import styles from './home.module.scss';
-import { Footer, Header } from "@/components/layout";
-import { IonButton, IonIcon } from "@ionic/react";
-import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
-import { createPortal } from "react-dom";
-import { Button, DocumentationButton, Link } from "@/components/ui";
+import { Footer, Header } from '@/components/layout';
+import { IonButton, IonIcon } from '@ionic/react';
+import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
+import { createPortal } from 'react-dom';
+import { Button, DocumentationButton, Link } from '@/components/ui';
 import { useNavigate } from 'react-router-dom';
-import { CollaboratorAPI } from "@/service/api/collaborator.ts";
-import { useAppSelector } from "@/service/app.ts";
-import { selectIsConnected } from "@/service/slices/auth.ts";
+import { useAppSelector } from '@/features';
+import { selectIsConnected } from '@/features/Auth';
+import { CollaboratorRestAPI } from '@/api/collaborator';
 
 
 export const Home: React.FC = () => {
@@ -23,13 +23,13 @@ export const Home: React.FC = () => {
   return (
     <div className={ styles.page }>
       <Header buttons={ <Fragment>
-        <Button color='dark' fill='clear' size='large' onClick={ accessAplose }>
+        <Button color="dark" fill="clear" size="large" onClick={ accessAplose }>
           { isConnected ? 'APLOSE' : 'Login' }
         </Button>
-        <Link href='/' size='large'>OSmOSE</Link>
+        <Link href="/" size="large">OSmOSE</Link>
       </Fragment>
       }/>
-      <img src="images/home/banner.jpg" loading='lazy'
+      <img src="images/home/banner.jpg" loading="lazy"
            alt="Aplose Page Banner"
            className={ styles.banner }/>
       <div className={ styles.content }>
@@ -66,7 +66,7 @@ const Intro: React.FC = () => (
       Dive into our short video presentation to find out more about APLOSE.
     </p>
     <video controls>
-      <source src='video/home/démo_APLOSE.mp4' type="video/mp4"/>
+      <source src="video/home/démo_APLOSE.mp4" type="video/mp4"/>
     </video>
   </div>
 )
@@ -91,7 +91,7 @@ const ManualAnnotation: React.FC = () => (
       the annotator annotates the whole spectrogram from the list of available labels ; and strong
       annotation, the annotator draws a labeled time-frequency box around the targeted sound event.
     </p>
-    <img src='images/home/GIF.gif' alt="Glider" className="full-width-margin-top"/>
+    <img src="images/home/GIF.gif" alt="Glider" className="full-width-margin-top"/>
 
   </div>
 )
@@ -145,9 +145,9 @@ const Carousel: React.FC<{
   return <div className={ [ styles.carouselContainer, isModal ? styles.modal : '' ].join(' ') }
               onClick={ onClick }>
     <div className={ styles.carousel } onClick={ e => e.stopPropagation() }>
-      <IonButton className={ styles.previousBtn } shape='round'
+      <IonButton className={ styles.previousBtn } shape="round"
                  onClick={ () => onIndexChange(index - 1) }>
-        <IonIcon icon={ chevronBackOutline } slot='icon-only'/>
+        <IonIcon icon={ chevronBackOutline } slot="icon-only"/>
       </IonButton>
       { trainingImages.map((id) => (
         <img key={ id }
@@ -157,9 +157,9 @@ const Carousel: React.FC<{
              alt={ `Training Resource ${ id + 1 }` }
              style={ { transform: `translateX(-${ realIndex * 100 }%)` } }/>
       )) }
-      <IonButton className={ styles.nextBtn } shape='round'
+      <IonButton className={ styles.nextBtn } shape="round"
                  onClick={ () => onIndexChange(index + 1) }>
-        <IonIcon icon={ chevronForwardOutline } slot='icon-only'/>
+        <IonIcon icon={ chevronForwardOutline } slot="icon-only"/>
       </IonButton>
     </div>
   </div>
@@ -176,7 +176,7 @@ const Resources: React.FC = () => (
     <div className={ styles.links }>
       <DocumentationButton/>
       /
-      <Link href="/app/images/campagne.pdf" target="_blank" color='medium'>
+      <Link href="/app/images/campagne.pdf" target="_blank" color="medium">
         Annotation Campaign APOCADO
       </Link>
     </div>
@@ -219,7 +219,7 @@ const Join: React.FC = () => (
 
 const Collaborators: React.FC = () => {
 
-  const { data: collaborators } = CollaboratorAPI.endpoints.listCollaborator.useQuery()
+  const { data: collaborators } = CollaboratorRestAPI.endpoints.listCollaborator.useQuery()
   return (
     <div className={ styles.bloc }>
       <h2>Collaborators & Funders</h2>

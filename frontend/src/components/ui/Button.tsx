@@ -1,9 +1,9 @@
-import React, { useCallback } from "react";
-import { IonButton, IonIcon } from "@ionic/react";
-import { TooltipOverlay } from "@/components/ui/Tooltip.tsx";
-import { Link } from "@/components/ui/Link.tsx";
-import { useNavigate } from "react-router-dom";
-import { chevronBackOutline } from "ionicons/icons";
+import React, { useCallback } from 'react';
+import { IonButton, IonIcon } from '@ionic/react';
+import { useNavigate } from 'react-router-dom';
+import { chevronBackOutline } from 'ionicons/icons';
+import { TooltipOverlay } from './Tooltip';
+import { Link } from './Link';
 
 type Props = {
   disabledExplanation?: string;
@@ -21,7 +21,7 @@ export const Button: React.FC<Props> = ({ disabledExplanation, disabled, ...prop
 export const DocumentationButton: React.FC<{
   size?: 'small' | 'default' | 'large';
 }> = ({ size }) => (
-  <Link color='medium' href='/doc/' size={ size } target='_blank'>Documentation</Link>
+  <Link color="medium" href="/doc/" size={ size } target="_blank">Documentation</Link>
 )
 
 export const BackButton: React.FC = () => {
@@ -29,8 +29,8 @@ export const BackButton: React.FC = () => {
 
   const onBack = useCallback(() => navigate(-1), [ navigate ])
 
-  return <IonButton fill='clear'
-                    color='medium'
+  return <IonButton fill="clear"
+                    color="medium"
                     style={ {
                       position: 'absolute',
                       left: '1rem',
@@ -38,7 +38,7 @@ export const BackButton: React.FC = () => {
                       transform: 'translateY(-50%)',
                     } }
                     onClick={ onBack }>
-    <IonIcon icon={ chevronBackOutline } slot='start'/>
+    <IonIcon icon={ chevronBackOutline } slot="start"/>
     Back
   </IonButton>
 }

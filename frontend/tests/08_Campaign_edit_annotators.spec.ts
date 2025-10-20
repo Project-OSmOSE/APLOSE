@@ -1,7 +1,9 @@
 import { API_URL, ESSENTIAL, expect, test } from './utils';
 import { ANNOTATOR_GROUP, CAMPAIGN, FILE_RANGE, USERS } from './fixtures';
-import { PostAnnotationFileRange } from "../src/service/api/annotation-file-range";
+import { AnnotationFileRange } from "../src/service/types";
 
+export type PostAnnotationFileRange = Pick<AnnotationFileRange, 'id' | 'annotator'> &
+  Partial<Pick<AnnotationFileRange, 'first_file_index' | 'last_file_index'>>
 
 test.describe('Campaign creator', () => {
 

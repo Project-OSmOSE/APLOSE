@@ -40,6 +40,18 @@ class AnnotationTask(models.Model):
         Session, related_name="annotation_tasks", through="AnnotationTaskSession"
     )
 
+    @property
+    def annotations(self):
+        """Annotations linked to this task"""
+        if self.annotation_phase.phase == "A":
+            return self.spectrogram.annotations.filter(
+                annotation_phase=self.annotation_phase,
+                annotator=self.annotator,
+            )
+        return self.spectrogram.annotations.filter(
+            annotation_phase=self.annotation_phase,
+        )
+
 
 class AnnotationTaskSession(models.Model):
     """Task sessions relation"""

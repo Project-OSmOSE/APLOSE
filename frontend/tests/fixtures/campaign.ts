@@ -8,9 +8,15 @@ import {
   ConfidenceIndicatorSet,
   Detector,
   LabelSet,
-  UserGroup
+  type User,
 } from '../../src/service/types';
 import { DATASET, DATASET_SR } from './dataset';
+
+type UserGroup = {
+  readonly id: number,
+  readonly name: string,
+  readonly annotators: User[]
+}
 
 const deadline = new Date()
 deadline.setTime(0)
@@ -22,21 +28,21 @@ export const LABEL = {
   set: {
     id: 1,
     name: 'Test label set',
-    labels: [ classic, withFeatures ]
-  } satisfies LabelSet
+    labels: [ classic, withFeatures ],
+  } satisfies LabelSet,
 }
 
 const notSure: ConfidenceIndicator = {
   id: 1,
   level: 0,
   is_default: false,
-  label: 'not sure'
+  label: 'not sure',
 }
 const sure: ConfidenceIndicator = {
   id: 2,
   level: 1,
   is_default: true,
-  label: 'sure'
+  label: 'sure',
 }
 export const CONFIDENCE = {
   sure, notSure,
@@ -44,8 +50,8 @@ export const CONFIDENCE = {
     id: 1,
     name: 'Test confidence set',
     desc: 'My test confidence indicator set',
-    confidence_indicators: [ notSure, sure ]
-  } satisfies ConfidenceIndicatorSet
+    confidence_indicators: [ notSure, sure ],
+  } satisfies ConfidenceIndicatorSet,
 }
 
 export const CAMPAIGN_PHASE: AnnotationPhase = {
@@ -60,7 +66,7 @@ export const CAMPAIGN_PHASE: AnnotationPhase = {
   global_progress: 50,
   global_total: 100,
   has_annotations: true,
-  annotation_campaign: 1
+  annotation_campaign: 1,
 }
 export const CAMPAIGN = {
   id: 1,
@@ -122,14 +128,14 @@ export const FILE_RANGE = {
     last_file_index: 3,
     finished_tasks_count: 1,
     annotation_campaign_phase: CAMPAIGN_PHASE.id,
-    annotator: USERS.annotator.id
+    annotator: USERS.annotator.id,
   } satisfies AnnotationFileRange,
 }
 
 export const ANNOTATOR_GROUP: UserGroup = {
   id: 1,
   name: 'Staff group',
-  annotators: [ USERS.staff ]
+  annotators: [ USERS.staff ],
 }
 
 export const DETECTOR_CONFIGURATION = 'Test configuration';
@@ -138,6 +144,6 @@ export const DETECTOR: Detector = {
   id: 1,
   configurations: [ {
     id: 1,
-    configuration: DETECTOR_CONFIGURATION
-  } ]
+    configuration: DETECTOR_CONFIGURATION,
+  } ],
 }

@@ -129,7 +129,7 @@ export class AnnotatorPage {
 
   getConfidence(confidence: string): Confidence {
     return {
-      select: async () => {
+      focusAnnotation: async () => {
         await this.page.locator('ion-chip').filter({ hasText: confidence }).click()
       }
     }

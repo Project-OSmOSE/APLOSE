@@ -3,7 +3,6 @@
 import graphene_django_optimizer
 from django.db.models import QuerySet, ExpressionWrapper, F, CharField
 from graphene import (
-    relay,
     String,
     Boolean,
     Enum,
@@ -11,9 +10,7 @@ from graphene import (
 from graphql import GraphQLResolveInfo
 
 from backend.aplose.models import User
-from backend.utils.schema import (
-    ApiObjectType,
-)
+from backend.utils.schema.types import BaseObjectType, BaseNode
 
 
 class ExpertiseLevel(Enum):
@@ -24,7 +21,7 @@ class ExpertiseLevel(Enum):
     Novice = "N"
 
 
-class UserNode(ApiObjectType):
+class UserNode(BaseObjectType):
     """User node"""
 
     display_name = String(required=True)
@@ -36,7 +33,19 @@ class UserNode(ApiObjectType):
         model = User
         exclude = ("password",)
         filter_fields = {}
-        interfaces = (relay.Node,)
+        interfaces = (BaseNode,)
+
+    @classmethod
+    def resolve_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
+        return (
+            super()
+            .resolve_queryset(queryset, info)
+            .annotate(
+                expertise=ExpressionWrapper(
+                    F("aplose__expertise_level"), output_field=CharField()
+                )
+            )
+        )
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_display_name(root: User, info):
@@ -45,14 +54,3 @@ class UserNode(ApiObjectType):
     @graphene_django_optimizer.resolver_hints()
     def resolve_is_admin(root: User, info):
         return root.is_superuser or root.is_staff
-
-    @classmethod
-    def get_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
-        return graphene_django_optimizer.query(
-            queryset.annotate(
-                expertise=ExpressionWrapper(
-                    F("aplose__expertise_level"), output_field=CharField()
-                )
-            ),
-            info,
-        )

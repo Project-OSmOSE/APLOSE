@@ -1,5 +1,5 @@
-import { SoundNode, SourceNode } from "@/features/_utils_/gql/types.generated.ts";
-import { Node } from "@xyflow/react";
+import { Node } from '@xyflow/react';
+import type { SoundNode, SourceNode } from '@/api';
 
 export type OntologyItem = Pick<SoundNode | SourceNode, 'id' | 'englishName'> & {
   parent?: Pick<SoundNode | SourceNode, 'id'> | null

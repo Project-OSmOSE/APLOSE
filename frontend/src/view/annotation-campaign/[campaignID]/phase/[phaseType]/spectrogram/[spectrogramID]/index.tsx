@@ -1,82 +1,113 @@
-import React, { Fragment, useCallback, useEffect } from "react";
-import styles from "./styles.module.scss";
-import { useRetrieveCurrentCampaign } from "@/service/api/campaign.ts";
-import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
-import { useAppDispatch } from "@/service/app.ts";
-import { API } from "@/service/api";
-import { Footer, Header } from "@/components/layout";
-import { Link, Progress } from "@/components/ui";
-import { IonIcon, IonNote } from "@ionic/react";
-import { helpBuoyOutline } from "ionicons/icons";
-import { IoCheckmarkCircleOutline, IoChevronForwardOutline } from "react-icons/io5";
-import { Annotator, useAnnotatorNavigation, useAnnotatorQuery, useAnnotatorUI } from "@/features/Annotator";
-import { AnnotationTaskStatus } from "@/features/_utils_/gql/types.generated.ts";
+import React, { Fragment, useEffect, useState } from 'react';
+import { useAnnotationTask } from '@/api';
+import { IonSpinner } from '@ionic/react';
+import { WarningText } from '@/components/ui';
+import { AudioDownloadButton, CurrentTime, PlaybackRateSelect, PlayPauseButton, useAudio } from '@/features/Audio';
+import styles from './styles.module.scss';
+import { AnnotatorCanvasWindow } from '@/features/Annotator/Canvas';
+import { AnalysisSelect } from '@/features/Annotator/Analysis';
+import {
+  BrightnessSelect,
+  ColormapReverseButton,
+  ColormapSelect,
+  ContrastSelect,
+} from '@/features/Annotator/VisualConfiguration';
+import { ZoomButtons } from '@/features/Annotator/Zoom';
+import { PointerInfo, useAnnotatorPointer } from '@/features/Annotator/Pointer';
+import { SpectrogramDownloadButton, SpectrogramInfo } from '@/features/Annotator/Spectrogram';
+import { NavigationButtons } from '@/features/Annotator/Navigation';
+import { FocusedAnnotationBloc } from '@/features/Annotator/Annotation';
+import { LabelsBloc } from '@/features/Annotator/Label';
+import { ConfidenceBloc } from '@/features/Annotator/Confidence';
+import { CommentBloc } from '@/features/Annotator/Comment';
+import { AnnotationsBloc } from '@/features/Annotator/Annotation/AnnotationsBloc';
+import { AnnotatorSkeleton } from '@/features/Annotator/Skeleton';
+import { useNavParams } from '@/features/UX';
 
 export const AnnotatorPage: React.FC = () => {
-  const { campaignID, campaign } = useRetrieveCurrentCampaign()
-  const { phaseType, phase } = useRetrieveCurrentPhase()
-  const { data, canEdit } = useAnnotatorQuery();
-  const dispatch = useAppDispatch()
+  // const { usedColormap: colormapClass } = useAnnotatorInput(); // TODO: check use: colormapClass was in div classes
+  const { campaignID } = useNavParams();
 
-  const { pointerPosition } = useAnnotatorUI()
-
-  const { canNavigate } = useAnnotatorNavigation()
+  const { task, isEditionAuthorized, isFetching, error } = useAnnotationTask({ refetchOnMountOrArgChange: true });
+  const audio = useAudio()
 
   useEffect(() => {
-    if (pointerPosition) { // Disable scroll
+    if (task?.spectrogram.audioPath) audio.setSource(task.spectrogram.audioPath)
+
+    return () => {
+      audio.clearSource() // TODO: check behavior when navigating between files
+    }
+  }, [ task ]);
+
+  const [ _previousCampaignID, _setPreviousCampaignID ] = useState<string>();
+  useEffect(() => {
+    if (_previousCampaignID !== campaignID) {
+      _setPreviousCampaignID(campaignID)
+      audio.setPlaybackRate(1)
+    }
+  }, [ campaignID ]);
+
+  const { position } = useAnnotatorPointer()
+  useEffect(() => {
+    if (position) { // Disable scroll
       document.getElementsByTagName('html')[0].style.overflowY = 'hidden';
     } else { // Enable scroll
       document.getElementsByTagName('html')[0].style.overflowY = 'unset';
     }
-  }, [ pointerPosition ]);
+  }, [ position ]);
 
-  const onBack = useCallback(() => {
-    dispatch(API.util.invalidateTags([ {
-      type: 'CampaignPhase',
-      id: phase?.id
-    } ]))
-  }, [ phase ])
+  if (isFetching) return <AnnotatorSkeleton children={ <IonSpinner/> }/>
+  if (error) return <AnnotatorSkeleton children={ <WarningText error={ error }/> }/>
+  if (!task) return <AnnotatorSkeleton/>
 
-  // 'page' class is for playwright tests
-  return <div className={ [ styles.page, 'page' ].join(' ') }>
-    <Header size='small'
-            canNavigate={ canNavigate }
-            buttons={ <Fragment>
+  return <AnnotatorSkeleton>
+    <div className={ styles.annotator }>
 
-              { campaign?.instructions_url &&
-                  <Link color='medium' target='_blank' href={ campaign?.instructions_url }>
-                      <IonIcon icon={ helpBuoyOutline } slot='start'/>
-                      Campaign instructions
-                  </Link>
-              }
+      <div className={ styles.spectrogramContainer }>
 
-              <Link color='medium' fill='outline' size='small'
-                    onClick={ onBack }
-                    appPath={ `/annotation-campaign/${ campaignID }/phase/${ phaseType }` }>
-                Back to campaign
-              </Link>
-            </Fragment> }>
-      { data && campaign && <div className={ styles.info }>
-          <p>
-            { campaign.name }
-              <IoChevronForwardOutline/> { data.spectrogramById?.filename } { data.annotationTask?.status === AnnotationTaskStatus.Finished &&
-              <IoCheckmarkCircleOutline/> }
-          </p>
-        { canEdit && data.annotationTaskIndexes?.total &&
-            <Progress label='Position'
-                      className={ styles.progress }
-                      value={ (data.annotationTaskIndexes.current ?? 0) + 1 }
-                      total={ data.annotationTaskIndexes.total }/> }
-        { campaign?.archive ? <IonNote>You cannot annotate an archived campaign.</IonNote> :
-          phase?.ended_by ? <IonNote>You cannot annotate an ended phase.</IonNote> :
-            !data.annotationFileRange ? <IonNote>You are not assigned to annotate this file.</IonNote> :
-              <Fragment/>
-        }
-      </div> }
-    </Header>
+        <div className={ styles.spectrogramData }>
 
-    <Annotator/>
+          <div className={ styles.spectrogramConfiguration }>
+            <AnalysisSelect/>
+            <div>
+              <ColormapSelect/>
+              <ColormapReverseButton/>
+            </div>
+            <BrightnessSelect/>
+            <ContrastSelect/>
+            <ZoomButtons/>
+          </div>
 
-    <Footer/>
-  </div>
+          <PointerInfo/>
+          <SpectrogramInfo/>
+        </div>
+
+        <AnnotatorCanvasWindow/>
+
+        <div className={ styles.spectrogramNavigation }>
+          <div className={ styles.audioNavigation }>
+            <PlayPauseButton/>
+            <PlaybackRateSelect/>
+          </div>
+          <NavigationButtons/>
+          <CurrentTime/>
+        </div>
+      </div>
+
+      <div className={ styles.blocContainer }>
+        { isEditionAuthorized && <Fragment>
+            <FocusedAnnotationBloc/>
+            <LabelsBloc/>
+            <ConfidenceBloc/>
+            <CommentBloc/>
+            <AnnotationsBloc/>
+        </Fragment> }
+      </div>
+
+      <div className={ styles.downloadButtons }>
+        <AudioDownloadButton/>
+        <SpectrogramDownloadButton/>
+      </div>
+    </div>
+  </AnnotatorSkeleton>
 }

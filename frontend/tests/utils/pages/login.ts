@@ -2,8 +2,7 @@ import { Page, Request, test } from '@playwright/test';
 import { API_URL } from '../const';
 import { Mock } from '../services';
 import { AUTH, UserType } from '../../fixtures';
-import { HomePage } from "./home";
-import { interceptGQL } from "../functions";
+import { HomePage } from './home';
 
 export class LoginPage {
 
@@ -34,7 +33,7 @@ export class LoginPage {
       else await this.mock.token({ status, json: { detail: LoginPage.SERVER_ERROR } })
       const [ request ] = await Promise.all([
         this.page.waitForRequest(API_URL.token),
-        submitAction === 'button' ? this.page.getByRole('button', { name: 'Login' }).click() : this.page.keyboard.press('Enter')
+        submitAction === 'button' ? this.page.getByRole('button', { name: 'Login' }).click() : this.page.keyboard.press('Enter'),
       ])
       return request;
     })
@@ -42,7 +41,7 @@ export class LoginPage {
 
   async login(as: UserType) {
     await this.go()
-    await interceptGQL(this.page, {}, as)
+    // await interceptGQL(this.page, {}, as) // TODO: Intercept getCurrentUser
     await this.fillForm()
     await this.submit({ status: 200, submitAction: 'button' })
   }

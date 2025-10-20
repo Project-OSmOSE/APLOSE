@@ -1,0 +1,59 @@
+query getCurrentUser {
+    currentUser {
+        id
+        displayName
+        isAdmin
+        isSuperuser
+        username
+        email
+    }
+}
+
+query listUsers {
+    allUsers {
+        results {
+            id
+            displayName
+            expertise
+        }
+    }
+    allUserGroups {
+        results {
+            id
+            name
+            users {
+                id
+            }
+        }
+    }
+}
+
+mutation updateCurrentUserPassword(
+    $oldPassword: String!
+    $newPassword: String!
+) {
+    userUpdatePassword(
+        input: {
+            oldPassword: $oldPassword
+            newPassword: $newPassword
+        }
+    ) {
+        errors {
+            field
+            messages
+        }
+    }
+}
+
+mutation updateCurrentUserEmail(
+    $email: String!
+) {
+    currentUserUpdate(input: {
+        email: $email
+    }) {
+        errors {
+            field
+            messages
+        }
+    }
+}

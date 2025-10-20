@@ -1,26 +1,24 @@
-import React, { Fragment, useMemo } from "react";
-import { Link, TooltipOverlay } from "@/components/ui";
-import { IonIcon } from "@ionic/react";
-import { cloudDownloadOutline } from "ionicons/icons";
-import { useParams } from "react-router-dom";
-import { Phase } from "@/service/types";
-import { useCurrentAnnotationCampaign } from "@/features/annotation/api";
-import { AnnotationPhaseType } from "@/features/_utils_";
+import React, { Fragment, useMemo } from 'react';
+import { Link, TooltipOverlay } from '@/components/ui';
+import { IonIcon } from '@ionic/react';
+import { cloudDownloadOutline } from 'ionicons/icons';
+import { useCurrentCampaign } from '@/api';
+import { useNavParams } from '@/features/UX';
 
 
 export const ImportAnnotationsButton: React.FC = () => {
-  const { campaignID, phaseType } = useParams<{ campaignID: string; phaseType?: Phase; }>();
-  const { phases } = useCurrentAnnotationCampaign()
+  const { campaignID, phaseType } = useNavParams();
+  const { verificationPhase } = useCurrentCampaign()
 
   const path = useMemo(() => {
-    return `/annotation-campaign/${ campaignID }/phase/${ phaseType }/import-annotations`
-  }, [ campaignID, phaseType ])
+    return `/annotation-campaign/${ campaignID }/phase/Annotation/import-annotations`
+  }, [ campaignID ])
 
   if (phaseType !== 'Annotation') return <Fragment/>
-  if (!phases.some(p => p.phase === AnnotationPhaseType.Verification)) return <Fragment/>
-  return <TooltipOverlay tooltipContent={ <p>Import annotations for verification</p> } anchor='right'>
-    <Link appPath={ path } fill='outline' color='medium' aria-label='Import'>
-      <IonIcon icon={ cloudDownloadOutline } slot='icon-only'/>
+  if (!verificationPhase) return <Fragment/>
+  return <TooltipOverlay tooltipContent={ <p>Import annotations for verification</p> } anchor="right">
+    <Link appPath={ path } fill="outline" color="medium" aria-label="Import">
+      <IonIcon icon={ cloudDownloadOutline } slot="icon-only"/>
     </Link>
   </TooltipOverlay>
 }

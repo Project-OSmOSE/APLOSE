@@ -1,21 +1,24 @@
 """User GraphQL definitions"""
 
-from graphene import relay, ObjectType
+from graphene import relay, ObjectType, List
 
 from backend.aplose.models import AnnotatorGroup
 from backend.utils.schema import (
-    ApiObjectType,
     AuthenticatedDjangoConnectionField,
 )
+from backend.utils.schema.types import BaseObjectType
+from .user import UserNode
 
 
-class UserGroupNode(ApiObjectType):
+class UserGroupNode(BaseObjectType):
     """User group node"""
+
+    users = List(UserNode, source="annotators")
 
     class Meta:
         # pylint: disable=too-few-public-methods, missing-class-docstring
         model = AnnotatorGroup
-        fields = "__all__"
+        exclude = ("annotators",)
         filter_fields = {}
         interfaces = (relay.Node,)
 

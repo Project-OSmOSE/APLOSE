@@ -118,76 +118,76 @@
 #             status=status.HTTP_200_OK,
 #         )
 #
-#     @action(
-#         methods=["POST"],
-#         detail=False,
-#         url_path="campaign/(?P<campaign_id>[^/.]+)/phase/(?P<phase_id>[^/.]+)/file/(?P<file_id>[^/.]+)",
-#         url_name="campaign-file-post",
-#     )
-#     @transaction.atomic()
-#     def post(self, request: Request, campaign_id: int, phase_id: int, file_id: int):
-#         """Post all data for annotator"""
-#
-#         # Check permission
-#         phase = get_object_or_404(
-#             AnnotationCampaignPhase,
-#             pk=phase_id,
-#             annotation_campaign_id=campaign_id,
-#         )
-#         file = get_object_or_404(DatasetFile, id=file_id)
-#         file_ranges = phase.file_ranges.filter(annotator_id=request.user.id)
-#         if not file_ranges.exists():
-#             return Response(status=status.HTTP_403_FORBIDDEN)
-#         all_files = []
-#         for file_range in file_ranges:
-#             all_files += list(DatasetFile.objects.filter_for_file_range(file_range))
-#         if file not in all_files:
-#             return Response(status=status.HTTP_403_FORBIDDEN)
-#
-#         # Update
-#         results = AnnotationResultViewSet.update_results(
-#             request.data.get("results") or [], phase, file, request.user.id
-#         )
-#         comments = AnnotationCommentViewSet.update_comments(
-#             request.data.get("task_comments") or [],
-#             phase,
-#             file,
-#             request.user.id,
-#         )
-#
-#         task, _ = AnnotationTask.objects.get_or_create(
-#             annotator=request.user,
-#             annotation_phase_id=phase_id,
-#             dataset_file_id=file_id,
-#         )
-#         task.status = AnnotationTask.Status.FINISHED
-#         task.save()
-#         if phase.phase == Phase.ANNOTATION:
-#             # Mark as unsubmitted verification task of other users on this file
-#             AnnotationTask.objects.filter(
-#                 annotation_phase__annotation_campaign=phase.annotation_campaign,
-#                 annotation_phase__phase=Phase.VERIFICATION,
-#                 dataset_file_id=file_id,
-#             ).filter(~Q(annotator=request.user)).update(
-#                 status=AnnotationTask.Status.CREATED
-#             )
-#         session_serializer = AnnotationSessionSerializer(
-#             data={
-#                 **request.data["session"],
-#                 "annotation_task": task.id,
-#                 "session_output": {
-#                     "results": request.data.get("results"),
-#                     "task_comments": request.data.get("task_comments"),
-#                 },
-#             }
-#         )
-#         session_serializer.is_valid(raise_exception=True)
-#         session_serializer.save()
-#
-#         return Response(
-#             {
-#                 "results": results,
-#                 "task_comments": comments,
-#             },
-#             status=status.HTTP_200_OK,
-#         )
+    @action(
+        methods=["POST"],
+        detail=False,
+        url_path="campaign/(?P<campaign_id>[^/.]+)/phase/(?P<phase_id>[^/.]+)/file/(?P<file_id>[^/.]+)",
+        url_name="campaign-file-post",
+    )
+    @transaction.atomic()
+    def post(self, request: Request, campaign_id: int, phase_id: int, file_id: int):
+        """Post all data for annotator"""
+
+        # Check permission
+        phase = get_object_or_404(
+            AnnotationCampaignPhase,
+            pk=phase_id,
+            annotation_campaign_id=campaign_id,
+        )
+        file = get_object_or_404(DatasetFile, id=file_id)
+        file_ranges = phase.file_ranges.filter(annotator_id=request.user.id)
+        if not file_ranges.exists():
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        all_files = []
+        for file_range in file_ranges:
+            all_files += list(DatasetFile.objects.filter_for_file_range(file_range))
+        if file not in all_files:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        # Update
+        results = AnnotationResultViewSet.update_results(
+            request.data.get("results") or [], phase, file, request.user.id
+        )
+        comments = AnnotationCommentViewSet.update_comments(
+            request.data.get("task_comments") or [],
+            phase,
+            file,
+            request.user.id,
+        )
+
+        task, _ = AnnotationTask.objects.get_or_create(
+            annotator=request.user,
+            annotation_phase_id=phase_id,
+            dataset_file_id=file_id,
+        )
+        task.status = AnnotationTask.Status.FINISHED
+        task.save()
+        if phase.phase == Phase.ANNOTATION:
+            # Mark as unsubmitted verification task of other users on this file
+            AnnotationTask.objects.filter(
+                annotation_phase__annotation_campaign=phase.annotation_campaign,
+                annotation_phase__phase=Phase.VERIFICATION,
+                dataset_file_id=file_id,
+            ).filter(~Q(annotator=request.user)).update(
+                status=AnnotationTask.Status.CREATED
+            )
+        session_serializer = AnnotationSessionSerializer(
+            data={
+                **request.data["session"],
+                "annotation_task": task.id,
+                "session_output": {
+                    "results": request.data.get("results"),
+                    "task_comments": request.data.get("task_comments"),
+                },
+            }
+        )
+        session_serializer.is_valid(raise_exception=True)
+        session_serializer.save()
+
+        return Response(
+            {
+                "results": results,
+                "task_comments": comments,
+            },
+            status=status.HTTP_200_OK,
+        )

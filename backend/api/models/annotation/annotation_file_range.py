@@ -61,16 +61,24 @@ class AnnotationFileRange(models.Model):
 
         super().save(*args, **kwargs)
 
-    # TODO:
-    #  @property
-    #  def tasks(self) -> QuerySet[AnnotationTask]:
-    #      """Get file range tasks"""
-    #      return AnnotationTask.objects.filter(
-    #          annotation_phase_id=self.annotation_phase_id,
-    #          annotator_id=self.annotator_id,
-    #          spectrogram__start__gte=self.from_datetime,
-    #          spectrogram__end__lte=self.to_datetime,
-    #      )
+    @property
+    def tasks(self) -> QuerySet[AnnotationTask]:
+        """Get file range tasks"""
+        return AnnotationTask.objects.filter(
+            annotation_phase_id=self.annotation_phase_id,
+            annotator_id=self.annotator_id,
+            spectrogram__start__gte=self.from_datetime,
+            spectrogram__end__lte=self.to_datetime,
+        )
+
+    @property
+    def spectrograms(self) -> QuerySet[Spectrogram]:
+        """Get file range spectrograms"""
+        return Spectrogram.objects.filter(
+            analysis__annotation_campaigns__id=self.annotation_phase.annotation_campaign_id,
+            spectrogram__start__gte=self.from_datetime,
+            spectrogram__end__lte=self.to_datetime,
+        ).distinct()
 
     @property
     def annotations(self) -> QuerySet[Annotation]:

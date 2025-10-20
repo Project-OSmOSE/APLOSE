@@ -145,8 +145,7 @@ class UpdateAnnotationCampaignLabelsWithFeaturesMutation(Mutation):
 class AnnotationCampaignMutation(ObjectType):  # pylint: disable=too-few-public-methods
     """AnnotationCampaign mutations"""
 
-    update_annotation_campaign = UpdateAnnotationCampaign.Field()
-    archive_annotation_campaign = ArchiveAnnotationCampaignMutation.Field()
+    # update_annotation_campaign = UpdateAnnotationCampaign.Field()
 
     update_annotation_campaign_labels_with_features = (
         UpdateAnnotationCampaignLabelsWithFeaturesMutation.Field()

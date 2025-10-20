@@ -1,8 +1,13 @@
 from django.core.exceptions import ValidationError
-from django.forms import IntegerField, Field, MultipleChoiceField
+from django.db import models
+from django.forms import IntegerField, Field, MultipleChoiceField, CharField
 from django.utils.translation import gettext_lazy as _
-from django_filters import NumberFilter, MultipleChoiceFilter
+from django_filters import NumberFilter, MultipleChoiceFilter, FilterSet
+from django_filters.constants import EMPTY_VALUES
+from django_filters.filterset import FILTER_FOR_DBFIELD_DEFAULTS
 from graphene import List
+from graphene_django.filter import GlobalIDFilter
+from graphene_django.forms import GlobalIDFormField
 from graphene_django.forms.converter import convert_form_field
 
 from .types import PK
@@ -80,3 +85,44 @@ class PKMultipleChoiceFilter(MultipleChoiceFilter):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("lookup_expr", "in")
         super().__init__(*args, **kwargs)
+
+
+class IDFormField(GlobalIDFormField):
+    def clean(self, value):
+        if not value and not self.required:
+            return None
+
+        try:
+            if type(value) == int:
+                IntegerField().clean(value)
+            else:
+                CharField().clean(value)
+        except ValidationError:
+            raise ValidationError(self.error_messages["invalid"])
+
+        return value
+
+
+class IDFilter(GlobalIDFilter):
+    """
+    Filter for Object ID.
+    """
+
+    field_class = IDFormField
+
+    def filter(self, qs, value):
+        """Convert the filter value to a primary key before filtering"""
+        if value in EMPTY_VALUES:
+            return qs
+        if self.distinct:
+            qs = qs.distinct()
+        lookup = "%s__%s" % (self.field_name, self.lookup_expr)
+        qs = self.get_method(qs)(**{lookup: value})
+        return qs
+
+
+class BaseFilterSet(FilterSet):
+    FILTER_DEFAULTS = {
+        **FILTER_FOR_DBFIELD_DEFAULTS,
+        models.UUIDField: {"filter_class": IDFilter},
+    }

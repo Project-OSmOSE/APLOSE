@@ -1,8 +1,15 @@
 import { API_URL, ESSENTIAL, expect, Page, Request, test } from './utils';
 import { CAMPAIGN, CAMPAIGN_PHASE, CONFIDENCE, LABEL, USERS } from './fixtures';
 import { LabelModal } from './utils/pages';
-import { PatchAnnotationCampaign } from "../src/service/api/campaign";
+
 import { dateToString } from "../src/service/function";
+import { ID, Optionable } from "../src/service/type";
+import { AnnotationCampaign } from "../src/service/types";
+
+type PatchAnnotationCampaign = Optionable<Pick<AnnotationCampaign,
+  'labels_with_acoustic_features' | 'label_set' | 'confidence_set' | 'allow_point_annotation'
+>> & { id: ID }
+
 
 // Utils
 

@@ -1,7 +1,7 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode } from 'react';
+import { IonNote, IonSkeletonText } from '@ionic/react';
 import styles from './ui.module.scss'
-import { IonNote, IonSkeletonText } from "@ionic/react";
-import { BackButton } from "@/components/ui/Button.tsx";
+import { BackButton } from './Button';
 
 export const Head: React.FC<{
   title?: string;
@@ -14,7 +14,7 @@ export const Head: React.FC<{
   return <div className={ styles.head }>
     <div className={ styles.title }>
       <h2>{ title ?? <IonSkeletonText animated style={ { width: 256, height: '1ch', justifySelf: 'center' } }/> }</h2>
-      { subtitle && <IonNote color='medium'>{ subtitle }</IonNote> }
+      { subtitle && <IonNote color="medium">{ subtitle }</IonNote> }
 
       { canGoBack && <BackButton/> }
     </div>

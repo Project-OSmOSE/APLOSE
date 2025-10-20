@@ -1,0 +1,34 @@
+query listChannelConfigurations($datasetID: ID) {
+    allChannelConfigurations(datasetId: $datasetID) {
+        results {
+            deployment {
+                name
+                campaign {
+                    name
+                }
+                site {
+                    name
+                }
+                project {
+                    name
+                }
+            }
+            recorderSpecification {
+                recorder {
+                    serialNumber
+                    model
+                }
+                hydrophone {
+                    serialNumber
+                    model
+                }
+            }
+            detectorSpecification {
+                detector {
+                    serialNumber
+                    model
+                }
+            }
+        }
+    }
+}

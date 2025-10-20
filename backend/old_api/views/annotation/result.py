@@ -235,7 +235,7 @@ class AnnotationResultViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         if phase.phase != Phase.ANNOTATION:
             return Response(
-                "Import should always be made on annotation campaign",
+                "Import should always be made on annotation campaign phase",
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { FormBloc, Input } from "@/components/form";
-import { IonButton, IonSpinner } from "@ionic/react";
-import styles from "./styles.module.scss";
-import { useToast } from "@/service/ui";
-import { getErrorMessage } from "@/service/function.ts";
-import { useCurrentUser, useUpdateCurrentUser } from "@/features/auth/api";
+import React, { useEffect, useState } from 'react';
+import { FormBloc, Input } from '@/components/form';
+import { IonButton, IonSpinner } from '@ionic/react';
+import styles from './styles.module.scss';
+import { useToast } from '@/components/ui';
+import { getErrorMessage } from '@/service/function';
+
+import { useCurrentUser, useUpdateCurrentUserEmail } from '@/api';
 
 export const UpdateEmail: React.FC = () => {
   const { user } = useCurrentUser();
   const {
-    updateCurrentUser,
-    data: {
-      isLoading: isSubmitting,
-      error: patchError,
-      formErrors,
-      isSuccess: isPatchSuccessful
-    }
-  } = useUpdateCurrentUser();
+    updateEmail,
+    isLoading: isSubmitting,
+    error: patchError,
+    formErrors,
+    isSuccess: isPatchSuccessful,
+  } = useUpdateCurrentUserEmail();
 
   const toast = useToast();
 
@@ -29,11 +28,11 @@ export const UpdateEmail: React.FC = () => {
 
   useEffect(() => {
     if (patchError) {
-      const e = getErrorMessage(patchError);
-      if (!e) return;
+      const error = getErrorMessage(patchError);
+      if (!error) return;
       try {
-        toast.presentError(e)
-        setErrors(JSON.parse(e))
+        toast.raiseError({ error: patchError })
+        setErrors(JSON.parse(error))
       } catch { /* empty */
       }
     }
@@ -42,7 +41,7 @@ export const UpdateEmail: React.FC = () => {
   useEffect(() => {
     if (formErrors) {
       setErrors({
-        email: formErrors.find(e => e.field === 'email')?.messages
+        email: formErrors.find(e => e.field === 'email')?.messages,
       })
     }
   }, [ formErrors ]);
@@ -55,10 +54,10 @@ export const UpdateEmail: React.FC = () => {
 
   function submit() {
     setErrors({})
-    updateCurrentUser({ email })
+    updateEmail({ email })
   }
 
-  return <FormBloc label='Update email'>
+  return <FormBloc label="Update email">
     <Input value={ email }
            onChange={ e => setEmail(e.target.value) }
            error={ errors?.email?.join(' ') }
@@ -71,7 +70,7 @@ export const UpdateEmail: React.FC = () => {
                disabled={ !email || isSubmitting }
                onClick={ submit }>
       Update
-      { isSubmitting && <IonSpinner slot='end'/> }
+      { isSubmitting && <IonSpinner slot="end"/> }
     </IonButton>
   </FormBloc>
 }

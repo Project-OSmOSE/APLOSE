@@ -1,0 +1,45 @@
+query listFileRanges(
+    $campaignID: ID!
+    $phaseType: AnnotationPhaseType!
+) {
+    allAnnotationFileRanges(
+        annotationPhase_AnnotationCampaign: $campaignID
+        annotationPhase_Phase: $phaseType
+    ) {
+        results {
+            id
+            firstFileIndex
+            lastFileIndex
+
+            annotator {
+                id
+                displayName
+            }
+
+            spectrograms{
+                totalCount
+            }
+
+            completedAnnotationTasks: annotationTasks(status: Finished) {
+                totalCount
+            }
+        }
+    }
+}
+
+mutation updateFileRanges(
+    $campaignID: ID!
+    $phaseType: AnnotationPhaseType!
+    $fileRanges: [AnnotationFileRangeInput]!
+) {
+    updateAnnotationPhaseFileRanges(
+        campaignId: $campaignID
+        phaseType: $phaseType
+        fileRanges: $fileRanges
+    ) {
+        errors {
+            messages
+            field
+        }
+    }
+}

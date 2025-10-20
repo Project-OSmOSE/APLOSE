@@ -1,16 +1,15 @@
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import styles from './auth.module.scss';
-import { Footer, Header } from "@/components/layout";
-import { Input } from "@/components/form";
-import { IonButton } from "@ionic/react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { getErrorMessage } from "@/service/function.ts";
-import { Button, Link } from "@/components/ui";
-import { useToast } from "@/service/ui";
-import { NON_FILTERED_KEY_DOWN_EVENT, useEvent } from "@/service/events";
-import { AuthAPI } from "@/service/api/auth.ts";
-import { useAppSelector } from "@/service/app.ts";
-import { selectIsConnected } from "@/service/slices/auth.ts";
+import { Footer, Header } from '@/components/layout';
+import { Input } from '@/components/form';
+import { IonButton } from '@ionic/react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { getErrorMessage } from '@/service/function';
+import { Button, Link, useToast } from '@/components/ui';
+import { NON_FILTERED_KEY_DOWN_EVENT, useEvent } from '@/features/UX/Events';
+import { useAppSelector } from '@/features';
+import { selectIsConnected } from '@/features/Auth';
+import { useLogin } from '@/api';
 
 export const Login: React.FC = () => {
 
@@ -29,7 +28,7 @@ export const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { from } = location.state || { from: { pathname: '/annotation-campaign' } };
-  const [ login, { isLoading, error: loginError } ] = AuthAPI.endpoints.login.useMutation();
+  const [ login, { isLoading, error: loginError } ] = useLogin();
   const toast = useToast()
 
   useEffect(() => {
@@ -39,7 +38,7 @@ export const Login: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (loginError) toast.presentError(loginError);
+    if (loginError) toast.raiseError({ error: loginError });
   }, [ loginError ]);
 
   useEffect(() => {
@@ -54,12 +53,13 @@ export const Login: React.FC = () => {
         break;
     }
   }
+
   useEvent(NON_FILTERED_KEY_DOWN_EVENT, onKbdEvent);
 
   const submit = async () => {
     setErrors({})
-    if (!ref.current.username) setErrors({ username: "This field is required." })
-    if (!ref.current.password) setErrors(prev => ({ ...prev, password: "This field is required." }))
+    if (!ref.current.username) setErrors({ username: 'This field is required.' })
+    if (!ref.current.password) setErrors(prev => ({ ...prev, password: 'This field is required.' }))
     if (!ref.current.username || !ref.current.password) return;
 
     await login(ref.current).unwrap()
@@ -73,8 +73,8 @@ export const Login: React.FC = () => {
 
   return <div className={ styles.page }>
     <Header buttons={ <Fragment>
-      <Button color='dark' size='large' fill='clear' onClick={ goHome }>Home</Button>
-      <Link href='/' size='large'>OSmOSE</Link>
+      <Button color="dark" size="large" fill="clear" onClick={ goHome }>Home</Button>
+      <Link href="/" size="large">OSmOSE</Link>
     </Fragment> }/>
     <div className={ styles.content }>
       <h2>Login</h2>
@@ -98,9 +98,9 @@ export const Login: React.FC = () => {
       </form>
       <div className={ styles.buttons }>
 
-        <Button color='dark' fill='clear' onClick={ goHome }>Back to Home</Button>
+        <Button color="dark" fill="clear" onClick={ goHome }>Back to Home</Button>
 
-        <IonButton color='primary' onClick={ submit }
+        <IonButton color="primary" onClick={ submit }
                    disabled={ isLoading }>
           Login
         </IonButton>

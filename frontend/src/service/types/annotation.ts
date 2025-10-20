@@ -1,5 +1,4 @@
 import { DetectorConfiguration } from './detector';
-import { DatasetFile } from "@/service/types/data.ts";
 
 export interface AnnotationComment {
   id: number;
@@ -17,7 +16,7 @@ export interface AnnotationResultValidations {
   is_valid: boolean;
 }
 
-export const SignalTrends = [ "Flat", "Ascending", "Descending", "Modulated" ];
+export const SignalTrends = [ 'Flat', 'Ascending', 'Descending', 'Modulated' ];
 export type SignalTrend = typeof SignalTrends[number];
 
 export interface AcousticFeatures {
@@ -73,26 +72,3 @@ export type BoxBounds = {
 export type AnnotationResultBounds = WeakBounds | PointBounds | BoxBounds
 
 export type AnnotationResult = BaseAnnotationResult & AnnotationResultBounds
-export type WeakResult = BaseAnnotationResult & WeakBounds
-export type BoxResult = BaseAnnotationResult & BoxBounds
-
-export type AnnotatorData = {
-  file: DatasetFile;
-  is_submitted: boolean;
-  is_assigned: boolean; // Is the user allowed to edit this file
-  task_comments: Array<AnnotationComment>;
-  results: Array<AnnotationResult>;
-
-
-  previous_file_id: number | null;
-  next_file_id: number | null;
-
-  current_task_index: number;
-  total_tasks: number;
-  current_task_index_in_filter: number;
-  total_tasks_in_filter: number;
-
-
-  campaignID: number;
-  userID: number
-}

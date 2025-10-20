@@ -1,7 +1,7 @@
 """AnnotationTask schema"""
 from django.db.models import Q
 from django_filters import FilterSet
-from graphene import relay, ObjectType, Field, Enum, Int
+from graphene import ObjectType, Field, Enum, Int
 from graphene_django.filter import TypedFilter
 
 from backend.api.models import (
@@ -11,8 +11,6 @@ from backend.api.models import (
     AnnotationFileRange,
 )
 from backend.utils.schema import (
-    ApiObjectType,
-    AuthenticatedDjangoConnectionField,
     GraphQLResolve,
     GraphQLPermissions,
     PKFilter,
@@ -51,17 +49,17 @@ class AnnotationTaskFilter(FilterSet):
         fields = {}
 
 
-class AnnotationTaskNode(ApiObjectType):
-    """AnnotationTask schema"""
-
-    status = AnnotationTaskStatus()
-
-    class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
-        model = AnnotationTask
-        fields = "__all__"
-        filterset_class = AnnotationTaskFilter
-        interfaces = (relay.Node,)
+# class AnnotationTaskNode(ApiObjectType):
+#     """AnnotationTask schema"""
+#
+#     status = AnnotationTaskStatus()
+#
+#     class Meta:
+#         # pylint: disable=missing-class-docstring, too-few-public-methods
+#         model = AnnotationTask
+#         fields = "__all__"
+#         filterset_class = AnnotationTaskFilter
+#         interfaces = (relay.Node,)
 
 
 class AnnotationTaskIndexesNode(ObjectType):
@@ -73,15 +71,15 @@ class AnnotationTaskIndexesNode(ObjectType):
 class AnnotationTaskQuery(ObjectType):  # pylint: disable=too-few-public-methods
     """AnnotationTask queries"""
 
-    all_annotation_tasks = AuthenticatedDjangoConnectionField(AnnotationTaskNode)
-
-    annotation_task = Field(
-        AnnotationTaskNode,
-        spectrogram_id=PK(required=True),
-        annotator_id=PK(required=True),
-        annotation_campaign_id=PK(required=True),
-        phase_type=AnnotationPhaseType(required=True),
-    )
+    # all_annotation_tasks = AuthenticatedDjangoConnectionField(AnnotationTaskNode)
+    #
+    # annotation_task = Field(
+    #     AnnotationTaskNode,
+    #     spectrogram_id=PK(required=True),
+    #     annotator_id=PK(required=True),
+    #     annotation_campaign_id=PK(required=True),
+    #     phase_type=AnnotationPhaseType(required=True),
+    # )
 
     annotation_task_indexes = Field(
         AnnotationTaskIndexesNode,

@@ -1,125 +1,78 @@
-import React, { Fragment, useCallback, useEffect, useRef } from "react";
-import styles from './styles.module.scss';
-import { IonSpinner } from "@ionic/react";
-import { FadedText, WarningText } from "@/components/ui";
-import { formatTime, getErrorMessage } from "@/service/function";
-import { useAppDispatch, useAppSelector } from "@/service/app.ts";
-import { SettingsSlice } from "@/service/slices/settings.ts";
-import { Input } from "@/components/form";
-import { AudioPlayer } from "./AudioPlayer";
+import React, { Fragment } from 'react';
+import styles from './styles.module.scss'
+import { AnnotatorCanvasContextProvider, AnnotatorCanvasWindow } from '@/features/Annotator/Canvas';
+import { AnalysisSelect } from '@/features/Annotator/Analysis';
 import {
-  AudioDownloadButton,
-  NavigationButtons,
-  PlayPauseButton,
-  SpectrogramDownloadButton,
-  ZoomButton
-} from "./buttons";
-import { ColormapConfiguration, NFFTSelect, PlaybackRateSelect } from "./select";
-import { SpectrogramImage } from './input';
-import { Annotations, Comment, ConfidenceIndicator, CurrentAnnotation, Labels } from './bloc';
-import { SpectrogramRender } from "./spectrogram";
-import { selectAudio, useAnnotatorInput, useAnnotatorQuery, useAnnotatorUI } from "@/features/Annotator";
+  BrightnessSelect,
+  ColormapReverseButton,
+  ColormapSelect,
+  ContrastSelect,
+} from '@/features/Annotator/VisualConfiguration';
+import { ZoomButtons } from '@/features/Annotator/Zoom';
+import { PointerInfo } from '@/features/Annotator/Pointer';
+import { useAnnotationTask } from '@/api';
+import { SpectrogramDownloadButton, SpectrogramInfo } from '@/features/Annotator/Spectrogram';
+import { AudioDownloadButton, CurrentTime, PlaybackRateSelect, PlayPauseButton } from '@/features/Audio';
+import { LabelsBloc } from '@/features/Annotator/Label';
+import { ConfidenceBloc } from '@/features/Annotator/Confidence';
+import { FocusedAnnotationBloc } from '@/features/Annotator/Annotation';
+import { AnnotationsBloc } from '@/features/Annotator/Annotation/AnnotationsBloc';
+import { CommentBloc } from '@/features/Annotator/Comment';
+import { NavigationButtons } from '@/features/Annotator/Navigation';
 
 
 export const Annotator: React.FC = () => {
-  const { isFetching, error, data, canEdit } = useAnnotatorQuery({
-    refetchOnMountOrArgChange: true
-  })
-  const { usedColormap: colormapClass } = useAnnotatorInput(); // TODO: check use
+  const { task, isEditionAuthorized } = useAnnotationTask()
 
-  const { disableSpectrogramResize } = useAppSelector(state => state.settings);
-  const dispatch = useAppDispatch()
+  if (!task) return <Fragment/>;
+  return <AnnotatorCanvasContextProvider>
+    <div className={ styles.annotator }>
 
-  // State
-  const { pointerPosition } = useAnnotatorUI()
-  const audio = useAppSelector(selectAudio)
+      <div className={ styles.spectrogramContainer }>
 
-  // Refs
-  const localIsPaused = useRef<boolean>(true);
-  const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
-  const spectrogramRenderRef = useRef<SpectrogramRender | null>(null);
+        <div className={ styles.spectrogramData }>
 
-  useEffect(() => {
-    localIsPaused.current = audio.isPaused;
-  }, [ audio.isPaused ])
-
-  const toggleSpectrogramResize = useCallback(() => {
-    if (disableSpectrogramResize) {
-      dispatch(SettingsSlice.actions.allowSpectrogramResize())
-    } else {
-      dispatch(SettingsSlice.actions.disableSpectrogramResize())
-    }
-  }, [ disableSpectrogramResize ])
-
-  return <div className={ [ styles.annotator, colormapClass ].join(' ') }>
-
-    { isFetching && <IonSpinner/> }
-    { error && <WarningText>{ getErrorMessage(error) }</WarningText> }
-
-    <AudioPlayer ref={ audioPlayerRef }/>
-
-    { !isFetching && data?.spectrogramById && <Fragment>
-        <div className={ styles.spectrogramContainer }>
-            <div className={ styles.spectrogramData }>
-                <div className={ styles.spectrogramInfo }>
-                    <NFFTSelect/>
-                    <ColormapConfiguration/>
-                    <SpectrogramImage/>
-                    <ZoomButton/>
-                </div>
-
-                <div className={ styles.pointerInfo }>
-                  { pointerPosition && <Fragment>
-                      <FadedText>Pointer</FadedText>
-                      <p>{ pointerPosition.frequency.toFixed(2) }Hz
-                          / { formatTime(pointerPosition.time, (data.spectrogramById.duration ?? 0) < 60) }</p>
-
-                  </Fragment> }
-                </div>
-
-                <div className={ styles.campaignInfo }>
-                    <div>
-                        <FadedText>Date:</FadedText>
-                        <p>{ new Date(data.spectrogramById.start).toUTCString() }</p>
-                    </div>
-                </div>
+          <div className={ styles.spectrogramConfiguration }>
+            <AnalysisSelect/>
+            <div>
+              <ColormapSelect/>
+              <ColormapReverseButton/>
             </div>
+            <BrightnessSelect/>
+            <ContrastSelect/>
+            <ZoomButtons/>
+          </div>
 
-            <SpectrogramRender ref={ spectrogramRenderRef } audioPlayer={ audioPlayerRef }/>
-
-            <div className={ styles.spectrogramNavigation }>
-                <div className={ styles.audioNavigation }>
-                    <PlayPauseButton player={ audioPlayerRef }/>
-                    <PlaybackRateSelect player={ audioPlayerRef }/>
-                </div>
-
-                <NavigationButtons/>
-
-                <p>{ data.spectrogramById.duration && <Fragment>
-                  { formatTime(audio.time, data.spectrogramById.duration < 60) }&nbsp;/&nbsp;{ formatTime(data.spectrogramById.duration) }
-                </Fragment> }</p>
-            </div>
+          <PointerInfo/>
+          <SpectrogramInfo/>
         </div>
 
-        <div
-            className={ styles.blocContainer }>
-          { canEdit && <Fragment>
-              <CurrentAnnotation/>
-              <Labels/>
-              <ConfidenceIndicator/>
-              <Comment/>
-              <Annotations onSelect={ r => spectrogramRenderRef.current?.onResultSelected(r) }/>
-          </Fragment> }
+        <AnnotatorCanvasWindow/>
+
+        <div className={ styles.spectrogramNavigation }>
+          <div className={ styles.audioNavigation }>
+            <PlayPauseButton/>
+            <PlaybackRateSelect/>
+          </div>
+          <NavigationButtons/>
+          <CurrentTime/>
         </div>
+      </div>
 
-        <div className={ styles.downloadButtons }>
-            <Input type="checkbox" label="Disable automatic spectrogram resize"
-                   checked={ disableSpectrogramResize } onChange={ toggleSpectrogramResize }/>
+      <div className={ styles.blocContainer }>
+        { isEditionAuthorized && <Fragment>
+            <FocusedAnnotationBloc/>
+            <LabelsBloc/>
+            <ConfidenceBloc/>
+            <CommentBloc/>
+            <AnnotationsBloc/>
+        </Fragment> }
+      </div>
 
-            <AudioDownloadButton/>
-            <SpectrogramDownloadButton render={ spectrogramRenderRef }/>
-        </div>
-    </Fragment> }
-
-  </div>
+      <div className={ styles.downloadButtons }>
+        <AudioDownloadButton/>
+        <SpectrogramDownloadButton/>
+      </div>
+    </div>
+  </AnnotatorCanvasContextProvider>
 }

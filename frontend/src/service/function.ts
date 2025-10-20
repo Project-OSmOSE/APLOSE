@@ -1,10 +1,10 @@
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { SerializedError } from '@reduxjs/toolkit';
-import { Item } from "@/types/item.ts";
+import { Item } from '@/components/form';
 
 export function getErrorMessage(error: FetchBaseQueryError | SerializedError | unknown | string | undefined): string | undefined {
   if (!error) return undefined;
-  console.log("DEBUG", typeof error, error)
+  console.log('DEBUG', typeof error, error)
   if (typeof error === 'string') return error;
   if ((error as SerializedError).message) return (error as SerializedError).message;
   if ((error as FetchBaseQueryError).status === 500) return '[500] Internal server error';
@@ -22,19 +22,19 @@ export function getErrorMessage(error: FetchBaseQueryError | SerializedError | u
   }
 }
 
-export function getNewItemID(items?: { id: number }[]) {
-  return Math.min(0, ...(items ?? []).map(r => r.id)) - 1;
+export function getNewItemID(items?: { id: number | string }[]) {
+  return Math.min(0, ...(items ?? []).map(r => +r.id)) - 1;
 }
 
 function downloadFile(filename: string, type: string, text: string) {
   const url = URL.createObjectURL(new File([ text ], filename, { type }));
   // Using <a>-linking trick https://stackoverflow.com/a/19328891/2730032
   const a = document.createElement('a');
-  a.style.display = "none";
+  a.style.display = 'none';
   a.href = url;
   a.type = type;
   a.download = filename;
-  if (!document.body) throw new Error("Unexpectedly missing <body>");
+  if (!document.body) throw new Error('Unexpectedly missing <body>');
   document.body.appendChild(a);
   a.click();
 }
@@ -43,14 +43,14 @@ export async function downloadResponseHandler(response: Response) {
   // TODO: reject errors correctly (catchable) - like a standard API error
   if (response.status !== 200) return `[${ response.status }] ${ response.statusText }`;
   const filenameRegExp = /filename=([^&]*)/.exec(decodeURI(response.url))
-  if (!filenameRegExp || filenameRegExp.length < 2) throw new Error("No filename provided");
+  if (!filenameRegExp || filenameRegExp.length < 2) throw new Error('No filename provided');
   const filename = filenameRegExp[1];
   const type = response.headers.get('content-type')
   if (!type) throw new Error('No file type provided')
   downloadFile(filename, type, await response.text())
 }
 
-export function pluralize(data?: any[]) {
+export function pluralize(data?: any[] | null) {
   if (!data) return ''
   return data.length > 1 ? 's' : ''
 }
@@ -86,7 +86,7 @@ export function buildErrorMessage(e: any): string {
           const message = Object
             .entries(e.response.body)
             .map(([ key, value ]) => Array.isArray(value) ? `${ key }: ${ value.join(' - ') }` : '')
-            .join("\n");
+            .join('\n');
           if (message.length > 0) return message;
           try {
             return JSON.stringify(e.response.body)
@@ -127,7 +127,7 @@ export function dateToString(date?: Date | string): string | undefined {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
-    timeZone: "UTC"
+    timeZone: 'UTC',
   })
 }
 
@@ -140,9 +140,9 @@ export function datetimeToString(date?: Date | string): string | undefined {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    hourCycle: "h24",
-    timeZoneName: "short",
-    timeZone: "UTC"
+    hourCycle: 'h24',
+    timeZoneName: 'short',
+    timeZone: 'UTC',
   })
 }
 
@@ -159,4 +159,11 @@ export function formatTime(rawSeconds?: number, withMs: boolean = false): string
   const msPart: string = withMs ? ('.' + ms.toFixed(3).slice(-3)) : '';
 
   return `${ hPart }${ mPart }${ sPart }${ msPart }`;
+}
+
+export function frequencyToString(value: number): string {
+  if (value < 1000) return value.toString()
+  let newValue: string | number = value / 1000;
+  if (newValue % 1 > 0) newValue = newValue.toFixed(1)
+  return `${ newValue }k`;
 }

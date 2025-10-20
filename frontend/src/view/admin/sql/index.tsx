@@ -1,20 +1,19 @@
-import React, { Fragment, useCallback, useEffect, useRef } from "react";
-import { basicSetup, EditorView } from "codemirror";
-import { PostgreSQL, sql } from "@codemirror/lang-sql";
-import { defaultKeymap, indentWithTab } from "@codemirror/commands";
-import { keymap } from "@codemirror/view";
-import { Button, Kbd, Pagination, Table, TableContent, TableDivider, TableHead, WarningText } from "@/components/ui";
-import { Prec } from "@codemirror/state";
-import { getErrorMessage } from "@/service/function.ts";
+import React, { Fragment, useCallback, useEffect, useRef } from 'react';
+import { basicSetup, EditorView } from 'codemirror';
+import { PostgreSQL, sql } from '@codemirror/lang-sql';
+import { defaultKeymap, indentWithTab } from '@codemirror/commands';
+import { keymap } from '@codemirror/view';
+import { Button, Kbd, Pagination, Table, TableContent, TableDivider, TableHead, WarningText } from '@/components/ui';
+import { Prec } from '@codemirror/state';
 import styles from './styles.module.scss'
-import { SQLAPI } from "@/service/api/sql.ts";
-import { useCurrentUser } from "@/features/auth/api";
+import { useCurrentUser } from '@/api';
+import { SQLRestAPI } from '@/api/sql';
 
 
 export const SqlQuery: React.FC = () => {
   const { user } = useCurrentUser();
-  const { data: schema } = SQLAPI.endpoints.sqlSchema.useQuery();
-  const [ run, { data: results, error } ] = SQLAPI.endpoints.postSQL.useMutation();
+  const { data: schema } = SQLRestAPI.endpoints.sqlSchema.useQuery();
+  const [ run, { data: results, error } ] = SQLRestAPI.endpoints.postSQL.useMutation();
 
   const editorContainerRef = useRef<HTMLDivElement | undefined>();
   const editorRef = useRef<EditorView | undefined>();
@@ -35,15 +34,15 @@ export const SqlQuery: React.FC = () => {
         sql({
           dialect: PostgreSQL,
           upperCaseKeywords: true,
-          schema
+          schema,
         }),
         keymap.of([ ...defaultKeymap, indentWithTab ]),
         Prec.highest(keymap.of([ {
-          key: "Ctrl-Enter",
+          key: 'Ctrl-Enter',
           run: () => {
             runQuery(1)
             return true;
-          }
+          },
         } ])),
       ],
       parent: editorContainerRef.current,
@@ -61,12 +60,12 @@ export const SqlQuery: React.FC = () => {
 
     const csvFile = new Blob([
       [ results.columns.join(','),
-        ...results.results.map(r => r.join(',')) ].join('\n')
-    ], { type: "text/csv" });
-    const downloadLink = document.createElement("a");
-    downloadLink.download = "results.csv";
+        ...results.results.map(r => r.join(',')) ].join('\n'),
+    ], { type: 'text/csv' });
+    const downloadLink = document.createElement('a');
+    downloadLink.download = 'results.csv';
     downloadLink.href = window.URL.createObjectURL(csvFile);
-    downloadLink.style.display = "none";
+    downloadLink.style.display = 'none';
     document.body.appendChild(downloadLink);
     downloadLink.click();
   }, [ results ])
@@ -89,7 +88,7 @@ export const SqlQuery: React.FC = () => {
     <Button fill="outline" className={ styles.download }
             onClick={ download } disabled={ !results }>Download</Button>
 
-    { error && <WarningText className={ styles.error }>{ getErrorMessage(error) }</WarningText> }
+    { error && <WarningText className={ styles.error } error={ error }/> }
 
     { results && <Table className={ styles.results } columns={ results.columns.length }>
       { results.columns.map((c, i) => <TableHead topSticky leftSticky={ i === 0 }

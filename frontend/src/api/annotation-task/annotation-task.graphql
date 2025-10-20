@@ -1,0 +1,209 @@
+query listAnnotationTask(
+    $annotatorID: ID!
+    $campaignID: ID!
+    $phaseType: AnnotationPhaseType!
+
+    # Pagination
+    $limit: Int!
+    $offset: Int
+
+    # Filtering
+    $search: String
+    $status: AnnotationTaskStatus
+    $from: DateTime
+    $to: DateTime
+
+    $withAnnotations: Boolean
+    $annotationLabel: String
+    $annotationConfidence: String
+    $annotationDetector: ID
+    $annotationAnnotator: ID
+    $withAcousticFeatures: Boolean
+) {
+    annotationTasksForUser(
+        annotatorId: $annotatorID
+        campaignId: $campaignID
+        phaseType: $phaseType
+
+        limit: $limit
+        offset: $offset
+
+        status: $status
+        spectrogram_End_Gte: $from
+        spectrogram_Start_Lte: $to
+        spectrogram_Filename_Icontains: $search
+
+        annotations_Exists: $withAnnotations
+        annotations_LabelName: $annotationLabel
+        annotations_Confidence_Label: $annotationConfidence
+        annotations_Detector: $annotationDetector
+        annotations_Annotator: $annotationAnnotator
+        annotations_AcousticFeatures_Exists: $withAcousticFeatures
+    ) {
+        resumeSpectrogramId
+        results {
+            status
+
+            spectrogram {
+                id
+                filename
+                start
+                duration
+            }
+
+            annotations(
+                annotator: $annotationAnnotator
+                label_Name: $annotationLabel
+                confidence_Label: $annotationConfidence
+                detectorConfiguration_Detector: $annotationDetector
+                acousticFeatures_Exists: $withAcousticFeatures
+            ) {
+                totalCount
+            }
+
+            validatedAnnotations(
+                annotator: $annotationAnnotator
+                label_Name: $annotationLabel
+                confidence_Label: $annotationConfidence
+                detectorConfiguration_Detector: $annotationDetector
+                acousticFeatures_Exists: $withAcousticFeatures
+            ) {
+                totalCount
+            }
+        }
+        totalCount
+    }
+}
+
+query getAnnotationTask(
+    $spectrogramID: ID!
+    $annotatorID: ID!
+    $campaignID: ID!
+    $analysisID: ID!
+    $phaseType: AnnotationPhaseType!
+
+    # Filtering
+    $search: String
+    $status: AnnotationTaskStatus
+    $from: DateTime
+    $to: DateTime
+
+    $withAnnotations: Boolean
+    $annotationLabel: String
+    $annotationConfidence: String
+    $annotationDetector: ID
+    $annotationAnnotator: ID
+    $withAcousticFeatures: Boolean
+) {
+    annotationTasksForUserBySpectrogramId(
+        spectrogramId: $spectrogramID
+        phaseType: $phaseType
+        campaignId: $campaignID
+        annotatorId: $annotatorID
+    ) {
+        status
+        isAssigned
+
+        spectrogram {
+            id
+            filename
+            audioPath(analysisId: $analysisID)
+            path(analysisId: $analysisID)
+            start
+            duration
+        }
+
+        annotations {
+            results {
+                id
+                type
+                startTime
+                endTime
+                startFrequency
+                endFrequency
+                label {
+                    name
+                }
+                confidence {
+                    label
+                }
+                detectorConfiguration {
+                    detector {
+                        id
+                        name
+                    }
+                }
+                annotator {
+                    id,
+                    displayName
+                }
+                comments(author: $annotatorID) {
+                    results{
+                        id
+                        comment
+                    }
+                }
+                validations(annotator: $annotatorID) {
+                    results {
+                        id
+                        isValid
+                    }
+                }
+                isUpdateOf {
+                    id
+                }
+                acousticFeatures {
+                    id
+                    startFrequency
+                    endFrequency
+                    trend
+                    stepsCount
+                    relativeMinFrequencyCount
+                    relativeMaxFrequencyCount
+                    hasHarmonics
+                }
+                analysis {
+                    id
+                }
+            }
+        }
+
+        taskComments: comments(
+            author: $annotatorID
+            annotation_Isnull: true
+        ) {
+            results {
+                id
+                comment
+            }
+        }
+    }
+
+    annotationTasksForUser(
+        annotatorId: $annotatorID
+        campaignId: $campaignID
+        phaseType: $phaseType
+
+        limit: 1
+        ordering: "-start"
+        spectrogramMax_Id: $spectrogramID
+
+        status: $status
+        spectrogram_End_Gte: $from
+        spectrogram_Start_Lte: $to
+        spectrogram_Filename_Icontains: $search
+
+        annotations_Exists: $withAnnotations
+        annotations_LabelName: $annotationLabel
+        annotations_Confidence_Label: $annotationConfidence
+        annotations_Detector: $annotationDetector
+        annotations_Annotator: $annotationAnnotator
+        annotations_AcousticFeatures_Exists: $withAcousticFeatures
+    ) {
+        currentIndex
+        totalCount
+        previousSpectrogramId
+        nextSpectrogramId
+    }
+
+}

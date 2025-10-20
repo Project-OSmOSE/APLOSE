@@ -1,30 +1,23 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './styles.module.scss'
-import { IonSpinner } from "@ionic/react";
-import { Input } from "@/components/form";
-import { Label } from "@/components/form/inputs/Label.tsx";
-import { Navigate, useParams } from "react-router-dom";
-import { Button } from "@/components/ui";
-import { OntologyAPI } from "@/features/Ontology";
+import { IonSpinner } from '@ionic/react';
+import { Input, Label } from '@/components/form';
+import { Navigate } from 'react-router-dom';
+import { Button } from '@/components/ui';
+import { useSound, useSoundCRUD, useSource, useSourceCRUD } from '@/api';
+import { useNavParams } from '@/features/UX';
 
 export const OntologyPanel: React.FC = () => {
-  const { type, id } = useParams<{ type: 'source' | 'sound' | string, id?: string }>();
+  const { type, id } = useNavParams();
 
-  const {
-    data: source,
-    isFetching: isFetchingSource
-  } = OntologyAPI.endpoints.getDetailedSourceByID.useQuery({ id: id ?? '' }, { skip: !id || type !== 'source' });
+  const { source, isFetching: isFetchingSource } = useSource({ id, skip: type !== 'source' });
+  const { sound, isFetching: isFetchingSound } = useSound({ id, skip: type !== 'sound' });
 
-  const {
-    data: sound,
-    isFetching: isFetchingSound
-  } = OntologyAPI.endpoints.getDetailedSoundByID.useQuery({ id: id ?? '' }, { skip: !id || type !== 'sound' });
-
-  const [ updateSource ] = OntologyAPI.endpoints.updateSource.useMutation()
-  const [ updateSound ] = OntologyAPI.endpoints.updateSound.useMutation()
+  const { update: updateSource } = useSourceCRUD()
+  const { update: updateSound } = useSoundCRUD()
 
   const isFetching = useMemo(() => isFetchingSound || isFetchingSource, [ isFetchingSource, isFetchingSound ])
-  const data = useMemo(() => type == 'source' ? source?.sourceById : sound?.soundById, [ type, source, sound ])
+  const data = useMemo(() => type == 'source' ? source : sound, [ type, source, sound ])
 
   const [ englishName, setEnglishName ] = useState<string | undefined>(data?.englishName);
   const [ frenchName, setFrenchName ] = useState<string | undefined>(data?.frenchName ?? undefined);
@@ -35,7 +28,7 @@ export const OntologyPanel: React.FC = () => {
   const update = useCallback(() => {
     if (!data || !englishName) return;
     switch (type) {
-      case "source":
+      case 'source':
         return updateSource({
           id: +data.id,
           englishName,
@@ -44,7 +37,7 @@ export const OntologyPanel: React.FC = () => {
           codeName,
           taxon,
         }).unwrap()
-      case "sound":
+      case 'sound':
         return updateSound({
           id: +data.id,
           englishName,
@@ -74,33 +67,33 @@ export const OntologyPanel: React.FC = () => {
     { !isFetching && data && <div className={ styles.item }>
         <h5>ID: { data.id }</h5>
         <div>
-            <Label required label='English name'/>
+            <Label required label="English name"/>
             <Input value={ englishName }
                    onChange={ e => setEnglishName(e.currentTarget.value) }/>
         </div>
       { type === 'source' && <div>
-          <Label required label='Latin name'/>
+          <Label required label="Latin name"/>
           <Input value={ latinName }
                  onChange={ e => setLatinName(e.currentTarget.value) }/>
       </div> }
         <div>
-            <Label required label='French name'/>
+            <Label required label="French name"/>
             <Input value={ frenchName }
                    onChange={ e => setFrenchName(e.currentTarget.value) }/>
         </div>
         <div>
-            <Label required label='Code name'/>
+            <Label required label="Code name"/>
             <Input value={ codeName }
                    onChange={ e => setCodeName(e.currentTarget.value) }/>
         </div>
         <div>
-            <Label required label='Taxon'/>
+            <Label required label="Taxon"/>
             <Input value={ taxon }
                    onChange={ e => setTaxon(e.currentTarget.value) }/>
         </div>
 
         <div className={ styles.buttons }>
-            <Button color="medium" fill='clear' onClick={ reset }>Reset changes</Button>
+            <Button color="medium" fill="clear" onClick={ reset }>Reset changes</Button>
             <Button onClick={ update }>Save</Button>
         </div>
     </div> }

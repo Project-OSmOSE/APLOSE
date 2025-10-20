@@ -1,0 +1,125 @@
+import { ScaleService, Step } from "./types";
+import { useCallback, useEffect } from "react";
+
+export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }: {
+  canvas?: HTMLCanvasElement,
+  scale: ScaleService,
+  orientation: 'horizontal' | 'vertical',
+  pixelSize: number,
+  valueToString: (value: number) => string;
+}) => {
+
+  useEffect(() => {
+    draw()
+  }, [ canvas, pixelSize, valueToString, orientation, scale ]);
+
+  const draw = useCallback(() => {
+    const context = canvas?.getContext('2d');
+    if (!canvas || !context || !pixelSize) return;
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = 'rgba(0, 0, 0)';
+    context.font = "500 10px 'Exo 2'";
+
+    let previousRatio = 0;
+    let offset = 0;
+    const scaleSteps = scale.getSteps().sort((a: Step, b: Step) => (a.correspondingRatio ?? 0) - (b.correspondingRatio ?? 0));
+    const maxRatio = Math.max(...scaleSteps.map(s => s.correspondingRatio ?? 0));
+    const realSteps = new Array<Step>();
+    for (const step of scaleSteps) {
+      if (step.correspondingRatio) {
+        if (step.correspondingRatio !== previousRatio) {
+          offset = previousRatio / maxRatio * pixelSize;
+          previousRatio = step.correspondingRatio
+        }
+      }
+      const position = Math.round(pixelSize - (offset + step.position));
+      const existingStep = realSteps.find(s => s.position === position)
+      if (existingStep) {
+        existingStep.additionalValue = step.value;
+      } else {
+        realSteps.push({ ...step, position })
+      }
+    }
+    for (const step of realSteps) {
+      const position = step.position;
+
+      // Tick
+      let tickLength = 10;
+      let tickWidth = 1;
+      switch (step.size) {
+        case "regular":
+          tickLength = 15;
+          tickWidth = 2;
+          break;
+        case "big":
+          tickLength = 15;
+          tickWidth = 4;
+          break;
+      }
+      let tickPosition = position;
+      if (pixelSize - tickWidth < tickPosition) tickPosition = pixelSize - tickWidth
+
+      switch (orientation) {
+        case "vertical":
+          context.fillRect(canvas.width - tickLength, tickPosition, tickLength, tickWidth);
+          break;
+        case "horizontal":
+          context.fillRect(tickPosition <= canvas.width - 2 ? tickPosition : canvas.width - 2, 0, tickWidth, tickLength);
+          break;
+      }
+
+      // Text
+      if (step.additionalValue) {
+        const min = Math.min(step.value, step.additionalValue)
+        const max = step.value === min ? step.additionalValue : step.value;
+        switch (orientation) {
+          case "vertical":
+            context.textBaseline = 'top'
+            break;
+          case "horizontal":
+            context.textAlign = "right"
+            break;
+        }
+        context.fillText(valueToString(min), 0, position);
+        switch (orientation) {
+          case "vertical":
+            context.textBaseline = 'bottom'
+            break;
+          case "horizontal":
+            context.textAlign = "left"
+            break;
+        }
+        context.fillText(valueToString(max), 0, position);
+      } else {
+        let textPosition = position;
+        const text = valueToString(step.value)
+        switch (orientation) {
+          case "vertical":
+            // "Top align" all labels but first
+            if (textPosition < (pixelSize - 5)) {
+              context.textBaseline = 'top'
+            } else {
+              context.textBaseline = 'bottom'
+            }
+            break;
+          case "horizontal":
+            if (textPosition === 0) {
+              context.textAlign = "left"
+            } else if (textPosition > (pixelSize - text.length * 8)) {
+              context.textAlign = "right"
+              textPosition -= 8;
+            } else {
+              context.textAlign = "center"
+            }
+            break;
+        }
+        context.fillText(text, 0, textPosition);
+      }
+    }
+  }, [ canvas, scale, orientation, pixelSize, valueToString ])
+
+  return {
+    draw
+  }
+}

@@ -1,5 +1,4 @@
-import { Colormap } from '@/service/ui/color.ts';
-import { LinearScale, MultiLinearScale } from "@/features/Annotator";
+import type { Colormap } from '@/features/Colormap';
 
 export type Dataset = {
   id: number;
@@ -38,6 +37,19 @@ export interface DatasetFile {
   dataset_sr: number; // read only
   audio_url: string;
   dataset_name: string; // read only
+}
+
+export type LinearScale = {
+  name?: string;
+  ratio: number;
+  min_value: number;
+  max_value: number;
+}
+
+
+export interface MultiLinearScale {
+  name?: string;
+  inner_scales: Array<LinearScale>;
 }
 
 export interface SpectrogramConfiguration {

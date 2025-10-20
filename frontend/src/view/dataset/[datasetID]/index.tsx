@@ -1,47 +1,34 @@
 import React, { Fragment } from 'react';
-import { useParams } from "react-router-dom";
-import { IonSpinner } from "@ionic/react";
+import { IonSpinner } from '@ionic/react';
+import { WarningText } from '@/components/ui';
 
-import { getErrorMessage } from "@/service/function.ts";
-import { WarningText } from "@/components/ui";
-
-import { DatasetHead, DatasetInfoCreation, SpectrogramAnalysisTable } from "@/features/data/display";
-import { DisplayDataAPI } from "@/features/data/display/api";
-import { ImportAnalysisModalButton } from "@/features/data/import";
-import { ChannelConfigurationTable } from "@/features/metadatax/acquisition/display";
+import { DatasetHead, DatasetInfoCreation } from '@/features/Dataset';
+import { ImportAnalysisModalButton, SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
+import { ChannelConfigurationTable } from '@/features/ChannelConfiguration';
+import { useDataset } from '@/api';
+import { useNavParams } from '@/features/UX';
 
 
 export const DatasetDetail: React.FC = () => {
-  const { datasetID } = useParams<{ datasetID: string }>()
+  const { datasetID: id } = useNavParams()
 
-  const { data, isLoading, error } = DisplayDataAPI.endpoints.getDatasetByPk.useQuery({
-    pk: datasetID ?? -1,
-  }, { skip: !datasetID })
+  const { dataset, isLoading, error } = useDataset({ id })
 
-  if (isLoading) return <Fragment>
-    <DatasetHead/>
-    <IonSpinner/>
-  </Fragment>
+  if (isLoading) return <Fragment><DatasetHead/><IonSpinner/></Fragment>
 
-  if (error) return <Fragment>
-    <DatasetHead/>
-    <WarningText>{ getErrorMessage(error) }</WarningText>
-  </Fragment>
+  if (error) return <Fragment><DatasetHead/><WarningText error={ error }/></Fragment>
 
-  if (!data?.datasetByPk) return <Fragment>
-    <DatasetHead/>
-    <WarningText>Dataset not found</WarningText>
-  </Fragment>
+  if (!dataset) return <Fragment><DatasetHead/><WarningText message="Dataset not found"/></Fragment>
 
   return <Fragment>
     <DatasetHead/>
 
     <div style={ { overflowX: 'hidden', display: 'grid', gap: '4rem' } }>
 
-      <ChannelConfigurationTable datasetPK={ +datasetID! }/>
+      <ChannelConfigurationTable datasetID={ dataset.id }/>
 
       <div style={ { overflowX: 'hidden', display: 'grid', gap: '1rem' } }>
-        <SpectrogramAnalysisTable datasetPK={ +datasetID! }/>
+        <SpectrogramAnalysisTable datasetID={ dataset.id }/>
 
         <ImportAnalysisModalButton/>
       </div>

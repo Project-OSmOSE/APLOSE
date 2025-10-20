@@ -3,7 +3,7 @@ import { Mock, Modal, UI } from '../services';
 import { UserType } from '../../fixtures';
 import { CampaignListPage } from './campaign-list';
 import { Phase } from '../../../src/service/types';
-import { oldInterceptGQL } from "../functions";
+import { interceptGQL } from '../mock';
 
 type LabelModalExtend = {
   getCheckbox: (text: string) => Locator;
@@ -68,8 +68,8 @@ export class CampaignDetailPage {
 
       await this.mock.fileRangesFiles(options?.empty)
       await this.list.card.click();
-      await oldInterceptGQL(this.page, {
-        getSpectrogramAnalysis: options?.empty ? 'empty' : 'filled',
+      await interceptGQL(this.page, {
+        listSpectrogramAnalysis: options?.empty ? 'empty' : 'filled',
       })
     });
   }
@@ -89,7 +89,7 @@ export class CampaignDetailPage {
       },
       get updateButton(): Locator {
         return modal.getByRole('button', { name: 'Update' });
-      }
+      },
     } as LabelModalExtend);
   }
 
@@ -99,7 +99,7 @@ export class CampaignDetailPage {
     return Object.assign(modal, {
       get downloadButton(): Locator {
         return modal.getByRole('button', { name: 'Download configurations' })
-      }
+      },
     } as MetadataModal);
   }
 
@@ -108,7 +108,7 @@ export class CampaignDetailPage {
     return Object.assign(modal, {
       get downloadButton(): Locator {
         return modal.getByRole('button', { name: 'Download metadata' })
-      }
+      },
     } as MetadataModal);
   }
 

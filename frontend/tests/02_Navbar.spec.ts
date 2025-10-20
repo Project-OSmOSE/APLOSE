@@ -1,4 +1,5 @@
 import { ESSENTIAL, expect, Page, test, URL } from './utils';
+import { interceptGQL } from './utils/mock';
 
 // Utils
 
@@ -8,10 +9,12 @@ const STEP = {
     expect(url).toEqual(URL.admin)
   }),
   canAccessDataset: (page: Page) => test.step('Can access datasets', async () => {
-    await page.mock.datasets()
+    interceptGQL(page, {
+      listDatasets: 'filled',
+    })
     await page.getByRole('button', { name: 'Datasets' }).click()
     await expect(page.getByRole('heading', { name: 'Datasets' })).toBeVisible();
-  })
+  }),
 }
 
 // Tests

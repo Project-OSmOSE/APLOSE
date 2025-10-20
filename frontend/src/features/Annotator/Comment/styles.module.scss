@@ -1,0 +1,11 @@
+.comments {
+  grid-area: comments;
+
+  .body {
+    padding: 0.5rem;
+
+    .removeButton {
+      align-self: center;
+    }
+  }
+}

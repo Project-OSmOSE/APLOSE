@@ -1,8 +1,8 @@
 import { Page, test } from '@playwright/test';
-import { MockType, Modal, UI } from '../services';
+import { Modal, UI } from '../services';
 import { UserType } from '../../fixtures';
-import { DatasetPage } from "./dataset";
-import { interceptGQL } from "../functions";
+import { DatasetPage } from './dataset';
+import { interceptGQL, MockType } from '../mock';
 
 export class DatasetDetailPage {
 
@@ -15,16 +15,16 @@ export class DatasetDetailPage {
     await test.step('Navigate to Dataset detail', async () => {
       await this.datasetList.go(as, 'filled');
       await interceptGQL(this.page, {
-        getDatasetByPk: 'filled',
-        getSpectrogramAnalysis: type,
-        getChannelConfigurations: type,
-      }, as)
+        getDatasetByID: 'filled',
+        listSpectrogramAnalysis: type,
+        listChannelConfigurations: type,
+      })
       await this.page.getByText('Test dataset').click()
     });
   }
 
   async openImportModal(type: MockType = 'filled'): Promise<AnalysisImportModal> {
-    await interceptGQL(this.page, { getAvailableSpectrogramAnalysisForImport: type })
+    await interceptGQL(this.page, { listAvailableSpectrogramAnalysisForImport: type })
     return AnalysisImportModal.get(this)
   }
 
@@ -52,7 +52,7 @@ export class AnalysisImportModal {
   }
 
   public async importAnalysis() {
-    await interceptGQL(this.modal.page(), { postAnalysisForImport: 'empty' })
+    await interceptGQL(this.modal.page(), { importSpectrogramAnalysis: 'empty' })
     await this.modal.locator('.download-analysis').first().click()
   }
 }

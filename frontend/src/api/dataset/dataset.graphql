@@ -1,0 +1,69 @@
+query listDatasets {
+    allDatasets(orderBy: "-createdAt") {
+        results {
+            id
+            name
+            description
+            createdAt
+            legacy
+            analysisCount
+            filesCount
+            start
+            end
+        }
+    }
+}
+
+query getDatasetByID($id: ID!) {
+    datasetById(id: $id) {
+        id
+        name
+        path
+        description
+        start
+        end
+        createdAt
+        legacy
+        owner {
+            displayName
+        }
+    }
+}
+
+query listAvailableDatasetsForImport {
+    allDatasetsAvailableForImport {
+        name
+        path
+        legacy
+        analysis {
+            name
+            path
+        }
+    }
+}
+
+mutation importDataset($name: String!, $path: String!, $legacy: Boolean) {
+    importDataset(name: $name, path: $path, legacy: $legacy) {
+        ok
+    }
+}
+
+query listDatasetsAndAnalysis {
+    allDatasets(orderBy: "name") {
+        results {
+            id
+            name
+            spectrogramAnalysis(orderBy: "name") {
+                edges {
+                    node {
+                        id
+                        name
+                        colormap {
+                            name
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -10,33 +10,15 @@ import {
   CHECK_DATA,
   CONFIDENCE,
   CREATE_DATA,
-  DATASET,
   DETECTOR,
   FILE_RANGE,
   LABEL,
   SPECTROGRAM_CONFIGURATION,
   USERS,
-  UserType
+  UserType,
 } from '../../fixtures';
 import { Paginated } from '../../../src/service/type';
 import { AnnotationCampaign, AnnotationFile, Phase } from '../../../src/service/types';
-import {
-  GetAvailableDatasetsForImportQuery,
-  GetAvailableSpectrogramAnalysisForImportQuery
-} from "../../../src/features/data/import/api/import-data.generated";
-import {
-  GetDatasetByPkQuery,
-  GetDatasetsQuery,
-  GetSpectrogramAnalysisQuery
-} from "../../../src/features/data/display/api/display-data.generated";
-import { GetDatasetsAndAnalysisQuery } from "../../../src/features/data/input/api/input.generated";
-import { COLORMAP_GREYS } from "../../../src/service/ui/color";
-import {
-  GetChannelConfigurationsQuery
-} from "../../../src/features/metadatax/acquisition/display/api/display-acquisition.generated";
-import { ListCampaignsAndPhasesQuery } from "../../../src/features/annotation/api/annotation.generated";
-import { AnnotationPhaseType } from "../../../src/features/_utils_/gql/types.generated";
-import { GetCurrentUserQuery } from "../../../src/features/auth/api/auth.generated";
 
 type Response = {
   status: number,
@@ -75,11 +57,11 @@ export class Mock {
   public async campaigns(empty: boolean = false) {
     await this.page.route(API_URL.campaign.list, route => route.fulfill({
       status: 200,
-      json: empty ? [] : [ CAMPAIGN ]
+      json: empty ? [] : [ CAMPAIGN ],
     }))
     await this.page.route(API_URL.phase.list, route => route.fulfill({
       status: 200,
-      json: empty ? [] : [ CAMPAIGN_PHASE, { ...CAMPAIGN_PHASE, id: 2, phase: 'Verification' } ]
+      json: empty ? [] : [ CAMPAIGN_PHASE, { ...CAMPAIGN_PHASE, id: 2, phase: 'Verification' } ],
     }))
   }
 
@@ -123,8 +105,8 @@ export class Mock {
         total: 0,
         my_progress: 0,
         my_total: 0,
-        phase
-      } : { ...CAMPAIGN_PHASE, phase }
+        phase,
+      } : { ...CAMPAIGN_PHASE, phase },
     }))
   }
 
@@ -136,11 +118,6 @@ export class Mock {
   public async audios(empty: boolean = false) {
     const json = empty ? [] : [ AUDIO_METADATA ]
     await this.page.route(API_URL.audio.list, route => route.fulfill({ status: 200, json }))
-  }
-
-  public async datasets(empty: boolean = false) {
-    const json = empty ? [] : [ DATASET ]
-    await this.page.route(API_URL.dataset.list, route => route.fulfill({ status: 200, json }))
   }
 
   public async labelSets(empty: boolean = false) {
@@ -177,7 +154,7 @@ export class Mock {
     const json: Partial<Paginated<AnnotationFile>> & { resume?: number } = {
       results,
       count: results.length,
-      resume: results.find(r => r.is_submitted === false)?.id
+      resume: results.find(r => r.is_submitted === false)?.id,
     }
     await this.page.route(API_URL.fileRanges.file, route => route.fulfill({ status: 200, json }))
   }
@@ -198,7 +175,7 @@ export class Mock {
   async resultImport() {
     await this.page.route(API_URL.result.import, route => route.fulfill({
       status: 200,
-      json: []
+      json: [],
     }))
   }
 
@@ -207,233 +184,3 @@ export class Mock {
     await this.page.route(API_URL.detector.list, route => route.fulfill({ status: 200, json }))
   }
 }
-
-const deadline = new Date()
-deadline.setTime(0)
-
-export function getCurrentUserMock(as: UserType) {
-  return {
-    currentUser: {
-      pk: USERS[as].id,
-      isAdmin: USERS[as].is_staff || USERS[as].is_superuser,
-      username: USERS[as].username,
-      email: USERS[as].email,
-      isSuperuser: USERS[as].is_superuser,
-      displayName: USERS[as].first_name + ' ' + USERS[as].last_name,
-    }
-  } satisfies GetCurrentUserQuery as GetCurrentUserQuery
-}
-
-const datasetByPk = {
-  pk: 1,
-  name: 'Test dataset',
-  path: 'test/dataset',
-  description: "Coastal audio recordings",
-  start: "2021-08-02T00:00:00Z",
-  end: "2022-07-13T06:00:00Z",
-  createdAt: new Date().toISOString(),
-  legacy: true,
-  owner: {
-    displayName: 'John Doe'
-  }
-}
-
-export const MOCK_QUERIES: {
-  [key in string]: { [key in MockType]: any }
-} = {
-  getAvailableDatasetsForImport: {
-    empty: {
-      allDatasetsAvailableForImport: []
-    } satisfies GetAvailableDatasetsForImportQuery as GetAvailableDatasetsForImportQuery,
-    filled: {
-      allDatasetsAvailableForImport: [ {
-        name: 'Test import dataset',
-        path: 'Test import dataset',
-        analysis: [
-          {
-            name: 'Test analysis 1',
-            path: 'Test analysis 1',
-          },
-          {
-            name: 'Test analysis 2',
-            path: 'Test analysis 2',
-          }
-        ]
-      } ]
-    } satisfies GetAvailableDatasetsForImportQuery as GetAvailableDatasetsForImportQuery
-  },
-  getDatasets: {
-    empty: {
-      allDatasets: {
-        results: []
-      }
-    } satisfies GetDatasetsQuery as GetDatasetsQuery,
-    filled: {
-      allDatasets: {
-        results: [
-          {
-            pk: 1,
-            name: 'Test dataset',
-            legacy: true,
-            createdAt: new Date().toISOString(),
-            start: "2021-08-02T00:00:00Z",
-            end: "2022-07-13T06:00:00Z",
-            filesCount: 99,
-            description: "Coastal audio recordings",
-            analysisCount: 1,
-          }
-        ]
-      }
-    } satisfies GetDatasetsQuery as GetDatasetsQuery
-  },
-  getDatasetByPk: {
-    empty: {
-      datasetByPk: undefined
-    } satisfies GetDatasetByPkQuery as GetDatasetByPkQuery,
-    filled: { datasetByPk } satisfies GetDatasetByPkQuery as GetDatasetByPkQuery
-  },
-  getDatasetsAndAnalysis: {
-    empty: {
-      allDatasets: { results: [] }
-    } satisfies GetDatasetsAndAnalysisQuery as GetDatasetsAndAnalysisQuery,
-    filled: {
-      allDatasets: {
-        results: [
-          {
-            pk: 1,
-            name: 'Test dataset',
-            spectrogramAnalysis: {
-              results: [
-                {
-                  pk: 1,
-                  name: 'Test analysis',
-                  colormap: { name: COLORMAP_GREYS }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    } satisfies GetDatasetsAndAnalysisQuery as GetDatasetsAndAnalysisQuery
-  },
-
-  getAvailableSpectrogramAnalysisForImport: {
-    empty: {
-      allSpectrogramAnalysisForImport: []
-    } satisfies GetAvailableSpectrogramAnalysisForImportQuery as GetAvailableSpectrogramAnalysisForImportQuery,
-    filled: {
-      allSpectrogramAnalysisForImport: [
-        {
-          name: 'Test analysis 1',
-          path: 'Test analysis 1',
-        },
-        {
-          name: 'Test analysis 2',
-          path: 'Test analysis 2',
-        }
-      ],
-      datasetByPk
-    } satisfies GetAvailableSpectrogramAnalysisForImportQuery as GetAvailableSpectrogramAnalysisForImportQuery
-  },
-  getSpectrogramAnalysis: {
-    empty: {
-      allSpectrogramAnalysis: {
-        results: []
-      }
-    } satisfies GetSpectrogramAnalysisQuery as GetSpectrogramAnalysisQuery,
-    filled: {
-      allSpectrogramAnalysis: {
-        results: [
-          {
-            pk: 1,
-            name: 'Test analysis',
-            description: "Coastal audio recordings",
-            createdAt: new Date().toISOString(),
-            legacy: true,
-            filesCount: 99,
-            start: "2021-08-02T00:00:00Z",
-            end: "2022-07-13T06:00:00Z",
-            dataDuration: 10,
-            fft: {
-              samplingFrequency: 64_000,
-              nfft: 2_048,
-              windowSize: 1_024,
-              overlap: 0.95
-            }
-          }
-        ]
-      }
-    } satisfies GetSpectrogramAnalysisQuery as GetSpectrogramAnalysisQuery
-  },
-
-  getChannelConfigurations: {
-    empty: {
-      allChannelConfigurations: null
-    } satisfies GetChannelConfigurationsQuery as GetChannelConfigurationsQuery,
-    filled: {
-      allChannelConfigurations: {
-        results: [
-          {
-            deployment: {
-              name: 'Test deployment',
-              campaign: {
-                name: 'Phase 1'
-              },
-              site: {
-                name: 'Site A'
-              },
-              project: {
-                name: 'Test Project',
-              }
-            }
-          }
-        ]
-      }
-    } satisfies GetChannelConfigurationsQuery as GetChannelConfigurationsQuery
-  },
-
-  listCampaignsAndPhases: {
-    empty: {
-      allAnnotationCampaigns: null,
-      allAnnotationPhases: null,
-    } satisfies ListCampaignsAndPhasesQuery as ListCampaignsAndPhasesQuery,
-    filled: {
-      allAnnotationCampaigns: {
-        results: [
-          {
-            pk: 1,
-            name: 'Test campaign',
-            datasetName: 'Test dataset',
-            isArchived: false,
-            deadline: deadline.toISOString().split('T')[0],
-          }
-        ]
-      },
-      allAnnotationPhases: {
-        results: [
-          {
-            pk: 1,
-            annotationCampaignPk: 1,
-            phase: AnnotationPhaseType.Annotation,
-            completedTasksCount: 50,
-            tasksCount: 100,
-            userCompletedTasksCount: 5,
-            userTasksCount: 10,
-          }
-        ]
-      }
-    } satisfies ListCampaignsAndPhasesQuery as ListCampaignsAndPhasesQuery
-  },
-}
-export const MOCK_MUTATIONS: {
-  [key in string]: { empty: Record<string, never> }
-} = {
-  postDatasetForImport: { empty: {} },
-  postAnalysisForImport: { empty: {} },
-}
-
-export const MOCK = { ...MOCK_QUERIES, ...MOCK_MUTATIONS }
-
-export type QueryName = keyof typeof MOCK_QUERIES | keyof typeof MOCK_MUTATIONS
-
-export type MockType = 'filled' | 'empty'

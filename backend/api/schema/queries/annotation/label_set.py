@@ -6,7 +6,8 @@ from backend.utils.schema import (
     ApiObjectType,
     AuthenticatedDjangoConnectionField,
     GraphQLResolve,
-    GraphQLPermissions, PK,
+    GraphQLPermissions,
+    PK,
 )
 from .label import AnnotationLabelNode
 
@@ -26,8 +27,6 @@ class LabelSetNode(ApiObjectType):
 
 class LabelSetQuery(ObjectType):  # pylint: disable=too-few-public-methods
     """LabelSet queries"""
-
-    all_label_sets = AuthenticatedDjangoConnectionField(LabelSetNode)
 
     annotation_campaign_label_set = Field(
         LabelSetNode, annotation_campaign_id=PK(required=True)

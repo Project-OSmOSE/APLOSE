@@ -1,7 +1,16 @@
 import { API_URL, ESSENTIAL, expect, expectNoRequestsOnAction, test } from './utils';
 import { CAMPAIGN } from './fixtures';
 import { Mock } from './utils/services';
-import { PostAnnotationCampaign } from "../src/service/api/campaign";
+import { AnnotationCampaign } from "../src/service/types";
+import { ID } from "../src/service/type";
+
+type PostAnnotationCampaign = Pick<AnnotationCampaign,
+  'name' | 'desc' | 'instructions_url' | 'deadline' |
+  'allow_image_tuning' | 'allow_colormap_tuning' | 'colormap_default' | 'colormap_inverted_default'
+> & {
+  analysis: ID[],
+  dataset: ID,
+}
 
 test.describe('Annotator', () => {
 

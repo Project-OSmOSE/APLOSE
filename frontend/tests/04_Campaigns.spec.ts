@@ -1,5 +1,6 @@
-import { ESSENTIAL, expect, oldInterceptGQL, test } from './utils';
-import { AnnotationPhaseType } from "../src/features/_utils_/gql/types.generated";
+import { ESSENTIAL, expect, test } from './utils';
+import { AnnotationPhaseType } from '../src/api';
+import { interceptGQL } from './utils/mock';
 
 
 test.describe('Annotator', () => {
@@ -24,9 +25,9 @@ test.describe('Annotator', () => {
   test('Can filter campaigns', async ({ page }) => {
     await page.campaign.list.go('annotator');
     await expect(page.getByText('Archived: False')).toBeVisible() // Filters are initialized
-    await oldInterceptGQL(page, {
-      listCampaignsAndPhases: 'filled'
-    }, undefined, 4)
+    await interceptGQL(page, {
+      listCampaignsAndPhases: 'filled',
+    })
 
     await test.step('Search', async () => {
       await page.mock.campaigns()
@@ -43,7 +44,7 @@ test.describe('Annotator', () => {
       await page.mock.campaigns()
       const [ request ] = await Promise.all([
         page.waitForRequest('**/graphql'),
-        page.getByText('My work').click()
+        page.getByText('My work').click(),
       ])
       expect(request.postDataJSON().variables.annotatorID).toEqual(undefined)
     })
@@ -52,7 +53,7 @@ test.describe('Annotator', () => {
       await page.mock.campaigns()
       const [ request ] = await Promise.all([
         page.waitForRequest('**/graphql'),
-        page.getByText('Archived: False').click()
+        page.getByText('Archived: False').click(),
       ])
       expect(request.postDataJSON().variables.isArchived).toBeTruthy()
     })
@@ -61,7 +62,7 @@ test.describe('Annotator', () => {
       await page.mock.campaigns()
       const [ request ] = await Promise.all([
         page.waitForRequest('**/graphql'),
-        page.getByText('Has verification').click()
+        page.getByText('Has verification').click(),
       ])
       expect(request.postDataJSON().variables.phase).toEqual(AnnotationPhaseType.Verification)
     })
@@ -70,7 +71,7 @@ test.describe('Annotator', () => {
       await page.mock.campaigns()
       const [ request ] = await Promise.all([
         page.waitForRequest('**/graphql'),
-        page.getByText('Owned campaigns').click()
+        page.getByText('Owned campaigns').click(),
       ])
       expect(request.postDataJSON().variables.ownerPk).toEqual(1)
     })

@@ -1,56 +1,37 @@
-import React, { Fragment, useCallback, useMemo, useState } from "react";
+import React, { Fragment, useCallback, useMemo } from 'react';
 import styles from './styles.module.scss'
-import { IonIcon, IonSpinner } from "@ionic/react";
-import { checkmarkCircle, chevronForwardOutline, ellipseOutline } from "ionicons/icons";
-import { Button, Pagination, Table, TableContent, TableDivider, TableHead, WarningText } from "@/components/ui";
-import { getErrorMessage } from "@/service/function.ts";
-import { AnnotationsFilter } from "./AnnotationsFilter.tsx";
-import { StatusFilter } from "./StatusFilter.tsx";
-import { DateFilter } from "./DateFilter.tsx";
-import { AnnotationFile, AnnotationPhase } from "@/service/types";
-import { AnnotationFileRangeAPI } from "@/service/api/annotation-file-range.ts";
-import { useRetrieveCurrentPhase } from "@/service/api/campaign-phase.ts";
-import { useSpectrogramFilters } from "@/service/slices/filter.ts";
-import { SpectrogramActionBar } from "@/features/AnnotationPhase/SpectrogramActionBar.tsx";
-import { ImportAnnotationsButton } from "@/features/AnnotationPhase/ImportAnnotationsButton.tsx";
-import { useAnnotatorNavigation } from "@/features/Annotator";
-import { useCurrentAnnotationCampaign } from "@/features/annotation/api";
-import { AnnotationPhaseType } from "@/features/_utils_";
+import { IonSpinner } from '@ionic/react';
+import { Pagination, Table, TableDivider, TableHead, WarningText } from '@/components/ui';
+import { AnnotationsFilter, DateFilter, StatusFilter, TaskRow } from '@/features/AnnotationTask';
+import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
+import { useAllAnnotationTasks, useAllTasksFilters, useCurrentCampaign, useCurrentPhase } from '@/api';
+import { FileRangeActionBar } from '@/features/AnnotationFileRange';
 
 export const AnnotationCampaignPhaseDetail: React.FC = () => {
-  const { params } = useSpectrogramFilters(true)
-  const { campaign, phases } = useCurrentAnnotationCampaign()
+  const { campaign, verificationPhase } = useCurrentCampaign()
+  const { phase } = useCurrentPhase()
 
-  const { phase } = useRetrieveCurrentPhase()
-  const [ page, setPage ] = useState<number>(1);
+  const { params, updatePage } = useAllTasksFilters({ clearOnLoad: true })
 
-  AnnotationFileRangeAPI.endpoints.listFilesWithPagination.useQuery({
-    page: 1,
-    phaseID: phase?.id ?? -1,
-  }, { refetchOnMountOrArgChange: true, skip: !phase || !!campaign?.isArchived });
-  const { currentData: files, isFetching, error } = AnnotationFileRangeAPI.endpoints.listFilesWithPagination.useQuery({
-    phaseID: phase?.id ?? -1,
-    ...params,
-    page
-  }, { skip: !phase || !!campaign?.isArchived });
-  const isEmpty = useMemo(() => error || !files || files.count === 0 || campaign?.isArchived, [ error, files, campaign ])
+  useAllAnnotationTasks({ page: 1 }, { refetchOnMountOrArgChange: true })
+  const { allTasks, pageCount, isFetching, error } = useAllAnnotationTasks(params)
+
+  const isEmpty = useMemo(() => error || !allTasks || allTasks.length === 0 || campaign?.isArchived, [ error, allTasks, campaign ])
 
   const onFilterUpdated = useCallback(() => {
-    setPage(1)
-  }, [])
+    updatePage(1)
+  }, [ updatePage ])
 
   if (!campaign || !phase) return <IonSpinner/>
   return <div className={ styles.phase }>
 
     <div className={ [ styles.tasks, isEmpty ? styles.empty : '' ].join(' ') }>
 
-      <SpectrogramActionBar/>
+      <FileRangeActionBar/>
 
-      { phase.phase === 'Verification' && !phase.has_annotations && phases.some(p => p?.phase === AnnotationPhaseType.Verification) &&
-          <WarningText>
-              Your campaign doesn't have any annotations to check
-              <ImportAnnotationsButton/>
-          </WarningText> }
+      { phase.phase === 'Verification' && !phase.hasAnnotations && verificationPhase &&
+          <WarningText message="Your campaign doesn't have any annotations to check"
+                       children={ <ImportAnnotationsButton/> }/> }
 
       <Table columns={ phase.phase === 'Verification' ? 7 : 6 } className={ styles.filesTable }>
         <TableHead topSticky isFirstColumn={ true }>
@@ -79,51 +60,24 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
         </TableHead>
         <TableDivider/>
 
-        { files?.results?.map(file => <TaskItem key={ file.id }
-                                                file={ file }
-                                                phase={ phase }/>) }
+        { allTasks
+          ?.filter(t => t && t.annotations && t.validatedAnnotations)
+          .map(t => <TaskRow key={ t!.spectrogram.id }
+                             task={ t! }
+                             spectrogram={ t!.spectrogram! }
+                             annotations={ t!.annotations! }
+                             validatedAnnotations={ t!.validatedAnnotations! }/>) }
       </Table>
 
-      { files?.results && files.results.length > 0 &&
-          <Pagination currentPage={ page } totalPages={ files.pageCount } setCurrentPage={ setPage }/> }
+      { allTasks && allTasks.length > 0 &&
+          <Pagination currentPage={ params.page } totalPages={ pageCount } setCurrentPage={ updatePage }/> }
 
       { isFetching && <IonSpinner/> }
-      { error && <WarningText>{ getErrorMessage(error) }</WarningText> }
-      { files && files.count === 0 && <p>You have no files to annotate.</p> }
+      { error && <WarningText error={ error }/> }
+      { allTasks && allTasks.length === 0 && <p>You have no files to annotate.</p> }
       { campaign?.isArchived ? <p>The campaign is archived. No more annotation can be done.</p> :
-        (phase?.ended_by && <p>The phase is ended. No more annotation can be done.</p>) }
+        (phase?.endedAt && <p>The phase is ended. No more annotation can be done.</p>) }
 
     </div>
   </div>
-}
-
-const TaskItem: React.FC<{
-  phase: AnnotationPhase;
-  file: AnnotationFile;
-}> = ({ phase, file }) => {
-  const startDate = useMemo(() => new Date(file.start), [ file.start ]);
-  const duration = useMemo(() => new Date(new Date(file.end).getTime() - startDate.getTime()), [ file.end, file.start ]);
-  const { openAnnotator } = useAnnotatorNavigation()
-
-  return <Fragment>
-    <TableContent isFirstColumn={ true } disabled={ file.is_submitted }>{ file.filename }</TableContent>
-    <TableContent disabled={ file.is_submitted }>{ startDate.toUTCString() }</TableContent>
-    <TableContent disabled={ file.is_submitted }>{ duration.toUTCString().split(' ')[4] }</TableContent>
-    <TableContent disabled={ file.is_submitted }>{ file.results_count }</TableContent>
-    { phase.phase == 'Verification' &&
-        <TableContent disabled={ file.is_submitted }>{ file.validated_results_count }</TableContent> }
-    <TableContent disabled={ file.is_submitted }>
-      { file.is_submitted &&
-          <IonIcon icon={ checkmarkCircle } className={ styles.statusIcon } color='primary'/> }
-      { !file.is_submitted &&
-          <IonIcon icon={ ellipseOutline } className={ styles.statusIcon } color='medium'/> }
-    </TableContent>
-    <TableContent disabled={ file.is_submitted }>
-      <Button color='dark' fill='clear' size='small' className={ styles.submit }
-              onClick={ () => openAnnotator(file.id) }>
-        <IonIcon icon={ chevronForwardOutline } color='primary' slot='icon-only'/>
-      </Button>
-    </TableContent>
-    <TableDivider/>
-  </Fragment>
 }

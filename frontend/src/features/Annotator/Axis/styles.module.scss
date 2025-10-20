@@ -1,0 +1,12 @@
+
+.xAxis {
+  grid-area: x;
+}
+
+.yAxis {
+  grid-area: y;
+  position: sticky;
+  left: 0;
+  background-color: #fff;
+  z-index: 1;
+}

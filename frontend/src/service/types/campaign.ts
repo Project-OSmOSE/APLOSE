@@ -1,6 +1,7 @@
-import { User } from "./user.ts";
-import { Colormap } from '@/service/ui/color.ts';
-import { Dataset, DatasetFile } from "./data.ts";
+import { User } from './user';
+import { Colormap } from '@/features/Colormap';
+import { Dataset, DatasetFile } from './data';
+import { ID } from '@/service/type';
 
 export type AnnotationCampaignUsage = 'Create' | 'Check';
 export type Phase = 'Annotation' | 'Verification';
@@ -87,7 +88,7 @@ export interface AnnotationFileRange {
   first_file_index: number;
   last_file_index: number;
   files_count: number; // read only
-  annotator: number; // pk
+  annotator: ID; // pk
   annotation_campaign_phase: number; // pk - read only
 
   finished_tasks_count: number; // read only

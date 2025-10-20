@@ -1,0 +1,12 @@
+query listDetectors {
+    allDetectors {
+        results {
+            id
+            name
+            configurations {
+                id
+                configuration
+            }
+        }
+    }
+}

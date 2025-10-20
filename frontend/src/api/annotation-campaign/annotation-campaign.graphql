@@ -1,0 +1,196 @@
+query listCampaignsAndPhases(
+    $isArchived: Boolean
+    $phase: AnnotationPhaseType
+    $ownerID: ID
+    $annotatorID: ID
+    $search: String
+) {
+    allAnnotationCampaigns(
+        isArchived: $isArchived
+        phases_Phase: $phase
+        ownerId: $ownerID
+        phases_AnnotationFileRanges_AnnotatorId: $annotatorID
+        search: $search
+    ) {
+        results {
+            id
+            name
+            datasetName
+            deadline
+            isArchived
+        }
+    }
+    allAnnotationPhases(
+        isCampaignArchived: $isArchived
+        phase: $phase
+        annotationCampaign_OwnerId: $ownerID
+        annotationFileRanges_AnnotatorId: $annotatorID
+        search: $search
+    ) {
+        results {
+            id
+            phase
+            userTasksCount
+            userCompletedTasksCount
+            tasksCount
+            completedTasksCount
+            annotationCampaignId
+        }
+    }
+}
+
+query getCampaign($id: ID!) {
+    annotationCampaignById(id: $id) {
+        id
+        name
+        createdAt
+        instructionsUrl
+        deadline
+        isArchived
+        canManage
+        allowPointAnnotation
+        allowColormapTuning
+        allowImageTuning
+        colormapDefault
+        colormapInvertedDefault
+        dataset {
+            id
+            name
+        }
+        labelsWithAcousticFeatures {
+            name
+        }
+        owner {
+            id
+            displayName
+            email
+        }
+        description
+        archive {
+            date
+            byUser {
+                displayName
+            }
+        }
+        filesCount
+        confidenceSet {
+            name
+            desc
+            confidenceIndicators {
+                label
+            }
+        }
+        labelSet {
+            name
+            description
+            labels {
+                name
+            }
+        }
+        detectors {
+            id
+            name
+        }
+        annotators {
+            id
+            displayName
+        }
+        analysis {
+            edges {
+                node {
+                    id
+                    colormap {
+                        name
+                    }
+                    fft {
+                        nfft
+                        windowSize
+                        overlap
+                        samplingFrequency
+                    }
+                    legacyConfiguration {
+                        scaleName
+                        zoomLevel
+                        linearFrequencyScale {
+                            ratio
+                            minValue
+                            maxValue
+                        }
+                        multiLinearFrequencyScale {
+                            innerScales {
+                                ratio
+                                minValue
+                                maxValue
+                            }
+                        }
+                    }
+                    legacy
+                }
+            }
+        }
+    }
+    allAnnotationPhases(annotationCampaignId: $id) {
+        results {
+            id
+            phase
+            completedTasksCount
+            tasksCount
+            isOpen
+        }
+    }
+}
+
+mutation createAnnotationCampaign(
+    $name: String!
+    $description: String
+    $instructionsUrl: String
+    $deadline: Date
+    $allowImageTuning: Boolean
+    $allowColormapTuning: Boolean
+    $colormapDefault: String
+    $colormapInvertedDefault: Boolean
+    $datasetID: ID!
+    $analysisIDs: [ID]!
+) {
+    createAnnotationCampaign(input: {
+        name: $name
+        description: $description
+        instructionsUrl: $instructionsUrl
+        deadline: $deadline
+        allowImageTuning: $allowImageTuning
+        allowColormapTuning: $allowColormapTuning
+        colormapDefault: $colormapDefault
+        colormapInvertedDefault: $colormapInvertedDefault
+        dataset: $datasetID
+        analysis: $analysisIDs
+    }) {
+        annotationCampaign {
+            id
+        }
+        errors {
+            field
+            messages
+        }
+    }
+}
+
+mutation archiveAnnotationCampaign($id: ID!) {
+    archiveAnnotationCampaign(id: $id) {
+        ok
+    }
+}
+
+mutation updateAnnotationCampaignFeaturedLabels(
+    $id: ID!
+    $labelsWithAcousticFeatures: [ID]!
+) {
+    updateAnnotationCampaign(input: {
+        id: $id
+        labelsWithAcousticFeatures: $labelsWithAcousticFeatures
+    }) {
+        errors {
+            field
+            messages
+        }
+    }
+}
