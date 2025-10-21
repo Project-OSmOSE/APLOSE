@@ -4,7 +4,6 @@ import { API_URL } from '../const';
 import {
   ANNOTATOR_GROUP,
   AUDIO_METADATA,
-  AUTH,
   CAMPAIGN,
   CAMPAIGN_PHASE,
   CHECK_DATA,
@@ -15,7 +14,6 @@ import {
   LABEL,
   SPECTROGRAM_CONFIGURATION,
   USERS,
-  UserType,
 } from '../../fixtures';
 import { Paginated } from '../../../src/service/type';
 import { AnnotationCampaign, AnnotationFile, Phase } from '../../../src/service/types';
@@ -34,20 +32,9 @@ export class Mock {
     return `Custom error for ${ field }`;
   }
 
-  public async token(response: Response = { status: 200, json: { detail: AUTH.token } }) {
-    await this.page.route(API_URL.token, route => route.fulfill(response))
-  }
-
   public async users(empty: boolean = false) {
     const json = empty ? [] : [ USERS.annotator, USERS.creator, USERS.staff, USERS.superuser ]
     await this.page.route(API_URL.user.list, route => route.fulfill({ status: 200, json }))
-  }
-
-  public async userSelf(type: UserType | null) {
-    if (type === null)
-      await this.page.route(API_URL.user.self, route => route.fulfill({ status: 401 }))
-    else
-      await this.page.route(API_URL.user.self, route => route.fulfill({ status: 200, json: USERS[type] }))
   }
 
   public async campaigns(empty: boolean = false) {

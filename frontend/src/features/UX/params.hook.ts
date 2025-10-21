@@ -32,21 +32,17 @@ export const useQueryParams = <T extends QueryParams>(
   }, [])
 
   const updateParams = useCallback((newParams: Partial<T>) => {
+    const params = new URLSearchParams(window.location.search)
     for (const [ key, value ] of Object.entries(newParams)) {
-      if (value !== undefined) searchParams.set(key, value);
-      else searchParams.delete(key);
+      if (value !== undefined) params.set(key, value);
+      else params.delete(key);
     }
-    setSearchParams(searchParams)
-    dispatch(update(toJSON(searchParams)))
-  }, [ setSearchParams, searchParams, update ])
+    setSearchParams(params)
+  }, [ setSearchParams ])
 
   const clearParams = useCallback(() => {
-    for (const key of searchParams.keys()) {
-      searchParams.delete(key);
-    }
-    setSearchParams(searchParams)
-    dispatch(update(toJSON(searchParams)))
-  }, [ setSearchParams, searchParams ])
+    setSearchParams(new URLSearchParams())
+  }, [ setSearchParams ])
 
   return { params, updateParams, clearParams }
 }

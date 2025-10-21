@@ -28,24 +28,26 @@ export const AnnotationCampaignListFilterActionBar: React.FC = () => {
 const AnnotationCampaignArchiveFilter: React.FC = () => {
   const { params, updateParams } = useAllCampaignsFilters()
 
+  const exists = useMemo(() => params.isArchived !== undefined && params.isArchived !== null, [ params.isArchived ])
+
   const toggle = useCallback(() => {
     switch (params.isArchived) {
-      case undefined:
-        updateParams({ isArchived: false })
-        break;
       case false:
         updateParams({ isArchived: true })
         break;
       case true:
-        updateParams({ isArchived: undefined })
+        updateParams({ isArchived: null })
+        break;
+      default: // undefined | null
+        updateParams({ isArchived: false })
         break;
     }
-  }, [ params ])
+  }, [ params.isArchived ])
 
-  return <IonChip outline={ params.isArchived === undefined }
+  return <IonChip outline={ !exists }
                   onClick={ toggle }
-                  color={ params.isArchived !== undefined ? 'primary' : 'medium' }>
-    Archived{ params.isArchived !== undefined && `: ${ params.isArchived ? 'True' : 'False' }` }
+                  color={ exists ? 'primary' : 'medium' }>
+    Archived{ exists && `: ${ params.isArchived ? 'True' : 'False' }` }
     { params.isArchived === false && <IonIcon icon={ swapHorizontal }/> }
     { params.isArchived === true && <IonIcon icon={ closeCircle }/> }
   </IonChip>
@@ -56,8 +58,9 @@ const AnnotationCampaignAnnotatorFilter: React.FC = () => {
   const { user } = useCurrentUser();
 
   const toggle = useCallback(() => {
+    console.log('toggle annotator', params.annotatorID)
     if (params.annotatorID) {
-      updateParams({ annotatorID: undefined })
+      updateParams({ annotatorID: null })
     } else {
       updateParams({ annotatorID: user?.id })
     }
@@ -76,7 +79,7 @@ const AnnotationCampaignPhaseTypeFilter: React.FC = () => {
 
   const toggle = useCallback(() => {
     if (!params.phase) updateParams({ phase: AnnotationPhaseType.Verification })
-    else updateParams({ phase: undefined })
+    else updateParams({ phase: null })
   }, [ params ])
 
   return <IonChip outline={ !params.phase }
@@ -93,7 +96,7 @@ const AnnotationCampaignOwnerFilter: React.FC = () => {
 
   const toggle = useCallback(() => {
     if (params.ownerID) {
-      updateParams({ ownerID: undefined })
+      updateParams({ ownerID: null })
     } else {
       updateParams({ ownerID: user?.id })
     }
@@ -116,11 +119,11 @@ const AnnotationCampaignResetFiltersButton: React.FC = () => {
   }, [ params ]);
   const resetFilters = useCallback(() => {
     updateParams({
-      search: undefined,
+      search: null,
       isArchived: false,
-      phase: undefined,
+      phase: null,
       annotatorID: user?.id,
-      ownerID: undefined,
+      ownerID: null,
     })
   }, [ params, user ])
 
