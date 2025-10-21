@@ -3,7 +3,7 @@ import { Mock, Modal, UI } from '../services';
 import { UserType } from '../../fixtures';
 import { CampaignListPage } from './campaign-list';
 import { Phase } from '../../../src/service/types';
-import { interceptGQL } from '../mock';
+import { interceptRequests } from '../mock';
 
 type LabelModalExtend = {
   getCheckbox: (text: string) => Locator;
@@ -68,7 +68,7 @@ export class CampaignDetailPage {
 
       await this.mock.fileRangesFiles(options?.empty)
       await this.list.card.click();
-      await interceptGQL(this.page, {
+      await interceptRequests(this.page, {
         listSpectrogramAnalysis: options?.empty ? 'empty' : 'filled',
       })
     });

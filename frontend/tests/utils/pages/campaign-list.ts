@@ -1,8 +1,6 @@
-import { Locator, Page, test } from '@playwright/test';
-import { UserType } from '../../fixtures';
+import { expect, type Locator, type Page, test } from '@playwright/test';
 import { LoginPage } from './login';
-import { interceptGQL, MockType } from '../mock';
-import { expect } from '../index';
+import { interceptRequests, type MockType, type UserType } from '../mock';
 
 export class CampaignListPage {
 
@@ -18,9 +16,12 @@ export class CampaignListPage {
               private login = new LoginPage(page)) {
   }
 
-  async go(as: UserType, type: MockType = 'filled') {
+  async go(
+    as: UserType,
+    type: MockType = 'filled',
+  ) {
     await test.step('Navigate to Campaigns', async () => {
-      await interceptGQL(this.page, {
+      await interceptRequests(this.page, {
         listCampaignsAndPhases: type,
       })
       await this.login.login(as)

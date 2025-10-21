@@ -1,5 +1,6 @@
-import type { GqlQuery } from './types';
-import type { AnnotationCampaignNode, GetCampaignQuery, ListCampaignsAndPhasesQuery } from '../../../src/api';
+import type { GqlQuery } from './_types';
+import type { AnnotationCampaignNode } from '../../../src/api/types.gql-generated';
+import type { GetCampaignQuery, ListCampaignsAndPhasesQuery } from '../../../src/api/annotation-campaign';
 import { dataset } from './dataset';
 import { phase } from './phase';
 import { USERS } from './user';
@@ -54,7 +55,7 @@ export const CAMPAIGN_QUERIES: {
         results: [
           {
             id: phase.id,
-            annotationCampaignId: phase.annotationCampaignId,
+            annotationCampaignId: campaign.id,
             phase: phase.phase,
             completedTasksCount: phase.completedTasksCount,
             tasksCount: phase.tasksCount,

@@ -1,12 +1,12 @@
 import type {
   CampaignNode,
   DeploymentNode,
-  ListChannelConfigurationsQuery,
   Maybe,
   ProjectNodeOverride,
   SiteNode,
-} from '../../../src/api';
-import type { GqlQuery } from './types';
+} from '../../../src/api/types.gql-generated';
+import type { ListChannelConfigurationsQuery } from '../../../src/api/channel-configuration';
+import type { GqlQuery } from './_types';
 
 export type Deployment = Pick<DeploymentNode, 'name'> & {
   campaign?: Maybe<Pick<CampaignNode, 'name'>>;

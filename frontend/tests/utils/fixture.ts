@@ -1,18 +1,18 @@
 import { type Page as PageBase, test as testBase } from '@playwright/test';
+import { Route } from 'playwright-core';
+import { Mock } from './services';
 import {
   AnnotatorPage,
   CampaignCreatePage,
   CampaignDetailPage,
   CampaignEditPage,
+  CampaignImportAnnotationsPage,
   CampaignListPage,
+  DatasetDetailPage,
   DatasetPage,
   HomePage,
   LoginPage,
 } from './pages';
-import { Mock } from './services';
-import { CampaignImportAnnotationsPage } from './pages/campaign-import-annotations';
-import { Route } from 'playwright-core';
-import { DatasetDetailPage } from './pages/dataset-detail';
 
 interface PageExtension {
   readonly mock: Mock;
@@ -73,5 +73,3 @@ export const test = testBase.extend<Fixture>({
     await use(Object.assign(page, extension))
   },
 });
-
-

@@ -1,46 +1,14 @@
-import { DATASET_QUERIES, type DatasetMutations } from './dataset';
-import { EMPTY_MUTATION, type EmptyMutation, type MockType } from './types';
-import { Page, Route } from 'playwright-core';
-import { CAMPAIGN_QUERIES, type CampaignMutations } from './campaign';
-import { ANALYSIS_QUERIES, type AnalysisMutations } from './spectrogramAnalysis';
-import { CHANNEL_CONFIGURATION_QUERIES } from './channelConfiguration';
+import { Page, type Route } from 'playwright-core';
+import { GQL_MOCK, type GqlOperations } from './_gql';
+import { REST_MOCK, type RestOperations } from './_rest';
 
-export * from './types'
+export * from './_types'
+export * from './user'
 
-// TODO: fill Queries type
-type Queries =
-  typeof DATASET_QUERIES
-  & typeof CAMPAIGN_QUERIES
-  & typeof ANALYSIS_QUERIES
-  & typeof CHANNEL_CONFIGURATION_QUERIES
-export type Query = keyof Queries
 
-const MOCK_QUERIES: Queries = {
-  ...DATASET_QUERIES,
-  ...CAMPAIGN_QUERIES,
-  ...ANALYSIS_QUERIES,
-  ...CHANNEL_CONFIGURATION_QUERIES,
-  // TODO: add queries
-}
+type Operations = GqlOperations | RestOperations;
 
-// TODO: fill Mutation type
-export type Mutation = DatasetMutations | CampaignMutations | AnalysisMutations
-const MOCK_MUTATIONS: {
-  [key in Mutation]: EmptyMutation
-} = {
-  importDataset: EMPTY_MUTATION,
-  importSpectrogramAnalysis: EMPTY_MUTATION,
-  createAnnotationCampaign: EMPTY_MUTATION,
-  archiveAnnotationCampaign: EMPTY_MUTATION,
-  updateAnnotationCampaignFeaturedLabels: EMPTY_MUTATION,
-  // TODO: add missing mutations
-}
-
-export const MOCK = { ...MOCK_QUERIES, ...MOCK_MUTATIONS }
-
-type Operations = { [key in Query | Mutation]?: MockType }
-
-export async function interceptGQL(
+export async function interceptRequests(
   page: Page,
   operations: Operations,
 ): Promise<Record<string, unknown>[]> {
@@ -52,7 +20,11 @@ export async function interceptGQL(
     const req = route.request().postDataJSON();
 
     if (!Object.keys(operations).includes(req.operationName)) {
-      return route.fallback();
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ data: GQL_MOCK[req.operationName].filled }),
+      });
     }
 
     // Store what variables we called the API with.
@@ -61,9 +33,14 @@ export async function interceptGQL(
     return route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ data: MOCK[req.operationName][operations[req.operationName]] }),
+      body: JSON.stringify({ data: GQL_MOCK[req.operationName][operations[req.operationName]] }),
     });
   });
+
+  for (const [ key, _mock ] of Object.entries(REST_MOCK)) {
+    const mock = key in Object.keys(operations) ? _mock[operations[key]] : _mock.filled;
+    page.route(mock.url, route => route.fulfill(mock));
+  }
 
   return reqs;
 }

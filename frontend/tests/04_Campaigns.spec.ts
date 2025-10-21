@@ -1,6 +1,6 @@
 import { ESSENTIAL, expect, test } from './utils';
 import { AnnotationPhaseType } from '../src/api';
-import { interceptGQL } from './utils/mock';
+import { interceptRequests } from './utils/mock';
 
 
 test.describe('Annotator', () => {
@@ -25,7 +25,7 @@ test.describe('Annotator', () => {
   test('Can filter campaigns', async ({ page }) => {
     await page.campaign.list.go('annotator');
     await expect(page.getByText('Archived: False')).toBeVisible() // Filters are initialized
-    await interceptGQL(page, {
+    await interceptRequests(page, {
       listCampaignsAndPhases: 'filled',
     })
 

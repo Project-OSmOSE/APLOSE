@@ -1,12 +1,10 @@
-import { type AnnotationPhaseNode, AnnotationPhaseType } from '../../../src/api';
-import { campaign } from './campaign';
+import { type AnnotationPhaseNode, AnnotationPhaseType } from '../../../src/api/types.gql-generated';
 
 export type Phase =
-  Omit<AnnotationPhaseNode, 'annotationComments' | 'annotationFileRanges' | 'createdBy' | 'annotationTasks' | 'annotations' | 'annotationCampaign' | 'endedBy'>
+  Omit<AnnotationPhaseNode, 'annotationComments' | 'annotationFileRanges' | 'createdBy' | 'annotationTasks' | 'annotations' | 'annotationCampaign' | 'endedBy' | 'annotationCampaignId'>
 
 export const phase: Phase = {
   id: '1',
-  annotationCampaignId: campaign.id,
   phase: AnnotationPhaseType.Annotation,
   completedTasksCount: 50,
   tasksCount: 100,

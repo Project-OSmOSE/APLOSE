@@ -1,11 +1,11 @@
-import type { GqlQuery } from './types';
+import type { GqlQuery } from './_types';
 import type {
-  DatasetNode,
   GetDatasetByIdQuery,
   ListAvailableDatasetsForImportQuery,
   ListDatasetsAndAnalysisQuery,
   ListDatasetsQuery,
-} from '../../../src/api';
+} from '../../../src/api/dataset';
+import type { DatasetNode } from '../../../src/api/types.gql-generated';
 import type { Colormap } from '../../../src/features/Colormap';
 import { USERS } from './user';
 

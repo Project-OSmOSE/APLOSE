@@ -2,7 +2,7 @@ import { Page, test } from '@playwright/test';
 import { Modal, UI } from '../services';
 import { UserType } from '../../fixtures';
 import { CampaignListPage } from './campaign-list';
-import { interceptGQL, MockType } from '../mock';
+import { interceptRequests, MockType } from '../mock';
 import { expect } from '../index';
 
 export class DatasetPage {
@@ -14,7 +14,7 @@ export class DatasetPage {
 
   async go(as: UserType, type: MockType = 'filled') {
     await test.step('Navigate to Datasets', async () => {
-      await interceptGQL(this.page, {
+      await interceptRequests(this.page, {
         listDatasets: type,
       })
       await this.campaignList.go(as);
@@ -27,7 +27,7 @@ export class DatasetPage {
   }
 
   async openImportModal(type: MockType = 'filled'): Promise<DatasetImportModal> {
-    await interceptGQL(this.page, {
+    await interceptRequests(this.page, {
       listAvailableDatasetsForImport: type,
     })
     return DatasetImportModal.get(this)
@@ -57,12 +57,12 @@ export class DatasetImportModal {
   }
 
   public async importDataset() {
-    await interceptGQL(this.modal.page(), { importDataset: 'empty' })
+    await interceptRequests(this.modal.page(), { importDataset: 'empty' })
     await this.modal.locator('.download-dataset').first().click()
   }
 
   public async importAnalysis() {
-    await interceptGQL(this.modal.page(), { importDataset: 'empty' })
+    await interceptRequests(this.modal.page(), { importDataset: 'empty' })
     await this.modal.locator('.download-analysis').first().click()
   }
 }

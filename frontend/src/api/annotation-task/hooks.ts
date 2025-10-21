@@ -9,7 +9,7 @@ import {
   useCurrentUser,
 } from '@/api';
 import { AllAnnotationTaskFilterSlice, AllTasksFilters, selectAllTaskFilters } from './all-tasks-filters';
-import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
+import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
 import { gqlAPI } from '@/api/baseGqlApi';
 import { useAppDispatch } from '@/features/App';
 import { useNavParams, useQueryParams } from '@/features/UX';

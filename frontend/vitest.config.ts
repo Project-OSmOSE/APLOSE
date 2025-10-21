@@ -12,4 +12,11 @@ export default defineConfig({
       { find: '@', replacement: resolve(__dirname, './src') },
     ],
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler', // or "modern"
+      },
+    },
+  },
 })

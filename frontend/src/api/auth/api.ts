@@ -1,5 +1,6 @@
-import { Token } from '@/features/Auth';
 import { restAPI } from '../baseRestApi';
+
+export type Token = string | undefined;
 
 type LoginResponse = { access: Token, refresh: Token }
 

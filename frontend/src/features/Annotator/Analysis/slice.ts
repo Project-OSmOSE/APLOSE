@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
+import type { GetCampaignQueryVariables } from '@/api';
 import { ColormapNode, getCampaignFulfilled, type GetCampaignQuery, SpectrogramAnalysisNode } from '@/api';
-import type { GetCampaignQueryVariables } from '@/api/annotation-campaign/annotation-campaign.generated';
 
 export type Analysis = Pick<SpectrogramAnalysisNode, 'id'> & {
   colormap: Pick<ColormapNode, 'name'>;

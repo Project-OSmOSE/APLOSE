@@ -3,6 +3,7 @@ import { API_URL } from '../const';
 import { Mock } from '../services';
 import { AUTH, UserType } from '../../fixtures';
 import { HomePage } from './home';
+import { interceptRequests } from '../mock';
 
 export class LoginPage {
 
@@ -41,7 +42,7 @@ export class LoginPage {
 
   async login(as: UserType) {
     await this.go()
-    // await interceptGQL(this.page, {}, as) // TODO: Intercept getCurrentUser
+    await interceptRequests(this.page, { getCurrentUser: as })
     await this.fillForm()
     await this.submit({ status: 200, submitAction: 'button' })
   }

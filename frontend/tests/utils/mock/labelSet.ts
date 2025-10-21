@@ -1,4 +1,4 @@
-import { type AnnotationLabelNode, type LabelSetNode, type Maybe } from '../../../src/api';
+import { type AnnotationLabelNode, type LabelSetNode, type Maybe } from '../../../src/api/types.gql-generated';
 
 export type Label = Omit<AnnotationLabelNode, 'metadataxLabel' | 'annotationSet' | 'annotationcampaignSet' | 'labelsetSet'>
 export const LABELS: { [key in 'classic' | 'featured']: Label } = {

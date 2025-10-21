@@ -1,9 +1,9 @@
 import type {
   ListAvailableSpectrogramAnalysisForImportQuery,
   ListSpectrogramAnalysisQuery,
-  SpectrogramAnalysisNode,
-} from '../../../src/api';
-import type { GqlQuery } from './types';
+} from '../../../src/api/spectrogram-analysis';
+import type { SpectrogramAnalysisNode } from '../../../src/api/types.gql-generated';
+import type { GqlQuery } from './_types';
 import { fft } from './fft';
 import { dataset } from './dataset';
 

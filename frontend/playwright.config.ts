@@ -93,5 +93,7 @@ export default defineConfig({
     command: 'npx vite',
     url: 'http://localhost:5173/app/',
     reuseExistingServer: !process.env.CI,
+    stderr: 'pipe',
+    stdout: 'pipe',
   },
 });
