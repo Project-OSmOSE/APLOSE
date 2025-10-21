@@ -1,5 +1,6 @@
 import { ESSENTIAL, expect, test } from './utils';
 import { UserType } from './fixtures';
+import { interceptRequests } from './utils/mock';
 
 // Utils
 
@@ -35,23 +36,26 @@ const TEST = {
 
       // TODO: intercept import mutation and check content
       await Promise.all([
-        page.waitForRequest("**/graphql"),
-        await modal.importDataset()
+        page.waitForRequest('**/graphql'),
+        await modal.importDataset(),
       ])
     })
   },
   manageAnalysisImport: (as: UserType) => {
     return test('Should manage import of an analysis', async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+      })
       await page.dataset.list.go(as);
       const modal = await page.dataset.list.openImportModal()
 
       // TODO: intercept import mutation and check content
       await Promise.all([
-        page.waitForRequest("**/graphql"),
-        await modal.importAnalysis()
+        page.waitForRequest('**/graphql'),
+        await modal.importAnalysis(),
       ])
     })
-  }
+  },
 }
 
 

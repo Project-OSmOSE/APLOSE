@@ -5,29 +5,39 @@ import { interceptRequests } from './utils/mock';
 
 test.describe('Annotator', () => {
   test('Handle empty states', ESSENTIAL, async ({ page }) => {
-    await page.campaign.list.go('annotator', 'empty');
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+      listCampaignsAndPhases: 'empty',
+    })
+    await page.campaign.list.go('annotator');
     await expect(page.campaign.list.card).not.toBeVisible();
     await expect(page.getByText('No campaigns')).toBeVisible();
   })
 
   test('Can see campaigns and access first', ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.list.go('annotator');
     await page.campaign.list.card.click()
     await page.waitForURL(`/app/annotation-campaign/1/phase/Annotation`)
   })
 
   test('Can access campaign creation', ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.list.go('annotator');
     await page.campaign.list.createButton.click()
     await page.waitForURL(`/app/annotation-campaign/new`)
   })
 
   test('Can filter campaigns', async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.list.go('annotator');
     await expect(page.getByText('Archived: False')).toBeVisible() // Filters are initialized
-    await interceptRequests(page, {
-      listCampaignsAndPhases: 'filled',
-    })
 
     await test.step('Search', async () => {
       await page.mock.campaigns()

@@ -1,8 +1,9 @@
 import { API_URL, ESSENTIAL, expect, expectNoRequestsOnAction, test } from './utils';
 import { CAMPAIGN } from './fixtures';
 import { Mock } from './utils/services';
-import { AnnotationCampaign } from "../src/service/types";
-import { ID } from "../src/service/type";
+import { AnnotationCampaign } from '../src/service/types';
+import { ID } from '../src/service/type';
+import { interceptRequests } from './utils/mock';
 
 type PostAnnotationCampaign = Pick<AnnotationCampaign,
   'name' | 'desc' | 'instructions_url' | 'deadline' |
@@ -15,13 +16,16 @@ type PostAnnotationCampaign = Pick<AnnotationCampaign,
 test.describe('Annotator', () => {
 
   test('Can submit only required fields', ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.create.go('annotator');
     await page.campaign.create.fillGlobal()
     await page.campaign.create.fillData()
 
     const [ request ] = await Promise.all([
       page.waitForRequest(API_URL.campaign.create),
-      page.campaign.create.createButton.click()
+      page.campaign.create.createButton.click(),
     ]);
 
     await test.step('Check campaign', async () => {
@@ -45,13 +49,16 @@ test.describe('Annotator', () => {
   })
 
   test('Can submit complete form', ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.create.go('annotator');
     await page.campaign.create.fillGlobal({ complete: true });
     await page.campaign.create.fillData();
     await page.campaign.create.fillColormap();
-    const [ campaignRequest, ] = await Promise.all([
+    const [ campaignRequest ] = await Promise.all([
       page.waitForRequest(API_URL.campaign.create),
-      page.campaign.create.createButton.click()
+      page.campaign.create.createButton.click(),
     ]);
 
     await test.step('Check campaign', async () => {
@@ -73,13 +80,16 @@ test.describe('Annotator', () => {
   })
 
   test('Handle errors', ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.create.go('annotator', { withErrors: true });
     await page.campaign.create.fillGlobal()
     await page.campaign.create.fillData()
 
     await Promise.all([
       page.waitForRequest(API_URL.campaign.create),
-      await page.campaign.create.createButton.click()
+      await page.campaign.create.createButton.click(),
     ]);
 
     await test.step('Check errors are shown', async () => {
@@ -92,6 +102,9 @@ test.describe('Annotator', () => {
   });
 
   test('Empty', async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.create.go('annotator', { empty: true });
 
     await test.step('Cannot select a dataset if none is imported', async () => {
@@ -103,7 +116,7 @@ test.describe('Annotator', () => {
       await expectNoRequestsOnAction(
         page,
         () => page.campaign.create.createButton.click(),
-        API_URL.campaign.create
+        API_URL.campaign.create,
       )
     })
   })

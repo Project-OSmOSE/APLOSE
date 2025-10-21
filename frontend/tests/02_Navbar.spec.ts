@@ -9,9 +9,6 @@ const STEP = {
     expect(url).toEqual(URL.admin)
   }),
   canAccessDataset: (page: Page) => test.step('Can access datasets', async () => {
-    interceptRequests(page, {
-      listDatasets: 'filled',
-    })
     await page.getByRole('button', { name: 'Datasets' }).click()
     await expect(page.getByRole('heading', { name: 'Datasets' })).toBeVisible();
   }),
@@ -20,6 +17,9 @@ const STEP = {
 // Tests
 
 test('Annotator', ESSENTIAL, async ({ page }) => {
+  await interceptRequests(page, {
+    getCurrentUser: 'annotator',
+  })
   await page.campaign.list.go('annotator');
 
   await test.step('can access campaign', async () => {
@@ -52,12 +52,18 @@ test('Annotator', ESSENTIAL, async ({ page }) => {
 })
 
 test('Staff', ESSENTIAL, async ({ page }) => {
+  await interceptRequests(page, {
+    getCurrentUser: 'staff',
+  })
   await page.campaign.list.go('staff');
   await STEP.hasAdminLink(page);
   await STEP.canAccessDataset(page)
 })
 
 test('Superuser', ESSENTIAL, async ({ page }) => {
+  await interceptRequests(page, {
+    getCurrentUser: 'superuser',
+  })
   await page.campaign.list.go('superuser');
   await STEP.hasAdminLink(page);
   await STEP.canAccessDataset(page)
