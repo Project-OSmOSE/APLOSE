@@ -1,6 +1,7 @@
 import { API_URL, ESSENTIAL, expect, test } from './utils';
 import { ANNOTATOR_GROUP, CAMPAIGN, FILE_RANGE, USERS } from './fixtures';
-import { AnnotationFileRange } from "../src/service/types";
+import { AnnotationFileRange } from '../src/service/types';
+import { interceptRequests } from './utils/mock';
 
 export type PostAnnotationFileRange = Pick<AnnotationFileRange, 'id' | 'annotator'> &
   Partial<Pick<AnnotationFileRange, 'first_file_index' | 'last_file_index'>>
@@ -8,12 +9,22 @@ export type PostAnnotationFileRange = Pick<AnnotationFileRange, 'id' | 'annotato
 test.describe('Campaign creator', () => {
 
   test('Empty', async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'creator',
+      getCampaign: 'empty',
+      listSpectrogramAnalysis: 'empty',
+      getAnnotationPhase: 'empty',
+      listAnnotationTask: 'empty',
+    })
     await page.campaign.edit.go('creator', { empty: true });
     await expect(page.getByPlaceholder('Search annotator').locator('input')).toBeVisible()
     await expect(page.locator('.table-aplose')).not.toBeVisible()
   })
 
   test('Manage annotators', ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'creator',
+    })
     await page.campaign.edit.go('creator');
 
     await test.step('Can see existing ranges', async () => {
@@ -43,8 +54,8 @@ test.describe('Campaign creator', () => {
     })
 
     await test.step('Can edit or remove annotator without finished tasks', async () => {
-      await page.campaign.edit.firstIndexInputs.nth(1).fill("5")
-      await page.campaign.edit.lastIndexInputs.nth(1).fill("15")
+      await page.campaign.edit.firstIndexInputs.nth(1).fill('5')
+      await page.campaign.edit.lastIndexInputs.nth(1).fill('15')
       const button = page.locator('.table-content button').last()
       await expect(button).toBeEnabled()
     })
@@ -71,7 +82,7 @@ test.describe('Campaign creator', () => {
     await test.step('Can submit', async () => {
       const [ request ] = await Promise.all([
         page.waitForRequest(API_URL.fileRanges.post),
-        page.getByRole('button', { name: 'Update annotators' }).click()
+        page.getByRole('button', { name: 'Update annotators' }).click(),
       ])
       const expectedData: Array<Omit<PostAnnotationFileRange, 'id'> & Partial<PostAnnotationFileRange>> = [ {
         id: FILE_RANGE.range.id,
@@ -79,17 +90,17 @@ test.describe('Campaign creator', () => {
         first_file_index: FILE_RANGE.range.first_file_index,
         last_file_index: FILE_RANGE.range.last_file_index,
       }, {
-        "annotator": USERS.superuser.id,
-        "first_file_index": 4,
-        "last_file_index": 14
+        'annotator': USERS.superuser.id,
+        'first_file_index': 4,
+        'last_file_index': 14,
       }, {
-        "annotator": USERS.superuser.id,
-        "first_file_index": 0,
-        "last_file_index": CAMPAIGN.files_count - 1
+        'annotator': USERS.superuser.id,
+        'first_file_index': 0,
+        'last_file_index': CAMPAIGN.files_count - 1,
       }, {
-        "annotator": USERS.staff.id,
-        "first_file_index": 0,
-        "last_file_index": CAMPAIGN.files_count - 1
+        'annotator': USERS.staff.id,
+        'first_file_index': 0,
+        'last_file_index': CAMPAIGN.files_count - 1,
       } ]
       expect(await request.postDataJSON()).toEqual({ data: expectedData })
     })

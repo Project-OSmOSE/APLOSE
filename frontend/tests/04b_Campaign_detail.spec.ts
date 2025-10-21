@@ -1,10 +1,17 @@
-import { API_URL, ESSENTIAL, expect, Page, Request, test } from './utils';
-import { CAMPAIGN, CAMPAIGN_PHASE, CONFIDENCE, LABEL, USERS } from './fixtures';
+import { AnnotationPhaseType } from '../src/api/types.gql-generated';
+import { ESSENTIAL, expect, Page, Request, test } from './utils';
 import { LabelModal } from './utils/pages';
-
-import { dateToString } from "../src/service/function";
-import { ID, Optionable } from "../src/service/type";
-import { AnnotationCampaign } from "../src/service/types";
+import { dateToString } from '../src/service/function';
+import { ID, Optionable } from '../src/service/type';
+import { AnnotationCampaign } from '../src/service/types';
+import { gqlURL, interceptRequests, USERS } from './utils/mock';
+import { campaign } from './utils/mock/campaign';
+import { phase } from './utils/mock/phase';
+import { LABELS, labelSet } from './utils/mock/labelSet';
+import { confidenceSet } from './utils/mock/confidenceSet';
+import { spectrogramAnalysis } from './utils/mock/spectrogramAnalysis';
+import { dataset } from './utils/mock/dataset';
+import type { GqlMutation } from './utils/mock/_gql';
 
 type PatchAnnotationCampaign = Optionable<Pick<AnnotationCampaign,
   'labels_with_acoustic_features' | 'label_set' | 'confidence_set' | 'allow_point_annotation'
@@ -18,7 +25,6 @@ const STEP = {
     await expect(modal.getByText(label)).toBeVisible()
     await expect(modal.getCheckbox(label)).toHaveAttribute('checked', state ? 'true' : 'false');
   }),
-
   accessArchive: (page: Page) => test.step('Access archive', () => expect(page.campaign.detail.archiveButton).toBeEnabled()),
   accessLabelUpdate: (page: Page) => test.step('Access label set update', async () => {
     const modal = await page.campaign.detail.openLabelModal();
@@ -32,17 +38,20 @@ const STEP = {
 test.describe('Annotator', () => {
 
   test('Global', async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.detail.go('annotator');
     await page.getByRole('button', { name: 'Information' }).click();
-    await expect(page.getByRole('heading', { name: CAMPAIGN.name })).toBeVisible();
-    await expect(page.getByText(`Created on ${ dateToString(CAMPAIGN.created_at) } by ${ CAMPAIGN.owner.display_name }`)).toBeVisible();
-    await expect(page.getByText(CAMPAIGN.desc)).toBeVisible();
-    await expect(page.getByText(dateToString(CAMPAIGN.deadline))).toBeVisible();
-    await expect(page.getByRole('button', { name: CAMPAIGN_PHASE.phase, exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: campaign.name })).toBeVisible();
+    await expect(page.getByText(`Created on ${ dateToString(campaign.createdAt) } by ${ USERS.creator.displayName }`)).toBeVisible();
+    await expect(page.getByText(campaign.description)).toBeVisible();
+    await expect(page.getByText(dateToString(campaign.deadline))).toBeVisible();
+    await expect(page.getByRole('button', { name: phase.phase, exact: true })).toBeVisible();
 
     await test.step('Can copy owner email', async () => {
       await page.locator('p').filter({ hasText: 'Created on ' }).getByRole('button').click()
-      await expect(page.getByText(`${ USERS.creator.display_name } email address`)).toBeVisible();
+      await expect(page.getByText(`${ USERS.creator.displayName } email address`)).toBeVisible();
     })
 
     await test.step('Cannot archive', async () => {
@@ -55,16 +64,19 @@ test.describe('Annotator', () => {
   })
 
   test('Label & Confidence', async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.detail.go('annotator');
     await page.getByRole('button', { name: 'Information' }).click();
     await test.step('See set names', async () => {
-      await expect(page.getByText(LABEL.set.name)).toBeVisible();
-      await expect(page.getByText(CONFIDENCE.set.name)).toBeVisible();
+      await expect(page.getByText(labelSet.name)).toBeVisible();
+      await expect(page.getByText(confidenceSet.name)).toBeVisible();
     })
 
     const modal = await page.campaign.detail.openLabelModal();
-    await STEP.checkLabelState(modal, LABEL.classic, false);
-    await STEP.checkLabelState(modal, LABEL.withFeatures, true);
+    await STEP.checkLabelState(modal, LABELS.classic.name, false);
+    await STEP.checkLabelState(modal, LABELS.featured.name, true);
 
     await test.step('Cannot update', async () => {
       await expect(modal.updateButton).not.toBeVisible();
@@ -72,15 +84,24 @@ test.describe('Annotator', () => {
   })
 
   test('Data', async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.detail.go('annotator');
     await page.getByRole('button', { name: 'Information' }).click();
-    await expect(page.getByText("Test analysis")).toBeVisible()
-    await page.getByRole("button", { name: "Test dataset" }).click()
-    await page.waitForURL(`/app/dataset/1/`)
+    await expect(page.getByText(spectrogramAnalysis.name)).toBeVisible()
+    await page.getByRole('button', { name: dataset.name }).click()
+    await page.waitForURL(`/app/dataset/${ dataset.id }/`)
   })
 
   test('Empty', ESSENTIAL, async ({ page }) => {
-    await page.campaign.detail.go('annotator', { empty: true });
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+      listSpectrogramAnalysis: 'empty',
+      getAnnotationPhase: 'empty',
+      listAnnotationTask: 'empty',
+    })
+    await page.campaign.detail.go('annotator');
     await page.getByRole('button', { name: 'Information' }).click();
     await expect(page.getByText('No spectrogram analysis')).toBeVisible();
   })
@@ -89,25 +110,36 @@ test.describe('Annotator', () => {
 test.describe('Campaign creator', () => {
 
   test('Can archive', async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'creator',
+      getCampaign: 'manager',
+    })
     await page.campaign.detail.go('creator');
     await page.getByRole('button', { name: 'Information' }).click();
     await page.campaign.detail.archiveButton.click();
     const alert = page.getByRole('dialog').first()
     await expect(alert).toBeVisible();
-    await Promise.all([
-      page.waitForRequest(API_URL.campaign.archive),
+    const [ request ] = await Promise.all([
+      page.waitForRequest(gqlURL),
       alert.getByRole('button', { name: 'Archive' }).click(),
     ])
+    const data = await request.postDataJSON();
+    expect(data.operationName).toBe('archiveAnnotationCampaign' as GqlMutation);
+    expect(data.variables.id).toEqual(campaign.id)
   })
 
   test('Can update labels with features', async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'creator',
+      getCampaign: 'manager',
+    })
     await page.campaign.detail.go('creator');
     await page.getByRole('button', { name: 'Information' }).click();
     const modal = await page.campaign.detail.openLabelModal()
 
     await test.step('Check current state', async () => {
-      await STEP.checkLabelState(modal, LABEL.classic, false);
-      await STEP.checkLabelState(modal, LABEL.withFeatures, true);
+      await STEP.checkLabelState(modal, LABELS.classic.name, false);
+      await STEP.checkLabelState(modal, LABELS.featured.name, true);
     })
 
     await test.step('Update state', async () => {
@@ -117,14 +149,14 @@ test.describe('Campaign creator', () => {
         await button.click();
       })
 
-      await modal.getCheckbox(LABEL.classic).click()
-      await modal.getCheckbox(LABEL.withFeatures).click()
+      await modal.getCheckbox(LABELS.classic.name).click()
+      await modal.getCheckbox(LABELS.featured.name).click()
 
       const request: Request = await test.step('Confirm update', async () => {
         const button = modal.getByRole('button', { name: 'Save' })
         await expect(button).toBeVisible();
         const [ request ] = await Promise.all([
-          page.waitForRequest(/\/api\/annotation-campaign\/-?\d\/?/g),
+          page.waitForRequest(gqlURL),
           button.click(),
         ])
         return request;
@@ -132,23 +164,33 @@ test.describe('Campaign creator', () => {
 
       await test.step('Check request', async () => {
         const data = await request.postDataJSON();
-        const expected: Partial<PatchAnnotationCampaign> = {
-          labels_with_acoustic_features: [ LABEL.classic ]
-        }
-        expect(data).toEqual(expected);
+        expect(data.operationName).toEqual('updateAnnotationCampaignFeaturedLabels' as GqlMutation);
+        expect(data.variables.id).toEqual(campaign.id)
+        expect(data.variables.labelsWithAcousticFeatures).toEqual([ LABELS.classic.id ])
       })
     })
   })
 
   test('Empty', ESSENTIAL, async ({ page }) => {
-    await page.campaign.detail.go('creator', { empty: true });
+    await interceptRequests(page, {
+      getCurrentUser: 'creator',
+      listSpectrogramAnalysis: 'empty',
+      getAnnotationPhase: 'empty',
+      listAnnotationTask: 'empty',
+    })
+    await page.campaign.detail.go('creator');
     await page.getByRole('button', { name: 'Information' }).click();
     await expect(page.getByText('No spectrogram analysis')).toBeVisible();
   })
 })
 
 test('Staff', async ({ page }) => {
-  await page.campaign.detail.go('staff', { phase: 'Verification' });
+  await interceptRequests(page, {
+    getCurrentUser: 'staff',
+    getAnnotationPhase: AnnotationPhaseType.Verification,
+    getCampaign: 'manager',
+  })
+  await page.campaign.detail.go('staff');
   await page.getByRole('button', { name: 'Information' }).click();
 
   await STEP.accessArchive(page)
@@ -156,7 +198,12 @@ test('Staff', async ({ page }) => {
 })
 
 test('Superuser', ESSENTIAL, async ({ page }) => {
-  await page.campaign.detail.go('superuser', { phase: 'Verification' });
+  await interceptRequests(page, {
+    getCurrentUser: 'superuser',
+    getAnnotationPhase: AnnotationPhaseType.Verification,
+    getCampaign: 'manager',
+  })
+  await page.campaign.detail.go('superuser');
   await page.getByRole('button', { name: 'Information' }).click();
 
   await STEP.accessArchive(page)

@@ -32,6 +32,7 @@ export const DATASET_QUERIES: {
   listDatasetsAndAnalysis: GqlQuery<ListDatasetsAndAnalysisQuery>,
 } = {
   listDatasets: {
+    defaultType: 'filled',
     empty: {
       allDatasets: {
         results: [],
@@ -56,6 +57,7 @@ export const DATASET_QUERIES: {
     },
   },
   getDatasetByID: {
+    defaultType: 'filled',
     empty: { datasetById: undefined },
     filled: {
       datasetById: {
@@ -74,6 +76,7 @@ export const DATASET_QUERIES: {
     },
   },
   listAvailableDatasetsForImport: {
+    defaultType: 'filled',
     empty: {
       allDatasetsAvailableForImport: [],
     },
@@ -95,6 +98,7 @@ export const DATASET_QUERIES: {
     },
   },
   listDatasetsAndAnalysis: {
+    defaultType: 'filled',
     empty: {
       allDatasets: { results: [] },
     },

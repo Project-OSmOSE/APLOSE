@@ -58,6 +58,7 @@ query getCampaign($id: ID!) {
             name
         }
         labelsWithAcousticFeatures {
+            id
             name
         }
         owner {

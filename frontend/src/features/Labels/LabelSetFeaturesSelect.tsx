@@ -46,7 +46,7 @@ export const LabelSetFeaturesSelect: React.FC<{
       { labels.map(label => <Fragment key={ label.id }>
         <TableContent isFirstColumn={ true }>{ label.name }</TableContent>
         <TableContent>
-          <IonCheckbox checked={ labelsWithAcousticFeatures.includes(label) }
+          <IonCheckbox checked={ labelsWithAcousticFeatures.some(l => l.id === label.id) }
                        disabled={ disabled || allDisabled }
                        onClick={ event => onLabelChecked(event, label) }/></TableContent>
         <TableDivider/>

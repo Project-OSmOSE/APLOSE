@@ -30,6 +30,7 @@ export const CHANNEL_CONFIGURATION_QUERIES: {
   listChannelConfigurations: GqlQuery<ListChannelConfigurationsQuery>,
 } = {
   listChannelConfigurations: {
+    defaultType: 'filled',
     empty: {
       allChannelConfigurations: null,
     },

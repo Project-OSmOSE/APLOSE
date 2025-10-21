@@ -2,8 +2,6 @@ import { Locator, Page, test } from '@playwright/test';
 import { Mock, Modal, UI } from '../services';
 import { UserType } from '../../fixtures';
 import { CampaignListPage } from './campaign-list';
-import { Phase } from '../../../src/service/types';
-import { interceptRequests } from '../mock';
 
 type LabelModalExtend = {
   getCheckbox: (text: string) => Locator;
@@ -47,30 +45,10 @@ export class CampaignDetailPage {
               private mock = new Mock(page)) {
   }
 
-  async go(as: UserType, options?: {
-    empty?: boolean,
-    phase?: Phase,
-    noConfidence?: boolean
-    allowPoint?: boolean
-  }) {
+  async go(as: UserType) {
     await test.step('Navigate to Campaign detail', async () => {
       await this.list.go(as)
-
-      await this.mock.campaignDetail(options?.empty, options?.phase, !options?.noConfidence, options?.allowPoint)
-      await this.mock.fileRanges(options?.empty)
-      await this.mock.fileRangesFiles(options?.empty)
-      await this.mock.spectrograms(options?.empty)
-      await this.mock.audios(options?.empty)
-      await this.mock.users(options?.empty)
-      await this.mock.labelSetDetail()
-      await this.mock.confidenceSetDetail()
-      await this.mock.campaignArchive()
-
-      await this.mock.fileRangesFiles(options?.empty)
       await this.list.card.click();
-      await interceptRequests(this.page, {
-        listSpectrogramAnalysis: options?.empty ? 'empty' : 'filled',
-      })
     });
   }
 
@@ -91,25 +69,6 @@ export class CampaignDetailPage {
         return modal.getByRole('button', { name: 'Update' });
       },
     } as LabelModalExtend);
-  }
-
-  async openSpectrogramModal(): Promise<MetadataModal> {
-    await this.mock.spectrograms()
-    const modal = await this.ui.openModal({ name: 'Spectrogram configuration' })
-    return Object.assign(modal, {
-      get downloadButton(): Locator {
-        return modal.getByRole('button', { name: 'Download configurations' })
-      },
-    } as MetadataModal);
-  }
-
-  async openAudioModal(): Promise<MetadataModal> {
-    const modal = await this.ui.openModal({ name: 'Audio metadata' })
-    return Object.assign(modal, {
-      get downloadButton(): Locator {
-        return modal.getByRole('button', { name: 'Download metadata' })
-      },
-    } as MetadataModal);
   }
 
   async openProgressModal(opt?: { empty?: boolean }): Promise<ProgressModal> {

@@ -36,6 +36,7 @@ export const ANALYSIS_QUERIES: {
   listAvailableSpectrogramAnalysisForImport: GqlQuery<ListAvailableSpectrogramAnalysisForImportQuery>,
 } = {
   listSpectrogramAnalysis: {
+    defaultType: 'filled',
     empty: {
       allSpectrogramAnalysis: null,
     },
@@ -62,6 +63,7 @@ export const ANALYSIS_QUERIES: {
     },
   },
   listAvailableSpectrogramAnalysisForImport: {
+    defaultType: 'filled',
     empty: {
       allSpectrogramAnalysisForImport: null,
       datasetById: null,

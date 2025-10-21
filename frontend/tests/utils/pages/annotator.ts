@@ -1,8 +1,8 @@
 import { expect, Locator, Page, test } from '@playwright/test';
 import { UserType } from '../../fixtures';
 import { AnnotationResultType, BoxBounds, Phase, PointBounds } from '../../../src/service/types';
-import { Mock } from "../services";
-import { CampaignDetailPage } from "./campaign-detail";
+import { Mock } from '../services';
+import { CampaignDetailPage } from './campaign-detail';
 
 export type Label = {
   addPresence: () => Promise<void>;
@@ -56,7 +56,7 @@ export class AnnotatorPage {
       expectState: async (isValid: boolean) => {
         await expect(validateBtn).toHaveAttribute('color', isValid ? 'success' : 'medium')
         await expect(invalidateBtn).toHaveAttribute('color', isValid ? 'medium' : 'danger')
-      }
+      },
     }
   }
 
@@ -76,28 +76,27 @@ export class AnnotatorPage {
 
   constructor(private page: Page,
               private mock = new Mock(page),
-              private detail = new CampaignDetailPage(page)) {
+              private campaignDetail = new CampaignDetailPage(page)) {
   }
 
   async go(as: UserType, options: {
-    phase: Phase,
+    phase?: Phase,
     empty?: boolean,
     noConfidence?: boolean
     allowPoint?: boolean
   }) {
     await test.step('Navigate to Annotator', async () => {
-      await this.detail.go(as, {
+      await this.campaignDetail.go(as, {
         noConfidence: options.noConfidence,
-        phase: options.phase,
-        allowPoint: options.allowPoint
+        allowPoint: options.allowPoint,
       })
       await this.mock.confidenceSetDetail()
       await this.mock.detectors()
       await this.mock.labelSetDetail()
       await this.mock.campaignDetail(false, options?.phase, !options.noConfidence, options.allowPoint)
-      await this.mock.annotator(options.phase, options.empty)
-      await this.detail.resumeButton.click()
-      await this.mock.annotator(options.phase, options.empty)
+      await this.mock.annotator(options.phase ?? 'Annotation', options.empty)
+      await this.campaignDetail.resumeButton.click()
+      await this.mock.annotator(options.phase ?? 'Annotation', options.empty)
     });
   }
 
@@ -131,7 +130,7 @@ export class AnnotatorPage {
     return {
       focusAnnotation: async () => {
         await this.page.locator('ion-chip').filter({ hasText: confidence }).click()
-      }
+      },
     }
   }
 

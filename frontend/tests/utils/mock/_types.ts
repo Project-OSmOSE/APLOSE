@@ -1,7 +1,7 @@
 export type GqlMockType = 'filled' | 'empty'
 export type RestStatus = 'forbidden'
 
-export type GqlQuery<T> = { [key in GqlMockType]: T }
+export type GqlQuery<T, Type extends string = 'filled'> = { defaultType: Type, empty: T } & { [key in Type]: T }
 export type RestQuery<T, Status extends RestStatus = never> = {
   url: string,
   success: { status: number, json: T }

@@ -4,7 +4,7 @@ import { Item } from '@/components/form';
 
 export function getErrorMessage(error: FetchBaseQueryError | SerializedError | unknown | string | undefined): string | undefined {
   if (!error) return undefined;
-  console.log('DEBUG', typeof error, error)
+  console.log('DEBUG', typeof error, JSON.stringify(error))
   if (typeof error === 'string') return error;
   if ((error as SerializedError).message) return (error as SerializedError).message;
   if ((error as FetchBaseQueryError).status === 500) return '[500] Internal server error';

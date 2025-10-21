@@ -6,24 +6,26 @@ export * from './_types'
 export * from './user'
 
 
-type Operations = GqlOperations | RestOperations;
+type Operations = GqlOperations & RestOperations;
+
+export const gqlURL = '**/graphql'
 
 export async function interceptRequests(
   page: Page,
   operations: Operations,
-): Promise<{ [key in keyof Operations]: Record<string, unknown> }> {
+): Promise<{ [key in keyof Operations]?: Record<string, unknown> }> {
   // A list of GQL variables which the handler has been called with.
-  const reqs: { [key in keyof Operations]: Record<string, unknown> } = {};
+  const reqs: { [key in keyof Operations]?: Record<string, unknown> } = {};
 
   // Register a new handler which intercepts all GQL requests.
-  await page.route('**/graphql', function (route: Route) {
+  await page.route(gqlURL, function (route: Route) {
     const req = route.request().postDataJSON();
 
     if (!Object.keys(operations).includes(req.operationName)) {
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ data: GQL_MOCK[req.operationName].filled }),
+        body: JSON.stringify({ data: GQL_MOCK[req.operationName][GQL_MOCK[req.operationName].defaultType] }),
       });
     }
 

@@ -1,5 +1,6 @@
 import { API_URL, ESSENTIAL, expect, Page, test } from './utils';
 import { FILE_RANGE, USERS } from './fixtures';
+import { interceptRequests } from './utils/mock';
 
 // Utils
 
@@ -28,6 +29,9 @@ const STEP = {
 
 test.describe('Annotator', () => {
   test('Progress', async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.detail.go('annotator');
 
     await test.step('Cannot manage', async () => {
@@ -45,6 +49,9 @@ test.describe('Annotator', () => {
   })
 
   test('Files', ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.detail.go('annotator');
     await test.step('See files', async () => {
       await expect(page.locator('.table-content').first()).toBeVisible();
@@ -53,13 +60,16 @@ test.describe('Annotator', () => {
       await page.mock.fileRangesFiles()
       await Promise.all([
         page.waitForRequest(/\/api\/annotation-file-range\/phase\/.*filename__icontains/g),
-        page.campaign.detail.searchFile(FILE_RANGE.submittedFile.filename)
+        page.campaign.detail.searchFile(FILE_RANGE.submittedFile.filename),
       ])
       await page.campaign.detail.searchFile(undefined);
     })
   })
 
   test('Can annotate submitted file', ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.detail.go('annotator');
     await page.mock.annotator()
     const button = page.locator('.table-content.disabled ion-button')
@@ -71,6 +81,9 @@ test.describe('Annotator', () => {
   })
 
   test('Can annotate unsubmitted file', ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.detail.go('annotator');
     await page.mock.annotator()
     const button = page.locator('.table-content:not(.disabled) ion-button')
@@ -82,6 +95,9 @@ test.describe('Annotator', () => {
   })
 
   test('Can resume annotation', ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.campaign.detail.go('annotator');
     await page.mock.annotator()
     await Promise.all([
@@ -91,7 +107,14 @@ test.describe('Annotator', () => {
   })
 
   test('Empty', ESSENTIAL, async ({ page }) => {
-    await page.campaign.detail.go('annotator', { empty: true });
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+      getCampaign: 'empty',
+      listSpectrogramAnalysis: 'empty',
+      getAnnotationPhase: 'empty',
+      listAnnotationTask: 'empty',
+    })
+    await page.campaign.detail.go('annotator');
 
     await test.step('Progress', async () => {
       const modal = await page.campaign.detail.openProgressModal({ empty: true });
@@ -109,11 +132,17 @@ test.describe('Annotator', () => {
 test.describe('Campaign creator', () => {
 
   test('Can import annotations', async ({ page }) => {
-    await page.campaign.detail.go('creator', { phase: 'Annotation' });
+    await interceptRequests(page, {
+      getCurrentUser: 'creator',
+    })
+    await page.campaign.detail.go('creator');
     await STEP.accessImportAnnotations(page)
   })
 
   test('Can download progress results and status', async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'creator',
+    })
     await page.campaign.detail.go('creator');
     const modal = await page.campaign.detail.openProgressModal()
 
@@ -129,6 +158,9 @@ test.describe('Campaign creator', () => {
   })
 
   test('Can manage annotators', async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'creator',
+    })
     await page.campaign.detail.go('creator');
     await Promise.all([
       page.waitForURL(/.*\/annotation-campaign\/-?\d+\/phase\/-?\d+\/edit\/?/g),
@@ -137,7 +169,14 @@ test.describe('Campaign creator', () => {
   })
 
   test('Empty', async ({ page }) => {
-    await page.campaign.detail.go('creator', { empty: true });
+    await interceptRequests(page, {
+      getCurrentUser: 'creator',
+      getCampaign: 'empty',
+      listSpectrogramAnalysis: 'empty',
+      getAnnotationPhase: 'empty',
+      listAnnotationTask: 'empty',
+    })
+    await page.campaign.detail.go('creator');
 
     await test.step('Progress', async () => {
       await expect(page.campaign.detail.manageButton).toBeVisible();
@@ -151,7 +190,10 @@ test.describe('Campaign creator', () => {
 })
 
 test('Staff', async ({ page }) => {
-  await page.campaign.detail.go('staff', { phase: 'Annotation' });
+  await interceptRequests(page, {
+    getCurrentUser: 'staff',
+  })
+  await page.campaign.detail.go('staff');
 
   await STEP.accessImportAnnotations(page)
   await STEP.accessDownloadCSV(page)
@@ -159,7 +201,10 @@ test('Staff', async ({ page }) => {
 })
 
 test('Superuser', ESSENTIAL, async ({ page }) => {
-  await page.campaign.detail.go('superuser', { phase: 'Annotation' });
+  await interceptRequests(page, {
+    getCurrentUser: 'superuser',
+  })
+  await page.campaign.detail.go('superuser');
 
   await STEP.accessImportAnnotations(page)
   await STEP.accessDownloadCSV(page)

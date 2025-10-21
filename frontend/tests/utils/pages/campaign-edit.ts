@@ -21,7 +21,7 @@ export class CampaignEditPage {
 
   async go(as: UserType, options?: { empty: boolean }) {
     await test.step('Navigate to Campaign detail', async () => {
-      await this.detail.go(as, options)
+      await this.detail.go(as)
       await this.mock.fileRanges(options?.empty)
       await this.mock.annotatorGroups(options?.empty)
       await this.detail.manageButton.click();

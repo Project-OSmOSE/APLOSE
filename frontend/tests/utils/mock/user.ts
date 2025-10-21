@@ -101,6 +101,7 @@ export const USER_QUERIES: {
   listUsers: GqlQuery<ListUsersQuery>,
 } = {
   listUsers: {
+    defaultType: 'filled',
     empty: {
       allUsers: null,
       allUserGroups: null,
