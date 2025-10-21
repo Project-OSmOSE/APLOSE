@@ -7,15 +7,23 @@ import { interceptRequests } from './utils/mock';
 const TEST = {
   empty: (as: UserType) => {
     return test('Should display empty state', async ({ page }) => {
-      await page.dataset.list.go(as, 'empty');
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        listDatasets: 'empty',
+        listAvailableDatasetsForImport: 'empty',
+      })
+      await page.dataset.list.go(as);
       await expect(page.getByText('No datasets')).toBeVisible();
 
-      const modal = await page.dataset.list.openImportModal('empty')
+      const modal = await page.dataset.list.openImportModal()
       await expect(modal.locator).toContainText('There is no new dataset or analysis')
     });
   },
   display: (as: UserType) => {
     return test('Should display loaded data', async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+      })
       await page.dataset.list.go(as);
       await expect(page.getByText('Test dataset')).toBeVisible();
 
@@ -31,6 +39,10 @@ const TEST = {
   },
   manageDatasetImport: (as: UserType) => {
     return test('Should manage import of a dataset', async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        importDataset: 'empty',
+      })
       await page.dataset.list.go(as);
       const modal = await page.dataset.list.openImportModal()
 
@@ -45,6 +57,7 @@ const TEST = {
     return test('Should manage import of an analysis', async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
+        importDataset: 'empty',
       })
       await page.dataset.list.go(as);
       const modal = await page.dataset.list.openImportModal()

@@ -75,7 +75,7 @@ export const ImportAnalysisModal: React.FC<{ onClose: () => void }> = ({ onClose
 
       { isLoading && <IonSpinner/> }
 
-      { !isLoading && !!availableSpectrogramAnalysis && availableSpectrogramAnalysis.length == 0 &&
+      { !isLoading && (!availableSpectrogramAnalysis || availableSpectrogramAnalysis.length == 0) &&
           <IonNote>There is no new analysis</IonNote> }
 
       { !isLoading && !!availableSpectrogramAnalysis && availableSpectrogramAnalysis.length > 0 && dataset &&

@@ -2,7 +2,7 @@ import { Page, test } from '@playwright/test';
 import { Modal, UI } from '../services';
 import { UserType } from '../../fixtures';
 import { DatasetPage } from './dataset';
-import { GqlMockType, interceptRequests } from '../mock';
+import { GqlMockType } from '../mock';
 
 export class DatasetDetailPage {
 
@@ -11,20 +11,14 @@ export class DatasetDetailPage {
               public ui = new UI(page)) {
   }
 
-  async go(as: UserType, type: GqlMockType = 'filled') {
+  async go(as: UserType) {
     await test.step('Navigate to Dataset detail', async () => {
-      await this.datasetList.go(as, 'filled');
-      await interceptRequests(this.page, {
-        getDatasetByID: 'filled',
-        listSpectrogramAnalysis: type,
-        listChannelConfigurations: type,
-      })
+      await this.datasetList.go(as);
       await this.page.getByText('Test dataset').click()
     });
   }
 
   async openImportModal(type: GqlMockType = 'filled'): Promise<AnalysisImportModal> {
-    await interceptRequests(this.page, { listAvailableSpectrogramAnalysisForImport: type })
     return AnalysisImportModal.get(this)
   }
 
@@ -52,7 +46,6 @@ export class AnalysisImportModal {
   }
 
   public async importAnalysis() {
-    await interceptRequests(this.modal.page(), { importSpectrogramAnalysis: 'empty' })
     await this.modal.locator('.download-analysis').first().click()
   }
 }

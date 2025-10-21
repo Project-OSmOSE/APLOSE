@@ -1,23 +1,34 @@
 import { ESSENTIAL, expect, test } from './utils';
 import { UserType } from './fixtures';
+import { interceptRequests } from './utils/mock';
+import { spectrogramAnalysis } from './utils/mock/spectrogramAnalysis';
 
 // Utils
 
 const TEST = {
   empty: (as: UserType) => {
     return test('Should display empty state', async ({ page }) => {
-      await page.dataset.detail.go(as, 'empty');
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        listSpectrogramAnalysis: 'empty',
+        listChannelConfigurations: 'empty',
+        listAvailableSpectrogramAnalysisForImport: 'empty',
+      })
+      await page.dataset.detail.go(as);
       await expect(page.locator('.table-content')).not.toBeVisible();
       await expect(page.getByText('No spectrogram analysis')).toBeVisible();
 
-      const modal = await page.dataset.detail.openImportModal('empty')
+      const modal = await page.dataset.detail.openImportModal()
       await expect(modal.locator).toContainText('There is no new analysis')
     });
   },
   display: (as: UserType) => {
     return test('Should display loaded data', async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+      })
       await page.dataset.detail.go(as);
-      await expect(page.getByText('Test analysis')).toBeVisible();
+      await expect(page.getByText(spectrogramAnalysis.name)).toBeVisible();
 
       const modal = await page.dataset.detail.openImportModal()
       await expect(modal.locator).toContainText('Test analysis 1')
@@ -29,18 +40,22 @@ const TEST = {
   },
   manageAnalysisImport: (as: UserType) => {
     return test('Should manage import of an analysis', async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        importSpectrogramAnalysis: 'empty',
+      })
       await page.dataset.detail.go(as);
-      await expect(page.getByText('Test analysis')).toBeVisible();
+      await expect(page.getByText(spectrogramAnalysis.name)).toBeVisible();
 
       const modal = await page.dataset.detail.openImportModal()
 
       // TODO: intercept import mutation and check content
       await Promise.all([
-        page.waitForRequest("**/graphql"),
-        await modal.locator.locator('.download-analysis').first().click()
+        page.waitForRequest('**/graphql'),
+        await modal.importAnalysis(),
       ])
     })
-  }
+  },
 }
 
 
