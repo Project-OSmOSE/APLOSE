@@ -2,7 +2,7 @@ import { Page, test } from '@playwright/test';
 import { Modal, UI } from '../services';
 import { UserType } from '../../fixtures';
 import { CampaignListPage } from './campaign-list';
-import { interceptRequests, MockType } from '../mock';
+import { GqlMockType, interceptRequests } from '../mock';
 import { expect } from '../index';
 
 export class DatasetPage {
@@ -12,7 +12,7 @@ export class DatasetPage {
               public ui = new UI(page)) {
   }
 
-  async go(as: UserType, type: MockType = 'filled') {
+  async go(as: UserType, type: GqlMockType = 'filled') {
     await test.step('Navigate to Datasets', async () => {
       await interceptRequests(this.page, {
         listDatasets: type,
@@ -26,7 +26,7 @@ export class DatasetPage {
     });
   }
 
-  async openImportModal(type: MockType = 'filled'): Promise<DatasetImportModal> {
+  async openImportModal(type: GqlMockType = 'filled'): Promise<DatasetImportModal> {
     await interceptRequests(this.page, {
       listAvailableDatasetsForImport: type,
     })

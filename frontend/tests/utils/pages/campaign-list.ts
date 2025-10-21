@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 import { LoginPage } from './login';
-import { interceptRequests, type MockType, type UserType } from '../mock';
+import { type GqlMockType, interceptRequests, type UserType } from '../mock';
 
 export class CampaignListPage {
 
@@ -18,7 +18,7 @@ export class CampaignListPage {
 
   async go(
     as: UserType,
-    type: MockType = 'filled',
+    type: GqlMockType = 'filled',
   ) {
     await test.step('Navigate to Campaigns', async () => {
       await interceptRequests(this.page, {

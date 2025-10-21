@@ -1,36 +1,46 @@
 import { ESSENTIAL, expect, test } from './utils';
-import { LoginPage } from './utils/pages';
-import { AUTH } from './fixtures';
+import { interceptRequests, PASSWORD, type UserType } from './utils/mock';
+import { TOKEN_ERROR } from './utils/mock/auth';
+
+const user: UserType = 'annotator'
 
 test('Login - Unauthorized', ESSENTIAL, async ({ page }) => {
+  await interceptRequests(page, {
+    getCurrentUser: user,
+    token: 'forbidden',
+  })
   await page.login.go();
-  await page.login.fillForm();
-  await page.login.submit({ status: 401, submitAction: 'button' });
-  await expect(page.getByText(LoginPage.SERVER_ERROR)).toBeVisible();
+  await page.login.fillForm(user);
+  await page.login.submit('button');
+  await expect(page.getByText(TOKEN_ERROR)).toBeVisible();
 })
 
 test('Login - Success', ESSENTIAL, async ({ page }) => {
+  await interceptRequests(page, {
+    getCurrentUser: user,
+    token: 'success',
+  })
   await page.login.go();
-  await page.login.fillForm();
-  await page.mock.userSelf('annotator')
-  const request = await page.login.submit({ status: 200, submitAction: 'button' });
-  await page.mock.userSelf('annotator')
+  await page.login.fillForm(user);
+  const request = await page.login.submit('button');
   expect(await request.postDataJSON()).toEqual({
-    username: AUTH.username,
-    password: AUTH.password
+    username: user,
+    password: PASSWORD,
   })
   await expect(page.getByRole('heading', { name: 'Annotation Campaigns' })).toBeVisible();
 })
 
 test('Login - Success with Enter key', ESSENTIAL, async ({ page }) => {
+  await interceptRequests(page, {
+    getCurrentUser: user,
+    token: 'success',
+  })
   await page.login.go();
-  await page.login.fillForm();
-  await page.mock.userSelf('annotator')
-  const request = await page.login.submit({ status: 200, submitAction: 'enterKey' });
-  await page.mock.userSelf('annotator')
+  await page.login.fillForm(user);
+  const request = await page.login.submit('enterKey');
   expect(await request.postDataJSON()).toEqual({
-    username: AUTH.username,
-    password: AUTH.password
+    username: user,
+    password: PASSWORD,
   })
   await expect(page.getByRole('heading', { name: 'Annotation Campaigns' })).toBeVisible();
 })

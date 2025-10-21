@@ -11,9 +11,9 @@ type Operations = GqlOperations | RestOperations;
 export async function interceptRequests(
   page: Page,
   operations: Operations,
-): Promise<Record<string, unknown>[]> {
+): Promise<{ [key in keyof Operations]: Record<string, unknown> }> {
   // A list of GQL variables which the handler has been called with.
-  const reqs: Record<string, unknown>[] = [];
+  const reqs: { [key in keyof Operations]: Record<string, unknown> } = {};
 
   // Register a new handler which intercepts all GQL requests.
   await page.route('**/graphql', function (route: Route) {
@@ -28,7 +28,7 @@ export async function interceptRequests(
     }
 
     // Store what variables we called the API with.
-    reqs.push(req.variables);
+    reqs[req.operationName] = req.variables;
 
     return route.fulfill({
       status: 200,
@@ -38,8 +38,17 @@ export async function interceptRequests(
   });
 
   for (const [ key, _mock ] of Object.entries(REST_MOCK)) {
-    const mock = key in Object.keys(operations) ? _mock[operations[key]] : _mock.filled;
-    page.route(mock.url, route => route.fulfill(mock));
+    const isKnown = Object.keys(operations).includes(key)
+    const mock = isKnown ? _mock[operations[key]] : _mock.success;
+    if (isKnown) {
+      await page.route(_mock.url, route => {
+        const req = route.request().postDataJSON();
+        reqs[key] = req.variables;
+        return route.fulfill(mock)
+      });
+    } else {
+      page.route(_mock.url, route => route.fulfill(mock));
+    }
   }
 
   return reqs;

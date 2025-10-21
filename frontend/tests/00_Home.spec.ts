@@ -1,15 +1,16 @@
-import { API_URL, ESSENTIAL, expect, test, URL } from './utils';
+import { ESSENTIAL, expect, test, URL } from './utils';
 import { interceptRequests } from './utils/mock';
+import { COLLABORATOR_QUERIES } from './utils/mock/collaborators';
 
 test('Global', ESSENTIAL, async ({ page }) => {
   await interceptRequests(page, {
     getCurrentUser: 'empty',
-    listCollaborators: 'empty',
+    listCollaborators: 'success',
   })
 
   await Promise.all([
     page.home.go(),
-    page.waitForRequest(API_URL.collaborators),
+    page.waitForRequest(COLLABORATOR_QUERIES.listCollaborators.url),
   ])
 
   await test.step('Has OSmOSE website link', async () => {

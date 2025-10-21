@@ -1,4 +1,4 @@
-import { EMPTY_MUTATION, type EmptyMutation, type MockType } from './_types';
+import { EMPTY_MUTATION, type EmptyMutation, type GqlMockType } from './_types';
 import { DATASET_QUERIES, type DatasetMutations } from './dataset';
 import { ANALYSIS_QUERIES, type AnalysisMutations } from './spectrogramAnalysis';
 import { CAMPAIGN_QUERIES, type CampaignMutations } from './campaign';
@@ -44,4 +44,4 @@ export const GQL_MOCK = {
 }
 
 export type GqlOperationName = GqlQuery | GqlMutation | 'getCurrentUser'
-export type GqlOperations = { [key in GqlQuery | GqlMutation]?: MockType; } & { getCurrentUser: UserType | 'empty' }
+export type GqlOperations = { [key in GqlQuery | GqlMutation]?: GqlMockType; } & { getCurrentUser: UserType | 'empty' }

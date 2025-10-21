@@ -1,18 +1,16 @@
-import type { MockType, RestQuery } from './_types';
+import type { RestQuery } from './_types';
 
 export const COLLABORATOR_QUERIES: {
-  listCollaborators: { [key in MockType]: RestQuery<[]> }
+  listCollaborators: RestQuery<[]>
 } = {
   listCollaborators: {
-    empty: {
-      url: '/api/collaborators/on_aplose_home',
-      status: 200,
-      json: [],
-    },
-    filled: {
-      url: '/api/collaborators/on_aplose_home',
+    url: '/api/collaborators/on_aplose_home',
+    success: {
       status: 200,
       json: [],
     },
   },
 }
+
+type Q = keyof typeof COLLABORATOR_QUERIES
+const q: Q = 'listCollaborators'

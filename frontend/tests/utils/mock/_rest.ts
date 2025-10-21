@@ -1,12 +1,15 @@
 import { COLLABORATOR_QUERIES } from './collaborators';
+import { AUTH_QUERIES } from './auth';
 
 type RestQueries =
   typeof COLLABORATOR_QUERIES
+  & typeof AUTH_QUERIES
 type RestQuery = keyof RestQueries
 
 const REST_MOCK_QUERIES: RestQueries = {
   // TODO: add queries
   ...COLLABORATOR_QUERIES,
+  ...AUTH_QUERIES,
 }
 
 // // TODO: fill Mutation type

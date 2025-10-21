@@ -1,17 +1,13 @@
 import { Page, Request, test } from '@playwright/test';
 import { API_URL } from '../const';
-import { Mock } from '../services';
-import { AUTH, UserType } from '../../fixtures';
+import { UserType } from '../../fixtures';
 import { HomePage } from './home';
-import { interceptRequests } from '../mock';
+import { PASSWORD } from '../mock';
 
 export class LoginPage {
-
-  static SERVER_ERROR: string = 'server_error';
-
+  
   constructor(private page: Page,
-              private home: HomePage = new HomePage(page),
-              private mock = new Mock(page)) {
+              private home: HomePage = new HomePage(page)) {
   }
 
   async go() {
@@ -21,17 +17,15 @@ export class LoginPage {
     });
   }
 
-  async fillForm() {
+  async fillForm(as: UserType) {
     await test.step('Fill login form', async () => {
-      await this.page.getByPlaceholder('username').fill(AUTH.username)
-      await this.page.getByPlaceholder('password').fill(AUTH.password)
+      await this.page.getByPlaceholder('username').fill(as)
+      await this.page.getByPlaceholder('password').fill(PASSWORD)
     })
   }
 
-  async submit({ status, submitAction }: { status: 200 | 401, submitAction: 'button' | 'enterKey' }): Promise<Request> {
+  async submit(submitAction: 'button' | 'enterKey'): Promise<Request> {
     return await test.step('Submit', async () => {
-      if (status === 200) await this.mock.token()
-      else await this.mock.token({ status, json: { detail: LoginPage.SERVER_ERROR } })
       const [ request ] = await Promise.all([
         this.page.waitForRequest(API_URL.token),
         submitAction === 'button' ? this.page.getByRole('button', { name: 'Login' }).click() : this.page.keyboard.press('Enter'),
@@ -42,8 +36,7 @@ export class LoginPage {
 
   async login(as: UserType) {
     await this.go()
-    await interceptRequests(this.page, { getCurrentUser: as })
-    await this.fillForm()
-    await this.submit({ status: 200, submitAction: 'button' })
+    await this.fillForm(as)
+    await this.submit('button')
   }
 }
