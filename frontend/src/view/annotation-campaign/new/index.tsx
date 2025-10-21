@@ -116,8 +116,8 @@ export const NewAnnotationCampaign: React.FC = () => {
     {/* Dataset & Spectro config */ }
     <FormBloc label="Data">
       <DatasetSelect selectAnalysis
-                     datasetError={ formErrors?.find(e => e?.field === 'dataset')?.messages.join(', ') }
-                     analysisError={ formErrors?.find(e => e?.field === 'analysis')?.messages.join(', ') }
+                     datasetError={ formErrors?.find(e => e?.field === 'datasetID')?.messages.join(', ') }
+                     analysisError={ formErrors?.find(e => e?.field === 'analysisIDs')?.messages.join(', ') }
                      onDatasetSelected={ setDatasetID }
                      onAnalysisSelected={ setAnalysisIDs }
                      onAnalysisColormapsChanged={ setAnalysisColormaps }/>
@@ -137,6 +137,7 @@ export const NewAnnotationCampaign: React.FC = () => {
       {/* Default colormap */ }
       { allowColormapTuning && <Select
           required={ true }
+          error={ formErrors?.find(e => e?.field === 'colormapDefault')?.messages.join(', ') }
           label="Default colormap"
           value={ colormapDefault ?? 'Greys' as Colormap }
           placeholder="Select a default colormap"

@@ -1,8 +1,14 @@
 import { AnnotationCampaignGqlAPI } from './api'
 import { useCallback, useEffect, useMemo } from 'react';
-import { AnnotationPhaseType, useCurrentUser } from '@/api';
+import {
+  AnnotationPhaseType,
+  type CreateAnnotationCampaignMutationVariables,
+  type UpdateAnnotationCampaignFeaturedLabelsMutationVariables,
+  useCurrentUser,
+} from '@/api';
 import { AllAnnotationCampaignFilterSlice, AllCampaignFilters, selectAllCampaignFilters } from './all-campaign-filters';
 import { useNavParams, useQueryParams } from '@/features/UX';
+import type { GqlError } from '@/api/utils';
 
 //  API
 
@@ -45,7 +51,7 @@ export const useCreateCampaign = () => {
   return {
     createCampaign,
     ...useMemo(() => {
-      const formErrors = info.data?.createAnnotationCampaign?.errors ?? []
+      const formErrors = (info.data?.createAnnotationCampaign?.errors ?? []) as GqlError<CreateAnnotationCampaignMutationVariables>[]
       return {
         ...info,
         campaign: info.data?.createAnnotationCampaign?.annotationCampaign,
@@ -62,7 +68,7 @@ export const useUpdateCampaignFeaturedLabels = () => {
   return {
     updateCampaignFeaturedLabels,
     ...useMemo(() => {
-      const formErrors = info.data?.updateAnnotationCampaign?.errors ?? []
+      const formErrors = (info.data?.updateAnnotationCampaign?.errors ?? []) as GqlError<UpdateAnnotationCampaignFeaturedLabelsMutationVariables>[]
       return {
         ...info,
         isSuccess: info.isSuccess && formErrors.length === 0,

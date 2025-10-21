@@ -1,10 +1,9 @@
-import { EMPTY_MUTATION, type EmptyMutation } from './_types';
-import { DATASET_QUERIES, type DatasetMutations } from './dataset';
-import { ANALYSIS_QUERIES, type AnalysisMutations } from './spectrogramAnalysis';
-import { CAMPAIGN_QUERIES, type CampaignMutations } from './campaign';
+import { DATASET_MUTATIONS, DATASET_QUERIES } from './dataset';
+import { ANALYSIS_MUTATIONS, ANALYSIS_QUERIES } from './spectrogramAnalysis';
+import { CAMPAIGN_MUTATIONS, CAMPAIGN_QUERIES } from './campaign';
 import { CHANNEL_CONFIGURATION_QUERIES } from './channelConfiguration';
 import { GET_CURRENT_USER_QUERY, USER_QUERIES, type UserType } from './user';
-import { PHASE_QUERIES, type PhaseMutations } from './phase';
+import { PHASE_MUTATIONS, PHASE_QUERIES } from './phase';
 import { TASK_QUERIES } from './task';
 
 type GqlQueries =
@@ -28,25 +27,22 @@ const GQL_MOCK_QUERIES: GqlQueries & { getCurrentUser: typeof GET_CURRENT_USER_Q
   // TODO: add queries
 }
 
-// TODO: fill Mutation type
-export type GqlMutation = DatasetMutations
-  | AnalysisMutations
-  | CampaignMutations
-  | PhaseMutations
-const GQL_MOCK_MUTATIONS: {
-  [key in GqlMutation]: EmptyMutation
-} = {
-  importDataset: EMPTY_MUTATION,
-  importSpectrogramAnalysis: EMPTY_MUTATION,
-  createAnnotationCampaign: EMPTY_MUTATION,
-  archiveAnnotationCampaign: EMPTY_MUTATION,
-  updateAnnotationCampaignFeaturedLabels: EMPTY_MUTATION,
-  createAnnotationPhase: EMPTY_MUTATION,
-  createVerificationPhase: EMPTY_MUTATION,
-  endPhase: EMPTY_MUTATION,
-  // TODO: add missing mutations
+type GqlMutations =
+  typeof DATASET_MUTATIONS
+  & typeof ANALYSIS_MUTATIONS
+  & typeof CAMPAIGN_MUTATIONS
+  & typeof PHASE_MUTATIONS
+export type GqlMutation = keyof GqlMutations
+
+const GQL_MOCK_MUTATIONS: GqlMutations = {
+  ...DATASET_MUTATIONS,
+  ...ANALYSIS_MUTATIONS,
+  ...CAMPAIGN_MUTATIONS,
+  ...PHASE_MUTATIONS,
+  // TODO: add mutations
 }
-type GqlMutations = typeof GQL_MOCK_MUTATIONS
+
+// TODO: fill Mutation type
 
 export const GQL_MOCK = {
   ...GQL_MOCK_QUERIES,

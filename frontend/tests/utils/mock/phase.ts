@@ -1,6 +1,11 @@
 import { type AnnotationPhaseNode, AnnotationPhaseType } from '../../../src/api/types.gql-generated';
 import type { GetAnnotationPhaseQuery } from '../../../src/api/annotation-phase';
 import type { GqlQuery } from './_types';
+import type {
+  ArchiveAnnotationCampaignMutation,
+  CreateAnnotationCampaignMutation,
+  UpdateAnnotationCampaignFeaturedLabelsMutation,
+} from '../../../src/api';
 
 export type Phase =
   Omit<AnnotationPhaseNode, 'annotationComments' | 'annotationFileRanges' | 'createdBy' | 'annotationTasks' | 'annotations' | 'annotationCampaign' | 'endedBy' | 'annotationCampaignId'>
@@ -56,8 +61,23 @@ export const PHASE_QUERIES: {
     },
   },
 }
-
-export type PhaseMutations =
-  'endPhase'
-  | 'createAnnotationPhase'
-  | 'createVerificationPhase'
+export const PHASE_MUTATIONS: {
+  endPhase: GqlQuery<CreateAnnotationCampaignMutation, never>,
+  createAnnotationPhase: GqlQuery<ArchiveAnnotationCampaignMutation, never>,
+  createVerificationPhase: GqlQuery<UpdateAnnotationCampaignFeaturedLabelsMutation, never>,
+} = {
+  endPhase: {
+    defaultType: 'empty',
+    empty: {},
+  },
+  createAnnotationPhase: {
+    defaultType: 'empty',
+    empty: {
+      ok: true,
+    },
+  },
+  createVerificationPhase: {
+    defaultType: 'empty',
+    empty: {},
+  },
+}

@@ -1,9 +1,9 @@
 import { Locator, Page, test } from '@playwright/test';
-import { Mock } from '../services';
-import { CAMPAIGN, DATASET, UserType } from '../../fixtures';
 import { CampaignListPage } from './campaign-list';
 import { selectInAlert } from '../functions';
-import { interceptRequests } from '../mock';
+import { campaign } from '../mock/campaign';
+import type { UserType } from '../mock';
+import { dataset } from '../mock/dataset';
 
 
 export class CampaignCreatePage {
@@ -13,27 +13,23 @@ export class CampaignCreatePage {
   }
 
   constructor(private page: Page,
-              private list = new CampaignListPage(page),
-              private mock = new Mock(page)) {
+              private list = new CampaignListPage(page)) {
   }
 
-  async go(as: UserType, options?: { empty?: boolean, withErrors?: boolean, loadDetectors?: boolean }): Promise<void> {
+  async go(as: UserType): Promise<void> {
     await test.step('Navigate to Campaign create', async () => {
       await this.list.go(as)
       await this.list.createButton.click();
-      await interceptRequests(this.page, { listDatasetsAndAnalysis: options?.empty ? 'empty' : 'filled' })
-      await this.mock.campaignCreate(options?.withErrors);
-      await this.mock.campaignDetail(options?.empty);
     });
   }
 
   async fillGlobal(options?: { complete: boolean }) {
     return test.step('Campaign global information', async () => {
-      await this.page.getByPlaceholder('Campaign name').fill(CAMPAIGN.name);
+      await this.page.getByPlaceholder('Campaign name').fill(campaign.name);
       if (options?.complete) {
-        await this.page.getByPlaceholder('Enter your campaign description').fill(CAMPAIGN.desc);
-        await this.page.getByPlaceholder('URL').fill(CAMPAIGN.instructions_url);
-        const d = new Date(CAMPAIGN.deadline);
+        await this.page.getByPlaceholder('Enter your campaign description').fill(campaign.description);
+        await this.page.getByPlaceholder('URL').fill(campaign.instructionsUrl);
+        const d = new Date(campaign.deadline);
         await this.page.getByPlaceholder('Deadline').fill(d.toISOString().split('T')[0]);
       }
     })
@@ -42,7 +38,7 @@ export class CampaignCreatePage {
   async fillData() {
     return test.step('Campaign data', async () => {
       await this.page.getByRole('button', { name: 'Select a dataset' }).click();
-      await selectInAlert(this.page, DATASET.name);
+      await selectInAlert(this.page, dataset.name);
     })
   }
 

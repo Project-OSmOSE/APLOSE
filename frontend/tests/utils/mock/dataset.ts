@@ -1,6 +1,7 @@
 import type { GqlQuery } from './_types';
 import type {
   GetDatasetByIdQuery,
+  ImportDatasetMutation,
   ListAvailableDatasetsForImportQuery,
   ListDatasetsAndAnalysisQuery,
   ListDatasetsQuery,
@@ -126,4 +127,11 @@ export const DATASET_QUERIES: {
   },
 }
 
-export type DatasetMutations = 'importDataset'
+export const DATASET_MUTATIONS: {
+  importDataset: GqlQuery<ImportDatasetMutation, never>,
+} = {
+  importDataset: {
+    defaultType: 'empty',
+    empty: {},
+  },
+}

@@ -1,6 +1,13 @@
-import type { GqlQuery } from './_types';
+import { type GqlQuery, mockGqlError } from './_types';
 import type { AnnotationCampaignNode } from '../../../src/api/types.gql-generated';
-import type { GetCampaignQuery, ListCampaignsAndPhasesQuery } from '../../../src/api/annotation-campaign';
+import type {
+  ArchiveAnnotationCampaignMutation,
+  CreateAnnotationCampaignMutation,
+  CreateAnnotationCampaignMutationVariables,
+  GetCampaignQuery,
+  ListCampaignsAndPhasesQuery,
+  UpdateAnnotationCampaignFeaturedLabelsMutation,
+} from '../../../src/api/annotation-campaign';
 import { dataset } from './dataset';
 import { phase } from './phase';
 import { USERS } from './user';
@@ -165,7 +172,42 @@ export const CAMPAIGN_QUERIES: {
   },
 }
 
-export type CampaignMutations =
-  'createAnnotationCampaign'
-  | 'archiveAnnotationCampaign'
-  | 'updateAnnotationCampaignFeaturedLabels'
+export const CAMPAIGN_MUTATIONS: {
+  createAnnotationCampaign: GqlQuery<CreateAnnotationCampaignMutation, 'filled' | 'failed'>,
+  archiveAnnotationCampaign: GqlQuery<ArchiveAnnotationCampaignMutation, never>,
+  updateAnnotationCampaignFeaturedLabels: GqlQuery<UpdateAnnotationCampaignFeaturedLabelsMutation, never>,
+} = {
+  createAnnotationCampaign: {
+    defaultType: 'filled',
+    empty: {},
+    filled: {
+      createAnnotationCampaign: {
+        annotationCampaign: {
+          id: campaign.id,
+        },
+        errors: [],
+      },
+    },
+    failed: {
+      createAnnotationCampaign: {
+        errors: [
+          mockGqlError<CreateAnnotationCampaignMutationVariables>('name'),
+          mockGqlError<CreateAnnotationCampaignMutationVariables>('description'),
+          mockGqlError<CreateAnnotationCampaignMutationVariables>('instructionsUrl'),
+          mockGqlError<CreateAnnotationCampaignMutationVariables>('deadline'),
+          mockGqlError<CreateAnnotationCampaignMutationVariables>('datasetID'),
+          mockGqlError<CreateAnnotationCampaignMutationVariables>('analysisIDs'),
+          mockGqlError<CreateAnnotationCampaignMutationVariables>('colormapDefault'),
+        ],
+      },
+    },
+  },
+  archiveAnnotationCampaign: {
+    defaultType: 'empty',
+    empty: {},
+  },
+  updateAnnotationCampaignFeaturedLabels: {
+    defaultType: 'empty',
+    empty: {},
+  },
+}

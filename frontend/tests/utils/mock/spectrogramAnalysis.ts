@@ -1,4 +1,5 @@
 import type {
+  ImportSpectrogramAnalysisMutation,
   ListAvailableSpectrogramAnalysisForImportQuery,
   ListSpectrogramAnalysisQuery,
 } from '../../../src/api/spectrogram-analysis';
@@ -87,4 +88,11 @@ export const ANALYSIS_QUERIES: {
   },
 }
 
-export type AnalysisMutations = 'importSpectrogramAnalysis'
+export const ANALYSIS_MUTATIONS: {
+  importSpectrogramAnalysis: GqlQuery<ImportSpectrogramAnalysisMutation, never>,
+} = {
+  importSpectrogramAnalysis: {
+    defaultType: 'empty',
+    empty: {},
+  },
+}

@@ -1,4 +1,5 @@
 import type { Token } from '@/api/auth';
+import type { ErrorType } from '@/api/types.gql-generated';
 
 export function getTokenFromCookie(): Token | undefined {
   const tokenCookie = document.cookie?.split(';').filter((item) => item.trim().startsWith('token='))[0];
@@ -12,3 +13,5 @@ export function prepareHeaders(headers: Headers) {
 
   return headers;
 }
+
+export type GqlError<T extends { [key in string]: any }> = ErrorType & { field: keyof T }
