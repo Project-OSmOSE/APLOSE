@@ -1,5 +1,5 @@
 import { type GqlQuery, mockGqlError } from './_types';
-import type { AnnotationCampaignNode } from '../../../src/api/types.gql-generated';
+import { type AnnotationCampaignNode, AnnotationPhaseType } from '../../../src/api/types.gql-generated';
 import type {
   ArchiveAnnotationCampaignMutation,
   CreateAnnotationCampaignMutation,
@@ -111,7 +111,13 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
   allAnnotationPhases: {
     results: [ {
       id: phase.id,
-      phase: phase.phase,
+      phase: AnnotationPhaseType.Annotation,
+      completedTasksCount: phase.completedTasksCount,
+      tasksCount: phase.tasksCount,
+      isOpen: phase.isOpen,
+    }, {
+      id: '2',
+      phase: AnnotationPhaseType.Verification,
       completedTasksCount: phase.completedTasksCount,
       tasksCount: phase.tasksCount,
       isOpen: phase.isOpen,
@@ -145,7 +151,7 @@ export const CAMPAIGN_QUERIES: {
           {
             id: phase.id,
             annotationCampaignId: campaign.id,
-            phase: phase.phase,
+            phase: AnnotationPhaseType.Annotation,
             completedTasksCount: phase.completedTasksCount,
             tasksCount: phase.tasksCount,
             userCompletedTasksCount: phase.userCompletedTasksCount,

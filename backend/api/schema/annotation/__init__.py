@@ -8,6 +8,7 @@ from .annotation import (
 from .annotation_campaign import AnnotationCampaignMutation, AnnotationCampaignQuery
 from .annotation_file_range import AnnotationFileRangeQuery
 from .annotation_phase import AnnotationPhaseQuery, AnnotationPhaseMutation
+from .annotation_spectrogram import AnnotationSpectrogramQuery
 from .annotation_task import AnnotationTaskQuery
 from .confidence_set import ConfidenceSetQuery
 from .detector import DetectorQuery
@@ -20,6 +21,7 @@ class AnnotationQuery(
     AnnotationCampaignQuery,
     AnnotationFileRangeQuery,
     AnnotationPhaseQuery,
+    AnnotationSpectrogramQuery,
     AnnotationTaskQuery,
     ConfidenceSetQuery,
     DetectorQuery,

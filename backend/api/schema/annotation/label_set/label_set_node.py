@@ -1,3 +1,4 @@
+import graphene_django_optimizer
 from graphene import List
 
 from backend.api.models import LabelSet
@@ -16,3 +17,8 @@ class LabelSetNode(BaseObjectType):
         fields = "__all__"
         filter_fields = "__all__"
         interfaces = (BaseNode,)
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_labels(self: LabelSet, info):
+        """Resolve featured labels"""
+        return self.labels.all()

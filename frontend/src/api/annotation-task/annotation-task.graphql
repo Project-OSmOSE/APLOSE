@@ -20,19 +20,28 @@ query listAnnotationTask(
     $annotationAnnotator: ID
     $withAcousticFeatures: Boolean
 ) {
-    annotationTasksForUser(
-        annotatorId: $annotatorID
-        campaignId: $campaignID
-        phaseType: $phaseType
-
+    listAnnotationSpectrogram(
+        # Sort
         limit: $limit
         offset: $offset
+        ordering: "-start"
 
-        status: $status
-        spectrogram_End_Gte: $from
-        spectrogram_Start_Lte: $to
-        spectrogram_Filename_Icontains: $search
+        # Only assigned
+        annotator: $annotatorID
+        annotationCampaign: $campaignID
+        phase: $phaseType
 
+        # Search
+        filename_Icontains: $search
+
+        # Dates filters
+        end_Gte: $from
+        start_Lte: $to
+
+        # Task filters
+        annotationTasks_Status: $status
+
+        # Annotation filters
         annotations_Exists: $withAnnotations
         annotations_LabelName: $annotationLabel
         annotations_Confidence_Label: $annotationConfidence
@@ -42,16 +51,15 @@ query listAnnotationTask(
     ) {
         resumeSpectrogramId
         results {
-            status
-
-            spectrogram {
-                id
-                filename
-                start
-                duration
-            }
+            id
+            filename
+            start
+            duration
+            status(campaignId: $campaignID, phase: $phaseType)
 
             annotations(
+                campaignId: $campaignID
+                phase: $phaseType
                 annotator: $annotationAnnotator
                 label_Name: $annotationLabel
                 confidence_Label: $annotationConfidence
@@ -62,6 +70,8 @@ query listAnnotationTask(
             }
 
             validatedAnnotations(
+                campaignId: $campaignID
+                phase: $phaseType
                 annotator: $annotationAnnotator
                 label_Name: $annotationLabel
                 confidence_Label: $annotationConfidence
@@ -95,25 +105,29 @@ query getAnnotationTask(
     $annotationAnnotator: ID
     $withAcousticFeatures: Boolean
 ) {
-    annotationTasksForUserBySpectrogramId(
-        spectrogramId: $spectrogramID
-        phaseType: $phaseType
-        campaignId: $campaignID
-        annotatorId: $annotatorID
-    ) {
-        status
-        isAssigned
+    annotationSpectrogramById(id: $spectrogramID) {
+        id
+        filename
+        audioPath(analysisId: $analysisID)
+        path(analysisId: $analysisID)
+        start
+        duration
 
-        spectrogram {
-            id
-            filename
-            audioPath(analysisId: $analysisID)
-            path(analysisId: $analysisID)
-            start
-            duration
+        isAssigned(phase: $phaseType, campaignId: $campaignID)
+        status(phase: $phaseType, campaignId: $campaignID)
+
+        taskComments: annotationComments(
+            author: $annotatorID,
+            annotationPhase_Phase: $phaseType
+            annotation_Isnull: true
+        ) {
+            results {
+                id
+                comment
+            }
         }
 
-        annotations {
+        annotations(campaignId: $campaignID, phase: $phaseType) {
             results {
                 id
                 type
@@ -167,32 +181,28 @@ query getAnnotationTask(
                 }
             }
         }
-
-        taskComments: comments(
-            author: $annotatorID
-            annotation_Isnull: true
-        ) {
-            results {
-                id
-                comment
-            }
-        }
     }
 
-    annotationTasksForUser(
-        annotatorId: $annotatorID
-        campaignId: $campaignID
-        phaseType: $phaseType
-
-        limit: 1
+    listAnnotationSpectrogram(
+        # Sort
         ordering: "-start"
-        spectrogramMax_Id: $spectrogramID
 
-        status: $status
-        spectrogram_End_Gte: $from
-        spectrogram_Start_Lte: $to
-        spectrogram_Filename_Icontains: $search
+        # Only assigned
+        annotator: $annotatorID
+        annotationCampaign: $campaignID
+        phase: $phaseType
 
+        # Search
+        filename_Icontains: $search
+
+        # Dates filters
+        end_Gte: $from
+        start_Lte: $to
+
+        # Task filters
+        annotationTasks_Status: $status
+
+        # Annotation filters
         annotations_Exists: $withAnnotations
         annotations_LabelName: $annotationLabel
         annotations_Confidence_Label: $annotationConfidence
@@ -200,10 +210,9 @@ query getAnnotationTask(
         annotations_Annotator: $annotationAnnotator
         annotations_AcousticFeatures_Exists: $withAcousticFeatures
     ) {
-        currentIndex
+        currentIndex(spectrogramId: $spectrogramID)
         totalCount
-        previousSpectrogramId
-        nextSpectrogramId
+        previousSpectrogramId(spectrogramId: $spectrogramID)
+        nextSpectrogramId(spectrogramId: $spectrogramID)
     }
-
 }

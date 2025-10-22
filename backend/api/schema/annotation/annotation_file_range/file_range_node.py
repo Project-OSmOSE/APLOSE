@@ -1,10 +1,10 @@
 from graphene_django.filter import TypedFilter
 
 from backend.api.models import AnnotationFileRange
+from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import AuthenticatedDjangoConnectionField
 from backend.utils.schema.filters import BaseFilterSet
 from backend.utils.schema.types import BaseObjectType, BaseNode
-from ..annotation_phase.phase_node import AnnotationPhaseType
 from ..annotation_task.task_node import AnnotationTaskNode
 from ...data.spectrogram.spectrogram_node import SpectrogramNode
 

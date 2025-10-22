@@ -7,7 +7,7 @@ import { useAnnotatorWindow } from '@/features/Annotator/Canvas';
 import { useTimeAxis } from '@/features/Annotator/Axis';
 
 export const useAnnotatorSpectrogram = () => {
-  const { task } = useAnnotationTask()
+  const { spectrogram } = useAnnotationTask()
   const { analysis } = useAnnotatorAnalysis()
   const { zoom } = useAnnotatorZoom()
   const { height } = useAnnotatorWindow()
@@ -21,16 +21,16 @@ export const useAnnotatorSpectrogram = () => {
   }, [ zoom ])
 
   const loadImages = useCallback(async () => {
-    if (!analysis || !task?.spectrogram?.path) {
+    if (!analysis || !spectrogram?.path) {
       images.current = new Map();
       return;
     }
     if (areAllImagesLoaded()) return;
 
-    const filename = task.spectrogram.filename
+    const filename = spectrogram.filename
     return Promise.all(
       Array.from(new Array<HTMLImageElement | undefined>(zoom)).map(async (_, index) => {
-        let src = task.spectrogram?.path;
+        let src = spectrogram?.path;
         if (!src) return;
         if (analysis.legacy) {
           src = `${ src.split(filename)[0] }_${ zoom }_${ index }${ src.split(filename)[1] }`
@@ -57,19 +57,19 @@ export const useAnnotatorSpectrogram = () => {
     ).then(loadedImages => {
       images.current.set(zoom, loadedImages)
     })
-  }, [ analysis, zoom, failedImagesSources, areAllImagesLoaded, task, analysis ])
+  }, [ analysis, zoom, failedImagesSources, areAllImagesLoaded, spectrogram, analysis ])
 
   const drawSpectrogram = useCallback(async (context: CanvasRenderingContext2D) => {
     if (!areAllImagesLoaded()) await loadImages();
     if (!areAllImagesLoaded()) return;
 
     const currentImages = images.current.get(zoom)
-    if (!currentImages || !task) return;
+    if (!currentImages || !spectrogram) return;
     for (const i in currentImages) {
       const index: number | undefined = i ? +i : undefined;
       if (index === undefined) continue;
-      const start = index * task.spectrogram.duration / zoom;
-      const end = (index + 1) * task.spectrogram.duration / zoom;
+      const start = index * spectrogram.duration / zoom;
+      const end = (index + 1) * spectrogram.duration / zoom;
       const image = currentImages[index];
       if (!image) continue
       context.drawImage(
@@ -80,7 +80,7 @@ export const useAnnotatorSpectrogram = () => {
         height,
       )
     }
-  }, [ images, zoom, task, timeScale, height, areAllImagesLoaded, loadImages ])
+  }, [ images, zoom, spectrogram, timeScale, height, areAllImagesLoaded, loadImages ])
 
   return {
     drawSpectrogram,

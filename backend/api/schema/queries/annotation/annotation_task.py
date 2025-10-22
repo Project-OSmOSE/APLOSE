@@ -1,7 +1,7 @@
 """AnnotationTask schema"""
 from django.db.models import Q
 from django_filters import FilterSet
-from graphene import ObjectType, Field, Enum, Int
+from graphene import ObjectType, Field, Int
 from graphene_django.filter import TypedFilter
 
 from backend.api.models import (
@@ -18,13 +18,6 @@ from backend.utils.schema import (
     PKMultipleChoiceFilter,
 )
 from .annotation_phase import AnnotationPhaseType
-
-
-class AnnotationTaskStatus(Enum):
-    """From AnnotationTask.Status"""
-
-    Created = "C"
-    Finished = "F"
 
 
 class AnnotationTaskFilter(FilterSet):

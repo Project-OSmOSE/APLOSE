@@ -27,6 +27,7 @@ import {
   useCurrentPhase,
   UserNode,
 } from '@/api';
+import { DOWNLOAD_ANNOTATIONS, DOWNLOAD_PROGRESS } from '@/consts/links';
 
 type Progression = {
   user: Pick<UserNode, 'id' | 'displayName' | 'expertise'>;
@@ -182,12 +183,12 @@ export const FileRangeProgressModal: React.FC<{
         <ModalFooter className={ styles.footer }>
           <div className={ styles.buttons }>
             { progress.length > 0 && <Fragment>
-                <Link href={ `/api/download/phase-annotations/${ phase.id }/` }>
+                <Link href={ DOWNLOAD_ANNOTATIONS(phase.id) }>
                     <IonIcon icon={ downloadOutline } slot="start"/>
                     Results (csv)
                 </Link>
 
-                <Link href={ `/api/download/phase-progression/${ phase.id }/` }>
+                <Link href={ DOWNLOAD_PROGRESS(phase.id) }>
                     <IonIcon icon={ downloadOutline } slot="start"/>
                     Status (csv)
                 </Link>

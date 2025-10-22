@@ -28,16 +28,21 @@ export const AnnotatorPage: React.FC = () => {
   // const { usedColormap: colormapClass } = useAnnotatorInput(); // TODO: check use: colormapClass was in div classes
   const { campaignID } = useNavParams();
 
-  const { task, isEditionAuthorized, isFetching, error } = useAnnotationTask({ refetchOnMountOrArgChange: true });
+  const {
+    spectrogram,
+    isEditionAuthorized,
+    isFetching,
+    error,
+  } = useAnnotationTask({ refetchOnMountOrArgChange: true });
   const audio = useAudio()
 
   useEffect(() => {
-    if (task?.spectrogram.audioPath) audio.setSource(task.spectrogram.audioPath)
+    if (spectrogram?.audioPath) audio.setSource(spectrogram.audioPath)
 
     return () => {
       audio.clearSource() // TODO: check behavior when navigating between files
     }
-  }, [ task ]);
+  }, [ spectrogram ]);
 
   const [ _previousCampaignID, _setPreviousCampaignID ] = useState<string>();
   useEffect(() => {
@@ -58,7 +63,7 @@ export const AnnotatorPage: React.FC = () => {
 
   if (isFetching) return <AnnotatorSkeleton children={ <IonSpinner/> }/>
   if (error) return <AnnotatorSkeleton children={ <WarningText error={ error }/> }/>
-  if (!task) return <AnnotatorSkeleton/>
+  if (!spectrogram) return <AnnotatorSkeleton/>
 
   return <AnnotatorSkeleton>
     <div className={ styles.annotator }>

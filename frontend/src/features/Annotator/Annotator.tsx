@@ -22,9 +22,9 @@ import { NavigationButtons } from '@/features/Annotator/Navigation';
 
 
 export const Annotator: React.FC = () => {
-  const { task, isEditionAuthorized } = useAnnotationTask()
+  const { spectrogram, isEditionAuthorized } = useAnnotationTask()
 
-  if (!task) return <Fragment/>;
+  if (!spectrogram) return <Fragment/>;
   return <AnnotatorCanvasContextProvider>
     <div className={ styles.annotator }>
 

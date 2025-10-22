@@ -1,8 +1,8 @@
 from graphene import Mutation, ID
 
 from backend.api.models import AnnotationPhase
+from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import GraphQLPermissions, GraphQLResolve, ForbiddenError
-from .phase_node import AnnotationPhaseType
 from ..annotation_campaign import AnnotationCampaignContextFilter
 
 

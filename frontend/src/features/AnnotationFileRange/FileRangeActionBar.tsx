@@ -13,7 +13,7 @@ export const FileRangeActionBar: React.FC = () => {
   const { campaignID, phaseType } = useNavParams();
   const { params, updateParams, clearParams } = useAllTasksFilters({ clearOnLoad: true })
   const { phase } = useCurrentPhase()
-  const { allTasks, resumeSpectrogramID } = useAllAnnotationTasks(params)
+  const { allSpectrograms, resumeSpectrogramID } = useAllAnnotationTasks(params)
   const { openAnnotator } = useOpenAnnotator()
 
   const updateSearch = useCallback((search: string) => {
@@ -24,9 +24,9 @@ export const FileRangeActionBar: React.FC = () => {
 
   const resumeBtnTooltip: string = useMemo(() => {
     if (hasFilters) return 'Cannot resume if filters are activated'
-    if (!allTasks || allTasks.length === 0) return 'No files to annotate'
+    if (!allSpectrograms || allSpectrograms.length === 0) return 'No files to annotate'
     return 'Resume annotation'
-  }, [ hasFilters, allTasks ])
+  }, [ hasFilters, allSpectrograms ])
 
   const resume = useCallback(() => {
     if (!resumeSpectrogramID) return;
@@ -70,7 +70,7 @@ export const FileRangeActionBar: React.FC = () => {
                       {/* Resume */ }
                       <TooltipOverlay tooltipContent={ <p>{ resumeBtnTooltip }</p> } anchor="right">
                         <Button color="primary" fill="outline" aria-label="Resume"
-                                disabled={ hasFilters || !(allTasks && allTasks.length > 0) || !resumeSpectrogramID }
+                                disabled={ hasFilters || !(allSpectrograms && allSpectrograms.length > 0) || !resumeSpectrogramID }
                                 style={ { pointerEvents: 'unset' } }
                                 onClick={ resume }>
                           <IonIcon icon={ playOutline } slot="icon-only"/>

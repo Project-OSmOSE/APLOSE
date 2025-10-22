@@ -4,12 +4,12 @@ from django.shortcuts import get_object_or_404
 from graphene_django.types import ErrorType
 
 from backend.api.models import AnnotationPhase
+from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 from ..annotation_file_range.file_range_input import (
     AnnotationFileRangeInput,
     AnnotationFileRangeMutation,
 )
-from ...annotation.annotation_phase.phase_node import AnnotationPhaseType
 
 
 class UpdateAnnotationPhaseFileRanges(graphene.Mutation):

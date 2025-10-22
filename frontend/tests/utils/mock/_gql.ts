@@ -5,6 +5,7 @@ import { CHANNEL_CONFIGURATION_QUERIES } from './channelConfiguration';
 import { GET_CURRENT_USER_QUERY, USER_QUERIES, type UserType } from './user';
 import { PHASE_MUTATIONS, PHASE_QUERIES } from './phase';
 import { TASK_QUERIES } from './task';
+import { FILE_RANGE_MUTATIONS, FILE_RANGE_QUERIES } from './fileRange';
 
 type GqlQueries =
   typeof DATASET_QUERIES
@@ -14,6 +15,7 @@ type GqlQueries =
   & typeof USER_QUERIES
   & typeof PHASE_QUERIES
   & typeof TASK_QUERIES
+  & typeof FILE_RANGE_QUERIES
 
 const GQL_MOCK_QUERIES: GqlQueries & { getCurrentUser: typeof GET_CURRENT_USER_QUERY } = {
   ...DATASET_QUERIES,
@@ -23,6 +25,7 @@ const GQL_MOCK_QUERIES: GqlQueries & { getCurrentUser: typeof GET_CURRENT_USER_Q
   ...USER_QUERIES,
   ...PHASE_QUERIES,
   ...TASK_QUERIES,
+  ...FILE_RANGE_QUERIES,
   getCurrentUser: GET_CURRENT_USER_QUERY,
   // TODO: add queries
 }
@@ -32,6 +35,7 @@ type GqlMutations =
   & typeof ANALYSIS_MUTATIONS
   & typeof CAMPAIGN_MUTATIONS
   & typeof PHASE_MUTATIONS
+  & typeof FILE_RANGE_MUTATIONS
 export type GqlMutation = keyof GqlMutations
 
 const GQL_MOCK_MUTATIONS: GqlMutations = {
@@ -39,6 +43,7 @@ const GQL_MOCK_MUTATIONS: GqlMutations = {
   ...ANALYSIS_MUTATIONS,
   ...CAMPAIGN_MUTATIONS,
   ...PHASE_MUTATIONS,
+  ...FILE_RANGE_MUTATIONS,
   // TODO: add mutations
 }
 

@@ -5,16 +5,16 @@ import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 import { useAnnotatorWindow } from '@/features/Annotator/Canvas';
 
 export const useTimeAxis = () => {
-  const { task } = useAnnotationTask()
+  const { spectrogram } = useAnnotationTask()
   const { width } = useAnnotatorWindow()
   const scale = useMemo(() => new LinearScaleService(
     width,
     {
       ratio: 1,
       minValue: 0,
-      maxValue: task?.spectrogram.duration ?? 0,
+      maxValue: spectrogram?.duration ?? 0,
     },
-  ), [ task, width ])
+  ), [ spectrogram, width ])
 
   return {
     timeScale: scale,

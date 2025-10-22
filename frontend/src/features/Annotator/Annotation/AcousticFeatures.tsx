@@ -25,7 +25,7 @@ export const AcousticFeatures: React.FC = () => {
   } = useAnnotatorAnnotation()
   const { campaign } = useCurrentCampaign()
   const { phase } = useCurrentPhase()
-  const { task } = useAnnotationTask()
+  const { spectrogram } = useAnnotationTask()
   const { analysis } = useAnnotatorAnalysis()
   const { timeScale } = useTimeAxis()
 
@@ -103,12 +103,12 @@ export const AcousticFeatures: React.FC = () => {
   }, [ updateAnnotation, focusedAnnotation, analysis ])
 
   const updateDuration = useCallback((value: number) => {
-    if (focusedAnnotation?.type !== AnnotationType.Box || !task?.spectrogram) return;
-    value = Math.min(value, task.spectrogram.duration)
+    if (focusedAnnotation?.type !== AnnotationType.Box || !spectrogram) return;
+    value = Math.min(value, spectrogram.duration)
     updateAnnotation(focusedAnnotation, {
       end_time: focusedAnnotation.start_time! + Math.max(value, 0),
     })
-  }, [ updateAnnotation, focusedAnnotation, task ])
+  }, [ updateAnnotation, focusedAnnotation, spectrogram ])
 
   const onTopMove = useCallback((move: number) => {
     setTop(prev => {
@@ -207,7 +207,7 @@ export const AcousticFeatures: React.FC = () => {
           <TableContent className={ styles.cell }>
               <Input value={ duration } type="number"
                      step={ 0.001 }
-                     min={ 0.01 } max={ task?.spectrogram?.duration ?? 0 }
+                     min={ 0.01 } max={ spectrogram?.duration ?? 0 }
                      disabled={ phase?.phase === 'Verification' }
                      onChange={ e => updateDuration(+e.currentTarget.value) }/>
               <IonNote>s</IonNote>

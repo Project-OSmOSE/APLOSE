@@ -4,11 +4,11 @@ from django.shortcuts import get_object_or_404
 from graphene_django.types import ErrorType
 
 from backend.api.models import AnnotationPhase
+from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions, ForbiddenError
 from .annotation_context_filter import AnnotationContextFilter
 from .annotation_input import AnnotationInput
 from .mutation import AnnotationMutation
-from ..annotation_phase.phase_node import AnnotationPhaseType
 
 
 class UpdateAnnotationListMutation(graphene.Mutation):

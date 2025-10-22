@@ -2,10 +2,11 @@ import React, { Fragment, useCallback, useMemo } from 'react';
 import styles from './styles.module.scss'
 import { IonSpinner } from '@ionic/react';
 import { Pagination, Table, TableDivider, TableHead, WarningText } from '@/components/ui';
-import { AnnotationsFilter, DateFilter, StatusFilter, TaskRow } from '@/features/AnnotationTask';
+import { AnnotationsFilter, DateFilter, StatusFilter } from '@/features/AnnotationTask';
 import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
 import { useAllAnnotationTasks, useAllTasksFilters, useCurrentCampaign, useCurrentPhase } from '@/api';
 import { FileRangeActionBar } from '@/features/AnnotationFileRange';
+import { SpectrogramRow } from '@/features/AnnotationSpectrogram';
 
 export const AnnotationCampaignPhaseDetail: React.FC = () => {
   const { campaign, verificationPhase } = useCurrentCampaign()
@@ -14,9 +15,9 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
   const { params, updatePage } = useAllTasksFilters({ clearOnLoad: true })
 
   useAllAnnotationTasks({ page: 1 }, { refetchOnMountOrArgChange: true })
-  const { allTasks, pageCount, isFetching, error } = useAllAnnotationTasks(params)
+  const { allSpectrograms, pageCount, isFetching, error } = useAllAnnotationTasks(params)
 
-  const isEmpty = useMemo(() => error || !allTasks || allTasks.length === 0 || campaign?.isArchived, [ error, allTasks, campaign ])
+  const isEmpty = useMemo(() => error || !allSpectrograms || allSpectrograms.length === 0 || campaign?.isArchived, [ error, allSpectrograms, campaign ])
 
   const onFilterUpdated = useCallback(() => {
     updatePage(1)
@@ -60,21 +61,21 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
         </TableHead>
         <TableDivider/>
 
-        { allTasks
-          ?.filter(t => t && t.annotations && t.validatedAnnotations)
-          .map(t => <TaskRow key={ t!.spectrogram.id }
-                             task={ t! }
-                             spectrogram={ t!.spectrogram! }
-                             annotations={ t!.annotations! }
-                             validatedAnnotations={ t!.validatedAnnotations! }/>) }
+        { allSpectrograms
+          ?.filter(s => s && s.annotations && s.validatedAnnotations)
+          .map(s => <SpectrogramRow key={ s!.id }
+                                    spectrogram={ s! }
+                                    annotations={ s!.annotations! }
+                                    validatedAnnotations={ s!.validatedAnnotations! }/>) }
       </Table>
 
-      { allTasks && allTasks.length > 0 &&
+      { allSpectrograms && allSpectrograms.length > 0 &&
           <Pagination currentPage={ params.page } totalPages={ pageCount } setCurrentPage={ updatePage }/> }
 
       { isFetching && <IonSpinner/> }
       { error && <WarningText error={ error }/> }
-      { allTasks && allTasks.length === 0 && <p>You have no files to annotate.</p> }
+      { !isFetching && !error && (!allSpectrograms || allSpectrograms.length === 0) &&
+          <p>You have no files to annotate.</p> }
       { campaign?.isArchived ? <p>The campaign is archived. No more annotation can be done.</p> :
         (phase?.endedAt && <p>The phase is ended. No more annotation can be done.</p>) }
 

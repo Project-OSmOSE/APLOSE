@@ -1,19 +1,13 @@
 from django.db.models import Q, QuerySet, Count, ExpressionWrapper, Value, BooleanField
 from django_filters import BooleanFilter, CharFilter, OrderingFilter
-from graphene import Field, Int, NonNull, Boolean, Enum, ID
+from graphene import Field, Int, NonNull, Boolean, ID
 from graphene_django.filter import TypedFilter
 from graphql import GraphQLResolveInfo
 
 from backend.api.models import AnnotationPhase, AnnotationTask
+from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema.filters import BaseFilterSet
 from backend.utils.schema.types import BaseObjectType, BaseNode
-
-
-class AnnotationPhaseType(Enum):
-    """From AnnotationPhase.Type"""
-
-    Annotation = "A"
-    Verification = "V"
 
 
 class AnnotationPhaseFilter(BaseFilterSet):
@@ -108,7 +102,7 @@ class AnnotationPhaseNode(BaseObjectType):
                         | Value(info.context.user.is_staff)
                         | Value(info.context.user.is_superuser)
                     ),
-                    output_field=BooleanField(),
+                    output_field=BooleanField(default=False),
                 ),
             )
         )

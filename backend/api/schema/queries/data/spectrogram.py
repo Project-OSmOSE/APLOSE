@@ -17,6 +17,7 @@ from backend.api.models import (
     Annotation,
     SpectrogramAnalysis,
 )
+from backend.api.schema.enums import AnnotationTaskStatus
 from backend.api.view.annotation.annotation_file_range import (
     AnnotationFileRangeFilesFilter,
 )
@@ -30,7 +31,6 @@ from backend.utils.schema import (
 )
 from ..annotation.annotation import AnnotationNode
 from ..annotation.annotation_phase import AnnotationPhaseType
-from ..annotation.annotation_task import AnnotationTaskStatus
 
 
 class SpectrogramFilter(FilterSet):

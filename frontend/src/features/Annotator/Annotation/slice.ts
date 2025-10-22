@@ -104,7 +104,7 @@ export const AnnotatorAnnotationSlice = createSlice({
         state._campaignID = action.meta.arg.originalArgs.campaignID
         state.id = initialState.id
       }
-      const annotations = action.payload.annotationTasksForUserBySpectrogramId?.annotations?.results.filter(a => a !== null).map(a => a!) ?? []
+      const annotations = action.payload.annotationSpectrogramById?.annotations?.results.filter(a => a !== null).map(a => a!) ?? []
       state.allAnnotations = convertGqlToAnnotations(annotations)
       const defaultAnnotation = [ ...state.allAnnotations ].reverse().pop();
       state.id = defaultAnnotation?.id

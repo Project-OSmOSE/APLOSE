@@ -7,14 +7,13 @@ from backend.api.models import (
     AnnotationTask,
     AnnotationCampaign,
 )
+from backend.api.schema.enums import AnnotationPhaseType, AnnotationTaskStatus
 from backend.utils.schema import NotFoundError, GraphQLResolve, GraphQLPermissions
+from .resume_connection import ResumeConnectionField
 from .task_node import (
     AnnotationTaskNode,
-    ResumeConnectionField,
-    AnnotationTaskIndexesNode,
+    AnnotationTaskFilter,
 )
-from ..annotation_phase.phase_node import AnnotationPhaseType
-from ...queries.annotation.annotation_task import AnnotationTaskStatus
 
 
 def _get_task(
@@ -53,7 +52,12 @@ class AnnotationTaskQuery(graphene.ObjectType):
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     def resolve_annotation_tasks_for_user(
-        self, info, campaign_id: int, annotator_id: int, phase_type: AnnotationPhaseType
+        self,
+        info,
+        campaign_id: int,
+        annotator_id: int,
+        phase_type: AnnotationPhaseType,
+        **kwargs
     ):
         """List tasks for user in phase"""
         file_ranges = AnnotationFileRange.objects.filter(

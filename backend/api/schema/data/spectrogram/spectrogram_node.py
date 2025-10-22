@@ -15,10 +15,9 @@ from backend.api.models import (
     AnnotationPhase,
     SpectrogramAnalysis,
 )
-from backend.api.schema.queries.annotation.annotation_task import AnnotationTaskStatus
+from backend.api.schema.enums import AnnotationPhaseType, AnnotationTaskStatus
 from backend.utils.schema.filters import BaseFilterSet, IDFilter
 from backend.utils.schema.types import BaseObjectType, BaseNode
-from ...annotation.annotation_phase.phase_node import AnnotationPhaseType
 
 
 class SpectrogramFilter(BaseFilterSet):

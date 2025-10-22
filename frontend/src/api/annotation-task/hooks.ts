@@ -46,10 +46,10 @@ export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
   })
   return useMemo(() => ({
     ...info,
-    allTasks: info.data?.annotationTasksForUser?.results.filter(r => r !== null),
-    resumeSpectrogramID: info.data?.annotationTasksForUser?.resumeSpectrogramId,
+    allSpectrograms: info.data?.listAnnotationSpectrogram?.results.filter(r => r !== null),
+    resumeSpectrogramID: info.data?.listAnnotationSpectrogram?.resumeSpectrogramId,
     page: filters.page,
-    pageCount: Math.ceil((info.data?.annotationTasksForUser?.totalCount ?? 0) / PAGE_SIZE),
+    pageCount: Math.ceil((info.data?.listAnnotationSpectrogram?.totalCount ?? 0) / PAGE_SIZE),
   }), [ info ])
 }
 
@@ -75,10 +75,10 @@ export const useAnnotationTask = (options: {
   })
   return useMemo(() => ({
     ...info,
-    task: info.data?.annotationTasksForUserBySpectrogramId,
-    navigationInfo: info.data?.annotationTasksForUser,
-    annotations: info.data?.annotationTasksForUserBySpectrogramId?.annotations?.results.filter(r => !!r).map(r => r!),
-    isEditionAuthorized: phase?.canManage && info.data?.annotationTasksForUserBySpectrogramId?.isAssigned,
+    spectrogram: info.data?.annotationSpectrogramById,
+    navigationInfo: info.data?.listAnnotationSpectrogram,
+    annotations: info.data?.annotationSpectrogramById?.annotations?.results.filter(r => !!r).map(r => r!),
+    isEditionAuthorized: phase?.canManage && info.data?.annotationSpectrogramById?.isAssigned,
   }), [ info, phase ])
 }
 

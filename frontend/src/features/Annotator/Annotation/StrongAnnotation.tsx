@@ -14,7 +14,7 @@ import { useFrequencyAxis, useTimeAxis } from '@/features/Annotator/Axis';
 export const StrongAnnotation: React.FC<{
   annotation: Annotation
 }> = ({ annotation }) => {
-  const { task, isEditionAuthorized } = useAnnotationTask()
+  const { spectrogram, isEditionAuthorized } = useAnnotationTask()
   const { focus: _focus, focusedAnnotation, updateAnnotation } = useAnnotatorAnnotation()
   const focus = useCallback(() => _focus(annotation), [ annotation, _focus ])
   const { allLabels, hiddenLabels } = useAnnotatorLabel()
@@ -129,12 +129,12 @@ export const StrongAnnotation: React.FC<{
     return `ion-color-${ allLabels.indexOf(annotation.update?.label ?? annotation.label) % 10 }`
   }, [ allLabels, annotation ]);
   const headerClass: string = useMemo(() => {
-    if (!task?.spectrogram || annotation.type === 'Weak') return ''
+    if (!spectrogram || annotation.type === 'Weak') return ''
     let stickSideClass = ''
     const end = annotation.type === 'Box' ? annotation.end_time! : annotation.start_time!;
-    if (end > (task.spectrogram.duration * 0.9))
+    if (end > (spectrogram.duration * 0.9))
       stickSideClass = styles.stickRight
-    if (annotation.start_time! < (task.spectrogram.duration * 0.1))
+    if (annotation.start_time! < (spectrogram.duration * 0.1))
       stickSideClass = styles.stickLeft
     return [
       styles.header,
@@ -143,7 +143,7 @@ export const StrongAnnotation: React.FC<{
       canDraw ? '' : styles.editDisabled,
       top < 24 ? styles.bellow : styles.over,
     ].join(' ')
-  }, [ task, annotation, colorClassName, canDraw, top ])
+  }, [ spectrogram, annotation, colorClassName, canDraw, top ])
 
   if (annotation.type === AnnotationType.Weak) return <Fragment/>
   if (isHidden) return <Fragment/>

@@ -19,7 +19,7 @@ export const useAnnotatorCanvas = () => {
     yAxisCanvas, setYAxisCanvas,
   } = useAnnotatorCanvasContext()
   const { analysis } = useAnnotatorAnalysis()
-  const { task } = useAnnotationTask()
+  const { spectrogram } = useAnnotationTask()
   const { width, height, yAxisWidth, containerWidth } = useAnnotatorWindow()
   const { drawSpectrogram } = useAnnotatorSpectrogram()
   const { zoom, zoomOrigin } = useAnnotatorZoom()
@@ -130,7 +130,7 @@ export const useAnnotatorCanvas = () => {
     // On current newAnnotation changed
     tempAnnotation?.end_time, tempAnnotation?.end_frequency, tempAnnotation,
     // On Spectrogram or analysis changed
-    task?.spectrogram, analysis,
+    spectrogram, analysis,
     // On colormap changed
     colormap, isColormapReversed, brightness, contrast,
   ])
@@ -139,9 +139,9 @@ export const useAnnotatorCanvas = () => {
   const currentTime = useRef<number>(0)
   useEffect(() => {
     // Scroll if progress bar reach the right edge of the screen
-    if (!window || !task?.spectrogram) return;
-    const oldX: number = Math.floor(width * currentTime.current / task.spectrogram.duration);
-    const newX: number = Math.floor(width * time / task.spectrogram.duration);
+    if (!window || !spectrogram) return;
+    const oldX: number = Math.floor(width * currentTime.current / spectrogram.duration);
+    const newX: number = Math.floor(width * time / spectrogram.duration);
 
     if ((oldX - window.scrollLeft) < containerWidth && (newX - window.scrollLeft) >= containerWidth) {
       window.scrollLeft += containerWidth;
@@ -149,19 +149,19 @@ export const useAnnotatorCanvas = () => {
     currentTime.current = time;
   }, [
     // On time changed
-    time, task?.spectrogram.duration,
+    time, spectrogram?.duration,
   ])
 
   // Manage zoom update
   const [ _zoom, _setZoom ] = useState<number>(1);
   useEffect(() => {
     const mainBounds = mainCanvas?.getBoundingClientRect()
-    if (!window || !task?.spectrogram || !mainBounds) return;
+    if (!window || !spectrogram || !mainBounds) return;
 
     // If zoom factor has changed
     if (zoom === _zoom) return;
     // New timePxRatio
-    const newTimePxRatio: number = containerWidth * zoom / task.spectrogram.duration;
+    const newTimePxRatio: number = containerWidth * zoom / spectrogram.duration;
 
     // Compute new center (before resizing)
     let newCenter: number;
@@ -185,7 +185,7 @@ export const useAnnotatorCanvas = () => {
     draw()
   }, [
     // On zoom updated
-    zoom, task?.spectrogram.duration,
+    zoom, spectrogram?.duration,
   ]);
 
   return {

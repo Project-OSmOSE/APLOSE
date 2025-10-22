@@ -1,3 +1,4 @@
+import graphene_django_optimizer
 from django.db.models import (
     Q,
     QuerySet,
@@ -14,10 +15,11 @@ from graphene_django.filter import TypedFilter
 from graphql import GraphQLResolveInfo
 
 from backend.api.models import AnnotationCampaign
+from backend.api.schema.enums import AnnotationPhaseType
 from backend.aplose.schema.user import UserNode
 from backend.utils.schema.filters import BaseFilterSet
 from backend.utils.schema.types import BaseObjectType, BaseNode
-from ..annotation_phase.phase_node import AnnotationPhaseType, AnnotationPhaseNode
+from ..annotation_phase.phase_node import AnnotationPhaseNode
 from ..detector.detector_node import DetectorNode
 from ..label.label_node import AnnotationLabelNode
 from ...archive import ArchiveNode
@@ -80,6 +82,11 @@ class AnnotationCampaignNode(BaseObjectType):
         filterset_class = AnnotationCampaignFilter
         interfaces = (BaseNode,)
 
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_labels_with_acoustic_features(self: AnnotationCampaign, info):
+        """Resolve featured labels"""
+        return self.labels_with_acoustic_features.all()
+
     @classmethod
     def resolve_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
         return (
@@ -100,7 +107,7 @@ class AnnotationCampaignNode(BaseObjectType):
                         | Value(info.context.user.is_staff)
                         | Value(info.context.user.is_superuser)
                     ),
-                    output_field=BooleanField(),
+                    output_field=BooleanField(default=False),
                 ),
             )
         )

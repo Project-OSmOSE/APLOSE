@@ -4,11 +4,11 @@ import { FadedText } from '@/components/ui';
 import { useAnnotationTask } from '@/api';
 
 export const SpectrogramInfo: React.FC = () => {
-  const { task } = useAnnotationTask()
-  
-  if (!task) return <Fragment/>
+  const { spectrogram } = useAnnotationTask()
+
+  if (!spectrogram) return <Fragment/>
   return <div className={ styles.spectrogramInfo }>
     <FadedText>Date:</FadedText>
-    <p>{ new Date(task.spectrogram.start).toUTCString() }</p>
+    <p>{ new Date(spectrogram.start).toUTCString() }</p>
   </div>
 }

@@ -5,17 +5,23 @@ import { spectrogram } from './spectrogram';
 
 export type Task =
   Omit<AnnotationTaskNode, 'annotations' | 'annotator' | 'validatedAnnotations' | 'annotationPhase' | 'spectrogram' | 'comments'>
+  & {
+  annotationCount: number,
+  validationAnnotationCount: number,
+}
 
 export const TASKS: { [key in 'submitted' | 'unsubmitted']: Task } = {
   unsubmitted: {
     id: '1',
     status: AnnotationTaskStatus.Created,
-    isAssigned: true,
+    annotationCount: 0,
+    validationAnnotationCount: 0,
   },
   submitted: {
     id: '2',
     status: AnnotationTaskStatus.Finished,
-    isAssigned: true,
+    annotationCount: 2,
+    validationAnnotationCount: 0,
   },
 }
 
@@ -26,42 +32,25 @@ export const TASK_QUERIES: {
   listAnnotationTask: {
     defaultType: 'filled',
     empty: {
-      annotationTasksForUser: null,
+      listAnnotationSpectrogram: null,
     },
     filled: {
-      annotationTasksForUser: {
-        results: [
-          {
-            status: AnnotationTaskStatus.Created,
-            annotations: {
-              totalCount: 0,
-            },
-            validatedAnnotations: {
-              totalCount: 0,
-            },
-            spectrogram: {
-              id: spectrogram.id,
-              start: spectrogram.start,
-              filename: spectrogram.filename,
-              duration: spectrogram.duration,
-            },
+      listAnnotationSpectrogram: {
+        results: Object.values(TASKS).map(t => ({
+          id: t.id,
+          status: t.status,
+          start: spectrogram.start,
+          filename: spectrogram.filename,
+          duration: spectrogram.duration,
+          annotations: {
+            totalCount: t.annotationCount,
           },
-          {
-            status: AnnotationTaskStatus.Finished,
-            annotations: {
-              totalCount: 2,
-            },
-            validatedAnnotations: {
-              totalCount: 0,
-            },
-            spectrogram: {
-              id: spectrogram.id,
-              start: spectrogram.start,
-              filename: spectrogram.filename,
-              duration: spectrogram.duration,
-            },
+          validatedAnnotations: {
+            totalCount: t.validationAnnotationCount,
           },
-        ],
+        })),
+        totalCount: 2,
+        resumeSpectrogramId: spectrogram.id,
       },
     },
   },

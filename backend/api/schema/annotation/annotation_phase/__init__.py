@@ -1,6 +1,7 @@
 from graphene import ObjectType, Field, ID
 
 from backend.api.models import AnnotationPhase
+from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import (
     AuthenticatedDjangoConnectionField,
     GraphQLPermissions,
@@ -8,7 +9,7 @@ from backend.utils.schema import (
 )
 from .create_phase_mutation import CreateAnnotationPhase
 from .end_phase_mutation import EndAnnotationPhaseMutation
-from .phase_node import AnnotationPhaseNode, AnnotationPhaseType
+from .phase_node import AnnotationPhaseNode
 from .update_file_ranges import UpdateAnnotationPhaseFileRanges
 
 

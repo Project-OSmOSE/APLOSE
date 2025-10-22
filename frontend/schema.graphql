@@ -1325,13 +1325,42 @@ type Query {
     annotations_AcousticFeatures_Exists: Boolean
     annotations_Detector: ID
     annotations_Annotator: ID
-    spectrogramMin_Id: ID
-    spectrogramMax_Id: ID
 
     """Ordering"""
     orderBy: String
   ): AnnotationTaskNodeNodeConnection
   annotationTasksForUserBySpectrogramId(spectrogramId: ID!, campaignId: ID!, annotatorId: ID!, phaseType: AnnotationPhaseType!): AnnotationTaskNode
+  listAnnotationSpectrogram(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    start_Lte: DateTime
+    end_Gte: DateTime
+    filename_Icontains: String
+    phase: AnnotationPhaseType
+    annotationCampaign: ID
+    annotator: ID
+    annotationTasks_Status: AnnotationTaskStatus
+    annotations_Exists: Boolean
+    annotations_Confidence_Label: String
+    annotations_LabelName: String
+    annotations_AcousticFeatures_Exists: Boolean
+    annotations_Detector: ID
+    annotations_Annotator: ID
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationSpectrogramNodeNodeConnection
+  annotationSpectrogramById(id: ID): AnnotationSpectrogramNode
   allAnnotationPhases(
     """Query limit"""
     limit: Int
@@ -2214,7 +2243,7 @@ type AnnotationNode implements BaseNode {
 
   """Expertise level of the annotator."""
   annotatorExpertiseLevel: ApiAnnotationAnnotatorExpertiseLevelChoices
-  spectrogram: SpectrogramNode!
+  spectrogram: AnnotationSpectrogramNode!
   analysis: SpectrogramAnalysisNode!
   detectorConfiguration: DetectorConfigurationNode
 
@@ -2224,7 +2253,7 @@ type AnnotationNode implements BaseNode {
   createdAt: DateTime!
   lastUpdatedAt: DateTime!
   updatedTo(offset: Int, before: String, after: String, first: Int, last: Int, annotator: ID, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean): AnnotationNodeConnection!
-  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID): AnnotationCommentNodeConnection!
+  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationCommentNodeConnection!
   validations(
     """Query limit"""
     limit: Int
@@ -2255,6 +2284,7 @@ type AnnotationNode implements BaseNode {
     last: Int
     annotation_Isnull: Boolean
     author: ID
+    annotationPhase_Phase: AnnotationPhaseType
   ): AnnotationCommentNodeNodeConnection
 }
 
@@ -2506,8 +2536,6 @@ type UserNode implements BaseNode {
     annotations_AcousticFeatures_Exists: Boolean
     annotations_Detector: ID
     annotations_Annotator: ID
-    spectrogramMin_Id: ID
-    spectrogramMax_Id: ID
 
     """Ordering"""
     orderBy: String
@@ -2536,11 +2564,11 @@ type UserNode implements BaseNode {
     after: String
     first: Int
     last: Int
+    annotationCampaignId: ID
+    annotationCampaign_OwnerId: ID
+    annotationFileRanges_AnnotatorId: ID
     isCampaignArchived: Boolean
-    campaignPk: PK
-    campaignOwnerPk: PK
-    annotatorPk: PK
-    phaseType: AnnotationPhaseType
+    phase: AnnotationPhaseType
 
     """search"""
     search: String
@@ -2554,11 +2582,11 @@ type UserNode implements BaseNode {
     after: String
     first: Int
     last: Int
+    annotationCampaignId: ID
+    annotationCampaign_OwnerId: ID
+    annotationFileRanges_AnnotatorId: ID
     isCampaignArchived: Boolean
-    campaignPk: PK
-    campaignOwnerPk: PK
-    annotatorPk: PK
-    phaseType: AnnotationPhaseType
+    phase: AnnotationPhaseType
 
     """search"""
     search: String
@@ -2566,7 +2594,7 @@ type UserNode implements BaseNode {
     """Ordering"""
     orderBy: String
   ): AnnotationPhaseNodeConnection!
-  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID): AnnotationCommentNodeConnection!
+  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationCommentNodeConnection!
   annotationResultsValidation(offset: Int, before: String, after: String, first: Int, last: Int, annotator: ID): AnnotationValidationNodeConnection!
   displayName: String!
   isAdmin: Boolean!
@@ -2659,30 +2687,23 @@ type SpectrogramAnalysisNode implements BaseNode {
     after: String
     first: Int
     last: Int
-    start: DateTime
-    start_Lt: DateTime
     start_Lte: DateTime
-    start_Gt: DateTime
-    start_Gte: DateTime
-    end: DateTime
-    end_Lt: DateTime
-    end_Lte: DateTime
-    end_Gt: DateTime
     end_Gte: DateTime
-    campaignId: ID
-    phaseType: AnnotationPhaseType
-    annotatorId: ID
-    isTaskCompleted: Boolean
-    hasAnnotations: Boolean
-    annotatedByAnnotator: ID
-    annotatedByDetector: ID
-    annotatedWithLabel: String
-    annotatedWithConfidence: String
-    annotatedWithFeatures: Boolean
+    filename_Icontains: String
+    phase: AnnotationPhaseType
+    annotationCampaign: ID
+    annotator: ID
+    annotationTasks_Status: AnnotationTaskStatus
+    annotations_Exists: Boolean
+    annotations_Confidence_Label: String
+    annotations_LabelName: String
+    annotations_AcousticFeatures_Exists: Boolean
+    annotations_Detector: ID
+    annotations_Annotator: ID
 
     """Ordering"""
     orderBy: String
-  ): SpectrogramNodeConnection!
+  ): AnnotationSpectrogramNodeConnection!
   annotations(offset: Int, before: String, after: String, first: Int, last: Int, annotator: ID, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean): AnnotationNodeConnection!
   annotationCampaigns(
     offset: Int
@@ -2831,25 +2852,24 @@ type LegacySpectrogramConfigurationNodeEdge {
   cursor: String!
 }
 
-type SpectrogramNodeConnection {
+type AnnotationSpectrogramNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfo!
 
   """Contains the nodes in this connection."""
-  edges: [SpectrogramNodeEdge]!
+  edges: [AnnotationSpectrogramNodeEdge]!
 }
 
-"""A Relay edge containing a `SpectrogramNode` and its cursor."""
-type SpectrogramNodeEdge {
+"""A Relay edge containing a `AnnotationSpectrogramNode` and its cursor."""
+type AnnotationSpectrogramNodeEdge {
   """The item at the end of the edge"""
-  node: SpectrogramNode
+  node: AnnotationSpectrogramNode
 
   """A cursor for use in pagination"""
   cursor: String!
 }
 
-"""Spectrogram schema"""
-type SpectrogramNode implements BaseNode {
+type AnnotationSpectrogramNode implements BaseNode {
   """The ID of the object"""
   id: ID!
   format: FileFormatNode!
@@ -2868,7 +2888,28 @@ type SpectrogramNode implements BaseNode {
     """Ordering"""
     orderBy: String
   ): SpectrogramAnalysisNodeConnection!
-  annotations(offset: Int, before: String, after: String, first: Int, last: Int, annotator: ID, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean): AnnotationNodeConnection!
+  annotations(
+    campaignId: ID!
+    phase: AnnotationPhaseType!
+
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotator: ID
+    confidence_Label: String
+    label_Name: String
+    detectorConfiguration_Detector: ID
+    acousticFeatures_Exists: Boolean
+  ): AnnotationNodeNodeConnection
   annotationTasks(
     offset: Int
     before: String
@@ -2886,19 +2927,57 @@ type SpectrogramNode implements BaseNode {
     annotations_AcousticFeatures_Exists: Boolean
     annotations_Detector: ID
     annotations_Annotator: ID
-    spectrogramMin_Id: ID
-    spectrogramMax_Id: ID
 
     """Ordering"""
     orderBy: String
   ): AnnotationTaskNodeConnection!
-  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID): AnnotationCommentNodeConnection!
+  annotationComments(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotation_Isnull: Boolean
+    author: ID
+    annotationPhase_Phase: AnnotationPhaseType
+  ): AnnotationCommentNodeNodeConnection
   taskStatus(campaignId: ID!, annotatorId: ID!, phaseType: AnnotationPhaseType!): AnnotationTaskStatus
   path(analysisId: ID!): String!
   audioPath(analysisId: ID!): String!
   duration: Int!
   annotationCount: Int!
   validatedAnnotationCount(campaignId: ID!, annotatorId: ID!): Int
+  isAssigned(campaignId: ID!, phase: AnnotationPhaseType!): Boolean!
+  status(campaignId: ID!, phase: AnnotationPhaseType!): AnnotationTaskStatus
+  validatedAnnotations(
+    campaignId: ID!
+    phase: AnnotationPhaseType!
+
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotator: ID
+    confidence_Label: String
+    label_Name: String
+    detectorConfiguration_Detector: ID
+    acousticFeatures_Exists: Boolean
+  ): AnnotationNodeNodeConnection
 }
 
 type FileFormatNode implements Node {
@@ -2917,30 +2996,23 @@ type FileFormatNode implements Node {
     after: String
     first: Int
     last: Int
-    start: DateTime
-    start_Lt: DateTime
     start_Lte: DateTime
-    start_Gt: DateTime
-    start_Gte: DateTime
-    end: DateTime
-    end_Lt: DateTime
-    end_Lte: DateTime
-    end_Gt: DateTime
     end_Gte: DateTime
-    campaignId: ID
-    phaseType: AnnotationPhaseType
-    annotatorId: ID
-    isTaskCompleted: Boolean
-    hasAnnotations: Boolean
-    annotatedByAnnotator: ID
-    annotatedByDetector: ID
-    annotatedWithLabel: String
-    annotatedWithConfidence: String
-    annotatedWithFeatures: Boolean
+    filename_Icontains: String
+    phase: AnnotationPhaseType
+    annotationCampaign: ID
+    annotator: ID
+    annotationTasks_Status: AnnotationTaskStatus
+    annotations_Exists: Boolean
+    annotations_Confidence_Label: String
+    annotations_LabelName: String
+    annotations_AcousticFeatures_Exists: Boolean
+    annotations_Detector: ID
+    annotations_Annotator: ID
 
     """Ordering"""
     orderBy: String
-  ): SpectrogramNodeConnection!
+  ): AnnotationSpectrogramNodeConnection!
 }
 
 type FileNodeConnection {
@@ -3194,6 +3266,21 @@ enum AnnotationPhaseType {
   Verification
 }
 
+"""From AnnotationTask.Status"""
+enum AnnotationTaskStatus {
+  Created
+  Finished
+}
+
+type AnnotationNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [AnnotationNode]!
+  totalCount: Int
+}
+
 type AnnotationTaskNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfo!
@@ -3218,8 +3305,7 @@ type AnnotationTaskNode implements BaseNode {
   status: AnnotationTaskStatus!
   annotationPhase: AnnotationPhaseNode!
   annotator: UserNode!
-  spectrogram: SpectrogramNode!
-  isAssigned: Boolean!
+  spectrogram: AnnotationSpectrogramNode!
   annotations(
     """Query limit"""
     limit: Int
@@ -3273,13 +3359,8 @@ type AnnotationTaskNode implements BaseNode {
     last: Int
     annotation_Isnull: Boolean
     author: ID
+    annotationPhase_Phase: AnnotationPhaseType
   ): AnnotationCommentNodeNodeConnection
-}
-
-"""From AnnotationTask.Status"""
-enum AnnotationTaskStatus {
-  Created
-  Finished
 }
 
 """AnnotationPhase schema"""
@@ -3310,14 +3391,12 @@ type AnnotationPhaseNode implements BaseNode {
     annotations_AcousticFeatures_Exists: Boolean
     annotations_Detector: ID
     annotations_Annotator: ID
-    spectrogramMin_Id: ID
-    spectrogramMax_Id: ID
 
     """Ordering"""
     orderBy: String
   ): AnnotationTaskNodeConnection!
   annotationFileRanges(offset: Int, before: String, after: String, first: Int, last: Int, annotationPhase_AnnotationCampaign: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationFileRangeNodeConnection!
-  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID): AnnotationCommentNodeConnection!
+  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationCommentNodeConnection!
   annotationCampaignId: ID!
   isCompleted: Boolean!
   isOpen: Boolean!
@@ -3381,8 +3460,6 @@ type AnnotationFileRangeNode implements BaseNode {
     annotations_AcousticFeatures_Exists: Boolean
     annotations_Detector: ID
     annotations_Annotator: ID
-    spectrogramMin_Id: ID
-    spectrogramMax_Id: ID
 
     """Ordering"""
     orderBy: String
@@ -3448,6 +3525,57 @@ type SpectrogramNodeNodeConnection {
   totalCount: Int
 }
 
+"""Spectrogram schema"""
+type SpectrogramNode implements BaseNode {
+  """The ID of the object"""
+  id: ID!
+  format: FileFormatNode!
+  filename: String!
+  start: DateTime!
+  end: DateTime!
+  analysis(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    datasetId: ID
+    annotationCampaigns_Id: ID
+
+    """Ordering"""
+    orderBy: String
+  ): SpectrogramAnalysisNodeConnection!
+  annotations(offset: Int, before: String, after: String, first: Int, last: Int, annotator: ID, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean): AnnotationNodeConnection!
+  annotationTasks(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotator: ID
+    status: AnnotationTaskStatus
+    spectrogram_Filename_Icontains: String
+    spectrogram_Start_Lte: DateTime
+    spectrogram_End_Gte: DateTime
+    annotations_Exists: Boolean
+    annotations_Confidence_Label: String
+    annotations_LabelName: String
+    annotations_AcousticFeatures_Exists: Boolean
+    annotations_Detector: ID
+    annotations_Annotator: ID
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationTaskNodeConnection!
+  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationCommentNodeConnection!
+  taskStatus(campaignId: ID!, annotatorId: ID!, phaseType: AnnotationPhaseType!): AnnotationTaskStatus
+  path(analysisId: ID!): String!
+  audioPath(analysisId: ID!): String!
+  duration: Int!
+  annotationCount: Int!
+  validatedAnnotationCount(campaignId: ID!, annotatorId: ID!): Int
+}
+
 type AnnotationCommentNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfo!
@@ -3473,17 +3601,8 @@ type AnnotationCommentNode implements BaseNode {
   annotation: AnnotationNode
   annotationPhase: AnnotationPhaseNode!
   author: UserNode!
-  spectrogram: SpectrogramNode!
+  spectrogram: AnnotationSpectrogramNode!
   createdAt: DateTime!
-}
-
-type AnnotationNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [AnnotationNode]!
-  totalCount: Int
 }
 
 type AnnotationCommentNodeNodeConnection {
@@ -3538,9 +3657,6 @@ type AnnotationPhaseNodeEdge {
   cursor: String!
 }
 
-"""Django Primary key"""
-scalar PK
-
 type AnnotationValidationNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfo!
@@ -3569,6 +3685,9 @@ type AnnotationValidationNode implements Node {
   lastUpdatedAt: DateTime!
   pk: PK!
 }
+
+"""Django Primary key"""
+scalar PK
 
 """From ExpertiseLevel"""
 enum ExpertiseLevel {
@@ -4273,6 +4392,19 @@ type ConfidenceSetNodeNodeConnection {
   """Contains the nodes in this connection."""
   results: [ConfidenceSetNode]!
   totalCount: Int
+}
+
+type AnnotationSpectrogramNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [AnnotationSpectrogramNode]!
+  totalCount: Int
+  resumeSpectrogramId: ID
+  previousSpectrogramId(spectrogramId: ID): ID
+  nextSpectrogramId(spectrogramId: ID): ID
+  currentIndex(spectrogramId: ID): Int
 }
 
 type AnnotationPhaseNodeNodeConnection {

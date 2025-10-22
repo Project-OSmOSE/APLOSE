@@ -6,23 +6,23 @@ import { useAnnotatorCanvas } from '@/features/Annotator/Canvas';
 import { useAnnotatorZoom } from '@/features/Annotator/Zoom';
 
 export const SpectrogramDownloadButton: React.FC = () => {
-  const { task } = useAnnotationTask()
+  const { spectrogram } = useAnnotationTask()
   const { user } = useCurrentUser();
   const { download } = useAnnotatorCanvas();
   const { zoom } = useAnnotatorZoom()
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
 
   const downloadSpectrogram = useCallback(async () => {
-    if (!task?.spectrogram) return;
+    if (!spectrogram) return;
     setIsLoading(true);
     try {
-      await download(`${ task.spectrogram.filename }-x${ zoom }.png`)
+      await download(`${ spectrogram.filename }-x${ zoom }.png`)
     } finally {
       setIsLoading(false);
     }
-  }, [ download, task, zoom ])
+  }, [ download, spectrogram, zoom ])
 
-  if (!task || !user?.isAdmin) return <Fragment/>
+  if (!spectrogram || !user?.isAdmin) return <Fragment/>
   return <IonButton color="medium" size="small" fill="outline"
                     onClick={ downloadSpectrogram }>
     <IonIcon icon={ downloadOutline } slot="start"/>

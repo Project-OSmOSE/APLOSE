@@ -1,18 +1,18 @@
 import { type AnnotationPhaseNode, AnnotationPhaseType } from '../../../src/api/types.gql-generated';
 import type { GetAnnotationPhaseQuery } from '../../../src/api/annotation-phase';
-import type { GqlQuery } from './_types';
+import type { GqlQuery, RestQuery } from './_types';
 import type {
   ArchiveAnnotationCampaignMutation,
   CreateAnnotationCampaignMutation,
   UpdateAnnotationCampaignFeaturedLabelsMutation,
 } from '../../../src/api';
+import { DOWNLOAD_ANNOTATIONS, DOWNLOAD_PROGRESS } from '../../../src/consts/links';
 
 export type Phase =
-  Omit<AnnotationPhaseNode, 'annotationComments' | 'annotationFileRanges' | 'createdBy' | 'annotationTasks' | 'annotations' | 'annotationCampaign' | 'endedBy' | 'annotationCampaignId'>
+  Omit<AnnotationPhaseNode, 'annotationComments' | 'annotationFileRanges' | 'createdBy' | 'annotationTasks' | 'annotations' | 'annotationCampaign' | 'endedBy' | 'annotationCampaignId' | 'phase' | 'canManage'>
 
 export const phase: Phase = {
   id: '1',
-  phase: AnnotationPhaseType.Annotation,
   completedTasksCount: 50,
   tasksCount: 100,
   userCompletedTasksCount: 5,
@@ -20,18 +20,30 @@ export const phase: Phase = {
   createdAt: new Date().toISOString(),
   endedAt: null,
   hasAnnotations: true,
-  canManage: true,
   isOpen: true,
   isCompleted: false,
 }
 
 export const PHASE_QUERIES: {
-  getAnnotationPhase: GqlQuery<GetAnnotationPhaseQuery, AnnotationPhaseType>,
+  getAnnotationPhase: GqlQuery<GetAnnotationPhaseQuery, AnnotationPhaseType | 'manager'>,
 } = {
   getAnnotationPhase: {
     defaultType: AnnotationPhaseType.Annotation,
     empty: {
       annotationPhaseByCampaignPhase: null,
+    },
+    manager: {
+      annotationPhaseByCampaignPhase: {
+        id: phase.id,
+        phase: AnnotationPhaseType.Annotation,
+        completedTasksCount: phase.completedTasksCount,
+        tasksCount: phase.tasksCount,
+        userCompletedTasksCount: phase.userCompletedTasksCount,
+        userTasksCount: phase.userTasksCount,
+        endedAt: phase.endedAt,
+        hasAnnotations: phase.hasAnnotations,
+        canManage: true,
+      },
     },
     Annotation: {
       annotationPhaseByCampaignPhase: {
@@ -43,7 +55,7 @@ export const PHASE_QUERIES: {
         userTasksCount: phase.userTasksCount,
         endedAt: phase.endedAt,
         hasAnnotations: phase.hasAnnotations,
-        canManage: phase.canManage,
+        canManage: false,
       },
     },
     Verification: {
@@ -56,11 +68,26 @@ export const PHASE_QUERIES: {
         userTasksCount: phase.userTasksCount,
         endedAt: phase.endedAt,
         hasAnnotations: phase.hasAnnotations,
-        canManage: phase.canManage,
+        canManage: false,
       },
     },
   },
 }
+
+export const PHASE_DOWNLOADS: {
+  downloadAnnotations: RestQuery<undefined>
+  downloadProgress: RestQuery<undefined>
+} = {
+  downloadAnnotations: {
+    url: DOWNLOAD_ANNOTATIONS(phase.id),
+    success: { status: 200, json: undefined },
+  },
+  downloadProgress: {
+    url: DOWNLOAD_PROGRESS(phase.id),
+    success: { status: 200, json: undefined },
+  },
+}
+
 export const PHASE_MUTATIONS: {
   endPhase: GqlQuery<CreateAnnotationCampaignMutation, never>,
   createAnnotationPhase: GqlQuery<ArchiveAnnotationCampaignMutation, never>,

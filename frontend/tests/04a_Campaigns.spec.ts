@@ -1,6 +1,6 @@
 import { ESSENTIAL, expect, test } from './utils';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
-import { interceptRequests, USERS } from './utils/mock';
+import { gqlURL, interceptRequests, USERS } from './utils/mock';
 
 
 test.describe('Annotator', () => {
@@ -41,7 +41,7 @@ test.describe('Annotator', () => {
 
     await test.step('Search', async () => {
       const [ request ] = await Promise.all([
-        page.waitForRequest('**/graphql'),
+        page.waitForRequest(gqlURL),
         page.campaign.list.search('Test campaign'),
       ])
       expect(request.postDataJSON().variables.isArchived).toBeFalsy()
@@ -59,7 +59,7 @@ test.describe('Annotator', () => {
 
     await test.step('Add Only archived filter', async () => {
       const [ request ] = await Promise.all([
-        page.waitForRequest('**/graphql'),
+        page.waitForRequest(gqlURL),
         page.getByText('Archived: False').click(),
       ])
 
@@ -79,7 +79,7 @@ test.describe('Annotator', () => {
 
     await test.step('Add Has verification filter', async () => {
       const [ request ] = await Promise.all([
-        page.waitForRequest('**/graphql'),
+        page.waitForRequest(gqlURL),
         page.getByText('Has verification').click(),
       ])
       expect(request.postDataJSON().variables.isArchived).toBeTruthy()
@@ -97,7 +97,7 @@ test.describe('Annotator', () => {
 
     await test.step('Add Owned campaigns filter', async () => {
       const [ request ] = await Promise.all([
-        page.waitForRequest('**/graphql'),
+        page.waitForRequest(gqlURL),
         page.getByText('Owned campaigns').click(),
       ])
       expect(request.postDataJSON().variables.isArchived).toBeTruthy()
@@ -115,7 +115,7 @@ test.describe('Annotator', () => {
 
     await test.step('Remove My work filter', async () => {
       const [ request ] = await Promise.all([
-        page.waitForRequest('**/graphql'),
+        page.waitForRequest(gqlURL),
         page.getByText('My work').click(),
       ])
       expect(request.postDataJSON().variables.isArchived).toBeTruthy()

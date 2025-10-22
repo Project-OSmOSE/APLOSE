@@ -16,7 +16,7 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
   const { campaignID, phaseType } = useNavParams();
   const { campaign } = useCurrentCampaign()
   const { phase } = useCurrentPhase()
-  const { task, isEditionAuthorized, navigationInfo } = useAnnotationTask();
+  const { spectrogram, isEditionAuthorized, navigationInfo } = useAnnotationTask();
   const { canNavigate } = useAnnotatorCanNavigate()
   const dispatch = useAppDispatch()
 
@@ -51,10 +51,10 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                 </Link>
               </Fragment> }>
 
-        { task && campaign && <div className={ styles.info }>
+        { spectrogram && campaign && <div className={ styles.info }>
             <p>
               { campaign.name }
-                <IoChevronForwardOutline/> { task.spectrogram.filename } { task.status === AnnotationTaskStatus.Finished &&
+                <IoChevronForwardOutline/> { spectrogram.filename } { spectrogram.status === AnnotationTaskStatus.Finished &&
                 <IoCheckmarkCircleOutline/> }
             </p>
           { isEditionAuthorized && navigationInfo?.totalCount &&
@@ -64,7 +64,7 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                         total={ navigationInfo.totalCount }/> }
           { campaign?.archive ? <IonNote>You cannot annotate an archived campaign.</IonNote> :
             phase?.endedAt ? <IonNote>You cannot annotate an ended phase.</IonNote> :
-              !task.isAssigned ? <IonNote>You are not assigned to annotate this file.</IonNote> :
+              !spectrogram.isAssigned ? <IonNote>You are not assigned to annotate this file.</IonNote> :
                 <Fragment/>
           }
         </div> }
