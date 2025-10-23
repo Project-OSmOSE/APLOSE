@@ -23,7 +23,6 @@ class CreateAnnotationCampaignForm(forms.ModelForm):
 
 
 class CreateAnnotationCampaignMutation(DjangoModelFormMutation):
-    
     class Meta:
         form_class = CreateAnnotationCampaignForm
 
@@ -32,4 +31,19 @@ class CreateAnnotationCampaignMutation(DjangoModelFormMutation):
         GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED).check_permission(
             info.context.user
         )
-        return super().mutate_and_get_payload(root, info, **input)
+        return super().mutate_and_get_payload(
+            root, info, **input, owner=info.context.user.id
+        )
+
+    @classmethod
+    def perform_mutate(cls, form, info):
+        # Create the instance without saving it to the database
+        instance = form.save(commit=False)
+        # Set the owner to the authenticated user
+        instance.owner = info.context.user
+        # Save the instance to the database
+        instance.save()
+        # Save many-to-many relationships if any
+        form.save_m2m()
+        kwargs = {cls._meta.return_field_name: instance}
+        return cls(errors=[], **kwargs)
