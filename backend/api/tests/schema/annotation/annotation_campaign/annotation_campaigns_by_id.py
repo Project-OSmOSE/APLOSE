@@ -10,22 +10,92 @@ from backend.api.tests.schema.data.spectrogram_analysis.all_spectrogram_analysis
 QUERY = """
 query ($id: ID!) {
     annotationCampaignById(id: $id) {
+        id
         name
         createdAt
+        instructionsUrl
+        deadline
+        isArchived
+        canManage
+        allowPointAnnotation
+        allowColormapTuning
+        allowImageTuning
+        colormapDefault
+        colormapInvertedDefault
+        dataset {
+            id
+            name
+        }
+        labelsWithAcousticFeatures {
+            id
+            name
+        }
         owner {
+            id
             displayName
             email
         }
-        phases(orderBy: "phase") {
-            results {
-                phase
-            }
-        }
+        description
         archive {
-            id
             date
             byUser {
                 displayName
+            }
+        }
+        filesCount
+        confidenceSet {
+            name
+            desc
+            confidenceIndicators {
+                label
+            }
+        }
+        labelSet {
+            name
+            description
+            labels {
+                name
+            }
+        }
+        detectors {
+            id
+            name
+        }
+        annotators {
+            id
+            displayName
+        }
+        analysis {
+            edges {
+                node {
+                    id
+                    colormap {
+                        name
+                    }
+                    fft {
+                        nfft
+                        windowSize
+                        overlap
+                        samplingFrequency
+                    }
+                    legacyConfiguration {
+                        scaleName
+                        zoomLevel
+                        linearFrequencyScale {
+                            ratio
+                            minValue
+                            maxValue
+                        }
+                        multiLinearFrequencyScale {
+                            innerScales {
+                                ratio
+                                minValue
+                                maxValue
+                            }
+                        }
+                    }
+                    legacy
+                }
             }
         }
     }
@@ -55,12 +125,15 @@ class AnnotationCampaignsByIDTestCase(GraphQLTestCase):
 
         content = json.loads(response.content)["data"]["annotationCampaignById"]
         self.assertEqual(content["name"], "Test SPM campaign")
+        self.assertEqual(content["dataset"]["id"], "1")
+        self.assertEqual(content["labelsWithAcousticFeatures"], [])
         self.assertEqual(content["owner"]["email"], "user1@osmose.xyz")
-        self.assertEqual(
-            content["phases"]["results"][0]["phase"],
-            "Annotation",
-        )
         self.assertIsNone(content["archive"])
+        self.assertEqual(content["confidenceSet"]["name"], "Confidence/NoConfidence")
+        self.assertEqual(content["labelSet"]["name"], "Test SPM campaign")
+        self.assertEqual(len(content["annotators"]), 2)
+        self.assertEqual(content["annotators"][0]["id"], "1")
+        self.assertEqual(len(content["analysis"]["edges"]), 1)
 
     def _test_get_by_id_archived(self, username: str):
         self.client.login(username=username, password="osmose29")
@@ -70,10 +143,6 @@ class AnnotationCampaignsByIDTestCase(GraphQLTestCase):
         content = json.loads(response.content)["data"]["annotationCampaignById"]
         self.assertEqual(content["name"], "Test RTF campaign")
         self.assertEqual(content["owner"]["email"], "user1@osmose.xyz")
-        self.assertEqual(
-            content["phases"]["results"][0]["phase"],
-            "Annotation",
-        )
         self.assertIsNotNone(content["archive"])
 
     def test_not_connected(self):

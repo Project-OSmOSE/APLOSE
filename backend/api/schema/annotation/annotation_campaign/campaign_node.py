@@ -8,17 +8,23 @@ from django.db.models import (
     Count,
     BooleanField,
     Value,
+    Case,
+    When,
+    Exists,
+    OuterRef,
 )
 from django_filters import CharFilter, OrderingFilter, BooleanFilter
 from graphene import Field, String, Boolean, List, Int
 from graphene_django.filter import TypedFilter
 from graphql import GraphQLResolveInfo
 
-from backend.api.models import AnnotationCampaign
+from backend.api.models import AnnotationCampaign, AnnotationFileRange
 from backend.api.schema.enums import AnnotationPhaseType
+from backend.aplose.models import User
 from backend.aplose.schema.user import UserNode
 from backend.utils.schema.filters import BaseFilterSet
 from backend.utils.schema.types import BaseObjectType, BaseNode
+from .campaign_context_filter import AnnotationCampaignContextFilter
 from ..annotation_phase.phase_node import AnnotationPhaseNode
 from ..detector.detector_node import DetectorNode
 from ..label.label_node import AnnotationLabelNode
@@ -61,7 +67,6 @@ class AnnotationCampaignFilter(BaseFilterSet):
 class AnnotationCampaignNode(BaseObjectType):
     """AnnotationCampaign schema"""
 
-    labels_with_acoustic_features = List(AnnotationLabelNode)
     phases = List(AnnotationPhaseNode)
 
     dataset_name = Field(String, required=True)
@@ -70,10 +75,9 @@ class AnnotationCampaignNode(BaseObjectType):
     detectors = List(
         DetectorNode, source="phases__annotations__detector_configuration__detector"
     )
-    annotators = List(UserNode, source="phases__file_ranges__annotator")
     files_count = Int(required=True)
 
-    can_manage = Field(Boolean, required=True)
+    can_manage = Field(Boolean, required=True, default_value=False)
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
@@ -82,6 +86,21 @@ class AnnotationCampaignNode(BaseObjectType):
         filterset_class = AnnotationCampaignFilter
         context_filter = AnnotationCampaignContextFilter
         interfaces = (BaseNode,)
+
+    annotators = List(UserNode)
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_annotators(self: AnnotationCampaign, info):
+        return User.objects.filter(
+            Exists(
+                AnnotationFileRange.objects.filter(
+                    annotation_phase__annotation_campaign_id=self.id,
+                    annotator_id=OuterRef("id"),
+                )
+            )
+        )
+
+    labels_with_acoustic_features = List(AnnotationLabelNode)
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_labels_with_acoustic_features(self: AnnotationCampaign, info):
