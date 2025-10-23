@@ -7,14 +7,14 @@ from backend.api.models import AnnotationPhase
 from backend.api.tests.fixtures import DATA_FIXTURES, COMMON_FIXTURES
 
 QUERY = """
-mutation ($campaignPk: PK!, $type: AnnotationPhaseType!) {
-    createAnnotationPhase(campaignPk: $campaignPk, type: $type) {
-        pk
+mutation ($campaignID: ID!, $type: AnnotationPhaseType!) {
+    createAnnotationPhase(campaignId: $campaignID, type: $type) {
+        id
     }
 }
 """
-ANNOTATION_VARIABLES = {"campaignPk": 1, "type": "Annotation"}
-VERIFICATION_VARIABLES = {"campaignPk": 1, "type": "Verification"}
+ANNOTATION_VARIABLES = {"campaignID": 1, "type": "Annotation"}
+VERIFICATION_VARIABLES = {"campaignID": 1, "type": "Verification"}
 
 
 @freeze_time("2012-01-14 00:00:00")
@@ -45,7 +45,7 @@ class CreateAnnotationPhaseForVerificationMutationTestCase(GraphQLTestCase):
     def test_connected_unknown(self):
         self.client.login(username="admin", password="osmose29")
         response = self.query(
-            QUERY, variables={"campaignPk": 99, "type": "Verification"}
+            QUERY, variables={"campaignID": 99, "type": "Verification"}
         )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
@@ -71,7 +71,7 @@ class CreateAnnotationPhaseForVerificationMutationTestCase(GraphQLTestCase):
         self.client.login(username=username, password="osmose29")
         response = self.query(QUERY, variables=ANNOTATION_VARIABLES)
         self.assertResponseNoErrors(response)
-        pk = json.loads(response.content)["data"]["createAnnotationPhase"]["pk"]
+        pk = json.loads(response.content)["data"]["createAnnotationPhase"]["id"]
         phase = AnnotationPhase.objects.get(pk=pk)
         self.assertTrue(phase.is_open)
         self.assertEqual(phase.phase, "A")
@@ -80,7 +80,7 @@ class CreateAnnotationPhaseForVerificationMutationTestCase(GraphQLTestCase):
 
         response = self.query(QUERY, variables=VERIFICATION_VARIABLES)
         self.assertResponseNoErrors(response)
-        pk = json.loads(response.content)["data"]["createAnnotationPhase"]["pk"]
+        pk = json.loads(response.content)["data"]["createAnnotationPhase"]["id"]
         phase = AnnotationPhase.objects.get(pk=pk)
         self.assertTrue(phase.is_open)
         self.assertEqual(phase.phase, "V")

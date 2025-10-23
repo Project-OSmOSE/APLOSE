@@ -31,4 +31,4 @@ class CreateAnnotationPhase(Mutation):  # pylint: disable=too-few-public-methods
             annotation_campaign_id=campaign_id,
             created_by_id=info.context.user.id,
         )
-        return CreateAnnotationPhase(pk=phase.pk)
+        return CreateAnnotationPhase(id=phase.pk)
