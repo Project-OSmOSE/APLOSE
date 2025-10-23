@@ -59,7 +59,6 @@ class PostAnnotationCampaignsTestCase(APITestCase):
             URL, data={"labels_with_acoustic_features": ["Dcall"]}, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        print(response.data)
         self.assertEqual(response.data["labels_with_acoustic_features"].code, "invalid")
 
     def test_connected_confidence_set(self):

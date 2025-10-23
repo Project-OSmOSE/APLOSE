@@ -12,6 +12,7 @@ from graphene_django.types import DjangoObjectTypeOptions
 from graphql import GraphQLResolveInfo
 from requests import Request
 
+from . import NotFoundError
 from .permissions import GraphQLResolve, GraphQLPermissions
 
 
@@ -37,14 +38,17 @@ class ApiObjectType(DjangoObjectType):
 class ModelContextFilter:
     """Base context filter"""
 
-    def __init__(self, model=None):
-        if model is None:
-            raise Exception("Cannot set a ModelContextFilter without model")
-        self.model = model
+    def __init__(self):
         super().__init__()
 
-    def get_queryset(self, context: Request):
-        return self.model.objects.all()
+    @classmethod
+    def get_queryset(cls, context: Request):
+        return QuerySet().none()
+
+    @classmethod
+    def get_edit_node_or_fail(cls, context: Request, pk: int):
+        """Get node with edit rights or fail depending on the context"""
+        raise NotFoundError()
 
 
 class BaseObjectTypeMeta(DjangoObjectTypeOptions):
@@ -61,7 +65,6 @@ class BaseObjectType(DjangoObjectType):
     def __init_subclass_with_meta__(
         cls,
         context_filter: Optional[ModelContextFilter.__class__] = None,
-        model=None,
         _meta=None,
         **kwargs,
     ):
@@ -69,7 +72,7 @@ class BaseObjectType(DjangoObjectType):
             _meta = BaseObjectTypeMeta(cls)
         if context_filter is not None:
             _meta.context_filter = context_filter
-        super().__init_subclass_with_meta__(model=model, _meta=_meta, **kwargs)
+        super().__init_subclass_with_meta__(_meta=_meta, **kwargs)
 
     @classmethod
     def resolve_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
@@ -105,11 +108,32 @@ class AuthenticatedModelFormMutation(DjangoModelFormMutation):
         abstract = True
 
     @classmethod
+    def __init_subclass_with_meta__(
+        cls,
+        context_filter: Optional[ModelContextFilter.__class__] = None,
+        **kwargs,
+    ):
+        cls._context_filter = context_filter
+        return super().__init_subclass_with_meta__(**kwargs)
+
+    @classmethod
     def mutate_and_get_payload(cls, root, info, **input):
         GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED).check_permission(
             info.context.user
         )
         return super().mutate_and_get_payload(root, info, **input)
+
+    @classmethod
+    def get_form_kwargs(cls, root, info, **input):
+        pk = input.get("id", None)
+
+        kwargs = super().get_form_kwargs(root, info, **input)
+        if pk and cls._context_filter:
+            kwargs["instance"] = cls._context_filter.get_edit_node_or_fail(
+                info.context, pk=pk
+            )
+
+        return kwargs
 
 
 class AuthenticatedSerializerMutation(SerializerMutation):

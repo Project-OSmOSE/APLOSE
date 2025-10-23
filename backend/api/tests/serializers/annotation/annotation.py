@@ -177,7 +177,6 @@ class CreateTestCase(TestCase):
             }
         )
         self.assertFalse(serializer.is_valid(raise_exception=False))
-        print(serializer.errors)
         self.assertEqual(serializer.errors["label"][0].code, "does_not_exist")
         self.assertEqual(serializer.errors["confidence"][0].code, "does_not_exist")
         self.assertEqual(serializer.errors["analysis"][0].code, "does_not_exist")

@@ -1,8 +1,7 @@
 from django import forms
-from graphene_django.forms.mutation import DjangoModelFormMutation
 
 from backend.api.models import AnnotationCampaign
-from backend.utils.schema import GraphQLResolve, GraphQLPermissions
+from backend.utils.schema.types import AuthenticatedModelFormMutation
 
 
 class CreateAnnotationCampaignForm(forms.ModelForm):
@@ -22,18 +21,9 @@ class CreateAnnotationCampaignForm(forms.ModelForm):
         )
 
 
-class CreateAnnotationCampaignMutation(DjangoModelFormMutation):
+class CreateAnnotationCampaignMutation(AuthenticatedModelFormMutation):
     class Meta:
         form_class = CreateAnnotationCampaignForm
-
-    @classmethod
-    def mutate_and_get_payload(cls, root, info, **input):
-        GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED).check_permission(
-            info.context.user
-        )
-        return super().mutate_and_get_payload(
-            root, info, **input, owner=info.context.user.id
-        )
 
     @classmethod
     def perform_mutate(cls, form, info):

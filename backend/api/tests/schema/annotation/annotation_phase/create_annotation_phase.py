@@ -47,8 +47,6 @@ class CreateAnnotationPhaseForVerificationMutationTestCase(GraphQLTestCase):
         response = self.query(
             QUERY, variables={"campaignPk": 99, "type": "Verification"}
         )
-        print(response)
-        print(response.content)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Not found")

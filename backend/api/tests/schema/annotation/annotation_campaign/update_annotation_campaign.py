@@ -8,28 +8,46 @@ from backend.api.tests.fixtures import ALL_FIXTURES
 
 QUERY = """
 mutation (
-    $campaignPk: PK!
-    $labelsWithAcousticFeatures: [String]
-    $labelSetPk: PK
-    $confidenceSetPk: PK
+    $campaignID: ID!
+    $labelsWithAcousticFeatures: [ID]
+    $labelSetID: ID
+    $confidenceSetID: ID
     $allowPointAnnotation: Boolean
      ) {
-    updateAnnotationCampaign(
-        pk: $campaignPk
-        labelsWithAcousticFeatures: $labelsWithAcousticFeatures
-        labelSetPk: $labelSetPk
-        confidenceSetPk: $confidenceSetPk
+    updateAnnotationCampaign(input: {
+        id: $campaignID
         allowPointAnnotation: $allowPointAnnotation
-    ) {
-        ok
+        labelsWithAcousticFeatures: $labelsWithAcousticFeatures
+        labelSet: $labelSetID
+        confidenceSet: $confidenceSetID
+    }) {
+        errors {
+            field
+            messages
+        }
+      _debug {
+        exceptions {
+          excType
+          message
+          stack
+        }
+      }
     }
+    
+  _debug {
+    exceptions {
+      excType
+      message
+      stack
+    }
+  }
 }
 """
 BASE_VARIABLES = {
-    "campaignPk": 1,
+    "campaignID": 1,
     "labelsWithAcousticFeatures": None,
-    "labelSetPk": None,
-    "confidenceSetPk": None,
+    "labelSetID": None,
+    "confidenceSetID": None,
     "allowPointAnnotation": None,
 }
 
@@ -52,10 +70,13 @@ class UpdateAnnotationCampaignTestCase(GraphQLTestCase):
 
     def test_connected_unknown(self):
         self.client.login(username="admin", password="osmose29")
-        response = self.query(QUERY, variables={**BASE_VARIABLES, "campaignPk": 99})
+        response = self.query(QUERY, variables={**BASE_VARIABLES, "campaignID": 99})
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
-        self.assertEqual(content["errors"][0]["message"], "Not found")
+        self.assertEqual(
+            content["errors"][0]["message"],
+            "AnnotationCampaign matching query does not exist.",
+        )
 
     def test_connected_no_access(self):
         self.client.login(username="user4", password="osmose29")
@@ -78,9 +99,9 @@ class UpdateAnnotationCampaignTestCase(GraphQLTestCase):
             QUERY,
             variables={
                 **BASE_VARIABLES,
-                "labelsWithAcousticFeatures": ["Dcall"],
-                "labelSetPk": 2,
-                "confidenceSetPk": -1,
+                "labelsWithAcousticFeatures": [6],
+                "labelSetID": 2,
+                "confidenceSetID": None,
                 "allowPointAnnotation": True,
             },
         )

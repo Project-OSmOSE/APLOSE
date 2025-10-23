@@ -73,7 +73,6 @@ class DatasetByPkTestCase(GraphQLTestCase):
         self.client.login(username="user1", password="osmose29")
         response = self.query(QUERY, variables={"pk": 1})
         self.assertResponseNoErrors(response)
-        print(response.content)
 
         content = json.loads(response.content)["data"]["datasetByPk"]
         self.assertEqual(content["name"], "gliderSPAmsDemo")

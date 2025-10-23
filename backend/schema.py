@@ -100,5 +100,7 @@ class Mutation(
 ):  # pylint: disable=too-few-public-methods
     """Global mutation"""
 
+    debug = graphene.Field(DjangoDebug, name="_debug")
+
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
