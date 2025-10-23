@@ -80,6 +80,7 @@ class AnnotationCampaignNode(BaseObjectType):
         model = AnnotationCampaign
         fields = "__all__"
         filterset_class = AnnotationCampaignFilter
+        context_filter = AnnotationCampaignContextFilter
         interfaces = (BaseNode,)
 
     @graphene_django_optimizer.resolver_hints()

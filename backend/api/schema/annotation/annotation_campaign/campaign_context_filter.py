@@ -5,9 +5,10 @@ from rest_framework.request import Request
 
 from backend.api.models import AnnotationFileRange, AnnotationCampaign
 from backend.utils.schema import ForbiddenError, NotFoundError
+from backend.utils.schema.types import ModelContextFilter
 
 
-class AnnotationCampaignContextFilter:
+class AnnotationCampaignContextFilter(ModelContextFilter):
     """Filter campaign from the context"""
 
     @classmethod

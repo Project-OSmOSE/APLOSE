@@ -12,19 +12,21 @@ QUERY = """
 query (
     $isArchived: Boolean
     $phase: AnnotationPhaseType
-    $ownerPk: PK
-    $annotatorPk: PK
+    $ownerID: ID
+    $annotatorID: ID
     $search: String
 ) {
     allAnnotationCampaigns(
         isArchived: $isArchived
-        phaseType: $phase
-        ownerPk: $ownerPk
-        annotatorPk: $annotatorPk
+        phases_Phase: $phase
+        ownerId: $ownerID
+        phases_AnnotationFileRanges_AnnotatorId: $annotatorID
         search: $search
+        
+        orderBy: "name"
     ) {
         results {
-            pk
+            id
             name
             datasetName
             deadline
@@ -36,8 +38,8 @@ query (
 VARIABLES = {
     "isArchived": None,
     "phase": None,
-    "ownerPk": None,
-    "annotatorPk": None,
+    "ownerID": None,
+    "annotatorID": None,
     "search": None,
 }
 
@@ -117,7 +119,7 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
             QUERY,
             variables={
                 **VARIABLES,
-                "ownerPk": 3,
+                "ownerID": 3,
             },
         )
         self.assertResponseNoErrors(response)
@@ -135,7 +137,7 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
             QUERY,
             variables={
                 **VARIABLES,
-                "annotatorPk": 1,
+                "annotatorID": 1,
             },
         )
         self.assertResponseNoErrors(response)

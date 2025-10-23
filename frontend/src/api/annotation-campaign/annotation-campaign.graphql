@@ -11,6 +11,8 @@ query listCampaignsAndPhases(
         ownerId: $ownerID
         phases_AnnotationFileRanges_AnnotatorId: $annotatorID
         search: $search
+
+        orderBy: "name"
     ) {
         results {
             id

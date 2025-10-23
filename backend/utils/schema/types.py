@@ -67,9 +67,9 @@ class BaseObjectType(DjangoObjectType):
     ):
         if not _meta:
             _meta = BaseObjectTypeMeta(cls)
-        super().__init_subclass_with_meta__(model=model, _meta=_meta, **kwargs)
         if context_filter is not None:
-            _meta.context_filter = context_filter(model)
+            _meta.context_filter = context_filter
+        super().__init_subclass_with_meta__(model=model, _meta=_meta, **kwargs)
 
     @classmethod
     def resolve_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
@@ -77,7 +77,7 @@ class BaseObjectType(DjangoObjectType):
         if cls._meta.context_filter is None:
             return queryset
         else:
-            return cls._meta.context_filter(info.context)
+            return cls._meta.context_filter.get_queryset(info.context)
 
     @classmethod
     def get_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
