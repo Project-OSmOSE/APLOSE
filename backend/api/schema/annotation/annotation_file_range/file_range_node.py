@@ -5,6 +5,7 @@ from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import AuthenticatedDjangoConnectionField
 from backend.utils.schema.filters import BaseFilterSet
 from backend.utils.schema.types import BaseObjectType, BaseNode
+from .context_filter import AnnotationFileRangeContextFilter
 from ..annotation_task.task_node import AnnotationTaskNode
 from ...data.spectrogram.spectrogram_node import SpectrogramNode
 
@@ -29,19 +30,16 @@ class AnnotationFileRangeFilter(BaseFilterSet):
 class AnnotationFileRangeNode(BaseObjectType):
     """AnnotationFileRange schema"""
 
+    annotation_tasks = AuthenticatedDjangoConnectionField(
+        AnnotationTaskNode, source="tasks"
+    )
+
+    spectrograms = AuthenticatedDjangoConnectionField(SpectrogramNode)
+
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
         model = AnnotationFileRange
         fields = "__all__"
         filterset_class = AnnotationFileRangeFilter
+        context_filter = AnnotationFileRangeContextFilter
         interfaces = (BaseNode,)
-
-    annotation_tasks = AuthenticatedDjangoConnectionField(AnnotationTaskNode)
-
-    def resolve_annotation_tasks(self: AnnotationFileRange, info):
-        return self.tasks
-
-    spectrograms = AuthenticatedDjangoConnectionField(SpectrogramNode)
-
-    def resolve_spectrograms(self: AnnotationFileRange, info):
-        return self.spectrograms

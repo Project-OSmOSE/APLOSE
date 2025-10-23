@@ -7,7 +7,7 @@ export type ListFileRangesQueryVariables = Types.Exact<{
 }>;
 
 
-export type ListFileRangesQuery = { __typename?: 'Query', allAnnotationFileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', results: Array<{ __typename?: 'AnnotationFileRangeNode', id: string, firstFileIndex: number, lastFileIndex: number, annotator: { __typename?: 'UserNode', id: string, displayName: string }, spectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount?: number | null } | null, completedAnnotationTasks?: { __typename?: 'AnnotationTaskNodeNodeConnection', totalCount?: number | null } | null } | null> } | null };
+export type ListFileRangesQuery = { __typename?: 'Query', allAnnotationFileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', results: Array<{ __typename?: 'AnnotationFileRangeNode', id: string, firstFileIndex: number, lastFileIndex: number, filesCount: number, annotator: { __typename?: 'UserNode', id: string, displayName: string }, completedAnnotationTasks?: { __typename?: 'AnnotationTaskNodeNodeConnection', totalCount?: number | null } | null } | null> } | null };
 
 export type UpdateFileRangesMutationVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
@@ -29,12 +29,10 @@ export const ListFileRangesDocument = `
       id
       firstFileIndex
       lastFileIndex
+      filesCount
       annotator {
         id
         displayName
-      }
-      spectrograms {
-        totalCount
       }
       completedAnnotationTasks: annotationTasks(status: Finished) {
         totalCount

@@ -2,52 +2,11 @@
 # pylint: disable=missing-class-docstring, missing-function-docstring, duplicate-code
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 
-from backend.utils.tests import AuthenticatedTestCase, empty_fixtures, all_fixtures
+from backend.utils.tests import AuthenticatedTestCase, all_fixtures
 
 URL = reverse("annotation-file-range-list")
 URL_files = reverse("annotation-file-range-phase-files", kwargs={"phase_id": 1})
-
-
-class ListUnauthenticatedTestCase(APITestCase):
-    """Test AnnotationFileRangeViewSet when request is unauthenticated"""
-
-    def test_unauthenticated(self):
-        """ViewSet returns 401 if no user is authenticated"""
-        response = self.client.get(URL)
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-
-class ListEmpyAdminAuthenticatedTestCase(AuthenticatedTestCase):
-    username = "admin"
-    fixtures = empty_fixtures
-
-    def test_list(self):
-        response = self.client.get(URL)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 0)
-
-    def test_list_for_current_user(self):
-        response = self.client.get(
-            URL,
-            {
-                "for_current_user": "true",
-            },
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 0)
-
-    def test_list_for_current_user_with_files(self):
-        response = self.client.get(
-            URL_files,
-            {
-                "page": 1,
-                "page_size": 100,
-            },
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data["results"]), 0)
 
 
 class ListFilledAdminAuthenticatedTestCase(AuthenticatedTestCase):

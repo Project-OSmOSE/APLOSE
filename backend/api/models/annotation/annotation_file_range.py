@@ -76,8 +76,8 @@ class AnnotationFileRange(models.Model):
         """Get file range spectrograms"""
         return Spectrogram.objects.filter(
             analysis__annotation_campaigns__id=self.annotation_phase.annotation_campaign_id,
-            spectrogram__start__gte=self.from_datetime,
-            spectrogram__end__lte=self.to_datetime,
+            start__gte=self.from_datetime,
+            end__lte=self.to_datetime,
         ).distinct()
 
     @property

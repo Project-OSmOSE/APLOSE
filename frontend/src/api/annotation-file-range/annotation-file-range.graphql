@@ -10,14 +10,11 @@ query listFileRanges(
             id
             firstFileIndex
             lastFileIndex
+            filesCount
 
             annotator {
                 id
                 displayName
-            }
-
-            spectrograms{
-                totalCount
             }
 
             completedAnnotationTasks: annotationTasks(status: Finished) {
