@@ -12,25 +12,28 @@ QUERY = """
 query (
     $isArchived: Boolean
     $phase: AnnotationPhaseType
-    $ownerPk: PK
-    $annotatorPk: PK
+    $campaignID: ID
+    $ownerID: ID
+    $annotatorID: ID
     $search: String
 ) {
     allAnnotationPhases(
+        annotationCampaignId: $campaignID
         isCampaignArchived: $isArchived
-        phaseType: $phase
-        campaignOwnerPk: $ownerPk
-        annotatorPk: $annotatorPk
+        phase: $phase
+        annotationCampaign_OwnerId: $ownerID
+        annotationFileRanges_AnnotatorId: $annotatorID
         search: $search
     ) {
         results {
-            pk
+            id
             phase
             userTasksCount
             userCompletedTasksCount
             tasksCount
             completedTasksCount
-            annotationCampaignPk
+            annotationCampaignId
+            isOpen
         }
     }
 }
@@ -38,8 +41,9 @@ query (
 VARIABLES = {
     "isArchived": None,
     "phase": None,
-    "ownerPk": None,
-    "annotatorPk": None,
+    "ownerID": None,
+    "annotatorID": None,
+    "campaignID": None,
     "search": None,
 }
 
@@ -54,26 +58,14 @@ class AllAnnotationPhasesTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(
-            QUERY,
-            variables={
-                **VARIABLES,
-                "userPk": 1,
-            },
-        )
+        response = self.query(QUERY, variables=VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_admin(self):
         self.client.login(username="admin", password="osmose29")
-        response = self.query(
-            QUERY,
-            variables={
-                **VARIABLES,
-                "userPk": 1,
-            },
-        )
+        response = self.query(QUERY, variables=VARIABLES)
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["allAnnotationPhases"]["results"]
@@ -82,13 +74,7 @@ class AllAnnotationPhasesTestCase(GraphQLTestCase):
 
     def test_connected_owner(self):
         self.client.login(username="user1", password="osmose29")
-        response = self.query(
-            QUERY,
-            variables={
-                **VARIABLES,
-                "userPk": 3,
-            },
-        )
+        response = self.query(QUERY, variables=VARIABLES)
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["allAnnotationPhases"]["results"]
@@ -97,13 +83,7 @@ class AllAnnotationPhasesTestCase(GraphQLTestCase):
 
     def test_connected_empty_user(self):
         self.client.login(username="user4", password="osmose29")
-        response = self.query(
-            QUERY,
-            variables={
-                **VARIABLES,
-                "userPk": 6,
-            },
-        )
+        response = self.query(QUERY, variables=VARIABLES)
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["allAnnotationPhases"]["results"]
@@ -115,8 +95,7 @@ class AllAnnotationPhasesTestCase(GraphQLTestCase):
             QUERY,
             variables={
                 **VARIABLES,
-                "userPk": 1,
-                "ownerPk": 3,
+                "ownerID": 3,
             },
         )
         self.assertResponseNoErrors(response)
@@ -131,8 +110,7 @@ class AllAnnotationPhasesTestCase(GraphQLTestCase):
             QUERY,
             variables={
                 **VARIABLES,
-                "userPk": 1,
-                "annotatorPk": 1,
+                "annotatorID": 1,
             },
         )
         self.assertResponseNoErrors(response)
@@ -146,7 +124,10 @@ class AllAnnotationPhasesTestCase(GraphQLTestCase):
         self.client.login(username="admin", password="osmose29")
         response = self.query(
             QUERY,
-            variables={**VARIABLES, "userPk": 1, "isArchived": True},
+            variables={
+                **VARIABLES,
+                "isArchived": True,
+            },
         )
         self.assertResponseNoErrors(response)
 
@@ -158,7 +139,7 @@ class AllAnnotationPhasesTestCase(GraphQLTestCase):
         self.client.login(username="admin", password="osmose29")
         response = self.query(
             QUERY,
-            variables={**VARIABLES, "userPk": 1, "phase": "Verification"},
+            variables={**VARIABLES, "phase": "Verification"},
         )
         self.assertResponseNoErrors(response)
 
@@ -166,11 +147,23 @@ class AllAnnotationPhasesTestCase(GraphQLTestCase):
         self.assertEqual(len(content), 1)
         self.assertEqual(content[0]["phase"], "Verification")
 
+    def test_connected_admin_filter_campaign_id(self):
+        self.client.login(username="admin", password="osmose29")
+        response = self.query(
+            QUERY,
+            variables={**VARIABLES, "campaignID": 3},
+        )
+        self.assertResponseNoErrors(response)
+
+        content = json.loads(response.content)["data"]["allAnnotationPhases"]["results"]
+        self.assertEqual(len(content), 1)
+        self.assertEqual(content[0]["phase"], "Annotation")
+
     def test_connected_admin_search_name(self):
         self.client.login(username="admin", password="osmose29")
         response = self.query(
             QUERY,
-            variables={**VARIABLES, "userPk": 1, "search": "RTF"},
+            variables={**VARIABLES, "search": "RTF"},
         )
         self.assertResponseNoErrors(response)
 
@@ -182,7 +175,7 @@ class AllAnnotationPhasesTestCase(GraphQLTestCase):
         self.client.login(username="admin", password="osmose29")
         response = self.query(
             QUERY,
-            variables={**VARIABLES, "userPk": 1, "search": "glider"},
+            variables={**VARIABLES, "search": "glider"},
         )
         self.assertResponseNoErrors(response)
 

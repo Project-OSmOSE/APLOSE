@@ -1,13 +1,16 @@
-from django.db.models import Q, QuerySet, Count, ExpressionWrapper, Value, BooleanField
+import graphene_django_optimizer
+from django.db.models import (
+    Q,
+)
 from django_filters import BooleanFilter, CharFilter, OrderingFilter
 from graphene import Field, Int, NonNull, Boolean, ID
 from graphene_django.filter import TypedFilter
-from graphql import GraphQLResolveInfo
 
 from backend.api.models import AnnotationPhase, AnnotationTask
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema.filters import BaseFilterSet
 from backend.utils.schema.types import BaseObjectType, BaseNode
+from .phase_context_filter import AnnotationPhaseContextFilter
 
 
 class AnnotationPhaseFilter(BaseFilterSet):
@@ -68,6 +71,7 @@ class AnnotationPhaseNode(BaseObjectType):
         model = AnnotationPhase
         fields = "__all__"
         filterset_class = AnnotationPhaseFilter
+        context_filter = AnnotationPhaseContextFilter
         interfaces = (BaseNode,)
 
     @classmethod
