@@ -1,6 +1,5 @@
 from graphene import ObjectType, Field, ID
 
-from backend.api.models import AnnotationPhase
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import (
     AuthenticatedDjangoConnectionField,
@@ -9,6 +8,7 @@ from backend.utils.schema import (
 )
 from .create_phase_mutation import CreateAnnotationPhase
 from .end_phase_mutation import EndAnnotationPhaseMutation
+from .phase_context_filter import AnnotationPhaseContextFilter
 from .phase_node import AnnotationPhaseNode
 from .update_file_ranges import UpdateAnnotationPhaseFileRanges
 
@@ -28,8 +28,9 @@ class AnnotationPhaseQuery(ObjectType):  # pylint: disable=too-few-public-method
     def resolve_annotation_phase_by_campaign_phase(
         self, info, campaign_id: int, phase_type: AnnotationPhaseType
     ):
-        """Get AnnotationCampaign by id"""
-        return AnnotationPhase.objects.get(
+        """Get AnnotationPhase by campaignID and phase type"""
+        return AnnotationPhaseContextFilter.get_node_or_fail(
+            info.context,
             annotation_campaign_id=campaign_id,
             phase=phase_type.value,
         )

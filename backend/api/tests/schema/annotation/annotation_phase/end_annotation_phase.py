@@ -17,7 +17,7 @@ BASE_VARIABLES = {"id": 1}
 
 
 @freeze_time("2012-01-14 00:00:00")
-class ArchiveAnnotationCampaignTestCase(GraphQLTestCase):
+class EndAnnotationPhaseTestCase(GraphQLTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ALL_FIXTURES

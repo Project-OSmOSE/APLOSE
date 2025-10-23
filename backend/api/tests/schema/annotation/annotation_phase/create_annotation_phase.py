@@ -18,7 +18,7 @@ VERIFICATION_VARIABLES = {"campaignID": 1, "type": "Verification"}
 
 
 @freeze_time("2012-01-14 00:00:00")
-class CreateAnnotationPhaseForVerificationMutationTestCase(GraphQLTestCase):
+class CreateAnnotationPhaseTestCase(GraphQLTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = [

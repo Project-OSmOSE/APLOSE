@@ -30,20 +30,17 @@ class AnnotationPhaseContextFilter:
         )
 
     @classmethod
-    def get_node_or_fail(cls, context: Request, pk: int) -> AnnotationPhase:
+    def get_node_or_fail(cls, context: Request, **kwargs) -> AnnotationPhase:
         """Get node or fail depending on the context"""
         try:
-            return get_object_or_404(
-                cls.get_queryset(context),
-                pk=pk,
-            )
+            return get_object_or_404(cls.get_queryset(context), **kwargs)
         except Http404:
             raise NotFoundError()
 
     @classmethod
-    def get_edit_node_or_fail(cls, context: Request, pk: int) -> AnnotationPhase:
+    def get_edit_node_or_fail(cls, context: Request, **kwargs) -> AnnotationPhase:
         """Get node with edit rights or fail depending on the context"""
-        phase: AnnotationPhase = cls.get_node_or_fail(context, pk=pk)
+        phase: AnnotationPhase = cls.get_node_or_fail(context, **kwargs)
         if not (
             phase.annotation_campaign.owner_id == context.user.id
             or context.user.is_staff
