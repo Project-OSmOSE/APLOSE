@@ -7,13 +7,13 @@ from backend.api.models import Archive, AnnotationPhase
 from backend.api.tests.fixtures import ALL_FIXTURES
 
 QUERY = """
-mutation ($pk: PK!) {
-    endAnnotationPhase(pk: $pk) {
+mutation ($id: ID!) {
+    endAnnotationPhase(id: $id) {
         ok
     }
 }
 """
-BASE_VARIABLES = {"pk": 1}
+BASE_VARIABLES = {"id": 1}
 
 
 @freeze_time("2012-01-14 00:00:00")
@@ -34,7 +34,7 @@ class ArchiveAnnotationCampaignTestCase(GraphQLTestCase):
 
     def test_connected_unknown(self):
         self.client.login(username="admin", password="osmose29")
-        response = self.query(QUERY, variables={"pk": 99})
+        response = self.query(QUERY, variables={"id": 99})
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Not found")

@@ -41,9 +41,9 @@ class AnnotationPhaseContextFilter:
             raise NotFoundError()
 
     @classmethod
-    def get_edit_node_or_fail(cls, context: Request, **kwargs) -> AnnotationPhase:
+    def get_edit_node_or_fail(cls, context: Request, pk: int) -> AnnotationPhase:
         """Get node with edit rights or fail depending on the context"""
-        phase: AnnotationPhase = cls.get_node_or_fail(context, **kwargs)
+        phase: AnnotationPhase = cls.get_node_or_fail(context, pk=pk)
         if not (
             phase.annotation_campaign.owner_id == context.user.id
             or context.user.is_staff

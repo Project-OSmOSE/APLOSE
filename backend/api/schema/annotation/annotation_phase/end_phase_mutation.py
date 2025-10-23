@@ -15,10 +15,10 @@ class EndAnnotationPhaseMutation(Mutation):  # pylint: disable=too-few-public-me
     ok = Boolean(required=True)
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
-    def mutate(self, info, pk: int):  # pylint: disable=redefined-builtin
+    def mutate(self, info, id: int):  # pylint: disable=redefined-builtin
         """Archive annotation campaign at current date by request user"""
         phase: AnnotationPhase = AnnotationPhaseContextFilter.get_edit_node_or_fail(
-            info.context, pk
+            info.context, id
         )
         phase.end(info.context.user)
         return EndAnnotationPhaseMutation(ok=True)
