@@ -7,7 +7,7 @@ from backend.api.models import AnnotationCampaign, Archive
 from backend.api.tests.fixtures import ALL_FIXTURES
 
 QUERY = """
-mutation ($id: PK!) {
+mutation ($id: ID!) {
     archiveAnnotationCampaign(id: $id) {
         ok
     }
