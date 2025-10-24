@@ -13,6 +13,7 @@ export type UpdateFileRangesMutationVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
   phaseType: Types.AnnotationPhaseType;
   fileRanges: Array<Types.InputMaybe<Types.AnnotationFileRangeInput>> | Types.InputMaybe<Types.AnnotationFileRangeInput>;
+  force?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
 }>;
 
 
@@ -42,11 +43,12 @@ export const ListFileRangesDocument = `
 }
     `;
 export const UpdateFileRangesDocument = `
-    mutation updateFileRanges($campaignID: ID!, $phaseType: AnnotationPhaseType!, $fileRanges: [AnnotationFileRangeInput]!) {
+    mutation updateFileRanges($campaignID: ID!, $phaseType: AnnotationPhaseType!, $fileRanges: [AnnotationFileRangeInput]!, $force: Boolean) {
   updateAnnotationPhaseFileRanges(
     campaignId: $campaignID
     phaseType: $phaseType
     fileRanges: $fileRanges
+    force: $force
   ) {
     errors {
       messages

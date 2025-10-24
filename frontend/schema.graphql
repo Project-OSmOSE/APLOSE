@@ -2418,9 +2418,9 @@ type AnnotationCampaignNode implements BaseNode {
   datasetName: String!
   isArchived: Boolean!
   detectors: [DetectorNode]
-  annotators: [UserNode]
   filesCount: Int!
   canManage: Boolean!
+  annotators: [UserNode]
 }
 
 """Dataset schema"""
@@ -4524,12 +4524,13 @@ type Mutation {
 
   """Create annotation phase of type "Verification" mutation"""
   createAnnotationPhase(campaignId: ID!, type: AnnotationPhaseType!): CreateAnnotationPhase
-  updateAnnotationPhaseFileRanges(campaignId: ID!, fileRanges: [AnnotationFileRangeInput]!, phaseType: AnnotationPhaseType!): UpdateAnnotationPhaseFileRanges
+  updateAnnotationPhaseFileRanges(campaignId: ID!, fileRanges: [AnnotationFileRangeInput]!, force: Boolean, phaseType: AnnotationPhaseType!): UpdateAnnotationPhaseFileRanges
   createAnnotationCampaign(input: CreateAnnotationCampaignMutationInput!): CreateAnnotationCampaignMutationPayload
   updateAnnotationCampaign(input: UpdateAnnotationCampaignMutationInput!): UpdateAnnotationCampaignMutationPayload
 
   """Archive annotation campaign mutation"""
   archiveAnnotationCampaign(id: ID!): ArchiveAnnotationCampaignMutation
+  _debug: DjangoDebug
 }
 
 type PostSourceMutationPayload {
@@ -4649,6 +4650,7 @@ type CreateAnnotationPhase {
 
 type UpdateAnnotationPhaseFileRanges {
   errors: [[ErrorType!]]!
+  _debug: DjangoDebug
 }
 
 input AnnotationFileRangeInput {

@@ -55,21 +55,22 @@ export const EditAnnotators: React.FC = () => {
     formErrors,
     status: submissionStatus,
   } = useUpdateFileRanges()
+  const [force, setForce] = useState<boolean>()
 
   // File ranges
-  const [ fileRanges, setFileRanges ] = useState<FileRange[]>([]);
+  const [fileRanges, setFileRanges] = useState<FileRange[]>([]);
   const availableUsers: SearchItem[] = useMemo(() => {
     const items: SearchItem[] = [];
     if (users) {
       items.push(...users.filter(u => {
         if (!campaign) return true;
         const count = fileRanges
-          .filter(f => f.annotatorId === u!.id)
-          .reduce((count, range) => {
-            const last_index = range.lastFileIndex ?? campaign?.filesCount ?? 0;
-            const first_index = range.firstFileIndex ?? 0;
-            return count + (last_index - first_index)
-          }, 0) + 1
+            .filter(f => f.annotatorId === u!.id)
+            .reduce((count, range) => {
+              const last_index = range.lastFileIndex ?? campaign?.filesCount ?? 0;
+              const first_index = range.firstFileIndex ?? 0;
+              return count + (last_index - first_index)
+            }, 0) + 1
         return count < campaign.filesCount
       }).map(u => ({ id: u!.id, display: u!.displayName, type: 'user' } as SearchItem)));
     }
@@ -77,7 +78,7 @@ export const EditAnnotators: React.FC = () => {
       items.push(...groups.map(g => ({ id: g!.id, display: g!.name, type: 'group' } as SearchItem)))
     }
     return items;
-  }, [ users, campaign, fileRanges, groups ]);
+  }, [users, campaign, fileRanges, groups]);
   useEffect(() => {
     if (allFileRanges) setFileRanges(allFileRanges.map(r => ({
       id: r!.id,
@@ -86,10 +87,10 @@ export const EditAnnotators: React.FC = () => {
       lastFileIndex: r!.lastFileIndex,
       started: !!r!.completedAnnotationTasks?.totalCount,
     })));
-  }, [ allFileRanges ]);
+  }, [allFileRanges]);
   const addFileRange = useCallback((item: Item) => {
     if (!groups || !campaign) return;
-    const [ type, id ] = (item.value as string).split('-');
+    const [type, id] = (item.value as string).split('-');
     const users = []
     switch (type!) {
       case 'user':
@@ -100,14 +101,14 @@ export const EditAnnotators: React.FC = () => {
         break
     }
     for (const newUser of users) {
-      setFileRanges(prev => [ ...prev, {
+      setFileRanges(prev => [...prev, {
         id: getNewItemID(prev)?.toString(),
         annotator: newUser!.id,
         firstFileIndex: 0,
         lastFileIndex: campaign.filesCount - 1,
-      } ])
+      }])
     }
-  }, [ groups, availableUsers, setFileRanges, campaign ])
+  }, [groups, availableUsers, setFileRanges, campaign])
   const updateFileRange = useCallback((fileRange: FileRange) => {
     setFileRanges(prev => prev.map(f => {
       if (f.id !== fileRange.id) return f;
@@ -124,20 +125,20 @@ export const EditAnnotators: React.FC = () => {
   // Submit
   const submit = useCallback(() => {
     if (!phaseType || !campaignID) return;
-    updateFileRanges({ campaignID, phaseType, fileRanges })
-  }, [ fileRanges, campaignID, phaseType, updateFileRanges ])
+    updateFileRanges({ campaignID, phaseType, fileRanges, force })
+  }, [fileRanges, campaignID, phaseType, updateFileRanges, force])
   useEffect(() => {
     if (errorSubmitting) toast.raiseError({ error: errorSubmitting })
-  }, [ errorSubmitting ]);
+  }, [errorSubmitting]);
   useEffect(() => {
     if (submissionStatus === QueryStatus.fulfilled) back()
-  }, [ submissionStatus ]);
+  }, [submissionStatus]);
 
   return <Fragment>
 
     <Head title="Manage annotators"
           subtitle={ campaign ? `${ campaign.name } - ${ phaseType }` :
-            <IonSkeletonText animated style={ { width: 128 } }/> }/>
+              <IonSkeletonText animated style={ { width: 128 } }/> }/>
 
     <FormBloc className={ styles.annotators }>
 
@@ -174,6 +175,7 @@ export const EditAnnotators: React.FC = () => {
                                                                   ...change,
                                                                 })
                                                               } }
+                                                              setForced={ () => setForce(true) }
                                                               onDelete={ removeFileRange }/>) }
 
             { fileRanges.length === 0 && <IonNote color="medium">No annotators</IonNote> }

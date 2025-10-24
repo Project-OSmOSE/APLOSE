@@ -4054,6 +4054,7 @@ export type MultiLinearScaleNodeNodeConnection = {
 /** Global mutation */
 export type Mutation = {
   __typename?: 'Mutation';
+  _debug?: Maybe<DjangoDebug>;
   /** Archive annotation campaign mutation */
   archiveAnnotationCampaign?: Maybe<ArchiveAnnotationCampaignMutation>;
   createAnnotationCampaign?: Maybe<CreateAnnotationCampaignMutationPayload>;
@@ -4161,6 +4162,7 @@ export type MutationUpdateAnnotationCampaignArgs = {
 export type MutationUpdateAnnotationPhaseFileRangesArgs = {
   campaignId: Scalars['ID']['input'];
   fileRanges: Array<InputMaybe<AnnotationFileRangeInput>>;
+  force?: InputMaybe<Scalars['Boolean']['input']>;
   phaseType: AnnotationPhaseType;
 };
 
@@ -7190,6 +7192,7 @@ export type UpdateAnnotationCampaignMutationPayload = {
 
 export type UpdateAnnotationPhaseFileRanges = {
   __typename?: 'UpdateAnnotationPhaseFileRanges';
+  _debug?: Maybe<DjangoDebug>;
   errors: Array<Maybe<Array<ErrorType>>>;
 };
 

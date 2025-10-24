@@ -117,6 +117,12 @@ class AnnotationCampaign(models.Model):
             if not self.labels_with_acoustic_features.filter(name=label.name).exists():
                 self.labels_with_acoustic_features.add(label)
 
+    @property
+    def spectrograms(self) -> QuerySet[Spectrogram]:
+        return Spectrogram.objects.filter(
+            analysis__annotation_campaigns=self
+        ).distinct()
+
 
 class AnnotationCampaignAnalysis(models.Model):
     """AnnotationCampaign <> Analysis manyToMany relation table"""

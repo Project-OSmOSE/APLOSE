@@ -25,22 +25,7 @@ mutation (
             field
             messages
         }
-      _debug {
-        exceptions {
-          excType
-          message
-          stack
-        }
-      }
     }
-    
-  _debug {
-    exceptions {
-      excType
-      message
-      stack
-    }
-  }
 }
 """
 BASE_VARIABLES = {

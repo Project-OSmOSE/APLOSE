@@ -28,11 +28,13 @@ mutation updateFileRanges(
     $campaignID: ID!
     $phaseType: AnnotationPhaseType!
     $fileRanges: [AnnotationFileRangeInput]!
+    $force: Boolean
 ) {
     updateAnnotationPhaseFileRanges(
         campaignId: $campaignID
         phaseType: $phaseType
         fileRanges: $fileRanges
+        force: $force
     ) {
         errors {
             messages

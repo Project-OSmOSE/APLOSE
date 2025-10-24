@@ -47,10 +47,7 @@ class AnnotationFileRange(models.Model):
         self.files_count = self.last_file_index - self.first_file_index + 1
 
         # pylint: disable=no-member
-        analysis_ids = self.annotation_phase.annotation_campaign.analysis.values_list(
-            "id", flat=True
-        )
-        files = Spectrogram.objects.filter(analysis__id__in=analysis_ids)
+        files = self.annotation_phase.annotation_campaign.spectrograms
 
         from_datetime = files[self.first_file_index].start
         to_datetime = files[self.last_file_index].end
