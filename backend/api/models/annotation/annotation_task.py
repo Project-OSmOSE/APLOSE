@@ -52,6 +52,13 @@ class AnnotationTask(models.Model):
             annotation_phase=self.annotation_phase,
         )
 
+    @property
+    def comments(self):
+        return self.spectrogram.annotation_comments.filter(
+            annotation_phase=self.annotation_phase,
+            annotation__isnull=True,
+        )
+
 
 class AnnotationTaskSession(models.Model):
     """Task sessions relation"""

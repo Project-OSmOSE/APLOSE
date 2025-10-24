@@ -46,11 +46,11 @@ export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
   })
   return useMemo(() => ({
     ...info,
-    allSpectrograms: info.data?.listAnnotationSpectrogram?.results.filter(r => r !== null),
-    resumeSpectrogramID: info.data?.listAnnotationSpectrogram?.resumeSpectrogramId,
+    allSpectrograms: info.data?.allAnnotationSpectrogram?.results.filter(r => r !== null),
+    resumeSpectrogramID: info.data?.allAnnotationSpectrogram?.resumeSpectrogramId,
     page: filters.page,
-    pageCount: Math.ceil((info.data?.listAnnotationSpectrogram?.totalCount ?? 0) / PAGE_SIZE),
-  }), [ info ])
+    pageCount: Math.ceil((info.data?.allAnnotationSpectrogram?.totalCount ?? 0) / PAGE_SIZE),
+  }), [info])
 }
 
 export const useAnnotationTask = (options: {
@@ -76,16 +76,16 @@ export const useAnnotationTask = (options: {
   return useMemo(() => ({
     ...info,
     spectrogram: info.data?.annotationSpectrogramById,
-    navigationInfo: info.data?.listAnnotationSpectrogram,
-    annotations: info.data?.annotationSpectrogramById?.annotations?.results.filter(r => !!r).map(r => r!),
+    navigationInfo: info.data?.allAnnotationSpectrogram,
+    annotations: info.data?.annotationSpectrogramById?.task?.annotations?.results.filter(r => !!r).map(r => r!),
     isEditionAuthorized: phase?.canManage && info.data?.annotationSpectrogramById?.isAssigned,
-  }), [ info, phase ])
+  }), [info, phase])
 }
 
 export const useSubmitTask = () => {
   const { campaignID, phaseType, spectrogramID } = useNavParams();
   const { phase } = useCurrentPhase()
-  const [ method, info ] = submitTask.useMutation()
+  const [method, info] = submitTask.useMutation()
   const dispatch = useAppDispatch()
 
   const submit = useCallback(async (annotations: PostAnnotation[],
@@ -93,16 +93,16 @@ export const useSubmitTask = () => {
                                     start: Date) => {
     if (!campaignID || !phaseType || !spectrogramID) return;
     await method({ campaignID, phaseType, spectrogramID, annotations, taskComments, start }).unwrap()
-    dispatch(gqlAPI.util.invalidateTags([ {
+    dispatch(gqlAPI.util.invalidateTags([{
       type: 'AnnotationPhase',
       id: phase?.id,
-    } ]))
-  }, [ method, campaignID, phaseType, spectrogramID, phase ]);
+    }]))
+  }, [method, campaignID, phaseType, spectrogramID, phase]);
 
   return useMemo(() => ({
     ...info,
     submitTask: submit,
-  }), [ submit, info ])
+  }), [submit, info])
 }
 
 
@@ -110,8 +110,8 @@ export const useSubmitTask = () => {
 
 export const useAllTasksFilters = ({ clearOnLoad }: { clearOnLoad: boolean } = { clearOnLoad: false }) => {
   const { params, updateParams, clearParams } = useQueryParams<AllTasksFilters>(
-    selectAllTaskFilters,
-    AllAnnotationTaskFilterSlice.actions.updateTaskFilters,
+      selectAllTaskFilters,
+      AllAnnotationTaskFilterSlice.actions.updateTaskFilters,
   )
 
   useEffect(() => {
@@ -123,13 +123,13 @@ export const useAllTasksFilters = ({ clearOnLoad }: { clearOnLoad: boolean } = {
     params,
     updateParams: useCallback((p: Omit<AllTasksFilters, 'page'>) => {
       updateParams({ ...p, page: 1 })
-    }, [ updateParams ]),
+    }, [updateParams]),
     updatePage: useCallback((page: number) => {
       updateParams({ page })
-    }, [ updateParams ]),
+    }, [updateParams]),
     clearParams: useCallback(() => {
       clearParams()
       updateParams({ page: 1 })
-    }, [ clearParams ]),
+    }, [clearParams]),
   }
 }

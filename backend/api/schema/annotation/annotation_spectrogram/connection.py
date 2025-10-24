@@ -31,11 +31,8 @@ class AnnotationSpectrogramConnectionField(AuthenticatedDjangoConnectionField):
                 self, info, spectrogram_id: int, **kwargs
             ):
                 current_spectrogram = Spectrogram.objects.get(pk=spectrogram_id)
-                spectrograms = Spectrogram.objects.filter(
-                    id__in=[task.spectrogram_id for task in self.iterable]
-                )
 
-                previous: Spectrogram = spectrograms.filter(
+                previous: Spectrogram = self.iterable.filter(
                     Q(start__lt=current_spectrogram.start)
                     | Q(start=current_spectrogram.start, id__lt=current_spectrogram.id)
                 ).last()
@@ -43,11 +40,8 @@ class AnnotationSpectrogramConnectionField(AuthenticatedDjangoConnectionField):
 
             def resolve_next_spectrogram_id(self, info, spectrogram_id: int, **kwargs):
                 current_spectrogram = Spectrogram.objects.get(pk=spectrogram_id)
-                spectrograms = Spectrogram.objects.filter(
-                    id__in=[task.spectrogram_id for task in self.iterable]
-                )
 
-                next: Spectrogram = spectrograms.filter(
+                next: Spectrogram = self.iterable.filter(
                     Q(start__gt=current_spectrogram.start)
                     | Q(start=current_spectrogram.start, id__gt=current_spectrogram.id)
                 ).first()
@@ -55,10 +49,7 @@ class AnnotationSpectrogramConnectionField(AuthenticatedDjangoConnectionField):
 
             def resolve_current_index(self, info, spectrogram_id: int):
                 current_spectrogram = Spectrogram.objects.get(pk=spectrogram_id)
-                spectrograms = Spectrogram.objects.filter(
-                    id__in=[task.spectrogram_id for task in self.iterable]
-                )
-                return spectrograms.filter(
+                return self.iterable.filter(
                     Q(start__lt=current_spectrogram.start)
                     | Q(start=current_spectrogram.start, id__lt=current_spectrogram.id)
                 ).count()

@@ -19,8 +19,8 @@ export type Comment = Omit<PostAnnotationComment, 'id'> & { id: number }
 export type Validation = Omit<PostAnnotationValidation, 'id'> & { id: number }
 export type Features = Omit<PostAcousticFeatures, 'id'> & { id: number }
 export type Annotation =
-  Omit<PostAnnotation, 'id' | 'comments' | 'validation' | 'acoustic_features' | 'is_update_of'>
-  & {
+    Omit<PostAnnotation, 'id' | 'comments' | 'validation' | 'acoustic_features' | 'is_update_of'>
+    & {
   id: number,
   type: AnnotationType;
   comments?: Comment[];
@@ -65,7 +65,7 @@ export const AnnotatorAnnotationSlice = createSlice({
         ...action.payload,
         analysis: state._analysisID,
       }
-      state.allAnnotations = [ ...state.allAnnotations, annotation ];
+      state.allAnnotations = [...state.allAnnotations, annotation];
       action.payload = annotation;
     },
     updateAnnotation: (state, action: { payload: Partial<Annotation> & Pick<Annotation, 'id'> }) => {
@@ -104,9 +104,9 @@ export const AnnotatorAnnotationSlice = createSlice({
         state._campaignID = action.meta.arg.originalArgs.campaignID
         state.id = initialState.id
       }
-      const annotations = action.payload.annotationSpectrogramById?.annotations?.results.filter(a => a !== null).map(a => a!) ?? []
+      const annotations = action.payload.annotationSpectrogramById?.task?.annotations?.results.filter(a => a !== null).map(a => a!) ?? []
       state.allAnnotations = convertGqlToAnnotations(annotations)
-      const defaultAnnotation = [ ...state.allAnnotations ].reverse().pop();
+      const defaultAnnotation = [...state.allAnnotations].reverse().pop();
       state.id = defaultAnnotation?.id
     })
   },

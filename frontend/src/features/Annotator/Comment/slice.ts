@@ -16,7 +16,7 @@ export const AnnotatorCommentSlice = createSlice({
   initialState,
   reducers: {
     addTaskComment: (state, action: { payload: Comment }) => {
-      state.taskComments = [ ...state.taskComments, action.payload ];
+      state.taskComments = [...state.taskComments, action.payload];
     },
     updateTaskComment: (state, action: { payload: Comment }) => {
       state.taskComments = state.taskComments.map(c => c.id === action.payload.id ? action.payload : c)
@@ -29,7 +29,7 @@ export const AnnotatorCommentSlice = createSlice({
     builder.addMatcher(getAnnotationTaskFulfilled, (state: AnnotationCommentState, action: {
       payload: GetAnnotationTaskQuery
     }) => {
-      state.taskComments = action.payload.annotationSpectrogramById?.taskComments?.results.filter(r => !!r).map(r => ({
+      state.taskComments = action.payload.annotationSpectrogramById?.task?.comments?.results.filter(r => !!r).map(r => ({
         id: +r!.id,
         comment: r!.comment,
       } as Comment)) ?? initialState.taskComments

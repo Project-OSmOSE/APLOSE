@@ -2,28 +2,45 @@ from typing import Optional
 
 import graphene
 import graphene_django_optimizer
-from django.db.models import Q, QuerySet
+from django.conf import settings
 from graphql import GraphQLResolveInfo
+from osekit.core_api.spectro_dataset import SpectroDataset
 
 from backend.api.models import (
     Spectrogram,
     AnnotationCampaign,
     AnnotationFileRange,
     AnnotationTask,
-    Annotation,
+    SpectrogramAnalysis,
 )
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import NotFoundError, AuthenticatedDjangoConnectionField
 from backend.utils.schema.types import BaseObjectType, BaseNode, ModelContextFilter
 from .filterset import AnnotationSpectrogramFilterSet
-from ..annotation.annotation_node import AnnotationNode
 from ..annotation_comment.comment_node import AnnotationCommentNode
-from ..annotation_task.task_node import AnnotationTaskStatus
-from ...data.spectrogram import SpectrogramNode
+from ..annotation_task.task_node import AnnotationTaskNode
 
 
-class AnnotationSpectrogramNode(SpectrogramNode, BaseObjectType):
+def get_task(
+    spectrogram: Spectrogram,
+    info: GraphQLResolveInfo,
+    campaign_id: int,
+    phase: AnnotationPhaseType,
+) -> Optional[AnnotationTask]:
+    try:
+        return AnnotationTask.objects.get(
+            spectrogram_id=spectrogram.id,
+            annotator_id=info.context.user.id,
+            annotation_phase__annotation_campaign_id=campaign_id,
+            annotation_phase__phase=phase.value,
+        )
+    except AnnotationTask.DoesNotExist:
+        return None
 
+
+class AnnotationSpectrogramNode(BaseObjectType):
+
+    duration = graphene.Int(required=True)
     annotation_comments = AuthenticatedDjangoConnectionField(AnnotationCommentNode)
 
     class Meta:
@@ -38,22 +55,9 @@ class AnnotationSpectrogramNode(SpectrogramNode, BaseObjectType):
         context_filter: Optional[ModelContextFilter.__class__] = None,
         model=None,
         _meta=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init_subclass_with_meta__(context_filter, model, _meta, **kwargs)
-
-    def _get_task(
-        self, info: GraphQLResolveInfo, campaign_id: int, phase: AnnotationPhaseType
-    ) -> Optional[AnnotationTask]:
-        try:
-            return AnnotationTask.objects.get(
-                spectrogram_id=self.id,
-                annotator_id=info.context.user.id,
-                annotation_phase__annotation_campaign_id=campaign_id,
-                annotation_phase__phase=phase.value,
-            )
-        except AnnotationTask.DoesNotExist:
-            return None
 
     is_assigned = graphene.Boolean(
         required=True,
@@ -91,59 +95,80 @@ class AnnotationSpectrogramNode(SpectrogramNode, BaseObjectType):
 
         return is_assigned
 
-    status = AnnotationTaskStatus(
-        campaign_id=graphene.ID(required=True),
-        phase=AnnotationPhaseType(required=True),
-    )
+    audio_path = graphene.String(analysis_id=graphene.ID(required=True), required=True)
 
     @graphene_django_optimizer.resolver_hints()
-    def resolve_status(
-        self: Spectrogram,
-        info,
-        campaign_id: int,
-        phase: AnnotationPhaseType,
-    ) -> Optional[AnnotationTaskStatus]:
-        task = self._get_task(info, campaign_id, phase)
-        return task.status if task else None
+    def resolve_audio_path(self: Spectrogram, info, analysis_id: int):
+        analysis: SpectrogramAnalysis = self.analysis.get(id=analysis_id)
 
-    annotations = AuthenticatedDjangoConnectionField(
-        AnnotationNode,
-        campaign_id=graphene.ID(required=True),
-        phase=AnnotationPhaseType(required=True),
-    )
-
-    @graphene_django_optimizer.resolver_hints()
-    def resolve_annotations(
-        self: Spectrogram,
-        info,
-        campaign_id: int,
-        phase: AnnotationPhaseType,
-    ) -> Optional[QuerySet[Annotation]]:
-        task = self._get_task(info, campaign_id, phase)
-        return task.annotations if task else None
-
-    validated_annotations = AuthenticatedDjangoConnectionField(
-        AnnotationNode,
-        campaign_id=graphene.ID(required=True),
-        phase=AnnotationPhaseType(required=True),
-    )
-
-    @graphene_django_optimizer.resolver_hints()
-    def resolve_validated_annotations(
-        self: Spectrogram,
-        info,
-        campaign_id: int,
-        phase: AnnotationPhaseType,
-    ) -> Optional[QuerySet[Annotation]]:
-        task = self._get_task(info, campaign_id, phase)
-        return (
-            task.annotations.filter(
-                Q(annotator_id=info.context.user.id)
-                | Q(
-                    validations__annotator_id=info.context.user.id,
-                    is_update_of__validations__is_valid=True,
-                )
+        if analysis.dataset.legacy:
+            return (
+                settings.STATIC_URL
+                / analysis.dataset.path
+                / settings.DATASET_FILES_FOLDER
+                / analysis.dataset.get_config_folder()
+                / f"{self.filename}.wav"
             )
-            if task
-            else None
-        )
+        else:
+            spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
+            audio_path = str(
+                spectro_dataset.data[self.filename].audio_data.files[0].path
+            ).split("\\dataset\\")[1]
+            return settings.STATIC_URL / settings.DATASET_EXPORT_PATH / audio_path
+
+    path = graphene.String(analysis_id=graphene.ID(required=True), required=True)
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_path(root, info, analysis_id: int):
+        analysis: SpectrogramAnalysis = root.analysis.get(id=analysis_id)
+
+        if analysis.dataset.legacy:
+            folder = f"{analysis.fft.nfft}_{analysis.fft.window_size}_{analysis.fft.overlap*100}"
+            if analysis.legacy_configuration is not None:
+                if analysis.legacy_configuration.linear_frequency_scale is not None:
+                    folder = f"{folder}_{analysis.legacy_configuration.linear_frequency_scale.name}"
+                if (
+                    analysis.legacy_configuration.multi_linear_frequency_scale
+                    is not None
+                ):
+                    folder = f"{folder}_{analysis.legacy_configuration.multi_linear_frequency_scale.name}"
+            return (
+                settings.STATIC_URL
+                / analysis.dataset.path
+                / settings.DATASET_SPECTRO_FOLDER
+                / analysis.dataset.get_config_folder()
+                / folder
+                / f"{root.filename}.{root.format.name}"
+            )
+        else:
+            spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
+            spectro_dataset_path = str(spectro_dataset.folder).split("\\dataset\\")[1]
+            return (
+                settings.STATIC_URL
+                / settings.DATASET_EXPORT_PATH
+                / spectro_dataset_path
+                / "spectrogram"
+                / f"{root.filename}.{root.format.name}"
+            )
+
+    task = graphene.Field(
+        AnnotationTaskNode,
+        campaign_id=graphene.ID(required=True),
+        phase=AnnotationPhaseType(required=True),
+    )
+
+    def resolve_task(
+        self: Spectrogram,
+        info: GraphQLResolveInfo,
+        campaign_id: int,
+        phase: AnnotationPhaseType,
+    ):
+        try:
+            return AnnotationTask.objects.get(
+                spectrogram_id=self.id,
+                annotator_id=info.context.user.id,
+                annotation_phase__annotation_campaign_id=campaign_id,
+                annotation_phase__phase=phase.value,
+            )
+        except AnnotationTask.DoesNotExist:
+            return None

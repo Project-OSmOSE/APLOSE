@@ -1,6 +1,7 @@
 import {
   AnnotationNodeNodeConnection,
   type AnnotationSpectrogramNode,
+  AnnotationTaskNode,
   AnnotationTaskStatus,
   useCurrentPhase,
 } from '@/api';
@@ -11,16 +12,17 @@ import { checkmarkCircle, chevronForwardOutline, ellipseOutline } from 'ionicons
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 
 export const SpectrogramRow: React.FC<{
-  spectrogram: Pick<AnnotationSpectrogramNode, 'id' | 'filename' | 'duration' | 'start' | 'status'>
+  spectrogram: Pick<AnnotationSpectrogramNode, 'id' | 'filename' | 'duration' | 'start'>,
+  task: Pick<AnnotationTaskNode, 'status'>,
   annotations: Pick<AnnotationNodeNodeConnection, 'totalCount'>;
   validatedAnnotations: Pick<AnnotationNodeNodeConnection, 'totalCount'>;
-}> = ({ spectrogram, annotations, validatedAnnotations }) => {
+}> = ({ spectrogram, task, annotations, validatedAnnotations }) => {
   const { phase } = useCurrentPhase()
   const { openAnnotator } = useOpenAnnotator()
 
-  const submitted = useMemo(() => spectrogram.status === AnnotationTaskStatus.Finished, [ spectrogram ])
-  const start = useMemo(() => new Date(spectrogram.start), [ spectrogram ])
-  const duration = useMemo(() => new Date(spectrogram.duration), [ spectrogram ])
+  const submitted = useMemo(() => task.status === AnnotationTaskStatus.Finished, [task])
+  const start = useMemo(() => new Date(spectrogram.start), [spectrogram])
+  const duration = useMemo(() => new Date(spectrogram.duration), [spectrogram])
 
   return <Fragment>
     <TableContent isFirstColumn={ true } disabled={ submitted }>{ spectrogram.filename }</TableContent>

@@ -17,16 +17,16 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
   useAllAnnotationTasks({ page: 1 }, { refetchOnMountOrArgChange: true })
   const { allSpectrograms, pageCount, isFetching, error } = useAllAnnotationTasks(params)
 
-  const isEmpty = useMemo(() => error || !allSpectrograms || allSpectrograms.length === 0 || campaign?.isArchived, [ error, allSpectrograms, campaign ])
+  const isEmpty = useMemo(() => error || !allSpectrograms || allSpectrograms.length === 0 || campaign?.isArchived, [error, allSpectrograms, campaign])
 
   const onFilterUpdated = useCallback(() => {
     updatePage(1)
-  }, [ updatePage ])
+  }, [updatePage])
 
   if (!campaign || !phase) return <IonSpinner/>
   return <div className={ styles.phase }>
 
-    <div className={ [ styles.tasks, isEmpty ? styles.empty : '' ].join(' ') }>
+    <div className={ [styles.tasks, isEmpty ? styles.empty : ''].join(' ') }>
 
       <FileRangeActionBar/>
 
@@ -62,11 +62,12 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
         <TableDivider/>
 
         { allSpectrograms
-          ?.filter(s => s && s.annotations && s.validatedAnnotations)
-          .map(s => <SpectrogramRow key={ s!.id }
-                                    spectrogram={ s! }
-                                    annotations={ s!.annotations! }
-                                    validatedAnnotations={ s!.validatedAnnotations! }/>) }
+            ?.filter(s => s?.task && s.task.annotations && s.task.validatedAnnotations)
+            .map(s => <SpectrogramRow key={ s!.id }
+                                      spectrogram={ s! }
+                                      task={ s!.task! }
+                                      annotations={ s!.task!.annotations! }
+                                      validatedAnnotations={ s!.task!.validatedAnnotations! }/>) }
       </Table>
 
       { allSpectrograms && allSpectrograms.length > 0 &&
@@ -77,7 +78,7 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
       { !isFetching && !error && (!allSpectrograms || allSpectrograms.length === 0) &&
           <p>You have no files to annotate.</p> }
       { campaign?.isArchived ? <p>The campaign is archived. No more annotation can be done.</p> :
-        (phase?.endedAt && <p>The phase is ended. No more annotation can be done.</p>) }
+          (phase?.endedAt && <p>The phase is ended. No more annotation can be done.</p>) }
 
     </div>
   </div>

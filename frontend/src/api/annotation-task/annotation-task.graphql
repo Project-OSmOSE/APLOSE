@@ -5,7 +5,7 @@ query listAnnotationTask(
 
     # Pagination
     $limit: Int!
-    $offset: Int
+    $offset: Int!
 
     # Filtering
     $search: String
@@ -24,7 +24,7 @@ query listAnnotationTask(
         # Sort
         limit: $limit
         offset: $offset
-        ordering: "-start"
+        orderBy: "start"
 
         # Only assigned
         annotator: $annotatorID
@@ -55,30 +55,32 @@ query listAnnotationTask(
             filename
             start
             duration
-            status(campaignId: $campaignID, phase: $phaseType)
 
-            annotations(
-                campaignId: $campaignID
+            task(
                 phase: $phaseType
-                annotator: $annotationAnnotator
-                label_Name: $annotationLabel
-                confidence_Label: $annotationConfidence
-                detectorConfiguration_Detector: $annotationDetector
-                acousticFeatures_Exists: $withAcousticFeatures
+                campaignId: $campaignID
             ) {
-                totalCount
-            }
+                status
+                annotations(
+                    annotator: $annotationAnnotator
+                    label_Name: $annotationLabel
+                    confidence_Label: $annotationConfidence
+                    detectorConfiguration_Detector: $annotationDetector
+                    acousticFeatures_Exists: $withAcousticFeatures
+                ) {
+                    totalCount
+                }
 
-            validatedAnnotations(
-                campaignId: $campaignID
-                phase: $phaseType
-                annotator: $annotationAnnotator
-                label_Name: $annotationLabel
-                confidence_Label: $annotationConfidence
-                detectorConfiguration_Detector: $annotationDetector
-                acousticFeatures_Exists: $withAcousticFeatures
-            ) {
-                totalCount
+                validatedAnnotations: annotations(
+                    isValid: true
+                    annotator: $annotationAnnotator
+                    label_Name: $annotationLabel
+                    confidence_Label: $annotationConfidence
+                    detectorConfiguration_Detector: $annotationDetector
+                    acousticFeatures_Exists: $withAcousticFeatures
+                ) {
+                    totalCount
+                }
             }
         }
         totalCount
@@ -114,78 +116,84 @@ query getAnnotationTask(
         duration
 
         isAssigned(phase: $phaseType, campaignId: $campaignID)
-        status(phase: $phaseType, campaignId: $campaignID)
 
-        taskComments: annotationComments(
-            author: $annotatorID,
-            annotationPhase_Phase: $phaseType
-            annotation_Isnull: true
+
+        task(
+            phase: $phaseType
+            campaignId: $campaignID
         ) {
-            results {
-                id
-                comment
-            }
-        }
+            status
 
-        annotations(campaignId: $campaignID, phase: $phaseType) {
-            results {
-                id
-                type
-                startTime
-                endTime
-                startFrequency
-                endFrequency
-                label {
-                    name
-                }
-                confidence {
-                    label
-                }
-                detectorConfiguration {
-                    detector {
-                        id
-                        name
-                    }
-                }
-                annotator {
-                    id,
-                    displayName
-                }
-                comments(author: $annotatorID) {
-                    results{
-                        id
-                        comment
-                    }
-                }
-                validations(annotator: $annotatorID) {
-                    results {
-                        id
-                        isValid
-                    }
-                }
-                isUpdateOf {
+            comments(
+                author: $annotatorID,
+                annotationPhase_Phase: $phaseType
+            ) {
+                results {
                     id
+                    comment
                 }
-                acousticFeatures {
+            }
+
+            annotations {
+                results {
                     id
+                    type
+                    startTime
+                    endTime
                     startFrequency
                     endFrequency
-                    trend
-                    stepsCount
-                    relativeMinFrequencyCount
-                    relativeMaxFrequencyCount
-                    hasHarmonics
-                }
-                analysis {
-                    id
+                    label {
+                        name
+                    }
+                    confidence {
+                        label
+                    }
+                    detectorConfiguration {
+                        detector {
+                            id
+                            name
+                        }
+                    }
+                    annotator {
+                        id,
+                        displayName
+                    }
+                    comments(author: $annotatorID) {
+                        results{
+                            id
+                            comment
+                        }
+                    }
+                    validations(annotator: $annotatorID) {
+                        results {
+                            id
+                            isValid
+                        }
+                    }
+                    isUpdateOf {
+                        id
+                    }
+                    acousticFeatures {
+                        id
+                        startFrequency
+                        endFrequency
+                        trend
+                        stepsCount
+                        relativeMinFrequencyCount
+                        relativeMaxFrequencyCount
+                        hasHarmonics
+                    }
+                    analysis {
+                        id
+                    }
                 }
             }
         }
     }
 
-    listAnnotationSpectrogram(
+    allAnnotationSpectrogram(
         # Sort
-        ordering: "-start"
+        orderBy: "start"
 
         # Only assigned
         annotator: $annotatorID

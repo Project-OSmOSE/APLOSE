@@ -1,5 +1,5 @@
 from django.db.models import QuerySet, Exists, OuterRef, Subquery
-from django_filters import FilterSet, OrderingFilter, filters
+from django_filters import OrderingFilter, filters
 from graphene_django import filter
 
 from backend.api.models import (
@@ -10,13 +10,14 @@ from backend.api.models import (
     AnnotationPhase,
 )
 from backend.api.schema.enums import AnnotationPhaseType, AnnotationTaskStatus
+from backend.utils.schema.filters import BaseFilterSet, IDFilter
 
 
-class AnnotationSpectrogramFilterSet(FilterSet):
+class AnnotationSpectrogramFilterSet(BaseFilterSet):
 
     phase = filter.TypedFilter(AnnotationPhaseType, method="fake")
-    annotation_campaign = filter.GlobalIDFilter(method="fake")
-    annotator = filter.GlobalIDFilter(method="fake")
+    annotation_campaign = IDFilter(method="fake")
+    annotator = IDFilter(method="fake")
 
     annotation_tasks__status = filter.TypedFilter(AnnotationTaskStatus, method="fake")
 
@@ -24,8 +25,8 @@ class AnnotationSpectrogramFilterSet(FilterSet):
     annotations__confidence__label = filters.CharFilter(method="fake")
     annotations__label_name = filters.CharFilter(method="fake")
     annotations__acoustic_features__exists = filters.BooleanFilter(method="fake")
-    annotations__detector = filter.GlobalIDFilter(method="fake")
-    annotations__annotator = filter.GlobalIDFilter(method="fake")
+    annotations__detector = IDFilter(method="fake")
+    annotations__annotator = IDFilter(method="fake")
 
     class Meta:
         model = Spectrogram
@@ -37,54 +38,57 @@ class AnnotationSpectrogramFilterSet(FilterSet):
 
     order_by = OrderingFilter(fields=("start",))
 
-    def fake(self):
-        pass
+    def fake(self, queryset, _1, _2):
+        return queryset
 
     def filter_queryset(self, queryset: QuerySet[Spectrogram]):
+        queryset = super().filter_queryset(queryset)
+
         file_ranges = AnnotationFileRange.objects.all()
         tasks = AnnotationTask.objects.all()
         annotations = Annotation.objects.all()
 
-        phase_id = self.data.get("phase")
-        phase = None
-        if phase_id:
-            file_ranges = file_ranges.filter(annotation_phase__phase=phase_id)
-            tasks = tasks.filter(annotation_phase__phase=phase_id)
-            phase = AnnotationPhase.objects.get(id=phase_id)
-            if phase.phase == AnnotationPhase.Type.ANNOTATION:
+        phase_type = self.data.get("phase")
+        if phase_type:
+            file_ranges = file_ranges.filter(annotation_phase__phase=phase_type)
+            tasks = tasks.filter(annotation_phase__phase=phase_type)
+
+        campaign_id = self.data.get("annotation_campaign")
+        if campaign_id:
+            file_ranges = file_ranges.filter(
+                annotation_phase__annotation_campaign_id=campaign_id
+            )
+            tasks = tasks.filter(annotation_phase__annotation_campaign_id=campaign_id)
+            annotations = annotations.filter(
+                annotation_phase__annotation_campaign_id=campaign_id
+            )
+
+        if phase_type and campaign_id:
+            if phase_type == AnnotationPhase.Type.ANNOTATION:
                 annotations = annotations.filter(
-                    annotation_phase_id=phase_id,
+                    annotation_phase__phase=phase_type,
+                    annotation_phase__annotation_campaign_id=campaign_id,
                 )
 
-        campaign = self.data.get("annotation_campaign")
-        if campaign:
-            file_ranges = file_ranges.filter(
-                annotation_phase__annotation_campaign_id=campaign
-            )
-            tasks = tasks.filter(annotation_phase__annotation_campaign_id=campaign)
-            annotations = annotations.filter(
-                annotation_phase__annotation_campaign_id=campaign
-            )
-
-        annotator = self.data.get("annotator")
-        if annotator:
-            file_ranges = file_ranges.filter(annotator_id=annotator)
-            tasks = tasks.filter(annotator_id=annotator)
-            if phase and phase.phase == AnnotationPhase.Type.ANNOTATION:
-                annotations = annotations.filter(annotator_id=annotator)
+        annotator_id = self.data.get("annotator")
+        if annotator_id:
+            file_ranges = file_ranges.filter(annotator_id=annotator_id)
+            tasks = tasks.filter(annotator_id=annotator_id)
+            if phase_type == AnnotationPhase.Type.ANNOTATION:
+                annotations = annotations.filter(annotator_id=annotator_id)
 
         # Filter through existing file range
         queryset = queryset.filter(
             Exists(
                 file_ranges.filter(
-                    from_datetime__lte=OuterRef("start_date"),
-                    to_datetime__gte=OuterRef("end_date"),
+                    from_datetime__lte=OuterRef("start"),
+                    to_datetime__gte=OuterRef("end"),
                 )
             )
         )
 
         # Filter on task status
-        status = self.data.get("annotations__status")
+        status = self.data.get("annotation_tasks__status")
         if status:
             q = Exists(
                 tasks.filter(
@@ -113,7 +117,7 @@ class AnnotationSpectrogramFilterSet(FilterSet):
                     acoustic_features__isnull=not features_exists
                 )
 
-            detector = self.data.get("annotations__annotator")
+            detector = self.data.get("annotations__detector")
             if detector:
                 annotations = annotations.filter(
                     detector_configuration__detector_id=detector
@@ -135,4 +139,4 @@ class AnnotationSpectrogramFilterSet(FilterSet):
             else:
                 queryset = queryset.filter(~q)
 
-        return super().filter_queryset(queryset)
+        return queryset

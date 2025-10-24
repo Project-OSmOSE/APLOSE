@@ -6,7 +6,7 @@ export type ListAnnotationTaskQueryVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
   phaseType: Types.AnnotationPhaseType;
   limit: Types.Scalars['Int']['input'];
-  offset?: Types.InputMaybe<Types.Scalars['Int']['input']>;
+  offset: Types.Scalars['Int']['input'];
   search?: Types.InputMaybe<Types.Scalars['String']['input']>;
   status?: Types.InputMaybe<Types.AnnotationTaskStatus>;
   from?: Types.InputMaybe<Types.Scalars['DateTime']['input']>;
@@ -20,7 +20,7 @@ export type ListAnnotationTaskQueryVariables = Types.Exact<{
 }>;
 
 
-export type ListAnnotationTaskQuery = { __typename?: 'Query', listAnnotationSpectrogram?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', resumeSpectrogramId?: string | null, totalCount?: number | null, results: Array<{ __typename?: 'AnnotationSpectrogramNode', id: string, filename: string, start: any, duration: number, status?: Types.AnnotationTaskStatus | null, annotations?: { __typename?: 'AnnotationNodeNodeConnection', totalCount?: number | null } | null, validatedAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', totalCount?: number | null } | null } | null> } | null };
+export type ListAnnotationTaskQuery = { __typename?: 'Query', allAnnotationSpectrogram?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', resumeSpectrogramId?: string | null, totalCount?: number | null, results: Array<{ __typename?: 'AnnotationSpectrogramNode', id: string, filename: string, start: any, duration: number, task?: { __typename?: 'AnnotationTaskNode', status: Types.AnnotationTaskStatus, annotations?: { __typename?: 'AnnotationNodeNodeConnection', totalCount?: number | null } | null, validatedAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', totalCount?: number | null } | null } | null } | null> } | null };
 
 export type GetAnnotationTaskQueryVariables = Types.Exact<{
   spectrogramID: Types.Scalars['ID']['input'];
@@ -41,15 +41,15 @@ export type GetAnnotationTaskQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetAnnotationTaskQuery = { __typename?: 'Query', annotationSpectrogramById?: { __typename?: 'AnnotationSpectrogramNode', id: string, filename: string, audioPath: string, path: string, start: any, duration: number, isAssigned: boolean, status?: Types.AnnotationTaskStatus | null, taskComments?: { __typename?: 'AnnotationCommentNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCommentNode', id: string, comment: string } | null> } | null, annotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', id: string, type: Types.AnnotationType, startTime?: number | null, endTime?: number | null, startFrequency?: number | null, endFrequency?: number | null, label: { __typename?: 'AnnotationLabelNode', name: string }, confidence?: { __typename?: 'ConfidenceNode', label: string } | null, detectorConfiguration?: { __typename?: 'DetectorConfigurationNode', detector: { __typename?: 'DetectorNode', id: string, name: string } } | null, annotator?: { __typename?: 'UserNode', id: string, displayName: string } | null, comments?: { __typename?: 'AnnotationCommentNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCommentNode', id: string, comment: string } | null> } | null, validations?: { __typename?: 'AnnotationValidationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationValidationNode', id: string, isValid: boolean } | null> } | null, isUpdateOf?: { __typename?: 'AnnotationNode', id: string } | null, acousticFeatures?: { __typename?: 'AcousticFeaturesNode', id: string, startFrequency?: number | null, endFrequency?: number | null, trend?: Types.SignalTrendType | null, stepsCount?: number | null, relativeMinFrequencyCount?: number | null, relativeMaxFrequencyCount?: number | null, hasHarmonics?: boolean | null } | null, analysis: { __typename?: 'SpectrogramAnalysisNode', id: string } } | null> } | null } | null, listAnnotationSpectrogram?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', currentIndex?: number | null, totalCount?: number | null, previousSpectrogramId?: string | null, nextSpectrogramId?: string | null } | null };
+export type GetAnnotationTaskQuery = { __typename?: 'Query', annotationSpectrogramById?: { __typename?: 'AnnotationSpectrogramNode', id: string, filename: string, audioPath: string, path: string, start: any, duration: number, isAssigned: boolean, task?: { __typename?: 'AnnotationTaskNode', status: Types.AnnotationTaskStatus, comments?: { __typename?: 'AnnotationCommentNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCommentNode', id: string, comment: string } | null> } | null, annotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', id: string, type: Types.AnnotationType, startTime?: number | null, endTime?: number | null, startFrequency?: number | null, endFrequency?: number | null, label: { __typename?: 'AnnotationLabelNode', name: string }, confidence?: { __typename?: 'ConfidenceNode', label: string } | null, detectorConfiguration?: { __typename?: 'DetectorConfigurationNode', detector: { __typename?: 'DetectorNode', id: string, name: string } } | null, annotator?: { __typename?: 'UserNode', id: string, displayName: string } | null, comments?: { __typename?: 'AnnotationCommentNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCommentNode', id: string, comment: string } | null> } | null, validations?: { __typename?: 'AnnotationValidationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationValidationNode', id: string, isValid: boolean } | null> } | null, isUpdateOf?: { __typename?: 'AnnotationNode', id: string } | null, acousticFeatures?: { __typename?: 'AcousticFeaturesNode', id: string, startFrequency?: number | null, endFrequency?: number | null, trend?: Types.SignalTrendType | null, stepsCount?: number | null, relativeMinFrequencyCount?: number | null, relativeMaxFrequencyCount?: number | null, hasHarmonics?: boolean | null } | null, analysis: { __typename?: 'SpectrogramAnalysisNode', id: string } } | null> } | null } | null } | null, allAnnotationSpectrogram?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', currentIndex?: number | null, totalCount?: number | null, previousSpectrogramId?: string | null, nextSpectrogramId?: string | null } | null };
 
 
 export const ListAnnotationTaskDocument = `
-    query listAnnotationTask($annotatorID: ID!, $campaignID: ID!, $phaseType: AnnotationPhaseType!, $limit: Int!, $offset: Int, $search: String, $status: AnnotationTaskStatus, $from: DateTime, $to: DateTime, $withAnnotations: Boolean, $annotationLabel: String, $annotationConfidence: String, $annotationDetector: ID, $annotationAnnotator: ID, $withAcousticFeatures: Boolean) {
-  listAnnotationSpectrogram(
+    query listAnnotationTask($annotatorID: ID!, $campaignID: ID!, $phaseType: AnnotationPhaseType!, $limit: Int!, $offset: Int!, $search: String, $status: AnnotationTaskStatus, $from: DateTime, $to: DateTime, $withAnnotations: Boolean, $annotationLabel: String, $annotationConfidence: String, $annotationDetector: ID, $annotationAnnotator: ID, $withAcousticFeatures: Boolean) {
+  allAnnotationSpectrogram(
     limit: $limit
     offset: $offset
-    ordering: "-start"
+    orderBy: "start"
     annotator: $annotatorID
     annotationCampaign: $campaignID
     phase: $phaseType
@@ -70,28 +70,27 @@ export const ListAnnotationTaskDocument = `
       filename
       start
       duration
-      status(campaignId: $campaignID, phase: $phaseType)
-      annotations(
-        campaignId: $campaignID
-        phase: $phaseType
-        annotator: $annotationAnnotator
-        label_Name: $annotationLabel
-        confidence_Label: $annotationConfidence
-        detectorConfiguration_Detector: $annotationDetector
-        acousticFeatures_Exists: $withAcousticFeatures
-      ) {
-        totalCount
-      }
-      validatedAnnotations(
-        campaignId: $campaignID
-        phase: $phaseType
-        annotator: $annotationAnnotator
-        label_Name: $annotationLabel
-        confidence_Label: $annotationConfidence
-        detectorConfiguration_Detector: $annotationDetector
-        acousticFeatures_Exists: $withAcousticFeatures
-      ) {
-        totalCount
+      task(phase: $phaseType, campaignId: $campaignID) {
+        status
+        annotations(
+          annotator: $annotationAnnotator
+          label_Name: $annotationLabel
+          confidence_Label: $annotationConfidence
+          detectorConfiguration_Detector: $annotationDetector
+          acousticFeatures_Exists: $withAcousticFeatures
+        ) {
+          totalCount
+        }
+        validatedAnnotations: annotations(
+          isValid: true
+          annotator: $annotationAnnotator
+          label_Name: $annotationLabel
+          confidence_Label: $annotationConfidence
+          detectorConfiguration_Detector: $annotationDetector
+          acousticFeatures_Exists: $withAcousticFeatures
+        ) {
+          totalCount
+        }
       }
     }
     totalCount
@@ -108,74 +107,72 @@ export const GetAnnotationTaskDocument = `
     start
     duration
     isAssigned(phase: $phaseType, campaignId: $campaignID)
-    status(phase: $phaseType, campaignId: $campaignID)
-    taskComments: annotationComments(
-      author: $annotatorID
-      annotationPhase_Phase: $phaseType
-      annotation_Isnull: true
-    ) {
-      results {
-        id
-        comment
+    task(phase: $phaseType, campaignId: $campaignID) {
+      status
+      comments(author: $annotatorID, annotationPhase_Phase: $phaseType) {
+        results {
+          id
+          comment
+        }
       }
-    }
-    annotations(campaignId: $campaignID, phase: $phaseType) {
-      results {
-        id
-        type
-        startTime
-        endTime
-        startFrequency
-        endFrequency
-        label {
-          name
-        }
-        confidence {
-          label
-        }
-        detectorConfiguration {
-          detector {
-            id
-            name
-          }
-        }
-        annotator {
+      annotations {
+        results {
           id
-          displayName
-        }
-        comments(author: $annotatorID) {
-          results {
-            id
-            comment
-          }
-        }
-        validations(annotator: $annotatorID) {
-          results {
-            id
-            isValid
-          }
-        }
-        isUpdateOf {
-          id
-        }
-        acousticFeatures {
-          id
+          type
+          startTime
+          endTime
           startFrequency
           endFrequency
-          trend
-          stepsCount
-          relativeMinFrequencyCount
-          relativeMaxFrequencyCount
-          hasHarmonics
-        }
-        analysis {
-          id
+          label {
+            name
+          }
+          confidence {
+            label
+          }
+          detectorConfiguration {
+            detector {
+              id
+              name
+            }
+          }
+          annotator {
+            id
+            displayName
+          }
+          comments(author: $annotatorID) {
+            results {
+              id
+              comment
+            }
+          }
+          validations(annotator: $annotatorID) {
+            results {
+              id
+              isValid
+            }
+          }
+          isUpdateOf {
+            id
+          }
+          acousticFeatures {
+            id
+            startFrequency
+            endFrequency
+            trend
+            stepsCount
+            relativeMinFrequencyCount
+            relativeMaxFrequencyCount
+            hasHarmonics
+          }
+          analysis {
+            id
+          }
         }
       }
     }
   }
-  listAnnotationSpectrogram(
-    ordering: "-start"
+  allAnnotationSpectrogram(
+    orderBy: "start"
     annotator: $annotatorID
     annotationCampaign: $campaignID
     phase: $phaseType

@@ -440,6 +440,7 @@ export type AnnotationLabelNodeAnnotationSetArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -568,6 +569,7 @@ export type AnnotationNodeUpdatedToArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -695,6 +697,7 @@ export type AnnotationPhaseNodeAnnotationsArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -737,7 +740,7 @@ export type AnnotationSpectrogramNode = BaseNode & {
   analysis: SpectrogramAnalysisNodeConnection;
   annotationComments?: Maybe<AnnotationCommentNodeNodeConnection>;
   annotationTasks: AnnotationTaskNodeConnection;
-  annotations?: Maybe<AnnotationNodeNodeConnection>;
+  annotations: AnnotationNodeConnection;
   audioPath: Scalars['String']['output'];
   duration: Scalars['Int']['output'];
   end: Scalars['DateTime']['output'];
@@ -748,8 +751,7 @@ export type AnnotationSpectrogramNode = BaseNode & {
   isAssigned: Scalars['Boolean']['output'];
   path: Scalars['String']['output'];
   start: Scalars['DateTime']['output'];
-  status?: Maybe<AnnotationTaskStatus>;
-  validatedAnnotations?: Maybe<AnnotationNodeNodeConnection>;
+  task?: Maybe<AnnotationTaskNode>;
 };
 
 
@@ -805,16 +807,13 @@ export type AnnotationSpectrogramNodeAnnotationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotator?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  campaignId: Scalars['ID']['input'];
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  ordering?: InputMaybe<Scalars['String']['input']>;
-  phase: AnnotationPhaseType;
 };
 
 
@@ -834,26 +833,8 @@ export type AnnotationSpectrogramNodePathArgs = {
 };
 
 
-export type AnnotationSpectrogramNodeStatusArgs = {
+export type AnnotationSpectrogramNodeTaskArgs = {
   campaignId: Scalars['ID']['input'];
-  phase: AnnotationPhaseType;
-};
-
-
-export type AnnotationSpectrogramNodeValidatedAnnotationsArgs = {
-  acousticFeatures_Exists?: InputMaybe<Scalars['Boolean']['input']>;
-  after?: InputMaybe<Scalars['String']['input']>;
-  annotator?: InputMaybe<Scalars['ID']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  campaignId: Scalars['ID']['input'];
-  confidence_Label?: InputMaybe<Scalars['String']['input']>;
-  detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  label_Name?: InputMaybe<Scalars['String']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  ordering?: InputMaybe<Scalars['String']['input']>;
   phase: AnnotationPhaseType;
 };
 
@@ -913,7 +894,6 @@ export type AnnotationTaskNode = BaseNode & {
   id: Scalars['ID']['output'];
   spectrogram: AnnotationSpectrogramNode;
   status: AnnotationTaskStatus;
-  validatedAnnotations?: Maybe<AnnotationNodeNodeConnection>;
 };
 
 
@@ -926,6 +906,7 @@ export type AnnotationTaskNodeAnnotationsArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -942,23 +923,6 @@ export type AnnotationTaskNodeCommentsArgs = {
   author?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  ordering?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** AnnotationTask schema */
-export type AnnotationTaskNodeValidatedAnnotationsArgs = {
-  acousticFeatures_Exists?: InputMaybe<Scalars['Boolean']['input']>;
-  after?: InputMaybe<Scalars['String']['input']>;
-  annotator?: InputMaybe<Scalars['ID']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  confidence_Label?: InputMaybe<Scalars['String']['input']>;
-  detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -1893,6 +1857,7 @@ export type ConfidenceNodeAnnotationSetArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -2684,6 +2649,7 @@ export type DetectorConfigurationNodeAnnotationsArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -4862,6 +4828,7 @@ export type Query = {
   allAnnotationFileRanges?: Maybe<AnnotationFileRangeNodeNodeConnection>;
   allAnnotationLabels?: Maybe<AnnotationLabelNodeNodeConnection>;
   allAnnotationPhases?: Maybe<AnnotationPhaseNodeNodeConnection>;
+  allAnnotationSpectrogram?: Maybe<AnnotationSpectrogramNodeNodeConnection>;
   allAnnotationValidations?: Maybe<AnnotationValidationNodeNodeConnection>;
   allAnnotations?: Maybe<AnnotationNodeNodeConnection>;
   allAudioProperties?: Maybe<AudioPropertiesNodeNodeConnection>;
@@ -4934,7 +4901,6 @@ export type Query = {
   hydrophoneSpecificationById?: Maybe<HydrophoneSpecificationNode>;
   institutionById?: Maybe<InstitutionNode>;
   labelById?: Maybe<LabelNode>;
-  listAnnotationSpectrogram?: Maybe<AnnotationSpectrogramNodeNodeConnection>;
   maintenanceById?: Maybe<MaintenanceNode>;
   maintenanceTypeById?: Maybe<MaintenanceTypeNode>;
   platformById?: Maybe<PlatformNode>;
@@ -5054,6 +5020,32 @@ export type QueryAllAnnotationPhasesArgs = {
 
 
 /** Global query */
+export type QueryAllAnnotationSpectrogramArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  annotationCampaign?: InputMaybe<Scalars['ID']['input']>;
+  annotationTasks_Status?: InputMaybe<AnnotationTaskStatus>;
+  annotations_AcousticFeatures_Exists?: InputMaybe<Scalars['Boolean']['input']>;
+  annotations_Annotator?: InputMaybe<Scalars['ID']['input']>;
+  annotations_Confidence_Label?: InputMaybe<Scalars['String']['input']>;
+  annotations_Detector?: InputMaybe<Scalars['ID']['input']>;
+  annotations_Exists?: InputMaybe<Scalars['Boolean']['input']>;
+  annotations_LabelName?: InputMaybe<Scalars['String']['input']>;
+  annotator?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  end_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  filename_Icontains?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
+  phase?: InputMaybe<AnnotationPhaseType>;
+  start_Lte?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+
+/** Global query */
 export type QueryAllAnnotationValidationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotator?: InputMaybe<Scalars['ID']['input']>;
@@ -5075,6 +5067,7 @@ export type QueryAllAnnotationsArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -6317,32 +6310,6 @@ export type QueryLabelByIdArgs = {
 
 
 /** Global query */
-export type QueryListAnnotationSpectrogramArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  annotationCampaign?: InputMaybe<Scalars['ID']['input']>;
-  annotationTasks_Status?: InputMaybe<AnnotationTaskStatus>;
-  annotations_AcousticFeatures_Exists?: InputMaybe<Scalars['Boolean']['input']>;
-  annotations_Annotator?: InputMaybe<Scalars['ID']['input']>;
-  annotations_Confidence_Label?: InputMaybe<Scalars['String']['input']>;
-  annotations_Detector?: InputMaybe<Scalars['ID']['input']>;
-  annotations_Exists?: InputMaybe<Scalars['Boolean']['input']>;
-  annotations_LabelName?: InputMaybe<Scalars['String']['input']>;
-  annotator?: InputMaybe<Scalars['ID']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  end_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  filename_Icontains?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Scalars['String']['input']>;
-  ordering?: InputMaybe<Scalars['String']['input']>;
-  phase?: InputMaybe<AnnotationPhaseType>;
-  start_Lte?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-
-/** Global query */
 export type QueryMaintenanceByIdArgs = {
   id: Scalars['ID']['input'];
 };
@@ -6909,6 +6876,7 @@ export type SpectrogramAnalysisNodeAnnotationsArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -7038,6 +7006,7 @@ export type SpectrogramNodeAnnotationsArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -7379,6 +7348,7 @@ export type UserNodeAnnotationsArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;

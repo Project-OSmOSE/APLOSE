@@ -21,15 +21,15 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
   const dispatch = useAppDispatch()
 
   const onBack = useCallback(() => {
-    dispatch(gqlAPI.util.invalidateTags([ {
+    dispatch(gqlAPI.util.invalidateTags([{
       type: 'AnnotationPhase',
       id: phase?.id,
-    } ]))
-  }, [ phase ])
+    }]))
+  }, [phase])
 
   // 'page' class is for playwright tests
   return <AnnotatorCanvasContextProvider>
-    <div className={ [ styles.page, 'page' ].join(' ') }>
+    <div className={ [styles.page, 'page'].join(' ') }>
       <Header size="small"
               canNavigate={ canNavigate }
               buttons={ <Fragment>
@@ -54,7 +54,7 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
         { spectrogram && campaign && <div className={ styles.info }>
             <p>
               { campaign.name }
-                <IoChevronForwardOutline/> { spectrogram.filename } { spectrogram.status === AnnotationTaskStatus.Finished &&
+                <IoChevronForwardOutline/> { spectrogram.filename } { spectrogram.task?.status === AnnotationTaskStatus.Finished &&
                 <IoCheckmarkCircleOutline/> }
             </p>
           { isEditionAuthorized && navigationInfo?.totalCount &&
@@ -63,9 +63,9 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                         value={ (navigationInfo.currentIndex ?? 0) + 1 }
                         total={ navigationInfo.totalCount }/> }
           { campaign?.archive ? <IonNote>You cannot annotate an archived campaign.</IonNote> :
-            phase?.endedAt ? <IonNote>You cannot annotate an ended phase.</IonNote> :
-              !spectrogram.isAssigned ? <IonNote>You are not assigned to annotate this file.</IonNote> :
-                <Fragment/>
+              phase?.endedAt ? <IonNote>You cannot annotate an ended phase.</IonNote> :
+                  !spectrogram.isAssigned ? <IonNote>You are not assigned to annotate this file.</IonNote> :
+                      <Fragment/>
           }
         </div> }
 

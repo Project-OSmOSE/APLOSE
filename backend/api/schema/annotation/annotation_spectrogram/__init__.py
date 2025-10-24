@@ -8,7 +8,7 @@ from .node import AnnotationSpectrogramNode
 class AnnotationSpectrogramQuery(graphene.ObjectType):
     """Annotation spectrogram query"""
 
-    list_annotation_spectrogram = AnnotationSpectrogramConnectionField(
+    all_annotation_spectrogram = AnnotationSpectrogramConnectionField(
         AnnotationSpectrogramNode,
     )
 

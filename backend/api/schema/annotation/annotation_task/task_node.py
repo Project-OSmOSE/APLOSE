@@ -1,5 +1,4 @@
-import graphene_django_optimizer
-from django.db.models import Q, QuerySet, Exists, Subquery, OuterRef
+from django.db.models import QuerySet, Exists, Subquery, OuterRef
 from django_filters import BooleanFilter, CharFilter, OrderingFilter
 from graphene import Enum
 
@@ -108,29 +107,4 @@ class AnnotationTaskNode(BaseObjectType):
 
     annotations = AuthenticatedDjangoConnectionField(AnnotationNode)
 
-    @graphene_django_optimizer.resolver_hints()
-    def resolve_annotations(self: AnnotationTask, info):
-        """Linked annotations"""
-        return self.annotations
-
-    validated_annotations = AuthenticatedDjangoConnectionField(AnnotationNode)
-
-    @graphene_django_optimizer.resolver_hints()
-    def resolve_validated_annotations(self: AnnotationTask, info):
-        """Count of annotations"""
-        return self.annotations.filter(
-            Q(annotator_id=self.annotator_id)
-            | Q(
-                validations__annotator_id=self.annotator_id,
-                is_update_of__validations__is_valid=True,
-            )
-        )
-
     comments = AuthenticatedDjangoConnectionField(AnnotationCommentNode)
-
-    @graphene_django_optimizer.resolver_hints()
-    def resolve_comments(self: AnnotationTask, info):
-        """Linked comments"""
-        return self.spectrogram.annotation_comments.filter(
-            annotation_phase=self.annotation_phase
-        )
