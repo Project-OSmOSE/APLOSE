@@ -3,12 +3,12 @@ from django.db.models import QuerySet, Q
 from django_filters import BooleanFilter
 
 from backend.api.models import Annotation
-from backend.api.schema.queries.annotation import AnnotationValidationNode
 from backend.utils.schema import AuthenticatedDjangoConnectionField
 from backend.utils.schema.filters import BaseFilterSet, IDFilter
 from backend.utils.schema.types import BaseObjectType, BaseNode
 from ..acoustic_features.features_node import AcousticFeaturesNode
 from ..annotation_comment.comment_node import AnnotationCommentNode
+from ..annotation_validation.node import AnnotationValidationNode
 
 
 class AnnotationFilter(BaseFilterSet):

@@ -1,6 +1,7 @@
 import graphene
 
 from backend.api.models import Spectrogram
+from backend.utils.schema import GraphQLPermissions, GraphQLResolve
 from .connection import AnnotationSpectrogramConnectionField
 from .node import AnnotationSpectrogramNode
 
@@ -16,5 +17,6 @@ class AnnotationSpectrogramQuery(graphene.ObjectType):
         AnnotationSpectrogramNode, id=graphene.ID()
     )
 
+    @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     def resolve_annotation_spectrogram_by_id(self, info, id: int):
         return Spectrogram.objects.get(pk=id)

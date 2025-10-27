@@ -1,18 +1,16 @@
 """AnnotationValidation schema"""
-from graphene import relay
 
 from backend.api.models import AnnotationValidation
-from backend.utils.schema import ApiObjectType
+from backend.utils.schema.types import BaseObjectType, BaseNode
+from .filterset import AnnotationValidationFilterSet
 
 
-class AnnotationValidationNode(ApiObjectType):
+class AnnotationValidationNode(BaseObjectType):
     """AnnotationValidation schema"""
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
         model = AnnotationValidation
         fields = "__all__"
-        filter_fields = {
-            "annotator": ["exact"],
-        }
-        interfaces = (relay.Node,)
+        filterset_class = AnnotationValidationFilterSet
+        interfaces = (BaseNode,)

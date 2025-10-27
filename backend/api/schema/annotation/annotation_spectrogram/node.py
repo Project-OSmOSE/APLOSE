@@ -1,3 +1,4 @@
+from os import path
 from typing import Optional
 
 import graphene
@@ -102,19 +103,21 @@ class AnnotationSpectrogramNode(BaseObjectType):
         analysis: SpectrogramAnalysis = self.analysis.get(id=analysis_id)
 
         if analysis.dataset.legacy:
-            return (
-                settings.STATIC_URL
-                / analysis.dataset.path
-                / settings.DATASET_FILES_FOLDER
-                / analysis.dataset.get_config_folder()
-                / f"{self.filename}.wav"
+            return path.join(
+                settings.STATIC_URL,
+                analysis.dataset.path,
+                settings.DATASET_FILES_FOLDER,
+                analysis.dataset.get_config_folder(),
+                f"{self.filename}.wav",
             )
         else:
             spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
             audio_path = str(
                 spectro_dataset.data[self.filename].audio_data.files[0].path
             ).split("\\dataset\\")[1]
-            return settings.STATIC_URL / settings.DATASET_EXPORT_PATH / audio_path
+            return path.join(
+                settings.STATIC_URL, settings.DATASET_EXPORT_PATH, audio_path
+            )
 
     path = graphene.String(analysis_id=graphene.ID(required=True), required=True)
 
@@ -132,23 +135,23 @@ class AnnotationSpectrogramNode(BaseObjectType):
                     is not None
                 ):
                     folder = f"{folder}_{analysis.legacy_configuration.multi_linear_frequency_scale.name}"
-            return (
-                settings.STATIC_URL
-                / analysis.dataset.path
-                / settings.DATASET_SPECTRO_FOLDER
-                / analysis.dataset.get_config_folder()
-                / folder
-                / f"{root.filename}.{root.format.name}"
+            return path.join(
+                settings.STATIC_URL,
+                analysis.dataset.path,
+                settings.DATASET_SPECTRO_FOLDER,
+                analysis.dataset.get_config_folder(),
+                folder,
+                f"{root.filename}.{root.format.name}",
             )
         else:
             spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
             spectro_dataset_path = str(spectro_dataset.folder).split("\\dataset\\")[1]
-            return (
-                settings.STATIC_URL
-                / settings.DATASET_EXPORT_PATH
-                / spectro_dataset_path
-                / "spectrogram"
-                / f"{root.filename}.{root.format.name}"
+            return path.join(
+                settings.STATIC_URL,
+                settings.DATASET_EXPORT_PATH,
+                spectro_dataset_path,
+                "spectrogram",  # TODO: avoid static path parts!!!
+                f"{root.filename}.{root.format.name}",
             )
 
     task = graphene.Field(

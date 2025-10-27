@@ -1,2 +1,3 @@
 """API annotation annotation_spectrogram GraphQL tests"""
 from .all_annotation_spectrogram import AllAnnotationSpectrogramTestCase
+from .annotation_spectrogram_by_id import AnnotationSpectrogramByIDTestCase
