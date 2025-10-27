@@ -58,9 +58,9 @@ export const DatasetTable: React.FC = () => {
       <TableContent isFirstColumn={ true }><DatasetName { ...d } link/></TableContent>
       <TableContent>{ dateToString(d.createdAt) }</TableContent>
       <TableContent>{ d.spectrogramAnalysis?.totalCount ?? 0 }</TableContent>
-      <TableContent>{ d.filesCount }</TableContent>
-      <TableContent>{ dateToString(d.start) }</TableContent>
-      <TableContent>{ dateToString(d.end) }</TableContent>
+      <TableContent>{ d.spectrograms?.totalCount ?? 0 }</TableContent>
+      <TableContent>{ d.spectrograms && dateToString(d.spectrograms.start) }</TableContent>
+      <TableContent>{ d.spectrograms && dateToString(d.spectrograms.end) }</TableContent>
       <TableDivider/>
     </Fragment>) }
   </Table>
