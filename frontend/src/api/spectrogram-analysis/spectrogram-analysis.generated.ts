@@ -1,46 +1,20 @@
 import * as Types from '../types.gql-generated';
 
 import { gqlAPI } from '@/api/baseGqlApi';
-
 export type ListSpectrogramAnalysisQueryVariables = Types.Exact<{
   datasetID?: Types.InputMaybe<Types.Scalars['ID']['input']>;
   annotationCampaignID?: Types.InputMaybe<Types.Scalars['ID']['input']>;
 }>;
 
 
-export type ListSpectrogramAnalysisQuery = {
-  __typename?: 'Query',
-  allSpectrogramAnalysis?: {
-    __typename?: 'SpectrogramAnalysisNodeNodeConnection',
-    results: Array<{
-      __typename?: 'SpectrogramAnalysisNode',
-      id: string,
-      name: string,
-      description?: string | null,
-      createdAt: any,
-      legacy: boolean,
-      dataDuration?: number | null,
-      fft: { __typename?: 'FFTNode', samplingFrequency: number, nfft: number, windowSize: number, overlap: any },
-      spectrograms?: {
-        __typename?: 'SpectrogramNodeNodeConnection',
-        totalCount?: number | null,
-        start?: any | null,
-        end?: any | null
-      } | null
-    } | null>
-  } | null
-};
+export type ListSpectrogramAnalysisQuery = { __typename?: 'Query', allSpectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', results: Array<{ __typename?: 'SpectrogramAnalysisNode', id: string, name: string, description?: string | null, createdAt: any, legacy: boolean, dataDuration?: number | null, fft: { __typename?: 'FFTNode', samplingFrequency: number, nfft: number, windowSize: number, overlap: any }, spectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount?: number | null, start?: any | null, end?: any | null } | null } | null> } | null };
 
 export type ListAvailableSpectrogramAnalysisForImportQueryVariables = Types.Exact<{
   datasetID: Types.Scalars['ID']['input'];
 }>;
 
 
-export type ListAvailableSpectrogramAnalysisForImportQuery = {
-  __typename?: 'Query',
-  allAnalysisForImport?: Array<{ __typename?: 'ImportAnalysisNode', name: string, path: string } | null> | null,
-  datasetById?: { __typename?: 'DatasetNode', name: string, path: string } | null
-};
+export type ListAvailableSpectrogramAnalysisForImportQuery = { __typename?: 'Query', allAnalysisForImport?: Array<{ __typename?: 'ImportAnalysisNode', name: string, path: string } | null> | null, datasetById?: { __typename?: 'DatasetNode', name: string, path: string } | null };
 
 export type ImportSpectrogramAnalysisMutationVariables = Types.Exact<{
   datasetName: Types.Scalars['String']['input'];
@@ -51,10 +25,7 @@ export type ImportSpectrogramAnalysisMutationVariables = Types.Exact<{
 }>;
 
 
-export type ImportSpectrogramAnalysisMutation = {
-  __typename?: 'Mutation',
-  importSpectrogramAnalysis?: { __typename?: 'ImportSpectrogramAnalysisMutation', ok?: boolean | null } | null
-};
+export type ImportSpectrogramAnalysisMutation = { __typename?: 'Mutation', importSpectrogramAnalysis?: { __typename?: 'ImportAnalysisMutation', ok?: boolean | null } | null };
 
 
 export const ListSpectrogramAnalysisDocument = `

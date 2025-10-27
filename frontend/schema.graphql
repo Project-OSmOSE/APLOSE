@@ -1097,54 +1097,6 @@ type Query {
     last: Int
   ): UserNodeNodeConnection
   currentUser: UserNode
-  allSpectrogramAnalysisForImport(datasetId: ID!): [ImportSpectrogramAnalysisType]
-  allLinearScales(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-  ): LinearScaleNodeNodeConnection
-  allMultiLinearScales(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-  ): MultiLinearScaleNodeNodeConnection
-  allDatasets(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-
-    """Ordering"""
-    orderBy: String
-  ): DatasetNodeNodeConnection
-  datasetById(id: ID!): DatasetNode
-  allDatasetsAvailableForImport: [ImportDatasetType]
   allLabelSets(
     """Query limit"""
     limit: Int
@@ -1329,6 +1281,24 @@ type Query {
     annotator: ID
   ): AnnotationNodeNodeConnection
   allAnalysisForImport(datasetId: ID!): [ImportAnalysisNode]
+  allDatasets(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+
+    """Ordering"""
+    orderBy: String
+  ): DatasetNodeNodeConnection
+  allDatasetsForImport: [ImportDatasetNode]
   allSpectrogramAnalysis(
     """Query limit"""
     limit: Int
@@ -1348,6 +1318,7 @@ type Query {
     """Ordering"""
     orderBy: String
   ): SpectrogramAnalysisNodeNodeConnection
+  datasetById(id: ID!): DatasetNode
   _debug: DjangoDebug
 }
 
@@ -2371,9 +2342,43 @@ type DatasetNode implements BaseNode {
     """Ordering"""
     orderBy: String
   ): AnnotationCampaignNodeConnection!
-  filesCount: Int
-  start: DateTime
-  end: DateTime
+  spectrograms(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    start: DateTime
+    start_Lt: DateTime
+    start_Lte: DateTime
+    start_Gt: DateTime
+    start_Gte: DateTime
+    end: DateTime
+    end_Lt: DateTime
+    end_Lte: DateTime
+    end_Gt: DateTime
+    end_Gte: DateTime
+    campaignId: ID
+    phaseType: AnnotationPhaseType
+    annotatorId: ID
+    isTaskCompleted: Boolean
+    hasAnnotations: Boolean
+    annotatedByAnnotator: ID
+    annotatedByDetector: ID
+    annotatedWithLabel: String
+    annotatedWithConfidence: String
+    annotatedWithFeatures: Boolean
+
+    """Ordering"""
+    orderBy: String
+  ): SpectrogramNodeNodeConnection
 }
 
 """User node"""
@@ -4154,47 +4159,6 @@ type UserNodeNodeConnection {
   totalCount: Int
 }
 
-"""Type for import dataset"""
-type ImportSpectrogramAnalysisType {
-  name: String!
-  path: String!
-}
-
-type LinearScaleNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [LinearScaleNode]!
-  totalCount: Int
-}
-
-type MultiLinearScaleNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [MultiLinearScaleNode]!
-  totalCount: Int
-}
-
-type DatasetNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [DatasetNode]!
-  totalCount: Int
-}
-
-"""Type for import dataset"""
-type ImportDatasetType {
-  name: String!
-  path: String!
-  legacy: Boolean
-  analysis: [ImportSpectrogramAnalysisType]
-}
-
 type LabelSetNodeNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfoExtra!
@@ -4277,6 +4241,23 @@ type ImportAnalysisNode {
   path: String!
 }
 
+type DatasetNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [DatasetNode]!
+  totalCount: Int
+}
+
+"""Type for import dataset"""
+type ImportDatasetNode {
+  name: String!
+  path: String!
+  legacy: Boolean
+  analysis: [ImportAnalysisNode]
+}
+
 """Debugging information for the current query."""
 type DjangoDebug {
   """Executed SQL queries for this API query."""
@@ -4356,12 +4337,6 @@ type Mutation {
   """Update user mutation"""
   currentUserUpdate(input: UpdateUserMutationInput!): UpdateUserMutationPayload
 
-  """"Import spectrogram analysis mutation"""
-  importSpectrogramAnalysis(datasetName: String!, datasetPath: String!, legacy: Boolean, name: String!, path: String!): ImportSpectrogramAnalysisMutation
-
-  """Import dataset mutation"""
-  importDataset(legacy: Boolean, name: String!, path: String!): ImportDatasetMutation
-
   """Archive annotation phase mutation"""
   endAnnotationPhase(id: ID!): EndAnnotationPhaseMutation
 
@@ -4373,6 +4348,12 @@ type Mutation {
 
   """Archive annotation campaign mutation"""
   archiveAnnotationCampaign(id: ID!): ArchiveAnnotationCampaignMutation
+
+  """Import dataset mutation"""
+  importDataset(legacy: Boolean, name: String!, path: String!): ImportDatasetMutation
+
+  """"Import spectrogram analysis mutation"""
+  importSpectrogramAnalysis(datasetName: String!, datasetPath: String!, legacy: Boolean, name: String!, path: String!): ImportAnalysisMutation
   _debug: DjangoDebug
 }
 
@@ -4471,16 +4452,6 @@ input UpdateUserMutationInput {
   clientMutationId: String
 }
 
-""""Import spectrogram analysis mutation"""
-type ImportSpectrogramAnalysisMutation {
-  ok: Boolean
-}
-
-"""Import dataset mutation"""
-type ImportDatasetMutation {
-  ok: Boolean!
-}
-
 """Archive annotation phase mutation"""
 type EndAnnotationPhaseMutation {
   ok: Boolean!
@@ -4542,4 +4513,14 @@ input UpdateAnnotationCampaignMutationInput {
 """Archive annotation campaign mutation"""
 type ArchiveAnnotationCampaignMutation {
   ok: Boolean!
+}
+
+"""Import dataset mutation"""
+type ImportDatasetMutation {
+  ok: Boolean!
+}
+
+""""Import spectrogram analysis mutation"""
+type ImportAnalysisMutation {
+  ok: Boolean
 }

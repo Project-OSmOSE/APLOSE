@@ -14,9 +14,11 @@ query {
             description
             createdAt
             legacy
-            filesCount
-            start
-            end
+            spectrograms {
+                totalCount
+                start
+                end
+            }
             spectrogramAnalysis(orderBy: "name") {
                 totalCount
                 results {
@@ -53,9 +55,11 @@ class AllDatasetsTestCase(GraphQLTestCase):
         self.assertEqual(len(content), Dataset.objects.count())
         self.assertEqual(content[0]["id"], "1")
 
-        self.assertEqual(content[0]["filesCount"], 11)
-        self.assertEqual(content[0]["start"], "2012-10-03T10:00:00+00:00")
-        self.assertEqual(content[0]["end"], "2012-10-03T20:15:00+00:00")
+        self.assertEqual(content[0]["spectrograms"]["totalCount"], 11)
+        self.assertEqual(
+            content[0]["spectrograms"]["start"], "2012-10-03T10:00:00+00:00"
+        )
+        self.assertEqual(content[0]["spectrograms"]["end"], "2012-10-03T20:15:00+00:00")
+
         self.assertEqual(content[0]["spectrogramAnalysis"]["totalCount"], 2)
-        self.assertEqual(len(content[0]["spectrogramAnalysis"]["results"]), 2)
         self.assertEqual(content[0]["spectrogramAnalysis"]["results"][0]["id"], "1")

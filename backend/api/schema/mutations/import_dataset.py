@@ -18,7 +18,7 @@ from osekit.public_api.dataset import (
 
 from backend.api.models import Dataset
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions
-from ..spectrogram_analysis import ImportSpectrogramAnalysisMutation
+from .import_analysis import ImportAnalysisMutation
 
 
 class ImportDatasetMutation(Mutation):
@@ -77,7 +77,7 @@ class ImportDatasetMutation(Mutation):
                     csv_path = join(spectro_root, folder, "metadata.csv")
                     if not exists(csv_path):
                         continue
-                    analysis_mutation = ImportSpectrogramAnalysisMutation()
+                    analysis_mutation = ImportAnalysisMutation()
                     analysis_mutation.mutate(
                         info,
                         dataset_name=dataset.name,
@@ -98,7 +98,7 @@ class ImportDatasetMutation(Mutation):
             for [analysis, d] in d.datasets.items():
                 if d["class"] != SpectroDataset.__name__:
                     continue
-                analysis_mutation = ImportSpectrogramAnalysisMutation()
+                analysis_mutation = ImportAnalysisMutation()
                 analysis_mutation.mutate(
                     info,
                     dataset_name=dataset.name,

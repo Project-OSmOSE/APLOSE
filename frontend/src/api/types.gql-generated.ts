@@ -2235,8 +2235,6 @@ export type DatasetNode = BaseNode & {
   annotationCampaigns: AnnotationCampaignNodeConnection;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
-  end?: Maybe<Scalars['DateTime']['output']>;
-  filesCount?: Maybe<Scalars['Int']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
   legacy: Scalars['Boolean']['output'];
@@ -2245,7 +2243,7 @@ export type DatasetNode = BaseNode & {
   path: Scalars['String']['output'];
   relatedChannelConfigurations: ChannelConfigurationNodeConnection;
   spectrogramAnalysis?: Maybe<SpectrogramAnalysisNodeNodeConnection>;
-  start?: Maybe<Scalars['DateTime']['output']>;
+  spectrograms?: Maybe<SpectrogramNodeNodeConnection>;
 };
 
 
@@ -2325,6 +2323,39 @@ export type DatasetNodeSpectrogramAnalysisArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
   ordering?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Dataset schema */
+export type DatasetNodeSpectrogramsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  annotatedByAnnotator?: InputMaybe<Scalars['ID']['input']>;
+  annotatedByDetector?: InputMaybe<Scalars['ID']['input']>;
+  annotatedWithConfidence?: InputMaybe<Scalars['String']['input']>;
+  annotatedWithFeatures?: InputMaybe<Scalars['Boolean']['input']>;
+  annotatedWithLabel?: InputMaybe<Scalars['String']['input']>;
+  annotatorId?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  campaignId?: InputMaybe<Scalars['ID']['input']>;
+  end?: InputMaybe<Scalars['DateTime']['input']>;
+  end_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  end_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  end_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  end_Lte?: InputMaybe<Scalars['DateTime']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  hasAnnotations?: InputMaybe<Scalars['Boolean']['input']>;
+  isTaskCompleted?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
+  phaseType?: InputMaybe<AnnotationPhaseType>;
+  start?: InputMaybe<Scalars['DateTime']['input']>;
+  start_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  start_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  start_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  start_Lte?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type DatasetNodeConnection = {
@@ -3258,6 +3289,12 @@ export type HydrophoneSpecificationNodeNodeConnection = {
   totalCount?: Maybe<Scalars['Int']['output']>;
 };
 
+/** "Import spectrogram analysis mutation */
+export type ImportAnalysisMutation = {
+  __typename?: 'ImportAnalysisMutation';
+  ok?: Maybe<Scalars['Boolean']['output']>;
+};
+
 /** Type for import dataset */
 export type ImportAnalysisNode = {
   __typename?: 'ImportAnalysisNode';
@@ -3272,23 +3309,10 @@ export type ImportDatasetMutation = {
 };
 
 /** Type for import dataset */
-export type ImportDatasetType = {
-  __typename?: 'ImportDatasetType';
-  analysis?: Maybe<Array<Maybe<ImportSpectrogramAnalysisType>>>;
+export type ImportDatasetNode = {
+  __typename?: 'ImportDatasetNode';
+  analysis?: Maybe<Array<Maybe<ImportAnalysisNode>>>;
   legacy?: Maybe<Scalars['Boolean']['output']>;
-  name: Scalars['String']['output'];
-  path: Scalars['String']['output'];
-};
-
-/** "Import spectrogram analysis mutation */
-export type ImportSpectrogramAnalysisMutation = {
-  __typename?: 'ImportSpectrogramAnalysisMutation';
-  ok?: Maybe<Scalars['Boolean']['output']>;
-};
-
-/** Type for import dataset */
-export type ImportSpectrogramAnalysisType = {
-  __typename?: 'ImportSpectrogramAnalysisType';
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
 };
@@ -3878,15 +3902,6 @@ export type LinearScaleNodeOuterScalesArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
-export type LinearScaleNodeNodeConnection = {
-  __typename?: 'LinearScaleNodeNodeConnection';
-  /** Pagination data for this connection. */
-  pageInfo: PageInfoExtra;
-  /** Contains the nodes in this connection. */
-  results: Array<Maybe<LinearScaleNode>>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
-};
-
 export type MaintenanceNode = Node & {
   __typename?: 'MaintenanceNode';
   date: Scalars['Date']['output'];
@@ -4006,15 +4021,6 @@ export type MultiLinearScaleNodeEdge = {
   node?: Maybe<MultiLinearScaleNode>;
 };
 
-export type MultiLinearScaleNodeNodeConnection = {
-  __typename?: 'MultiLinearScaleNodeNodeConnection';
-  /** Pagination data for this connection. */
-  pageInfo: PageInfoExtra;
-  /** Contains the nodes in this connection. */
-  results: Array<Maybe<MultiLinearScaleNode>>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
-};
-
 /** Global mutation */
 export type Mutation = {
   __typename?: 'Mutation';
@@ -4033,7 +4039,7 @@ export type Mutation = {
   /** Import dataset mutation */
   importDataset?: Maybe<ImportDatasetMutation>;
   /** "Import spectrogram analysis mutation */
-  importSpectrogramAnalysis?: Maybe<ImportSpectrogramAnalysisMutation>;
+  importSpectrogramAnalysis?: Maybe<ImportAnalysisMutation>;
   postSound?: Maybe<PostSoundMutationPayload>;
   postSource?: Maybe<PostSourceMutationPayload>;
   updateAnnotationCampaign?: Maybe<UpdateAnnotationCampaignMutationPayload>;
@@ -4840,7 +4846,7 @@ export type Query = {
   allContactRoles?: Maybe<ContactRoleNodeNodeConnection>;
   allContacts?: Maybe<ContactNodeNodeConnection>;
   allDatasets?: Maybe<DatasetNodeNodeConnection>;
-  allDatasetsAvailableForImport?: Maybe<Array<Maybe<ImportDatasetType>>>;
+  allDatasetsForImport?: Maybe<Array<Maybe<ImportDatasetNode>>>;
   allDeploymentMobilePositions?: Maybe<DeploymentMobilePositionNodeNodeConnection>;
   allDeployments?: Maybe<DeploymentNodeNodeConnection>;
   allDetectionProperties?: Maybe<DetectionPropertiesNodeNodeConnection>;
@@ -4852,10 +4858,8 @@ export type Query = {
   allInstitutions?: Maybe<InstitutionNodeNodeConnection>;
   allLabelSets?: Maybe<LabelSetNodeNodeConnection>;
   allLabels?: Maybe<LabelNodeNodeConnection>;
-  allLinearScales?: Maybe<LinearScaleNodeNodeConnection>;
   allMaintenanceTypes?: Maybe<MaintenanceTypeNodeNodeConnection>;
   allMaintenances?: Maybe<MaintenanceNodeNodeConnection>;
-  allMultiLinearScales?: Maybe<MultiLinearScaleNodeNodeConnection>;
   allPlatformTypes?: Maybe<PlatformTypeNodeNodeConnection>;
   allPlatforms?: Maybe<PlatformNodeNodeConnection>;
   allProjectTypes?: Maybe<ProjectTypeNodeNodeConnection>;
@@ -4865,7 +4869,6 @@ export type Query = {
   allSounds?: Maybe<SoundNodeNodeConnection>;
   allSources?: Maybe<SourceNodeNodeConnection>;
   allSpectrogramAnalysis?: Maybe<SpectrogramAnalysisNodeNodeConnection>;
-  allSpectrogramAnalysisForImport?: Maybe<Array<Maybe<ImportSpectrogramAnalysisType>>>;
   allStorageSpecifications?: Maybe<StorageSpecificationNodeNodeConnection>;
   allTags?: Maybe<TagNodeNodeConnection>;
   allUserGroups?: Maybe<UserGroupNodeNodeConnection>;
@@ -5752,18 +5755,6 @@ export type QueryAllLabelsArgs = {
 
 
 /** Global query */
-export type QueryAllLinearScalesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  ordering?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** Global query */
 export type QueryAllMaintenanceTypesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -5812,18 +5803,6 @@ export type QueryAllMaintenancesArgs = {
   platformId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   typeId?: InputMaybe<Scalars['ID']['input']>;
   typeId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-};
-
-
-/** Global query */
-export type QueryAllMultiLinearScalesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  ordering?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -6050,12 +6029,6 @@ export type QueryAllSpectrogramAnalysisArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
   ordering?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** Global query */
-export type QueryAllSpectrogramAnalysisForImportArgs = {
-  datasetId: Scalars['ID']['input'];
 };
 
 

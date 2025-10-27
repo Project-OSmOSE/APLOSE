@@ -6,11 +6,13 @@ query listDatasets {
             description
             createdAt
             legacy
-            filesCount
-            start
-            end
             spectrogramAnalysis {
                 totalCount
+            }
+            spectrograms {
+                totalCount
+                start
+                end
             }
         }
     }
@@ -22,8 +24,10 @@ query getDatasetByID($id: ID!) {
         name
         path
         description
-        start
-        end
+        spectrograms {
+            start
+            end
+        }
         createdAt
         legacy
         owner {
@@ -33,7 +37,7 @@ query getDatasetByID($id: ID!) {
 }
 
 query listAvailableDatasetsForImport {
-    allDatasetsAvailableForImport {
+    allDatasetsForImport {
         name
         path
         legacy

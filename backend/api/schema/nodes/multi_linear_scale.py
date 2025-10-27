@@ -3,7 +3,7 @@ import graphene_django_optimizer
 
 from backend.api.models import MultiLinearScale
 from backend.utils.schema.types import BaseObjectType, BaseNode
-from .linear_scale_node import LinearScaleNode
+from .linear_scale import LinearScaleNode
 
 
 class MultiLinearScaleNode(BaseObjectType):

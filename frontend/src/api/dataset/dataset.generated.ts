@@ -1,22 +1,65 @@
 import * as Types from '../types.gql-generated';
 
 import { gqlAPI } from '@/api/baseGqlApi';
+
 export type ListDatasetsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListDatasetsQuery = { __typename?: 'Query', allDatasets?: { __typename?: 'DatasetNodeNodeConnection', results: Array<{ __typename?: 'DatasetNode', id: string, name: string, description?: string | null, createdAt: any, legacy: boolean, filesCount?: number | null, start?: any | null, end?: any | null, spectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', totalCount?: number | null } | null } | null> } | null };
+export type ListDatasetsQuery = {
+  __typename?: 'Query',
+  allDatasets?: {
+    __typename?: 'DatasetNodeNodeConnection',
+    results: Array<{
+      __typename?: 'DatasetNode',
+      id: string,
+      name: string,
+      description?: string | null,
+      createdAt: any,
+      legacy: boolean,
+      spectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', totalCount?: number | null } | null,
+      spectrograms?: {
+        __typename?: 'SpectrogramNodeNodeConnection',
+        totalCount?: number | null,
+        start?: any | null,
+        end?: any | null
+      } | null
+    } | null>
+  } | null
+};
 
 export type GetDatasetByIdQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
 }>;
 
 
-export type GetDatasetByIdQuery = { __typename?: 'Query', datasetById?: { __typename?: 'DatasetNode', id: string, name: string, path: string, description?: string | null, start?: any | null, end?: any | null, createdAt: any, legacy: boolean, owner: { __typename?: 'UserNode', displayName: string } } | null };
+export type GetDatasetByIdQuery = {
+  __typename?: 'Query',
+  datasetById?: {
+    __typename?: 'DatasetNode',
+    id: string,
+    name: string,
+    path: string,
+    description?: string | null,
+    createdAt: any,
+    legacy: boolean,
+    spectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', start?: any | null, end?: any | null } | null,
+    owner: { __typename?: 'UserNode', displayName: string }
+  } | null
+};
 
 export type ListAvailableDatasetsForImportQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListAvailableDatasetsForImportQuery = { __typename?: 'Query', allDatasetsAvailableForImport?: Array<{ __typename?: 'ImportDatasetType', name: string, path: string, legacy?: boolean | null, analysis?: Array<{ __typename?: 'ImportSpectrogramAnalysisType', name: string, path: string } | null> | null } | null> | null };
+export type ListAvailableDatasetsForImportQuery = {
+  __typename?: 'Query',
+  allDatasetsForImport?: Array<{
+    __typename?: 'ImportDatasetNode',
+    name: string,
+    path: string,
+    legacy?: boolean | null,
+    analysis?: Array<{ __typename?: 'ImportAnalysisNode', name: string, path: string } | null> | null
+  } | null> | null
+};
 
 export type ImportDatasetMutationVariables = Types.Exact<{
   name: Types.Scalars['String']['input'];
@@ -25,12 +68,34 @@ export type ImportDatasetMutationVariables = Types.Exact<{
 }>;
 
 
-export type ImportDatasetMutation = { __typename?: 'Mutation', importDataset?: { __typename?: 'ImportDatasetMutation', ok: boolean } | null };
+export type ImportDatasetMutation = {
+  __typename?: 'Mutation',
+  importDataset?: { __typename?: 'ImportDatasetMutation', ok: boolean } | null
+};
 
 export type ListDatasetsAndAnalysisQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListDatasetsAndAnalysisQuery = { __typename?: 'Query', allDatasets?: { __typename?: 'DatasetNodeNodeConnection', results: Array<{ __typename?: 'DatasetNode', id: string, name: string, spectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', results: Array<{ __typename?: 'SpectrogramAnalysisNode', id: string, name: string, colormap: { __typename?: 'ColormapNode', name: string } } | null> } | null } | null> } | null };
+export type ListDatasetsAndAnalysisQuery = {
+  __typename?: 'Query',
+  allDatasets?: {
+    __typename?: 'DatasetNodeNodeConnection',
+    results: Array<{
+      __typename?: 'DatasetNode',
+      id: string,
+      name: string,
+      spectrogramAnalysis?: {
+        __typename?: 'SpectrogramAnalysisNodeNodeConnection',
+        results: Array<{
+          __typename?: 'SpectrogramAnalysisNode',
+          id: string,
+          name: string,
+          colormap: { __typename?: 'ColormapNode', name: string }
+        } | null>
+      } | null
+    } | null>
+  } | null
+};
 
 
 export const ListDatasetsDocument = `
@@ -42,11 +107,13 @@ export const ListDatasetsDocument = `
       description
       createdAt
       legacy
-      filesCount
-      start
-      end
       spectrogramAnalysis {
         totalCount
+      }
+      spectrograms {
+        totalCount
+        start
+        end
       }
     }
   }
@@ -59,8 +126,10 @@ export const GetDatasetByIdDocument = `
     name
     path
     description
-    start
-    end
+    spectrograms {
+      start
+      end
+    }
     createdAt
     legacy
     owner {
@@ -71,7 +140,7 @@ export const GetDatasetByIdDocument = `
     `;
 export const ListAvailableDatasetsForImportDocument = `
     query listAvailableDatasetsForImport {
-  allDatasetsAvailableForImport {
+  allDatasetsForImport {
     name
     path
     legacy

@@ -1,0 +1,12 @@
+from graphene import ObjectType, NonNull, String, Boolean, List
+
+from .import_analysis import ImportAnalysisNode
+
+
+class ImportDatasetNode(ObjectType):  # pylint: disable=too-few-public-methods
+    """Type for import dataset"""
+
+    name = NonNull(String)
+    path = NonNull(String)
+    legacy = Boolean()
+    analysis = List(ImportAnalysisNode)

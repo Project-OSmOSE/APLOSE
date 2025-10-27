@@ -13,7 +13,7 @@ from backend.api.models import (
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 
 
-class ImportSpectrogramAnalysisMutation(Mutation):
+class ImportAnalysisMutation(Mutation):
     """"Import spectrogram analysis mutation""" ""
 
     class Arguments:  # pylint: disable=too-few-public-methods, missing-class-docstring
@@ -40,11 +40,11 @@ class ImportSpectrogramAnalysisMutation(Mutation):
         if SpectrogramAnalysis.objects.filter(
             dataset_id=dataset.id, name=name
         ).exists():
-            return ImportSpectrogramAnalysisMutation(ok=False)
+            return ImportAnalysisMutation(ok=False)
 
         analysis = SpectrogramAnalysis.objects.import_for_dataset(
             dataset, name, path, owner=info.context.user
         )
         Spectrogram.objects.import_all_for_analysis(analysis)
 
-        return ImportSpectrogramAnalysisMutation(ok=True)
+        return ImportAnalysisMutation(ok=True)

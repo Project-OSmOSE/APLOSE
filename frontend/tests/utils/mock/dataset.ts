@@ -14,14 +14,13 @@ import { spectrogramAnalysis } from "./spectrogramAnalysis";
 export type Dataset =
     Omit<DatasetNode, 'owner' | 'annotationCampaigns' | 'spectrogramAnalysis' | 'relatedChannelConfigurations'>
 
+const start = '2021-08-02T00:00:00Z';
+const end = '2022-07-13T06:00:00Z';
 export const dataset: Dataset = {
   id: '1',
   name: 'Test dataset',
   path: 'test/dataset',
   description: 'Coastal audio recordings',
-  start: '2021-08-02T00:00:00Z',
-  end: '2022-07-13T06:00:00Z',
-  filesCount: 99,
   createdAt: new Date().toISOString(),
   legacy: true,
 }
@@ -47,12 +46,14 @@ export const DATASET_QUERIES: {
             name: dataset.name,
             legacy: dataset.legacy,
             createdAt: dataset.createdAt,
-            start: dataset.start,
-            end: dataset.end,
-            filesCount: dataset.filesCount,
             description: dataset.description,
             spectrogramAnalysis: {
               totalCount: 1
+            },
+            spectrograms: {
+              start,
+              end,
+              totalCount: 99,
             }
           },
         ],
@@ -68,23 +69,24 @@ export const DATASET_QUERIES: {
         name: dataset.name,
         legacy: dataset.legacy,
         createdAt: dataset.createdAt,
-        start: dataset.start,
-        end: dataset.end,
         description: dataset.description,
         path: dataset.path,
         owner: {
           displayName: USERS.creator.displayName,
         },
+        spectrograms: {
+          start, end
+        }
       },
     },
   },
   listAvailableDatasetsForImport: {
     defaultType: 'filled',
     empty: {
-      allDatasetsAvailableForImport: [],
+      allDatasetsForImport: [],
     },
     filled: {
-      allDatasetsAvailableForImport: [{
+      allDatasetsForImport: [{
         name: 'Test import dataset',
         path: 'Test import dataset',
         analysis: [
