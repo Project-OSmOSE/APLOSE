@@ -1328,6 +1328,7 @@ type Query {
     isValid: Boolean
     annotator: ID
   ): AnnotationNodeNodeConnection
+  allAnalysisForImport(datasetId: ID!): [ImportAnalysisNode]
   allSpectrogramAnalysis(
     """Query limit"""
     limit: Int
@@ -4268,6 +4269,12 @@ type AnnotationCampaignNodeNodeConnection {
   """Contains the nodes in this connection."""
   results: [AnnotationCampaignNode]!
   totalCount: Int
+}
+
+"""Type for import dataset"""
+type ImportAnalysisNode {
+  name: String!
+  path: String!
 }
 
 """Debugging information for the current query."""

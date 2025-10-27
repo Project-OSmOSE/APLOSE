@@ -3,7 +3,7 @@ import graphene
 
 from .annotation import AnnotationMutation, AnnotationQuery
 from .data import DataQuery, DataMutation
-from .queries import AllSpectrogramAnalysisField
+from .queries import AllSpectrogramAnalysisField, AllAnalysisForImportField
 
 
 class APIMutation(
@@ -22,3 +22,5 @@ class APIQuery(
     """API GraphQL queries"""
 
     all_spectrogram_analysis = AllSpectrogramAnalysisField
+
+    all_analysis_for_import = AllAnalysisForImportField

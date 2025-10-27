@@ -67,11 +67,11 @@ export const ANALYSIS_QUERIES: {
   listAvailableSpectrogramAnalysisForImport: {
     defaultType: 'filled',
     empty: {
-      allSpectrogramAnalysisForImport: null,
+      allAnalysisForImport: null,
       datasetById: null,
     },
     filled: {
-      allSpectrogramAnalysisForImport: [
+      allAnalysisForImport: [
         {
           name: 'Test analysis 1',
           path: 'Test analysis 1',

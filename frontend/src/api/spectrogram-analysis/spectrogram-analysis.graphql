@@ -32,7 +32,7 @@ query listSpectrogramAnalysis(
 query listAvailableSpectrogramAnalysisForImport(
     $datasetID: ID!
 ) {
-    allSpectrogramAnalysisForImport(datasetId: $datasetID) {
+    allAnalysisForImport(datasetId: $datasetID) {
         name
         path
     }

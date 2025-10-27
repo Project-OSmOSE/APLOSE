@@ -13,7 +13,7 @@ export const useAllSpectrogramAnalysis = (variables: ListSpectrogramAnalysisQuer
   return useMemo(() => ({
     ...info,
     allSpectrogramAnalysis: info.data?.allSpectrogramAnalysis?.results.filter(r => r !== null),
-  }), [ info ])
+  }), [info])
 }
 
 export const useAvailableSpectrogramAnalysisForImport = ({ datasetID }: { datasetID?: string }) => {
@@ -25,12 +25,12 @@ export const useAvailableSpectrogramAnalysisForImport = ({ datasetID }: { datase
   })
   return useMemo(() => ({
     ...info,
-    availableSpectrogramAnalysis: info.data?.allSpectrogramAnalysisForImport?.filter(d => d !== null).map(d => d!),
+    availableSpectrogramAnalysis: info.data?.allAnalysisForImport?.filter(d => d !== null).map(d => d!),
     dataset: info?.data?.datasetById,
-  }), [ info ])
+  }), [info])
 }
 
 export const useImportSpectrogramAnalysis = () => {
-  const [ method, info ] = importSpectrogramAnalysis.useMutation()
+  const [method, info] = importSpectrogramAnalysis.useMutation()
   return { ...info, importSpectrogramAnalysis: method }
 }

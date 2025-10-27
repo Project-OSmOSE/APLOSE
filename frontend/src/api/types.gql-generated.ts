@@ -3258,6 +3258,13 @@ export type HydrophoneSpecificationNodeNodeConnection = {
   totalCount?: Maybe<Scalars['Int']['output']>;
 };
 
+/** Type for import dataset */
+export type ImportAnalysisNode = {
+  __typename?: 'ImportAnalysisNode';
+  name: Scalars['String']['output'];
+  path: Scalars['String']['output'];
+};
+
 /** Import dataset mutation */
 export type ImportDatasetMutation = {
   __typename?: 'ImportDatasetMutation';
@@ -4815,6 +4822,7 @@ export type Query = {
   _debug?: Maybe<DjangoDebug>;
   acousticDetectorSpecificationById?: Maybe<AcousticDetectorSpecificationNode>;
   allAcousticDetectorSpecifications?: Maybe<AcousticDetectorSpecificationNodeNodeConnection>;
+  allAnalysisForImport?: Maybe<Array<Maybe<ImportAnalysisNode>>>;
   allAnnotationCampaigns?: Maybe<AnnotationCampaignNodeNodeConnection>;
   allAnnotationFileRanges?: Maybe<AnnotationFileRangeNodeNodeConnection>;
   allAnnotationLabels?: Maybe<AnnotationLabelNodeNodeConnection>;
@@ -4939,6 +4947,12 @@ export type QueryAllAcousticDetectorSpecificationsArgs = {
   minFrequency_Lte?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   ordering?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Global query */
+export type QueryAllAnalysisForImportArgs = {
+  datasetId: Scalars['ID']['input'];
 };
 
 
