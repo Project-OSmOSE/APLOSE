@@ -11,7 +11,7 @@ IMPORT_FIXTURES = settings.FIXTURE_DIRS[1] / "data" / "dataset" / "list_to_impor
 
 QUERY = """
 query {
-    allDatasetsAvailableForImport {
+    allDatasetsForImport {
         name
         path
         legacy
@@ -52,7 +52,7 @@ class AllDatasetsAvailableForImportTestCase(GraphQLTestCase):
         response = self.query(QUERY)
         self.assertResponseNoErrors(response)
 
-        content = json.loads(response.content)["data"]["allDatasetsAvailableForImport"]
+        content = json.loads(response.content)["data"]["allDatasetsForImport"]
         self.assertEqual(len(content), 1)
         self.assertEqual(content[0]["name"], "gliderSPAmsDemo")
         self.assertEqual(content[0]["path"], "gliderSPAmsDemo")
@@ -69,7 +69,7 @@ class AllDatasetsAvailableForImportTestCase(GraphQLTestCase):
         response = self.query(QUERY)
         self.assertResponseNoErrors(response)
 
-        content = json.loads(response.content)["data"]["allDatasetsAvailableForImport"]
+        content = json.loads(response.content)["data"]["allDatasetsForImport"]
         self.assertEqual(len(content), 1)
         self.assertEqual(content[0]["name"], "tp_osekit")
         self.assertEqual(content[0]["path"], "tp_osekit")
