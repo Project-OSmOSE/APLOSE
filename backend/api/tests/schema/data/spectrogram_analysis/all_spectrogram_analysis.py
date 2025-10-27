@@ -6,10 +6,10 @@ from backend.api.models import Dataset
 from backend.api.tests.fixtures import ALL_FIXTURES
 
 QUERY = """
-query ($datasetID: PK, $annotationCampaignID: PK) {
-    allSpectrogramAnalysis(orderBy: "-createdAt", datasetId: $datasetID, annotationCampaignId: $annotationCampaignID) {
+query ($datasetID: ID, $annotationCampaignID: ID) {
+    allSpectrogramAnalysis(orderBy: "-createdAt", datasetId: $datasetID, annotationCampaigns_Id: $annotationCampaignID) {
         results {
-            pk
+            id
             name
             description
             createdAt
