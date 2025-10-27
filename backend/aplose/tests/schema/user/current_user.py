@@ -5,7 +5,7 @@ from graphene_django.utils import GraphQLTestCase
 QUERY = """
 query {
     currentUser {
-        pk
+        id
         displayName
         isAdmin
     }
@@ -34,7 +34,7 @@ class CurrentUserTestCase(GraphQLTestCase):
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["currentUser"]
-        self.assertEqual(content["pk"], 3)
+        self.assertEqual(content["id"], "3")
         self.assertEqual(content["displayName"], "user1 Aplose")
         self.assertFalse(content["isAdmin"])
 
@@ -44,7 +44,7 @@ class CurrentUserTestCase(GraphQLTestCase):
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["currentUser"]
-        self.assertEqual(content["pk"], 2)
+        self.assertEqual(content["id"], "2")
         self.assertEqual(content["displayName"], "staff Aplose")
         self.assertTrue(content["isAdmin"])
 
@@ -54,6 +54,6 @@ class CurrentUserTestCase(GraphQLTestCase):
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["currentUser"]
-        self.assertEqual(content["pk"], 1)
+        self.assertEqual(content["id"], "1")
         self.assertEqual(content["displayName"], "admin Aplose")
         self.assertTrue(content["isAdmin"])
