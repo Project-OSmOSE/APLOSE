@@ -26,7 +26,7 @@ from backend.utils.schema.filters import BaseFilterSet
 from backend.utils.schema.types import BaseObjectType, BaseNode
 from .campaign_context_filter import AnnotationCampaignContextFilter
 from ..annotation_phase.phase_node import AnnotationPhaseNode
-from ..detector.detector_node import DetectorNode
+from ..detector.node import DetectorNode
 from ..label.label_node import AnnotationLabelNode
 from ...archive import ArchiveNode
 

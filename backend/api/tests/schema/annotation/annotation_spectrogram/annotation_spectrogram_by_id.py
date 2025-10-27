@@ -98,11 +98,6 @@ query (
             }
         }
     }
-  _debug {
-    exceptions {
-      stack
-    }
-  }
 }
 """
 VARIABLES = {
