@@ -8,14 +8,10 @@ QUERY = """
 query {
     allUserGroups {
         results {
-            pk
+            id
             name
-            annotators {
-                edges {
-                    node {
-                        pk
-                    }
-                }
+            users {
+                id
             }
         }
     }
@@ -46,4 +42,4 @@ class AllUserGroupsTestCase(GraphQLTestCase):
         results = json.loads(response.content)["data"]["allUserGroups"]["results"]
         self.assertEqual(len(results), AnnotatorGroup.objects.count())
         self.assertEqual(results[0]["name"], "Annotators group")
-        self.assertEqual(len(results[0]["annotators"]["edges"]), 4)
+        self.assertEqual(len(results[0]["users"]), 4)

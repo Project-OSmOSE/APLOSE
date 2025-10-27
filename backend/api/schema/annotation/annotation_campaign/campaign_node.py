@@ -21,7 +21,7 @@ from graphql import GraphQLResolveInfo
 from backend.api.models import AnnotationCampaign, AnnotationFileRange
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.aplose.models import User
-from backend.aplose.schema.user import UserNode
+from backend.aplose.schema import UserNode
 from backend.utils.schema.filters import BaseFilterSet
 from backend.utils.schema.types import BaseObjectType, BaseNode
 from .campaign_context_filter import AnnotationCampaignContextFilter

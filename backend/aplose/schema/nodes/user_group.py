@@ -1,19 +1,15 @@
 """User GraphQL definitions"""
-
-from graphene import relay, ObjectType, List
+import graphene
+import graphene_django_optimizer
+from graphene import relay
 
 from backend.aplose.models import AnnotatorGroup
-from backend.utils.schema import (
-    AuthenticatedDjangoConnectionField,
-)
 from backend.utils.schema.types import BaseObjectType
 from .user import UserNode
 
 
 class UserGroupNode(BaseObjectType):
     """User group node"""
-
-    users = List(UserNode, source="annotators")
 
     class Meta:
         # pylint: disable=too-few-public-methods, missing-class-docstring
@@ -22,8 +18,8 @@ class UserGroupNode(BaseObjectType):
         filter_fields = {}
         interfaces = (relay.Node,)
 
+    users = graphene.List(UserNode)
 
-class UserGroupQuery(ObjectType):
-    """User group queries"""
-
-    all_user_groups = AuthenticatedDjangoConnectionField(UserGroupNode)
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_users(self: AnnotatorGroup, info):
+        return self.annotators.all()

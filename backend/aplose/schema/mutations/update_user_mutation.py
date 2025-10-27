@@ -1,17 +1,16 @@
 """User GraphQL definitions"""
-
+import graphene
 from django import forms
-from graphene import Field
 from graphene_django.forms.mutation import (
     DjangoModelFormMutation,
 )
 
 from backend.aplose.models import User
+from backend.aplose.schema.nodes import UserNode
 from backend.utils.schema import (
     GraphQLResolve,
     GraphQLPermissions,
 )
-from .user_node import UserNode
 
 
 class UserForm(forms.ModelForm):
@@ -23,7 +22,7 @@ class UserForm(forms.ModelForm):
 class UpdateUserMutation(DjangoModelFormMutation):
     """Update user mutation"""
 
-    user = Field(UserNode)
+    user = graphene.Field(UserNode)
 
     class Meta:
         form_class = UserForm

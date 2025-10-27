@@ -18,7 +18,7 @@ from backend.utils.schema import (
 )
 
 
-class UpdatePasswordForm(forms.Form):
+class UpdateUserPasswordForm(forms.Form):
 
     user: Optional[User]
 
@@ -46,15 +46,15 @@ class UpdatePasswordForm(forms.Form):
         self.user.save()
 
 
-class UpdatePasswordMutation(DjangoFormMutation):
+class UpdateUserPasswordMutation(DjangoFormMutation):
     """Update password mutation"""
 
     class Meta:
-        form_class = UpdatePasswordForm
+        form_class = UpdateUserPasswordForm
 
     @classmethod
     def get_form(cls, root, info, **input):
-        form: UpdatePasswordForm = super().get_form(root, info, **input)
+        form: UpdateUserPasswordForm = super().get_form(root, info, **input)
         form.user = info.context.user
         return form
 
