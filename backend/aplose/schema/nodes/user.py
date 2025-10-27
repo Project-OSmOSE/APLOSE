@@ -1,7 +1,7 @@
 """User GraphQL definitions"""
-from typing import Optional
 
 import graphene_django_optimizer
+from django.db.models import QuerySet
 from graphene import (
     String,
     Boolean,
@@ -26,8 +26,9 @@ class UserNode(BaseObjectType):
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_expertise(root: User, info):
-        aplose: Optional[AploseUser] = root.aplose
-        return aplose.expertise_level if aplose else None
+        aplose: QuerySet[AploseUser] = AploseUser.objects.filter(user=root)
+        if aplose.exists():
+            return aplose.first().expertise_level
 
     display_name = String(required=True)
 

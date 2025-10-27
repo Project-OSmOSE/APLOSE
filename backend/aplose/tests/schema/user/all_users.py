@@ -8,7 +8,7 @@ QUERY = """
 query {
     allUsers {
         results {
-            pk
+            id
             displayName
             expertise
         }
@@ -39,6 +39,6 @@ class AllUsersTestCase(GraphQLTestCase):
 
         results = json.loads(response.content)["data"]["allUsers"]["results"]
         self.assertEqual(len(results), User.objects.count())
-        self.assertEqual(results[0]["pk"], 1)
+        self.assertEqual(results[0]["id"], "1")
         self.assertEqual(results[0]["displayName"], "admin Aplose")
         self.assertEqual(results[0]["expertise"], "Expert")
