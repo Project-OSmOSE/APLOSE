@@ -2,7 +2,6 @@ from graphene import ObjectType, List, ID
 
 from backend.api.models import Dataset
 from backend.utils.schema import (
-    AuthenticatedDjangoConnectionField,
     GraphQLPermissions,
     GraphQLResolve,
 )
@@ -10,17 +9,12 @@ from .all_analysis_for_import import (
     legacy_resolve_all_spectrogram_analysis_available_for_import,
     resolve_all_spectrogram_analysis_available_for_import,
 )
-from .analysis_node import SpectrogramAnalysisNode
 from .import_analysis_mutation import ImportSpectrogramAnalysisMutation
 from .import_analysis_type import ImportSpectrogramAnalysisType
 
 
 class SpectrogramAnalysisQuery(ObjectType):  # pylint: disable=too-few-public-methods
     """SpectrogramAnalysis queries"""
-
-    all_spectrogram_analysis = AuthenticatedDjangoConnectionField(
-        SpectrogramAnalysisNode
-    )
 
     all_spectrogram_analysis_for_import = List(
         ImportSpectrogramAnalysisType, dataset_id=ID(required=True)

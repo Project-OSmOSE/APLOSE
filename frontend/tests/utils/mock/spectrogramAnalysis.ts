@@ -9,14 +9,14 @@ import { fft } from './fft';
 import { dataset } from './dataset';
 
 export type SpectrogramAnalysis = Omit<SpectrogramAnalysisNode,
-  'dataset'
-  | 'spectrograms'
-  | 'fft'
-  | 'colormap'
-  | 'legacyConfiguration'
-  | 'annotationCampaigns'
-  | 'owner'
-  | 'annotations'>
+    'dataset'
+    | 'spectrograms'
+    | 'fft'
+    | 'colormap'
+    | 'legacyConfiguration'
+    | 'annotationCampaigns'
+    | 'owner'
+    | 'annotations'>
 export const spectrogramAnalysis: SpectrogramAnalysis = {
   id: '1',
   createdAt: new Date().toISOString(),
@@ -29,7 +29,6 @@ export const spectrogramAnalysis: SpectrogramAnalysis = {
   dynamicMin: 30,
   dynamicMax: 60,
   path: 'analysis',
-  filesCount: 99,
 }
 
 export const ANALYSIS_QUERIES: {
@@ -43,23 +42,25 @@ export const ANALYSIS_QUERIES: {
     },
     filled: {
       allSpectrogramAnalysis: {
-        results: [ {
+        results: [{
           id: spectrogramAnalysis.id,
           name: spectrogramAnalysis.name,
           legacy: spectrogramAnalysis.legacy,
           createdAt: spectrogramAnalysis.createdAt,
-          start: spectrogramAnalysis.start,
-          end: spectrogramAnalysis.end,
           description: spectrogramAnalysis.description,
           dataDuration: spectrogramAnalysis.dataDuration,
-          filesCount: spectrogramAnalysis.filesCount,
           fft: {
             nfft: fft.nfft,
             overlap: fft.overlap,
             windowSize: fft.windowSize,
             samplingFrequency: fft.samplingFrequency,
           },
-        } ],
+          spectrograms: {
+            totalCount: 99,
+            start: spectrogramAnalysis.startDate,
+            end: spectrogramAnalysis.endDate
+          }
+        }],
       },
     },
   },

@@ -15,7 +15,7 @@ export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVari
     error,
     isFetching,
   } = useAllSpectrogramAnalysis(option);
-  const analysis = useMemo(() => data?.allSpectrogramAnalysis?.results.filter(r => r !== null).map(r => r!), [ data ])
+  const analysis = useMemo(() => data?.allSpectrogramAnalysis?.results.filter(r => r && r.spectrograms).map(r => r!), [data])
 
   if (isLoading) return <IonSpinner/>
   if (error) return <WarningText error={ error }/>
@@ -43,9 +43,9 @@ export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVari
       <TableContent isFirstColumn={ true }>{ analysis.name }</TableContent>
       <TableContent>Spectrogram</TableContent>
       <TableContent>{ dateToString(analysis.createdAt) }</TableContent>
-      <TableContent>{ analysis.filesCount }</TableContent>
-      <TableContent>{ dateToString(analysis.start) }</TableContent>
-      <TableContent>{ dateToString(analysis.end) }</TableContent>
+      <TableContent>{ analysis.spectrograms!.totalCount }</TableContent>
+      <TableContent>{ dateToString(analysis.spectrograms!.start) }</TableContent>
+      <TableContent>{ dateToString(analysis.spectrograms!.end) }</TableContent>
       <TableContent>{ analysis.dataDuration }</TableContent>
       <TableContent>{ analysis.fft.samplingFrequency }</TableContent>
       <TableContent>{ analysis.fft.nfft }</TableContent>

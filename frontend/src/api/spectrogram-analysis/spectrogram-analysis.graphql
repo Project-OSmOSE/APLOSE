@@ -4,7 +4,7 @@ query listSpectrogramAnalysis(
 ) {
     allSpectrogramAnalysis(
         orderBy: "-createdAt"
-        datasetId: $datasetID
+        dataset: $datasetID
         annotationCampaigns_Id: $annotationCampaignID
     ) {
         results {
@@ -13,15 +13,17 @@ query listSpectrogramAnalysis(
             description
             createdAt
             legacy
-            filesCount
-            start
-            end
             dataDuration
             fft {
                 samplingFrequency
                 nfft
                 windowSize
                 overlap
+            }
+            spectrograms {
+                totalCount
+                start
+                end
             }
         }
     }

@@ -1,11 +1,6 @@
-import graphene_django_optimizer
-from django.conf import settings
-from django.db.models import Exists, Subquery, OuterRef, QuerySet, Count, Q
+from django.db.models import Exists, Subquery, OuterRef, Q
 from django_filters import OrderingFilter, BooleanFilter, CharFilter
-from graphene import Int, String, ID
 from graphene_django.filter import TypedFilter
-from graphql import GraphQLResolveInfo
-from osekit.core_api.spectro_dataset import SpectroDataset
 
 from backend.api.models import (
     Spectrogram,
@@ -13,14 +8,12 @@ from backend.api.models import (
     AnnotationTask,
     Annotation,
     AnnotationPhase,
-    SpectrogramAnalysis,
 )
-from backend.api.schema.enums import AnnotationPhaseType, AnnotationTaskStatus
+from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema.filters import BaseFilterSet, IDFilter
-from backend.utils.schema.types import BaseObjectType, BaseNode
 
 
-class SpectrogramFilter(BaseFilterSet):
+class SpectrogramFilterSet(BaseFilterSet):
     """Spectrogram filters"""
 
     campaign_id = IDFilter(field_name="analysis__annotation_campaigns__id")
@@ -53,6 +46,9 @@ class SpectrogramFilter(BaseFilterSet):
         compatible_file_ranges = AnnotationFileRange.objects.all()
         compatible_tasks = AnnotationTask.objects.all()
         compatible_annotations = Annotation.objects.all()
+
+        if self.data == {}:
+            return super().filter_queryset(queryset)
 
         f = Q()
         if self.data.get("campaign_id"):
@@ -153,120 +149,3 @@ class SpectrogramFilter(BaseFilterSet):
         )
 
         return super().filter_queryset(queryset)
-
-
-class SpectrogramNode(BaseObjectType):
-    """Spectrogram schema"""
-
-    task_status = AnnotationTaskStatus(
-        campaign_id=ID(required=True),
-        annotator_id=ID(required=True),
-        phase_type=AnnotationPhaseType(required=True),
-    )
-
-    path = String(analysis_id=ID(required=True), required=True)
-    audio_path = String(analysis_id=ID(required=True), required=True)
-
-    duration = Int(required=True)
-    annotation_count = Int(required=True)
-    validated_annotation_count = Int(
-        campaign_id=ID(required=True),
-        annotator_id=ID(required=True),
-    )
-
-    class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
-        model = Spectrogram
-        fields = "__all__"
-        filterset_class = SpectrogramFilter
-        interfaces = (BaseNode,)
-
-    @graphene_django_optimizer.resolver_hints(
-        prefetch_related=(
-            "annotation_tasks",
-            "annotation_tasks__annotation_phase",
-        ),
-    )
-    def resolve_task_status(
-        root, info, campaign_id: int, annotator_id: int, phase_type: AnnotationPhaseType
-    ):
-        task = root.annotation_tasks.get(
-            annotation_phase__annotation_campaign_id=campaign_id,
-            annotator_id=annotator_id,
-            annotation_phase__phase=phase_type.value,
-        )
-        return task.status if task is not None else AnnotationTask.Status.CREATED
-
-    @graphene_django_optimizer.resolver_hints()
-    def resolve_path(root, info, analysis_id: int):
-        analysis: SpectrogramAnalysis = root.analysis.get(id=analysis_id)
-
-        if analysis.dataset.legacy:
-            folder = f"{analysis.fft.nfft}_{analysis.fft.window_size}_{analysis.fft.overlap*100}"
-            if analysis.legacy_configuration is not None:
-                if analysis.legacy_configuration.linear_frequency_scale is not None:
-                    folder = f"{folder}_{analysis.legacy_configuration.linear_frequency_scale.name}"
-                if (
-                    analysis.legacy_configuration.multi_linear_frequency_scale
-                    is not None
-                ):
-                    folder = f"{folder}_{analysis.legacy_configuration.multi_linear_frequency_scale.name}"
-            return (
-                settings.STATIC_URL
-                / analysis.dataset.path
-                / settings.DATASET_SPECTRO_FOLDER
-                / analysis.dataset.get_config_folder()
-                / folder
-                / f"{root.filename}.{root.format.name}"
-            )
-        else:
-            spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
-            spectro_dataset_path = str(spectro_dataset.folder).split("\\dataset\\")[1]
-            return (
-                settings.STATIC_URL
-                / settings.DATASET_EXPORT_PATH
-                / spectro_dataset_path
-                / "spectrogram"
-                / f"{root.filename}.{root.format.name}"
-            )
-
-    @graphene_django_optimizer.resolver_hints()
-    def resolve_audio_path(root, info, analysis_id: int):
-        analysis: SpectrogramAnalysis = root.analysis.get(id=analysis_id)
-
-        if analysis.dataset.legacy:
-            return (
-                settings.STATIC_URL
-                / analysis.dataset.path
-                / settings.DATASET_FILES_FOLDER
-                / analysis.dataset.get_config_folder()
-                / f"{root.filename}.wav"
-            )
-        else:
-            spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
-            audio_path = str(
-                spectro_dataset.data[root.filename].audio_data.files[0].path
-            ).split("\\dataset\\")[1]
-            return settings.STATIC_URL / settings.DATASET_EXPORT_PATH / audio_path
-
-    @graphene_django_optimizer.resolver_hints(
-        prefetch_related=(
-            "annotation_tasks",
-            "annotation_tasks__annotation_phase",
-        ),
-    )
-    def resolve_validated_annotation_count(
-        root: Spectrogram, info, campaign_id: int, annotator_id: int
-    ):
-        return root.annotations.filter(
-            annotation_phase__annotation_campaign_id=campaign_id,
-            annotator_id=annotator_id,
-        ).count()
-
-    @classmethod
-    def resolve_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
-        return (
-            super()
-            .resolve_queryset(queryset, info)
-            .annotate(annotation_count=Count("annotations"))
-        )

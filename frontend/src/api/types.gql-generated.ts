@@ -240,7 +240,7 @@ export type AnnotationCampaignNodeAnalysisArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationCampaigns_Id?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  datasetId?: InputMaybe<Scalars['ID']['input']>;
+  dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -759,7 +759,7 @@ export type AnnotationSpectrogramNodeAnalysisArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationCampaigns_Id?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  datasetId?: InputMaybe<Scalars['ID']['input']>;
+  dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -1827,7 +1827,7 @@ export type ColormapNodeSpectrogramAnalysisArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationCampaigns_Id?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  datasetId?: InputMaybe<Scalars['ID']['input']>;
+  dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -2318,7 +2318,7 @@ export type DatasetNodeSpectrogramAnalysisArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationCampaigns_Id?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  datasetId?: InputMaybe<Scalars['ID']['input']>;
+  dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -2950,7 +2950,7 @@ export type FftNodeSpectrogramAnalysisArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationCampaigns_Id?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  datasetId?: InputMaybe<Scalars['ID']['input']>;
+  dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -6029,7 +6029,7 @@ export type QueryAllSpectrogramAnalysisArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationCampaigns_Id?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  datasetId?: InputMaybe<Scalars['ID']['input']>;
+  dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -6796,10 +6796,8 @@ export type SpectrogramAnalysisNode = BaseNode & {
   description?: Maybe<Scalars['String']['output']>;
   dynamicMax: Scalars['Float']['output'];
   dynamicMin: Scalars['Float']['output'];
-  end?: Maybe<Scalars['DateTime']['output']>;
   endDate?: Maybe<Scalars['DateTime']['output']>;
   fft: FftNode;
-  filesCount?: Maybe<Scalars['Int']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
   legacy: Scalars['Boolean']['output'];
@@ -6807,8 +6805,7 @@ export type SpectrogramAnalysisNode = BaseNode & {
   name: Scalars['String']['output'];
   owner: UserNode;
   path: Scalars['String']['output'];
-  spectrograms: AnnotationSpectrogramNodeConnection;
-  start?: Maybe<Scalars['DateTime']['output']>;
+  spectrograms?: Maybe<SpectrogramNodeNodeConnection>;
   startDate?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -6848,23 +6845,32 @@ export type SpectrogramAnalysisNodeAnnotationsArgs = {
 /** SpectrogramAnalysis schema */
 export type SpectrogramAnalysisNodeSpectrogramsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
-  annotationCampaign?: InputMaybe<Scalars['ID']['input']>;
-  annotationTasks_Status?: InputMaybe<AnnotationTaskStatus>;
-  annotations_AcousticFeatures_Exists?: InputMaybe<Scalars['Boolean']['input']>;
-  annotations_Annotator?: InputMaybe<Scalars['ID']['input']>;
-  annotations_Confidence_Label?: InputMaybe<Scalars['String']['input']>;
-  annotations_Detector?: InputMaybe<Scalars['ID']['input']>;
-  annotations_Exists?: InputMaybe<Scalars['Boolean']['input']>;
-  annotations_LabelName?: InputMaybe<Scalars['String']['input']>;
-  annotator?: InputMaybe<Scalars['ID']['input']>;
+  annotatedByAnnotator?: InputMaybe<Scalars['ID']['input']>;
+  annotatedByDetector?: InputMaybe<Scalars['ID']['input']>;
+  annotatedWithConfidence?: InputMaybe<Scalars['String']['input']>;
+  annotatedWithFeatures?: InputMaybe<Scalars['Boolean']['input']>;
+  annotatedWithLabel?: InputMaybe<Scalars['String']['input']>;
+  annotatorId?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  campaignId?: InputMaybe<Scalars['ID']['input']>;
+  end?: InputMaybe<Scalars['DateTime']['input']>;
+  end_Gt?: InputMaybe<Scalars['DateTime']['input']>;
   end_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  filename_Icontains?: InputMaybe<Scalars['String']['input']>;
+  end_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  end_Lte?: InputMaybe<Scalars['DateTime']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  hasAnnotations?: InputMaybe<Scalars['Boolean']['input']>;
+  isTaskCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
-  phase?: InputMaybe<AnnotationPhaseType>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
+  phaseType?: InputMaybe<AnnotationPhaseType>;
+  start?: InputMaybe<Scalars['DateTime']['input']>;
+  start_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  start_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  start_Lt?: InputMaybe<Scalars['DateTime']['input']>;
   start_Lte?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
@@ -6916,7 +6922,7 @@ export type SpectrogramNodeAnalysisArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationCampaigns_Id?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  datasetId?: InputMaybe<Scalars['ID']['input']>;
+  dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -6976,10 +6982,12 @@ export type SpectrogramNodeAnnotationsArgs = {
 
 export type SpectrogramNodeNodeConnection = {
   __typename?: 'SpectrogramNodeNodeConnection';
+  end?: Maybe<Scalars['DateTime']['output']>;
   /** Pagination data for this connection. */
   pageInfo: PageInfoExtra;
   /** Contains the nodes in this connection. */
   results: Array<Maybe<SpectrogramNode>>;
+  start?: Maybe<Scalars['DateTime']['output']>;
   totalCount?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -7389,7 +7397,7 @@ export type UserNodeSpectrogramAnalysisArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationCampaigns_Id?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  datasetId?: InputMaybe<Scalars['ID']['input']>;
+  dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;

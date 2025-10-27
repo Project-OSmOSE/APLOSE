@@ -1,23 +1,12 @@
 from django.db.models import Count, Min, Max, QuerySet
-from django_filters import FilterSet, OrderingFilter
 from graphene import Int, DateTime
 from graphql import GraphQLResolveInfo
 
 from backend.api.models import Dataset
-from backend.utils.schema import AuthenticatedDjangoConnectionField
+from backend.api.schema.connections import SpectrogramConnection
+from backend.api.schema.filter_sets import DatasetFilterSet
+from backend.api.schema.nodes import SpectrogramAnalysisNode
 from backend.utils.schema.types import BaseObjectType, BaseNode
-from ..spectrogram_analysis.analysis_node import SpectrogramAnalysisNode
-
-
-class DatasetFilter(FilterSet):
-    """Dataset filters"""
-
-    class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
-        model = Dataset
-        fields = {}
-
-    order_by = OrderingFilter(fields=("created_at", "name"))
 
 
 class DatasetNode(BaseObjectType):
@@ -27,13 +16,13 @@ class DatasetNode(BaseObjectType):
     start = DateTime()
     end = DateTime()
 
-    spectrogram_analysis = AuthenticatedDjangoConnectionField(SpectrogramAnalysisNode)
+    spectrogram_analysis = SpectrogramConnection(SpectrogramAnalysisNode)
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
         model = Dataset
         fields = "__all__"
-        filterset_class = DatasetFilter
+        filterset_class = DatasetFilterSet
         interfaces = (BaseNode,)
 
     @classmethod

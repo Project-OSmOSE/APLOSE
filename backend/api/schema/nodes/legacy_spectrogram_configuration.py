@@ -1,6 +1,6 @@
 """LegacySpectrogramConfiguration schema"""
 import graphene_django_optimizer
-from graphene import ObjectType, String
+from graphene import String
 
 from backend.api.models import LegacySpectrogramConfiguration
 from backend.utils.schema.types import BaseObjectType, BaseNode
@@ -21,7 +21,7 @@ class LegacySpectrogramConfigurationNode(BaseObjectType):
     @graphene_django_optimizer.resolver_hints(
         select_related=("linear_frequency_scale", "multi_linear_frequency_scale")
     )
-    def resolve_scale_name(self, info):
+    def resolve_scale_name(self: LegacySpectrogramConfiguration, info):
         """Get scale name"""
         if self.multi_linear_frequency_scale:
             return self.multi_linear_frequency_scale.name
