@@ -4,7 +4,9 @@ from graphene import Int, DateTime
 from graphql import GraphQLResolveInfo
 
 from backend.api.models import Dataset
+from backend.utils.schema import AuthenticatedDjangoConnectionField
 from backend.utils.schema.types import BaseObjectType, BaseNode
+from ..spectrogram_analysis.analysis_node import SpectrogramAnalysisNode
 
 
 class DatasetFilter(FilterSet):
@@ -21,10 +23,11 @@ class DatasetFilter(FilterSet):
 class DatasetNode(BaseObjectType):
     """Dataset schema"""
 
-    analysis_count = Int()
     files_count = Int()
     start = DateTime()
     end = DateTime()
+
+    spectrogram_analysis = AuthenticatedDjangoConnectionField(SpectrogramAnalysisNode)
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
@@ -39,7 +42,6 @@ class DatasetNode(BaseObjectType):
             super()
             .resolve_queryset(queryset, info)
             .annotate(
-                analysis_count=Count("spectrogram_analysis"),
                 files_count=Count("spectrogram_analysis__spectrograms", distinct=True),
                 start=Min("spectrogram_analysis__spectrograms__start"),
                 end=Max("spectrogram_analysis__spectrograms__end"),

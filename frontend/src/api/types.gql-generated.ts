@@ -969,7 +969,7 @@ export enum AnnotationType {
 }
 
 /** AnnotationValidation schema */
-export type AnnotationValidationNode = Node & {
+export type AnnotationValidationNode = BaseNode & {
   __typename?: 'AnnotationValidationNode';
   annotation: AnnotationNode;
   annotator: UserNode;
@@ -978,7 +978,6 @@ export type AnnotationValidationNode = Node & {
   id: Scalars['ID']['output'];
   isValid: Scalars['Boolean']['output'];
   lastUpdatedAt: Scalars['DateTime']['output'];
-  pk: Scalars['PK']['output'];
 };
 
 export type AnnotationValidationNodeConnection = {
@@ -1876,15 +1875,6 @@ export type ConfidenceNodeConfidenceIndicatorSetsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
-export type ConfidenceNodeNodeConnection = {
-  __typename?: 'ConfidenceNodeNodeConnection';
-  /** Pagination data for this connection. */
-  pageInfo: PageInfoExtra;
-  /** Contains the nodes in this connection. */
-  results: Array<Maybe<ConfidenceNode>>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
-};
-
 /** ConfidenceSet schema */
 export type ConfidenceSetNode = BaseNode & {
   __typename?: 'ConfidenceSetNode';
@@ -2242,7 +2232,6 @@ export type CreateAnnotationPhase = {
 /** Dataset schema */
 export type DatasetNode = BaseNode & {
   __typename?: 'DatasetNode';
-  analysisCount?: Maybe<Scalars['Int']['output']>;
   annotationCampaigns: AnnotationCampaignNodeConnection;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
@@ -2255,7 +2244,7 @@ export type DatasetNode = BaseNode & {
   owner: UserNode;
   path: Scalars['String']['output'];
   relatedChannelConfigurations: ChannelConfigurationNodeConnection;
-  spectrogramAnalysis: SpectrogramAnalysisNodeConnection;
+  spectrogramAnalysis?: Maybe<SpectrogramAnalysisNodeNodeConnection>;
   start?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -2332,8 +2321,10 @@ export type DatasetNodeSpectrogramAnalysisArgs = {
   datasetId?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type DatasetNodeConnection = {
@@ -2933,7 +2924,7 @@ export type ErrorType = {
 };
 
 /** From ExpertiseLevel */
-export enum ExpertiseLevel {
+export enum ExpertiseLevelType {
   Average = 'Average',
   Expert = 'Expert',
   Novice = 'Novice'
@@ -4041,7 +4032,7 @@ export type Mutation = {
   updateAnnotationCampaign?: Maybe<UpdateAnnotationCampaignMutationPayload>;
   updateAnnotationPhaseFileRanges?: Maybe<UpdateAnnotationPhaseFileRanges>;
   /** Update password mutation */
-  userUpdatePassword?: Maybe<UpdatePasswordMutationPayload>;
+  userUpdatePassword?: Maybe<UpdateUserPasswordMutationPayload>;
 };
 
 
@@ -4135,7 +4126,7 @@ export type MutationUpdateAnnotationPhaseFileRangesArgs = {
 
 /** Global mutation */
 export type MutationUserUpdatePasswordArgs = {
-  input: UpdatePasswordMutationInput;
+  input: UpdateUserPasswordMutationInput;
 };
 
 /** An object with an ID */
@@ -4829,7 +4820,6 @@ export type Query = {
   allAnnotationLabels?: Maybe<AnnotationLabelNodeNodeConnection>;
   allAnnotationPhases?: Maybe<AnnotationPhaseNodeNodeConnection>;
   allAnnotationSpectrogram?: Maybe<AnnotationSpectrogramNodeNodeConnection>;
-  allAnnotationValidations?: Maybe<AnnotationValidationNodeNodeConnection>;
   allAnnotations?: Maybe<AnnotationNodeNodeConnection>;
   allAudioProperties?: Maybe<AudioPropertiesNodeNodeConnection>;
   allAuthors?: Maybe<AuthorNodeNodeConnection>;
@@ -4839,7 +4829,6 @@ export type Query = {
   allChannelConfigurationsDetectorSpecifications?: Maybe<ChannelConfigurationDetectorSpecificationNodeNodeConnection>;
   allChannelConfigurationsRecorderSpecifications?: Maybe<ChannelConfigurationRecorderSpecificationNodeNodeConnection>;
   allConfidenceSets?: Maybe<ConfidenceSetNodeNodeConnection>;
-  allConfidences?: Maybe<ConfidenceNodeNodeConnection>;
   allContactRoles?: Maybe<ContactRoleNodeNodeConnection>;
   allContacts?: Maybe<ContactNodeNodeConnection>;
   allDatasets?: Maybe<DatasetNodeNodeConnection>;
@@ -5042,19 +5031,6 @@ export type QueryAllAnnotationSpectrogramArgs = {
   ordering?: InputMaybe<Scalars['String']['input']>;
   phase?: InputMaybe<AnnotationPhaseType>;
   start_Lte?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-
-/** Global query */
-export type QueryAllAnnotationValidationsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  annotator?: InputMaybe<Scalars['ID']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  ordering?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -5285,20 +5261,6 @@ export type QueryAllConfidenceSetsArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  ordering?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** Global query */
-export type QueryAllConfidencesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  label?: InputMaybe<Scalars['String']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  level?: InputMaybe<Scalars['Int']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   ordering?: InputMaybe<Scalars['String']['input']>;
 };
@@ -7165,21 +7127,6 @@ export type UpdateAnnotationPhaseFileRanges = {
   errors: Array<Maybe<Array<ErrorType>>>;
 };
 
-export type UpdatePasswordMutationInput = {
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  newPassword: Scalars['String']['input'];
-  oldPassword: Scalars['String']['input'];
-};
-
-/** Update password mutation */
-export type UpdatePasswordMutationPayload = {
-  __typename?: 'UpdatePasswordMutationPayload';
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  errors?: Maybe<Array<Maybe<ErrorType>>>;
-  newPassword: Scalars['String']['output'];
-  oldPassword: Scalars['String']['output'];
-};
-
 export type UpdateUserMutationInput = {
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
@@ -7192,6 +7139,21 @@ export type UpdateUserMutationPayload = {
   clientMutationId?: Maybe<Scalars['String']['output']>;
   errors: Array<ErrorType>;
   user?: Maybe<UserNode>;
+};
+
+export type UpdateUserPasswordMutationInput = {
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  newPassword: Scalars['String']['input'];
+  oldPassword: Scalars['String']['input'];
+};
+
+/** Update password mutation */
+export type UpdateUserPasswordMutationPayload = {
+  __typename?: 'UpdateUserPasswordMutationPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  errors?: Maybe<Array<Maybe<ErrorType>>>;
+  newPassword: Scalars['String']['output'];
+  oldPassword: Scalars['String']['output'];
 };
 
 /** User group node */
@@ -7246,7 +7208,7 @@ export type UserNode = BaseNode & {
   displayName: Scalars['String']['output'];
   email: Scalars['String']['output'];
   endedPhases: AnnotationPhaseNodeConnection;
-  expertise?: Maybe<ExpertiseLevel>;
+  expertise?: Maybe<ExpertiseLevelType>;
   firstName: Scalars['String']['output'];
   /** The ID of the object */
   id: Scalars['ID']['output'];

@@ -4,7 +4,7 @@ import { gqlAPI } from '@/api/baseGqlApi';
 export type ListDatasetsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListDatasetsQuery = { __typename?: 'Query', allDatasets?: { __typename?: 'DatasetNodeNodeConnection', results: Array<{ __typename?: 'DatasetNode', id: string, name: string, description?: string | null, createdAt: any, legacy: boolean, analysisCount?: number | null, filesCount?: number | null, start?: any | null, end?: any | null } | null> } | null };
+export type ListDatasetsQuery = { __typename?: 'Query', allDatasets?: { __typename?: 'DatasetNodeNodeConnection', results: Array<{ __typename?: 'DatasetNode', id: string, name: string, description?: string | null, createdAt: any, legacy: boolean, filesCount?: number | null, start?: any | null, end?: any | null, spectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', totalCount?: number | null } | null } | null> } | null };
 
 export type GetDatasetByIdQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
@@ -30,7 +30,7 @@ export type ImportDatasetMutation = { __typename?: 'Mutation', importDataset?: {
 export type ListDatasetsAndAnalysisQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListDatasetsAndAnalysisQuery = { __typename?: 'Query', allDatasets?: { __typename?: 'DatasetNodeNodeConnection', results: Array<{ __typename?: 'DatasetNode', id: string, name: string, spectrogramAnalysis: { __typename?: 'SpectrogramAnalysisNodeConnection', edges: Array<{ __typename?: 'SpectrogramAnalysisNodeEdge', node?: { __typename?: 'SpectrogramAnalysisNode', id: string, name: string, colormap: { __typename?: 'ColormapNode', name: string } } | null } | null> } } | null> } | null };
+export type ListDatasetsAndAnalysisQuery = { __typename?: 'Query', allDatasets?: { __typename?: 'DatasetNodeNodeConnection', results: Array<{ __typename?: 'DatasetNode', id: string, name: string, spectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', results: Array<{ __typename?: 'SpectrogramAnalysisNode', id: string, name: string, colormap: { __typename?: 'ColormapNode', name: string } } | null> } | null } | null> } | null };
 
 
 export const ListDatasetsDocument = `
@@ -42,10 +42,12 @@ export const ListDatasetsDocument = `
       description
       createdAt
       legacy
-      analysisCount
       filesCount
       start
       end
+      spectrogramAnalysis {
+        totalCount
+      }
     }
   }
 }
@@ -94,13 +96,11 @@ export const ListDatasetsAndAnalysisDocument = `
       id
       name
       spectrogramAnalysis(orderBy: "name") {
-        edges {
-          node {
-            id
+        results {
+          id
+          name
+          colormap {
             name
-            colormap {
-              name
-            }
           }
         }
       }

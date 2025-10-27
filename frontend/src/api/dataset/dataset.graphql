@@ -6,10 +6,12 @@ query listDatasets {
             description
             createdAt
             legacy
-            analysisCount
             filesCount
             start
             end
+            spectrogramAnalysis {
+                totalCount
+            }
         }
     }
 }
@@ -54,13 +56,11 @@ query listDatasetsAndAnalysis {
             id
             name
             spectrogramAnalysis(orderBy: "name") {
-                edges {
-                    node {
-                        id
+                results {
+                    id
+                    name
+                    colormap {
                         name
-                        colormap {
-                            name
-                        }
                     }
                 }
             }

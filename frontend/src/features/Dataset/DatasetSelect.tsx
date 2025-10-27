@@ -29,40 +29,40 @@ export const DatasetSelect: React.FC<{
       value: d.id,
       label: d.name,
     })) ?? []
-  }, [ allDatasets ])
+  }, [allDatasets])
 
-  const [ selectedDatasetID, setSelectedDatasetID ] = useState<string | undefined>();
+  const [selectedDatasetID, setSelectedDatasetID] = useState<string | undefined>();
 
   const analysisItems = useMemo(() => {
     return allDatasets?.find(d => d?.id === selectedDatasetID)
-      ?.spectrogramAnalysis?.edges.filter(e => !!e?.node).map(a => ({
-        value: a!.node!.id,
-        label: `${ a!.node!.name } (${ a!.node!.colormap.name })`,
-      })) ?? []
-  }, [ allDatasets, selectedDatasetID ])
-  const [ selectedAnalysis, setSelectedAnalysis ] = useState<string[]>([]);
+        ?.spectrogramAnalysis?.results.filter(r => !!r).map(a => ({
+          value: a!.id,
+          label: `${ a!.name } (${ a!.colormap.name })`,
+        })) ?? []
+  }, [allDatasets, selectedDatasetID])
+  const [selectedAnalysis, setSelectedAnalysis] = useState<string[]>([]);
 
   const updateAnalysisSelection = useCallback((selection: Array<string>) => {
     setSelectedAnalysis(selection)
     if (onAnalysisSelected) onAnalysisSelected(selection)
-  }, [ setSelectedAnalysis, onAnalysisSelected ]);
+  }, [setSelectedAnalysis, onAnalysisSelected]);
 
   const selectDataset = useCallback((value?: string | number) => {
     if (typeof value === 'number') value = value.toString()
     setSelectedDatasetID(value);
     onDatasetSelected(value);
-    updateAnalysisSelection(allDatasets?.find(d => d?.id == value)?.spectrogramAnalysis?.edges.filter(e => !!e?.node).map(a => a!.node!.id) ?? [])
-  }, [ setSelectedDatasetID, updateAnalysisSelection, allDatasets ]);
+    updateAnalysisSelection(allDatasets?.find(d => d?.id == value)?.spectrogramAnalysis?.results.filter(r => !!r).map(a => a!.id) ?? [])
+  }, [setSelectedDatasetID, updateAnalysisSelection, allDatasets]);
 
   useEffect(() => {
     if (!onAnalysisColormapsChanged) return;
     onAnalysisColormapsChanged(
-      allDatasets?.find(d => d?.id === selectedDatasetID)
-        ?.spectrogramAnalysis?.edges.filter(e => !!e?.node)
-        .filter(a => selectedAnalysis.includes(a!.node!.id))
-        .map(a => a!.node!.colormap.name) ?? [],
+        allDatasets?.find(d => d?.id === selectedDatasetID)
+            ?.spectrogramAnalysis?.results.filter(r => !!r)
+            .filter(a => selectedAnalysis.includes(a!.id))
+            .map(a => a!.colormap.name) ?? [],
     )
-  }, [ selectedDatasetID, selectedAnalysis ]);
+  }, [selectedDatasetID, selectedAnalysis]);
 
 
   if (isFetching)

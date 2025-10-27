@@ -9,18 +9,18 @@ QUERY = """
 query {
     allDatasets(orderBy: "-createdAt" ) {
         results {
-            pk
+            id
             name
             description
             createdAt
             legacy
-            analysisCount
             filesCount
             start
             end
             spectrogramAnalysis(orderBy: "name") {
+                totalCount
                 results {
-                    pk
+                    id
                     name
                     colormap {
                         name
@@ -56,10 +56,10 @@ class AllDatasetsTestCase(GraphQLTestCase):
         content = json.loads(response.content)["data"]["allDatasets"]["results"]
         self.assertEqual(len(content), Dataset.objects.count())
         self.assertEqual(content[0]["name"], "gliderSPAmsDemo")
-        self.assertEqual(content[0]["analysisCount"], 2)
         self.assertEqual(content[0]["filesCount"], 11)
         self.assertEqual(content[0]["start"], "2012-10-03T10:00:00+00:00")
         self.assertEqual(content[0]["end"], "2012-10-03T20:15:00+00:00")
+        self.assertEqual(content[0]["spectrogramAnalysis"]["totalCount"], 2)
         self.assertEqual(
             content[0]["spectrogramAnalysis"]["results"][0]["name"], "spectro_config1"
         )

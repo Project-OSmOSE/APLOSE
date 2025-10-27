@@ -1097,37 +1097,6 @@ type Query {
     last: Int
   ): UserNodeNodeConnection
   currentUser: UserNode
-  allAnnotationValidations(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    annotator: ID
-  ): AnnotationValidationNodeNodeConnection
-  allConfidences(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    label: String
-    level: Int
-  ): ConfidenceNodeNodeConnection
   allSpectrogramAnalysis(
     """Query limit"""
     limit: Int
@@ -2436,7 +2405,14 @@ type DatasetNode implements BaseNode {
   legacy: Boolean!
   relatedChannelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, deploymentId: ID, deploymentId_In: [ID], continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, files_Id: Decimal, files_Id_In: [ID], storages_Id: Decimal, storages_Id_In: [ID], datasetId: ID): ChannelConfigurationNodeConnection!
   spectrogramAnalysis(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
     offset: Int
+
+    """Query order"""
+    ordering: String
     before: String
     after: String
     first: Int
@@ -2446,7 +2422,7 @@ type DatasetNode implements BaseNode {
 
     """Ordering"""
     orderBy: String
-  ): SpectrogramAnalysisNodeConnection!
+  ): SpectrogramAnalysisNodeNodeConnection
   annotationCampaigns(
     offset: Int
     before: String
@@ -2464,7 +2440,6 @@ type DatasetNode implements BaseNode {
     """Ordering"""
     orderBy: String
   ): AnnotationCampaignNodeConnection!
-  analysisCount: Int
   filesCount: Int
   start: DateTime
   end: DateTime
@@ -2597,9 +2572,9 @@ type UserNode implements BaseNode {
   ): AnnotationPhaseNodeConnection!
   annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationCommentNodeConnection!
   annotationResultsValidation(offset: Int, before: String, after: String, first: Int, last: Int, annotator: ID): AnnotationValidationNodeConnection!
+  expertise: ExpertiseLevelType
   displayName: String!
   isAdmin: Boolean!
-  expertise: ExpertiseLevel
 }
 
 type UserGroupNodeConnection {
@@ -3603,7 +3578,7 @@ type AnnotationValidationNodeEdge {
 }
 
 """AnnotationValidation schema"""
-type AnnotationValidationNode implements Node {
+type AnnotationValidationNode implements BaseNode {
   """The ID of the object"""
   id: ID!
   annotation: AnnotationNode!
@@ -3611,17 +3586,22 @@ type AnnotationValidationNode implements Node {
   isValid: Boolean!
   createdAt: DateTime!
   lastUpdatedAt: DateTime!
-  pk: PK!
 }
 
-"""Django Primary key"""
-scalar PK
-
 """From ExpertiseLevel"""
-enum ExpertiseLevel {
+enum ExpertiseLevelType {
   Expert
   Average
   Novice
+}
+
+type SpectrogramAnalysisNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [SpectrogramAnalysisNode]!
+  totalCount: Int
 }
 
 """ConfidenceSet schema"""
@@ -3811,6 +3791,9 @@ type WebsiteProjectNode implements Node {
   metadataxProject: ProjectNodeOverride
   pk: PK!
 }
+
+"""Django Primary key"""
+scalar PK
 
 type SoundNodeConnection {
   """Pagination data for this connection."""
@@ -4227,24 +4210,6 @@ type UserNodeNodeConnection {
   totalCount: Int
 }
 
-type ConfidenceNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [ConfidenceNode]!
-  totalCount: Int
-}
-
-type SpectrogramAnalysisNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [SpectrogramAnalysisNode]!
-  totalCount: Int
-}
-
 """Type for import dataset"""
 type ImportSpectrogramAnalysisType {
   name: String!
@@ -4436,7 +4401,7 @@ type Mutation {
   deleteSound(id: ID): DeleteSoundMutation
 
   """Update password mutation"""
-  userUpdatePassword(input: UpdatePasswordMutationInput!): UpdatePasswordMutationPayload
+  userUpdatePassword(input: UpdateUserPasswordMutationInput!): UpdateUserPasswordMutationPayload
 
   """Update user mutation"""
   currentUserUpdate(input: UpdateUserMutationInput!): UpdateUserMutationPayload
@@ -4530,14 +4495,14 @@ type DeleteSoundMutation {
 }
 
 """Update password mutation"""
-type UpdatePasswordMutationPayload {
+type UpdateUserPasswordMutationPayload {
   oldPassword: String!
   newPassword: String!
   errors: [ErrorType]
   clientMutationId: String
 }
 
-input UpdatePasswordMutationInput {
+input UpdateUserPasswordMutationInput {
   oldPassword: String!
   newPassword: String!
   clientMutationId: String

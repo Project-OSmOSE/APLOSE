@@ -23,7 +23,7 @@ export const DatasetTable: React.FC = () => {
       <TableHead topSticky>End date</TableHead>
       <TableDivider/>
     </Fragment>
-  }, [ isFetching ])
+  }, [isFetching])
 
   if (error) return <WarningText error={ error }/>
 
@@ -57,7 +57,7 @@ export const DatasetTable: React.FC = () => {
     { allDatasets.map(d => <Fragment key={ d.name }>
       <TableContent isFirstColumn={ true }><DatasetName { ...d } link/></TableContent>
       <TableContent>{ dateToString(d.createdAt) }</TableContent>
-      <TableContent>{ d.analysisCount }</TableContent>
+      <TableContent>{ d.spectrogramAnalysis?.totalCount ?? 0 }</TableContent>
       <TableContent>{ d.filesCount }</TableContent>
       <TableContent>{ dateToString(d.start) }</TableContent>
       <TableContent>{ dateToString(d.end) }</TableContent>

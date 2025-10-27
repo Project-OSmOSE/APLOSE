@@ -9,9 +9,10 @@ import type {
 import type { DatasetNode } from '../../../src/api/types.gql-generated';
 import type { Colormap } from '../../../src/features/Colormap';
 import { USERS } from './user';
+import { spectrogramAnalysis } from "./spectrogramAnalysis";
 
 export type Dataset =
-  Omit<DatasetNode, 'owner' | 'annotationCampaigns' | 'spectrogramAnalysis' | 'relatedChannelConfigurations'>
+    Omit<DatasetNode, 'owner' | 'annotationCampaigns' | 'spectrogramAnalysis' | 'relatedChannelConfigurations'>
 
 export const dataset: Dataset = {
   id: '1',
@@ -23,7 +24,6 @@ export const dataset: Dataset = {
   filesCount: 99,
   createdAt: new Date().toISOString(),
   legacy: true,
-  analysisCount: 1,
 }
 
 export const DATASET_QUERIES: {
@@ -51,7 +51,9 @@ export const DATASET_QUERIES: {
             end: dataset.end,
             filesCount: dataset.filesCount,
             description: dataset.description,
-            analysisCount: dataset.analysisCount,
+            spectrogramAnalysis: {
+              totalCount: 1
+            }
           },
         ],
       },
@@ -82,7 +84,7 @@ export const DATASET_QUERIES: {
       allDatasetsAvailableForImport: [],
     },
     filled: {
-      allDatasetsAvailableForImport: [ {
+      allDatasetsAvailableForImport: [{
         name: 'Test import dataset',
         path: 'Test import dataset',
         analysis: [
@@ -95,7 +97,7 @@ export const DATASET_QUERIES: {
             path: 'Test analysis 2',
           },
         ],
-      } ],
+      }],
     },
   },
   listDatasetsAndAnalysis: {
@@ -107,16 +109,14 @@ export const DATASET_QUERIES: {
       allDatasets: {
         results: [
           {
-            id: '1',
-            name: 'Test dataset',
+            id: dataset.id,
+            name: dataset.name,
             spectrogramAnalysis: {
-              edges: [
+              results: [
                 {
-                  node: {
-                    id: '1',
-                    name: 'Test analysis',
-                    colormap: { name: 'Greys' as Colormap },
-                  },
+                  id: spectrogramAnalysis.id,
+                  name: spectrogramAnalysis.name,
+                  colormap: { name: 'Greys' as Colormap },
                 },
               ],
             },

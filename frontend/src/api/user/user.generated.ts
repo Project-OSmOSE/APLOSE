@@ -9,7 +9,7 @@ export type GetCurrentUserQuery = { __typename?: 'Query', currentUser?: { __type
 export type ListUsersQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListUsersQuery = { __typename?: 'Query', allUsers?: { __typename?: 'UserNodeNodeConnection', results: Array<{ __typename?: 'UserNode', id: string, displayName: string, expertise?: Types.ExpertiseLevel | null } | null> } | null, allUserGroups?: { __typename?: 'UserGroupNodeNodeConnection', results: Array<{ __typename?: 'UserGroupNode', id: string, name: string, users?: Array<{ __typename?: 'UserNode', id: string } | null> | null } | null> } | null };
+export type ListUsersQuery = { __typename?: 'Query', allUsers?: { __typename?: 'UserNodeNodeConnection', results: Array<{ __typename?: 'UserNode', id: string, displayName: string, expertise?: Types.ExpertiseLevelType | null } | null> } | null, allUserGroups?: { __typename?: 'UserGroupNodeNodeConnection', results: Array<{ __typename?: 'UserGroupNode', id: string, name: string, users?: Array<{ __typename?: 'UserNode', id: string } | null> | null } | null> } | null };
 
 export type UpdateCurrentUserPasswordMutationVariables = Types.Exact<{
   oldPassword: Types.Scalars['String']['input'];
@@ -17,7 +17,7 @@ export type UpdateCurrentUserPasswordMutationVariables = Types.Exact<{
 }>;
 
 
-export type UpdateCurrentUserPasswordMutation = { __typename?: 'Mutation', userUpdatePassword?: { __typename?: 'UpdatePasswordMutationPayload', errors?: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> } | null> | null } | null };
+export type UpdateCurrentUserPasswordMutation = { __typename?: 'Mutation', userUpdatePassword?: { __typename?: 'UpdateUserPasswordMutationPayload', errors?: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> } | null> | null } | null };
 
 export type UpdateCurrentUserEmailMutationVariables = Types.Exact<{
   email: Types.Scalars['String']['input'];
