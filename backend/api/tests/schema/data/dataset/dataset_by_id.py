@@ -13,7 +13,7 @@ query ($id: ID!) {
         path
         description
         owner {
-            displayName
+            id
         }
         spectrograms {
             start
@@ -47,5 +47,6 @@ class DatasetByPkTestCase(GraphQLTestCase):
         content = json.loads(response.content)["data"]["datasetById"]
         self.assertEqual(content["name"], "gliderSPAmsDemo")
         self.assertEqual(content["path"], "gliderSPAmsDemo")
+        self.assertEqual(content["owner"]["id"], "1")
         self.assertEqual(content["spectrograms"]["start"], "2012-10-03T10:00:00+00:00")
         self.assertEqual(content["spectrograms"]["end"], "2012-10-03T20:15:00+00:00")
