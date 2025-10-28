@@ -1,22 +1,22 @@
 import { api } from './annotation-task.generated'
 import { restAPI } from '@/api/baseRestApi';
-import { AnnotationPhaseType, type PostAnnotation, type PostAnnotationComment } from '@/api';
+import { AnnotationCommentInput, AnnotationPhaseType, type PostAnnotation } from '@/api';
 
 export const AnnotationTaskGqlAPI = api.enhanceEndpoints({
   endpoints: {
     listAnnotationTask: {
       // @ts-expect-error: result and error are unused
-      providesTags: (result, error, args) => [ {
+      providesTags: (result, error, args) => [{
         type: 'AnnotationTask',
         id: JSON.stringify(args),
-      } ],
+      }],
     },
     getAnnotationTask: {
       // @ts-expect-error: result and error are unused
-      providesTags: (result, error, args) => [ {
+      providesTags: (result, error, args) => [{
         type: 'AnnotationTask',
         id: JSON.stringify(args),
-      } ],
+      }],
     },
   },
 })
@@ -28,7 +28,7 @@ export const AnnotationTaskRestAPI = restAPI.injectEndpoints({
       phaseType: AnnotationPhaseType;
       spectrogramID: string | number;
       annotations: PostAnnotation[],
-      taskComments: PostAnnotationComment[],
+      taskComments: AnnotationCommentInput[],
       start: Date
     }>({
       query: ({ campaignID, phaseType, spectrogramID, annotations, taskComments, start }) => ({

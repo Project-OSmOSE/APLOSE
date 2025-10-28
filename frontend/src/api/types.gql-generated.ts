@@ -305,6 +305,11 @@ export type AnnotationCampaignNodeNodeConnection = {
   totalCount?: Maybe<Scalars['Int']['output']>;
 };
 
+export type AnnotationCommentInput = {
+  comment: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['Int']['input']>;
+};
+
 /** AnnotationComment schema */
 export type AnnotationCommentNode = BaseNode & {
   __typename?: 'AnnotationCommentNode';
@@ -4093,6 +4098,7 @@ export type Mutation = {
   postSound?: Maybe<PostSoundMutationPayload>;
   postSource?: Maybe<PostSourceMutationPayload>;
   updateAnnotationCampaign?: Maybe<UpdateAnnotationCampaignMutationPayload>;
+  updateAnnotationComments?: Maybe<UpdateAnnotationCommentsMutationPayload>;
   updateAnnotationPhaseFileRanges?: Maybe<UpdateAnnotationPhaseFileRangesMutation>;
   /** Update password mutation */
   userUpdatePassword?: Maybe<UpdateUserPasswordMutationPayload>;
@@ -4175,6 +4181,12 @@ export type MutationPostSourceArgs = {
 /** Global mutation */
 export type MutationUpdateAnnotationCampaignArgs = {
   input: UpdateAnnotationCampaignMutationInput;
+};
+
+
+/** Global mutation */
+export type MutationUpdateAnnotationCommentsArgs = {
+  input: UpdateAnnotationCommentsMutationInput;
 };
 
 
@@ -7130,6 +7142,22 @@ export type UpdateAnnotationCampaignMutationPayload = {
   annotationCampaign?: Maybe<AnnotationCampaignNode>;
   clientMutationId?: Maybe<Scalars['String']['output']>;
   errors: Array<ErrorType>;
+};
+
+export type UpdateAnnotationCommentsMutationInput = {
+  annotationId?: InputMaybe<Scalars['ID']['input']>;
+  campaignId: Scalars['ID']['input'];
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  list: Array<InputMaybe<AnnotationCommentInput>>;
+  phaseType: AnnotationPhaseType;
+  spectrogramId: Scalars['ID']['input'];
+};
+
+export type UpdateAnnotationCommentsMutationPayload = {
+  __typename?: 'UpdateAnnotationCommentsMutationPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  /** May contain more than one error for same field. */
+  errors?: Maybe<Array<Maybe<ErrorType>>>;
 };
 
 export type UpdateAnnotationPhaseFileRangesMutation = {

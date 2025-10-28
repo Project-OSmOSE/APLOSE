@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.db.models import QuerySet, Q, Exists, OuterRef
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -16,21 +14,12 @@ class AnnotationCommentContextFilter:
     """Filter Annotation comment from the context"""
 
     @classmethod
-    def get_queryset(
-        cls,
-        context: Request,
-        annotation_phase_id: Optional[int] = None,
-        spectrogram_id: Optional[int] = None,
-        queryset: QuerySet[AnnotationComment] = AnnotationComment.objects.all(),
-    ) -> QuerySet[AnnotationComment]:
+    def get_queryset(cls, context: Request, **kwargs) -> QuerySet[AnnotationComment]:
         """Get queryset depending on the context"""
-        if annotation_phase_id is not None:
-            queryset = queryset.filter(annotation_phase_id=annotation_phase_id)
-        if spectrogram_id is not None:
-            queryset = queryset.filter(spectrogram_id=spectrogram_id)
+        queryset = AnnotationComment.objects.filter(**kwargs)
         if context.user.is_staff or context.user.is_superuser:
             return queryset
-        return queryset.objects.filter(
+        return queryset.filter(
             Q(annotation_phase__annotation_campaign__owner_id=context.user.id)
             | (
                 Exists(
@@ -50,37 +39,23 @@ class AnnotationCommentContextFilter:
 
     @classmethod
     def get_edit_queryset(
-        cls,
-        context: Request,
-        annotation_phase_id: Optional[int] = None,
-        spectrogram_id: Optional[int] = None,
-        queryset: QuerySet[AnnotationComment] = AnnotationComment.objects.all(),
+        cls, context: Request, **kwargs
     ) -> QuerySet[AnnotationComment]:
         """Get queryset depending on the context"""
-        return cls.get_queryset(
-            context,
-            annotation_phase_id,
-            spectrogram_id,
-            queryset=queryset.filter(annotator_id=context.user.id),
-        )
+        return cls.get_queryset(context, **kwargs)
 
     @classmethod
-    def get_node_or_fail(cls, context: Request, pk: int) -> AnnotationComment:
+    def get_node_or_fail(cls, context: Request, **kwargs) -> AnnotationComment:
         """Get node or fail depending on the context"""
         try:
-            return get_object_or_404(
-                cls.get_queryset(
-                    context, queryset=AnnotationComment.objects.filter(pk=pk)
-                ),
-                pk=pk,
-            )
+            return get_object_or_404(cls.get_queryset(context, **kwargs), **kwargs)
         except Http404:
             raise NotFoundError()
 
     @classmethod
-    def get_edit_node_or_fail(cls, context: Request, pk: int) -> AnnotationComment:
+    def get_edit_node_or_fail(cls, context: Request, **kwargs) -> AnnotationComment:
         """Get node with edit rights or fail depending on the context"""
-        comment = cls.get_node_or_fail(context, pk)
+        comment = cls.get_node_or_fail(context, **kwargs)
         if comment.author_id != context.user.id:
             raise ForbiddenError()
 

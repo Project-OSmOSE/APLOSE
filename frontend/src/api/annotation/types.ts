@@ -1,4 +1,4 @@
-import { PostAcousticFeatures, PostAnnotationComment, PostAnnotationValidation } from '@/api';
+import { AnnotationCommentInput, PostAcousticFeatures, PostAnnotationValidation } from '@/api';
 
 export type PostAnnotation = {
   id?: number;
@@ -27,19 +27,19 @@ export type PostAnnotation = {
   is_update_of?: string | number;
 
   acoustic_features?: PostAcousticFeatures;
-  comments?: PostAnnotationComment[];
+  comments?: AnnotationCommentInput[];
   validation?: PostAnnotationValidation;
 }
 
 export type ImportAnnotation =
-  Pick<
-    PostAnnotation,
-    'start_time'
-    | 'end_time'
-    | 'start_frequency'
-    | 'end_frequency'
-    | 'analysis'
-  > & {
+    Pick<
+        PostAnnotation,
+        'start_time'
+        | 'end_time'
+        | 'start_frequency'
+        | 'end_frequency'
+        | 'analysis'
+    > & {
   label__name: string
   confidence__label?: string
   confidence__level?: number

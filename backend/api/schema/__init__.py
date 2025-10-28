@@ -27,6 +27,7 @@ from .mutations import (
     EndAnnotationPhaseMutation,
     CreateAnnotationPhase,
     ArchiveAnnotationCampaignMutation,
+    UpdateAnnotationCommentsMutation,
 )
 
 
@@ -52,6 +53,9 @@ class APIMutation(
         UpdateAnnotationPhaseFileRangesMutation.Field()
     )
     end_annotation_phase = EndAnnotationPhaseMutation.Field()
+
+    # Annotation
+    update_annotation_comments = UpdateAnnotationCommentsMutation.Field()
 
 
 class APIQuery(

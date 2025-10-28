@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getAnnotationTaskFulfilled, type GetAnnotationTaskQuery, type PostAnnotationComment } from '@/api';
+import { AnnotationCommentInput, getAnnotationTaskFulfilled, type GetAnnotationTaskQuery } from '@/api';
 
 
-export type Comment = Omit<PostAnnotationComment, 'id'> & { id: number }
+export type Comment = Omit<AnnotationCommentInput, 'id'> & { id: number }
 type AnnotationCommentState = {
   taskComments: Comment[];
 }

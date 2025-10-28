@@ -38,4 +38,7 @@ class AnnotationCommentSerializer(serializers.ModelSerializer):
         data["annotation_phase"] = phase.id or data["annotation_phase"]
         data["author"] = user.id or data["author"]
         data["spectrogram"] = spectrogram.id or data["spectrogram"]
+        data["annotation"] = (
+            self.context["annotation_id"] if "annotation_id" in self.context else None
+        )
         return super().run_validation(data)

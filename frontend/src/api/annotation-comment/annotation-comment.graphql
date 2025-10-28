@@ -1,0 +1,20 @@
+mutation updateTaskComments (
+    $campaignID: ID!
+    $spectrogramID: ID!
+    $phase: AnnotationPhaseType!
+
+    $comments: [AnnotationCommentInput]!
+) {
+    updateAnnotationComments(input: {
+        campaignId: $campaignID
+        phaseType: $phase
+        spectrogramId: $spectrogramID
+        list: $comments
+        annotationId: null
+    }) {
+        errors {
+            messages
+            field
+        }
+    }
+}

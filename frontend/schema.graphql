@@ -4370,12 +4370,6 @@ type Mutation {
   """Update user mutation"""
   currentUserUpdate(input: UpdateUserMutationInput!): UpdateUserMutationPayload
 
-  """Create annotation phase of type "Verification" mutation"""
-  createAnnotationPhase(campaignId: ID!, type: AnnotationPhaseType!): CreateAnnotationPhase
-
-  """Archive annotation campaign mutation"""
-  archiveAnnotationCampaign(id: ID!): ArchiveAnnotationCampaignMutation
-
   """Import dataset mutation"""
   importDataset(legacy: Boolean, name: String!, path: String!): ImportDatasetMutation
 
@@ -4383,10 +4377,17 @@ type Mutation {
   importSpectrogramAnalysis(datasetName: String!, datasetPath: String!, legacy: Boolean, name: String!, path: String!): ImportAnalysisMutation
   createAnnotationCampaign(input: CreateAnnotationCampaignMutationInput!): CreateAnnotationCampaignMutationPayload
   updateAnnotationCampaign(input: UpdateAnnotationCampaignMutationInput!): UpdateAnnotationCampaignMutationPayload
+
+  """Archive annotation campaign mutation"""
+  archiveAnnotationCampaign(id: ID!): ArchiveAnnotationCampaignMutation
+
+  """Create annotation phase of type "Verification" mutation"""
+  createAnnotationPhase(campaignId: ID!, type: AnnotationPhaseType!): CreateAnnotationPhase
   updateAnnotationPhaseFileRanges(campaignId: ID!, fileRanges: [AnnotationFileRangeInput]!, force: Boolean, phaseType: AnnotationPhaseType!): UpdateAnnotationPhaseFileRangesMutation
 
   """Archive annotation phase mutation"""
   endAnnotationPhase(id: ID!): EndAnnotationPhaseMutation
+  updateAnnotationComments(input: UpdateAnnotationCommentsMutationInput!): UpdateAnnotationCommentsMutationPayload
   _debug: DjangoDebug
 }
 
@@ -4485,16 +4486,6 @@ input UpdateUserMutationInput {
   clientMutationId: String
 }
 
-"""Create annotation phase of type "Verification" mutation"""
-type CreateAnnotationPhase {
-  id: ID!
-}
-
-"""Archive annotation campaign mutation"""
-type ArchiveAnnotationCampaignMutation {
-  ok: Boolean!
-}
-
 """Import dataset mutation"""
 type ImportDatasetMutation {
   ok: Boolean!
@@ -4541,6 +4532,16 @@ input UpdateAnnotationCampaignMutationInput {
   clientMutationId: String
 }
 
+"""Archive annotation campaign mutation"""
+type ArchiveAnnotationCampaignMutation {
+  ok: Boolean!
+}
+
+"""Create annotation phase of type "Verification" mutation"""
+type CreateAnnotationPhase {
+  id: ID!
+}
+
 type UpdateAnnotationPhaseFileRangesMutation {
   errors: [[ErrorType!]]!
   _debug: DjangoDebug
@@ -4556,4 +4557,24 @@ input AnnotationFileRangeInput {
 """Archive annotation phase mutation"""
 type EndAnnotationPhaseMutation {
   ok: Boolean!
+}
+
+type UpdateAnnotationCommentsMutationPayload {
+  """May contain more than one error for same field."""
+  errors: [ErrorType]
+  clientMutationId: String
+}
+
+input UpdateAnnotationCommentsMutationInput {
+  campaignId: ID!
+  phaseType: AnnotationPhaseType!
+  spectrogramId: ID!
+  annotationId: ID
+  list: [AnnotationCommentInput]!
+  clientMutationId: String
+}
+
+input AnnotationCommentInput {
+  id: Int
+  comment: String!
 }

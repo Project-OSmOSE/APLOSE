@@ -1,9 +1,9 @@
 import { AnnotationTaskGqlAPI, AnnotationTaskRestAPI } from './api';
 import { useCallback, useEffect, useMemo } from 'react';
 import {
+  AnnotationCommentInput,
   AnnotationPhaseType,
   type PostAnnotation,
-  type PostAnnotationComment,
   useCurrentCampaign,
   useCurrentPhase,
   useCurrentUser,
@@ -89,7 +89,7 @@ export const useSubmitTask = () => {
   const dispatch = useAppDispatch()
 
   const submit = useCallback(async (annotations: PostAnnotation[],
-                                    taskComments: PostAnnotationComment[],
+                                    taskComments: AnnotationCommentInput[],
                                     start: Date) => {
     if (!campaignID || !phaseType || !spectrogramID) return;
     await method({ campaignID, phaseType, spectrogramID, annotations, taskComments, start }).unwrap()

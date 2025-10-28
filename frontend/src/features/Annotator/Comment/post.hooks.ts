@@ -1,9 +1,9 @@
-import { type AnnotationCommentNode, type Maybe, type PostAnnotationComment, useUpdateTaskComments } from '@/api';
+import { AnnotationCommentInput, type AnnotationCommentNode, type Maybe, useUpdateTaskComments } from '@/api';
 import { useCallback, useEffect, useRef } from 'react';
 import { useAnnotatorComment } from './hooks';
 import { Comment } from './slice'
 
-export function convertCommentsToPost(comments: Comment[]): PostAnnotationComment[] {
+export function convertCommentsToPost(comments: Comment[]): AnnotationCommentInput[] {
   return comments?.map(c => ({
     ...c,
     id: c.id > 0 ? c.id : undefined,
@@ -24,11 +24,11 @@ export const useAnnotatorTaskCommentsPost = () => {
   const taskCommentsRef = useRef<Comment[]>(taskComments)
   useEffect(() => {
     taskCommentsRef.current = taskComments
-  }, [ taskComments ]);
+  }, [taskComments]);
 
   const post = useCallback(async () => {
     await updateTaskComments(convertCommentsToPost(taskCommentsRef.current))
-  }, [ updateTaskComments ])
+  }, [updateTaskComments])
 
   return {
     taskCommentsRef,

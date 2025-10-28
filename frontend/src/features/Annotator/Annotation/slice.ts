@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
+  AnnotationCommentInput,
   AnnotationType,
   getAnnotationTaskFulfilled,
   GetAnnotationTaskQuery,
@@ -7,7 +8,6 @@ import {
   type GetCampaignQuery,
   type PostAcousticFeatures,
   PostAnnotation,
-  type PostAnnotationComment,
   type PostAnnotationValidation,
 } from '@/api';
 import { type Analysis, getDefaultAnalysisID, setAnalysis } from '@/features/Annotator/Analysis/slice';
@@ -15,7 +15,7 @@ import type { GetAnnotationTaskQueryVariables } from '@/api/annotation-task/anno
 import { convertGqlToAnnotations } from '@/features/Annotator/Annotation/post.hooks';
 
 
-export type Comment = Omit<PostAnnotationComment, 'id'> & { id: number }
+export type Comment = Omit<AnnotationCommentInput, 'id'> & { id: number }
 export type Validation = Omit<PostAnnotationValidation, 'id'> & { id: number }
 export type Features = Omit<PostAcousticFeatures, 'id'> & { id: number }
 export type Annotation =
