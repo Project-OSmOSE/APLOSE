@@ -1,19 +1,36 @@
 """API GraphQL schemas"""
 import graphene
 
-from .annotation import AnnotationMutation, AnnotationQuery
-from .mutations import ImportAnalysisMutation, ImportDatasetMutation
 from .queries import (
     AllSpectrogramAnalysisField,
     AllAnalysisForImportField,
     AllDatasetForImportField,
     AllDatasetField,
     DatasetByIdField,
+    AllLabelSetField,
+    AllDetectorsField,
+    AllConfidenceSetField,
+    AllAnnotationFileRangesField,
+    AllAnnotationSpectrogramsField,
+    AnnotationSpectrogramByIdField,
+    AllAnnotationCampaignsField,
+    AnnotationCampaignByIdField,
+    AllAnnotationPhaseField,
+    AnnotationPhaseByCampaignPhase,
+)
+from .mutations import (
+    ImportAnalysisMutation,
+    ImportDatasetMutation,
+    CreateAnnotationCampaignMutation,
+    UpdateAnnotationCampaignMutation,
+    UpdateAnnotationPhaseFileRangesMutation,
+    EndAnnotationPhaseMutation,
+    CreateAnnotationPhase,
+    ArchiveAnnotationCampaignMutation,
 )
 
 
 class APIMutation(
-    AnnotationMutation,
     graphene.ObjectType,
 ):  # pylint: disable=too-few-public-methods
     """API GraphQL mutations"""
@@ -24,9 +41,20 @@ class APIMutation(
     # Spectrogram analysis
     import_spectrogram_analysis = ImportAnalysisMutation.Field()
 
+    # Annotation campaign
+    create_annotation_campaign = CreateAnnotationCampaignMutation.Field()
+    update_annotation_campaign = UpdateAnnotationCampaignMutation.Field()
+    archive_annotation_campaign = ArchiveAnnotationCampaignMutation.Field()
+
+    # Annotation phase
+    create_annotation_phase = CreateAnnotationPhase.Field()
+    update_annotation_phase_file_ranges = (
+        UpdateAnnotationPhaseFileRangesMutation.Field()
+    )
+    end_annotation_phase = EndAnnotationPhaseMutation.Field()
+
 
 class APIQuery(
-    AnnotationQuery,
     graphene.ObjectType,
 ):  # pylint: disable=too-few-public-methods
     """API GraphQL queries"""
@@ -39,3 +67,23 @@ class APIQuery(
     # Spectrogram analysis
     all_spectrogram_analysis = AllSpectrogramAnalysisField
     all_analysis_for_import = AllAnalysisForImportField
+
+    # Label
+    all_label_sets = AllLabelSetField
+
+    # Confidence
+    all_confidence_sets = AllConfidenceSetField
+
+    # Detector
+    all_detectors = AllDetectorsField
+
+    # Annotation campaign
+    all_annotation_campaigns = AllAnnotationCampaignsField
+    annotation_campaign_by_id = AnnotationCampaignByIdField
+    all_annotation_phases = AllAnnotationPhaseField
+    annotation_phase_by_campaign_phase = AnnotationPhaseByCampaignPhase
+
+    # Annotation related items
+    all_annotation_file_ranges = AllAnnotationFileRangesField
+    all_annotation_spectrograms = AllAnnotationSpectrogramsField
+    annotation_spectrogram_by_id = AnnotationSpectrogramByIdField

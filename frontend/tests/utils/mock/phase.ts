@@ -9,20 +9,20 @@ import type {
 import { DOWNLOAD_ANNOTATIONS, DOWNLOAD_PROGRESS } from '../../../src/consts/links';
 
 export type Phase =
-  Omit<AnnotationPhaseNode, 'annotationComments' | 'annotationFileRanges' | 'createdBy' | 'annotationTasks' | 'annotations' | 'annotationCampaign' | 'endedBy' | 'annotationCampaignId' | 'phase' | 'canManage'>
+    Omit<AnnotationPhaseNode, 'annotationComments' | 'annotationFileRanges' | 'createdBy' | 'annotationTasks' | 'annotations' | 'annotationCampaign' | 'endedBy' | 'annotationCampaignId' | 'phase' | 'canManage'>
 
 export const phase: Phase = {
   id: '1',
-  completedTasksCount: 50,
-  tasksCount: 100,
-  userCompletedTasksCount: 5,
-  userTasksCount: 10,
   createdAt: new Date().toISOString(),
   endedAt: null,
   hasAnnotations: true,
   isOpen: true,
   isCompleted: false,
 }
+export const completedTasksCount = 50;
+export const tasksCount = 100;
+export const userCompletedTasksCount = 5;
+export const userTasksCount = 10;
 
 export const PHASE_QUERIES: {
   getAnnotationPhase: GqlQuery<GetAnnotationPhaseQuery, AnnotationPhaseType | 'manager'>,
@@ -36,10 +36,10 @@ export const PHASE_QUERIES: {
       annotationPhaseByCampaignPhase: {
         id: phase.id,
         phase: AnnotationPhaseType.Annotation,
-        completedTasksCount: phase.completedTasksCount,
-        tasksCount: phase.tasksCount,
-        userCompletedTasksCount: phase.userCompletedTasksCount,
-        userTasksCount: phase.userTasksCount,
+        completedTasks: { totalCount: completedTasksCount },
+        fileRanges: { tasksCount },
+        userCompletedTasks: { totalCount: userCompletedTasksCount },
+        userFileRanges: { tasksCount: userTasksCount },
         endedAt: phase.endedAt,
         hasAnnotations: phase.hasAnnotations,
         canManage: true,
@@ -49,10 +49,10 @@ export const PHASE_QUERIES: {
       annotationPhaseByCampaignPhase: {
         id: phase.id,
         phase: AnnotationPhaseType.Annotation,
-        completedTasksCount: phase.completedTasksCount,
-        tasksCount: phase.tasksCount,
-        userCompletedTasksCount: phase.userCompletedTasksCount,
-        userTasksCount: phase.userTasksCount,
+        completedTasks: { totalCount: completedTasksCount },
+        fileRanges: { tasksCount },
+        userCompletedTasks: { totalCount: userCompletedTasksCount },
+        userFileRanges: { tasksCount: userTasksCount },
         endedAt: phase.endedAt,
         hasAnnotations: phase.hasAnnotations,
         canManage: false,
@@ -62,10 +62,10 @@ export const PHASE_QUERIES: {
       annotationPhaseByCampaignPhase: {
         id: phase.id,
         phase: AnnotationPhaseType.Annotation,
-        completedTasksCount: phase.completedTasksCount,
-        tasksCount: phase.tasksCount,
-        userCompletedTasksCount: phase.userCompletedTasksCount,
-        userTasksCount: phase.userTasksCount,
+        completedTasks: { totalCount: completedTasksCount },
+        fileRanges: { tasksCount },
+        userCompletedTasks: { totalCount: userCompletedTasksCount },
+        userFileRanges: { tasksCount: userTasksCount },
         endedAt: phase.endedAt,
         hasAnnotations: phase.hasAnnotations,
         canManage: false,

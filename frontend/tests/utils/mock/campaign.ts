@@ -8,8 +8,8 @@ import type {
   ListCampaignsAndPhasesQuery,
   UpdateAnnotationCampaignFeaturedLabelsMutation,
 } from '../../../src/api/annotation-campaign';
-import { dataset } from './dataset';
-import { phase } from './phase';
+import { dataset, DATASET_FILES_COUNT } from './dataset';
+import { completedTasksCount, phase, tasksCount, userCompletedTasksCount, userTasksCount } from './phase';
 import { USERS } from './user';
 import { confidenceSet } from './confidenceSet';
 import { spectrogramAnalysis } from './spectrogramAnalysis';
@@ -22,13 +22,12 @@ const deadline = new Date()
 deadline.setTime(0)
 
 export type Campaign = Omit<AnnotationCampaignNode,
-  'dataset' | 'annotators' | 'confidenceSet' | 'owner' | 'analysis' | 'archive' | 'labelSet' | 'labelsWithAcousticFeatures' | 'detectors' | 'phases' | 'canManage'
+    'dataset' | 'annotators' | 'confidenceSet' | 'owner' | 'analysis' | 'archive' | 'labelSet' | 'labelsWithAcousticFeatures' | 'detectors' | 'phases' | 'canManage'
 >
 export const campaign: Campaign = {
   id: '1',
   name: 'Test campaign',
   description: 'Test campaign description',
-  datasetName: dataset.name,
   isArchived: false,
   deadline: deadline.toISOString().split('T')[0],
   allowColormapTuning: false,
@@ -37,7 +36,6 @@ export const campaign: Campaign = {
   colormapDefault: null,
   colormapInvertedDefault: null,
   createdAt: new Date().toISOString(),
-  filesCount: dataset.filesCount,
   instructionsUrl: 'myinstructions.co',
 }
 
@@ -56,7 +54,9 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
     colormapDefault: campaign.colormapDefault,
     colormapInvertedDefault: campaign.colormapInvertedDefault,
     description: campaign.description,
-    filesCount: campaign.filesCount,
+    spectrograms: {
+      totalCount: DATASET_FILES_COUNT
+    },
     instructionsUrl: campaign.instructionsUrl,
     owner: {
       id: USERS.creator.id,
@@ -67,10 +67,10 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
       id: dataset.id,
       name: dataset.name,
     },
-    annotators: [ {
+    annotators: [{
       id: USERS.annotator.id,
       displayName: USERS.annotator.displayName,
-    } ],
+    }],
     confidenceSet: {
       name: confidenceSet.name,
       desc: confidenceSet.desc,
@@ -79,7 +79,7 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
       })),
     },
     analysis: {
-      edges: [ {
+      edges: [{
         node: {
           id: spectrogramAnalysis.id,
           legacy: spectrogramAnalysis.legacy,
@@ -99,29 +99,29 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
             zoomLevel: legacyConfiguration.zoomLevel,
           },
         },
-      } ],
+      }],
     },
     detectors: [],
     labelSet,
-    labelsWithAcousticFeatures: [ {
+    labelsWithAcousticFeatures: [{
       id: LABELS.featured.id,
       name: LABELS.featured.name,
-    } ],
+    }],
   },
   allAnnotationPhases: {
-    results: [ {
+    results: [{
       id: phase.id,
       phase: AnnotationPhaseType.Annotation,
-      completedTasksCount: phase.completedTasksCount,
-      tasksCount: phase.tasksCount,
+      fileRanges: { tasksCount },
+      completedTasks: { totalCount: completedTasksCount },
       isOpen: phase.isOpen,
     }, {
       id: '2',
       phase: AnnotationPhaseType.Verification,
-      completedTasksCount: phase.completedTasksCount,
-      tasksCount: phase.tasksCount,
+      fileRanges: { tasksCount },
+      completedTasks: { totalCount: completedTasksCount },
       isOpen: phase.isOpen,
-    } ],
+    }],
   },
 }
 export const CAMPAIGN_QUERIES: {
@@ -140,7 +140,9 @@ export const CAMPAIGN_QUERIES: {
           {
             id: campaign.id,
             name: campaign.name,
-            datasetName: campaign.name,
+            dataset: {
+              name: campaign.name
+            },
             isArchived: campaign.isArchived,
             deadline: campaign.deadline,
           },
@@ -152,10 +154,10 @@ export const CAMPAIGN_QUERIES: {
             id: phase.id,
             annotationCampaignId: campaign.id,
             phase: AnnotationPhaseType.Annotation,
-            completedTasksCount: phase.completedTasksCount,
-            tasksCount: phase.tasksCount,
-            userCompletedTasksCount: phase.userCompletedTasksCount,
-            userTasksCount: phase.userTasksCount,
+            fileRanges: { tasksCount },
+            completedTasks: { totalCount: completedTasksCount },
+            userFileRanges: { tasksCount: userTasksCount },
+            userCompletedTasks: { totalCount: userCompletedTasksCount },
           },
         ],
       },

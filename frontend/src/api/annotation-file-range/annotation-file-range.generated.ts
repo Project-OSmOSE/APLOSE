@@ -17,7 +17,7 @@ export type UpdateFileRangesMutationVariables = Types.Exact<{
 }>;
 
 
-export type UpdateFileRangesMutation = { __typename?: 'Mutation', updateAnnotationPhaseFileRanges?: { __typename?: 'UpdateAnnotationPhaseFileRanges', errors: Array<Array<{ __typename?: 'ErrorType', messages: Array<string>, field: string }> | null> } | null };
+export type UpdateFileRangesMutation = { __typename?: 'Mutation', updateAnnotationPhaseFileRanges?: { __typename?: 'UpdateAnnotationPhaseFileRangesMutation', errors: Array<Array<{ __typename?: 'ErrorType', messages: Array<string>, field: string }> | null> } | null };
 
 
 export const ListFileRangesDocument = `

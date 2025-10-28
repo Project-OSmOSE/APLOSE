@@ -24,6 +24,7 @@ export const dataset: Dataset = {
   createdAt: new Date().toISOString(),
   legacy: true,
 }
+export const DATASET_FILES_COUNT = 99
 
 export const DATASET_QUERIES: {
   listDatasets: GqlQuery<ListDatasetsQuery>,
@@ -53,7 +54,7 @@ export const DATASET_QUERIES: {
             spectrograms: {
               start,
               end,
-              totalCount: 99,
+              totalCount: DATASET_FILES_COUNT,
             }
           },
         ],

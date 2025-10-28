@@ -1,6 +1,16 @@
 """API GQL queries"""
 from .all_analysis_for_import import AllAnalysisForImportField
+from .all_annotation_campaigns import AllAnnotationCampaignsField
+from .all_annotation_file_ranges import AllAnnotationFileRangesField
+from .all_annotation_phases import AllAnnotationPhaseField
+from .all_annotation_spectrograms import AllAnnotationSpectrogramsField
+from .all_confidence_sets import AllConfidenceSetField
 from .all_datasets import AllDatasetField
 from .all_datasets_for_import import AllDatasetForImportField
+from .all_detectors import AllDetectorsField
+from .all_label_sets import AllLabelSetField
 from .all_spectrogram_analysis import AllSpectrogramAnalysisField
+from .annotation_campaign_by_id import AnnotationCampaignByIdField
+from .annotation_phase_by_campaign_phase import AnnotationPhaseByCampaignPhase
+from .annotation_spectrogram_by_id import AnnotationSpectrogramByIdField
 from .dataset_by_id import DatasetByIdField

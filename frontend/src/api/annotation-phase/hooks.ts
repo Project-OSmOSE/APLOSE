@@ -1,6 +1,6 @@
 import { AnnotationPhaseGqlAPI } from './api';
 import { useMemo } from 'react';
-import { AnnotationPhaseType } from '@/api';
+import { AnnotationPhaseType, useCurrentUser } from '@/api';
 import { useNavParams } from '@/features/UX';
 
 const {
@@ -12,18 +12,20 @@ const {
 
 export const useCurrentPhase = () => {
   const { campaignID, phaseType } = useNavParams();
+  const { user } = useCurrentUser()
   const info = getAnnotationPhase.useQuery({
     campaignID: campaignID ?? '',
     phase: phaseType ?? AnnotationPhaseType.Annotation,
-  }, { skip: !campaignID || !phaseType })
+    userID: user?.id ?? ''
+  }, { skip: !campaignID || !phaseType || !user })
   return useMemo(() => ({
     ...info,
     phase: info.data?.annotationPhaseByCampaignPhase,
-  }), [ info ])
+  }), [info])
 }
 
 export const useEndPhase = () => {
-  const [ method, info ] = endPhase.useMutation()
+  const [method, info] = endPhase.useMutation()
   return {
     endPhase: method,
     ...info,
@@ -31,7 +33,7 @@ export const useEndPhase = () => {
 }
 
 export const useCreateAnnotationPhase = () => {
-  const [ method, info ] = createAnnotationPhase.useMutation()
+  const [method, info] = createAnnotationPhase.useMutation()
   return {
     createAnnotationPhase: method,
     ...useMemo(() => {
@@ -41,12 +43,12 @@ export const useCreateAnnotationPhase = () => {
         isSuccess: info.isSuccess && formErrors.length === 0,
         formErrors,
       }
-    }, [ info ]),
+    }, [info]),
   }
 }
 
 export const useCreateVerificationPhase = () => {
-  const [ method, info ] = createVerificationPhase.useMutation()
+  const [method, info] = createVerificationPhase.useMutation()
   return {
     createVerificationPhase: method,
     ...info,

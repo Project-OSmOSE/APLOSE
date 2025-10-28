@@ -46,10 +46,10 @@ export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
   })
   return useMemo(() => ({
     ...info,
-    allSpectrograms: info.data?.allAnnotationSpectrogram?.results.filter(r => r !== null),
-    resumeSpectrogramID: info.data?.allAnnotationSpectrogram?.resumeSpectrogramId,
+    allSpectrograms: info.data?.allAnnotationSpectrograms?.results.filter(r => r !== null),
+    resumeSpectrogramID: info.data?.allAnnotationSpectrograms?.resumeSpectrogramId,
     page: filters.page,
-    pageCount: Math.ceil((info.data?.allAnnotationSpectrogram?.totalCount ?? 0) / PAGE_SIZE),
+    pageCount: Math.ceil((info.data?.allAnnotationSpectrograms?.totalCount ?? 0) / PAGE_SIZE),
   }), [info])
 }
 
@@ -76,7 +76,7 @@ export const useAnnotationTask = (options: {
   return useMemo(() => ({
     ...info,
     spectrogram: info.data?.annotationSpectrogramById,
-    navigationInfo: info.data?.allAnnotationSpectrogram,
+    navigationInfo: info.data?.allAnnotationSpectrograms,
     annotations: info.data?.annotationSpectrogramById?.task?.annotations?.results.filter(r => !!r).map(r => r!),
     isEditionAuthorized: phase?.canManage && info.data?.annotationSpectrogramById?.isAssigned,
   }), [info, phase])

@@ -55,8 +55,8 @@ export const AnnotationCampaignInfo: React.FC = () => {
                     Label{ pluralize(campaign.labelsWithAcousticFeatures) } with acoustic features
                 </FadedText>
               { campaign.labelsWithAcousticFeatures && campaign.labelsWithAcousticFeatures.filter(l => l !== null).length > 0 ?
-                <p>{ campaign.labelsWithAcousticFeatures.filter(l => l !== null).map(l => l!.name).join(', ') }</p>
-                : <p>No labels with features</p> }
+                  <p>{ campaign.labelsWithAcousticFeatures.filter(l => l !== null).map(l => l!.name).join(', ') }</p>
+                  : <p>No labels with features</p> }
             </div>
           { campaign?.labelSet && <LabelSetModalButton/> }
         </div>
@@ -83,8 +83,8 @@ export const AnnotationCampaignInfo: React.FC = () => {
     { phases && phases.map(p => <div key={ p!.id } className={ styles.bloc }>
       <FadedText>{ p!.phase } progress</FadedText>
       <Progress className={ styles.progress }
-                value={ p!.completedTasksCount }
-                total={ p!.tasksCount }/>
+                value={ p!.completedTasks?.totalCount ?? 0 }
+                total={ p!.fileRanges?.tasksCount ?? 0 }/>
     </div>) }
   </div>
 }

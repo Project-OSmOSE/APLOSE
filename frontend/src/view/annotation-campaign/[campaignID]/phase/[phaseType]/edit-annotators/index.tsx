@@ -63,15 +63,15 @@ export const EditAnnotators: React.FC = () => {
     const items: SearchItem[] = [];
     if (users) {
       items.push(...users.filter(u => {
-        if (!campaign) return true;
+        if (!campaign?.spectrograms) return true;
         const count = fileRanges
             .filter(f => f.annotatorId === u!.id)
             .reduce((count, range) => {
-              const last_index = range.lastFileIndex ?? campaign?.filesCount ?? 0;
+              const last_index = range.lastFileIndex ?? campaign.spectrograms!.totalCount ?? 0;
               const first_index = range.firstFileIndex ?? 0;
               return count + (last_index - first_index)
             }, 0) + 1
-        return count < campaign.filesCount
+        return count < campaign.spectrograms.totalCount
       }).map(u => ({ id: u!.id, display: u!.displayName, type: 'user' } as SearchItem)));
     }
     if (groups) {
@@ -89,7 +89,7 @@ export const EditAnnotators: React.FC = () => {
     })));
   }, [allFileRanges]);
   const addFileRange = useCallback((item: Item) => {
-    if (!groups || !campaign) return;
+    if (!groups || !campaign?.spectrograms) return;
     const [type, id] = (item.value as string).split('-');
     const users = []
     switch (type!) {
@@ -105,7 +105,7 @@ export const EditAnnotators: React.FC = () => {
         id: getNewItemID(prev)?.toString(),
         annotator: newUser!.id,
         firstFileIndex: 0,
-        lastFileIndex: campaign.filesCount - 1,
+        lastFileIndex: campaign.spectrograms!.totalCount - 1,
       }])
     }
   }, [groups, availableUsers, setFileRanges, campaign])
@@ -155,12 +155,12 @@ export const EditAnnotators: React.FC = () => {
       { errorLoadingFileRanges &&
           <WarningText message="Fail loading file ranges" error={ errorLoadingFileRanges }/> }
 
-      { fileRanges && campaign && users && groups &&
+      { fileRanges && campaign?.spectrograms && users && groups &&
           <Table columns={ 3 } className={ styles.table }>
               <TableHead isFirstColumn={ true } topSticky>Annotator</TableHead>
               <TableHead className={ styles.fileRangeHead } topSticky>
                   File range
-                  <small>(between 1 and { campaign.filesCount })</small>
+                  <small>(between 1 and { campaign.spectrograms.totalCount })</small>
                   <small className="disabled"><i>Start and end limits are included</i></small>
               </TableHead>
               <TableHead topSticky/>

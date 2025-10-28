@@ -191,7 +191,7 @@ query getAnnotationTask(
         }
     }
 
-    allAnnotationSpectrogram(
+    allAnnotationSpectrograms(
         # Sort
         orderBy: "start"
 

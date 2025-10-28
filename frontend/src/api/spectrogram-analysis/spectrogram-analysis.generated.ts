@@ -7,7 +7,7 @@ export type ListSpectrogramAnalysisQueryVariables = Types.Exact<{
 }>;
 
 
-export type ListSpectrogramAnalysisQuery = { __typename?: 'Query', allSpectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', results: Array<{ __typename?: 'SpectrogramAnalysisNode', id: string, name: string, description?: string | null, createdAt: any, legacy: boolean, dataDuration?: number | null, fft: { __typename?: 'FFTNode', samplingFrequency: number, nfft: number, windowSize: number, overlap: any }, spectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount?: number | null, start?: any | null, end?: any | null } | null } | null> } | null };
+export type ListSpectrogramAnalysisQuery = { __typename?: 'Query', allSpectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', results: Array<{ __typename?: 'SpectrogramAnalysisNode', id: string, name: string, description?: string | null, createdAt: any, legacy: boolean, dataDuration?: number | null, fft: { __typename?: 'FFTNode', samplingFrequency: number, nfft: number, windowSize: number, overlap: any }, spectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount: number, start?: any | null, end?: any | null } | null } | null> } | null };
 
 export type ListAvailableSpectrogramAnalysisForImportQueryVariables = Types.Exact<{
   datasetID: Types.Scalars['ID']['input'];

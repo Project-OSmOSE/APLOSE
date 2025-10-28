@@ -6,11 +6,22 @@ import { crop } from 'ionicons/icons/index.js';
 
 import { dateToString, pluralize } from '@/service/function';
 import { Progress, SkeletonProgress, WarningText } from '@/components/ui';
-import { type AnnotationCampaignNode, type AnnotationPhaseNode, useAllCampaigns, useAllCampaignsFilters } from '@/api';
+import {
+  type AnnotationCampaignNode,
+  AnnotationFileRangeNodeNodeConnection,
+  AnnotationSpectrogramNodeNodeConnection,
+  useAllCampaigns,
+  useAllCampaignsFilters
+} from '@/api';
 import styles from './styles.module.scss';
 
 type Campaign = Pick<AnnotationCampaignNode, 'id' | 'isArchived' | 'deadline'> & {
-  phases?: Pick<AnnotationPhaseNode, 'userTasksCount' | 'userCompletedTasksCount' | 'tasksCount' | 'completedTasksCount'>[]
+  phases?: {
+    fileRanges?: Pick<AnnotationFileRangeNodeNodeConnection, 'tasksCount'> | null,
+    userFileRanges?: Pick<AnnotationFileRangeNodeNodeConnection, 'tasksCount'> | null,
+    completedTasks?: Pick<AnnotationSpectrogramNodeNodeConnection, 'totalCount'> | null,
+    userCompletedTasks?: Pick<AnnotationSpectrogramNodeNodeConnection, 'totalCount'> | null,
+  }[]
 }
 export const Cards: React.FC = () => {
   const { params } = useAllCampaignsFilters()
@@ -27,8 +38,8 @@ export const Cards: React.FC = () => {
       return `/annotation-campaign/${ campaign.id }/phase/Annotation`;
     return `/annotation-campaign/${ campaign.id }`
   }, [])
-  const accessDetail = useCallback((campaign: Campaign) => navigate(getLink(campaign)), [ getLink ]);
-  const accessAuxDetail = useCallback((campaign: Campaign) => window.open(`/app${ getLink(campaign) }`, '_blank'), [ getLink ]);
+  const accessDetail = useCallback((campaign: Campaign) => navigate(getLink(campaign)), [getLink]);
+  const accessAuxDetail = useCallback((campaign: Campaign) => window.open(`/app${ getLink(campaign) }`, '_blank'), [getLink]);
 
   const getDeadline = useCallback((campaign: Campaign): Date | undefined => campaign.deadline ? new Date(campaign.deadline) : undefined, []);
   const getBadgeLabel = useCallback((campaign: Campaign) => {
@@ -37,7 +48,7 @@ export const Cards: React.FC = () => {
     if (deadline && (deadline.getTime() - 7 * 24 * 60 * 60 * 1000) <= Date.now())
       return `Due date: ${ dateToString(deadline) }`
     return 'Open'
-  }, [ getDeadline ])
+  }, [getDeadline])
   const getColor = useCallback((campaign: Campaign): Color => {
     switch (getBadgeLabel(campaign)) {
       case 'Open':
@@ -47,19 +58,19 @@ export const Cards: React.FC = () => {
       default: // Due date
         return 'warning';
     }
-  }, [ getBadgeLabel ]);
+  }, [getBadgeLabel]);
 
   const getUserTotal = useCallback((campaign: Campaign) => {
-    return campaign.phases?.reduce((previousValue, p) => previousValue + p.userTasksCount, 0) ?? 0;
+    return campaign.phases?.reduce((previousValue, p) => previousValue + (p.userFileRanges?.tasksCount ?? 0), 0) ?? 0;
   }, []);
   const getUserProgress = useCallback((campaign: Campaign) => {
-    return campaign.phases?.reduce((previousValue, p) => previousValue + p.userCompletedTasksCount, 0) ?? 0;
+    return campaign.phases?.reduce((previousValue, p) => previousValue + (p.userCompletedTasks?.totalCount ?? 0), 0) ?? 0;
   }, []);
   const getTotal = useCallback((campaign: Campaign) => {
-    return campaign.phases?.reduce((previousValue, p) => previousValue + p.tasksCount, 0) ?? 0;
+    return campaign.phases?.reduce((previousValue, p) => previousValue + (p.fileRanges?.tasksCount ?? 0), 0) ?? 0;
   }, []);
   const getProgress = useCallback((campaign: Campaign) => {
-    return campaign.phases?.reduce((previousValue, p) => previousValue + p.completedTasksCount, 0) ?? 0;
+    return campaign.phases?.reduce((previousValue, p) => previousValue + (p.completedTasks?.totalCount ?? 0), 0) ?? 0;
   }, []);
 
   if (isFetching)
@@ -75,14 +86,14 @@ export const Cards: React.FC = () => {
 
   return <div className={ styles.cards }>
     { allCampaigns?.map(c => <div key={ c.id }
-                                  className={ [ styles.card, 'campaign-card' ].join(' ') }
+                                  className={ [styles.card, 'campaign-card'].join(' ') }
                                   onClick={ () => accessDetail(c) } onAuxClick={ () => accessAuxDetail(c) }>
       {/*campaign-card classname for test purpose*/ }
 
       <div className={ styles.head }>
         <IonBadge color={ getColor(c) } children={ getBadgeLabel(c) }/>
         <p className={ styles.campaign }>{ c.name }</p>
-        <p className={ styles.dataset }>{ c.datasetName }</p>
+        <p className={ styles.dataset }>{ c.dataset.name }</p>
       </div>
 
       <div className={ styles.property }>
@@ -107,22 +118,22 @@ export const Cards: React.FC = () => {
 }
 
 const SkeletonCard: React.FC = () => (
-  <div className={ styles.card }>
+    <div className={ styles.card }>
 
-    <div className={ styles.head }>
-      <IonBadge color="light">
-        <IonSkeletonText animated style={ { width: 64 } }/>
-      </IonBadge>
-      <IonSkeletonText className={ styles.campaign } animated style={ { width: 128, height: '1ch' } }/>
-      <IonSkeletonText className={ styles.dataset } animated style={ { width: 192, height: '1ch' } }/>
+      <div className={ styles.head }>
+        <IonBadge color="light">
+          <IonSkeletonText animated style={ { width: 64 } }/>
+        </IonBadge>
+        <IonSkeletonText className={ styles.campaign } animated style={ { width: 128, height: '1ch' } }/>
+        <IonSkeletonText className={ styles.dataset } animated style={ { width: 192, height: '1ch' } }/>
+      </div>
+
+      <div className={ styles.property }>
+        <IonIcon className={ styles.icon } icon={ crop }/>
+        <IonSkeletonText animated style={ { width: 128, height: '1ch' } }/>
+      </div>
+
+      <SkeletonProgress className={ styles.userProgression }/>
+      <SkeletonProgress className={ styles.progression }/>
     </div>
-
-    <div className={ styles.property }>
-      <IonIcon className={ styles.icon } icon={ crop }/>
-      <IonSkeletonText animated style={ { width: 128, height: '1ch' } }/>
-    </div>
-
-    <SkeletonProgress className={ styles.userProgression }/>
-    <SkeletonProgress className={ styles.progression }/>
-  </div>
 )

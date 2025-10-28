@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Fragment, useState } from 'react';
+import React, { ChangeEvent, Fragment, useMemo, useState } from 'react';
 import { TableContent, TableDivider, useAlert } from '@/components/ui';
 import styles from '@/view/annotation-campaign/[campaignID]/phase/[phaseType]/edit-annotators/styles.module.scss';
 import { Input } from '@/components/form';
@@ -21,8 +21,9 @@ export const FileRangeInputRow: React.FC<{
   errors?: Array<ErrorType>
 }> = ({ range, annotator, onUpdate, onDelete, setForced, errors }) => {
   const { campaign } = useCurrentCampaign();
-  const [ isLocked, setIsLocked ] = useState<boolean>(range.started ?? false);
+  const [isLocked, setIsLocked] = useState<boolean>(range.started ?? false);
   const alert = useAlert();
+  const filesCount = useMemo(() => campaign?.spectrograms?.totalCount, [campaign])
 
   function unlock() {
     alert.showAlert({
@@ -41,43 +42,43 @@ export const FileRangeInputRow: React.FC<{
   }
 
   return (
-    <Fragment key={ range.id }>
-      <TableContent isFirstColumn={ true }>
-        { annotator.displayName }&nbsp;{ annotator.expertise &&
-          <Fragment>( { annotator.expertise } )</Fragment> }
-      </TableContent>
-      <TableContent>
-        <div className={ styles.fileRangeCell }>
-          <Input type="number"
-                 value={ range.firstFileIndex ?? '' }
-                 error={ errors?.find(e => e.field === 'firstFileIndex')?.messages.join(' ') }
-                 onChange={ (e: ChangeEvent<HTMLInputElement>) => onUpdate({ firstFileIndex: e.target.valueAsNumber }) }
-                 placeholder="1"
-                 min={ 1 } max={ campaign?.filesCount }
-                 disabled={ campaign?.filesCount === undefined || isLocked }/>
-          -
-          <Input type="number"
-                 value={ range.lastFileIndex ?? '' }
-                 error={ errors?.find(e => e.field === 'lastFileIndex')?.messages.join(' ') }
-                 onChange={ (e: ChangeEvent<HTMLInputElement>) => onUpdate({ lastFileIndex: e.target.valueAsNumber }) }
-                 placeholder={ campaign?.filesCount?.toString() }
-                 min={ 1 } max={ campaign?.filesCount }
-                 disabled={ campaign?.filesCount === undefined || isLocked }/>
-        </div>
-      </TableContent>
-      <TableContent>
-        { isLocked ? <IonButton color="medium" fill="outline"
-                                data-tooltip={ 'This user as already started to annotate' }
-                                className={ [ styles.annotatorButton, 'tooltip-right' ].join(' ') }
-                                onClick={ unlock }>
-          <IonIcon icon={ lockClosedOutline }/>
-        </IonButton> : <IonButton color="danger"
-                                  className={ styles.annotatorButton }
-                                  onClick={ () => onDelete(range) }>
-          <IonIcon icon={ trashBinOutline }/>
-        </IonButton> }
-      </TableContent>
-      <TableDivider/>
-    </Fragment>
+      <Fragment key={ range.id }>
+        <TableContent isFirstColumn={ true }>
+          { annotator.displayName }&nbsp;{ annotator.expertise &&
+            <Fragment>( { annotator.expertise } )</Fragment> }
+        </TableContent>
+        <TableContent>
+          <div className={ styles.fileRangeCell }>
+            <Input type="number"
+                   value={ range.firstFileIndex ?? '' }
+                   error={ errors?.find(e => e.field === 'firstFileIndex')?.messages.join(' ') }
+                   onChange={ (e: ChangeEvent<HTMLInputElement>) => onUpdate({ firstFileIndex: e.target.valueAsNumber }) }
+                   placeholder="1"
+                   min={ 1 } max={ filesCount }
+                   disabled={ filesCount === undefined || isLocked }/>
+            -
+            <Input type="number"
+                   value={ range.lastFileIndex ?? '' }
+                   error={ errors?.find(e => e.field === 'lastFileIndex')?.messages.join(' ') }
+                   onChange={ (e: ChangeEvent<HTMLInputElement>) => onUpdate({ lastFileIndex: e.target.valueAsNumber }) }
+                   placeholder={ filesCount?.toString() }
+                   min={ 1 } max={ filesCount }
+                   disabled={ filesCount === undefined || isLocked }/>
+          </div>
+        </TableContent>
+        <TableContent>
+          { isLocked ? <IonButton color="medium" fill="outline"
+                                  data-tooltip={ 'This user as already started to annotate' }
+                                  className={ [styles.annotatorButton, 'tooltip-right'].join(' ') }
+                                  onClick={ unlock }>
+            <IonIcon icon={ lockClosedOutline }/>
+          </IonButton> : <IonButton color="danger"
+                                    className={ styles.annotatorButton }
+                                    onClick={ () => onDelete(range) }>
+            <IonIcon icon={ trashBinOutline }/>
+          </IonButton> }
+        </TableContent>
+        <TableDivider/>
+      </Fragment>
   )
 }

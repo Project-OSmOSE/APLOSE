@@ -1,13 +1,17 @@
 import * as Types from '../types.gql-generated';
 
 import { gqlAPI } from '@/api/baseGqlApi';
+
 export type EndPhaseMutationVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
   campaignID: Types.Scalars['ID']['input'];
 }>;
 
 
-export type EndPhaseMutation = { __typename?: 'Mutation', endAnnotationPhase?: { __typename?: 'EndAnnotationPhaseMutation', ok: boolean } | null };
+export type EndPhaseMutation = {
+  __typename?: 'Mutation',
+  endAnnotationPhase?: { __typename?: 'EndAnnotationPhaseMutation', ok: boolean } | null
+};
 
 export type CreateAnnotationPhaseMutationVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
@@ -18,22 +22,47 @@ export type CreateAnnotationPhaseMutationVariables = Types.Exact<{
 }>;
 
 
-export type CreateAnnotationPhaseMutation = { __typename?: 'Mutation', createAnnotationPhase?: { __typename?: 'CreateAnnotationPhase', id: string } | null, updateAnnotationCampaign?: { __typename?: 'UpdateAnnotationCampaignMutationPayload', errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }> } | null };
+export type CreateAnnotationPhaseMutation = {
+  __typename?: 'Mutation',
+  createAnnotationPhase?: { __typename?: 'CreateAnnotationPhase', id: string } | null,
+  updateAnnotationCampaign?: {
+    __typename?: 'UpdateAnnotationCampaignMutationPayload',
+    errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }>
+  } | null
+};
 
 export type CreateVerificationPhaseMutationVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
 }>;
 
 
-export type CreateVerificationPhaseMutation = { __typename?: 'Mutation', createAnnotationPhase?: { __typename?: 'CreateAnnotationPhase', id: string } | null };
+export type CreateVerificationPhaseMutation = {
+  __typename?: 'Mutation',
+  createAnnotationPhase?: { __typename?: 'CreateAnnotationPhase', id: string } | null
+};
 
 export type GetAnnotationPhaseQueryVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
   phase: Types.AnnotationPhaseType;
+  userID: Types.Scalars['ID']['input'];
 }>;
 
 
-export type GetAnnotationPhaseQuery = { __typename?: 'Query', annotationPhaseByCampaignPhase?: { __typename?: 'AnnotationPhaseNode', id: string, phase: Types.AnnotationPhaseType, canManage: boolean, endedAt?: any | null, userTasksCount: number, userCompletedTasksCount: number, tasksCount: number, completedTasksCount: number, hasAnnotations: boolean } | null };
+export type GetAnnotationPhaseQuery = {
+  __typename?: 'Query',
+  annotationPhaseByCampaignPhase?: {
+    __typename?: 'AnnotationPhaseNode',
+    id: string,
+    phase: Types.AnnotationPhaseType,
+    canManage: boolean,
+    endedAt?: any | null,
+    hasAnnotations: boolean,
+    fileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null,
+    completedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null,
+    userFileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null,
+    userCompletedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null
+  } | null
+};
 
 
 export const EndPhaseDocument = `
@@ -66,17 +95,28 @@ export const CreateVerificationPhaseDocument = `
 }
     `;
 export const GetAnnotationPhaseDocument = `
-    query getAnnotationPhase($campaignID: ID!, $phase: AnnotationPhaseType!) {
+    query getAnnotationPhase($campaignID: ID!, $phase: AnnotationPhaseType!, $userID: ID!) {
   annotationPhaseByCampaignPhase(campaignId: $campaignID, phaseType: $phase) {
     id
     phase
     canManage
     endedAt
-    userTasksCount
-    userCompletedTasksCount
-    tasksCount
-    completedTasksCount
     hasAnnotations
+    fileRanges: annotationFileRanges {
+      tasksCount
+    }
+    completedTasks: annotationSpectrograms(annotationTasks_Status: Finished) {
+      totalCount
+    }
+    userFileRanges: annotationFileRanges(annotator: $userID) {
+      tasksCount
+    }
+    userCompletedTasks: annotationSpectrograms(
+      annotationTasks_Status: Finished
+      annotator: $userID
+    ) {
+      totalCount
+    }
   }
 }
     `;

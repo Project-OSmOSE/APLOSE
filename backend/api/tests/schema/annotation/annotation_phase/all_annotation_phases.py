@@ -28,11 +28,18 @@ query (
         results {
             id
             phase
-            userTasksCount
-            userCompletedTasksCount
-            tasksCount
-            completedTasksCount
-            annotationCampaignId
+            fileRanges: annotationFileRanges {
+                tasksCount
+            }
+            completedTasks: annotationSpectrograms(annotationTasks_Status: Finished) {
+                totalCount
+            }
+            userFileRanges: annotationFileRanges(annotator: $annotatorID) {
+                tasksCount
+            }
+            userCompletedTasks: annotationSpectrograms(annotationTasks_Status: Finished, annotator: $annotatorID) {
+                totalCount
+            }
             isOpen
         }
     }

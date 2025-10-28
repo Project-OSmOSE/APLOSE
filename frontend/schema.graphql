@@ -1097,7 +1097,8 @@ type Query {
     last: Int
   ): UserNodeNodeConnection
   currentUser: UserNode
-  allLabelSets(
+  allAnalysisForImport(datasetId: ID!): [ImportAnalysisNode]
+  allAnnotationCampaigns(
     """Query limit"""
     limit: Int
 
@@ -1110,11 +1111,18 @@ type Query {
     after: String
     first: Int
     last: Int
-    name: String
-    description: String
-    labels: ID
-  ): LabelSetNodeNodeConnection
-  allAnnotationLabels(
+    phases_AnnotationFileRanges_AnnotatorId: ID
+    ownerId: ID
+    isArchived: Boolean
+    phases_Phase: AnnotationPhaseType
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeNodeConnection
+  allAnnotationFileRanges(
     """Query limit"""
     limit: Int
 
@@ -1127,11 +1135,11 @@ type Query {
     after: String
     first: Int
     last: Int
-    annotation_AnnotationPhase_AnnotationCampaignId: ID
-    annotation_AnnotationPhase_Phase: AnnotationPhaseType
-    annotation_AnnotatorId: ID
-  ): AnnotationLabelNodeNodeConnection
-  allDetectors(
+    annotator: ID
+    annotationPhase_AnnotationCampaign: ID
+    annotationPhase_Phase: AnnotationPhaseType
+  ): AnnotationFileRangeNodeNodeConnection
+  allAnnotationPhases(
     """Query limit"""
     limit: Int
 
@@ -1144,25 +1152,19 @@ type Query {
     after: String
     first: Int
     last: Int
-  ): DetectorNodeNodeConnection
-  allConfidenceSets(
-    """Query limit"""
-    limit: Int
+    annotationCampaignId: ID
+    annotationCampaign_OwnerId: ID
+    annotationFileRanges_AnnotatorId: ID
+    isCampaignArchived: Boolean
+    phase: AnnotationPhaseType
 
-    """Query offset"""
-    offset: Int
+    """search"""
+    search: String
 
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    name: String
-    desc: String
-    confidenceIndicators: ID
-  ): ConfidenceSetNodeNodeConnection
-  allAnnotationSpectrogram(
+    """Ordering"""
+    orderBy: String
+  ): AnnotationPhaseNodeNodeConnection
+  allAnnotationSpectrograms(
     """Query limit"""
     limit: Int
 
@@ -1192,8 +1194,7 @@ type Query {
     """Ordering"""
     orderBy: String
   ): AnnotationSpectrogramNodeNodeConnection
-  annotationSpectrogramById(id: ID): AnnotationSpectrogramNode
-  allAnnotationPhases(
+  allConfidenceSets(
     """Query limit"""
     limit: Int
 
@@ -1206,81 +1207,10 @@ type Query {
     after: String
     first: Int
     last: Int
-    annotationCampaignId: ID
-    annotationCampaign_OwnerId: ID
-    annotationFileRanges_AnnotatorId: ID
-    isCampaignArchived: Boolean
-    phase: AnnotationPhaseType
-
-    """search"""
-    search: String
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationPhaseNodeNodeConnection
-  annotationPhaseByCampaignPhase(campaignId: ID!, phaseType: AnnotationPhaseType!): AnnotationPhaseNode
-  allAnnotationFileRanges(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    annotationPhase_AnnotationCampaign: ID
-    annotationPhase_Phase: AnnotationPhaseType
-  ): AnnotationFileRangeNodeNodeConnection
-  allAnnotationCampaigns(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    phases_AnnotationFileRanges_AnnotatorId: ID
-    ownerId: ID
-    isArchived: Boolean
-    phases_Phase: AnnotationPhaseType
-
-    """search"""
-    search: String
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationCampaignNodeNodeConnection
-  annotationCampaignById(id: ID!): AnnotationCampaignNode
-  allAnnotations(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    confidence_Label: String
-    label_Name: String
-    detectorConfiguration_Detector: ID
-    acousticFeatures_Exists: Boolean
-    isValid: Boolean
-    annotator: ID
-  ): AnnotationNodeNodeConnection
-  allAnalysisForImport(datasetId: ID!): [ImportAnalysisNode]
+    name: String
+    desc: String
+    confidenceIndicators: ID
+  ): ConfidenceSetNodeNodeConnection
   allDatasets(
     """Query limit"""
     limit: Int
@@ -1299,6 +1229,37 @@ type Query {
     orderBy: String
   ): DatasetNodeNodeConnection
   allDatasetsForImport: [ImportDatasetNode]
+  allDetectors(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): DetectorNodeNodeConnection
+  allLabelSets(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    name: String
+    description: String
+    labels: ID
+  ): LabelSetNodeNodeConnection
   allSpectrogramAnalysis(
     """Query limit"""
     limit: Int
@@ -1318,6 +1279,9 @@ type Query {
     """Ordering"""
     orderBy: String
   ): SpectrogramAnalysisNodeNodeConnection
+  annotationCampaignById(id: ID!): AnnotationCampaignNode
+  annotationPhaseByCampaignPhase(campaignId: ID!, phaseType: AnnotationPhaseType!): AnnotationPhaseNode
+  annotationSpectrogramById(id: ID!): AnnotationSpectrogramNode
   datasetById(id: ID!): DatasetNode
   _debug: DjangoDebug
 }
@@ -2287,12 +2251,47 @@ type AnnotationCampaignNode implements BaseNode {
   confidenceSet: ConfidenceSetNode
   archive: ArchiveNode
   phases: [AnnotationPhaseNode]
-  datasetName: String!
-  isArchived: Boolean!
   detectors: [DetectorNode]
-  filesCount: Int!
-  canManage: Boolean!
   annotators: [UserNode]
+  spectrograms(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    start: DateTime
+    start_Lt: DateTime
+    start_Lte: DateTime
+    start_Gt: DateTime
+    start_Gte: DateTime
+    end: DateTime
+    end_Lt: DateTime
+    end_Lte: DateTime
+    end_Gt: DateTime
+    end_Gte: DateTime
+    campaignId: ID
+    phaseType: AnnotationPhaseType
+    annotatorId: ID
+    isTaskCompleted: Boolean
+    hasAnnotations: Boolean
+    annotatedByAnnotator: ID
+    annotatedByDetector: ID
+    annotatedWithLabel: String
+    annotatedWithConfidence: String
+    annotatedWithFeatures: Boolean
+
+    """Ordering"""
+    orderBy: String
+  ): SpectrogramNodeNodeConnection
+  isArchived: Boolean!
+  canManage: Boolean!
 }
 
 """Dataset schema"""
@@ -2452,7 +2451,7 @@ type UserNode implements BaseNode {
     """Ordering"""
     orderBy: String
   ): AnnotationTaskNodeConnection!
-  annotationFileRanges(offset: Int, before: String, after: String, first: Int, last: Int, annotationPhase_AnnotationCampaign: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationFileRangeNodeConnection!
+  annotationFileRanges(offset: Int, before: String, after: String, first: Int, last: Int, annotator: ID, annotationPhase_AnnotationCampaign: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationFileRangeNodeConnection!
   annotationcampaignSet(
     offset: Int
     before: String
@@ -2781,7 +2780,7 @@ type SpectrogramNodeNodeConnection {
 
   """Contains the nodes in this connection."""
   results: [SpectrogramNode]!
-  totalCount: Int
+  totalCount: Int!
   start: DateTime
   end: DateTime
 }
@@ -3296,17 +3295,59 @@ type AnnotationPhaseNode implements BaseNode {
     """Ordering"""
     orderBy: String
   ): AnnotationTaskNodeConnection!
-  annotationFileRanges(offset: Int, before: String, after: String, first: Int, last: Int, annotationPhase_AnnotationCampaign: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationFileRangeNodeConnection!
+  annotationFileRanges(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotator: ID
+    annotationPhase_AnnotationCampaign: ID
+    annotationPhase_Phase: AnnotationPhaseType
+  ): AnnotationFileRangeNodeNodeConnection
   annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationCommentNodeConnection!
   annotationCampaignId: ID!
+  annotationSpectrograms(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    start_Lte: DateTime
+    end_Gte: DateTime
+    filename_Icontains: String
+    phase: AnnotationPhaseType
+    annotationCampaign: ID
+    annotator: ID
+    annotationTasks_Status: AnnotationTaskStatus
+    annotations_Exists: Boolean
+    annotations_Confidence_Label: String
+    annotations_LabelName: String
+    annotations_AcousticFeatures_Exists: Boolean
+    annotations_Detector: ID
+    annotations_Annotator: ID
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationSpectrogramNodeNodeConnection
   isCompleted: Boolean!
   isOpen: Boolean!
   hasAnnotations: Boolean!
   canManage: Boolean!
-  tasksCount: Int!
-  completedTasksCount: Int!
-  userTasksCount: Int!
-  userCompletedTasksCount: Int!
 }
 
 """From AnnotationPhase.Type"""
@@ -3315,21 +3356,14 @@ enum AnnotationPhaseType {
   Verification
 }
 
-type AnnotationFileRangeNodeConnection {
+type AnnotationFileRangeNodeNodeConnection {
   """Pagination data for this connection."""
-  pageInfo: PageInfo!
+  pageInfo: PageInfoExtra!
 
   """Contains the nodes in this connection."""
-  edges: [AnnotationFileRangeNodeEdge]!
-}
-
-"""A Relay edge containing a `AnnotationFileRangeNode` and its cursor."""
-type AnnotationFileRangeNodeEdge {
-  """The item at the end of the edge"""
-  node: AnnotationFileRangeNode
-
-  """A cursor for use in pagination"""
-  cursor: String!
+  results: [AnnotationFileRangeNode]!
+  totalCount: Int!
+  tasksCount: Int!
 }
 
 """AnnotationFileRange schema"""
@@ -3448,6 +3482,19 @@ type AnnotationCommentNode implements BaseNode {
   createdAt: DateTime!
 }
 
+type AnnotationSpectrogramNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [AnnotationSpectrogramNode]!
+  totalCount: Int!
+  resumeSpectrogramId: ID
+  previousSpectrogramId(spectrogramId: ID): ID
+  nextSpectrogramId(spectrogramId: ID): ID
+  currentIndex(spectrogramId: ID): Int
+}
+
 type AnnotationNodeNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfoExtra!
@@ -3490,6 +3537,23 @@ type ArchiveNode implements BaseNode {
   date: DateTime!
   byUser: UserNode
   annotationCampaign: AnnotationCampaignNode
+}
+
+type AnnotationFileRangeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [AnnotationFileRangeNodeEdge]!
+}
+
+"""A Relay edge containing a `AnnotationFileRangeNode` and its cursor."""
+type AnnotationFileRangeNodeEdge {
+  """The item at the end of the edge"""
+  node: AnnotationFileRangeNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
 }
 
 type AnnotationPhaseNodeConnection {
@@ -4159,71 +4223,10 @@ type UserNodeNodeConnection {
   totalCount: Int
 }
 
-type LabelSetNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [LabelSetNode]!
-  totalCount: Int
-}
-
-type AnnotationLabelNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [AnnotationLabelNode]!
-  totalCount: Int
-}
-
-type DetectorNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [DetectorNode]!
-  totalCount: Int
-}
-
-type ConfidenceSetNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [ConfidenceSetNode]!
-  totalCount: Int
-}
-
-type AnnotationSpectrogramNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [AnnotationSpectrogramNode]!
-  totalCount: Int
-  resumeSpectrogramId: ID
-  previousSpectrogramId(spectrogramId: ID): ID
-  nextSpectrogramId(spectrogramId: ID): ID
-  currentIndex(spectrogramId: ID): Int
-}
-
-type AnnotationPhaseNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [AnnotationPhaseNode]!
-  totalCount: Int
-}
-
-type AnnotationFileRangeNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [AnnotationFileRangeNode]!
-  totalCount: Int
+"""Type for import dataset"""
+type ImportAnalysisNode {
+  name: String!
+  path: String!
 }
 
 type AnnotationCampaignNodeNodeConnection {
@@ -4235,10 +4238,22 @@ type AnnotationCampaignNodeNodeConnection {
   totalCount: Int
 }
 
-"""Type for import dataset"""
-type ImportAnalysisNode {
-  name: String!
-  path: String!
+type AnnotationPhaseNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [AnnotationPhaseNode]!
+  totalCount: Int
+}
+
+type ConfidenceSetNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [ConfidenceSetNode]!
+  totalCount: Int
 }
 
 type DatasetNodeNodeConnection {
@@ -4256,6 +4271,24 @@ type ImportDatasetNode {
   path: String!
   legacy: Boolean
   analysis: [ImportAnalysisNode]
+}
+
+type DetectorNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [DetectorNode]!
+  totalCount: Int
+}
+
+type LabelSetNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [LabelSetNode]!
+  totalCount: Int
 }
 
 """Debugging information for the current query."""
@@ -4337,14 +4370,8 @@ type Mutation {
   """Update user mutation"""
   currentUserUpdate(input: UpdateUserMutationInput!): UpdateUserMutationPayload
 
-  """Archive annotation phase mutation"""
-  endAnnotationPhase(id: ID!): EndAnnotationPhaseMutation
-
   """Create annotation phase of type "Verification" mutation"""
   createAnnotationPhase(campaignId: ID!, type: AnnotationPhaseType!): CreateAnnotationPhase
-  updateAnnotationPhaseFileRanges(campaignId: ID!, fileRanges: [AnnotationFileRangeInput]!, force: Boolean, phaseType: AnnotationPhaseType!): UpdateAnnotationPhaseFileRanges
-  createAnnotationCampaign(input: CreateAnnotationCampaignMutationInput!): CreateAnnotationCampaignMutationPayload
-  updateAnnotationCampaign(input: UpdateAnnotationCampaignMutationInput!): UpdateAnnotationCampaignMutationPayload
 
   """Archive annotation campaign mutation"""
   archiveAnnotationCampaign(id: ID!): ArchiveAnnotationCampaignMutation
@@ -4354,6 +4381,12 @@ type Mutation {
 
   """"Import spectrogram analysis mutation"""
   importSpectrogramAnalysis(datasetName: String!, datasetPath: String!, legacy: Boolean, name: String!, path: String!): ImportAnalysisMutation
+  createAnnotationCampaign(input: CreateAnnotationCampaignMutationInput!): CreateAnnotationCampaignMutationPayload
+  updateAnnotationCampaign(input: UpdateAnnotationCampaignMutationInput!): UpdateAnnotationCampaignMutationPayload
+  updateAnnotationPhaseFileRanges(campaignId: ID!, fileRanges: [AnnotationFileRangeInput]!, force: Boolean, phaseType: AnnotationPhaseType!): UpdateAnnotationPhaseFileRangesMutation
+
+  """Archive annotation phase mutation"""
+  endAnnotationPhase(id: ID!): EndAnnotationPhaseMutation
   _debug: DjangoDebug
 }
 
@@ -4452,26 +4485,24 @@ input UpdateUserMutationInput {
   clientMutationId: String
 }
 
-"""Archive annotation phase mutation"""
-type EndAnnotationPhaseMutation {
-  ok: Boolean!
-}
-
 """Create annotation phase of type "Verification" mutation"""
 type CreateAnnotationPhase {
   id: ID!
 }
 
-type UpdateAnnotationPhaseFileRanges {
-  errors: [[ErrorType!]]!
-  _debug: DjangoDebug
+"""Archive annotation campaign mutation"""
+type ArchiveAnnotationCampaignMutation {
+  ok: Boolean!
 }
 
-input AnnotationFileRangeInput {
-  id: ID
-  annotatorId: ID
-  firstFileIndex: Int!
-  lastFileIndex: Int!
+"""Import dataset mutation"""
+type ImportDatasetMutation {
+  ok: Boolean!
+}
+
+""""Import spectrogram analysis mutation"""
+type ImportAnalysisMutation {
+  ok: Boolean
 }
 
 type CreateAnnotationCampaignMutationPayload {
@@ -4510,17 +4541,19 @@ input UpdateAnnotationCampaignMutationInput {
   clientMutationId: String
 }
 
-"""Archive annotation campaign mutation"""
-type ArchiveAnnotationCampaignMutation {
-  ok: Boolean!
+type UpdateAnnotationPhaseFileRangesMutation {
+  errors: [[ErrorType!]]!
+  _debug: DjangoDebug
 }
 
-"""Import dataset mutation"""
-type ImportDatasetMutation {
-  ok: Boolean!
+input AnnotationFileRangeInput {
+  id: ID
+  annotatorId: ID
+  firstFileIndex: Int!
+  lastFileIndex: Int!
 }
 
-""""Import spectrogram analysis mutation"""
-type ImportAnalysisMutation {
-  ok: Boolean
+"""Archive annotation phase mutation"""
+type EndAnnotationPhaseMutation {
+  ok: Boolean!
 }

@@ -30,9 +30,6 @@ from backend.api.models import (
 from backend.api.models import (
     SpectrogramAnalysis,
 )
-from backend.api.schema.annotation.annotation_phase.phase_context_filter import (
-    AnnotationPhaseContextFilter,
-)
 from backend.api.schema.context_filters import AnnotationPhaseContextFilter
 from backend.utils.renderers import CSVRenderer
 

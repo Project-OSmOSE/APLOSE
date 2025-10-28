@@ -1,6 +1,7 @@
 import * as Types from '../types.gql-generated';
 
 import { gqlAPI } from '@/api/baseGqlApi';
+
 export type ListCampaignsAndPhasesQueryVariables = Types.Exact<{
   isArchived?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
   phase?: Types.InputMaybe<Types.AnnotationPhaseType>;
@@ -10,14 +11,125 @@ export type ListCampaignsAndPhasesQueryVariables = Types.Exact<{
 }>;
 
 
-export type ListCampaignsAndPhasesQuery = { __typename?: 'Query', allAnnotationCampaigns?: { __typename?: 'AnnotationCampaignNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCampaignNode', id: string, name: string, datasetName: string, deadline?: any | null, isArchived: boolean } | null> } | null, allAnnotationPhases?: { __typename?: 'AnnotationPhaseNodeNodeConnection', results: Array<{ __typename?: 'AnnotationPhaseNode', id: string, phase: Types.AnnotationPhaseType, userTasksCount: number, userCompletedTasksCount: number, tasksCount: number, completedTasksCount: number, annotationCampaignId: string } | null> } | null };
+export type ListCampaignsAndPhasesQuery = {
+  __typename?: 'Query',
+  allAnnotationCampaigns?: {
+    __typename?: 'AnnotationCampaignNodeNodeConnection',
+    results: Array<{
+      __typename?: 'AnnotationCampaignNode',
+      id: string,
+      name: string,
+      deadline?: any | null,
+      isArchived: boolean,
+      dataset: { __typename?: 'DatasetNode', name: string }
+    } | null>
+  } | null,
+  allAnnotationPhases?: {
+    __typename?: 'AnnotationPhaseNodeNodeConnection',
+    results: Array<{
+      __typename?: 'AnnotationPhaseNode',
+      id: string,
+      phase: Types.AnnotationPhaseType,
+      annotationCampaignId: string,
+      fileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null,
+      completedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null,
+      userFileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null,
+      userCompletedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null
+    } | null>
+  } | null
+};
 
 export type GetCampaignQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
 }>;
 
 
-export type GetCampaignQuery = { __typename?: 'Query', annotationCampaignById?: { __typename?: 'AnnotationCampaignNode', id: string, name: string, createdAt: any, instructionsUrl?: string | null, deadline?: any | null, isArchived: boolean, canManage: boolean, allowPointAnnotation: boolean, allowColormapTuning: boolean, allowImageTuning: boolean, colormapDefault?: string | null, colormapInvertedDefault?: boolean | null, description?: string | null, filesCount: number, dataset: { __typename?: 'DatasetNode', id: string, name: string }, labelsWithAcousticFeatures?: Array<{ __typename?: 'AnnotationLabelNode', id: string, name: string } | null> | null, owner: { __typename?: 'UserNode', id: string, displayName: string, email: string }, archive?: { __typename?: 'ArchiveNode', date: any, byUser?: { __typename?: 'UserNode', displayName: string } | null } | null, confidenceSet?: { __typename?: 'ConfidenceSetNode', name: string, desc?: string | null, confidenceIndicators?: Array<{ __typename?: 'ConfidenceNode', label: string } | null> | null } | null, labelSet?: { __typename?: 'LabelSetNode', name: string, description?: string | null, labels: Array<{ __typename?: 'AnnotationLabelNode', name: string } | null> } | null, detectors?: Array<{ __typename?: 'DetectorNode', id: string, name: string } | null> | null, annotators?: Array<{ __typename?: 'UserNode', id: string, displayName: string } | null> | null, analysis: { __typename?: 'SpectrogramAnalysisNodeConnection', edges: Array<{ __typename?: 'SpectrogramAnalysisNodeEdge', node?: { __typename?: 'SpectrogramAnalysisNode', id: string, legacy: boolean, colormap: { __typename?: 'ColormapNode', name: string }, fft: { __typename?: 'FFTNode', nfft: number, windowSize: number, overlap: any, samplingFrequency: number }, legacyConfiguration?: { __typename?: 'LegacySpectrogramConfigurationNode', scaleName?: string | null, zoomLevel: number, linearFrequencyScale?: { __typename?: 'LinearScaleNode', ratio: number, minValue: number, maxValue: number } | null, multiLinearFrequencyScale?: { __typename?: 'MultiLinearScaleNode', innerScales?: Array<{ __typename?: 'LinearScaleNode', ratio: number, minValue: number, maxValue: number } | null> | null } | null } | null } | null } | null> } } | null, allAnnotationPhases?: { __typename?: 'AnnotationPhaseNodeNodeConnection', results: Array<{ __typename?: 'AnnotationPhaseNode', id: string, phase: Types.AnnotationPhaseType, completedTasksCount: number, tasksCount: number, isOpen: boolean } | null> } | null };
+export type GetCampaignQuery = {
+  __typename?: 'Query',
+  annotationCampaignById?: {
+    __typename?: 'AnnotationCampaignNode',
+    id: string,
+    name: string,
+    createdAt: any,
+    instructionsUrl?: string | null,
+    deadline?: any | null,
+    isArchived: boolean,
+    canManage: boolean,
+    allowPointAnnotation: boolean,
+    allowColormapTuning: boolean,
+    allowImageTuning: boolean,
+    colormapDefault?: string | null,
+    colormapInvertedDefault?: boolean | null,
+    description?: string | null,
+    dataset: { __typename?: 'DatasetNode', id: string, name: string },
+    labelsWithAcousticFeatures?: Array<{ __typename?: 'AnnotationLabelNode', id: string, name: string } | null> | null,
+    owner: { __typename?: 'UserNode', id: string, displayName: string, email: string },
+    archive?: {
+      __typename?: 'ArchiveNode',
+      date: any,
+      byUser?: { __typename?: 'UserNode', displayName: string } | null
+    } | null,
+    confidenceSet?: {
+      __typename?: 'ConfidenceSetNode',
+      name: string,
+      desc?: string | null,
+      confidenceIndicators?: Array<{ __typename?: 'ConfidenceNode', label: string } | null> | null
+    } | null,
+    labelSet?: {
+      __typename?: 'LabelSetNode',
+      name: string,
+      description?: string | null,
+      labels: Array<{ __typename?: 'AnnotationLabelNode', name: string } | null>
+    } | null,
+    detectors?: Array<{ __typename?: 'DetectorNode', id: string, name: string } | null> | null,
+    annotators?: Array<{ __typename?: 'UserNode', id: string, displayName: string } | null> | null,
+    analysis: {
+      __typename?: 'SpectrogramAnalysisNodeConnection',
+      edges: Array<{
+        __typename?: 'SpectrogramAnalysisNodeEdge',
+        node?: {
+          __typename?: 'SpectrogramAnalysisNode',
+          id: string,
+          legacy: boolean,
+          colormap: { __typename?: 'ColormapNode', name: string },
+          fft: { __typename?: 'FFTNode', nfft: number, windowSize: number, overlap: any, samplingFrequency: number },
+          legacyConfiguration?: {
+            __typename?: 'LegacySpectrogramConfigurationNode',
+            scaleName?: string | null,
+            zoomLevel: number,
+            linearFrequencyScale?: {
+              __typename?: 'LinearScaleNode',
+              ratio: number,
+              minValue: number,
+              maxValue: number
+            } | null,
+            multiLinearFrequencyScale?: {
+              __typename?: 'MultiLinearScaleNode',
+              innerScales?: Array<{
+                __typename?: 'LinearScaleNode',
+                ratio: number,
+                minValue: number,
+                maxValue: number
+              } | null> | null
+            } | null
+          } | null
+        } | null
+      } | null>
+    },
+    spectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount: number } | null
+  } | null,
+  allAnnotationPhases?: {
+    __typename?: 'AnnotationPhaseNodeNodeConnection',
+    results: Array<{
+      __typename?: 'AnnotationPhaseNode',
+      id: string,
+      phase: Types.AnnotationPhaseType,
+      isOpen: boolean,
+      fileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null,
+      completedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null
+    } | null>
+  } | null
+};
 
 export type CreateAnnotationCampaignMutationVariables = Types.Exact<{
   name: Types.Scalars['String']['input'];
@@ -33,14 +145,24 @@ export type CreateAnnotationCampaignMutationVariables = Types.Exact<{
 }>;
 
 
-export type CreateAnnotationCampaignMutation = { __typename?: 'Mutation', createAnnotationCampaign?: { __typename?: 'CreateAnnotationCampaignMutationPayload', annotationCampaign?: { __typename?: 'AnnotationCampaignNode', id: string } | null, errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }> } | null };
+export type CreateAnnotationCampaignMutation = {
+  __typename?: 'Mutation',
+  createAnnotationCampaign?: {
+    __typename?: 'CreateAnnotationCampaignMutationPayload',
+    annotationCampaign?: { __typename?: 'AnnotationCampaignNode', id: string } | null,
+    errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }>
+  } | null
+};
 
 export type ArchiveAnnotationCampaignMutationVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
 }>;
 
 
-export type ArchiveAnnotationCampaignMutation = { __typename?: 'Mutation', archiveAnnotationCampaign?: { __typename?: 'ArchiveAnnotationCampaignMutation', ok: boolean } | null };
+export type ArchiveAnnotationCampaignMutation = {
+  __typename?: 'Mutation',
+  archiveAnnotationCampaign?: { __typename?: 'ArchiveAnnotationCampaignMutation', ok: boolean } | null
+};
 
 export type UpdateAnnotationCampaignFeaturedLabelsMutationVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
@@ -48,7 +170,13 @@ export type UpdateAnnotationCampaignFeaturedLabelsMutationVariables = Types.Exac
 }>;
 
 
-export type UpdateAnnotationCampaignFeaturedLabelsMutation = { __typename?: 'Mutation', updateAnnotationCampaign?: { __typename?: 'UpdateAnnotationCampaignMutationPayload', errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }> } | null };
+export type UpdateAnnotationCampaignFeaturedLabelsMutation = {
+  __typename?: 'Mutation',
+  updateAnnotationCampaign?: {
+    __typename?: 'UpdateAnnotationCampaignMutationPayload',
+    errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }>
+  } | null
+};
 
 
 export const ListCampaignsAndPhasesDocument = `

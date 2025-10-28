@@ -13,7 +13,7 @@ class SpectrogramConnection(AuthenticatedDjangoConnectionField):
                 node = self._type
                 name = "{}NodeConnection".format(self._type._meta.name)
 
-            total_count = graphene.Int()
+            total_count = graphene.NonNull(graphene.Int)
 
             def resolve_total_count(self, info, **kwargs):
                 return self.iterable.count()

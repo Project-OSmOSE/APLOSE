@@ -17,9 +17,11 @@ query listCampaignsAndPhases(
         results {
             id
             name
-            datasetName
             deadline
             isArchived
+            dataset {
+                name
+            }
         }
     }
     allAnnotationPhases(
@@ -32,11 +34,19 @@ query listCampaignsAndPhases(
         results {
             id
             phase
-            userTasksCount
-            userCompletedTasksCount
-            tasksCount
-            completedTasksCount
             annotationCampaignId
+            fileRanges: annotationFileRanges {
+                tasksCount
+            }
+            completedTasks: annotationSpectrograms(annotationTasks_Status: Finished) {
+                totalCount
+            }
+            userFileRanges: annotationFileRanges(annotator: $annotatorID) {
+                tasksCount
+            }
+            userCompletedTasks: annotationSpectrograms(annotationTasks_Status: Finished, annotator: $annotatorID) {
+                totalCount
+            }
         }
     }
 }
@@ -75,7 +85,6 @@ query getCampaign($id: ID!) {
                 displayName
             }
         }
-        filesCount
         confidenceSet {
             name
             desc
@@ -131,14 +140,21 @@ query getCampaign($id: ID!) {
                 }
             }
         }
+        spectrograms {
+            totalCount
+        }
     }
     allAnnotationPhases(annotationCampaignId: $id) {
         results {
             id
             phase
-            completedTasksCount
-            tasksCount
             isOpen
+            fileRanges: annotationFileRanges {
+                tasksCount
+            }
+            completedTasks: annotationSpectrograms(annotationTasks_Status: Finished) {
+                totalCount
+            }
         }
     }
 }

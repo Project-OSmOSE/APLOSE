@@ -6,9 +6,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from backend.api.models import AnnotationPhase, Spectrogram, AnnotationComment
-from backend.api.schema.annotation.annotation_comment.comment_context_filter import (
-    AnnotationCommentContextFilter,
-)
+from backend.api.schema.context_filters import AnnotationCommentContextFilter
 from backend.api.serializers.annotation.comment import AnnotationCommentSerializer
 from backend.utils.filters import ModelFilter
 

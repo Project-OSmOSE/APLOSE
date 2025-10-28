@@ -18,20 +18,20 @@ export const FileRangeActionBar: React.FC = () => {
 
   const updateSearch = useCallback((search: string) => {
     updateParams({ search })
-  }, [ updateParams ])
+  }, [updateParams])
 
-  const hasFilters = useMemo(() => Object.entries(params).filter(([ k, v ]) => k !== 'page' && v !== undefined).length > 0, [ params ]);
+  const hasFilters = useMemo(() => Object.entries(params).filter(([k, v]) => k !== 'page' && v !== undefined).length > 0, [params]);
 
   const resumeBtnTooltip: string = useMemo(() => {
     if (hasFilters) return 'Cannot resume if filters are activated'
     if (!allSpectrograms || allSpectrograms.length === 0) return 'No files to annotate'
     return 'Resume annotation'
-  }, [ hasFilters, allSpectrograms ])
+  }, [hasFilters, allSpectrograms])
 
   const resume = useCallback(() => {
     if (!resumeSpectrogramID) return;
     openAnnotator(resumeSpectrogramID)
-  }, [ resumeSpectrogramID, openAnnotator ])
+  }, [resumeSpectrogramID, openAnnotator])
 
   return <ActionBar search={ params.search ?? undefined }
                     searchPlaceholder="Search filename"
@@ -44,13 +44,15 @@ export const FileRangeActionBar: React.FC = () => {
                       </IonButton> }
 
                       <div className={ styles.progress }>
-                        { phase && phase.userCompletedTasksCount > 0 && <Progress label="My progress"
-                                                                                  color="primary"
-                                                                                  value={ phase.userTasksCount }
-                                                                                  total={ phase.userCompletedTasksCount }/> }
-                        { phase && phase.completedTasksCount > 0 && <Progress label="Global progress"
-                                                                              value={ phase.tasksCount }
-                                                                              total={ phase.completedTasksCount }/> }
+                        { phase && phase.userCompletedTasks && phase.userCompletedTasks!.totalCount > 0 &&
+                            <Progress label="My progress"
+                                      color="primary"
+                                      value={ phase.userFileRanges?.tasksCount ?? 0 }
+                                      total={ phase.userCompletedTasks!.totalCount }/> }
+                        { phase && phase.completedTasks && phase.completedTasks!.totalCount > 0 &&
+                            <Progress label="Global progress"
+                                      value={ phase.fileRanges?.tasksCount ?? 0 }
+                                      total={ phase.completedTasks.totalCount }/> }
                         <FileRangeProgressModalButton/>
                       </div>
 

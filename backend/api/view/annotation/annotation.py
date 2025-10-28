@@ -9,12 +9,10 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from backend.api.models import Annotation, AnnotationPhase, Spectrogram
-from backend.api.schema.annotation.annotation.annotation_context_filter import (
-    AnnotationContextFilter,
-)
-from backend.api.schema.annotation.annotation_phase.phase_context_filter import (
+from backend.api.schema.context_filters import (
     AnnotationPhaseContextFilter,
 )
+from backend.api.schema.context_filters.annotation import AnnotationContextFilter
 from backend.api.serializers import AnnotationSerializer, AnnotationImportSerializer
 from backend.utils.filters import ModelFilter
 from backend.utils.schema import ForbiddenError, NotFoundError

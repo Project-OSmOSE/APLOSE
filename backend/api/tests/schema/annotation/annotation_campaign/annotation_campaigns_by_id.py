@@ -42,7 +42,9 @@ query ($id: ID!) {
                 displayName
             }
         }
-        filesCount
+        spectrograms {
+            totalCount
+        }
         confidenceSet {
             name
             desc

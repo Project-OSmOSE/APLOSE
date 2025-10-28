@@ -11,6 +11,7 @@ QUERY = """
 query (
     $campaignID: ID!
     $phase: AnnotationPhaseType!
+    $annotatorID: ID!
 ) {
     annotationPhaseByCampaignPhase(
         campaignId: $campaignID
@@ -20,16 +21,25 @@ query (
         phase
         canManage
         endedAt
-        userTasksCount
-        userCompletedTasksCount
-        tasksCount
-        completedTasksCount
+        fileRanges: annotationFileRanges {
+            tasksCount
+        }
+        completedTasks: annotationSpectrograms(annotationTasks_Status: Finished) {
+            totalCount
+        }
+        userFileRanges: annotationFileRanges(annotator: $annotatorID) {
+            tasksCount
+        }
+        userCompletedTasks: annotationSpectrograms(annotationTasks_Status: Finished, annotator: $annotatorID) {
+            totalCount
+        }
         hasAnnotations
     }
 }
 """
 VARIABLES = {
     "campaignID": 1,
+    "annotatorID": 1,
     "phase": "Annotation",
 }
 
@@ -59,7 +69,7 @@ class AnnotationPhaseByCampaignPhaseTestCase(GraphQLTestCase):
 
     def test_connected_owner(self):
         self.client.login(username="user1", password="osmose29")
-        response = self.query(QUERY, variables=VARIABLES)
+        response = self.query(QUERY, variables={**VARIABLES, "annotatorID": 3})
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["annotationPhaseByCampaignPhase"]
@@ -67,7 +77,7 @@ class AnnotationPhaseByCampaignPhaseTestCase(GraphQLTestCase):
 
     def test_connected_empty_user(self):
         self.client.login(username="user4", password="osmose29")
-        response = self.query(QUERY, variables=VARIABLES)
+        response = self.query(QUERY, variables={**VARIABLES, "annotatorID": 6})
         self.assertResponseHasErrors(response)
         self.assertEqual(
             json.loads(response.content)["errors"][0]["message"], "Not found"
