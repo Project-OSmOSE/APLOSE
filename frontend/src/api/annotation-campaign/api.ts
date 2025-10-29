@@ -13,14 +13,14 @@ export const AnnotationCampaignGqlAPI = api.enhanceEndpoints({
       // @ts-expect-error: result and error are unused
       providesTags: (result, error, { id }) => [ { type: 'Campaign', id } ]
     },
-    createAnnotationCampaign: {
+    createCampaign: {
       invalidatesTags: [ 'Campaign', ],
     },
-    archiveAnnotationCampaign: {
+    archiveCampaign: {
       // @ts-expect-error: result and error are unused
       invalidatesTags: (result, error, { id }) => [ 'Campaign', { type: 'Campaign', id } ]
     },
-    updateAnnotationCampaignFeaturedLabels: {
+    updateCampaignFeaturedLabels: {
       // @ts-expect-error: result and error are unused
       invalidatesTags: (result, error, { id }) => [ 'Campaign', { type: 'Campaign', id } ]
     }

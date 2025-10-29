@@ -1,17 +1,13 @@
 import * as Types from '../types.gql-generated';
 
 import { gqlAPI } from '@/api/baseGqlApi';
-
 export type EndPhaseMutationVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
   campaignID: Types.Scalars['ID']['input'];
 }>;
 
 
-export type EndPhaseMutation = {
-  __typename?: 'Mutation',
-  endAnnotationPhase?: { __typename?: 'EndAnnotationPhaseMutation', ok: boolean } | null
-};
+export type EndPhaseMutation = { __typename?: 'Mutation', endAnnotationPhase?: { __typename?: 'EndAnnotationPhaseMutation', ok: boolean } | null };
 
 export type CreateAnnotationPhaseMutationVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
@@ -22,24 +18,14 @@ export type CreateAnnotationPhaseMutationVariables = Types.Exact<{
 }>;
 
 
-export type CreateAnnotationPhaseMutation = {
-  __typename?: 'Mutation',
-  createAnnotationPhase?: { __typename?: 'CreateAnnotationPhase', id: string } | null,
-  updateAnnotationCampaign?: {
-    __typename?: 'UpdateAnnotationCampaignMutationPayload',
-    errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }>
-  } | null
-};
+export type CreateAnnotationPhaseMutation = { __typename?: 'Mutation', createAnnotationPhase?: { __typename?: 'CreateAnnotationPhase', id: string } | null, updateAnnotationCampaign?: { __typename?: 'UpdateAnnotationCampaignMutationPayload', errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }> } | null };
 
 export type CreateVerificationPhaseMutationVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
 }>;
 
 
-export type CreateVerificationPhaseMutation = {
-  __typename?: 'Mutation',
-  createAnnotationPhase?: { __typename?: 'CreateAnnotationPhase', id: string } | null
-};
+export type CreateVerificationPhaseMutation = { __typename?: 'Mutation', createAnnotationPhase?: { __typename?: 'CreateAnnotationPhase', id: string } | null };
 
 export type GetAnnotationPhaseQueryVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
@@ -48,21 +34,7 @@ export type GetAnnotationPhaseQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetAnnotationPhaseQuery = {
-  __typename?: 'Query',
-  annotationPhaseByCampaignPhase?: {
-    __typename?: 'AnnotationPhaseNode',
-    id: string,
-    phase: Types.AnnotationPhaseType,
-    canManage: boolean,
-    endedAt?: any | null,
-    hasAnnotations: boolean,
-    fileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null,
-    completedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null,
-    userFileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null,
-    userCompletedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null
-  } | null
-};
+export type GetAnnotationPhaseQuery = { __typename?: 'Query', annotationPhaseByCampaignPhase?: { __typename?: 'AnnotationPhaseNode', id: string, phase: Types.AnnotationPhaseType, canManage: boolean, endedAt?: any | null, hasAnnotations: boolean, fileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null, completedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null, userFileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null, userCompletedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null } | null };
 
 
 export const EndPhaseDocument = `

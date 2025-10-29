@@ -8,12 +8,12 @@ import { formatTime } from '@/service/function';
 export const AnnotationTimeInfo: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
 
   const correctedStartTime = useMemo(() => {
-    if (annotation.update && annotation.update?.start_time !== annotation.start_time) return annotation.update.start_time;
+    if (annotation.update && annotation.update?.startTime !== annotation.startTime) return annotation.update.startTime;
     return undefined
   }, [ annotation ])
 
   const correctedEndTime = useMemo(() => {
-    if (annotation.update && annotation.update?.end_time !== annotation.end_time) return annotation.update.end_time;
+    if (annotation.update && annotation.update?.endTime !== annotation.endTime) return annotation.update.endTime;
     return undefined
   }, [ annotation ])
 
@@ -23,16 +23,16 @@ export const AnnotationTimeInfo: React.FC<{ annotation: Annotation }> = ({ annot
     <IoTimeOutline className={ styles.mainIcon }/>
 
     <p className={ isCorrected ? 'disabled' : undefined }>
-      { formatTime(annotation.start_time!, true) }
+      { formatTime(annotation.startTime!, true) }
       { annotation.type === AnnotationType.Box && <Fragment>
-          &nbsp;<IoChevronForwardOutline/> { formatTime(annotation.end_time!, true) }
+          &nbsp;<IoChevronForwardOutline/> { formatTime(annotation.endTime!, true) }
       </Fragment> }
     </p>
 
     { isCorrected && <p>
-      { formatTime(correctedStartTime ?? annotation.start_time!, true) }
+      { formatTime(correctedStartTime ?? annotation.startTime!, true) }
       { annotation.type === AnnotationType.Box && <Fragment>
-          &nbsp;<IoChevronForwardOutline/> { formatTime(correctedEndTime ?? annotation.end_time!, true) }
+          &nbsp;<IoChevronForwardOutline/> { formatTime(correctedEndTime ?? annotation.endTime!, true) }
       </Fragment> }
     </p> }
   </div>

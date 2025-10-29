@@ -15,7 +15,7 @@ import { AnnotationType, useCurrentUser } from '@/api';
 import { useAnnotatorConfidence } from '@/features/Annotator/Confidence';
 import { useNavParams } from '@/features/UX';
 
-type AnnotationEqualsType = Pick<Annotation, 'label' | 'confidence' | 'start_time' | 'end_time' | 'start_frequency' | 'end_frequency'>
+type AnnotationEqualsType = Pick<Annotation, 'label' | 'confidence' | 'startTime' | 'endTime' | 'startFrequency' | 'endFrequency'>
 
 
 export const useAnnotatorAnnotation = () => {
@@ -31,19 +31,19 @@ export const useAnnotatorAnnotation = () => {
 
   const _equals = useCallback((a: AnnotationEqualsType, b: AnnotationEqualsType): boolean => {
     return a.label === b.label
-      && a.confidence === b.confidence
-      && a.start_time === b.start_time
-      && a.end_time === b.end_time
-      && a.start_frequency === b.start_frequency
-      && a.end_frequency === b.end_frequency
+        && a.confidence === b.confidence
+        && a.startTime === b.startTime
+        && a.endTime === b.endTime
+        && a.startFrequency === b.startFrequency
+        && a.endFrequency === b.endFrequency
   }, [])
 
   // Validation
   const _getNewValidationID = useCallback(() => {
     return getNewItemID(allAnnotations.map(a => a.validation).filter(v => v !== undefined).map(v => v!))
   }, [ allAnnotations ])
-  const _updateValidation = useCallback((is_valid: boolean, validation?: Annotation['validation']): Annotation['validation'] => {
-    return validation ? { ...validation, is_valid } : { is_valid, id: _getNewValidationID() }
+  const _updateValidation = useCallback((isValid: boolean, validation?: Annotation['validation']): Annotation['validation'] => {
+    return validation ? { ...validation, isValid } : { isValid, id: _getNewValidationID() }
   }, [ _getNewValidationID ])
   const validate = useCallback((annotation: Annotation): Annotation => {
     annotation = dispatch(updateAnnotation({
@@ -72,7 +72,7 @@ export const useAnnotatorAnnotation = () => {
     const otherStrongValidAnnotations = allAnnotations.filter(a => {
       if (a.type === AnnotationType.Weak) return false;
       if (a.label !== annotation.label) return false;
-      return a.validation?.is_valid
+      return a.validation?.isValid
     });
     const weakAnnotation = allAnnotations.find(a => a.type === AnnotationType.Weak && a.label === annotation.label);
     if (annotation.type !== AnnotationType.Weak && otherStrongValidAnnotations.length === 0 && weakAnnotation) {
@@ -148,20 +148,20 @@ export const useAnnotatorAnnotation = () => {
 
   // Acoustic features
   const _getNewFeaturesID = useCallback(() => {
-    return getNewItemID(allAnnotations.filter(a => a.acoustic_features).map(a => a.acoustic_features!))
+    return getNewItemID(allAnnotations.filter(a => a.acousticFeatures).map(a => a.acousticFeatures!))
   }, [ allAnnotations ])
-  const updateFeatures = useCallback((annotation: Annotation, update: Partial<Annotation['acoustic_features']>) => {
+  const updateFeatures = useCallback((annotation: Annotation, update: Partial<Annotation['acousticFeatures']>) => {
     if (annotation.type === AnnotationType.Weak) return;
-    const acoustic_features = {
-      ...(annotation.acoustic_features ?? { id: _getNewFeaturesID() }),
+    const acousticFeatures = {
+      ...(annotation.acousticFeatures ?? { id: _getNewFeaturesID() }),
       ...update,
     }
-    annotation = dispatch(updateAnnotation({ id: annotation.id, acoustic_features })).payload as Annotation
+    annotation = dispatch(updateAnnotation({ id: annotation.id, acousticFeatures })).payload as Annotation
     dispatch(focusAnnotation(annotation))
   }, [ _getNewFeaturesID ])
   const removeFeatures = useCallback((annotation: Annotation) => {
     if (annotation.type === AnnotationType.Weak) return;
-    annotation = dispatch(updateAnnotation({ id: annotation.id, acoustic_features: undefined })).payload as Annotation
+    annotation = dispatch(updateAnnotation({ id: annotation.id, acousticFeatures: undefined })).payload as Annotation
     dispatch(focusAnnotation(annotation))
   }, [])
 

@@ -1,5 +1,15 @@
 import { restAPI } from '@/api/baseRestApi';
-import { AnnotationPhaseType, type ImportAnnotation, PostAnnotation } from '@/api';
+import { AnnotationPhaseType, type ImportAnnotation } from '@/api';
+import { api } from './annotation.generated'
+
+export const AnnotationGqlAPI = api.enhanceEndpoints({
+  endpoints: {
+    updateAnnotations: {
+      invalidatesTags: [ 'AnnotationTask' ]
+    }
+  }
+})
+
 
 const keys: (keyof ImportAnnotation)[] = [
   'start_time',
@@ -16,21 +26,6 @@ const keys: (keyof ImportAnnotation)[] = [
 
 export const AnnotationRestAPI = restAPI.injectEndpoints({
   endpoints: builder => ({
-    updateAnnotations: builder.mutation<void, {
-      campaignID: string | number;
-      phaseType: AnnotationPhaseType;
-      spectrogramID: string | number;
-      annotations: PostAnnotation[]
-    }>({
-      query: ({ campaignID, phaseType, spectrogramID, annotations }) => ({
-        url: `annotation/campaign/${ campaignID }/phase/${ phaseType }/spectrogram/${ spectrogramID }/`,
-        method: 'POST',
-        body: annotations.map(a => ({
-          ...a,
-          validations: [ a.validation ],
-        })),
-      }),
-    }),
     importAnnotations: builder.mutation<void, {
       campaignID: string | number;
       annotations: ImportAnnotation[];

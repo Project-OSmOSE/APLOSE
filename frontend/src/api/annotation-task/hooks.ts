@@ -2,8 +2,8 @@ import { AnnotationTaskGqlAPI, AnnotationTaskRestAPI } from './api';
 import { useCallback, useEffect, useMemo } from 'react';
 import {
   AnnotationCommentInput,
+  AnnotationInput,
   AnnotationPhaseType,
-  type PostAnnotation,
   useCurrentCampaign,
   useCurrentPhase,
   useCurrentUser,
@@ -50,7 +50,7 @@ export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
     resumeSpectrogramID: info.data?.allAnnotationSpectrograms?.resumeSpectrogramId,
     page: filters.page,
     pageCount: Math.ceil((info.data?.allAnnotationSpectrograms?.totalCount ?? 0) / PAGE_SIZE),
-  }), [info])
+  }), [ info ])
 }
 
 export const useAnnotationTask = (options: {
@@ -79,30 +79,30 @@ export const useAnnotationTask = (options: {
     navigationInfo: info.data?.allAnnotationSpectrograms,
     annotations: info.data?.annotationSpectrogramById?.task?.annotations?.results.filter(r => !!r).map(r => r!),
     isEditionAuthorized: phase?.canManage && info.data?.annotationSpectrogramById?.isAssigned,
-  }), [info, phase])
+  }), [ info, phase ])
 }
 
 export const useSubmitTask = () => {
   const { campaignID, phaseType, spectrogramID } = useNavParams();
   const { phase } = useCurrentPhase()
-  const [method, info] = submitTask.useMutation()
+  const [ method, info ] = submitTask.useMutation()
   const dispatch = useAppDispatch()
 
-  const submit = useCallback(async (annotations: PostAnnotation[],
+  const submit = useCallback(async (annotations: AnnotationInput[],
                                     taskComments: AnnotationCommentInput[],
                                     start: Date) => {
     if (!campaignID || !phaseType || !spectrogramID) return;
     await method({ campaignID, phaseType, spectrogramID, annotations, taskComments, start }).unwrap()
-    dispatch(gqlAPI.util.invalidateTags([{
+    dispatch(gqlAPI.util.invalidateTags([ {
       type: 'AnnotationPhase',
       id: phase?.id,
-    }]))
-  }, [method, campaignID, phaseType, spectrogramID, phase]);
+    } ]))
+  }, [ method, campaignID, phaseType, spectrogramID, phase ]);
 
   return useMemo(() => ({
     ...info,
     submitTask: submit,
-  }), [submit, info])
+  }), [ submit, info ])
 }
 
 
@@ -123,13 +123,13 @@ export const useAllTasksFilters = ({ clearOnLoad }: { clearOnLoad: boolean } = {
     params,
     updateParams: useCallback((p: Omit<AllTasksFilters, 'page'>) => {
       updateParams({ ...p, page: 1 })
-    }, [updateParams]),
+    }, [ updateParams ]),
     updatePage: useCallback((page: number) => {
       updateParams({ page })
-    }, [updateParams]),
+    }, [ updateParams ]),
     clearParams: useCallback(() => {
       clearParams()
       updateParams({ page: 1 })
-    }, [clearParams]),
+    }, [ clearParams ]),
   }
 }

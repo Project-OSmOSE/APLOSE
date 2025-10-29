@@ -2,22 +2,21 @@ import json
 
 from graphene_django.utils import GraphQLTestCase
 
-from backend.api.models import LabelSet
+from backend.api.models import Detector
 from backend.api.tests.fixtures import ALL_FIXTURES
-from backend.api.tests.schema.data.spectrogram_analysis.all_spectrogram_analysis_for_import import (
+from backend.api.tests.schema.spectrogram_analysis.all_spectrogram_analysis_for_import import (
     VARIABLES,
 )
 
 QUERY = """
 query {
-    allLabelSets {
+    allDetectors {
         results {
             id
             name
-            description
-            labels {
+            configurations {
                 id
-                name
+                configuration
             }
         }
     }
@@ -25,7 +24,7 @@ query {
 """
 
 
-class AllLabelSetTestCase(GraphQLTestCase):
+class AllDetectorsTestCase(GraphQLTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ALL_FIXTURES
@@ -45,8 +44,10 @@ class AllLabelSetTestCase(GraphQLTestCase):
         response = self.query(QUERY, variables=VARIABLES)
         self.assertResponseNoErrors(response)
 
-        content = json.loads(response.content)["data"]["allLabelSets"]["results"]
-        self.assertEqual(len(content), LabelSet.objects.count())
-        self.assertEqual(content[0]["name"], "Test SPM campaign")
-        self.assertEqual(len(content[0]["labels"]), 5)
-        self.assertEqual(content[0]["labels"][0]["name"], "Mysticetes")
+        content = json.loads(response.content)["data"]["allDetectors"]["results"]
+        self.assertEqual(len(content), Detector.objects.count())
+        self.assertEqual(content[0]["name"], "Detector 1")
+        self.assertEqual(len(content[0]["configurations"]), 1)
+        self.assertEqual(
+            content[0]["configurations"][0]["configuration"], "Detector configuration 1"
+        )

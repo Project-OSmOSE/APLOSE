@@ -4387,6 +4387,7 @@ type Mutation {
 
   """Archive annotation phase mutation"""
   endAnnotationPhase(id: ID!): EndAnnotationPhaseMutation
+  updateAnnotations(input: UpdateAnnotationsMutationInput!): UpdateAnnotationsMutationPayload
   updateAnnotationComments(input: UpdateAnnotationCommentsMutationInput!): UpdateAnnotationCommentsMutationPayload
   _debug: DjangoDebug
 }
@@ -4559,9 +4560,81 @@ type EndAnnotationPhaseMutation {
   ok: Boolean!
 }
 
+type UpdateAnnotationsMutationPayload {
+  errors: [[ErrorType]]
+  _debug: DjangoDebug
+  clientMutationId: String
+}
+
+input UpdateAnnotationsMutationInput {
+  campaignId: ID!
+  phaseType: AnnotationPhaseType!
+  spectrogramId: ID!
+  list: [AnnotationInput]!
+  clientMutationId: String
+}
+
+input AnnotationInput {
+  id: Int
+  label: String!
+  confidence: String
+  comments: [AnnotationCommentSerializerInput]
+  validations: [AnnotationValidationSerializerInput]
+  acousticFeatures: AnnotationAcousticFeaturesSerializerInput
+  startTime: Float
+  endTime: Float
+  startFrequency: Float
+  endFrequency: Float
+  annotator: String
+  analysis: String!
+  detectorConfiguration: String
+  isUpdateOf: String
+}
+
+input AnnotationCommentSerializerInput {
+  id: Int
+  comment: String!
+  createdAt: DateTime
+  annotation: String
+  annotationPhase: String
+  author: String
+  spectrogram: String
+}
+
+input AnnotationValidationSerializerInput {
+  id: Int
+  isValid: Boolean!
+  createdAt: DateTime
+  lastUpdatedAt: DateTime
+  annotation: String
+  annotator: String
+}
+
+input AnnotationAcousticFeaturesSerializerInput {
+  id: Int
+  trend: SignalTrendType
+
+  """[Hz] Frequency at the beginning of the signal"""
+  startFrequency: Float
+
+  """[Hz] Frequency at the end of the signal"""
+  endFrequency: Float
+
+  """Number of relative maximum frequency in the signal"""
+  relativeMaxFrequencyCount: Int
+
+  """Number of relative minimum frequency in the signal"""
+  relativeMinFrequencyCount: Int
+
+  """If the signal has harmonics"""
+  hasHarmonics: Boolean
+
+  """Number of steps (flat segment) in the signal"""
+  stepsCount: Int
+}
+
 type UpdateAnnotationCommentsMutationPayload {
-  """May contain more than one error for same field."""
-  errors: [ErrorType]
+  errors: [[ErrorType]]
   clientMutationId: String
 }
 

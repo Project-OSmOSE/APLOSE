@@ -203,6 +203,23 @@ export type AcousticFeaturesNode = BaseNode & {
   trend?: Maybe<SignalTrendType>;
 };
 
+export type AnnotationAcousticFeaturesSerializerInput = {
+  /** [Hz] Frequency at the end of the signal */
+  endFrequency?: InputMaybe<Scalars['Float']['input']>;
+  /** If the signal has harmonics */
+  hasHarmonics?: InputMaybe<Scalars['Boolean']['input']>;
+  id?: InputMaybe<Scalars['Int']['input']>;
+  /** Number of relative maximum frequency in the signal */
+  relativeMaxFrequencyCount?: InputMaybe<Scalars['Int']['input']>;
+  /** Number of relative minimum frequency in the signal */
+  relativeMinFrequencyCount?: InputMaybe<Scalars['Int']['input']>;
+  /** [Hz] Frequency at the beginning of the signal */
+  startFrequency?: InputMaybe<Scalars['Float']['input']>;
+  /** Number of steps (flat segment) in the signal */
+  stepsCount?: InputMaybe<Scalars['Int']['input']>;
+  trend?: InputMaybe<SignalTrendType>;
+};
+
 /** AnnotationCampaign schema */
 export type AnnotationCampaignNode = BaseNode & {
   __typename?: 'AnnotationCampaignNode';
@@ -349,6 +366,16 @@ export type AnnotationCommentNodeNodeConnection = {
   totalCount?: Maybe<Scalars['Int']['output']>;
 };
 
+export type AnnotationCommentSerializerInput = {
+  annotation?: InputMaybe<Scalars['String']['input']>;
+  annotationPhase?: InputMaybe<Scalars['String']['input']>;
+  author?: InputMaybe<Scalars['String']['input']>;
+  comment: Scalars['String']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['Int']['input']>;
+  spectrogram?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type AnnotationFileRangeInput = {
   annotatorId?: InputMaybe<Scalars['ID']['input']>;
   firstFileIndex: Scalars['Int']['input'];
@@ -454,6 +481,23 @@ export type AnnotationFileRangeNodeNodeConnection = {
   results: Array<Maybe<AnnotationFileRangeNode>>;
   tasksCount: Scalars['Int']['output'];
   totalCount: Scalars['Int']['output'];
+};
+
+export type AnnotationInput = {
+  acousticFeatures?: InputMaybe<AnnotationAcousticFeaturesSerializerInput>;
+  analysis: Scalars['String']['input'];
+  annotator?: InputMaybe<Scalars['String']['input']>;
+  comments?: InputMaybe<Array<InputMaybe<AnnotationCommentSerializerInput>>>;
+  confidence?: InputMaybe<Scalars['String']['input']>;
+  detectorConfiguration?: InputMaybe<Scalars['String']['input']>;
+  endFrequency?: InputMaybe<Scalars['Float']['input']>;
+  endTime?: InputMaybe<Scalars['Float']['input']>;
+  id?: InputMaybe<Scalars['Int']['input']>;
+  isUpdateOf?: InputMaybe<Scalars['String']['input']>;
+  label: Scalars['String']['input'];
+  startFrequency?: InputMaybe<Scalars['Float']['input']>;
+  startTime?: InputMaybe<Scalars['Float']['input']>;
+  validations?: InputMaybe<Array<InputMaybe<AnnotationValidationSerializerInput>>>;
 };
 
 /** Label schema */
@@ -1059,6 +1103,15 @@ export type AnnotationValidationNodeNodeConnection = {
   /** Contains the nodes in this connection. */
   results: Array<Maybe<AnnotationValidationNode>>;
   totalCount?: Maybe<Scalars['Int']['output']>;
+};
+
+export type AnnotationValidationSerializerInput = {
+  annotation?: InputMaybe<Scalars['String']['input']>;
+  annotator?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['Int']['input']>;
+  isValid: Scalars['Boolean']['input'];
+  lastUpdatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 /** An enumeration. */
@@ -4100,6 +4153,7 @@ export type Mutation = {
   updateAnnotationCampaign?: Maybe<UpdateAnnotationCampaignMutationPayload>;
   updateAnnotationComments?: Maybe<UpdateAnnotationCommentsMutationPayload>;
   updateAnnotationPhaseFileRanges?: Maybe<UpdateAnnotationPhaseFileRangesMutation>;
+  updateAnnotations?: Maybe<UpdateAnnotationsMutationPayload>;
   /** Update password mutation */
   userUpdatePassword?: Maybe<UpdateUserPasswordMutationPayload>;
 };
@@ -4196,6 +4250,12 @@ export type MutationUpdateAnnotationPhaseFileRangesArgs = {
   fileRanges: Array<InputMaybe<AnnotationFileRangeInput>>;
   force?: InputMaybe<Scalars['Boolean']['input']>;
   phaseType: AnnotationPhaseType;
+};
+
+
+/** Global mutation */
+export type MutationUpdateAnnotationsArgs = {
+  input: UpdateAnnotationsMutationInput;
 };
 
 
@@ -7156,14 +7216,28 @@ export type UpdateAnnotationCommentsMutationInput = {
 export type UpdateAnnotationCommentsMutationPayload = {
   __typename?: 'UpdateAnnotationCommentsMutationPayload';
   clientMutationId?: Maybe<Scalars['String']['output']>;
-  /** May contain more than one error for same field. */
-  errors?: Maybe<Array<Maybe<ErrorType>>>;
+  errors?: Maybe<Array<Maybe<Array<Maybe<ErrorType>>>>>;
 };
 
 export type UpdateAnnotationPhaseFileRangesMutation = {
   __typename?: 'UpdateAnnotationPhaseFileRangesMutation';
   _debug?: Maybe<DjangoDebug>;
   errors: Array<Maybe<Array<ErrorType>>>;
+};
+
+export type UpdateAnnotationsMutationInput = {
+  campaignId: Scalars['ID']['input'];
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  list: Array<InputMaybe<AnnotationInput>>;
+  phaseType: AnnotationPhaseType;
+  spectrogramId: Scalars['ID']['input'];
+};
+
+export type UpdateAnnotationsMutationPayload = {
+  __typename?: 'UpdateAnnotationsMutationPayload';
+  _debug?: Maybe<DjangoDebug>;
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  errors?: Maybe<Array<Maybe<Array<Maybe<ErrorType>>>>>;
 };
 
 export type UpdateUserMutationInput = {

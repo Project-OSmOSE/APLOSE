@@ -128,7 +128,7 @@ export const useAnnotatorCanvas = () => {
     draw()
   }, [
     // On current newAnnotation changed
-    tempAnnotation?.end_time, tempAnnotation?.end_frequency, tempAnnotation,
+    tempAnnotation?.endTime, tempAnnotation?.endFrequency, tempAnnotation,
     // On Spectrogram or analysis changed
     spectrogram, analysis,
     // On colormap changed

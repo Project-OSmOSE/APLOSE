@@ -1,15 +1,15 @@
 import {
   type AcousticFeaturesNode,
+  AnnotationAcousticFeaturesSerializerInput,
   type AnnotationCommentNode,
+  AnnotationInput,
   type AnnotationLabelNode,
   type AnnotationNode,
   type AnnotationValidationNode,
+  AnnotationValidationSerializerInput,
   type ConfidenceNode,
   type DetectorNode,
   type Maybe,
-  type PostAcousticFeatures,
-  PostAnnotation,
-  type PostAnnotationValidation,
   type SpectrogramAnalysisNode,
   type UserNode,
   useUpdateAnnotations,
@@ -19,7 +19,7 @@ import { useAnnotatorAnnotation } from './hooks';
 import { type Annotation, type Features, type Validation } from './slice';
 import { convertCommentsToPost, convertGqlToComments } from '@/features/Annotator/Comment';
 
-export function convertValidationToPost(validation: Validation): PostAnnotationValidation {
+export function convertValidationToPost(validation: Validation): AnnotationValidationSerializerInput {
   return {
     ...validation,
     id: validation.id > 0 ? validation.id : undefined,
@@ -32,11 +32,11 @@ export function convertGqlToValidation(validations: Maybe<Pick<AnnotationValidat
   const v = validations[0]
   return {
     id: +v!.id,
-    is_valid: v!.isValid,
+    isValid: v!.isValid,
   }
 }
 
-export function convertFeaturesToPost(features: Features): PostAcousticFeatures {
+export function convertFeaturesToPost(features: Features): AnnotationAcousticFeaturesSerializerInput {
   return {
     ...features,
     id: features.id > 0 ? features.id : undefined,
@@ -45,18 +45,12 @@ export function convertFeaturesToPost(features: Features): PostAcousticFeatures 
 
 export function convertGqlToFeatures(features: Omit<AcousticFeaturesNode, '__typename'>): Features {
   return {
+    ...features,
     id: +features.id,
-    has_harmonics: features.hasHarmonics === null ? undefined : features.hasHarmonics,
-    steps_count: features.stepsCount === null ? undefined : features.stepsCount,
-    relative_max_frequency_count: features.relativeMaxFrequencyCount === null ? undefined : features.relativeMaxFrequencyCount,
-    relative_min_frequency_count: features.relativeMinFrequencyCount === null ? undefined : features.relativeMinFrequencyCount,
-    end_frequency: features.endFrequency === null ? undefined : features.endFrequency,
-    start_frequency: features.startFrequency === null ? undefined : features.startFrequency,
-    trend: features.trend === null ? undefined : features.trend,
   }
 }
 
-export function convertAnnotationsToPost(annotations: Annotation[]): PostAnnotation[] {
+export function convertAnnotationsToPost(annotations: Annotation[]): AnnotationInput[] {
   return [ ...annotations, ...annotations.filter(a => a.update).map(a => ({
     ...a.update,
     is_update_of: a.id,
@@ -64,14 +58,14 @@ export function convertAnnotationsToPost(annotations: Annotation[]): PostAnnotat
     ...a,
     id: a.id > 0 ? a.id : undefined,
     comments: convertCommentsToPost(a.comments ?? []),
-    validation: a.validation ? convertValidationToPost(a.validation) : undefined,
-    acoustic_features: a.acoustic_features ? convertFeaturesToPost(a.acoustic_features) : undefined,
-  }))
+    validations: [ a.validation ? convertValidationToPost(a.validation) : null ],
+    acousticFeatures: a.acousticFeatures ? convertFeaturesToPost(a.acousticFeatures) : undefined,
+  } as AnnotationInput))
 }
 
 type Node =
-  Pick<AnnotationNode, 'id' | 'type' | 'startFrequency' | 'endFrequency' | 'startTime' | 'endTime'>
-  & {
+    Pick<AnnotationNode, 'id' | 'type' | 'startFrequency' | 'endFrequency' | 'startTime' | 'endTime'>
+    & {
   isUpdateOf?: Maybe<Pick<AnnotationNode, 'id'>>,
   annotator?: Maybe<Pick<UserNode, 'id'>>,
   detectorConfiguration?: Maybe<{

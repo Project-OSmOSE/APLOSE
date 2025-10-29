@@ -22,7 +22,7 @@ export const AnnotationHeadContent: React.FC<{
   }, [ annotation ]);
 
   const play = useCallback(() => {
-    audio.play(annotation.start_time ?? undefined, annotation.end_time ?? undefined)
+    audio.play(annotation.startTime ?? undefined, annotation.endTime ?? undefined)
   }, [ audio.play, annotation ])
 
   const updateLabel = useCallback((label: string) => {
@@ -53,10 +53,10 @@ export const AnnotationHeadContent: React.FC<{
 
     {/* Comment info */ }
     { (annotation.comments && annotation.comments.length > 0) ?
-      <IoChatbubbleEllipses/> :
-      <TooltipOverlay tooltipContent={ <p>No comments</p> }>
-        <IoChatbubbleOutline className={ styles.outlineIcon }/>
-      </TooltipOverlay> }
+        <IoChatbubbleEllipses/> :
+        <TooltipOverlay tooltipContent={ <p>No comments</p> }>
+          <IoChatbubbleOutline className={ styles.outlineIcon }/>
+        </TooltipOverlay> }
 
     {/* Label */ }
     <p>{ annotation.update?.label ?? annotation.label }</p>

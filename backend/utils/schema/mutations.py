@@ -5,12 +5,12 @@ import graphene
 from graphene import InputField, ClientIDMutation, InputObjectType
 from graphene.types.utils import yank_fields_from_attrs
 from graphene_django.rest_framework.mutation import (
-    fields_for_serializer,
     SerializerMutationOptions,
 )
 from graphene_django.types import ErrorType
 
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions
+from .mutation_serializer_converter import fields_for_serializer
 
 
 class ListSerializerMutation(ClientIDMutation):
@@ -18,7 +18,9 @@ class ListSerializerMutation(ClientIDMutation):
         abstract = True
 
     errors = graphene.List(
-        ErrorType, description="May contain more than one error for same field."
+        graphene.List(
+            ErrorType, description="May contain more than one error for same field."
+        )
     )
 
     @classmethod
@@ -98,7 +100,10 @@ class ListSerializerMutation(ClientIDMutation):
             "instance": cls.get_serializer_queryset(root, info, **input),
             "data": input["list"],
             "many": True,
-            "context": cls.get_serializer_context(root, info, **input),
+            "context": {
+                **cls.get_serializer_context(root, info, **input),
+                "request": info.context,
+            },
         }
 
     @classmethod
@@ -113,6 +118,7 @@ class ListSerializerMutation(ClientIDMutation):
             serializer.save()
             return cls(errors=None)
         else:
-            errors = ErrorType.from_errors(serializer.errors)
-
+            errors = []
+            for e in serializer.errors:
+                errors.append(ErrorType.from_errors(e))
             return cls(errors=errors)

@@ -25,6 +25,18 @@ class AnnotationCommentSerializer(serializers.ModelSerializer):
                 "required": False,
                 "allow_null": True,
             },
+            "annotation_phase": {
+                "required": False,
+            },
+            "author": {
+                "required": False,
+            },
+            "spectrogram": {
+                "required": False,
+            },
+            "annotation": {
+                "required": False,
+            },
         }
 
     def run_validation(self, data=empty):

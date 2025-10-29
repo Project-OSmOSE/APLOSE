@@ -9,7 +9,7 @@ export type UpdateTaskCommentsMutationVariables = Types.Exact<{
 }>;
 
 
-export type UpdateTaskCommentsMutation = { __typename?: 'Mutation', updateAnnotationComments?: { __typename?: 'UpdateAnnotationCommentsMutationPayload', errors?: Array<{ __typename?: 'ErrorType', messages: Array<string>, field: string } | null> | null } | null };
+export type UpdateTaskCommentsMutation = { __typename?: 'Mutation', updateAnnotationComments?: { __typename?: 'UpdateAnnotationCommentsMutationPayload', errors?: Array<Array<{ __typename?: 'ErrorType', messages: Array<string>, field: string } | null> | null> | null } | null };
 
 
 export const UpdateTaskCommentsDocument = `

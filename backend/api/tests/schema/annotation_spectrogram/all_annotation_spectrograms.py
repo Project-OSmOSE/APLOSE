@@ -3,13 +3,12 @@ import json
 from graphene_django.utils import GraphQLTestCase
 
 from backend.api.tests.fixtures import ALL_FIXTURES
-from backend.api.tests.schema.data.spectrogram_analysis.all_spectrogram_analysis_for_import import (
+from backend.api.tests.schema.spectrogram_analysis.all_spectrogram_analysis_for_import import (
     VARIABLES,
 )
 
 QUERY = """
 query (
-    $annotatorID: ID!
     $annotatorID: ID!
     $campaignID: ID!
     $phaseType: AnnotationPhaseType!
@@ -31,7 +30,7 @@ query (
     $annotationAnnotator: ID
     $withAcousticFeatures: Boolean
 ) {
-    allAnnotationSpectrogram(
+    allAnnotationSpectrograms(
         # Sort
         limit: $limit
         offset: $offset
@@ -105,7 +104,7 @@ query (
     $campaignID: ID!
     $phaseType: AnnotationPhaseType!
 ) {
-    allAnnotationSpectrogram(
+    allAnnotationSpectrograms(
         # Sort
         orderBy: "start"
 
@@ -146,7 +145,7 @@ VARIABLES_FOR_SPECTROGRAM = {
 }
 
 
-class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
+class AllAnnotationSpectrogramsTestCase(GraphQLTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ALL_FIXTURES
@@ -172,7 +171,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        content = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(content), 0)
@@ -188,7 +187,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        content = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(content), 0)
@@ -204,7 +203,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        content = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(content), 4)
@@ -220,7 +219,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        content = json.loads(response.content)["data"]["allAnnotationSpectrogram"]
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
         results = content["results"]
         self.assertEqual(len(results), 6)
 
@@ -240,7 +239,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        content = json.loads(response.content)["data"]["allAnnotationSpectrogram"]
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
         self.assertEqual(content["totalCount"], 6)
         self.assertEqual(content["currentIndex"], 0)
         self.assertIsNone(content["previousSpectrogramId"])
@@ -260,7 +259,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 0)
@@ -277,7 +276,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 1)
@@ -294,7 +293,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 1)
@@ -311,7 +310,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 5)
@@ -329,7 +328,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 0)
@@ -347,7 +346,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 1)
@@ -365,7 +364,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 0)
@@ -383,7 +382,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 1)
@@ -401,7 +400,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 1)
@@ -419,7 +418,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 1)
@@ -436,7 +435,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 1)
@@ -453,7 +452,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 5)
@@ -471,7 +470,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 0)
@@ -491,7 +490,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 1)
@@ -508,7 +507,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 5)
@@ -525,7 +524,7 @@ class AllAnnotationSpectrogramTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrogram"][
+        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
             "results"
         ]
         self.assertEqual(len(results), 2)

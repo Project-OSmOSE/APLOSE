@@ -18,8 +18,11 @@ class EnumField(serializers.ChoiceField):
         return self.enum(value).label
 
     def to_internal_value(self, data):
-        index = self.enum.labels.index(data)
-        value = self.enum.values[index]
+        try:
+            index = self.enum.labels.index(data)
+            value = self.enum.values[index]
+        except ValueError:
+            value = data.value  # Handle GQL Input enums
         try:
             return self.enum(value)
         except KeyError:

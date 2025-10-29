@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo } from 'react';
-import { ImportDatasetType, ImportSpectrogramAnalysisType, useImportDataset } from '@/api';
+import { ImportAnalysisNode, ImportDatasetNode, useImportDataset } from '@/api';
 import { ImportRow, useToast } from '@/components/ui';
 import { FolderCheck, MoveToFolder } from '@solar-icons/react';
 import { ImportAnalysisRow } from '@/features/SpectrogramAnalysis';
 import { useFilter, useSort } from '@/features/UX';
 
 export const ImportDatasetRow: React.FC<{
-  dataset: ImportDatasetType,
+  dataset: ImportDatasetNode,
   importedAnalysis?: string[]
   search?: string;
-  onImported: (dataset: ImportDatasetType) => void
+  onImported: (dataset: ImportDatasetNode) => void
 }> = ({ dataset, search, importedAnalysis, onImported }) => {
 
   const {
@@ -42,11 +42,11 @@ export const ImportDatasetRow: React.FC<{
   const filteredAnalysis = useFilter({
     items: dataset.analysis?.filter(a => a !== null).map(a => a!) ?? [],
     search,
-    itemToStringArray: (analysis: ImportSpectrogramAnalysisType) => [ analysis.name, analysis.path ],
+    itemToStringArray: (analysis: ImportAnalysisNode) => [ analysis.name, analysis.path ],
   })
   const searchAnalysis = useSort({
     items: filteredAnalysis,
-    itemToSortString: (analysis: ImportSpectrogramAnalysisType) => analysis.name,
+    itemToSortString: (analysis: ImportAnalysisNode) => analysis.name,
   })
 
   return <ImportRow downloadedIcon={ <FolderCheck size={ 24 } weight="BoldDuotone"/> }

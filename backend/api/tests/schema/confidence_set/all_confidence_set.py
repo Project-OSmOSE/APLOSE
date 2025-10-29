@@ -4,7 +4,7 @@ from graphene_django.utils import GraphQLTestCase
 
 from backend.api.models import ConfidenceSet
 from backend.api.tests.fixtures import ALL_FIXTURES
-from backend.api.tests.schema.data.spectrogram_analysis.all_spectrogram_analysis_for_import import (
+from backend.api.tests.schema.spectrogram_analysis.all_spectrogram_analysis_for_import import (
     VARIABLES,
 )
 

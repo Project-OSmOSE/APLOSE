@@ -7,7 +7,7 @@ export type {
   ListDatasetsAndAnalysisQueryVariables,
   ListDatasetsQuery,
   ListDatasetsQueryVariables,
-  ImportDatasetMutation,
-  ImportDatasetMutationVariables,
+  ImportDatasetMutation as ImportNewDatasetMutation,
+  ImportDatasetMutationVariables as ImportNewDatasetMutationVariables,
 } from './dataset.generated'
 export * from './hooks'

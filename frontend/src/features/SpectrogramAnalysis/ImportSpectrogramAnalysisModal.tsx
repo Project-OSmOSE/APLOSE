@@ -3,7 +3,7 @@ import { Modal, ModalFooter, ModalHeader, useModal } from '@/components/ui';
 import { IonButton, IonIcon, IonNote, IonSearchbar, IonSpinner, SearchbarInputEventDetail } from '@ionic/react';
 import { downloadOutline } from 'ionicons/icons/index.js';
 import { createPortal } from 'react-dom';
-import { ImportSpectrogramAnalysisType, useAvailableSpectrogramAnalysisForImport } from '@/api';
+import { ImportAnalysisNode, useAvailableSpectrogramAnalysisForImport } from '@/api';
 import { GenerateDatasetHelpButton } from '@/features/Dataset';
 import { ImportAnalysisRow } from './ImportSpectrogramAnalysisRow';
 import styles from './styles.module.scss';
@@ -40,11 +40,11 @@ export const ImportAnalysisModal: React.FC<{ onClose: () => void }> = ({ onClose
   const filteredAnalysis = useFilter({
     items: availableSpectrogramAnalysis ?? [],
     search,
-    itemToStringArray: (analysis: ImportSpectrogramAnalysisType) => [ analysis.name, analysis.path ],
+    itemToStringArray: (analysis: ImportAnalysisNode) => [ analysis.name, analysis.path ],
   })
   const searchedAnalysis = useSort({
     items: filteredAnalysis,
-    itemToSortString: (analysis: ImportSpectrogramAnalysisType) => analysis.name,
+    itemToSortString: (analysis: ImportAnalysisNode) => analysis.name,
   })
 
   const searchbar = useRef<HTMLIonSearchbarElement | null>(null)
@@ -61,41 +61,41 @@ export const ImportAnalysisModal: React.FC<{ onClose: () => void }> = ({ onClose
     setSearch(undefined);
   }, [])
 
-  const onAnalysisImported = useCallback((analysis: ImportSpectrogramAnalysisType) => {
+  const onAnalysisImported = useCallback((analysis: ImportAnalysisNode) => {
     setImports(prevState => {
       return [ ...new Set([ ...prevState, analysis.name ]) ]
     });
   }, [ setImports ])
 
   return (
-    <Modal onClose={ onClose }
-           className={ [ styles.importModal, (!isLoading && !!availableSpectrogramAnalysis && availableSpectrogramAnalysis.length > 0) ? styles.filled : 'empty' ].join(' ') }>
-      <ModalHeader title="Import an analysis"
-                   onClose={ onClose }/>
+      <Modal onClose={ onClose }
+             className={ [ styles.importModal, (!isLoading && !!availableSpectrogramAnalysis && availableSpectrogramAnalysis.length > 0) ? styles.filled : 'empty' ].join(' ') }>
+        <ModalHeader title="Import an analysis"
+                     onClose={ onClose }/>
 
-      { isLoading && <IonSpinner/> }
+        { isLoading && <IonSpinner/> }
 
-      { !isLoading && (!availableSpectrogramAnalysis || availableSpectrogramAnalysis.length == 0) &&
-          <IonNote>There is no new analysis</IonNote> }
+        { !isLoading && (!availableSpectrogramAnalysis || availableSpectrogramAnalysis.length == 0) &&
+            <IonNote>There is no new analysis</IonNote> }
 
-      { !isLoading && !!availableSpectrogramAnalysis && availableSpectrogramAnalysis.length > 0 && dataset &&
-          <Fragment>
+        { !isLoading && !!availableSpectrogramAnalysis && availableSpectrogramAnalysis.length > 0 && dataset &&
+            <Fragment>
 
-              <IonSearchbar ref={ searchbar } onIonInput={ onSearchUpdated } onIonClear={ onSearchCleared }/>
+                <IonSearchbar ref={ searchbar } onIonInput={ onSearchUpdated } onIonClear={ onSearchCleared }/>
 
-              <div className={ styles.content }>
-                { searchedAnalysis.map(a => <ImportAnalysisRow key={ [ a.name, a.path ].join(' ') }
-                                                               analysis={ a }
-                                                               dataset={ dataset }
-                                                               imported={ imports.includes(a.name) }
-                                                               onImported={ onAnalysisImported }/>) }
-              </div>
+                <div className={ styles.content }>
+                  { searchedAnalysis.map(a => <ImportAnalysisRow key={ [ a.name, a.path ].join(' ') }
+                                                                 analysis={ a }
+                                                                 dataset={ dataset }
+                                                                 imported={ imports.includes(a.name) }
+                                                                 onImported={ onAnalysisImported }/>) }
+                </div>
 
-              <ModalFooter>
-                  <GenerateDatasetHelpButton/>
-              </ModalFooter>
+                <ModalFooter>
+                    <GenerateDatasetHelpButton/>
+                </ModalFooter>
 
-          </Fragment> }
-    </Modal>
+            </Fragment> }
+      </Modal>
   )
 }

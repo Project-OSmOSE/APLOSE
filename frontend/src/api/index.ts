@@ -1,13 +1,11 @@
 export * from './types.gql-generated'
 
-export * from './acoustic-features'
 export * from './annotation'
 export * from './annotation-campaign'
 export * from './annotation-comment'
 export * from './annotation-file-range'
 export * from './annotation-phase'
 export * from './annotation-task'
-export * from './annotation-validation'
 export * from './auth'
 export * from './channel-configuration'
 export * from './confidence-set'

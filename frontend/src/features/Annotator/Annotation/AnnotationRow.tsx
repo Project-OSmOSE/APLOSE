@@ -37,10 +37,10 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
 
   const onClick = useCallback(() => {
     focus(annotation)
-    if (typeof annotation.start_time !== 'number') return;
+    if (typeof annotation.startTime !== 'number') return;
     let time: number;
-    if (typeof annotation.end_time !== 'number') time = annotation.start_time;
-    else time = annotation.start_time + Math.abs(annotation.end_time - annotation.start_time) / 2;
+    if (typeof annotation.endTime !== 'number') time = annotation.startTime;
+    else time = annotation.startTime + Math.abs(annotation.endTime - annotation.startTime) / 2;
     focusTime(time)
   }, [ focus, annotation, focusTime ])
 
@@ -72,18 +72,18 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
           <AnnotationConfidenceInfo annotation={ annotation }/>
       </TableContent> }
       { phaseType === AnnotationPhaseType.Verification && (
-        completeInfo?.detectorConfiguration ?
-          <TableContent className={ className } onClick={ onClick }>
-            <RiRobot2Fill/>
-            <p>{ completeInfo?.detectorConfiguration.detector.name }</p>
-          </TableContent>
-          :
-          <TableContent
-            className={ [ className, completeInfo?.annotator?.id === user?.id ? 'disabled' : '' ].join(' ') }
-            onClick={ onClick }>
-            <RiUser3Fill/>
-            <p>{ completeInfo?.annotator?.displayName }</p>
-          </TableContent>
+          completeInfo?.detectorConfiguration ?
+              <TableContent className={ className } onClick={ onClick }>
+                <RiRobot2Fill/>
+                <p>{ completeInfo?.detectorConfiguration.detector.name }</p>
+              </TableContent>
+              :
+              <TableContent
+                  className={ [ className, completeInfo?.annotator?.id === user?.id ? 'disabled' : '' ].join(' ') }
+                  onClick={ onClick }>
+                <RiUser3Fill/>
+                <p>{ completeInfo?.annotator?.displayName }</p>
+              </TableContent>
       ) }
       <TableContent className={ className } onClick={ onClick }>
         { annotation.comments && annotation.comments.length > 0 ? <IoChatbubbleEllipses/> : <IoChatbubbleOutline/> }

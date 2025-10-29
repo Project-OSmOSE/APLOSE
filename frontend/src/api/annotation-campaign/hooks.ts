@@ -2,8 +2,8 @@ import { AnnotationCampaignGqlAPI } from './api'
 import { useCallback, useEffect, useMemo } from 'react';
 import {
   AnnotationPhaseType,
-  type CreateAnnotationCampaignMutationVariables,
-  type UpdateAnnotationCampaignFeaturedLabelsMutationVariables,
+  type CreateCampaignMutationVariables,
+  type UpdateCampaignFeaturedLabelsMutationVariables,
   useCurrentUser,
 } from '@/api';
 import { AllAnnotationCampaignFilterSlice, AllCampaignFilters, selectAllCampaignFilters } from './all-campaign-filters';
@@ -15,9 +15,9 @@ import type { GqlError } from '@/api/utils';
 const {
   listCampaignsAndPhases,
   getCampaign,
-  createAnnotationCampaign,
-  updateAnnotationCampaignFeaturedLabels,
-  archiveAnnotationCampaign,
+  createCampaign,
+  updateCampaignFeaturedLabels,
+  archiveCampaign,
 } = AnnotationCampaignGqlAPI.endpoints
 
 export const useAllCampaigns = (filters: AllCampaignFilters) => {
@@ -46,12 +46,12 @@ export const useCurrentCampaign = () => {
 }
 
 export const useCreateCampaign = () => {
-  const [ createCampaign, info ] = createAnnotationCampaign.useMutation();
+  const [ method, info ] = createCampaign.useMutation();
 
   return {
-    createCampaign,
+    createCampaign: method,
     ...useMemo(() => {
-      const formErrors = (info.data?.createAnnotationCampaign?.errors ?? []) as GqlError<CreateAnnotationCampaignMutationVariables>[]
+      const formErrors = (info.data?.createAnnotationCampaign?.errors ?? []) as GqlError<CreateCampaignMutationVariables>[]
       return {
         ...info,
         campaign: info.data?.createAnnotationCampaign?.annotationCampaign,
@@ -63,12 +63,12 @@ export const useCreateCampaign = () => {
 }
 
 export const useUpdateCampaignFeaturedLabels = () => {
-  const [ updateCampaignFeaturedLabels, info ] = updateAnnotationCampaignFeaturedLabels.useMutation();
+  const [ method, info ] = updateCampaignFeaturedLabels.useMutation();
 
   return {
-    updateCampaignFeaturedLabels,
+    updateCampaignFeaturedLabels: method,
     ...useMemo(() => {
-      const formErrors = (info.data?.updateAnnotationCampaign?.errors ?? []) as GqlError<UpdateAnnotationCampaignFeaturedLabelsMutationVariables>[]
+      const formErrors = (info.data?.updateAnnotationCampaign?.errors ?? []) as GqlError<UpdateCampaignFeaturedLabelsMutationVariables>[]
       return {
         ...info,
         isSuccess: info.isSuccess && formErrors.length === 0,
@@ -79,8 +79,8 @@ export const useUpdateCampaignFeaturedLabels = () => {
 }
 
 export const useArchiveCampaign = () => {
-  const [ archiveCampaign, info ] = archiveAnnotationCampaign.useMutation();
-  return { archiveCampaign, ...info }
+  const [ method, info ] = archiveCampaign.useMutation();
+  return { archiveCampaign: method, ...info }
 }
 
 // Filters
@@ -88,8 +88,8 @@ export const useArchiveCampaign = () => {
 export const useAllCampaignsFilters = () => {
   const { user } = useCurrentUser();
   const { params, updateParams, clearParams } = useQueryParams<AllCampaignFilters>(
-    selectAllCampaignFilters,
-    AllAnnotationCampaignFilterSlice.actions.updateCampaignFilters,
+      selectAllCampaignFilters,
+      AllAnnotationCampaignFilterSlice.actions.updateCampaignFilters,
   )
 
   useEffect(() => {

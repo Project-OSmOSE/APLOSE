@@ -1,4 +1,4 @@
-from backend.api.schema.enums.annotation_type import AnnotationType
+from backend.api.schema.enums import AnnotationType
 from backend.utils.schema import AuthenticatedDjangoConnectionField
 from backend.utils.schema.types import BaseObjectType, BaseNode
 from .acoustic_features import AcousticFeaturesNode

@@ -1,25 +1,25 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
-  AnnotationCommentInput,
+  AnnotationAcousticFeaturesSerializerInput,
+  AnnotationCommentSerializerInput,
+  AnnotationInput,
   AnnotationType,
+  AnnotationValidationSerializerInput,
   getAnnotationTaskFulfilled,
   GetAnnotationTaskQuery,
   getCampaignFulfilled,
   type GetCampaignQuery,
-  type PostAcousticFeatures,
-  PostAnnotation,
-  type PostAnnotationValidation,
 } from '@/api';
 import { type Analysis, getDefaultAnalysisID, setAnalysis } from '@/features/Annotator/Analysis/slice';
 import type { GetAnnotationTaskQueryVariables } from '@/api/annotation-task/annotation-task.generated';
 import { convertGqlToAnnotations } from '@/features/Annotator/Annotation/post.hooks';
 
 
-export type Comment = Omit<AnnotationCommentInput, 'id'> & { id: number }
-export type Validation = Omit<PostAnnotationValidation, 'id'> & { id: number }
-export type Features = Omit<PostAcousticFeatures, 'id'> & { id: number }
+export type Comment = Omit<AnnotationCommentSerializerInput, 'id'> & { id: number }
+export type Validation = Omit<AnnotationValidationSerializerInput, 'id'> & { id: number }
+export type Features = Omit<AnnotationAcousticFeaturesSerializerInput, 'id'> & { id: number }
 export type Annotation =
-    Omit<PostAnnotation, 'id' | 'comments' | 'validation' | 'acoustic_features' | 'is_update_of'>
+    Omit<AnnotationInput, 'id' | 'isUpdateOf' | 'comments' | 'validations' | 'acousticFeatures'>
     & {
   id: number,
   type: AnnotationType;
@@ -27,9 +27,9 @@ export type Annotation =
   annotator?: string | number;
   validation?: Validation;
   update?: Annotation;
-  acoustic_features?: Features;
+  acousticFeatures?: Features;
 };
-export type TempAnnotation = Pick<Annotation, 'type' | 'start_time' | 'start_frequency' | 'end_time' | 'end_frequency'>
+export type TempAnnotation = Pick<Annotation, 'type' | 'startTime' | 'startFrequency' | 'endTime' | 'endFrequency'>
 
 type AnnotationState = {
   allAnnotations: Annotation[];
@@ -65,7 +65,7 @@ export const AnnotatorAnnotationSlice = createSlice({
         ...action.payload,
         analysis: state._analysisID,
       }
-      state.allAnnotations = [...state.allAnnotations, annotation];
+      state.allAnnotations = [ ...state.allAnnotations, annotation ];
       action.payload = annotation;
     },
     updateAnnotation: (state, action: { payload: Partial<Annotation> & Pick<Annotation, 'id'> }) => {
@@ -106,7 +106,7 @@ export const AnnotatorAnnotationSlice = createSlice({
       }
       const annotations = action.payload.annotationSpectrogramById?.task?.annotations?.results.filter(a => a !== null).map(a => a!) ?? []
       state.allAnnotations = convertGqlToAnnotations(annotations)
-      const defaultAnnotation = [...state.allAnnotations].reverse().pop();
+      const defaultAnnotation = [ ...state.allAnnotations ].reverse().pop();
       state.id = defaultAnnotation?.id
     })
   },

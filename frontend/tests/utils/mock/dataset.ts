@@ -1,7 +1,7 @@
 import type { GqlQuery } from './_types';
-import type {
+import {
   GetDatasetByIdQuery,
-  ImportDatasetMutation,
+  ImportNewDatasetMutation,
   ListAvailableDatasetsForImportQuery,
   ListDatasetsAndAnalysisQuery,
   ListDatasetsQuery,
@@ -87,7 +87,7 @@ export const DATASET_QUERIES: {
       allDatasetsForImport: [],
     },
     filled: {
-      allDatasetsForImport: [{
+      allDatasetsForImport: [ {
         name: 'Test import dataset',
         path: 'Test import dataset',
         analysis: [
@@ -100,7 +100,7 @@ export const DATASET_QUERIES: {
             path: 'Test analysis 2',
           },
         ],
-      }],
+      } ],
     },
   },
   listDatasetsAndAnalysis: {
@@ -131,7 +131,7 @@ export const DATASET_QUERIES: {
 }
 
 export const DATASET_MUTATIONS: {
-  importDataset: GqlQuery<ImportDatasetMutation, never>,
+  importDataset: GqlQuery<ImportNewDatasetMutation, never>,
 } = {
   importDataset: {
     defaultType: 'empty',

@@ -1,10 +1,14 @@
-import { AnnotationRestAPI } from './api';
-import { type ImportAnnotation, type PostAnnotation } from '@/api';
+import { AnnotationGqlAPI, AnnotationRestAPI } from './api';
+import { AnnotationInput } from '@/api/types.gql-generated.ts';
 import { useCallback, useMemo } from 'react';
 import { useNavParams } from '@/features/UX';
+import { ImportAnnotation } from "./types";
 
 const {
   updateAnnotations,
+} = AnnotationGqlAPI.endpoints
+
+const {
   importAnnotations,
 } = AnnotationRestAPI.endpoints
 
@@ -12,9 +16,9 @@ export const useUpdateAnnotations = () => {
   const { campaignID, phaseType, spectrogramID } = useNavParams();
   const [ method, info ] = updateAnnotations.useMutation()
 
-  const update = useCallback(async (annotations: PostAnnotation[]) => {
+  const update = useCallback(async (annotations: AnnotationInput[]) => {
     if (!campaignID || !phaseType || !spectrogramID) return;
-    await method({ campaignID, phaseType, spectrogramID, annotations }).unwrap()
+    await method({ campaignID, phase: phaseType, spectrogramID, annotations }).unwrap()
   }, [ method, campaignID, phaseType, spectrogramID ]);
 
   return useMemo(() => ({

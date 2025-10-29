@@ -46,10 +46,10 @@ export const useAnnotatorTempAnnotation = () => {
     if (!tempAnnotation) return;
     context.strokeStyle = 'blue';
     context.strokeRect(
-      timeScale.valueToPosition(Math.min(tempAnnotation.start_time!, tempAnnotation.end_time!)),
-      frequencyScale.valueToPosition(Math.max(tempAnnotation.start_frequency!, tempAnnotation.end_frequency!)),
-      Math.floor(timeScale.valuesToPositionRange(tempAnnotation.start_time!, tempAnnotation.end_time!)),
-      frequencyScale.valuesToPositionRange(tempAnnotation.start_frequency!, tempAnnotation.end_frequency!),
+        timeScale.valueToPosition(Math.min(tempAnnotation.startTime!, tempAnnotation.endTime!)),
+        frequencyScale.valueToPosition(Math.max(tempAnnotation.startFrequency!, tempAnnotation.endFrequency!)),
+        Math.floor(timeScale.valuesToPositionRange(tempAnnotation.startTime!, tempAnnotation.endTime!)),
+        frequencyScale.valuesToPositionRange(tempAnnotation.startFrequency!, tempAnnotation.endFrequency!),
     );
   }, [ tempAnnotation, timeScale, frequencyScale ])
 
@@ -61,10 +61,10 @@ export const useAnnotatorTempAnnotation = () => {
 
     dispatch(setTempAnnotation({
       type: AnnotationType.Box,
-      start_time: data.time,
-      end_time: data.time,
-      start_frequency: data.frequency,
-      end_frequency: data.frequency,
+      startTime: data.time,
+      endTime: data.time,
+      startFrequency: data.frequency,
+      endFrequency: data.frequency,
     }))
   }, [ isHoverCanvas, getFreqTime ])
   useEvent(MOUSE_DOWN_EVENT, onStartTempAnnotation);
@@ -77,8 +77,8 @@ export const useAnnotatorTempAnnotation = () => {
       if (tempAnnotationRef.current) {
         dispatch(setTempAnnotation({
           ...tempAnnotationRef.current,
-          end_time: data.time,
-          end_frequency: data.frequency,
+          endTime: data.time,
+          endFrequency: data.frequency,
         }))
       }
     }
@@ -90,18 +90,18 @@ export const useAnnotatorTempAnnotation = () => {
     if (tempAnnotationRef.current && focusLabelRef.current) {
       const data = getFreqTime(e);
       if (data) {
-        tempAnnotationRef.current.end_time = data.time;
-        tempAnnotationRef.current.end_frequency = data.frequency;
+        tempAnnotationRef.current.endTime = data.time;
+        tempAnnotationRef.current.endFrequency = data.frequency;
       }
       if (tempAnnotationRef.current.type !== AnnotationType.Box) return;
-      const start_time = Math.min(tempAnnotationRef.current.start_time!, tempAnnotationRef.current.end_time!);
-      const end_time = Math.max(tempAnnotationRef.current.start_time!, tempAnnotationRef.current.end_time!);
-      const start_frequency = Math.min(tempAnnotationRef.current.start_frequency!, tempAnnotationRef.current.end_frequency!);
-      const end_frequency = Math.max(tempAnnotationRef.current.start_frequency!, tempAnnotationRef.current.end_frequency!);
-      tempAnnotationRef.current.start_time = start_time;
-      tempAnnotationRef.current.end_time = end_time;
-      tempAnnotationRef.current.start_frequency = start_frequency;
-      tempAnnotationRef.current.end_frequency = end_frequency;
+      const start_time = Math.min(tempAnnotationRef.current.startTime!, tempAnnotationRef.current.endTime!);
+      const end_time = Math.max(tempAnnotationRef.current.startTime!, tempAnnotationRef.current.endTime!);
+      const start_frequency = Math.min(tempAnnotationRef.current.startFrequency!, tempAnnotationRef.current.endFrequency!);
+      const end_frequency = Math.max(tempAnnotationRef.current.startFrequency!, tempAnnotationRef.current.endFrequency!);
+      tempAnnotationRef.current.startTime = start_time;
+      tempAnnotationRef.current.endTime = end_time;
+      tempAnnotationRef.current.startFrequency = start_frequency;
+      tempAnnotationRef.current.endFrequency = end_frequency;
 
       if (!frequencyScale.isRangeContinuouslyOnScale(start_frequency, end_frequency)) {
         toast.raiseError({
@@ -115,23 +115,23 @@ export const useAnnotatorTempAnnotation = () => {
          Are you sure your annotation goes from ${ formatTime(start_time) } to ${ formatTime(end_time) }?`,
         })
       }
-      const width = timeScale.valuesToPositionRange(tempAnnotationRef.current.start_time, tempAnnotationRef.current.end_time);
-      const height = frequencyScale.valuesToPositionRange(tempAnnotationRef.current.start_frequency, tempAnnotationRef.current.end_frequency);
+      const width = timeScale.valuesToPositionRange(tempAnnotationRef.current.startTime, tempAnnotationRef.current.endTime);
+      const height = frequencyScale.valuesToPositionRange(tempAnnotationRef.current.startFrequency, tempAnnotationRef.current.endFrequency);
       if (width > 2 && height > 2) {
         addAnnotation({
           type: AnnotationType.Box,
-          start_time: tempAnnotationRef.current.start_time,
-          start_frequency: tempAnnotationRef.current.start_frequency,
-          end_time: tempAnnotationRef.current.end_time,
-          end_frequency: tempAnnotationRef.current.end_frequency,
+          startTime: tempAnnotationRef.current.startTime,
+          startFrequency: tempAnnotationRef.current.startFrequency,
+          endTime: tempAnnotationRef.current.endTime,
+          endFrequency: tempAnnotationRef.current.endFrequency,
           label: focusLabelRef.current,
           confidence: focusConfidenceRef.current ?? undefined,
         })
       } else if (campaign?.allowPointAnnotation) {
         addAnnotation({
           type: AnnotationType.Point,
-          start_time: tempAnnotationRef.current.start_time,
-          start_frequency: tempAnnotationRef.current.end_frequency,
+          startTime: tempAnnotationRef.current.startTime,
+          startFrequency: tempAnnotationRef.current.endFrequency,
           label: focusLabelRef.current,
           confidence: focusConfidenceRef.current ?? undefined,
         })

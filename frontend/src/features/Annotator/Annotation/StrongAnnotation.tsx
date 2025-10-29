@@ -29,7 +29,7 @@ export const StrongAnnotation: React.FC<{
     // Hide updated annotations
     if (annotation.update) return false;
     // Hide invalidated annotations
-    return annotation.validation?.is_valid
+    return annotation.validation?.isValid
   }, [ hiddenLabels, annotation ])
 
   // Time / Frequency
@@ -38,10 +38,10 @@ export const StrongAnnotation: React.FC<{
   const _startFrequency = useRef<number | null | undefined>();
   const _endFrequency = useRef<number | null | undefined>();
   useEffect(() => {
-    _startTime.current = annotation.update?.start_time ?? annotation.start_time;
-    _endTime.current = annotation.update?.end_time ?? annotation.end_time;
-    _startFrequency.current = annotation.update?.start_frequency ?? annotation.start_frequency;
-    _endFrequency.current = annotation.update?.end_frequency ?? annotation.end_frequency;
+    _startTime.current = annotation.update?.startTime ?? annotation.startTime;
+    _endTime.current = annotation.update?.endTime ?? annotation.endTime;
+    _startFrequency.current = annotation.update?.startFrequency ?? annotation.startFrequency;
+    _endFrequency.current = annotation.update?.endFrequency ?? annotation.endFrequency;
   }, [ annotation ]);
 
   // Scales
@@ -106,20 +106,20 @@ export const StrongAnnotation: React.FC<{
     setWidth(_width.current)
   }, [ setWidth ])
   const onValidateMove = useCallback(() => {
-    let end_frequency = frequencyScaleRef.current.positionToValue(_top.current);
-    let start_frequency = frequencyScaleRef.current.positionToValue(_top.current + _height.current);
-    let start_time = timeScaleRef.current.positionToValue(_left.current);
-    let end_time = timeScaleRef.current.positionToValue(_left.current + _width.current);
-    if (_startTime.current && formatTime(start_time, true) === formatTime(_startTime.current, true)) start_time = _startTime.current;
-    if (_endTime.current && formatTime(end_time, true) === formatTime(_endTime.current, true)) end_time = _endTime.current;
-    if (_startFrequency.current && _startFrequency.current.toFixed(2) === start_frequency.toFixed(2)) start_frequency = _startFrequency.current;
-    if (_endFrequency.current && _endFrequency.current.toFixed(2) === end_frequency.toFixed(2)) end_frequency = _endFrequency.current;
+    let endFrequency = frequencyScaleRef.current.positionToValue(_top.current);
+    let startFrequency = frequencyScaleRef.current.positionToValue(_top.current + _height.current);
+    let startTime = timeScaleRef.current.positionToValue(_left.current);
+    let endTime = timeScaleRef.current.positionToValue(_left.current + _width.current);
+    if (_startTime.current && formatTime(startTime, true) === formatTime(_startTime.current, true)) startTime = _startTime.current;
+    if (_endTime.current && formatTime(endTime, true) === formatTime(_endTime.current, true)) endTime = _endTime.current;
+    if (_startFrequency.current && _startFrequency.current.toFixed(2) === startFrequency.toFixed(2)) startFrequency = _startFrequency.current;
+    if (_endFrequency.current && _endFrequency.current.toFixed(2) === endFrequency.toFixed(2)) endFrequency = _endFrequency.current;
     switch (annotation.type) {
       case AnnotationType.Box:
-        updateAnnotation(annotation, { start_time, end_time, start_frequency, end_frequency })
+        updateAnnotation(annotation, { startTime, endTime, startFrequency, endFrequency })
         break;
       case AnnotationType.Point:
-        updateAnnotation(annotation, { start_time, start_frequency })
+        updateAnnotation(annotation, { startTime, startFrequency })
         break;
     }
   }, [ updateAnnotation, annotation ])
@@ -131,10 +131,10 @@ export const StrongAnnotation: React.FC<{
   const headerClass: string = useMemo(() => {
     if (!spectrogram || annotation.type === 'Weak') return ''
     let stickSideClass = ''
-    const end = annotation.type === 'Box' ? annotation.end_time! : annotation.start_time!;
+    const end = annotation.type === 'Box' ? annotation.endTime! : annotation.startTime!;
     if (end > (spectrogram.duration * 0.9))
       stickSideClass = styles.stickRight
-    if (annotation.start_time! < (spectrogram.duration * 0.1))
+    if (annotation.startTime! < (spectrogram.duration * 0.1))
       stickSideClass = styles.stickLeft
     return [
       styles.header,

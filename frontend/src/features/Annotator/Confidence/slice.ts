@@ -38,7 +38,7 @@ export const AnnotatorConfidenceSlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(focusAnnotation, (state: ConfidenceState, action: { payload: Annotation }) => {
-      state.focus = action.payload.confidence
+      state.focus = action.payload.confidence ?? undefined
     })
     builder.addCase(blur, (state: ConfidenceState) => {
       state.focus = state._defaultConfidence
@@ -56,7 +56,7 @@ export const AnnotatorConfidenceSlice = createSlice({
         state.focus = initialState.focus
       } else {
         const annotations = action.payload.annotationSpectrogramById?.task?.annotations?.results.filter(a => a !== null).map(a => a!) ?? []
-        const defaultAnnotation = [...convertGqlToAnnotations(annotations)].reverse().pop();
+        const defaultAnnotation = [ ...convertGqlToAnnotations(annotations) ].reverse().pop();
         state.focus = defaultAnnotation?.update?.confidence ?? defaultAnnotation?.confidence ?? state._defaultConfidence
       }
     })

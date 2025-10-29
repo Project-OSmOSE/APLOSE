@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo } from 'react';
-import { ImportDatasetType, ImportSpectrogramAnalysisType, useImportSpectrogramAnalysis } from '@/api';
+import { ImportAnalysisNode, ImportDatasetNode, useImportSpectrogramAnalysis } from '@/api';
 import { ImportRow, useToast } from '@/components/ui';
 import { FileCheck, FileRight } from '@solar-icons/react';
 
 export const ImportAnalysisRow: React.FC<{
-  analysis: ImportSpectrogramAnalysisType,
-  dataset: Omit<ImportDatasetType, 'analysis' | '__typename'>,
+  analysis: ImportAnalysisNode,
+  dataset: Omit<ImportDatasetNode, 'analysis' | '__typename'>,
   imported?: boolean
-  onImported?: (analysis: ImportSpectrogramAnalysisType) => void
+  onImported?: (analysis: ImportAnalysisNode) => void
 }> = ({ analysis, dataset, imported, onImported }) => {
 
   const {

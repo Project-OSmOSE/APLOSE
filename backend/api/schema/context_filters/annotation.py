@@ -21,7 +21,7 @@ class AnnotationContextFilter:
         queryset = queryset.filter(**kwargs)
         if context.user.is_staff or context.user.is_superuser:
             return queryset
-        return queryset.objects.filter(
+        return queryset.filter(
             Q(annotation_phase__annotation_campaign__owner_id=context.user.id)
             | (
                 Exists(

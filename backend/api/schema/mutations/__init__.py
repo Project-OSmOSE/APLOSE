@@ -8,3 +8,4 @@ from .end_annotation_phase import EndAnnotationPhaseMutation
 from .create_annotation_phase import CreateAnnotationPhase
 from .archive_annotation_campaign import ArchiveAnnotationCampaignMutation
 from .update_annotation_comments import UpdateAnnotationCommentsMutation
+from .update_annotations import UpdateAnnotationsMutation

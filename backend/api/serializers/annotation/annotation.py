@@ -13,15 +13,15 @@ from backend.api.models import (
     Label,
     Confidence,
     DetectorConfiguration,
-    AnnotationComment,
     AnnotationValidation,
     SpectrogramAnalysis,
 )
-from backend.aplose.models import ExpertiseLevel, User
-from backend.utils.serializers import EnumField
+from backend.aplose.models import ExpertiseLevel
+from backend.utils.serializers import EnumField, ListSerializer
 from .acoustic_features import AnnotationAcousticFeaturesSerializer
 from .annotation_validation import AnnotationValidationSerializer
 from .comment import AnnotationCommentSerializer
+from backend.api.schema.context_filters import AnnotationCommentContextFilter
 
 
 class AnnotationSerializer(serializers.ModelSerializer):
@@ -45,6 +45,7 @@ class AnnotationSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
+        list_serializer_class = ListSerializer
         model = Annotation
         fields = "__all__"
         read_only_fields = [
@@ -52,10 +53,7 @@ class AnnotationSerializer(serializers.ModelSerializer):
             "annotator_expertise_level",
         ]
         extra_kwargs = {
-            "id": {
-                "required": False,
-                "allow_null": True,
-            },
+            "id": {"required": False, "allow_null": True, "read_only": False},
         }
 
     def get_fields(self):
@@ -121,10 +119,9 @@ class AnnotationSerializer(serializers.ModelSerializer):
         spectrogram: Optional[Spectrogram] = (
             self.context["spectrogram"] if "spectrogram" in self.context else None
         )
-        user: Optional[User] = self.context["user"] if "user" in self.context else None
         data["annotation_phase"] = phase.id
         data["spectrogram"] = spectrogram.id
-        data["annotator"] = user.id
+        data["annotator"] = self.context["user"].id if "user" in self.context else None
         return super().run_validation(data)
 
     def validate(self, attrs: dict):
@@ -165,7 +162,6 @@ class AnnotationSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        user: User = self.context["user"] if "user" in self.context else None
         comments = AnnotationCommentSerializer(
             validated_data.pop("comments", []), many=True
         ).data
@@ -177,37 +173,8 @@ class AnnotationSerializer(serializers.ModelSerializer):
         is_update_of = validated_data.pop("is_update_of", None)
         instance: Annotation = super().create(validated_data)
 
-        # Comments
-        comments_serializer = AnnotationCommentSerializer(
-            data=[
-                {
-                    **c,
-                    "annotation": instance.id,
-                    "annotation_phase": instance.annotation_phase_id,
-                    "author": user.id,
-                    "spectrogram": instance.spectrogram_id,
-                }
-                for c in comments
-            ],
-            many=True,
-        )
-        comments_serializer.is_valid(raise_exception=True)
-        comments_serializer.save()
-
-        # Validations
-        validations_serializer = AnnotationValidationSerializer(
-            data=[
-                {
-                    **v,
-                    "annotation": instance.id,
-                    "annotator": user.id,
-                }
-                for v in validations
-            ],
-            many=True,
-        )
-        validations_serializer.is_valid(raise_exception=True)
-        validations_serializer.save()
+        self.update_comments(instance, comments)
+        self.update_validations(instance, validations)
 
         # Acoustic features
         if initial_acoustic_features is not None:
@@ -230,7 +197,6 @@ class AnnotationSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance: Annotation, validated_data):
-        user: User = self.context["user"] if "user" in self.context else None
         comments = AnnotationCommentSerializer(
             validated_data.pop("comments", []), many=True
         ).data
@@ -245,47 +211,8 @@ class AnnotationSerializer(serializers.ModelSerializer):
         is_update_of = validated_data.pop("is_update_of", None)
         instance: Annotation = super().update(instance, validated_data)
 
-        # Comments
-        instance_comments = AnnotationComment.objects.filter(
-            annotation_id=instance.id,
-            author_id=user.id,
-        )
-        comments_serializer = AnnotationCommentSerializer(
-            instance_comments,
-            data=[
-                {
-                    **c,
-                    "annotation": instance.id,
-                    "annotation_phase": instance.annotation_phase_id,
-                    "author": user.id,
-                    "spectrogram": instance.spectrogram_id,
-                }
-                for c in comments
-            ],
-            many=True,
-        )
-        comments_serializer.is_valid(raise_exception=True)
-        comments_serializer.save()
-
-        # Validations
-        instance_validations = AnnotationValidation.objects.filter(
-            annotation__id=instance.id,
-            annotator_id=user.id,
-        )
-        validations_serializer = AnnotationValidationSerializer(
-            instance_validations,
-            data=[
-                {
-                    **v,
-                    "annotation": instance.id,
-                    "annotator": user.id,
-                }
-                for v in validations
-            ],
-            many=True,
-        )
-        validations_serializer.is_valid(raise_exception=True)
-        validations_serializer.save()
+        self.update_comments(instance, comments)
+        self.update_validations(instance, validations)
 
         # acoustic_features
         if initial_acoustic_features is None:
@@ -310,6 +237,45 @@ class AnnotationSerializer(serializers.ModelSerializer):
 
         instance.save()
         return self.Meta.model.objects.get(pk=instance.id)
+
+    def update_comments(self, instance: Annotation, validated_data):
+        instances = AnnotationCommentContextFilter.get_edit_queryset(
+            self.context["request"],
+            annotation_phase=instance.annotation_phase,
+            spectrogram=instance.spectrogram,
+            author_id=instance.annotator,
+            annotation_id=instance.id,
+        )
+        serializer = AnnotationCommentSerializer(
+            instances,
+            data=validated_data,
+            many=True,
+            context={
+                "user": instance.annotator,
+                "phase": instance.annotation_phase,
+                "spectrogram": instance.spectrogram,
+                "annotation_id": instance.id,
+            },
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+    def update_validations(self, instance: Annotation, validated_data):
+        instances = AnnotationValidation.objects.filter(
+            annotation=instance,
+            annotator=instance.annotator,
+        )
+        serializer = AnnotationValidationSerializer(
+            instances,
+            data=validated_data,
+            many=True,
+            context={
+                "user": instance.annotator,
+                "annotation_id": instance.id,
+            },
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
 
 class AnnotationImportSerializer(AnnotationSerializer):

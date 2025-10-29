@@ -8,7 +8,10 @@ class AnnotationAcousticFeaturesSerializer(serializers.ModelSerializer):
     """AcousticFeatures serializer"""
 
     trend = EnumField(
-        enum=AcousticFeatures.SignalTrend, allow_null=True, allow_blank=True
+        enum=AcousticFeatures.SignalTrend,
+        allow_null=True,
+        allow_blank=True,
+        required=False,
     )
 
     class Meta:

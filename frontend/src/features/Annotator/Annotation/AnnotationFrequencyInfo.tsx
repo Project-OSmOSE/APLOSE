@@ -7,12 +7,12 @@ import { AnnotationType } from '@/api';
 export const AnnotationFrequencyInfo: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
 
   const correctedStartFrequency = useMemo(() => {
-    if (annotation.update && annotation.update?.start_frequency !== annotation.start_frequency) return annotation.update.start_frequency;
+    if (annotation.update && annotation.update?.startFrequency !== annotation.startFrequency) return annotation.update.startFrequency;
     return undefined
   }, [ annotation ])
 
   const correctedEndFrequency = useMemo(() => {
-    if (annotation.update && annotation.update?.end_frequency !== annotation.end_frequency) return annotation.update.end_frequency;
+    if (annotation.update && annotation.update?.endFrequency !== annotation.endFrequency) return annotation.update.endFrequency;
     return undefined
   }, [ annotation ])
 
@@ -22,16 +22,16 @@ export const AnnotationFrequencyInfo: React.FC<{ annotation: Annotation }> = ({ 
     <IoAnalyticsOutline className={ styles.mainIcon }/>
 
     <p className={ isCorrected ? 'disabled' : undefined }>
-      { annotation.start_frequency!.toFixed(2) }Hz
+      { annotation.startFrequency!.toFixed(2) }Hz
       { annotation.type === AnnotationType.Box && <Fragment>
-          &nbsp;<IoChevronForwardOutline/> { annotation.end_frequency!.toFixed(2) }Hz
+          &nbsp;<IoChevronForwardOutline/> { annotation.endFrequency!.toFixed(2) }Hz
       </Fragment> }
     </p>
 
     { isCorrected && <p>
-      { (correctedStartFrequency ?? annotation.start_frequency!).toFixed(2) }Hz
+      { (correctedStartFrequency ?? annotation.startFrequency!).toFixed(2) }Hz
       { annotation.type === AnnotationType.Box && <Fragment>
-          &nbsp;<IoChevronForwardOutline/> { (correctedEndFrequency ?? annotation.end_frequency!).toFixed(2) }Hz
+          &nbsp;<IoChevronForwardOutline/> { (correctedEndFrequency ?? annotation.endFrequency!).toFixed(2) }Hz
       </Fragment> }
     </p> }
   </div>

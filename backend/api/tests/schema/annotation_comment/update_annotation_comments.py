@@ -24,11 +24,6 @@ mutation (
             field
         }
     }
-  _debug {
-    exceptions {
-      stack
-    }
-  }
 }
 """
 BASE_VARIABLES = {
