@@ -5,6 +5,7 @@ from .annotation_comment import *
 from .annotation_file_range import *
 from .annotation_phase import *
 from .annotation_spectrogram import *
+from .annotation_task import *
 from .confidence_set import *
 from .dataset import *
 from .detector import *

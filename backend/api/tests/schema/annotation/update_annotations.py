@@ -22,16 +22,6 @@ mutation (
             messages
             field
         }
-        _debug {
-            exceptions {
-                stack
-            }
-        }
-    }
-    _debug {
-        exceptions {
-            stack
-        }
     }
 }
 """

@@ -43,6 +43,18 @@ export type GetAnnotationTaskQueryVariables = Types.Exact<{
 
 export type GetAnnotationTaskQuery = { __typename?: 'Query', annotationSpectrogramById?: { __typename?: 'AnnotationSpectrogramNode', id: string, filename: string, audioPath: string, path: string, start: any, duration: number, isAssigned: boolean, task?: { __typename?: 'AnnotationTaskNode', status: Types.AnnotationTaskStatus, comments?: { __typename?: 'AnnotationCommentNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCommentNode', id: string, comment: string } | null> } | null, annotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', id: string, type: Types.AnnotationType, startTime?: number | null, endTime?: number | null, startFrequency?: number | null, endFrequency?: number | null, label: { __typename?: 'AnnotationLabelNode', name: string }, confidence?: { __typename?: 'ConfidenceNode', label: string } | null, detectorConfiguration?: { __typename?: 'DetectorConfigurationNode', detector: { __typename?: 'DetectorNode', id: string, name: string } } | null, annotator?: { __typename?: 'UserNode', id: string, displayName: string } | null, comments?: { __typename?: 'AnnotationCommentNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCommentNode', id: string, comment: string } | null> } | null, validations?: { __typename?: 'AnnotationValidationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationValidationNode', id: string, isValid: boolean } | null> } | null, isUpdateOf?: { __typename?: 'AnnotationNode', id: string } | null, acousticFeatures?: { __typename?: 'AcousticFeaturesNode', id: string, startFrequency?: number | null, endFrequency?: number | null, trend?: Types.SignalTrendType | null, stepsCount?: number | null, relativeMinFrequencyCount?: number | null, relativeMaxFrequencyCount?: number | null, hasHarmonics?: boolean | null } | null, analysis: { __typename?: 'SpectrogramAnalysisNode', id: string } } | null> } | null } | null } | null, allAnnotationSpectrograms?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', currentIndex?: number | null, totalCount: number, previousSpectrogramId?: string | null, nextSpectrogramId?: string | null } | null };
 
+export type SubmitTaskMutationVariables = Types.Exact<{
+  campaignID: Types.Scalars['ID']['input'];
+  spectrogramID: Types.Scalars['ID']['input'];
+  phase: Types.AnnotationPhaseType;
+  startedAt: Types.Scalars['DateTime']['input'];
+  endedAt: Types.Scalars['DateTime']['input'];
+  content: Types.Scalars['String']['input'];
+}>;
+
+
+export type SubmitTaskMutation = { __typename?: 'Mutation', submitAnnotationTask?: { __typename?: 'SubmitAnnotationTaskMutation', ok: boolean } | null };
+
 
 export const ListAnnotationTaskDocument = `
     query listAnnotationTask($annotatorID: ID!, $campaignID: ID!, $phaseType: AnnotationPhaseType!, $limit: Int!, $offset: Int!, $search: String, $status: AnnotationTaskStatus, $from: DateTime, $to: DateTime, $withAnnotations: Boolean, $annotationLabel: String, $annotationConfidence: String, $annotationDetector: ID, $annotationAnnotator: ID, $withAcousticFeatures: Boolean) {
@@ -194,6 +206,20 @@ export const GetAnnotationTaskDocument = `
   }
 }
     `;
+export const SubmitTaskDocument = `
+    mutation submitTask($campaignID: ID!, $spectrogramID: ID!, $phase: AnnotationPhaseType!, $startedAt: DateTime!, $endedAt: DateTime!, $content: String!) {
+  submitAnnotationTask(
+    spectrogramId: $spectrogramID
+    phaseType: $phase
+    campaignId: $campaignID
+    startedAt: $startedAt
+    endedAt: $endedAt
+    content: $content
+  ) {
+    ok
+  }
+}
+    `;
 
 const injectedRtkApi = gqlAPI.injectEndpoints({
   endpoints: (build) => ({
@@ -202,6 +228,9 @@ const injectedRtkApi = gqlAPI.injectEndpoints({
     }),
     getAnnotationTask: build.query<GetAnnotationTaskQuery, GetAnnotationTaskQueryVariables>({
       query: (variables) => ({ document: GetAnnotationTaskDocument, variables })
+    }),
+    submitTask: build.mutation<SubmitTaskMutation, SubmitTaskMutationVariables>({
+      query: (variables) => ({ document: SubmitTaskDocument, variables })
     }),
   }),
 });

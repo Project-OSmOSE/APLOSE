@@ -4389,6 +4389,7 @@ type Mutation {
   endAnnotationPhase(id: ID!): EndAnnotationPhaseMutation
   updateAnnotations(input: UpdateAnnotationsMutationInput!): UpdateAnnotationsMutationPayload
   updateAnnotationComments(input: UpdateAnnotationCommentsMutationInput!): UpdateAnnotationCommentsMutationPayload
+  submitAnnotationTask(campaignId: ID!, content: String!, endedAt: DateTime!, phaseType: AnnotationPhaseType!, spectrogramId: ID!, startedAt: DateTime!): SubmitAnnotationTaskMutation
   _debug: DjangoDebug
 }
 
@@ -4545,7 +4546,6 @@ type CreateAnnotationPhase {
 
 type UpdateAnnotationPhaseFileRangesMutation {
   errors: [[ErrorType!]]!
-  _debug: DjangoDebug
 }
 
 input AnnotationFileRangeInput {
@@ -4562,7 +4562,6 @@ type EndAnnotationPhaseMutation {
 
 type UpdateAnnotationsMutationPayload {
   errors: [[ErrorType]]
-  _debug: DjangoDebug
   clientMutationId: String
 }
 
@@ -4650,4 +4649,8 @@ input UpdateAnnotationCommentsMutationInput {
 input AnnotationCommentInput {
   id: Int
   comment: String!
+}
+
+type SubmitAnnotationTaskMutation {
+  ok: Boolean!
 }

@@ -3,7 +3,6 @@ from django import forms
 from django.core import validators
 from django.db import transaction
 from django.db.models import Q
-from graphene_django.debug import DjangoDebug
 from graphene_django.types import ErrorType
 from graphql import GraphQLError
 
@@ -108,7 +107,6 @@ class UpdateAnnotationPhaseFileRangesMutation(graphene.Mutation):
         graphene.List(graphene.NonNull(ErrorType), required=True),
         required=True,
     )
-    debug = graphene.Field(DjangoDebug, name="_debug")
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     @transaction.atomic

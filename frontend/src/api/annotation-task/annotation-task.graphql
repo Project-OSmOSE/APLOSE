@@ -224,3 +224,24 @@ query getAnnotationTask(
         nextSpectrogramId(spectrogramId: $spectrogramID)
     }
 }
+
+mutation submitTask (
+    $campaignID: ID!
+    $spectrogramID: ID!
+    $phase: AnnotationPhaseType!
+
+    $startedAt: DateTime!
+    $endedAt: DateTime!
+    $content: String!
+) {
+    submitAnnotationTask(
+        spectrogramId: $spectrogramID
+        phaseType: $phase
+        campaignId: $campaignID
+        startedAt: $startedAt
+        endedAt: $endedAt
+        content: $content
+    ) {
+        ok
+    }
+}

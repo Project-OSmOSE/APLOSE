@@ -4150,6 +4150,7 @@ export type Mutation = {
   importSpectrogramAnalysis?: Maybe<ImportAnalysisMutation>;
   postSound?: Maybe<PostSoundMutationPayload>;
   postSource?: Maybe<PostSourceMutationPayload>;
+  submitAnnotationTask?: Maybe<SubmitAnnotationTaskMutation>;
   updateAnnotationCampaign?: Maybe<UpdateAnnotationCampaignMutationPayload>;
   updateAnnotationComments?: Maybe<UpdateAnnotationCommentsMutationPayload>;
   updateAnnotationPhaseFileRanges?: Maybe<UpdateAnnotationPhaseFileRangesMutation>;
@@ -4229,6 +4230,17 @@ export type MutationPostSoundArgs = {
 /** Global mutation */
 export type MutationPostSourceArgs = {
   input: PostSourceMutationInput;
+};
+
+
+/** Global mutation */
+export type MutationSubmitAnnotationTaskArgs = {
+  campaignId: Scalars['ID']['input'];
+  content: Scalars['String']['input'];
+  endedAt: Scalars['DateTime']['input'];
+  phaseType: AnnotationPhaseType;
+  spectrogramId: Scalars['ID']['input'];
+  startedAt: Scalars['DateTime']['input'];
 };
 
 
@@ -7132,6 +7144,11 @@ export type StorageSpecificationNodeNodeConnection = {
   totalCount?: Maybe<Scalars['Int']['output']>;
 };
 
+export type SubmitAnnotationTaskMutation = {
+  __typename?: 'SubmitAnnotationTaskMutation';
+  ok: Scalars['Boolean']['output'];
+};
+
 export type TagNode = Node & {
   __typename?: 'TagNode';
   bibliographySet: BibliographyNodeConnection;
@@ -7221,7 +7238,6 @@ export type UpdateAnnotationCommentsMutationPayload = {
 
 export type UpdateAnnotationPhaseFileRangesMutation = {
   __typename?: 'UpdateAnnotationPhaseFileRangesMutation';
-  _debug?: Maybe<DjangoDebug>;
   errors: Array<Maybe<Array<ErrorType>>>;
 };
 
@@ -7235,7 +7251,6 @@ export type UpdateAnnotationsMutationInput = {
 
 export type UpdateAnnotationsMutationPayload = {
   __typename?: 'UpdateAnnotationsMutationPayload';
-  _debug?: Maybe<DjangoDebug>;
   clientMutationId?: Maybe<Scalars['String']['output']>;
   errors?: Maybe<Array<Maybe<Array<Maybe<ErrorType>>>>>;
 };

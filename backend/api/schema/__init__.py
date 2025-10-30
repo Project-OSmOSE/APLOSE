@@ -29,6 +29,7 @@ from .mutations import (
     ArchiveAnnotationCampaignMutation,
     UpdateAnnotationCommentsMutation,
     UpdateAnnotationsMutation,
+    SubmitAnnotationTaskMutation,
 )
 
 
@@ -58,6 +59,7 @@ class APIMutation(
     # Annotation
     update_annotations = UpdateAnnotationsMutation.Field()
     update_annotation_comments = UpdateAnnotationCommentsMutation.Field()
+    submit_annotation_task = SubmitAnnotationTaskMutation.Field()
 
 
 class APIQuery(

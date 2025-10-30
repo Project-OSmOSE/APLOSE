@@ -1,5 +1,4 @@
 import graphene
-from graphene_django.debug import DjangoDebug
 
 from backend.api.models import Spectrogram
 from backend.api.schema.context_filters import (
@@ -16,8 +15,6 @@ class UpdateAnnotationsMutation(ListSerializerMutation):
         campaign_id = graphene.ID(required=True)
         phase_type = AnnotationPhaseType(required=True)
         spectrogram_id = graphene.ID(required=True)
-
-    debug = graphene.Field(DjangoDebug, name="_debug")
 
     class Meta:
         serializer_class = AnnotationSerializer

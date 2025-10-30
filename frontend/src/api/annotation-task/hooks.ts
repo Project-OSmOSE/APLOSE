@@ -1,4 +1,4 @@
-import { AnnotationTaskGqlAPI, AnnotationTaskRestAPI } from './api';
+import { AnnotationTaskGqlAPI } from './api';
 import { useCallback, useEffect, useMemo } from 'react';
 import {
   AnnotationCommentInput,
@@ -10,8 +10,6 @@ import {
 } from '@/api';
 import { AllAnnotationTaskFilterSlice, AllTasksFilters, selectAllTaskFilters } from './all-tasks-filters';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
-import { gqlAPI } from '@/api/baseGqlApi';
-import { useAppDispatch } from '@/features/App';
 import { useNavParams, useQueryParams } from '@/features/UX';
 
 const PAGE_SIZE = 20;
@@ -21,10 +19,8 @@ const PAGE_SIZE = 20;
 const {
   listAnnotationTask,
   getAnnotationTask,
-} = AnnotationTaskGqlAPI.endpoints
-const {
   submitTask,
-} = AnnotationTaskRestAPI.endpoints
+} = AnnotationTaskGqlAPI.endpoints
 
 export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
   refetchOnMountOrArgChange?: boolean
@@ -86,17 +82,19 @@ export const useSubmitTask = () => {
   const { campaignID, phaseType, spectrogramID } = useNavParams();
   const { phase } = useCurrentPhase()
   const [ method, info ] = submitTask.useMutation()
-  const dispatch = useAppDispatch()
 
   const submit = useCallback(async (annotations: AnnotationInput[],
                                     taskComments: AnnotationCommentInput[],
                                     start: Date) => {
     if (!campaignID || !phaseType || !spectrogramID) return;
-    await method({ campaignID, phaseType, spectrogramID, annotations, taskComments, start }).unwrap()
-    dispatch(gqlAPI.util.invalidateTags([ {
-      type: 'AnnotationPhase',
-      id: phase?.id,
-    } ]))
+    await method({
+      campaignID,
+      phase: phaseType,
+      spectrogramID,
+      startedAt: start.toISOString(),
+      endedAt: new Date().toISOString(),
+      content: JSON.stringify({ annotations, taskComments })
+    }).unwrap()
   }, [ method, campaignID, phaseType, spectrogramID, phase ]);
 
   return useMemo(() => ({
