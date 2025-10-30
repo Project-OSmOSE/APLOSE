@@ -11,6 +11,3 @@ export const COLLABORATOR_QUERIES: {
     },
   },
 }
-
-type Q = keyof typeof COLLABORATOR_QUERIES
-const q: Q = 'listCollaborators'

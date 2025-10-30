@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { IonItem, IonList, IonSearchbar } from '@ionic/react';
+import { IonItem, IonList } from '@ionic/react';
 import { createPortal } from 'react-dom';
 import { usePopover } from '@/components/ui';
 import styles from './form.module.scss';
@@ -29,9 +29,6 @@ export const ListSearchbar: React.FC<Props> = (props) => {
                  onChange={ setSearch }
                  placeholder={ props.placeholder }
                  className={ props.className }/>
-      <IonSearchbar { ...props }
-                    value={ search }
-                    onIonInput={ e => setSearch(e.detail.value ?? undefined) }></IonSearchbar>
 
       { !!search && createPortal(<IonList id="searchbar-results"
                                           className={ styles.results }

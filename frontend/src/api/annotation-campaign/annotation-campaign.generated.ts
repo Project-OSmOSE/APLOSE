@@ -1,7 +1,6 @@
 import * as Types from '../types.gql-generated';
 
 import { gqlAPI } from '@/api/baseGqlApi';
-
 export type ListCampaignsAndPhasesQueryVariables = Types.Exact<{
   isArchived?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
   phase?: Types.InputMaybe<Types.AnnotationPhaseType>;
@@ -11,127 +10,16 @@ export type ListCampaignsAndPhasesQueryVariables = Types.Exact<{
 }>;
 
 
-export type ListCampaignsAndPhasesQuery = {
-  __typename?: 'Query',
-  allAnnotationCampaigns?: {
-    __typename?: 'AnnotationCampaignNodeNodeConnection',
-    results: Array<{
-      __typename?: 'AnnotationCampaignNode',
-      id: string,
-      name: string,
-      deadline?: any | null,
-      isArchived: boolean,
-      dataset: { __typename?: 'DatasetNode', name: string }
-    } | null>
-  } | null,
-  allAnnotationPhases?: {
-    __typename?: 'AnnotationPhaseNodeNodeConnection',
-    results: Array<{
-      __typename?: 'AnnotationPhaseNode',
-      id: string,
-      phase: Types.AnnotationPhaseType,
-      annotationCampaignId: string,
-      fileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null,
-      completedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null,
-      userFileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null,
-      userCompletedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null
-    } | null>
-  } | null
-};
+export type ListCampaignsAndPhasesQuery = { __typename?: 'Query', allAnnotationCampaigns?: { __typename?: 'AnnotationCampaignNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCampaignNode', id: string, name: string, deadline?: any | null, isArchived: boolean, dataset: { __typename?: 'DatasetNode', name: string } } | null> } | null, allAnnotationPhases?: { __typename?: 'AnnotationPhaseNodeNodeConnection', results: Array<{ __typename?: 'AnnotationPhaseNode', id: string, phase: Types.AnnotationPhaseType, annotationCampaignId: string, fileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null, completedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null, userFileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null, userCompletedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null } | null> } | null };
 
 export type GetCampaignQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
 }>;
 
 
-export type GetCampaignQuery = {
-  __typename?: 'Query',
-  annotationCampaignById?: {
-    __typename?: 'AnnotationCampaignNode',
-    id: string,
-    name: string,
-    createdAt: any,
-    instructionsUrl?: string | null,
-    deadline?: any | null,
-    isArchived: boolean,
-    canManage: boolean,
-    allowPointAnnotation: boolean,
-    allowColormapTuning: boolean,
-    allowImageTuning: boolean,
-    colormapDefault?: string | null,
-    colormapInvertedDefault?: boolean | null,
-    description?: string | null,
-    dataset: { __typename?: 'DatasetNode', id: string, name: string },
-    labelsWithAcousticFeatures?: Array<{ __typename?: 'AnnotationLabelNode', id: string, name: string } | null> | null,
-    owner: { __typename?: 'UserNode', id: string, displayName: string, email: string },
-    archive?: {
-      __typename?: 'ArchiveNode',
-      date: any,
-      byUser?: { __typename?: 'UserNode', displayName: string } | null
-    } | null,
-    confidenceSet?: {
-      __typename?: 'ConfidenceSetNode',
-      name: string,
-      desc?: string | null,
-      confidenceIndicators?: Array<{ __typename?: 'ConfidenceNode', label: string } | null> | null
-    } | null,
-    labelSet?: {
-      __typename?: 'LabelSetNode',
-      name: string,
-      description?: string | null,
-      labels: Array<{ __typename?: 'AnnotationLabelNode', name: string } | null>
-    } | null,
-    detectors?: Array<{ __typename?: 'DetectorNode', id: string, name: string } | null> | null,
-    annotators?: Array<{ __typename?: 'UserNode', id: string, displayName: string } | null> | null,
-    analysis: {
-      __typename?: 'SpectrogramAnalysisNodeConnection',
-      edges: Array<{
-        __typename?: 'SpectrogramAnalysisNodeEdge',
-        node?: {
-          __typename?: 'SpectrogramAnalysisNode',
-          id: string,
-          legacy: boolean,
-          colormap: { __typename?: 'ColormapNode', name: string },
-          fft: { __typename?: 'FFTNode', nfft: number, windowSize: number, overlap: any, samplingFrequency: number },
-          legacyConfiguration?: {
-            __typename?: 'LegacySpectrogramConfigurationNode',
-            scaleName?: string | null,
-            zoomLevel: number,
-            linearFrequencyScale?: {
-              __typename?: 'LinearScaleNode',
-              ratio: number,
-              minValue: number,
-              maxValue: number
-            } | null,
-            multiLinearFrequencyScale?: {
-              __typename?: 'MultiLinearScaleNode',
-              innerScales?: Array<{
-                __typename?: 'LinearScaleNode',
-                ratio: number,
-                minValue: number,
-                maxValue: number
-              } | null> | null
-            } | null
-          } | null
-        } | null
-      } | null>
-    },
-    spectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount: number } | null
-  } | null,
-  allAnnotationPhases?: {
-    __typename?: 'AnnotationPhaseNodeNodeConnection',
-    results: Array<{
-      __typename?: 'AnnotationPhaseNode',
-      id: string,
-      phase: Types.AnnotationPhaseType,
-      isOpen: boolean,
-      fileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null,
-      completedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null
-    } | null>
-  } | null
-};
+export type GetCampaignQuery = { __typename?: 'Query', annotationCampaignById?: { __typename?: 'AnnotationCampaignNode', id: string, name: string, createdAt: any, instructionsUrl?: string | null, deadline?: any | null, isArchived: boolean, canManage: boolean, allowPointAnnotation: boolean, allowColormapTuning: boolean, allowImageTuning: boolean, colormapDefault?: string | null, colormapInvertedDefault?: boolean | null, description?: string | null, dataset: { __typename?: 'DatasetNode', id: string, name: string }, labelsWithAcousticFeatures?: Array<{ __typename?: 'AnnotationLabelNode', id: string, name: string } | null> | null, owner: { __typename?: 'UserNode', id: string, displayName: string, email: string }, archive?: { __typename?: 'ArchiveNode', date: any, byUser?: { __typename?: 'UserNode', displayName: string } | null } | null, confidenceSet?: { __typename?: 'ConfidenceSetNode', name: string, desc?: string | null, confidenceIndicators?: Array<{ __typename?: 'ConfidenceNode', label: string } | null> | null } | null, labelSet?: { __typename?: 'LabelSetNode', name: string, description?: string | null, labels: Array<{ __typename?: 'AnnotationLabelNode', name: string } | null> } | null, detectors?: Array<{ __typename?: 'DetectorNode', id: string, name: string } | null> | null, annotators?: Array<{ __typename?: 'UserNode', id: string, displayName: string } | null> | null, analysis: { __typename?: 'SpectrogramAnalysisNodeConnection', edges: Array<{ __typename?: 'SpectrogramAnalysisNodeEdge', node?: { __typename?: 'SpectrogramAnalysisNode', id: string, legacy: boolean, colormap: { __typename?: 'ColormapNode', name: string }, fft: { __typename?: 'FFTNode', nfft: number, windowSize: number, overlap: any, samplingFrequency: number }, legacyConfiguration?: { __typename?: 'LegacySpectrogramConfigurationNode', scaleName?: string | null, zoomLevel: number, linearFrequencyScale?: { __typename?: 'LinearScaleNode', ratio: number, minValue: number, maxValue: number } | null, multiLinearFrequencyScale?: { __typename?: 'MultiLinearScaleNode', innerScales?: Array<{ __typename?: 'LinearScaleNode', ratio: number, minValue: number, maxValue: number } | null> | null } | null } | null } | null } | null> }, spectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount: number } | null } | null, allAnnotationPhases?: { __typename?: 'AnnotationPhaseNodeNodeConnection', results: Array<{ __typename?: 'AnnotationPhaseNode', id: string, phase: Types.AnnotationPhaseType, isOpen: boolean, fileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null, completedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null } | null> } | null };
 
-export type CreateAnnotationCampaignMutationVariables = Types.Exact<{
+export type CreateCampaignMutationVariables = Types.Exact<{
   name: Types.Scalars['String']['input'];
   description?: Types.InputMaybe<Types.Scalars['String']['input']>;
   instructionsUrl?: Types.InputMaybe<Types.Scalars['String']['input']>;
@@ -145,38 +33,22 @@ export type CreateAnnotationCampaignMutationVariables = Types.Exact<{
 }>;
 
 
-export type CreateAnnotationCampaignMutation = {
-  __typename?: 'Mutation',
-  createAnnotationCampaign?: {
-    __typename?: 'CreateAnnotationCampaignMutationPayload',
-    annotationCampaign?: { __typename?: 'AnnotationCampaignNode', id: string } | null,
-    errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }>
-  } | null
-};
+export type CreateCampaignMutation = { __typename?: 'Mutation', createAnnotationCampaign?: { __typename?: 'CreateAnnotationCampaignMutationPayload', annotationCampaign?: { __typename?: 'AnnotationCampaignNode', id: string } | null, errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }> } | null };
 
-export type ArchiveAnnotationCampaignMutationVariables = Types.Exact<{
+export type ArchiveCampaignMutationVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
 }>;
 
 
-export type ArchiveAnnotationCampaignMutation = {
-  __typename?: 'Mutation',
-  archiveAnnotationCampaign?: { __typename?: 'ArchiveAnnotationCampaignMutation', ok: boolean } | null
-};
+export type ArchiveCampaignMutation = { __typename?: 'Mutation', archiveAnnotationCampaign?: { __typename?: 'ArchiveAnnotationCampaignMutation', ok: boolean } | null };
 
-export type UpdateAnnotationCampaignFeaturedLabelsMutationVariables = Types.Exact<{
+export type UpdateCampaignFeaturedLabelsMutationVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
   labelsWithAcousticFeatures: Array<Types.InputMaybe<Types.Scalars['ID']['input']>> | Types.InputMaybe<Types.Scalars['ID']['input']>;
 }>;
 
 
-export type UpdateAnnotationCampaignFeaturedLabelsMutation = {
-  __typename?: 'Mutation',
-  updateAnnotationCampaign?: {
-    __typename?: 'UpdateAnnotationCampaignMutationPayload',
-    errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }>
-  } | null
-};
+export type UpdateCampaignFeaturedLabelsMutation = { __typename?: 'Mutation', updateAnnotationCampaign?: { __typename?: 'UpdateAnnotationCampaignMutationPayload', errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }> } | null };
 
 
 export const ListCampaignsAndPhasesDocument = `
@@ -187,13 +59,16 @@ export const ListCampaignsAndPhasesDocument = `
     ownerId: $ownerID
     phases_AnnotationFileRanges_AnnotatorId: $annotatorID
     search: $search
+    orderBy: "name"
   ) {
     results {
       id
       name
-      datasetName
       deadline
       isArchived
+      dataset {
+        name
+      }
     }
   }
   allAnnotationPhases(
@@ -206,11 +81,22 @@ export const ListCampaignsAndPhasesDocument = `
     results {
       id
       phase
-      userTasksCount
-      userCompletedTasksCount
-      tasksCount
-      completedTasksCount
       annotationCampaignId
+      fileRanges: annotationFileRanges {
+        tasksCount
+      }
+      completedTasks: annotationSpectrograms(annotationTasks_Status: Finished) {
+        totalCount
+      }
+      userFileRanges: annotationFileRanges(annotator: $annotatorID) {
+        tasksCount
+      }
+      userCompletedTasks: annotationSpectrograms(
+        annotationTasks_Status: Finished
+        annotator: $annotatorID
+      ) {
+        totalCount
+      }
     }
   }
 }
@@ -250,7 +136,6 @@ export const GetCampaignDocument = `
         displayName
       }
     }
-    filesCount
     confidenceSet {
       name
       desc
@@ -306,20 +191,27 @@ export const GetCampaignDocument = `
         }
       }
     }
+    spectrograms {
+      totalCount
+    }
   }
   allAnnotationPhases(annotationCampaignId: $id) {
     results {
       id
       phase
-      completedTasksCount
-      tasksCount
       isOpen
+      fileRanges: annotationFileRanges {
+        tasksCount
+      }
+      completedTasks: annotationSpectrograms(annotationTasks_Status: Finished) {
+        totalCount
+      }
     }
   }
 }
     `;
-export const CreateAnnotationCampaignDocument = `
-    mutation createAnnotationCampaign($name: String!, $description: String, $instructionsUrl: String, $deadline: Date, $allowImageTuning: Boolean, $allowColormapTuning: Boolean, $colormapDefault: String, $colormapInvertedDefault: Boolean, $datasetID: ID!, $analysisIDs: [ID]!) {
+export const CreateCampaignDocument = `
+    mutation createCampaign($name: String!, $description: String, $instructionsUrl: String, $deadline: Date, $allowImageTuning: Boolean, $allowColormapTuning: Boolean, $colormapDefault: String, $colormapInvertedDefault: Boolean, $datasetID: ID!, $analysisIDs: [ID]!) {
   createAnnotationCampaign(
     input: {name: $name, description: $description, instructionsUrl: $instructionsUrl, deadline: $deadline, allowImageTuning: $allowImageTuning, allowColormapTuning: $allowColormapTuning, colormapDefault: $colormapDefault, colormapInvertedDefault: $colormapInvertedDefault, dataset: $datasetID, analysis: $analysisIDs}
   ) {
@@ -333,15 +225,15 @@ export const CreateAnnotationCampaignDocument = `
   }
 }
     `;
-export const ArchiveAnnotationCampaignDocument = `
-    mutation archiveAnnotationCampaign($id: ID!) {
+export const ArchiveCampaignDocument = `
+    mutation archiveCampaign($id: ID!) {
   archiveAnnotationCampaign(id: $id) {
     ok
   }
 }
     `;
-export const UpdateAnnotationCampaignFeaturedLabelsDocument = `
-    mutation updateAnnotationCampaignFeaturedLabels($id: ID!, $labelsWithAcousticFeatures: [ID]!) {
+export const UpdateCampaignFeaturedLabelsDocument = `
+    mutation updateCampaignFeaturedLabels($id: ID!, $labelsWithAcousticFeatures: [ID]!) {
   updateAnnotationCampaign(
     input: {id: $id, labelsWithAcousticFeatures: $labelsWithAcousticFeatures}
   ) {
@@ -361,14 +253,14 @@ const injectedRtkApi = gqlAPI.injectEndpoints({
     getCampaign: build.query<GetCampaignQuery, GetCampaignQueryVariables>({
       query: (variables) => ({ document: GetCampaignDocument, variables })
     }),
-    createAnnotationCampaign: build.mutation<CreateAnnotationCampaignMutation, CreateAnnotationCampaignMutationVariables>({
-      query: (variables) => ({ document: CreateAnnotationCampaignDocument, variables })
+    createCampaign: build.mutation<CreateCampaignMutation, CreateCampaignMutationVariables>({
+      query: (variables) => ({ document: CreateCampaignDocument, variables })
     }),
-    archiveAnnotationCampaign: build.mutation<ArchiveAnnotationCampaignMutation, ArchiveAnnotationCampaignMutationVariables>({
-      query: (variables) => ({ document: ArchiveAnnotationCampaignDocument, variables })
+    archiveCampaign: build.mutation<ArchiveCampaignMutation, ArchiveCampaignMutationVariables>({
+      query: (variables) => ({ document: ArchiveCampaignDocument, variables })
     }),
-    updateAnnotationCampaignFeaturedLabels: build.mutation<UpdateAnnotationCampaignFeaturedLabelsMutation, UpdateAnnotationCampaignFeaturedLabelsMutationVariables>({
-      query: (variables) => ({ document: UpdateAnnotationCampaignFeaturedLabelsDocument, variables })
+    updateCampaignFeaturedLabels: build.mutation<UpdateCampaignFeaturedLabelsMutation, UpdateCampaignFeaturedLabelsMutationVariables>({
+      query: (variables) => ({ document: UpdateCampaignFeaturedLabelsDocument, variables })
     }),
   }),
 });

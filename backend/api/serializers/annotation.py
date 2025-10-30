@@ -17,10 +17,10 @@ from backend.api.models import (
 )
 from backend.aplose.models import ExpertiseLevel, User
 from backend.utils.serializers import EnumField, ListSerializer
+from backend.api.schema.context_filters import AnnotationCommentContextFilter
 from .acoustic_features import AnnotationAcousticFeaturesSerializer
 from .annotation_validation import AnnotationValidationSerializer
 from .comment import AnnotationCommentSerializer
-from backend.api.schema.context_filters import AnnotationCommentContextFilter
 
 
 class AnnotationSerializer(serializers.ModelSerializer):

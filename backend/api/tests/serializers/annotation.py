@@ -56,6 +56,11 @@ SPECTROGRAM_ID = 9
 PHASE_ID = 1
 
 
+class FakeRequest:
+    def __init__(self, user: User):
+        self.user = user
+
+
 @freeze_time("2012-01-14 00:00:00")
 class CreateTestCase(TestCase):
     fixtures = all_fixtures
@@ -65,6 +70,7 @@ class CreateTestCase(TestCase):
         return AnnotationSerializer(
             data=data,
             context={
+                "request": FakeRequest(User.objects.get(id=USER_ID)),
                 "user": User.objects.get(pk=USER_ID),
                 "phase": AnnotationPhase.objects.get(pk=phase_id),
                 "spectrogram": Spectrogram.objects.get(pk=spectrogram_id),
@@ -247,6 +253,7 @@ class UpdateTestCase(CreateTestCase):
             instance=self.instance,
             data=data,
             context={
+                "request": FakeRequest(User.objects.get(id=USER_ID)),
                 "user": User.objects.get(pk=USER_ID),
                 "phase": AnnotationPhase.objects.get(pk=phase_id),
                 "spectrogram": Spectrogram.objects.get(pk=spectrogram_id),
@@ -329,6 +336,7 @@ class CreateUpdateOfResultTestCase(TestCase):
                 "acoustic_features": None,
             },
             context={
+                "request": FakeRequest(User.objects.get(id=USER_ID)),
                 "user": User.objects.get(pk=3),
                 "phase": AnnotationPhase.objects.get(pk=1),
                 "spectrogram": Spectrogram.objects.get(pk=7),

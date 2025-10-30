@@ -1,7 +1,7 @@
 import { Page, test } from '@playwright/test';
-import { Mock } from '../services';
-import { CAMPAIGN, UserType } from '../../fixtures';
+import { UserType } from '../../fixtures';
 import { CampaignDetailPage } from './campaign-detail';
+import { dataset } from '../mock/dataset';
 
 export class CampaignEditPage {
 
@@ -11,19 +11,16 @@ export class CampaignEditPage {
 
 
   get lastIndexInputs() {
-    return this.page.getByPlaceholder((CAMPAIGN.files_count).toString())
+    return this.page.getByPlaceholder((dataset.filesCount).toString())
   }
 
   constructor(private page: Page,
-              private detail = new CampaignDetailPage(page),
-              private mock = new Mock(page)) {
+              private detail = new CampaignDetailPage(page)) {
   }
 
-  async go(as: UserType, options?: { empty: boolean }) {
+  async go(as: UserType) {
     await test.step('Navigate to Campaign detail', async () => {
       await this.detail.go(as)
-      await this.mock.fileRanges(options?.empty)
-      await this.mock.annotatorGroups(options?.empty)
       await this.detail.manageButton.click();
     });
   }

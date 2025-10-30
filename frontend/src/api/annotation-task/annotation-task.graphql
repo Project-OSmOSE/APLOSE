@@ -20,7 +20,7 @@ query listAnnotationTask(
     $annotationAnnotator: ID
     $withAcousticFeatures: Boolean
 ) {
-    listAnnotationSpectrogram(
+    allAnnotationSpectrograms(
         # Sort
         limit: $limit
         offset: $offset

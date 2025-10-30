@@ -4,8 +4,8 @@ import type { ListAnnotationTaskQuery } from '../../../src/api/annotation-task/a
 import { spectrogram } from './spectrogram';
 
 export type Task =
-  Omit<AnnotationTaskNode, 'annotations' | 'annotator' | 'validatedAnnotations' | 'annotationPhase' | 'spectrogram' | 'comments'>
-  & {
+    Omit<AnnotationTaskNode, 'annotations' | 'annotator' | 'validatedAnnotations' | 'annotationPhase' | 'spectrogram' | 'comments'>
+    & {
   annotationCount: number,
   validationAnnotationCount: number,
 }
@@ -32,21 +32,23 @@ export const TASK_QUERIES: {
   listAnnotationTask: {
     defaultType: 'filled',
     empty: {
-      listAnnotationSpectrogram: null,
+      allAnnotationSpectrogram: null,
     },
     filled: {
-      listAnnotationSpectrogram: {
+      allAnnotationSpectrogram: {
         results: Object.values(TASKS).map(t => ({
           id: t.id,
-          status: t.status,
           start: spectrogram.start,
           filename: spectrogram.filename,
           duration: spectrogram.duration,
-          annotations: {
-            totalCount: t.annotationCount,
-          },
-          validatedAnnotations: {
-            totalCount: t.validationAnnotationCount,
+          task: {
+            status: t.status,
+            annotations: {
+              totalCount: t.annotationCount,
+            },
+            validatedAnnotations: {
+              totalCount: t.validationAnnotationCount,
+            },
           },
         })),
         totalCount: 2,
@@ -57,8 +59,6 @@ export const TASK_QUERIES: {
   // getAnnotationTask: {
   //   defaultType: 'filled', // TODO: change!!
   //   empty: {
-  //     annotationTasksForUser: null,
-  //     annotationTasksForUserBySpectrogramId: null,
   //   },
   // },
 }

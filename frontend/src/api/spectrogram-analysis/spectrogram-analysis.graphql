@@ -53,4 +53,3 @@ mutation importSpectrogramAnalysis(
         ok
     }
 }
-

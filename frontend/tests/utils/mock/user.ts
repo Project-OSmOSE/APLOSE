@@ -119,7 +119,7 @@ export const USER_QUERIES: {
           id: userGroup.id,
           name: userGroup.name,
           users: [ {
-            id: USERS.annotator.id,
+            id: USERS.staff.id,
           } ],
         } ],
       },

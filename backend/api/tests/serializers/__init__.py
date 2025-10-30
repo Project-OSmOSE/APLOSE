@@ -1,1 +1,1 @@
-from .annotation import *
+from .annotation import CreateTestCase, UpdateTestCase, CreateUpdateOfResultTestCase
