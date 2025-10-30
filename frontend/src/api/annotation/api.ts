@@ -12,8 +12,8 @@ export const AnnotationGqlAPI = api.enhanceEndpoints({
 
 
 const keys: (keyof ImportAnnotation)[] = [
-  'start_time',
-  'end_time',
+  'start_datetime',
+  'end_datetime',
   'start_frequency',
   'end_frequency',
   'label__name',
@@ -37,10 +37,12 @@ export const AnnotationRestAPI = restAPI.injectEndpoints({
           url: `annotation/campaign/${ campaignID }/phase/${ AnnotationPhaseType.Annotation }/`,
           method: 'POST',
           params,
-          body: [
-            keys.join(','),
-            ...annotations.map(a => keys.map(k => `"${ a[k] }"`).join(',')),
-          ].join('\n'),
+          body: {
+            data: [
+              keys.join(','),
+              ...annotations.map(a => keys.map(k => `"${ a[k] }"`).join(',')),
+            ].join('\n'),
+          }
         }
       },
     }),

@@ -1,10 +1,10 @@
 from typing import Optional
 
+from django.core import validators
 from django.db import transaction
 from django.db.models import Max
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.fields import empty
+from rest_framework.fields import empty, FloatField
 
 from backend.api.models import (
     Annotation,
@@ -12,11 +12,10 @@ from backend.api.models import (
     Spectrogram,
     Label,
     Confidence,
-    DetectorConfiguration,
     AnnotationValidation,
     SpectrogramAnalysis,
 )
-from backend.aplose.models import ExpertiseLevel
+from backend.aplose.models import ExpertiseLevel, User
 from backend.utils.serializers import EnumField, ListSerializer
 from .acoustic_features import AnnotationAcousticFeaturesSerializer
 from .annotation_validation import AnnotationValidationSerializer
@@ -54,13 +53,18 @@ class AnnotationSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {
             "id": {"required": False, "allow_null": True, "read_only": False},
+            "start_time": {"min_value": 0},
+            "end_time": {"min_value": 0},
+            "start_frequency": {"min_value": 0},
+            "end_frequency": {"min_value": 0},
         }
 
     def get_fields(self):
         fields = super().get_fields()
-        phase: Optional[AnnotationPhase] = (
-            self.context["phase"] if "phase" in self.context else None
-        )
+        phase: Optional[AnnotationPhase] = self.context.get("phase", None)
+        spectrogram: Optional[Spectrogram] = self.context.get("spectrogram", None)
+        sampling_frequency = None
+
         if phase is not None:
             campaign = phase.annotation_campaign
             fields["label"].queryset = campaign.label_set.labels
@@ -77,51 +81,54 @@ class AnnotationSerializer(serializers.ModelSerializer):
                     required=True,
                     allow_null=False,
                 )
+            sampling_frequency = (
+                phase.annotation_campaign.dataset.spectrogram_analysis.aggregate(
+                    sampling_frequency=Max("fft__sampling_frequency")
+                ).get("sampling_frequency")
+            )
 
-        spectrogram: Optional[Spectrogram] = (
-            self.context["spectrogram"] if "spectrogram" in self.context else None
-        )
         if spectrogram is not None:
-            fields["start_time"] = serializers.FloatField(
-                required=False,
-                allow_null=True,
-                min_value=0.0,
-                max_value=spectrogram.duration,
+            validator = validators.MaxValueValidator(
+                spectrogram.duration,
+                message=FloatField.default_error_messages["max_value"],
             )
-            fields["end_time"] = serializers.FloatField(
-                required=False,
-                allow_null=True,
-                min_value=0.0,
-                max_value=spectrogram.duration,
-            )
+            fields["start_time"].max_value = spectrogram.duration
+            fields["start_time"].validators.append(validator)
+            fields["end_time"].max_value = spectrogram.duration
+            fields["end_time"].validators.append(validator)
             sampling_frequency = spectrogram.analysis.aggregate(
                 sampling_frequency=Max("fft__sampling_frequency")
             ).get("sampling_frequency")
-            fields["start_frequency"] = serializers.FloatField(
-                required=False,
-                allow_null=True,
-                min_value=0.0,
-                max_value=sampling_frequency / 2,
+
+        if sampling_frequency is not None:
+            validator = validators.MaxValueValidator(
+                sampling_frequency / 2,
+                message=FloatField.default_error_messages["max_value"],
             )
-            fields["end_frequency"] = serializers.FloatField(
-                required=False,
-                allow_null=True,
-                min_value=0.0,
-                max_value=sampling_frequency / 2,
-            )
+            fields["start_frequency"].max_value = sampling_frequency / 2
+            fields["start_frequency"].validators.append(validator)
+            fields["end_frequency"].max_value = sampling_frequency / 2
+            fields["end_frequency"].validators.append(validator)
 
         return fields
 
     def run_validation(self, data=empty):
-        phase: Optional[AnnotationPhase] = (
-            self.context["phase"] if "phase" in self.context else None
-        )
-        spectrogram: Optional[Spectrogram] = (
-            self.context["spectrogram"] if "spectrogram" in self.context else None
-        )
-        data["annotation_phase"] = phase.id
-        data["spectrogram"] = spectrogram.id
-        data["annotator"] = self.context["user"].id if "user" in self.context else None
+        phase: Optional[AnnotationPhase] = self.context.get("phase", None)
+        spectrogram: Optional[Spectrogram] = self.context.get("spectrogram", None)
+        annotator: Optional[User] = self.context.get("user", None)
+        data["annotation_phase"] = phase.id if phase else None
+        data["spectrogram"] = spectrogram.id if spectrogram else data["spectrogram"]
+        data["annotator"] = annotator.id if annotator else None
+
+        if self.context.get("force_max_frequency", False):
+            if (
+                float(data["start_frequency"])
+                > self.fields["start_frequency"].max_value
+            ):
+                data["start_frequency"] = self.fields["start_frequency"].max_value
+            if float(data["end_frequency"]) > self.fields["end_frequency"].max_value:
+                data["end_frequency"] = self.fields["end_frequency"].max_value
+
         return super().run_validation(data)
 
     def validate(self, attrs: dict):
@@ -141,20 +148,11 @@ class AnnotationSerializer(serializers.ModelSerializer):
         phase: Optional[AnnotationPhase] = (
             self.context["phase"] if "phase" in self.context else None
         )
-        detector_configuration = attrs.get("detector_configuration")
-        if detector_configuration is not None:
-            (
-                attrs["detector_configuration"],
-                _,
-            ) = DetectorConfiguration.objects.get_or_create(
-                detector_id=detector_configuration["detector"].id,
-                configuration=detector_configuration["configuration"],
-            )
         if (
             phase is not None
             and phase.phase == AnnotationPhase.Type.VERIFICATION
             and "annotator" in attrs
-            and detector_configuration is not None
+            and attrs.get("detector_configuration", None) is not None
         ):
             attrs.pop("annotator")
 
@@ -276,19 +274,3 @@ class AnnotationSerializer(serializers.ModelSerializer):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
-
-class AnnotationImportSerializer(AnnotationSerializer):
-    class Meta(AnnotationSerializer.Meta):
-        pass
-
-    def run_validation(self, data=empty):
-        phase: Optional[AnnotationPhase] = (
-            self.context["phase"] if "phase" in self.context else None
-        )
-        data["spectrogram"] = get_object_or_404(
-            Spectrogram,
-            filename=data["spectrogram"],
-            dataset=phase.annotation_campaign.dataset,
-        )
-        return super().run_validation(data)

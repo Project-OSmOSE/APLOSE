@@ -10,9 +10,10 @@ from django.utils import timezone
 
 from backend.aplose.models import User
 from .annotation_file_range import AnnotationFileRange
-from .confidence_set import ConfidenceSet
+from .confidence_set import ConfidenceSet, ConfidenceIndicatorSetIndicator
 from .label import Label
 from .label_set import LabelSet
+from .confidence import Confidence
 from ..common import Archive
 from ..data import Dataset, SpectrogramAnalysis, Spectrogram
 
@@ -122,6 +123,52 @@ class AnnotationCampaign(models.Model):
         return Spectrogram.objects.filter(
             analysis__annotation_campaigns=self
         ).distinct()
+
+    def import_new_label(self, name: str) -> Label:
+        """Import new label into campaign label set"""
+        label: Label = Label.objects.get_or_create(name=name)[0]
+        if not self.label_set.labels.filter(
+            id=label.id
+        ).exists():  # If the campaign's label set doesn't contain this label
+            if (
+                self.label_set.annotationcampaign_set.count() > 1
+            ):  # If the campaign's label set also belong to other campaigns
+                # Duplicate label set
+                old_label_set = self.label_set
+                self.label_set = LabelSet.create_for_campaign(
+                    campaign=self,
+                    labels=old_label_set.labels,
+                )
+                self.save()
+            self.label_set.labels.add(label)
+        return label
+
+    def import_new_confidence(self, label: str, level: int) -> Confidence:
+        """Import new confidence into campaign confidence set"""
+        confidence: Confidence = Confidence.objects.get_or_create(
+            label=label, level=level
+        )[0]
+
+        if self.confidence_set is None:
+            # Create confidence set if none exists
+            self.confidence_set = ConfidenceSet.create_for_campaign(campaign=self)
+            self.save()
+        elif not self.confidence_set.confidence_indicators.filter(
+            id=confidence.id
+        ).exists():  # If the campaign's confidence set doesn't contain this confidence
+            if (
+                self.confidence_set.annotationcampaign_set.count() > 1
+            ):  # If the campaign's confidence set also belong to other campaigns
+                old_set = self.confidence_set
+                self.confidence_set = ConfidenceSet.create_for_campaign(
+                    campaign=self, confidences=old_set.confidence_indicators.all()
+                )
+                self.save()
+        ConfidenceIndicatorSetIndicator.objects.get_or_create(
+            confidence=confidence,
+            confidence_set=self.confidence_set,
+        )
+        return confidence
 
 
 class AnnotationCampaignAnalysis(models.Model):

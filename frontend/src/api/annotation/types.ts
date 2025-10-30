@@ -1,9 +1,9 @@
 export type ImportAnnotation = {
 
-  /** [0 ; duration] */
-  start_time?: number;
-  /** [0 ; duration] */
-  end_time?: number;
+  /** Date.getTime() */
+  start_datetime?: number;
+  /** Date.getTime() */
+  end_datetime?: number;
   /** [0 ; samplingFrequency/2] */
   start_frequency?: number;
   /** [0 ; samplingFrequency/2] */

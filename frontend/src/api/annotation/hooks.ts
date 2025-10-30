@@ -3,6 +3,8 @@ import { AnnotationInput } from '@/api/types.gql-generated.ts';
 import { useCallback, useMemo } from 'react';
 import { useNavParams } from '@/features/UX';
 import { ImportAnnotation } from "./types";
+import { gqlAPI } from "@/api/baseGqlApi.ts";
+import { useAppDispatch } from "@/features/App";
 
 const {
   updateAnnotations,
@@ -30,14 +32,18 @@ export const useUpdateAnnotations = () => {
 export const useImportAnnotations = () => {
   const { campaignID } = useNavParams();
   const [ method, info ] = importAnnotations.useMutation()
+  const dispatch = useAppDispatch()
 
-  const update = useCallback(async (annotations: ImportAnnotation[]) => {
+  const importData = useCallback(async (annotations: ImportAnnotation[]) => {
     if (!campaignID) return;
+    dispatch(gqlAPI.util.invalidateTags([ {
+      type: 'AnnotationTask',
+    } ]))
     await method({ campaignID, annotations }).unwrap()
   }, [ method, campaignID ]);
 
   return useMemo(() => ({
     ...info,
-    importAnnotations: update,
-  }), [ update, info ])
+    importAnnotations: importData,
+  }), [ importData, info ])
 }

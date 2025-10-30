@@ -1,3 +1,3 @@
 """API views annotation tests"""
-from .annotation_campaign import *
-from .annotation_phase import *
+
+from .import_for_phase import ImportAnnotationsForPhaseTestCase

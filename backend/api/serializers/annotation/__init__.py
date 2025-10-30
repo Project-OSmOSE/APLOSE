@@ -1,5 +1,5 @@
 """API Annotation serializer"""
-from .annotation import AnnotationSerializer, AnnotationImportSerializer
+from .annotation import AnnotationSerializer
 from .annotation_campaign import (
     AnnotationCampaignSerializer,
     AnnotationCampaignPatchSerializer,

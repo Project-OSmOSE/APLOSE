@@ -127,14 +127,14 @@ export const useImportAnnotationsContext = () => {
 }
 
 type Annotation = Omit<
-  ImportAnnotation,
-  'detector__name'
-  | 'detector_configuration__configuration'
-  | 'analysis'
+    ImportAnnotation,
+    'detector__name'
+    | 'detector_configuration__configuration'
+    | 'analysis'
 > & Partial<Pick<
-  ImportAnnotation,
-  'detector__name'
-  | 'detector_configuration__configuration'
+    ImportAnnotation,
+    'detector__name'
+    | 'detector_configuration__configuration'
 >> & {
   initial__detector__name: string
 }
@@ -221,15 +221,15 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
     setAnnotations(contentRows.map(r => {
       const confidence__level = r[header.indexOf('confidence_indicator_level')].split('/')
       return {
-        start_time: +r[header.indexOf('start_time')],
-        end_time: +r[header.indexOf('end_time')],
+        start_datetime: +r[header.indexOf('start_datetime')],
+        end_datetime: +r[header.indexOf('end_datetime')],
         start_frequency: +r[header.indexOf('start_frequency')],
         end_frequency: +r[header.indexOf('end_frequency')],
         label__name: r[header.indexOf('label')],
         confidence__label: r[header.indexOf('confidence_indicator_label')],
         confidence__level: confidence__level.length > 0 ? +confidence__level[0] : undefined,
         initial__detector__name: r[header.indexOf('annotator')],
-      }
+      } as Annotation
     }))
     setFileState('loaded');
   }, [])
@@ -311,11 +311,11 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
     if (!canImport) return;
     if (uploadState !== 'uploading' && !options?.bypassUploadState) return;
     importAnnotations(annotations.slice(start, start + CHUNK_SIZE).map(a => ({
-        ...a,
-        analysis: analysisID!,
-        detector__name: unknownToKnownDetectors[a.initial__detector__name] ?? a.initial__detector__name,
-        detector_configuration__configuration: unknownToConfiguration[a.initial__detector__name]?.configuration,
-      }
+          ...a,
+          analysis: analysisID!,
+          detector__name: unknownToKnownDetectors[a.initial__detector__name] ?? a.initial__detector__name,
+          detector_configuration__configuration: unknownToConfiguration[a.initial__detector__name]?.configuration,
+        }
     )))
   }, [ importAnnotations, annotations, canImport, uploadState, unknownToKnownDetectors, unknownToConfiguration ])
 

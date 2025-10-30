@@ -1,5 +1,4 @@
 """API annotation views"""
-from .annotation import AnnotationViewSet
 from .annotation_campaign import AnnotationCampaignViewSet
 from .annotation_comment import AnnotationCommentViewSet
 from .annotation_file_range import AnnotationFileRangeViewSet

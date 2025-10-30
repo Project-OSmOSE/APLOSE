@@ -6,7 +6,7 @@ from pathlib import Path
 
 from django.conf import settings
 from django.db import models
-from django.db.models import Q, F, Manager
+from django.db.models import Q, F, Manager, QuerySet
 from metadatax.data.models import FileFormat
 from osekit.config import TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
 
@@ -121,6 +121,16 @@ class SpectrogramManager(Manager):  # pylint: disable=too-few-public-methods
             start__gte=file_range.from_datetime,
             end__lte=file_range.to_datetime,
         )
+
+    def filter_matches_time_range(
+        self, start: datetime, end: datetime
+    ) -> QuerySet["Spectrogram"]:
+        """Get files from absolute start and ends"""
+        return self.filter(
+            Q(start__lte=start, end__gt=start)
+            | Q(start__gte=start, end__lte=end)
+            | Q(start__lt=end, end__gte=end)
+        ).order_by("start", "id")
 
 
 class Spectrogram(AbstractFile, TimeSegment, models.Model):
