@@ -33,7 +33,7 @@ class AnnotationPhaseContextFilter:
 
     @classmethod
     def get_node_or_fail(
-        cls, context: Request, queryset=None, **kwargs
+        cls, context: Request, queryset=AnnotationPhase.objects.all(), **kwargs
     ) -> AnnotationPhase:
         """Get node or fail depending on the context"""
         try:
