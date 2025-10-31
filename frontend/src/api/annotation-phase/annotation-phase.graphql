@@ -39,7 +39,6 @@ mutation createVerificationPhase($campaignID: ID!) {
 query getAnnotationPhase(
     $campaignID: ID!
     $phase: AnnotationPhaseType!
-    $userID: ID!
 ) {
     annotationPhaseByCampaignPhase(
         campaignId: $campaignID
@@ -50,18 +49,9 @@ query getAnnotationPhase(
         canManage
         endedAt
         hasAnnotations
-
-        fileRanges: annotationFileRanges {
-            tasksCount
-        }
-        completedTasks: annotationSpectrograms(annotationTasks_Status: Finished) {
-            totalCount
-        }
-        userFileRanges: annotationFileRanges(annotator: $userID) {
-            tasksCount
-        }
-        userCompletedTasks: annotationSpectrograms(annotationTasks_Status: Finished, annotator: $userID) {
-            totalCount
-        }
+        tasksCount
+        completedTasksCount
+        userTasksCount
+        userCompletedTasksCount
     }
 }

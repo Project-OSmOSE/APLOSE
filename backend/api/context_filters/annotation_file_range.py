@@ -12,11 +12,13 @@ class AnnotationFileRangeContextFilter:
     """Filter file range from the context"""
 
     @classmethod
-    def get_queryset(cls, context: Request) -> QuerySet[AnnotationFileRange]:
+    def get_queryset(
+        cls, context: Request, queryset=AnnotationFileRange.objects.all()
+    ) -> QuerySet[AnnotationFileRange]:
         """Get queryset depending on the context"""
         if context.user.is_staff or context.user.is_superuser:
-            return AnnotationFileRange.objects.all()
-        return AnnotationFileRange.objects.filter(
+            return queryset
+        return queryset.filter(
             Exists(
                 AnnotationPhaseContextFilter.get_queryset(context).filter(
                     id=OuterRef("annotation_phase_id")

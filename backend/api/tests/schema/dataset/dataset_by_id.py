@@ -12,12 +12,10 @@ query ($id: ID!) {
         legacy
         path
         description
+        start
+        end
         owner {
             id
-        }
-        spectrograms {
-            start
-            end
         }
     }
 }
@@ -48,5 +46,5 @@ class DatasetByPkTestCase(GraphQLTestCase):
         self.assertEqual(content["name"], "gliderSPAmsDemo")
         self.assertEqual(content["path"], "gliderSPAmsDemo")
         self.assertEqual(content["owner"]["id"], "1")
-        self.assertEqual(content["spectrograms"]["start"], "2012-10-03T10:00:00+00:00")
-        self.assertEqual(content["spectrograms"]["end"], "2012-10-03T20:15:00+00:00")
+        self.assertEqual(content["start"], "2012-10-03T10:00:00+00:00")
+        self.assertEqual(content["end"], "2012-10-03T20:15:00+00:00")

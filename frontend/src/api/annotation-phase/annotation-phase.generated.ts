@@ -30,11 +30,10 @@ export type CreateVerificationPhaseMutation = { __typename?: 'Mutation', createA
 export type GetAnnotationPhaseQueryVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
   phase: Types.AnnotationPhaseType;
-  userID: Types.Scalars['ID']['input'];
 }>;
 
 
-export type GetAnnotationPhaseQuery = { __typename?: 'Query', annotationPhaseByCampaignPhase?: { __typename?: 'AnnotationPhaseNode', id: string, phase: Types.AnnotationPhaseType, canManage: boolean, endedAt?: any | null, hasAnnotations: boolean, fileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null, completedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null, userFileRanges?: { __typename?: 'AnnotationFileRangeNodeNodeConnection', tasksCount: number } | null, userCompletedTasks?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', totalCount: number } | null } | null };
+export type GetAnnotationPhaseQuery = { __typename?: 'Query', annotationPhaseByCampaignPhase?: { __typename?: 'AnnotationPhaseNode', id: string, phase: Types.AnnotationPhaseType, canManage: boolean, endedAt?: any | null, hasAnnotations: boolean, tasksCount: number, completedTasksCount: number, userTasksCount: number, userCompletedTasksCount: number } | null };
 
 
 export const EndPhaseDocument = `
@@ -67,28 +66,17 @@ export const CreateVerificationPhaseDocument = `
 }
     `;
 export const GetAnnotationPhaseDocument = `
-    query getAnnotationPhase($campaignID: ID!, $phase: AnnotationPhaseType!, $userID: ID!) {
+    query getAnnotationPhase($campaignID: ID!, $phase: AnnotationPhaseType!) {
   annotationPhaseByCampaignPhase(campaignId: $campaignID, phaseType: $phase) {
     id
     phase
     canManage
     endedAt
     hasAnnotations
-    fileRanges: annotationFileRanges {
-      tasksCount
-    }
-    completedTasks: annotationSpectrograms(annotationTasks_Status: Finished) {
-      totalCount
-    }
-    userFileRanges: annotationFileRanges(annotator: $userID) {
-      tasksCount
-    }
-    userCompletedTasks: annotationSpectrograms(
-      annotationTasks_Status: Finished
-      annotator: $userID
-    ) {
-      totalCount
-    }
+    tasksCount
+    completedTasksCount
+    userTasksCount
+    userCompletedTasksCount
   }
 }
     `;

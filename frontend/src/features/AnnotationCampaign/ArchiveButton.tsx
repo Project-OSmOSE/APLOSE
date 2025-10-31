@@ -15,26 +15,26 @@ export const AnnotationCampaignArchiveButton: React.FC = () => {
       return alert.showAlert({
         type: 'Warning',
         message: 'The campaign is empty.\nAre you sure you want to archive this campaign?',
-        actions: [{
+        actions: [ {
           label: 'Archive',
           callback: () => archiveCampaign(campaign),
-        }],
+        } ],
       })
     }
-    const progress = phases.reduce((previousValue, p) => previousValue + ((p!.isOpen ? p!.completedTasks?.totalCount : p!.fileRanges?.tasksCount) ?? 0), 0);
-    const total = phases.reduce((previousValue, p) => previousValue + (p!.fileRanges?.tasksCount ?? 0), 0);
+    const progress = phases.reduce((previousValue, p) => previousValue + ((p.isOpen ? p.completedTasksCount : p.tasksCount) ?? 0), 0);
+    const total = phases.reduce((previousValue, p) => previousValue + (p.tasksCount ?? 0), 0);
     if (progress < total) {
       // If annotators haven't finished yet, ask for confirmation
       return alert.showAlert({
         type: 'Warning',
         message: 'There is still unfinished annotations.\nAre you sure you want to archive this campaign?',
-        actions: [{
+        actions: [ {
           label: 'Archive',
           callback: () => archiveCampaign(campaign),
-        }],
+        } ],
       });
     } else archiveCampaign(campaign)
-  }, [campaign, phases]);
+  }, [ campaign, phases ]);
 
   if (!campaign || campaign.isArchived || !campaign.canManage) return <Fragment/>
   return <IonButton color="medium" fill="outline" onClick={ archive }>

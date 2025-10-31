@@ -12,32 +12,34 @@ interface Props {
   onValueSelected?: (value: Item) => void;
   placeholder: string;
   className?: string;
+  disabled?: boolean;
 }
 
-export const ListSearchbar: React.FC<Props> = (props) => {
+export const ListSearchbar: React.FC<Props> = ({ values, placeholder, className, onValueSelected, disabled }) => {
   const { containerRef, top, left, width } = usePopover()
 
   const [ search, setSearch ] = useState<string>();
   const [ searchResult, setSearchResult ] = useState<Array<any>>([]);
 
-  useEffect(() => setSearchResult(searchFilter(props.values, search)), [ search ])
+  useEffect(() => setSearchResult(searchFilter(values, search)), [ search ])
 
   return (
     <div ref={ containerRef }
          className={ [ styles.searchbar, !search ? '' : styles.withResults ].join(' ') }>
       <Searchbar search={ search }
-                 onChange={ setSearch }
-                 placeholder={ props.placeholder }
-                 className={ props.className }/>
+                 onInput={ setSearch }
+                 disabled={ disabled }
+                 placeholder={ placeholder }
+                 className={ className }/>
 
       { !!search && createPortal(<IonList id="searchbar-results"
-                                          className={ styles.results }
+                                          className={ styles.searchbarResults }
                                           lines="none"
                                           style={ { top, left, width } }>
         { (searchResult.length > 5 ? searchResult.slice(0, 4) : searchResult.slice(0, 5)).map((v, i) => (
           <IonItem key={ i } onClick={ () => {
             setSearch(undefined);
-            if (props.onValueSelected) props.onValueSelected(v)
+            if (onValueSelected) onValueSelected(v)
           } }>{ v.label }</IonItem>
         )) }
         { searchResult.length > 5 && <IonItem className="none">{ searchResult.length - 4 } more results</IonItem> }

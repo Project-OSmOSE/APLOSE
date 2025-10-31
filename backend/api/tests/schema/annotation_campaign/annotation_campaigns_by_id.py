@@ -42,9 +42,7 @@ query ($id: ID!) {
                 displayName
             }
         }
-        spectrograms {
-            totalCount
-        }
+        spectrogramsCount
         confidenceSet {
             name
             desc

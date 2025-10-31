@@ -4,14 +4,14 @@ import { gqlAPI } from '@/api/baseGqlApi';
 export type ListDatasetsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListDatasetsQuery = { __typename?: 'Query', allDatasets?: { __typename?: 'DatasetNodeNodeConnection', results: Array<{ __typename?: 'DatasetNode', id: string, name: string, description?: string | null, createdAt: any, legacy: boolean, spectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', totalCount?: number | null } | null, spectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount: number, start?: any | null, end?: any | null } | null } | null> } | null };
+export type ListDatasetsQuery = { __typename?: 'Query', allDatasets?: { __typename?: 'DatasetNodeNodeConnection', results: Array<{ __typename?: 'DatasetNode', id: string, name: string, description?: string | null, createdAt: any, legacy: boolean, analysisCount: number, spectrogramCount: number, start?: any | null, end?: any | null } | null> } | null };
 
 export type GetDatasetByIdQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
 }>;
 
 
-export type GetDatasetByIdQuery = { __typename?: 'Query', datasetById?: { __typename?: 'DatasetNode', id: string, name: string, path: string, description?: string | null, createdAt: any, legacy: boolean, spectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', start?: any | null, end?: any | null } | null, owner: { __typename?: 'UserNode', displayName: string } } | null };
+export type GetDatasetByIdQuery = { __typename?: 'Query', datasetById?: { __typename?: 'DatasetNode', id: string, name: string, path: string, description?: string | null, start?: any | null, end?: any | null, createdAt: any, legacy: boolean, owner: { __typename?: 'UserNode', displayName: string } } | null };
 
 export type ListAvailableDatasetsForImportQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
@@ -42,14 +42,10 @@ export const ListDatasetsDocument = `
       description
       createdAt
       legacy
-      spectrogramAnalysis {
-        totalCount
-      }
-      spectrograms {
-        totalCount
-        start
-        end
-      }
+      analysisCount
+      spectrogramCount
+      start
+      end
     }
   }
 }
@@ -61,10 +57,8 @@ export const GetDatasetByIdDocument = `
     name
     path
     description
-    spectrograms {
-      start
-      end
-    }
+    start
+    end
     createdAt
     legacy
     owner {

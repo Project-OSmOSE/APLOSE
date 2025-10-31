@@ -80,7 +80,9 @@ class BaseObjectType(DjangoObjectType):
         if cls._meta.context_filter is None:
             return queryset
         else:
-            return cls._meta.context_filter.get_queryset(info.context)
+            return cls._meta.context_filter.get_queryset(
+                info.context, queryset=queryset
+            )
 
     @classmethod
     def get_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):

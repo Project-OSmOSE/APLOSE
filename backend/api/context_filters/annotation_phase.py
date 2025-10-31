@@ -11,12 +11,14 @@ class AnnotationPhaseContextFilter:
     """Filter phase from the context"""
 
     @classmethod
-    def get_queryset(cls, context: Request) -> QuerySet[AnnotationPhase]:
+    def get_queryset(
+        cls, context: Request, queryset=AnnotationPhase.objects.all()
+    ) -> QuerySet[AnnotationPhase]:
         """Get queryset depending on the context"""
 
         if context.user.is_staff or context.user.is_superuser:
-            return AnnotationPhase.objects.all()
-        return AnnotationPhase.objects.filter(
+            return queryset
+        return queryset.filter(
             Q(annotation_campaign__owner_id=context.user.id)
             | (
                 Q(annotation_campaign__archive__isnull=True)
@@ -30,10 +32,14 @@ class AnnotationPhaseContextFilter:
         )
 
     @classmethod
-    def get_node_or_fail(cls, context: Request, **kwargs) -> AnnotationPhase:
+    def get_node_or_fail(
+        cls, context: Request, queryset=None, **kwargs
+    ) -> AnnotationPhase:
         """Get node or fail depending on the context"""
         try:
-            return get_object_or_404(cls.get_queryset(context), **kwargs)
+            return get_object_or_404(
+                cls.get_queryset(context, queryset=queryset), **kwargs
+            )
         except Http404:
             raise NotFoundError()
 

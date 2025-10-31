@@ -1,10 +1,10 @@
 import graphene
 
 from backend.api.models import Spectrogram
-from backend.api.schema.context_filters import (
+from backend.api.context_filters import (
     AnnotationPhaseContextFilter,
+    AnnotationContextFilter,
 )
-from backend.api.schema.context_filters.annotation import AnnotationContextFilter
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.serializers import AnnotationSerializer
 from backend.utils.schema.mutations import ListSerializerMutation

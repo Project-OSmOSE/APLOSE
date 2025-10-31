@@ -1,13 +1,14 @@
 import { ESSENTIAL, expect, test } from './utils';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
-import { gqlURL, interceptRequests, USERS } from './utils/mock';
+import { gqlURL, interceptRequests } from './utils/mock';
+import { USERS } from './utils/mock/types';
 
 
 test.describe('Annotator', () => {
   test('Handle empty states', ESSENTIAL, async ({ page }) => {
     await interceptRequests(page, {
       getCurrentUser: 'annotator',
-      listCampaignsAndPhases: 'empty',
+      listCampaigns: 'empty',
     })
     await page.campaign.list.go('annotator');
     await expect(page.campaign.list.card).not.toBeVisible();

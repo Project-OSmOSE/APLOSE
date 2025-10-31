@@ -1,13 +1,8 @@
 import { ESSENTIAL, expect, test } from './utils';
-import { AnnotationFileRange } from '../src/service/types';
-import { gqlURL, interceptRequests, userGroup, USERS } from './utils/mock';
-import { fileRange } from './utils/mock/fileRange';
-import { dataset } from './utils/mock/dataset';
-import { AnnotationPhaseType, type UpdateFileRangesMutationVariables } from '../src/api';
-import { campaign } from './utils/mock/campaign';
-
-export type PostAnnotationFileRange = Pick<AnnotationFileRange, 'id' | 'annotator'> &
-  Partial<Pick<AnnotationFileRange, 'first_file_index' | 'last_file_index'>>
+import { gqlURL, interceptRequests } from './utils/mock';
+import { campaign, DATASET_FILES_COUNT, fileRange, userGroup, USERS } from './utils/mock/types';
+import { AnnotationPhaseType } from '../src/api/types.gql-generated';
+import { type UpdateFileRangesMutationVariables } from '../src/api/annotation-file-range';
 
 test.describe('Campaign creator', () => {
 
@@ -34,8 +29,8 @@ test.describe('Campaign creator', () => {
 
     await test.step('Can see existing ranges', async () => {
       await expect(page.getByText(USERS.annotator.displayName)).toBeVisible()
-      await expect(page.campaign.edit.firstIndexInputs.first()).toHaveValue((fileRange.firstFileIndex).toString())
-      await expect(page.campaign.edit.lastIndexInputs.first()).toHaveValue((fileRange.lastFileIndex).toString())
+      await expect(page.campaign.edit.firstIndexInputs.first()).toHaveValue((fileRange.firstFileIndex + 1).toString())
+      await expect(page.campaign.edit.lastIndexInputs.first()).toHaveValue((fileRange.lastFileIndex + 1).toString())
       await expect(page.getByText(USERS.creator.displayName)).not.toBeVisible()
       await expect(page.getByText(USERS.staff.displayName)).not.toBeVisible()
       await expect(page.getByText(USERS.superuser.displayName)).not.toBeVisible()
@@ -89,8 +84,8 @@ test.describe('Campaign creator', () => {
         page.waitForRequest(gqlURL),
         page.getByRole('button', { name: 'Update annotators' }).click(),
       ])
-      const variables: UpdateFileRangesMutationVariables = await request.postDataJSON()
-      expect(variables.campaignID).toEqual(+campaign.id)
+      const variables: UpdateFileRangesMutationVariables = await request.postDataJSON().variables
+      expect(variables.campaignID).toEqual(campaign.id)
       expect(variables.phaseType).toEqual(AnnotationPhaseType.Annotation)
       const expectedRanges: UpdateFileRangesMutationVariables['fileRanges'] = [
         {
@@ -105,11 +100,11 @@ test.describe('Campaign creator', () => {
         }, {
           annotatorId: USERS.superuser.id,
           firstFileIndex: 0,
-          lastFileIndex: dataset.filesCount - 1,
+          lastFileIndex: DATASET_FILES_COUNT - 1,
         }, {
           annotatorId: USERS.staff.id,
           firstFileIndex: 0,
-          lastFileIndex: dataset.filesCount - 1,
+          lastFileIndex: DATASET_FILES_COUNT - 1,
         },
       ]
       expect(variables.fileRanges).toEqual(expectedRanges)

@@ -28,9 +28,7 @@ query (
         results {
             id
             name
-            dataset {
-                name
-            }
+            datasetName
             deadline
             isArchived
         }

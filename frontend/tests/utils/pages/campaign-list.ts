@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 import { LoginPage } from './login';
-import { type UserType } from '../mock';
+import type { UserType } from '../mock/types';
 
 export class CampaignListPage {
 

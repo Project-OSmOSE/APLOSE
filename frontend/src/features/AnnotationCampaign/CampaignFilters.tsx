@@ -58,7 +58,6 @@ const AnnotationCampaignAnnotatorFilter: React.FC = () => {
   const { user } = useCurrentUser();
 
   const toggle = useCallback(() => {
-    console.log('toggle annotator', params.annotatorID)
     if (params.annotatorID) {
       updateParams({ annotatorID: null })
     } else {

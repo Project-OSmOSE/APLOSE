@@ -1,4 +1,4 @@
-query listCampaignsAndPhases(
+query listCampaigns(
     $isArchived: Boolean
     $phase: AnnotationPhaseType
     $ownerID: ID
@@ -19,34 +19,12 @@ query listCampaignsAndPhases(
             name
             deadline
             isArchived
-            dataset {
-                name
-            }
-        }
-    }
-    allAnnotationPhases(
-        isCampaignArchived: $isArchived
-        phase: $phase
-        annotationCampaign_OwnerId: $ownerID
-        annotationFileRanges_AnnotatorId: $annotatorID
-        search: $search
-    ) {
-        results {
-            id
-            phase
-            annotationCampaignId
-            fileRanges: annotationFileRanges {
-                tasksCount
-            }
-            completedTasks: annotationSpectrograms(annotationTasks_Status: Finished) {
-                totalCount
-            }
-            userFileRanges: annotationFileRanges(annotator: $annotatorID) {
-                tasksCount
-            }
-            userCompletedTasks: annotationSpectrograms(annotationTasks_Status: Finished, annotator: $annotatorID) {
-                totalCount
-            }
+            datasetName
+            phaseTypes
+            tasksCount
+            completedTasksCount
+            userTasksCount
+            userCompletedTasksCount
         }
     }
 }
@@ -69,6 +47,13 @@ query getCampaign($id: ID!) {
             id
             name
         }
+        labelSet {
+            name
+            description
+            labels {
+                name
+            }
+        }
         labelsWithAcousticFeatures {
             id
             name
@@ -90,13 +75,6 @@ query getCampaign($id: ID!) {
             desc
             confidenceIndicators {
                 label
-            }
-        }
-        labelSet {
-            name
-            description
-            labels {
-                name
             }
         }
         detectors {
@@ -140,21 +118,13 @@ query getCampaign($id: ID!) {
                 }
             }
         }
-        spectrograms {
-            totalCount
-        }
-    }
-    allAnnotationPhases(annotationCampaignId: $id) {
-        results {
+        spectrogramsCount
+        phases {
             id
             phase
             isOpen
-            fileRanges: annotationFileRanges {
-                tasksCount
-            }
-            completedTasks: annotationSpectrograms(annotationTasks_Status: Finished) {
-                totalCount
-            }
+            tasksCount
+            completedTasksCount
         }
     }
 }

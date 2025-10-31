@@ -2250,48 +2250,18 @@ type AnnotationCampaignNode implements BaseNode {
   owner: UserNode!
   confidenceSet: ConfidenceSetNode
   archive: ArchiveNode
-  phases: [AnnotationPhaseNode]
-  detectors: [DetectorNode]
-  annotators: [UserNode]
-  spectrograms(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    start: DateTime
-    start_Lt: DateTime
-    start_Lte: DateTime
-    start_Gt: DateTime
-    start_Gte: DateTime
-    end: DateTime
-    end_Lt: DateTime
-    end_Lte: DateTime
-    end_Gt: DateTime
-    end_Gte: DateTime
-    campaignId: ID
-    phaseType: AnnotationPhaseType
-    annotatorId: ID
-    isTaskCompleted: Boolean
-    hasAnnotations: Boolean
-    annotatedByAnnotator: ID
-    annotatedByDetector: ID
-    annotatedWithLabel: String
-    annotatedWithConfidence: String
-    annotatedWithFeatures: Boolean
-
-    """Ordering"""
-    orderBy: String
-  ): SpectrogramNodeNodeConnection
+  phases: [AnnotationPhaseNode]!
+  phaseTypes: [AnnotationPhaseType]!
   isArchived: Boolean!
   canManage: Boolean!
+  datasetName: String!
+  spectrogramsCount: Int!
+  tasksCount: Int!
+  userTasksCount: Int!
+  completedTasksCount: Int!
+  userCompletedTasksCount: Int!
+  detectors: [DetectorNode]
+  annotators: [UserNode]
 }
 
 """Dataset schema"""
@@ -2341,43 +2311,10 @@ type DatasetNode implements BaseNode {
     """Ordering"""
     orderBy: String
   ): AnnotationCampaignNodeConnection!
-  spectrograms(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    start: DateTime
-    start_Lt: DateTime
-    start_Lte: DateTime
-    start_Gt: DateTime
-    start_Gte: DateTime
-    end: DateTime
-    end_Lt: DateTime
-    end_Lte: DateTime
-    end_Gt: DateTime
-    end_Gte: DateTime
-    campaignId: ID
-    phaseType: AnnotationPhaseType
-    annotatorId: ID
-    isTaskCompleted: Boolean
-    hasAnnotations: Boolean
-    annotatedByAnnotator: ID
-    annotatedByDetector: ID
-    annotatedWithLabel: String
-    annotatedWithConfidence: String
-    annotatedWithFeatures: Boolean
-
-    """Ordering"""
-    orderBy: String
-  ): SpectrogramNodeNodeConnection
+  analysisCount: Int!
+  spectrogramCount: Int!
+  start: DateTime
+  end: DateTime
 }
 
 """User node"""
@@ -3346,8 +3283,12 @@ type AnnotationPhaseNode implements BaseNode {
   ): AnnotationSpectrogramNodeNodeConnection
   isCompleted: Boolean!
   isOpen: Boolean!
-  hasAnnotations: Boolean!
   canManage: Boolean!
+  tasksCount: Int!
+  userTasksCount: Int!
+  completedTasksCount: Int!
+  userCompletedTasksCount: Int!
+  hasAnnotations: Boolean!
 }
 
 """From AnnotationPhase.Type"""

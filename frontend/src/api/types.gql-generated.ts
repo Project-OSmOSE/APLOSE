@@ -232,9 +232,11 @@ export type AnnotationCampaignNode = BaseNode & {
   canManage: Scalars['Boolean']['output'];
   colormapDefault?: Maybe<Scalars['String']['output']>;
   colormapInvertedDefault?: Maybe<Scalars['Boolean']['output']>;
+  completedTasksCount: Scalars['Int']['output'];
   confidenceSet?: Maybe<ConfidenceSetNode>;
   createdAt: Scalars['DateTime']['output'];
   dataset: DatasetNode;
+  datasetName: Scalars['String']['output'];
   deadline?: Maybe<Scalars['Date']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   detectors?: Maybe<Array<Maybe<DetectorNode>>>;
@@ -246,8 +248,12 @@ export type AnnotationCampaignNode = BaseNode & {
   labelsWithAcousticFeatures?: Maybe<Array<Maybe<AnnotationLabelNode>>>;
   name: Scalars['String']['output'];
   owner: UserNode;
-  phases?: Maybe<Array<Maybe<AnnotationPhaseNode>>>;
-  spectrograms?: Maybe<SpectrogramNodeNodeConnection>;
+  phaseTypes: Array<Maybe<AnnotationPhaseType>>;
+  phases: Array<Maybe<AnnotationPhaseNode>>;
+  spectrogramsCount: Scalars['Int']['output'];
+  tasksCount: Scalars['Int']['output'];
+  userCompletedTasksCount: Scalars['Int']['output'];
+  userTasksCount: Scalars['Int']['output'];
 };
 
 
@@ -261,39 +267,6 @@ export type AnnotationCampaignNodeAnalysisArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** AnnotationCampaign schema */
-export type AnnotationCampaignNodeSpectrogramsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  annotatedByAnnotator?: InputMaybe<Scalars['ID']['input']>;
-  annotatedByDetector?: InputMaybe<Scalars['ID']['input']>;
-  annotatedWithConfidence?: InputMaybe<Scalars['String']['input']>;
-  annotatedWithFeatures?: InputMaybe<Scalars['Boolean']['input']>;
-  annotatedWithLabel?: InputMaybe<Scalars['String']['input']>;
-  annotatorId?: InputMaybe<Scalars['ID']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  campaignId?: InputMaybe<Scalars['ID']['input']>;
-  end?: InputMaybe<Scalars['DateTime']['input']>;
-  end_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  end_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  end_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  end_Lte?: InputMaybe<Scalars['DateTime']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  hasAnnotations?: InputMaybe<Scalars['Boolean']['input']>;
-  isTaskCompleted?: InputMaybe<Scalars['Boolean']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Scalars['String']['input']>;
-  ordering?: InputMaybe<Scalars['String']['input']>;
-  phaseType?: InputMaybe<AnnotationPhaseType>;
-  start?: InputMaybe<Scalars['DateTime']['input']>;
-  start_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  start_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  start_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  start_Lte?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type AnnotationCampaignNodeConnection = {
@@ -698,6 +671,7 @@ export type AnnotationPhaseNode = BaseNode & {
   annotationTasks: AnnotationTaskNodeConnection;
   annotations: AnnotationNodeConnection;
   canManage: Scalars['Boolean']['output'];
+  completedTasksCount: Scalars['Int']['output'];
   createdAt: Scalars['DateTime']['output'];
   createdBy: UserNode;
   endedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -708,6 +682,9 @@ export type AnnotationPhaseNode = BaseNode & {
   isCompleted: Scalars['Boolean']['output'];
   isOpen: Scalars['Boolean']['output'];
   phase: AnnotationPhaseType;
+  tasksCount: Scalars['Int']['output'];
+  userCompletedTasksCount: Scalars['Int']['output'];
+  userTasksCount: Scalars['Int']['output'];
 };
 
 
@@ -2340,9 +2317,11 @@ export type CreateAnnotationPhase = {
 /** Dataset schema */
 export type DatasetNode = BaseNode & {
   __typename?: 'DatasetNode';
+  analysisCount: Scalars['Int']['output'];
   annotationCampaigns: AnnotationCampaignNodeConnection;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
+  end?: Maybe<Scalars['DateTime']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
   legacy: Scalars['Boolean']['output'];
@@ -2351,7 +2330,8 @@ export type DatasetNode = BaseNode & {
   path: Scalars['String']['output'];
   relatedChannelConfigurations: ChannelConfigurationNodeConnection;
   spectrogramAnalysis?: Maybe<SpectrogramAnalysisNodeNodeConnection>;
-  spectrograms?: Maybe<SpectrogramNodeNodeConnection>;
+  spectrogramCount: Scalars['Int']['output'];
+  start?: Maybe<Scalars['DateTime']['output']>;
 };
 
 
@@ -2431,39 +2411,6 @@ export type DatasetNodeSpectrogramAnalysisArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
   ordering?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** Dataset schema */
-export type DatasetNodeSpectrogramsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  annotatedByAnnotator?: InputMaybe<Scalars['ID']['input']>;
-  annotatedByDetector?: InputMaybe<Scalars['ID']['input']>;
-  annotatedWithConfidence?: InputMaybe<Scalars['String']['input']>;
-  annotatedWithFeatures?: InputMaybe<Scalars['Boolean']['input']>;
-  annotatedWithLabel?: InputMaybe<Scalars['String']['input']>;
-  annotatorId?: InputMaybe<Scalars['ID']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  campaignId?: InputMaybe<Scalars['ID']['input']>;
-  end?: InputMaybe<Scalars['DateTime']['input']>;
-  end_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  end_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  end_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  end_Lte?: InputMaybe<Scalars['DateTime']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  hasAnnotations?: InputMaybe<Scalars['Boolean']['input']>;
-  isTaskCompleted?: InputMaybe<Scalars['Boolean']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Scalars['String']['input']>;
-  ordering?: InputMaybe<Scalars['String']['input']>;
-  phaseType?: InputMaybe<AnnotationPhaseType>;
-  start?: InputMaybe<Scalars['DateTime']['input']>;
-  start_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  start_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  start_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  start_Lte?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type DatasetNodeConnection = {

@@ -1,9 +1,7 @@
 import { Page } from '@playwright/test';
-import { Serializable } from 'playwright-core/types/structs';
 import { API_URL } from '../const';
 import {
   ANNOTATOR_GROUP,
-  AUDIO_METADATA,
   CAMPAIGN,
   CAMPAIGN_PHASE,
   CHECK_DATA,
@@ -16,20 +14,11 @@ import {
   USERS,
 } from '../../fixtures';
 import { Paginated } from '../../../src/service/type';
-import { AnnotationCampaign, AnnotationFile, Phase } from '../../../src/service/types';
-
-type Response = {
-  status: number,
-  json?: Serializable
-}
+import { AnnotationFile, Phase } from '../../../src/service/types';
 
 export class Mock {
 
   constructor(private page: Page) {
-  }
-
-  public static getError(field: string) {
-    return `Custom error for ${ field }`;
   }
 
   public async users(empty: boolean = false) {
@@ -48,34 +37,11 @@ export class Mock {
     }))
   }
 
-  public async campaignCreate(withErrors: boolean = false) {
-    let json: Serializable = CAMPAIGN;
-    let status = 200;
-    if (withErrors) {
-      status = 400;
-      json = {
-        name: [ Mock.getError('name') ],
-        desc: [ Mock.getError('desc') ],
-        instructions_url: [ Mock.getError('instructions_url') ],
-        deadline: [ Mock.getError('deadline') ],
-        dataset: [ Mock.getError('datasets') ],
-        analysis: [ Mock.getError('spectro_configs') ],
-        usage: [ Mock.getError('usage') ],
-        label_set: [ Mock.getError('label_set') ],
-        confidence_indicator_set: [ Mock.getError('confidence_indicator_set') ],
-      }
-    }
-    await this.page.route(API_URL.campaign.create, (route, request) => {
-      if (request.method() === 'POST') route.fulfill({ status, json })
-      else route.continue()
-    })
-  }
-
   public async campaignDetail(empty: boolean = false,
                               phase: Phase = 'Annotation',
                               hasConfidence: boolean = true,
                               allowPoint: boolean = false) {
-    const json: AnnotationCampaign = CAMPAIGN;
+    const json = CAMPAIGN;
     if (!hasConfidence) {
       json.confidence_set = null;
     }
@@ -98,23 +64,8 @@ export class Mock {
     await this.page.route(API_URL.spectrogram.list, route => route.fulfill({ status: 200, json }))
   }
 
-  public async audios(empty: boolean = false) {
-    const json = empty ? [] : [ AUDIO_METADATA ]
-    await this.page.route(API_URL.audio.list, route => route.fulfill({ status: 200, json }))
-  }
-
-  public async labelSets(empty: boolean = false) {
-    const json = empty ? [] : [ LABEL.set ]
-    await this.page.route(API_URL.label.list, route => route.fulfill({ status: 200, json }))
-  }
-
   public async labelSetDetail() {
     await this.page.route(API_URL.label.detail, route => route.fulfill({ status: 200, json: LABEL.set }))
-  }
-
-  public async confidenceSets(empty: boolean = false) {
-    const json = empty ? [] : [ CONFIDENCE.set ]
-    await this.page.route(API_URL.confidence.list, route => route.fulfill({ status: 200, json }))
   }
 
   public async confidenceSetDetail() {
@@ -130,7 +81,6 @@ export class Mock {
     const json = empty ? [] : [ ANNOTATOR_GROUP ]
     await this.page.route(API_URL.annotatorGroup.list, route => route.fulfill({ status: 200, json }))
   }
-
 
   public async fileRangesFiles(empty: boolean = false) {
     const results = empty ? [] : [ FILE_RANGE.submittedFile, FILE_RANGE.unsubmittedFile ]
@@ -149,11 +99,6 @@ export class Mock {
       else route.fulfill({ status: 200 })
     });
   }
-
-  public async campaignArchive() {
-    await this.page.route(API_URL.campaign.archive, route => route.fulfill({ status: 200 }));
-  }
-
 
   async resultImport() {
     await this.page.route(API_URL.result.import, route => route.fulfill({

@@ -2,7 +2,7 @@
 from django import forms
 
 from backend.api.models import AnnotationCampaign
-from backend.api.schema.context_filters import AnnotationCampaignContextFilter
+from backend.api.context_filters import AnnotationCampaignContextFilter
 from backend.utils.schema.types import AuthenticatedModelFormMutation
 
 

@@ -1,6 +1,10 @@
 import graphene
 
-from backend.api.schema.context_filters import AnnotationPhaseContextFilter
+from backend.api.context_filters import (
+    AnnotationPhaseContextFilter,
+    AnnotationCampaignContextFilter,
+)
+from backend.api.models import AnnotationCampaign
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.nodes import AnnotationPhaseNode
 from backend.utils.schema import GraphQLPermissions, GraphQLResolve
@@ -11,9 +15,14 @@ def resolve_phase(
     self, info, campaign_id: int, phase_type: AnnotationPhaseType
 ):  # pylint: disable=redefined-builtin
     """Get AnnotationPhase by campaignID and phase type"""
+    campaign: AnnotationCampaign = AnnotationCampaignContextFilter.get_node_or_fail(
+        info.context,
+        pk=campaign_id,
+    )
     return AnnotationPhaseContextFilter.get_node_or_fail(
         info.context,
-        annotation_campaign_id=campaign_id,
+        queryset=AnnotationPhaseNode.get_queryset(campaign.phases, info),
+        annotation_campaign_id=campaign.id,
         phase=phase_type.value,
     )
 

@@ -1,14 +1,14 @@
-import React, { Fragment } from "react";
+import React, { Fragment } from 'react';
 
-import { DatasetName } from "@/features/Dataset";
-import { SpectrogramAnalysisTable } from "@/features/SpectrogramAnalysis";
-import { AnnotationCampaignArchiveButton, AnnotationCampaignInstructionsButton } from "@/features/AnnotationCampaign";
-import { FadedText, Progress } from "@/components/ui";
-import { dateToString, pluralize } from "@/service/function";
-import { LabelSetModalButton } from "@/features/Labels";
-import { useCurrentCampaign } from "@/api";
+import { DatasetName } from '@/features/Dataset';
+import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
+import { AnnotationCampaignArchiveButton, AnnotationCampaignInstructionsButton } from '@/features/AnnotationCampaign';
+import { FadedText, Progress } from '@/components/ui';
+import { dateToString, pluralize } from '@/service/function';
+import { LabelSetModalButton } from '@/features/Labels';
+import { useCurrentCampaign } from '@/api';
 
-import styles from "./styles.module.scss";
+import styles from './styles.module.scss';
 
 
 export const AnnotationCampaignInfo: React.FC = () => {
@@ -44,21 +44,8 @@ export const AnnotationCampaignInfo: React.FC = () => {
         <div className={ styles.bloc }>
             <div>
                 <FadedText>Label set</FadedText>
-              { campaign.labelSet ? <p>{ campaign.labelSet.name }</p> : <p>No label set</p> }
+              { campaign?.labelSet && <LabelSetModalButton/> }
             </div>
-          { campaign.labelSet && <div>
-              <FadedText>Label{ pluralize(campaign.labelSet.labels) }</FadedText>
-              <p>{ campaign.labelSet.labels?.map(l => l?.name).join(', ') }</p>
-          </div> }
-            <div>
-                <FadedText>
-                    Label{ pluralize(campaign.labelsWithAcousticFeatures) } with acoustic features
-                </FadedText>
-              { campaign.labelsWithAcousticFeatures && campaign.labelsWithAcousticFeatures.filter(l => l !== null).length > 0 ?
-                  <p>{ campaign.labelsWithAcousticFeatures.filter(l => l !== null).map(l => l!.name).join(', ') }</p>
-                  : <p>No labels with features</p> }
-            </div>
-          { campaign?.labelSet && <LabelSetModalButton/> }
         </div>
 
         <div className={ styles.bloc }>
@@ -83,8 +70,8 @@ export const AnnotationCampaignInfo: React.FC = () => {
     { phases && phases.map(p => <div key={ p!.id } className={ styles.bloc }>
       <FadedText>{ p!.phase } progress</FadedText>
       <Progress className={ styles.progress }
-                value={ p!.completedTasks?.totalCount ?? 0 }
-                total={ p!.fileRanges?.tasksCount ?? 0 }/>
+                value={ p.completedTasksCount }
+                total={ p.tasksCount }/>
     </div>) }
   </div>
 }

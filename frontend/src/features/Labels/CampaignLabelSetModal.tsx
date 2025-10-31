@@ -8,10 +8,13 @@ import styles from './styles.module.scss';
 
 
 export const LabelSetModalButton: React.FC = () => {
+  const { campaign } = useCurrentCampaign()
   const modal = useModal()
   return <Fragment>
-    <IonButton fill="outline" color="medium" className="ion-text-wrap" onClick={ modal.toggle }>
-      Update labels with features
+    <IonButton fill="outline" color="medium" className="ion-text-wrap"
+               disabled={ !campaign?.labelSet?.name }
+               onClick={ modal.toggle }>
+      { campaign?.labelSet?.name ?? 'No label set' }
     </IonButton>
     { modal.isOpen && createPortal(<LabelSetModal onClose={ modal.toggle }/>, document.body) }
   </Fragment>
@@ -35,8 +38,8 @@ export const LabelSetModal: React.FC<{
   const [ disabled, setDisabled ] = useState<boolean>(true);
 
   useEffect(() => {
-    setLabelsWithAcousticFeatures((campaign?.labelsWithAcousticFeatures?.filter(r => r !== null) ?? []) as Label[]);
-  }, [ campaign?.labelsWithAcousticFeatures ]);
+    setLabelsWithAcousticFeatures((campaign?.labelsWithAcousticFeatures ?? []) as Label[]);
+  }, [ campaign ]);
 
   useEffect(() => {
     if (patchError) toast.raiseError({ error: patchError });
@@ -50,34 +53,37 @@ export const LabelSetModal: React.FC<{
   }, [ disabled, setDisabled ])
 
   const onSave = useCallback(async () => {
-    if (!campaign) return;
     try {
       await updateCampaignFeaturedLabels({
-        id: campaign.id,
         labelsWithAcousticFeatures: labelsWithAcousticFeatures.map(l => l.id),
-      }).unwrap();
+      });
     } finally {
       toggleDisabled()
     }
-  }, [ updateCampaignFeaturedLabels, campaign, labelsWithAcousticFeatures, toggleDisabled ])
+  }, [ updateCampaignFeaturedLabels, labelsWithAcousticFeatures, toggleDisabled ])
 
   return (
     <Modal onClose={ onClose } className={ [ styles.modal ].join(' ') }>
-      <ModalHeader onClose={ onClose } title="Label set"/>
+      <ModalHeader onClose={ onClose }
+                   title={ campaign?.labelSet?.name }
+                   subtitle="Label set"/>
 
       { isFetching && <IonSpinner/> }
 
       { formErrors.length > 0 && <WarningText error={ formErrors }/> }
 
-      { campaign?.labelSet && <LabelSetFeaturesSelect description={ campaign.labelSet.description ?? undefined }
-                                                      error={ formErrors.find((e: ErrorType) => e.field === 'labelsWithAcousticFeatures')?.messages.join(' ') }
-                                                      labels={ (campaign.labelSet.labels ?? []).filter(l => l !== null) as Label[] }
-                                                      labelsWithAcousticFeatures={ labelsWithAcousticFeatures }
-                                                      setLabelsWithAcousticFeatures={ setLabelsWithAcousticFeatures }/> }
+      { campaign?.labelSet && <Fragment>
+        { campaign?.labelSet.description && <p>{ campaign?.labelSet.description }</p> }
+          <LabelSetFeaturesSelect description={ campaign?.labelSet.description ?? undefined }
+                                  error={ formErrors.find((e: ErrorType) => e.field === 'labelsWithAcousticFeatures')?.messages.join(' ') }
+                                  labels={ (campaign?.labelSet.labels ?? []).filter(l => l !== null) as Label[] }
+                                  labelsWithAcousticFeatures={ labelsWithAcousticFeatures }
+                                  setLabelsWithAcousticFeatures={ setLabelsWithAcousticFeatures }/>
+      </Fragment> }
 
 
       <ModalFooter>
-        { campaign?.canManage && !campaign?.archive && (
+        { campaign?.canManage && !campaign?.isArchived && (
           <IonButton fill="outline"
                      onClick={ toggleDisabled }
                      disabled={ isSubmitting || !disabled }>

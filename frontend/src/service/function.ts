@@ -4,7 +4,6 @@ import { Item } from '@/components/form';
 
 export function getErrorMessage(error: FetchBaseQueryError | SerializedError | unknown | string | undefined): string | undefined {
   if (!error) return undefined;
-  console.log('DEBUG', typeof error, JSON.stringify(error))
   if (typeof error === 'string') return error;
   if ((error as SerializedError).message) return (error as SerializedError).message;
   if ((error as FetchBaseQueryError).status === 500) return '[500] Internal server error';
@@ -35,13 +34,13 @@ export function searchFilter(values: Array<Item>, search: string | undefined): A
   if (!search) return []
   const searchData = search.split(' ').filter(s => s).map(s => s.toLowerCase());
   return values.filter(value => {
-    const valueData = value.label.split(' ').filter(v => v).map(v => v.toLowerCase());
-    for (const s of searchData) {
-      if (valueData.find(v => v.includes(s))) continue;
-      return false;
-    }
-    return true;
-  })
+      const valueData = value.label.split(' ').filter(v => v).map(v => v.toLowerCase());
+      for (const s of searchData) {
+        if (valueData.find(v => v.includes(s))) continue;
+        return false;
+      }
+      return true;
+    })
     .sort((a, b) => {
       const aShow = a.label.toLowerCase();
       const bShow = b.label.toLowerCase();

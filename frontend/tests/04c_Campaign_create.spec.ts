@@ -1,12 +1,8 @@
 import { API_URL, ESSENTIAL, expect, expectNoRequestsOnAction, test } from './utils';
 import { gqlURL, interceptRequests, mockError } from './utils/mock';
 import type { GqlMutation } from './utils/mock/_gql';
-import { campaign } from './utils/mock/campaign';
-import type {
-  CreateAnnotationCampaignMutationVariables,
-} from '../src/api/annotation-campaign/annotation-campaign.generated';
-import { dataset } from './utils/mock/dataset';
-import { spectrogramAnalysis } from './utils/mock/spectrogramAnalysis';
+import { campaign, dataset, spectrogramAnalysis } from './utils/mock/types';
+import type { CreateCampaignMutationVariables } from '../src/api/annotation-campaign/annotation-campaign.generated';
 
 test.describe('Annotator', () => {
 
@@ -25,8 +21,8 @@ test.describe('Annotator', () => {
 
     await test.step('Check campaign', async () => {
       const data = await request.postDataJSON();
-      expect(data.operationName).toEqual('createAnnotationCampaign' as GqlMutation);
-      const variables: CreateAnnotationCampaignMutationVariables = data.variables;
+      expect(data.operationName).toEqual('createCampaign' as GqlMutation);
+      const variables: CreateCampaignMutationVariables = data.variables;
       expect(variables).toEqual({
         name: campaign.name,
         datasetID: dataset.id,
@@ -38,7 +34,7 @@ test.describe('Annotator', () => {
         allowColormapTuning: false,
         colormapDefault: null,
         colormapInvertedDefault: null,
-      } as CreateAnnotationCampaignMutationVariables)
+      } as CreateCampaignMutationVariables)
     })
 
     await expect(page.getByRole('heading', { name: campaign.name })).toBeVisible()
@@ -59,8 +55,8 @@ test.describe('Annotator', () => {
 
     await test.step('Check campaign', async () => {
       const data = await request.postDataJSON();
-      expect(data.operationName).toEqual('createAnnotationCampaign' as GqlMutation);
-      const variables: CreateAnnotationCampaignMutationVariables = data.variables;
+      expect(data.operationName).toEqual('createCampaign' as GqlMutation);
+      const variables: CreateCampaignMutationVariables = data.variables;
       expect(variables).toEqual({
         name: campaign.name,
         datasetID: dataset.id,
@@ -72,14 +68,14 @@ test.describe('Annotator', () => {
         allowColormapTuning: true,
         colormapDefault: 'hsv',
         colormapInvertedDefault: true,
-      } as CreateAnnotationCampaignMutationVariables)
+      } as CreateCampaignMutationVariables)
     })
   })
 
   test('Handle errors', ESSENTIAL, async ({ page }) => {
     await interceptRequests(page, {
       getCurrentUser: 'annotator',
-      createAnnotationCampaign: 'failed',
+      createCampaign: 'failed',
     })
     await page.campaign.create.go('annotator');
     await page.campaign.create.fillGlobal()

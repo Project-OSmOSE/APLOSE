@@ -1,23 +1,19 @@
-import { type AnnotationLabelNode, type LabelSetNode, type Maybe } from '../../../src/api/types.gql-generated';
+import type { GqlQuery } from './_types';
+import type { ListLabelSetsQuery } from '../../../src/api/label-set';
+import { labelSet } from './types';
 
-export type Label = Omit<AnnotationLabelNode, 'metadataxLabel' | 'annotationSet' | 'annotationcampaignSet' | 'labelsetSet'>
-export const LABELS: { [key in 'classic' | 'featured']: Label } = {
-  classic: {
-    id: '1',
-    name: 'Rain',
+export const LABEL_SET_QUERIES: {
+  listLabelSets: GqlQuery<ListLabelSetsQuery>,
+} = {
+  listLabelSets: {
+    defaultType: 'filled',
+    empty: {
+      allLabelSets: null,
+    },
+    filled: {
+      allLabelSets: {
+        results: [ labelSet ],
+      },
+    },
   },
-  featured: {
-    id: '2',
-    name: 'Whistle',
-  },
-}
-
-export type LabelSet = Omit<LabelSetNode, 'annotationcampaignSet' | 'labels'> & {
-  labels: Array<Maybe<Label>>;
-}
-export const labelSet: LabelSet = {
-  id: '1',
-  name: 'Test label set',
-  description: 'My testing label set',
-  labels: Object.values(LABELS),
 }

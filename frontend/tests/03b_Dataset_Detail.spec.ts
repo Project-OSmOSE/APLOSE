@@ -1,7 +1,8 @@
 import { ESSENTIAL, expect, test } from './utils';
 import { UserType } from './fixtures';
 import { interceptRequests } from './utils/mock';
-import { spectrogramAnalysis } from './utils/mock/spectrogramAnalysis';
+import { spectrogramAnalysis } from './utils/mock/types';
+import type { ImportSpectrogramAnalysisMutationVariables } from '../src/api/spectrogram-analysis';
 
 // Utils
 
@@ -49,11 +50,12 @@ const TEST = {
 
       const modal = await page.dataset.detail.openImportModal()
 
-      // TODO: intercept import mutation and check content
-      await Promise.all([
+      const [ request ] = await Promise.all([
         page.waitForRequest('**/graphql'),
         await modal.importAnalysis(),
       ])
+      const variables: ImportSpectrogramAnalysisMutationVariables = request.postDataJSON().variables
+      expect(variables.name).toEqual('Test analysis 1')
     })
   },
 }

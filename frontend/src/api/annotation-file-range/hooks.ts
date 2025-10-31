@@ -1,6 +1,6 @@
 import { AnnotationFileRangeGqlAPI } from './api'
-import { AnnotationPhaseType } from '@/api';
-import { useMemo } from 'react';
+import { type AnnotationFileRangeInput, AnnotationPhaseType } from '@/api';
+import { useCallback, useMemo } from 'react';
 import { useNavParams } from '@/features/UX';
 
 const {
@@ -18,15 +18,41 @@ export const useAllFileRanges = () => {
   })
   return useMemo(() => ({
     ...info,
-    allFileRanges: info.data?.allAnnotationFileRanges?.results.filter(r => r !== null),
+    allFileRanges: info.data?.allAnnotationFileRanges?.results.filter(r => r !== null).map(r => ({
+      ...r!,
+      firstFileIndex: r.firstFileIndex + 1,
+      lastFileIndex: r.lastFileIndex + 1,
+    })),
   }), [ info ])
 }
 
 export const useUpdateFileRanges = () => {
+  const { campaignID, phaseType } = useNavParams();
   const [ method, info ] = updateFileRanges.useMutation();
 
+  const update = useCallback(async ({
+                                      fileRanges,
+                                      force,
+                                    }: {
+    fileRanges: Array<AnnotationFileRangeInput>;
+    force?: boolean;
+  }) => {
+    if (!phaseType || !campaignID) return;
+    await method({
+      campaignID,
+      phaseType,
+      fileRanges: fileRanges.map(fr => ({
+        id: (fr.id && +fr.id > -1) ? fr.id : undefined,
+        annotatorId: fr.annotatorId,
+        lastFileIndex: fr.lastFileIndex - 1,
+        firstFileIndex: fr.firstFileIndex - 1,
+      } as AnnotationFileRangeInput)),
+      force,
+    }).unwrap()
+  }, [ method, campaignID, phaseType ])
+
   return {
-    updateFileRanges: method,
+    updateFileRanges: update,
     ...useMemo(() => {
       const formErrors = info.data?.updateAnnotationPhaseFileRanges?.errors ?? []
       return {

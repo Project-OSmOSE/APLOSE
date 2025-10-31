@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo } from 'react';
 import { LabelSetGqlAPI } from './api'
 
 const {
@@ -9,6 +9,6 @@ export const useAllLabelSets = () => {
   const info = listLabelSets.useQuery()
   return useMemo(() => ({
     ...info,
-    allLabelSets: info.data?.allLabelSets?.results.filter(r => r !== null)
+    allLabelSets: info.data?.allLabelSets?.results.map(r => r!),
   }), [ info ])
 }

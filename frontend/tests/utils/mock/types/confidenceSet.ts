@@ -1,4 +1,4 @@
-import { type ConfidenceNode, type ConfidenceSetNode, type Maybe } from '../../../src/api/types.gql-generated';
+import { type ConfidenceNode, type ConfidenceSetNode, type Maybe } from '../../../../src/api/types.gql-generated';
 
 export type Confidence = Omit<ConfidenceNode, 'confidenceIndicatorSets' | 'annotationSet'>
 export const CONFIDENCES: { [key in 'sure' | 'notSure']: Confidence } = {

@@ -1,16 +1,8 @@
-import { User } from './user';
-import { Colormap } from '@/features/Colormap';
-import { Dataset, DatasetFile } from './data';
+import { DatasetFile } from './data';
 import { ID } from '@/service/type';
 
 export type AnnotationCampaignUsage = 'Create' | 'Check';
 export type Phase = 'Annotation' | 'Verification';
-
-export type AnnotationCampaignArchive = {
-  id: number;
-  date: string; // Date
-  by_user: User
-}
 
 export type AnnotationPhase = {
   id: number;
@@ -31,36 +23,6 @@ export type AnnotationPhase = {
   annotation_campaign: number; // pk
 }
 
-export type AnnotationCampaign = {
-  id: number;
-  name: string;
-  desc: string | null;
-  /** URL */
-  instructions_url: string | null;
-  /** Date */
-  deadline: string | null;
-
-  owner: User;
-  /** Date */
-  created_at: string;
-  archive: AnnotationCampaignArchive | null;
-  phases: number[]; // pk
-
-  dataset: Dataset;
-  files_count: number;
-
-  /** ID */
-  label_set: number | null;
-  labels_with_acoustic_features: string[]
-  /** ID */
-  confidence_set: number | null;
-
-  allow_point_annotation: boolean;
-  allow_image_tuning: boolean;
-  allow_colormap_tuning: boolean;
-  colormap_default: Colormap | null;
-  colormap_inverted_default: boolean | null;
-}
 
 export interface LabelSet {
   id: number;

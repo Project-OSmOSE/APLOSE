@@ -4,9 +4,7 @@ from typing import Optional
 from rest_framework import serializers
 from rest_framework.fields import empty
 
-from backend.api.models import (
-    AnnotationValidation,
-)
+from backend.api.models import AnnotationValidation
 from backend.aplose.models import User
 from backend.utils.serializers import ListSerializer
 

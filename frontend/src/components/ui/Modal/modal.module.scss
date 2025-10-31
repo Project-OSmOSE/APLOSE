@@ -38,13 +38,19 @@
     .header {
       display: grid;
       grid-auto-flow: column;
-      justify-content: space-between;
+      justify-content: start;
       align-items: center;
+      position: relative;
+      gap: 1rem;
 
       .icon {
         font-size: 2rem;
         color: var(--ion-color-medium);
         cursor: pointer;
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
       }
     }
 

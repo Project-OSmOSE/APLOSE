@@ -1,43 +1,31 @@
 import { type GqlQuery, mockGqlError } from './_types';
-import { type AnnotationCampaignNode, AnnotationPhaseType } from '../../../src/api/types.gql-generated';
+import { AnnotationPhaseType } from '../../../src/api/types.gql-generated';
 import type {
-  ArchiveAnnotationCampaignMutation,
-  CreateAnnotationCampaignMutation,
-  CreateAnnotationCampaignMutationVariables,
+  ArchiveCampaignMutation,
+  CreateCampaignMutation,
+  CreateCampaignMutationVariables,
   GetCampaignQuery,
-  ListCampaignsAndPhasesQuery,
-  UpdateAnnotationCampaignFeaturedLabelsMutation,
+  ListCampaignsQuery,
+  UpdateCampaignFeaturedLabelsMutation,
 } from '../../../src/api/annotation-campaign';
-import { dataset, DATASET_FILES_COUNT } from './dataset';
-import { completedTasksCount, phase, tasksCount, userCompletedTasksCount, userTasksCount } from './phase';
-import { USERS } from './user';
-import { confidenceSet } from './confidenceSet';
-import { spectrogramAnalysis } from './spectrogramAnalysis';
-import { fft } from './fft';
-import { colormap } from './colormap';
-import { legacyConfiguration } from './legacyConfiguration';
-import { LABELS, labelSet } from './labelSet';
-
-const deadline = new Date()
-deadline.setTime(0)
-
-export type Campaign = Omit<AnnotationCampaignNode,
-    'dataset' | 'annotators' | 'confidenceSet' | 'owner' | 'analysis' | 'archive' | 'labelSet' | 'labelsWithAcousticFeatures' | 'detectors' | 'phases' | 'canManage'
->
-export const campaign: Campaign = {
-  id: '1',
-  name: 'Test campaign',
-  description: 'Test campaign description',
-  isArchived: false,
-  deadline: deadline.toISOString().split('T')[0],
-  allowColormapTuning: false,
-  allowImageTuning: false,
-  allowPointAnnotation: false,
-  colormapDefault: null,
-  colormapInvertedDefault: null,
-  createdAt: new Date().toISOString(),
-  instructionsUrl: 'myinstructions.co',
-}
+import {
+  campaign,
+  colormap,
+  completedTasksCount,
+  confidenceSet,
+  dataset,
+  DATASET_FILES_COUNT,
+  fft,
+  LABELS,
+  labelSet,
+  legacyConfiguration,
+  phase,
+  spectrogramAnalysis,
+  tasksCount,
+  userCompletedTasksCount,
+  USERS,
+  userTasksCount,
+} from './types';
 
 const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
   annotationCampaignById: {
@@ -54,9 +42,7 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
     colormapDefault: campaign.colormapDefault,
     colormapInvertedDefault: campaign.colormapInvertedDefault,
     description: campaign.description,
-    spectrograms: {
-      totalCount: DATASET_FILES_COUNT
-    },
+    spectrogramsCount: DATASET_FILES_COUNT,
     instructionsUrl: campaign.instructionsUrl,
     owner: {
       id: USERS.creator.id,
@@ -67,10 +53,10 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
       id: dataset.id,
       name: dataset.name,
     },
-    annotators: [{
+    annotators: [ {
       id: USERS.annotator.id,
       displayName: USERS.annotator.displayName,
-    }],
+    } ],
     confidenceSet: {
       name: confidenceSet.name,
       desc: confidenceSet.desc,
@@ -79,7 +65,7 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
       })),
     },
     analysis: {
-      edges: [{
+      edges: [ {
         node: {
           id: spectrogramAnalysis.id,
           legacy: spectrogramAnalysis.legacy,
@@ -99,40 +85,37 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
             zoomLevel: legacyConfiguration.zoomLevel,
           },
         },
-      }],
+      } ],
     },
     detectors: [],
     labelSet,
-    labelsWithAcousticFeatures: [{
+    labelsWithAcousticFeatures: [ {
       id: LABELS.featured.id,
       name: LABELS.featured.name,
-    }],
-  },
-  allAnnotationPhases: {
-    results: [{
+    } ],
+    phases: [ {
       id: phase.id,
       phase: AnnotationPhaseType.Annotation,
-      fileRanges: { tasksCount },
-      completedTasks: { totalCount: completedTasksCount },
+      tasksCount,
+      completedTasksCount,
       isOpen: phase.isOpen,
     }, {
       id: '2',
       phase: AnnotationPhaseType.Verification,
-      fileRanges: { tasksCount },
-      completedTasks: { totalCount: completedTasksCount },
+      tasksCount,
+      completedTasksCount,
       isOpen: phase.isOpen,
-    }],
+    } ],
   },
 }
 export const CAMPAIGN_QUERIES: {
-  listCampaignsAndPhases: GqlQuery<ListCampaignsAndPhasesQuery>,
+  listCampaigns: GqlQuery<ListCampaignsQuery>,
   getCampaign: GqlQuery<GetCampaignQuery, 'default' | 'manager'>,
 } = {
-  listCampaignsAndPhases: {
+  listCampaigns: {
     defaultType: 'filled',
     empty: {
       allAnnotationCampaigns: null,
-      allAnnotationPhases: null,
     },
     filled: {
       allAnnotationCampaigns: {
@@ -140,24 +123,14 @@ export const CAMPAIGN_QUERIES: {
           {
             id: campaign.id,
             name: campaign.name,
-            dataset: {
-              name: campaign.name
-            },
+            datasetName: campaign.name,
             isArchived: campaign.isArchived,
             deadline: campaign.deadline,
-          },
-        ],
-      },
-      allAnnotationPhases: {
-        results: [
-          {
-            id: phase.id,
-            annotationCampaignId: campaign.id,
-            phase: AnnotationPhaseType.Annotation,
-            fileRanges: { tasksCount },
-            completedTasks: { totalCount: completedTasksCount },
-            userFileRanges: { tasksCount: userTasksCount },
-            userCompletedTasks: { totalCount: userCompletedTasksCount },
+            tasksCount,
+            completedTasksCount,
+            userTasksCount,
+            userCompletedTasksCount,
+            phaseTypes: [ AnnotationPhaseType.Annotation ],
           },
         ],
       },
@@ -167,7 +140,6 @@ export const CAMPAIGN_QUERIES: {
     defaultType: 'default',
     empty: {
       annotationCampaignById: null,
-      allAnnotationPhases: null,
     },
     default: DEFAULT_GET_CAMPAIGN,
     manager: {
@@ -181,11 +153,11 @@ export const CAMPAIGN_QUERIES: {
 }
 
 export const CAMPAIGN_MUTATIONS: {
-  createAnnotationCampaign: GqlQuery<CreateAnnotationCampaignMutation, 'filled' | 'failed'>,
-  archiveAnnotationCampaign: GqlQuery<ArchiveAnnotationCampaignMutation, never>,
-  updateAnnotationCampaignFeaturedLabels: GqlQuery<UpdateAnnotationCampaignFeaturedLabelsMutation, never>,
+  createCampaign: GqlQuery<CreateCampaignMutation, 'filled' | 'failed'>,
+  archiveCampaign: GqlQuery<ArchiveCampaignMutation, never>,
+  updateCampaignFeaturedLabels: GqlQuery<UpdateCampaignFeaturedLabelsMutation, never>,
 } = {
-  createAnnotationCampaign: {
+  createCampaign: {
     defaultType: 'filled',
     empty: {},
     filled: {
@@ -199,22 +171,22 @@ export const CAMPAIGN_MUTATIONS: {
     failed: {
       createAnnotationCampaign: {
         errors: [
-          mockGqlError<CreateAnnotationCampaignMutationVariables>('name'),
-          mockGqlError<CreateAnnotationCampaignMutationVariables>('description'),
-          mockGqlError<CreateAnnotationCampaignMutationVariables>('instructionsUrl'),
-          mockGqlError<CreateAnnotationCampaignMutationVariables>('deadline'),
-          mockGqlError<CreateAnnotationCampaignMutationVariables>('datasetID'),
-          mockGqlError<CreateAnnotationCampaignMutationVariables>('analysisIDs'),
-          mockGqlError<CreateAnnotationCampaignMutationVariables>('colormapDefault'),
+          mockGqlError<CreateCampaignMutationVariables>('name'),
+          mockGqlError<CreateCampaignMutationVariables>('description'),
+          mockGqlError<CreateCampaignMutationVariables>('instructionsUrl'),
+          mockGqlError<CreateCampaignMutationVariables>('deadline'),
+          mockGqlError<CreateCampaignMutationVariables>('datasetID'),
+          mockGqlError<CreateCampaignMutationVariables>('analysisIDs'),
+          mockGqlError<CreateCampaignMutationVariables>('colormapDefault'),
         ],
       },
     },
   },
-  archiveAnnotationCampaign: {
+  archiveCampaign: {
     defaultType: 'empty',
     empty: {},
   },
-  updateAnnotationCampaignFeaturedLabels: {
+  updateCampaignFeaturedLabels: {
     defaultType: 'empty',
     empty: {},
   },

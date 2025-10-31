@@ -42,7 +42,7 @@ export const gqlAPI = createApi({
     'Detector',
 
     // Label Set
-    'LabelSet', 'Label',
+    'LabelSet', 'CampaignLabels',
 
     // Ontology
     'Source', 'Sound',

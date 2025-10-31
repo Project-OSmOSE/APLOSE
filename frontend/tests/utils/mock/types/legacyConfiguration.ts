@@ -1,4 +1,4 @@
-import type { LegacySpectrogramConfigurationNode } from '../../../src/api/types.gql-generated';
+import type { LegacySpectrogramConfigurationNode } from '../../../../src/api/types.gql-generated';
 
 export type LegacyConfiguration = Omit<LegacySpectrogramConfigurationNode, 'audioFilesSubtypes' | 'spectrogramAnalysis'>
 export const legacyConfiguration: LegacyConfiguration = {

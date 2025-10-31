@@ -6,25 +6,8 @@ import {
   ListDatasetsAndAnalysisQuery,
   ListDatasetsQuery,
 } from '../../../src/api/dataset';
-import type { DatasetNode } from '../../../src/api/types.gql-generated';
 import type { Colormap } from '../../../src/features/Colormap';
-import { USERS } from './user';
-import { spectrogramAnalysis } from "./spectrogramAnalysis";
-
-export type Dataset =
-    Omit<DatasetNode, 'owner' | 'annotationCampaigns' | 'spectrogramAnalysis' | 'relatedChannelConfigurations'>
-
-const start = '2021-08-02T00:00:00Z';
-const end = '2022-07-13T06:00:00Z';
-export const dataset: Dataset = {
-  id: '1',
-  name: 'Test dataset',
-  path: 'test/dataset',
-  description: 'Coastal audio recordings',
-  createdAt: new Date().toISOString(),
-  legacy: true,
-}
-export const DATASET_FILES_COUNT = 99
+import { dataset, DATASET_END, DATASET_FILES_COUNT, DATASET_START, spectrogramAnalysis, USERS } from './types';
 
 export const DATASET_QUERIES: {
   listDatasets: GqlQuery<ListDatasetsQuery>,
@@ -48,14 +31,10 @@ export const DATASET_QUERIES: {
             legacy: dataset.legacy,
             createdAt: dataset.createdAt,
             description: dataset.description,
-            spectrogramAnalysis: {
-              totalCount: 1
-            },
-            spectrograms: {
-              start,
-              end,
-              totalCount: DATASET_FILES_COUNT,
-            }
+            analysisCount: 1,
+            spectrogramCount: DATASET_FILES_COUNT,
+            start: DATASET_START,
+            end: DATASET_END,
           },
         ],
       },
@@ -75,9 +54,8 @@ export const DATASET_QUERIES: {
         owner: {
           displayName: USERS.creator.displayName,
         },
-        spectrograms: {
-          start, end
-        }
+        start: DATASET_START,
+        end: DATASET_END,
       },
     },
   },

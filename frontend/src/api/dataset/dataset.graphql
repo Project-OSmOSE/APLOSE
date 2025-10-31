@@ -6,14 +6,10 @@ query listDatasets {
             description
             createdAt
             legacy
-            spectrogramAnalysis {
-                totalCount
-            }
-            spectrograms {
-                totalCount
-                start
-                end
-            }
+            analysisCount
+            spectrogramCount
+            start
+            end
         }
     }
 }
@@ -24,10 +20,8 @@ query getDatasetByID($id: ID!) {
         name
         path
         description
-        spectrograms {
-            start
-            end
-        }
+        start
+        end
         createdAt
         legacy
         owner {

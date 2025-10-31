@@ -44,8 +44,7 @@ export async function interceptRequests(
     const mock = isKnown ? _mock[operations[key]] : _mock.success;
     if (isKnown) {
       await page.route(_mock.url, route => {
-        const req = route.request().postDataJSON();
-        reqs[key] = req.variables;
+        reqs[key] = route.request().postDataJSON();
         return route.fulfill(mock)
       });
     } else {

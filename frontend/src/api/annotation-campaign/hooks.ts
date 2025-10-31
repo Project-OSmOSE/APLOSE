@@ -13,7 +13,7 @@ import type { GqlError } from '@/api/utils';
 //  API
 
 const {
-  listCampaignsAndPhases,
+  listCampaigns,
   getCampaign,
   createCampaign,
   updateCampaignFeaturedLabels,
@@ -21,20 +21,17 @@ const {
 } = AnnotationCampaignGqlAPI.endpoints
 
 export const useAllCampaigns = (filters: AllCampaignFilters) => {
-  const info = listCampaignsAndPhases.useQuery(filters)
+  const info = listCampaigns.useQuery(filters)
   return useMemo(() => ({
     ...info,
-    allCampaigns: info.data?.allAnnotationCampaigns?.results.filter(r => r !== null).map(c => ({
-      ...c!,
-      phases: info.data?.allAnnotationPhases?.results.filter(p => p?.annotationCampaignId === c!.id).map(p => p!) ?? [],
-    })),
+    allCampaigns: info.data?.allAnnotationCampaigns?.results.filter(r => r !== null).map(c => c!),
   }), [ info ]);
 }
 
 export const useCurrentCampaign = () => {
   const { campaignID: id } = useNavParams();
   const info = getCampaign.useQuery({ id: id ?? '' }, { skip: !id })
-  const phases = useMemo(() => info.data?.allAnnotationPhases?.results?.filter(p => p !== null), [ info ])
+  const phases = useMemo(() => info.data?.annotationCampaignById?.phases?.map(p => p!), [ info ])
   return useMemo(() => ({
     ...info,
     campaign: info?.data?.annotationCampaignById,
@@ -63,10 +60,16 @@ export const useCreateCampaign = () => {
 }
 
 export const useUpdateCampaignFeaturedLabels = () => {
+  const { campaignID } = useNavParams();
   const [ method, info ] = updateCampaignFeaturedLabels.useMutation();
 
+  const update = useCallback(async (variables: Pick<UpdateCampaignFeaturedLabelsMutationVariables, 'labelsWithAcousticFeatures'>) => {
+    if (!campaignID) return;
+    await method({ ...variables, id: campaignID }).unwrap()
+  }, [ method, campaignID ])
+
   return {
-    updateCampaignFeaturedLabels: method,
+    updateCampaignFeaturedLabels: update,
     ...useMemo(() => {
       const formErrors = (info.data?.updateAnnotationCampaign?.errors ?? []) as GqlError<UpdateCampaignFeaturedLabelsMutationVariables>[]
       return {
@@ -88,8 +91,8 @@ export const useArchiveCampaign = () => {
 export const useAllCampaignsFilters = () => {
   const { user } = useCurrentUser();
   const { params, updateParams, clearParams } = useQueryParams<AllCampaignFilters>(
-      selectAllCampaignFilters,
-      AllAnnotationCampaignFilterSlice.actions.updateCampaignFilters,
+    selectAllCampaignFilters,
+    AllAnnotationCampaignFilterSlice.actions.updateCampaignFilters,
   )
 
   useEffect(() => {

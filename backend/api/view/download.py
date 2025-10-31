@@ -30,7 +30,7 @@ from backend.api.models import (
 from backend.api.models import (
     SpectrogramAnalysis,
 )
-from backend.api.schema.context_filters import AnnotationPhaseContextFilter
+from backend.api.context_filters import AnnotationPhaseContextFilter
 from backend.utils.renderers import CSVRenderer
 
 REPORT_HEADERS = [  # headers

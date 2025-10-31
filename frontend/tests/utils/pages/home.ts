@@ -8,7 +8,8 @@ export class HomePage implements AplosePage {
 
   async go() {
     await test.step('Navigate to home', async () => {
-      await this.page.goto('/app/');
+      await this.page.goto('/');
+      await this.page.waitForLoadState('networkidle');
     });
   }
 }

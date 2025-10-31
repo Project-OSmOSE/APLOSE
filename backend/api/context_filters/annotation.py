@@ -15,9 +15,10 @@ class AnnotationContextFilter:
     """Filter Annotation from the context"""
 
     @classmethod
-    def get_queryset(cls, context: Request, **kwargs) -> QuerySet[Annotation]:
+    def get_queryset(
+        cls, context: Request, queryset=Annotation.objects.all(), **kwargs
+    ) -> QuerySet[Annotation]:
         """Get queryset depending on the context"""
-        queryset = Annotation.objects.all()
         queryset = queryset.filter(**kwargs)
         if context.user.is_staff or context.user.is_superuser:
             return queryset

@@ -1,7 +1,7 @@
 import graphene
 
 from backend.api.models import Spectrogram
-from backend.api.schema.context_filters import (
+from backend.api.context_filters import (
     AnnotationPhaseContextFilter,
     AnnotationCommentContextFilter,
 )

@@ -1,4 +1,4 @@
-import { ErrorType } from '../../../src/api';
+import { ErrorType } from '../../../src/api/types.gql-generated';
 
 export type GqlMockType = 'filled' | 'empty'
 export type RestStatus = 'forbidden'

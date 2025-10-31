@@ -11,7 +11,6 @@ QUERY = """
 query (
     $campaignID: ID!
     $phase: AnnotationPhaseType!
-    $annotatorID: ID!
 ) {
     annotationPhaseByCampaignPhase(
         campaignId: $campaignID
@@ -21,25 +20,16 @@ query (
         phase
         canManage
         endedAt
-        fileRanges: annotationFileRanges {
-            tasksCount
-        }
-        completedTasks: annotationSpectrograms(annotationTasks_Status: Finished) {
-            totalCount
-        }
-        userFileRanges: annotationFileRanges(annotator: $annotatorID) {
-            tasksCount
-        }
-        userCompletedTasks: annotationSpectrograms(annotationTasks_Status: Finished, annotator: $annotatorID) {
-            totalCount
-        }
+        tasksCount
+        completedTasksCount
+        userTasksCount
+        userCompletedTasksCount
         hasAnnotations
     }
 }
 """
 VARIABLES = {
     "campaignID": 1,
-    "annotatorID": 1,
     "phase": "Annotation",
 }
 

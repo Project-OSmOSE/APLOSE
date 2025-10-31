@@ -35,7 +35,7 @@ export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
     phaseType: phaseType ?? AnnotationPhaseType.Annotation,
     annotatorID: user?.id ?? '',
     limit: PAGE_SIZE,
-    offset: PAGE_SIZE * (filters.page - 1),
+    offset: PAGE_SIZE * ((filters.page ?? 1) - 1),
   }, {
     skip: !user || !campaignID || !phaseType || campaign?.isArchived,
     ...options,
@@ -93,7 +93,7 @@ export const useSubmitTask = () => {
       spectrogramID,
       startedAt: start.toISOString(),
       endedAt: new Date().toISOString(),
-      content: JSON.stringify({ annotations, taskComments })
+      content: JSON.stringify({ annotations, taskComments }),
     }).unwrap()
   }, [ method, campaignID, phaseType, spectrogramID, phase ]);
 
@@ -108,8 +108,8 @@ export const useSubmitTask = () => {
 
 export const useAllTasksFilters = ({ clearOnLoad }: { clearOnLoad: boolean } = { clearOnLoad: false }) => {
   const { params, updateParams, clearParams } = useQueryParams<AllTasksFilters>(
-      selectAllTaskFilters,
-      AllAnnotationTaskFilterSlice.actions.updateTaskFilters,
+    selectAllTaskFilters,
+    AllAnnotationTaskFilterSlice.actions.updateTaskFilters,
   )
 
   useEffect(() => {

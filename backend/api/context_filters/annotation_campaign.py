@@ -11,11 +11,13 @@ class AnnotationCampaignContextFilter:
     """Filter campaign from the context"""
 
     @classmethod
-    def get_queryset(cls, context: Request) -> QuerySet[AnnotationCampaign]:
+    def get_queryset(
+        cls, context: Request, queryset=AnnotationCampaign.objects.all()
+    ) -> QuerySet[AnnotationCampaign]:
         """Get queryset depending on the context"""
         if context.user.is_staff or context.user.is_superuser:
-            return AnnotationCampaign.objects.all()
-        return AnnotationCampaign.objects.filter(
+            return queryset
+        return queryset.filter(
             Q(owner_id=context.user.id)
             | (
                 Q(archive__isnull=True)

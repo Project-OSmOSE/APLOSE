@@ -1,6 +1,7 @@
 import { ESSENTIAL, expect, test } from './utils';
-import { interceptRequests, PASSWORD, type UserType } from './utils/mock';
+import { interceptRequests, PASSWORD } from './utils/mock';
 import { TOKEN_ERROR } from './utils/mock/auth';
+import type { UserType } from './utils/mock/types';
 
 const user: UserType = 'annotator'
 
@@ -9,6 +10,7 @@ test('Login - Unauthorized', ESSENTIAL, async ({ page }) => {
     getCurrentUser: user,
     token: 'forbidden',
   })
+
   await page.login.go();
   await page.login.fillForm(user);
   await page.login.submit('button');
@@ -20,6 +22,7 @@ test('Login - Success', ESSENTIAL, async ({ page }) => {
     getCurrentUser: user,
     token: 'success',
   })
+
   await page.login.go();
   await page.login.fillForm(user);
   const request = await page.login.submit('button');
@@ -35,6 +38,7 @@ test('Login - Success with Enter key', ESSENTIAL, async ({ page }) => {
     getCurrentUser: user,
     token: 'success',
   })
+
   await page.login.go();
   await page.login.fillForm(user);
   const request = await page.login.submit('enterKey');

@@ -1,15 +1,11 @@
 import { Locator, Page, test } from '@playwright/test';
 import { Mock, Modal, UI } from '../services';
-import { UserType } from '../../fixtures';
+import { labelSet, UserType } from '../mock/types';
 import { CampaignListPage } from './campaign-list';
 
 type LabelModalExtend = {
   getCheckbox: (text: string) => Locator;
   get updateButton(): Locator;
-}
-
-type MetadataModalExtend = {
-  get downloadButton(): Locator;
 }
 
 type ProgressModalExtend = {
@@ -18,7 +14,6 @@ type ProgressModalExtend = {
 }
 
 export type LabelModal = Modal & LabelModalExtend
-export type MetadataModal = Modal & MetadataModalExtend
 export type ProgressModal = Modal & ProgressModalExtend
 
 export class CampaignDetailPage {
@@ -59,7 +54,7 @@ export class CampaignDetailPage {
   }
 
   async openLabelModal(): Promise<LabelModal> {
-    const modal = await this.ui.openModal({ name: 'Update labels with features' })
+    const modal = await this.ui.openModal({ name: labelSet.name })
     const ui = this.ui;
     return Object.assign(modal, {
       getCheckbox(label: string) {

@@ -11,17 +11,16 @@ import styles from './styles.module.scss';
 export const DatasetHead: React.FC = () => {
   const { datasetID: id } = useNavParams()
   const { dataset } = useDataset({ id })
-  return (
-      <Head title={ dataset?.name }
-            subtitle={ dataset?.path }
-            canGoBack>
-        { dataset?.description && <p>{ dataset.description }</p> }
-        { dataset && dataset.spectrograms && <div className={ styles.info }>
-            <Calendar/>
-            <IonNote>Start:</IonNote>
-            <p>{ datetimeToString(dataset.spectrograms.start) }</p>
-            <IonNote>End:</IonNote>
-            <p>{ datetimeToString(dataset.spectrograms.end) }</p>
-        </div> }
-      </Head>)
+  return <Head title={ dataset?.name }
+               subtitle={ dataset?.path }
+               canGoBack>
+    { dataset?.description && <p>{ dataset.description }</p> }
+    { dataset && <div className={ styles.info }>
+        <Calendar/>
+        <IonNote>Start:</IonNote>
+        <p>{ datetimeToString(dataset.start) }</p>
+        <IonNote>End:</IonNote>
+        <p>{ datetimeToString(dataset.end) }</p>
+    </div> }
+  </Head>
 }

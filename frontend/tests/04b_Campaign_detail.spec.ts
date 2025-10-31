@@ -2,20 +2,9 @@ import { AnnotationPhaseType } from '../src/api/types.gql-generated';
 import { ESSENTIAL, expect, Page, Request, test } from './utils';
 import { LabelModal } from './utils/pages';
 import { dateToString } from '../src/service/function';
-import { ID, Optionable } from '../src/service/type';
-import { AnnotationCampaign } from '../src/service/types';
-import { gqlURL, interceptRequests, USERS } from './utils/mock';
-import { campaign } from './utils/mock/campaign';
-import { phase } from './utils/mock/phase';
-import { LABELS, labelSet } from './utils/mock/labelSet';
-import { confidenceSet } from './utils/mock/confidenceSet';
-import { spectrogramAnalysis } from './utils/mock/spectrogramAnalysis';
-import { dataset } from './utils/mock/dataset';
+import { gqlURL, interceptRequests } from './utils/mock';
+import { campaign, confidenceSet, dataset, LABELS, labelSet, spectrogramAnalysis, USERS } from './utils/mock/types';
 import type { GqlMutation } from './utils/mock/_gql';
-
-type PatchAnnotationCampaign = Optionable<Pick<AnnotationCampaign,
-  'labels_with_acoustic_features' | 'label_set' | 'confidence_set' | 'allow_point_annotation'
->> & { id: ID }
 
 
 // Utils
@@ -47,7 +36,7 @@ test.describe('Annotator', () => {
     await expect(page.getByText(`Created on ${ dateToString(campaign.createdAt) } by ${ USERS.creator.displayName }`)).toBeVisible();
     await expect(page.getByText(campaign.description)).toBeVisible();
     await expect(page.getByText(dateToString(campaign.deadline))).toBeVisible();
-    await expect(page.getByRole('button', { name: phase.phase, exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: AnnotationPhaseType.Annotation, exact: true })).toBeVisible();
 
     await test.step('Can copy owner email', async () => {
       await page.locator('p').filter({ hasText: 'Created on ' }).getByRole('button').click()
@@ -70,11 +59,11 @@ test.describe('Annotator', () => {
     await page.campaign.detail.go('annotator');
     await page.getByRole('button', { name: 'Information' }).click();
     await test.step('See set names', async () => {
-      await expect(page.getByText(labelSet.name)).toBeVisible();
       await expect(page.getByText(confidenceSet.name)).toBeVisible();
     })
 
     const modal = await page.campaign.detail.openLabelModal();
+    await expect(modal.getByText(labelSet.name)).toBeVisible();
     await STEP.checkLabelState(modal, LABELS.classic.name, false);
     await STEP.checkLabelState(modal, LABELS.featured.name, true);
 
@@ -124,7 +113,7 @@ test.describe('Campaign creator', () => {
       alert.getByRole('button', { name: 'Archive' }).click(),
     ])
     const data = await request.postDataJSON();
-    expect(data.operationName).toBe('archiveAnnotationCampaign' as GqlMutation);
+    expect(data.operationName).toBe('archiveCampaign' as GqlMutation);
     expect(data.variables.id).toEqual(campaign.id)
   })
 
@@ -164,7 +153,7 @@ test.describe('Campaign creator', () => {
 
       await test.step('Check request', async () => {
         const data = await request.postDataJSON();
-        expect(data.operationName).toEqual('updateAnnotationCampaignFeaturedLabels' as GqlMutation);
+        expect(data.operationName).toEqual('updateCampaignFeaturedLabels' as GqlMutation);
         expect(data.variables.id).toEqual(campaign.id)
         expect(data.variables.labelsWithAcousticFeatures).toEqual([ LABELS.classic.id ])
       })

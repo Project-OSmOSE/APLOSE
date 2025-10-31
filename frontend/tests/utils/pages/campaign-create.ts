@@ -1,9 +1,7 @@
 import { Locator, Page, test } from '@playwright/test';
 import { CampaignListPage } from './campaign-list';
 import { selectInAlert } from '../functions';
-import { campaign } from '../mock/campaign';
-import type { UserType } from '../mock';
-import { dataset } from '../mock/dataset';
+import { campaign, dataset, UserType } from '../mock/types';
 
 
 export class CampaignCreatePage {

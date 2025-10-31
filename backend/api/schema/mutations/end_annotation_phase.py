@@ -1,7 +1,7 @@
 from graphene import Mutation, ID, Boolean
 
 from backend.api.models import AnnotationPhase
-from backend.api.schema.context_filters import AnnotationPhaseContextFilter
+from backend.api.context_filters import AnnotationPhaseContextFilter
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 
 

@@ -27,7 +27,7 @@ query listFileRanges(
 mutation updateFileRanges(
     $campaignID: ID!
     $phaseType: AnnotationPhaseType!
-    $fileRanges: [AnnotationFileRangeInput]!
+    $fileRanges: [AnnotationFileRangeInput!]!
     $force: Boolean
 ) {
     updateAnnotationPhaseFileRanges(

@@ -19,9 +19,7 @@ from backend.api.models import (
     AnnotationCampaign,
     AnnotationTask,
 )
-from backend.api.schema.context_filters import (
-    AnnotationPhaseContextFilter,
-)
+from backend.api.context_filters import AnnotationPhaseContextFilter
 from backend.api.serializers import AnnotationSerializer
 from backend.utils.filters import ModelFilter, get_boolean_query_param
 from backend.utils.schema import ForbiddenError, NotFoundError

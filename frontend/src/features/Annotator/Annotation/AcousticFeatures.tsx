@@ -134,7 +134,7 @@ export const AcousticFeatures: React.FC = () => {
   }, [ getAnnotation, focusedAnnotation, focus ])
 
   if (!focusedAnnotation) return <Fragment/>;
-  if (!campaign?.labelsWithAcousticFeatures?.find(l => l?.name === focusedAnnotation.label)) return <Fragment/>;
+  if (campaign?.labelsWithAcousticFeatures?.find(l => l?.name === focusedAnnotation.label)) return <Fragment/>;
   if (focusedAnnotation.type !== AnnotationType.Box) return <Fragment/>;
   // @ts-expect-error: --left isn't recognized
   return <div style={ { top, '--left': `${ left }px` } }
@@ -245,7 +245,7 @@ export const AcousticFeatures: React.FC = () => {
           <TableDivider className={ styles.span2ColsEnd }/>
           <TableContent>Inflection count</TableContent>
           <TableContent><IonNote>{ (focusedAnnotation.acousticFeatures.relativeMinFrequencyCount ?? 0)
-              + (focusedAnnotation.acousticFeatures.relativeMaxFrequencyCount ?? 0) }</IonNote></TableContent>
+            + (focusedAnnotation.acousticFeatures.relativeMaxFrequencyCount ?? 0) }</IonNote></TableContent>
 
           <TableDivider className={ styles.span2ColsEnd }/>
           <TableContent>Steps count</TableContent>

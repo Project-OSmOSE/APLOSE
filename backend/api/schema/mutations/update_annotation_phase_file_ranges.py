@@ -7,7 +7,7 @@ from graphene_django.types import ErrorType
 from graphql import GraphQLError
 
 from backend.api.models import AnnotationFileRange, AnnotationPhase
-from backend.api.schema.context_filters import AnnotationPhaseContextFilter
+from backend.api.context_filters import AnnotationPhaseContextFilter
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 from backend.utils.schema.types import AuthenticatedModelFormMutation

@@ -3,33 +3,9 @@ import type {
   ListAvailableSpectrogramAnalysisForImportQuery,
   ListSpectrogramAnalysisQuery,
 } from '../../../src/api/spectrogram-analysis';
-import type { SpectrogramAnalysisNode } from '../../../src/api/types.gql-generated';
 import type { GqlQuery } from './_types';
-import { fft } from './fft';
-import { dataset } from './dataset';
+import { dataset, fft, spectrogramAnalysis } from './types';
 
-export type SpectrogramAnalysis = Omit<SpectrogramAnalysisNode,
-    'dataset'
-    | 'spectrograms'
-    | 'fft'
-    | 'colormap'
-    | 'legacyConfiguration'
-    | 'annotationCampaigns'
-    | 'owner'
-    | 'annotations'>
-export const spectrogramAnalysis: SpectrogramAnalysis = {
-  id: '1',
-  createdAt: new Date().toISOString(),
-  legacy: true,
-  name: '2048_2048_50',
-  description: '',
-  startDate: '2021-08-02T00:00:00Z',
-  endDate: '2022-07-13T06:00:00Z',
-  dataDuration: 10,
-  dynamicMin: 30,
-  dynamicMax: 60,
-  path: 'analysis',
-}
 
 export const ANALYSIS_QUERIES: {
   listSpectrogramAnalysis: GqlQuery<ListSpectrogramAnalysisQuery>,
@@ -42,7 +18,7 @@ export const ANALYSIS_QUERIES: {
     },
     filled: {
       allSpectrogramAnalysis: {
-        results: [{
+        results: [ {
           id: spectrogramAnalysis.id,
           name: spectrogramAnalysis.name,
           legacy: spectrogramAnalysis.legacy,
@@ -58,9 +34,9 @@ export const ANALYSIS_QUERIES: {
           spectrograms: {
             totalCount: 99,
             start: spectrogramAnalysis.startDate,
-            end: spectrogramAnalysis.endDate
-          }
-        }],
+            end: spectrogramAnalysis.endDate,
+          },
+        } ],
       },
     },
   },

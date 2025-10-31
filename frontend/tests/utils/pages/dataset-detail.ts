@@ -1,8 +1,7 @@
 import { Page, test } from '@playwright/test';
 import { Modal, UI } from '../services';
-import { UserType } from '../../fixtures';
+import { UserType } from '../mock/types';
 import { DatasetPage } from './dataset';
-import { GqlMockType } from '../mock';
 
 export class DatasetDetailPage {
 
@@ -18,7 +17,7 @@ export class DatasetDetailPage {
     });
   }
 
-  async openImportModal(type: GqlMockType = 'filled'): Promise<AnalysisImportModal> {
+  async openImportModal(): Promise<AnalysisImportModal> {
     return AnalysisImportModal.get(this)
   }
 

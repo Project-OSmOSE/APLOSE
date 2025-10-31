@@ -34,7 +34,9 @@ class UserNode(BaseObjectType):
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_display_name(root: User, info):
-        return "{} {}".format(root.first_name, root.last_name)
+        if root.first_name and root.last_name:
+            return "{} {}".format(root.first_name, root.last_name)
+        return root.username
 
     is_admin = Boolean(required=True)
 

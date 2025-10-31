@@ -1,28 +1,13 @@
-import { type AnnotationPhaseNode, AnnotationPhaseType } from '../../../src/api/types.gql-generated';
-import type { GetAnnotationPhaseQuery } from '../../../src/api/annotation-phase';
-import type { GqlQuery, RestQuery } from './_types';
+import { AnnotationPhaseType } from '../../../src/api/types.gql-generated';
 import type {
-  ArchiveAnnotationCampaignMutation,
-  CreateAnnotationCampaignMutation,
-  UpdateAnnotationCampaignFeaturedLabelsMutation,
-} from '../../../src/api';
+  CreateAnnotationPhaseMutation,
+  CreateVerificationPhaseMutation,
+  EndPhaseMutation,
+  GetAnnotationPhaseQuery,
+} from '../../../src/api/annotation-phase';
+import type { GqlQuery, RestQuery } from './_types';
 import { DOWNLOAD_ANNOTATIONS, DOWNLOAD_PROGRESS } from '../../../src/consts/links';
-
-export type Phase =
-    Omit<AnnotationPhaseNode, 'annotationComments' | 'annotationFileRanges' | 'createdBy' | 'annotationTasks' | 'annotations' | 'annotationCampaign' | 'endedBy' | 'annotationCampaignId' | 'phase' | 'canManage'>
-
-export const phase: Phase = {
-  id: '1',
-  createdAt: new Date().toISOString(),
-  endedAt: null,
-  hasAnnotations: true,
-  isOpen: true,
-  isCompleted: false,
-}
-export const completedTasksCount = 50;
-export const tasksCount = 100;
-export const userCompletedTasksCount = 5;
-export const userTasksCount = 10;
+import { completedTasksCount, phase, tasksCount, userCompletedTasksCount, userTasksCount } from './types';
 
 export const PHASE_QUERIES: {
   getAnnotationPhase: GqlQuery<GetAnnotationPhaseQuery, AnnotationPhaseType | 'manager'>,
@@ -36,10 +21,10 @@ export const PHASE_QUERIES: {
       annotationPhaseByCampaignPhase: {
         id: phase.id,
         phase: AnnotationPhaseType.Annotation,
-        completedTasks: { totalCount: completedTasksCount },
-        fileRanges: { tasksCount },
-        userCompletedTasks: { totalCount: userCompletedTasksCount },
-        userFileRanges: { tasksCount: userTasksCount },
+        completedTasksCount,
+        tasksCount,
+        userCompletedTasksCount,
+        userTasksCount,
         endedAt: phase.endedAt,
         hasAnnotations: phase.hasAnnotations,
         canManage: true,
@@ -49,10 +34,10 @@ export const PHASE_QUERIES: {
       annotationPhaseByCampaignPhase: {
         id: phase.id,
         phase: AnnotationPhaseType.Annotation,
-        completedTasks: { totalCount: completedTasksCount },
-        fileRanges: { tasksCount },
-        userCompletedTasks: { totalCount: userCompletedTasksCount },
-        userFileRanges: { tasksCount: userTasksCount },
+        completedTasksCount,
+        tasksCount,
+        userCompletedTasksCount,
+        userTasksCount,
         endedAt: phase.endedAt,
         hasAnnotations: phase.hasAnnotations,
         canManage: false,
@@ -62,10 +47,10 @@ export const PHASE_QUERIES: {
       annotationPhaseByCampaignPhase: {
         id: phase.id,
         phase: AnnotationPhaseType.Annotation,
-        completedTasks: { totalCount: completedTasksCount },
-        fileRanges: { tasksCount },
-        userCompletedTasks: { totalCount: userCompletedTasksCount },
-        userFileRanges: { tasksCount: userTasksCount },
+        completedTasksCount,
+        tasksCount,
+        userCompletedTasksCount,
+        userTasksCount,
         endedAt: phase.endedAt,
         hasAnnotations: phase.hasAnnotations,
         canManage: false,
@@ -89,9 +74,9 @@ export const PHASE_DOWNLOADS: {
 }
 
 export const PHASE_MUTATIONS: {
-  endPhase: GqlQuery<CreateAnnotationCampaignMutation, never>,
-  createAnnotationPhase: GqlQuery<ArchiveAnnotationCampaignMutation, never>,
-  createVerificationPhase: GqlQuery<UpdateAnnotationCampaignFeaturedLabelsMutation, never>,
+  endPhase: GqlQuery<EndPhaseMutation, never>,
+  createAnnotationPhase: GqlQuery<CreateAnnotationPhaseMutation, never>,
+  createVerificationPhase: GqlQuery<CreateVerificationPhaseMutation, never>,
 } = {
   endPhase: {
     defaultType: 'empty',
@@ -99,9 +84,7 @@ export const PHASE_MUTATIONS: {
   },
   createAnnotationPhase: {
     defaultType: 'empty',
-    empty: {
-      ok: true,
-    },
+    empty: {},
   },
   createVerificationPhase: {
     defaultType: 'empty',

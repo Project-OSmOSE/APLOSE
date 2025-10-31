@@ -1,7 +1,6 @@
 import { Page, test } from '@playwright/test';
-import { UserType } from '../../fixtures';
+import { DATASET_FILES_COUNT, UserType } from '../mock/types';
 import { CampaignDetailPage } from './campaign-detail';
-import { dataset } from '../mock/dataset';
 
 export class CampaignEditPage {
 
@@ -11,7 +10,7 @@ export class CampaignEditPage {
 
 
   get lastIndexInputs() {
-    return this.page.getByPlaceholder((dataset.filesCount).toString())
+    return this.page.getByPlaceholder((DATASET_FILES_COUNT).toString())
   }
 
   constructor(private page: Page,

@@ -8,7 +8,7 @@ from graphene import Boolean
 
 from backend.api.models import Spectrogram, AnnotationTask, Session
 from backend.api.models.annotation.annotation_task import AnnotationTaskSession
-from backend.api.schema.context_filters import AnnotationFileRangeContextFilter
+from backend.api.context_filters import AnnotationFileRangeContextFilter
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions, NotFoundError
 

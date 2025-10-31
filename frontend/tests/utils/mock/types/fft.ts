@@ -1,4 +1,4 @@
-import type { FftNode } from '../../../src/api/types.gql-generated';
+import type { FftNode } from '../../../../src/api/types.gql-generated';
 
 export type FFT = Omit<FftNode, 'spectrogramAnalysis'>
 export const fft: FFT = {

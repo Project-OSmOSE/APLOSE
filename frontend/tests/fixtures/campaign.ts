@@ -1,6 +1,5 @@
 import { USERS } from './user';
 import {
-  AnnotationCampaign,
   AnnotationFile,
   AnnotationFileRange,
   AnnotationPhase,
@@ -8,15 +7,8 @@ import {
   ConfidenceIndicatorSet,
   Detector,
   LabelSet,
-  type User,
 } from '../../src/service/types';
 import { DATASET, DATASET_SR } from './dataset';
-
-type UserGroup = {
-  readonly id: number,
-  readonly name: string,
-  readonly annotators: User[]
-}
 
 const deadline = new Date()
 deadline.setTime(0)
@@ -88,7 +80,7 @@ export const CAMPAIGN = {
   allow_colormap_tuning: false,
   colormap_default: null,
   colormap_inverted_default: null,
-} satisfies AnnotationCampaign
+}
 
 const start = new Date();
 const end = new Date(start.toISOString());
@@ -132,7 +124,7 @@ export const FILE_RANGE = {
   } satisfies AnnotationFileRange,
 }
 
-export const ANNOTATOR_GROUP: UserGroup = {
+export const ANNOTATOR_GROUP = {
   id: 1,
   name: 'Staff group',
   annotators: [ USERS.staff ],

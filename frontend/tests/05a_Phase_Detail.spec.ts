@@ -1,12 +1,9 @@
 import { ESSENTIAL, expect, Page, test } from './utils';
-import { gqlURL, interceptRequests, USERS } from './utils/mock';
-import { spectrogram } from './utils/mock/spectrogram';
+import { gqlURL, interceptRequests } from './utils/mock';
+import { campaign, phase, spectrogram, TASKS, USERS } from './utils/mock/types';
 import type { ListAnnotationTaskQueryVariables } from '../src/api/annotation-task';
-import { campaign } from './utils/mock/campaign';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
 import { DOWNLOAD_ANNOTATIONS, DOWNLOAD_PROGRESS } from '../src/consts/links';
-import { phase } from './utils/mock/phase';
-import { TASKS } from './utils/mock/task';
 
 // Utils
 

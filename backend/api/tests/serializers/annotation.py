@@ -11,8 +11,8 @@ from backend.api.models import (
     AcousticFeatures,
     SpectrogramAnalysis,
 )
-from backend.api.serializers import AnnotationSerializer
 from backend.aplose.models import User
+from backend.api.serializers import AnnotationSerializer
 from backend.utils.tests import all_fixtures
 
 features = {
