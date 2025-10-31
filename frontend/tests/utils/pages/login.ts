@@ -1,11 +1,11 @@
 import { Page, Request, test } from '@playwright/test';
-import { API_URL } from '../const';
 import { UserType } from '../../fixtures';
 import { HomePage } from './home';
 import { PASSWORD } from '../mock';
+import { REST_MOCK } from '../mock/_rest';
 
 export class LoginPage {
-  
+
   constructor(private page: Page,
               private home: HomePage = new HomePage(page)) {
   }
@@ -27,7 +27,7 @@ export class LoginPage {
   async submit(submitAction: 'button' | 'enterKey'): Promise<Request> {
     return await test.step('Submit', async () => {
       const [ request ] = await Promise.all([
-        this.page.waitForRequest(API_URL.token),
+        this.page.waitForRequest(REST_MOCK.token.url),
         submitAction === 'button' ? this.page.getByRole('button', { name: 'Login' }).click() : this.page.keyboard.press('Enter'),
       ])
       return request;

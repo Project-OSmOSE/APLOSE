@@ -7,7 +7,7 @@ import {
   ListDatasetsQuery,
 } from '../../../src/api/dataset';
 import type { Colormap } from '../../../src/features/Colormap';
-import { dataset, DATASET_END, DATASET_FILES_COUNT, DATASET_START, spectrogramAnalysis, USERS } from './types';
+import { dataset, spectrogramAnalysis, USERS } from './types';
 
 export const DATASET_QUERIES: {
   listDatasets: GqlQuery<ListDatasetsQuery>,
@@ -31,10 +31,10 @@ export const DATASET_QUERIES: {
             legacy: dataset.legacy,
             createdAt: dataset.createdAt,
             description: dataset.description,
-            analysisCount: 1,
-            spectrogramCount: DATASET_FILES_COUNT,
-            start: DATASET_START,
-            end: DATASET_END,
+            analysisCount: dataset.analysisCount,
+            spectrogramCount: dataset.spectrogramCount,
+            start: dataset.start,
+            end: dataset.end,
           },
         ],
       },
@@ -54,8 +54,8 @@ export const DATASET_QUERIES: {
         owner: {
           displayName: USERS.creator.displayName,
         },
-        start: DATASET_START,
-        end: DATASET_END,
+        start: dataset.start,
+        end: dataset.end,
       },
     },
   },

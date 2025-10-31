@@ -62,12 +62,11 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
         <TableDivider/>
 
         { allSpectrograms
-          ?.filter(s => s?.task && s.task.annotations && s.task.validatedAnnotations)
-          .map(s => <SpectrogramRow key={ s!.id }
-                                    spectrogram={ s! }
-                                    task={ s!.task! }
-                                    annotations={ s!.task!.annotations! }
-                                    validatedAnnotations={ s!.task!.validatedAnnotations! }/>) }
+          ?.map(s => <SpectrogramRow key={ s!.id }
+                                     spectrogram={ s! }
+                                     task={ s!.task }
+                                     annotations={ s!.task?.annotations }
+                                     validatedAnnotations={ s!.task?.validatedAnnotations }/>) }
       </Table>
 
       { allSpectrograms && allSpectrograms.length > 0 &&

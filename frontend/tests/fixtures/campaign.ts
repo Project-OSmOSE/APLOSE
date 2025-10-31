@@ -124,12 +124,6 @@ export const FILE_RANGE = {
   } satisfies AnnotationFileRange,
 }
 
-export const ANNOTATOR_GROUP = {
-  id: 1,
-  name: 'Staff group',
-  annotators: [ USERS.staff ],
-}
-
 export const DETECTOR_CONFIGURATION = 'Test configuration';
 export const DETECTOR: Detector = {
   name: 'detector1',

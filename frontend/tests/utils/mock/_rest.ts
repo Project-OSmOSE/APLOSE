@@ -1,6 +1,7 @@
 import { COLLABORATOR_QUERIES } from './collaborators';
 import { AUTH_QUERIES } from './auth';
 import { PHASE_DOWNLOADS } from './phase';
+import { ANNOTATION_MUTATIONS } from './annotations';
 
 type RestQueries =
   typeof COLLABORATOR_QUERIES
@@ -15,18 +16,24 @@ const REST_MOCK_QUERIES: RestQueries = {
   ...AUTH_QUERIES,
 }
 
-// // TODO: fill Mutation type
-// type RestMutation = never
-// const REST_MOCK_MUTATIONS: {
-//   [key in RestMutation]: EmptyMutation
-// } = {
-//   // TODO: add missing mutations
-// }
+
+type RestMutations =
+  typeof ANNOTATION_MUTATIONS
+type RestMutation = keyof RestMutations
+
+const REST_MOCK_MUTATIONS: RestMutations = {
+  // TODO: add mutations
+  ...ANNOTATION_MUTATIONS,
+}
 
 export const REST_MOCK = {
   ...REST_MOCK_QUERIES,
-  // ...REST_MOCK_MUTATIONS,
+  ...REST_MOCK_MUTATIONS,
 }
 
-export type RestOperationName = RestQuery
-export type RestOperations = { [key in RestOperationName]?: keyof RestQueries[key]; }
+export type RestOperations = {
+  [key in RestQuery]?: keyof RestQueries[key];
+} | {
+  [key in RestMutation]?: keyof RestMutations[key];
+}
+

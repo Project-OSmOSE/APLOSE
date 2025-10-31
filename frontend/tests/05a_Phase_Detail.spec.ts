@@ -60,7 +60,6 @@ test.describe('Annotator', () => {
       await expect(page.locator('.table-content').first()).toBeVisible();
     })
     await test.step('Can search file', async () => {
-      await page.mock.fileRangesFiles()
       const [ request ] = await Promise.all([
         page.waitForRequest(gqlURL),
         page.campaign.detail.searchFile(spectrogram.filename),
@@ -122,7 +121,7 @@ test.describe('Annotator', () => {
     await page.campaign.detail.go('annotator');
 
     await test.step('Progress', async () => {
-      const modal = await page.campaign.detail.openProgressModal({ empty: true });
+      const modal = await page.campaign.detail.openProgressModal();
       await expect(modal.getByText('No annotators')).toBeVisible();
       await modal.close()
     })
@@ -197,7 +196,7 @@ test.describe('Campaign creator', () => {
 
     await test.step('Progress', async () => {
       await expect(page.campaign.detail.manageButton).toBeVisible();
-      const modal = await page.campaign.detail.openProgressModal({ empty: true });
+      const modal = await page.campaign.detail.openProgressModal();
       await expect(modal.downloadStatusButton).not.toBeVisible();
       await expect(modal.downloadStatusButton).not.toBeVisible();
       await modal.close()

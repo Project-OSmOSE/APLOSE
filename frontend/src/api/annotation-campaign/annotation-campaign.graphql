@@ -89,6 +89,7 @@ query getCampaign($id: ID!) {
             edges {
                 node {
                     id
+                    name
                     colormap {
                         name
                     }

@@ -9,6 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from backend.api.context_filters import AnnotationPhaseContextFilter
 from backend.api.models import (
     Annotation,
     AnnotationPhase,
@@ -19,7 +20,6 @@ from backend.api.models import (
     AnnotationCampaign,
     AnnotationTask,
 )
-from backend.api.context_filters import AnnotationPhaseContextFilter
 from backend.api.serializers import AnnotationSerializer
 from backend.utils.filters import ModelFilter, get_boolean_query_param
 from backend.utils.schema import ForbiddenError, NotFoundError
@@ -40,7 +40,7 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
     @action(
         methods=["POST"],
         detail=False,
-        url_path="campaign/(?P<campaign_id>[^/.]+)/phase/(?P<phase_type>[^/.]+)/",
+        url_path="campaign/(?P<campaign_id>[^/.]+)/phase/(?P<phase_type>[^/.]+)",
         url_name="phase-import",
     )
     @transaction.atomic()
@@ -50,21 +50,22 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
         campaign_id: int,
         phase_type: AnnotationPhase.Type,
     ):
+
+        if phase_type[0] == AnnotationPhase.Type.VERIFICATION:
+            return Response(
+                "Import should always be made on annotation campaign",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         try:
             phase = AnnotationPhaseContextFilter.get_edit_node_or_fail(
-                request, annotation_campaign_id=campaign_id, phase=phase_type
+                request, annotation_campaign_id=campaign_id, phase=phase_type[0]
             )
             campaign: AnnotationCampaign = phase.annotation_campaign
         except ForbiddenError:
             return Response(status=status.HTTP_403_FORBIDDEN)
         except NotFoundError:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
-        if phase.phase == AnnotationPhase.Type.VERIFICATION:
-            return Response(
-                "Import should always be made on annotation campaign",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        print(phase)
 
         reader = csv.DictReader(StringIO(request.data["data"]))
         annotations = []

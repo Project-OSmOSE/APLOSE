@@ -93,7 +93,7 @@
     --padding-end: 0.5rem;
   }
 
-  &.initial .importBloc {
+  &.initial {
     align-self: stretch;
     grid-template-rows: auto 1fr;
   }

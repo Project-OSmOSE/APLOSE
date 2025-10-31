@@ -23,7 +23,8 @@ export const DetectorEntry: React.FC<{
   })
   const isKnown = useMemo(() => allDetectors?.some(d => d.name === initialName), [ allDetectors ]);
   const isSelected = useMemo(() => !!selectedDetectorsForImport.find(d => d === initialName), [ selectedDetectorsForImport ]);
-  const isUpdated = useMemo(() => initialName in Object.keys(unknownToKnownDetectors), [ unknownToKnownDetectors ]);
+  const isUpdated = useMemo(() => Object.keys(unknownToKnownDetectors).includes(initialName), [ unknownToKnownDetectors ]);
+
 
   useEffect(() => {
     if (isKnown) // By default, select detector if it already matches to a known one

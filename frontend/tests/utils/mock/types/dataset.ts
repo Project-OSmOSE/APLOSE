@@ -10,7 +10,8 @@ export const dataset: Dataset = {
   description: 'Coastal audio recordings',
   createdAt: new Date().toISOString(),
   legacy: true,
+  analysisCount: 1,
+  start: '2021-08-02T00:00:00Z',
+  end: '2022-07-13T06:00:00Z',
+  spectrogramCount: 99,
 }
-export const DATASET_START = '2021-08-02T00:00:00Z';
-export const DATASET_END = '2022-07-13T06:00:00Z';
-export const DATASET_FILES_COUNT = 99

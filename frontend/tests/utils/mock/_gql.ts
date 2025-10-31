@@ -8,6 +8,7 @@ import { PHASE_MUTATIONS, PHASE_QUERIES } from './phase';
 import { TASK_QUERIES } from './task';
 import { FILE_RANGE_MUTATIONS, FILE_RANGE_QUERIES } from './fileRange';
 import type { UserType } from './types';
+import { DETECTOR_QUERIES } from './detector';
 
 type GqlQueries =
   typeof DATASET_QUERIES
@@ -19,6 +20,7 @@ type GqlQueries =
   & typeof PHASE_QUERIES
   & typeof TASK_QUERIES
   & typeof FILE_RANGE_QUERIES
+  & typeof DETECTOR_QUERIES
 
 const GQL_MOCK_QUERIES: GqlQueries & { getCurrentUser: typeof GET_CURRENT_USER_QUERY } = {
   ...DATASET_QUERIES,
@@ -30,6 +32,7 @@ const GQL_MOCK_QUERIES: GqlQueries & { getCurrentUser: typeof GET_CURRENT_USER_Q
   ...PHASE_QUERIES,
   ...TASK_QUERIES,
   ...FILE_RANGE_QUERIES,
+  ...DETECTOR_QUERIES,
   getCurrentUser: GET_CURRENT_USER_QUERY,
   // TODO: add queries
 }

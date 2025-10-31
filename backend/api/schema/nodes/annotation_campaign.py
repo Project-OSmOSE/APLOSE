@@ -102,7 +102,7 @@ class AnnotationCampaignNode(BaseObjectType):
             .resolve_queryset(queryset, info)
             .annotate(
                 spectrograms_count=Count("analysis__spectrograms", distinct=True),
-                phase_types=ArrayAgg("phases__phase"),
+                phase_types=ArrayAgg("phases__phase", distinct=True),
                 dataset_name=F("dataset__name"),
                 is_archived=ExpressionWrapper(
                     Q(archive__isnull=False),

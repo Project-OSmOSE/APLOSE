@@ -1,5 +1,5 @@
 import { Locator, Page, test } from '@playwright/test';
-import { Mock, Modal, UI } from '../services';
+import { Modal, UI } from '../services';
 import { labelSet, UserType } from '../mock/types';
 import { CampaignListPage } from './campaign-list';
 
@@ -36,8 +36,7 @@ export class CampaignDetailPage {
 
   constructor(private page: Page,
               private list = new CampaignListPage(page),
-              private ui = new UI(page),
-              private mock = new Mock(page)) {
+              private ui = new UI(page)) {
   }
 
   async go(as: UserType) {
@@ -66,8 +65,7 @@ export class CampaignDetailPage {
     } as LabelModalExtend);
   }
 
-  async openProgressModal(opt?: { empty?: boolean }): Promise<ProgressModal> {
-    await this.mock.fileRanges(opt?.empty)
+  async openProgressModal(): Promise<ProgressModal> {
     const modal = await this.ui.openModal({ ariaLabel: 'Progress' })
     return Object.assign(modal, {
       get downloadResultsButton(): Locator {

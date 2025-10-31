@@ -1,5 +1,6 @@
 import { ESSENTIAL, expect, Page, test } from './utils';
 import { LABEL, RESULTS } from './fixtures';
+import { interceptRequests } from './utils/mock';
 
 // Utils
 const STEP = {
@@ -9,21 +10,24 @@ const STEP = {
   }) => test.step('Submit', async () => {
     const [ request ] = await Promise.all([
       page.waitForRequest(/annotator\/campaign\/-?\d\/phase\/-?\d\/file\/-?\d/g),
-      page.getByRole('button', { name: 'Submit & load next recording' }).click()
+      page.getByRole('button', { name: 'Submit & load next recording' }).click(),
     ])
     const submittedResults = request.postDataJSON().results;
     expect(submittedResults[0]).toEqual(expect.objectContaining({
-      validations: [ { is_valid: presenceIsValid } ]
+      validations: [ { is_valid: presenceIsValid } ],
     }));
     expect(submittedResults[1]).toEqual(expect.objectContaining({
-      validations: [ { is_valid: boxIsValid } ]
+      validations: [ { is_valid: boxIsValid } ],
     }));
-  })
+  }),
 }
 
 // Tests
-test.describe('"Verification" phase', {tag: '@annotator'}, () => {
+test.describe('"Verification" phase', { tag: '@annotator' }, () => {
   test(`Empty`, ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.annotator.go('annotator', { phase: 'Verification', empty: true });
     await page.annotator.resultsBlock.waitFor()
 
@@ -35,6 +39,9 @@ test.describe('"Verification" phase', {tag: '@annotator'}, () => {
   })
 
   test(`With annotations without updates`, ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.annotator.go('annotator', { phase: 'Verification' });
     await page.annotator.resultsBlock.waitFor()
 
@@ -53,6 +60,9 @@ test.describe('"Verification" phase', {tag: '@annotator'}, () => {
   })
 
   test(`With annotations - can validate and invalidate`, ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.annotator.go('annotator', { phase: 'Verification' });
     await page.annotator.resultsBlock.waitFor()
 
@@ -98,6 +108,9 @@ test.describe('"Verification" phase', {tag: '@annotator'}, () => {
   })
 
   test(`With annotations - can edit label`, ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.annotator.go('annotator', { phase: 'Verification' });
     await page.annotator.resultsBlock.waitFor()
 
@@ -116,25 +129,28 @@ test.describe('"Verification" phase', {tag: '@annotator'}, () => {
 
     const [ request ] = await Promise.all([
       page.waitForRequest(/annotator\/campaign\/-?\d\/phase\/-?\d\/file\/-?\d/g),
-      page.getByRole('button', { name: 'Submit & load next recording' }).click()
+      page.getByRole('button', { name: 'Submit & load next recording' }).click(),
     ])
     const submittedResults = request.postDataJSON().results;
     expect(submittedResults[0]).toEqual(expect.objectContaining({
       validations: [ { is_valid: true } ],
-      label: LABEL.classic
+      label: LABEL.classic,
     }));
     expect(submittedResults[1]).toEqual(expect.objectContaining({
       validations: [ { is_valid: false } ],
-      label: LABEL.classic
+      label: LABEL.classic,
     }));
     expect(submittedResults[2]).toEqual(expect.objectContaining({
       validations: [],
       label: LABEL.withFeatures,
-      is_update_of: RESULTS.box.id
+      is_update_of: RESULTS.box.id,
     }));
   })
 
   test(`With annotations - can validate after edit label`, ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.annotator.go('annotator', { phase: 'Verification' });
     await page.annotator.resultsBlock.waitFor()
 
@@ -158,21 +174,24 @@ test.describe('"Verification" phase', {tag: '@annotator'}, () => {
 
     const [ request ] = await Promise.all([
       page.waitForRequest(/annotator\/campaign\/-?\d\/phase\/-?\d\/file\/-?\d/g),
-      page.getByRole('button', { name: 'Submit & load next recording' }).click()
+      page.getByRole('button', { name: 'Submit & load next recording' }).click(),
     ])
     const submittedResults = request.postDataJSON().results;
     expect(submittedResults[0]).toEqual(expect.objectContaining({
       validations: [ { is_valid: true } ],
-      label: LABEL.classic
+      label: LABEL.classic,
     }));
     expect(submittedResults[1]).toEqual(expect.objectContaining({
       validations: [ { is_valid: true } ],
-      label: LABEL.classic
+      label: LABEL.classic,
     }));
     expect(submittedResults.length).toEqual(2);
   })
 
   test(`With annotations - can remove box`, ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.annotator.go('annotator', { phase: 'Verification' });
     await page.annotator.resultsBlock.waitFor()
 
@@ -190,16 +209,16 @@ test.describe('"Verification" phase', {tag: '@annotator'}, () => {
 
     const [ request ] = await Promise.all([
       page.waitForRequest(/annotator\/campaign\/-?\d\/phase\/-?\d\/file\/-?\d/g),
-      page.getByRole('button', { name: 'Submit & load next recording' }).click()
+      page.getByRole('button', { name: 'Submit & load next recording' }).click(),
     ])
     const submittedResults = request.postDataJSON().results;
     expect(submittedResults[0]).toEqual(expect.objectContaining({
       validations: [ { is_valid: true } ],
-      label: LABEL.classic
+      label: LABEL.classic,
     }));
     expect(submittedResults[1]).toEqual(expect.objectContaining({
       validations: [ { is_valid: false } ],
-      label: LABEL.classic
+      label: LABEL.classic,
     }));
     expect(submittedResults.length).toEqual(2);
   })

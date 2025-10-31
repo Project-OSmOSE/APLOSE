@@ -14,7 +14,6 @@ import {
   completedTasksCount,
   confidenceSet,
   dataset,
-  DATASET_FILES_COUNT,
   fft,
   LABELS,
   labelSet,
@@ -42,7 +41,7 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
     colormapDefault: campaign.colormapDefault,
     colormapInvertedDefault: campaign.colormapInvertedDefault,
     description: campaign.description,
-    spectrogramsCount: DATASET_FILES_COUNT,
+    spectrogramsCount: dataset.spectrogramCount,
     instructionsUrl: campaign.instructionsUrl,
     owner: {
       id: USERS.creator.id,
@@ -110,7 +109,7 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
 }
 export const CAMPAIGN_QUERIES: {
   listCampaigns: GqlQuery<ListCampaignsQuery>,
-  getCampaign: GqlQuery<GetCampaignQuery, 'default' | 'manager'>,
+  getCampaign: GqlQuery<GetCampaignQuery, 'default' | 'manager' | 'withoutConfidence' | 'allowPoint'>,
 } = {
   listCampaigns: {
     defaultType: 'filled',
@@ -147,6 +146,20 @@ export const CAMPAIGN_QUERIES: {
       annotationCampaignById: {
         ...DEFAULT_GET_CAMPAIGN.annotationCampaignById,
         canManage: true,
+      },
+    },
+    withoutConfidence: {
+      ...DEFAULT_GET_CAMPAIGN,
+      annotationCampaignById: {
+        ...DEFAULT_GET_CAMPAIGN.annotationCampaignById,
+        confidenceSet: null,
+      },
+    },
+    allowPoint: {
+      ...DEFAULT_GET_CAMPAIGN,
+      annotationCampaignById: {
+        ...DEFAULT_GET_CAMPAIGN.annotationCampaignById,
+        allowPointAnnotation: true,
       },
     },
   },

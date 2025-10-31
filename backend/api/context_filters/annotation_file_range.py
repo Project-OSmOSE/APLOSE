@@ -20,8 +20,8 @@ class AnnotationFileRangeContextFilter:
             return queryset
         return queryset.filter(
             Exists(
-                AnnotationPhaseContextFilter.get_queryset(context).filter(
-                    id=OuterRef("annotation_phase_id")
+                AnnotationPhaseContextFilter.get_queryset(
+                    context, id=OuterRef("annotation_phase_id")
                 )
             )
         )

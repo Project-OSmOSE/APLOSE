@@ -20,7 +20,8 @@ export const DetectorConfigurationEntry: React.FC<{
     return allDetectors?.find(d => d.id === unknownToKnownDetectors[initialName])
   }, [ allDetectors, unknownToKnownDetectors, initialName ])
   const knownConfigurations = useMemo(() => {
-    return knownDetector?.configurations?.filter(c => !!c).map(c => c!) ?? []
+    const detector = knownDetector ?? allDetectors?.find(d => d.name === initialName)
+    return detector?.configurations?.filter(c => !!c).map(c => c!) ?? []
   }, [ knownDetector ])
   const className = useMemo(() => [
     styles.configEntry,

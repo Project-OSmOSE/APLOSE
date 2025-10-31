@@ -138,6 +138,9 @@ const TEST = {
 test.describe('"Annotation" phase', { tag: '@annotator' }, () => {
 
   test(`Can go back to campaign`, ESSENTIAL, async ({ page }) => {
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+    })
     await page.annotator.go('annotator', { phase: 'Annotation' });
     await page.annotator.backToCampaignButton.click();
     await page.waitForURL(`/app/annotation-campaign/${ CAMPAIGN.id }/phase/${ CAMPAIGN_PHASE.id }`)
@@ -147,7 +150,11 @@ test.describe('"Annotation" phase', { tag: '@annotator' }, () => {
   TEST.empty('annotator', { phase: AnnotationPhaseType.Annotation, submit: 'key' })
 
   test(`Empty | allow point annotation`, ESSENTIAL, async ({ page }) => {
-    await page.annotator.go('annotator', { empty: true, allowPoint: true });
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+      getCampaign: 'allowPoint',
+    })
+    await page.annotator.go('annotator', { empty: true });
 
     await test.step('Can add presence - mouse', async () => {
       const label = page.annotator.getLabel(LABEL.classic);
@@ -177,7 +184,11 @@ test.describe('"Annotation" phase', { tag: '@annotator' }, () => {
   })
 
   test(`No confidence`, ESSENTIAL, async ({ page }) => {
-    await page.annotator.go('annotator', { noConfidence: true });
+    await interceptRequests(page, {
+      getCurrentUser: 'annotator',
+      getCampaign: 'withoutConfidence',
+    })
+    await page.annotator.go('annotator');
     await expect(page.getByText('Confidence indicator ')).not.toBeVisible();
   })
 })
@@ -201,8 +212,9 @@ test.describe('"Verification" phase', { tag: '@annotator' }, () => {
     await interceptRequests(page, {
       getCurrentUser: 'annotator',
       getAnnotationPhase: AnnotationPhaseType.Verification,
+      getCampaign: 'allowPoint',
     })
-    await page.annotator.go('annotator', { phase: 'Verification', empty: true, allowPoint: true });
+    await page.annotator.go('annotator', { phase: 'Verification', empty: true });
 
     await test.step('Can add presence - mouse', async () => {
       const label = page.annotator.getLabel(LABEL.classic);
@@ -235,8 +247,9 @@ test.describe('"Verification" phase', { tag: '@annotator' }, () => {
     await interceptRequests(page, {
       getCurrentUser: 'annotator',
       getAnnotationPhase: AnnotationPhaseType.Verification,
+      getCampaign: 'withoutConfidence',
     })
-    await page.annotator.go('annotator', { phase: 'Verification', noConfidence: true });
+    await page.annotator.go('annotator', { phase: 'Verification' });
     await expect(page.getByText('Confidence indicator ')).not.toBeVisible();
   })
 })

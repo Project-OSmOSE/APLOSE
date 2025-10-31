@@ -34,6 +34,7 @@ type SelectProperties = {
   noneLabel?: string;
   noneFirst?: boolean;
   error?: string;
+  note?: string;
   isLoading?: boolean;
 } & Omit<HTMLProps<HTMLDivElement>, 'id' | 'ref'>
 
@@ -51,12 +52,13 @@ export const Select: React.FC<SelectProperties> = ({
                                                      className,
                                                      noneFirst = false,
                                                      error,
+                                                     note,
                                                      isLoading = false,
                                                      ...props
                                                    }) => {
-  const { containerRef, top, right } = usePopover();
+  const { containerRef: inputRef, top, right } = usePopover();
 
-  const inputRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const selectButtonRef = useRef<HTMLButtonElement | null>(null);
   const selectLabelRef = useRef<HTMLParagraphElement | null>(null);
   const selectImgRef = useRef<HTMLImageElement | null>(null);
@@ -164,6 +166,7 @@ export const Select: React.FC<SelectProperties> = ({
 
     { !!children && <div className={ styles.inner }>{ children }</div> }
     { error && <IonNote color="danger">{ error }</IonNote> }
+    { note && <IonNote>{ note }</IonNote> }
   </div>
 }
 

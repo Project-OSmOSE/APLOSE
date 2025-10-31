@@ -1,4 +1,4 @@
-import { API_URL, ESSENTIAL, expect, expectNoRequestsOnAction, test } from './utils';
+import { ESSENTIAL, expect, expectNoRequestsOnAction, test } from './utils';
 import { gqlURL, interceptRequests, mockError } from './utils/mock';
 import type { GqlMutation } from './utils/mock/_gql';
 import { campaign, dataset, spectrogramAnalysis } from './utils/mock/types';
@@ -114,7 +114,7 @@ test.describe('Annotator', () => {
       await expectNoRequestsOnAction(
         page,
         () => page.campaign.create.createButton.click(),
-        API_URL.campaign.create,
+        gqlURL,
       )
     })
   })

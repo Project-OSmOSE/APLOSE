@@ -3,6 +3,7 @@ import {
   type AnnotationSpectrogramNode,
   AnnotationTaskNode,
   AnnotationTaskStatus,
+  type Maybe,
   useCurrentPhase,
 } from '@/api';
 import React, { Fragment, useMemo } from 'react';
@@ -13,24 +14,24 @@ import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 
 export const SpectrogramRow: React.FC<{
   spectrogram: Pick<AnnotationSpectrogramNode, 'id' | 'filename' | 'duration' | 'start'>,
-  task: Pick<AnnotationTaskNode, 'status'>,
-  annotations: Pick<AnnotationNodeNodeConnection, 'totalCount'>;
-  validatedAnnotations: Pick<AnnotationNodeNodeConnection, 'totalCount'>;
+  task?: Maybe<Pick<AnnotationTaskNode, 'status'>>,
+  annotations?: Maybe<Pick<AnnotationNodeNodeConnection, 'totalCount'>>;
+  validatedAnnotations?: Maybe<Pick<AnnotationNodeNodeConnection, 'totalCount'>>;
 }> = ({ spectrogram, task, annotations, validatedAnnotations }) => {
   const { phase } = useCurrentPhase()
   const { openAnnotator } = useOpenAnnotator()
 
-  const submitted = useMemo(() => task.status === AnnotationTaskStatus.Finished, [task])
-  const start = useMemo(() => new Date(spectrogram.start), [spectrogram])
-  const duration = useMemo(() => new Date(spectrogram.duration), [spectrogram])
+  const submitted = useMemo(() => task?.status === AnnotationTaskStatus.Finished, [ task ])
+  const start = useMemo(() => new Date(spectrogram.start), [ spectrogram ])
+  const duration = useMemo(() => new Date(spectrogram.duration), [ spectrogram ])
 
   return <Fragment>
     <TableContent isFirstColumn={ true } disabled={ submitted }>{ spectrogram.filename }</TableContent>
     <TableContent disabled={ submitted }>{ start.toUTCString() }</TableContent>
     <TableContent disabled={ submitted }>{ duration.toUTCString().split(' ')[4] }</TableContent>
-    <TableContent disabled={ submitted }>{ annotations.totalCount }</TableContent>
+    <TableContent disabled={ submitted }>{ annotations?.totalCount ?? 0 }</TableContent>
     { phase?.phase == 'Verification' &&
-        <TableContent disabled={ submitted }>{ validatedAnnotations.totalCount }</TableContent> }
+        <TableContent disabled={ submitted }>{ validatedAnnotations?.totalCount ?? 0 }</TableContent> }
     <TableContent disabled={ submitted }>
       { submitted &&
           <IonIcon icon={ checkmarkCircle } color="primary"/> }

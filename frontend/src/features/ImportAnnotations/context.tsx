@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ACCEPT_CSV_MIME_TYPE, ACCEPT_CSV_SEPARATOR, IMPORT_ANNOTATIONS_COLUMNS } from '@/consts/csv';
-import { type ImportAnnotation, useImportAnnotations } from '@/api';
+import { type ImportAnnotation, type SpectrogramAnalysisNode, useCurrentCampaign, useImportAnnotations } from '@/api';
 import { QueryStatus } from '@reduxjs/toolkit/query';
 
 const CHUNK_SIZE = 200;
@@ -47,6 +47,7 @@ type DetectorConfiguration = { id: string, configuration: string } | { id?: neve
 
 type ImportAnnotationsContext = {
   analysisID?: string;
+  analysis?: Pick<SpectrogramAnalysisNode, 'id' | 'name'>;
 
   /** List of initial names (as in csv) */
   fileDetectorNames: string[],
@@ -70,6 +71,7 @@ type ImportAnnotationsContext = {
   load(file: File): Promise<void>;
   reset(): void;
 
+  setAnalysisID(id: string): void;
   selectDetectorForImport(initialName: string): void;
   unselectDetectorForImport(initialName: string): void;
   createUnknownDetector(initialName: string): void;
@@ -102,6 +104,8 @@ export const ImportAnnotationsContext = createContext<ImportAnnotationsContext>(
   },
   reset: () => {
   },
+  setAnalysisID: () => {
+  },
   selectDetectorForImport: () => {
   },
   unselectDetectorForImport: () => {
@@ -127,19 +131,20 @@ export const useImportAnnotationsContext = () => {
 }
 
 type Annotation = Omit<
-    ImportAnnotation,
-    'detector__name'
-    | 'detector_configuration__configuration'
-    | 'analysis'
+  ImportAnnotation,
+  'detector__name'
+  | 'detector_configuration__configuration'
+  | 'analysis'
 > & Partial<Pick<
-    ImportAnnotation,
-    'detector__name'
-    | 'detector_configuration__configuration'
+  ImportAnnotation,
+  'detector__name'
+  | 'detector_configuration__configuration'
 >> & {
   initial__detector__name: string
 }
 
 export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { allAnalysis } = useCurrentCampaign();
   const {
     importAnnotations,
     status,
@@ -150,6 +155,14 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
   } = useImportAnnotations()
 
   const [ analysisID, setAnalysisID ] = useState<string>();
+  useEffect(() => {
+    if (allAnalysis && allAnalysis.length === 1) {
+      setAnalysisID(allAnalysis[0].id)
+    }
+  }, [ allAnalysis ]);
+  const analysis = useMemo(() => {
+    return allAnalysis?.find(a => a.id == analysisID)
+  }, [ analysisID, allAnalysis ])
   const [ fileState, setFileState ] = useState<FileStatus>('initial')
   const [ fileError, setFileError ] = useState<any>();
   const [ file, setFile ] = useState<File>();
@@ -177,8 +190,10 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
 
   const load = useCallback(async (file: File) => {
     setFileState('loading');
+    console.debug('loading')
     if (!ACCEPT_CSV_MIME_TYPE.includes(file.type)) {
       setFileState('error');
+      console.debug('incorrect mime type')
       return setFileError(new WrongMIMETypeError(file.type))
     }
 
@@ -190,13 +205,16 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
         reader.onerror = () => reject(new UnreadableFileError())
         reader.onload = (event) => {
           const result = event.target?.result;
+          console.debug('loaded rows', result)
           if (!result || typeof result !== 'string') {
+            console.debug('unsupported result')
             reject(new UnsupportedCSVError())
             return;
           }
 
           let lines = result.replaceAll('\r', '').split('\n').map(l => [ l ]);
           lines = lines.map(l => l.flatMap(l => l.split(ACCEPT_CSV_SEPARATOR))).filter(d => d.length > 1);
+          console.debug('lines', JSON.stringify(lines))
           if (lines.length === 0) reject(new EmptyCSVError())
 
           const missingColumns = [];
@@ -204,6 +222,7 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
           for (const column of IMPORT_ANNOTATIONS_COLUMNS.required) {
             if (!headers.includes(column)) missingColumns.push(column);
           }
+          console.debug('missing columns', JSON.stringify(missingColumns))
           if (missingColumns.length > 0)
             throw new Error(`Missing columns: ${ missingColumns.join(', ') }`);
           resolve(lines)
@@ -211,6 +230,7 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
       })
     } catch (error) {
       setFileState('error');
+      console.debug('fail loading rows')
       return setFileError(error)
     }
 
@@ -218,11 +238,13 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
     contentRows.reverse()
     const header = contentRows.pop()!
     contentRows.reverse()
+    console.debug('header', JSON.stringify(header))
     setAnnotations(contentRows.map(r => {
       const confidence__level = r[header.indexOf('confidence_indicator_level')].split('/')
+      console.debug('setAnnotations', JSON.stringify(r))
       return {
-        start_datetime: +r[header.indexOf('start_datetime')],
-        end_datetime: +r[header.indexOf('end_datetime')],
+        start_datetime: r[header.indexOf('start_datetime')],
+        end_datetime: r[header.indexOf('end_datetime')],
         start_frequency: +r[header.indexOf('start_frequency')],
         end_frequency: +r[header.indexOf('end_frequency')],
         label__name: r[header.indexOf('label')],
@@ -232,6 +254,7 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
       } as Annotation
     }))
     setFileState('loaded');
+    setFile(file)
   }, [])
 
   const reset = useCallback(() => {
@@ -253,7 +276,7 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
   }, [])
 
   const selectDetectorForImport = useCallback((initialName: string) => {
-    setSelectedDetectorsForImport(prev => [ ...prev, initialName ])
+    setSelectedDetectorsForImport(prev => [ ...new Set([ ...prev, initialName ]) ])
   }, [ setSelectedDetectorsForImport ])
 
   const unselectDetectorForImport = useCallback((initialName: string) => {
@@ -262,12 +285,12 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
 
   const createUnknownDetector = useCallback((initialName: string) => {
     setUnknownToKnownDetectors(prev => ({ ...prev, [initialName]: undefined }))
-    setSelectedDetectorsForImport(prev => [ ...prev, initialName ])
+    setSelectedDetectorsForImport(prev => [ ...new Set([ ...prev, initialName ]) ])
   }, [ setUnknownToKnownDetectors ])
 
   const assignUnknownToKnownDetector = useCallback((initialName: string, id: string) => {
     setUnknownToKnownDetectors(prev => ({ ...prev, [initialName]: id }))
-    setSelectedDetectorsForImport(prev => [ ...prev, initialName ])
+    setSelectedDetectorsForImport(prev => [ ...new Set([ ...prev, initialName ]) ])
   }, [ setUnknownToKnownDetectors, setSelectedDetectorsForImport ])
 
   const assignUnknownToConfiguration = useCallback((initialName: string, configuration: DetectorConfiguration) => {
@@ -295,13 +318,14 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
   }, [ uploadState, uploadError, file ])
 
   const canImport = useMemo<boolean>(() => {
+    console.debug('canImportMemo', analysisID, fileState, JSON.stringify(selectedDetectorsForImport), JSON.stringify(unknownToConfiguration))
     if (!analysisID) return false;
     if (fileState !== 'loaded') return false
     if (selectedDetectorsForImport.length === 0) return false
     return selectedDetectorsForImport.map(initialName => {
       return !!unknownToConfiguration[initialName];
     }).reduce((a, b) => a && b, true)
-  }, [ fileState, uploadState, selectedDetectorsForImport ])
+  }, [ analysisID, fileState, uploadState, selectedDetectorsForImport, unknownToConfiguration ])
 
   const uploadChunk = useCallback((start: number = 0, options?: {
     bypassUploadState?: true;
@@ -311,11 +335,11 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
     if (!canImport) return;
     if (uploadState !== 'uploading' && !options?.bypassUploadState) return;
     importAnnotations(annotations.slice(start, start + CHUNK_SIZE).map(a => ({
-          ...a,
-          analysis: analysisID!,
-          detector__name: unknownToKnownDetectors[a.initial__detector__name] ?? a.initial__detector__name,
-          detector_configuration__configuration: unknownToConfiguration[a.initial__detector__name]?.configuration,
-        }
+        ...a,
+        analysis: analysisID!,
+        detector__name: unknownToKnownDetectors[a.initial__detector__name] ?? a.initial__detector__name,
+        detector_configuration__configuration: unknownToConfiguration[a.initial__detector__name]?.configuration,
+      }
     )))
   }, [ importAnnotations, annotations, canImport, uploadState, unknownToKnownDetectors, unknownToConfiguration ])
 
@@ -323,6 +347,7 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
     force_datetime?: boolean;
     force_max_frequency?: boolean;
   }) => {
+    console.debug('upload', canImport, uploadState, JSON.stringify(options))
     if (!canImport) return;
     if (uploadState === 'uploading') return;
     const isDatetimeForced = options?.force_datetime !== undefined ? options.force_datetime : (uploadState === 'initial' ? false : forceDatetime)
@@ -401,6 +426,8 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
                                               annotations,
                                               upload,
                                               analysisID,
+                                              analysis,
+                                              setAnalysisID,
                                               uploadDuration,
                                               uploadedCount,
                                             } }/>;

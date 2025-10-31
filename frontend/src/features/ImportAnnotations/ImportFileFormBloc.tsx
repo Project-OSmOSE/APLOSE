@@ -7,6 +7,7 @@ import { ACCEPT_CSV_MIME_TYPE, ACCEPT_CSV_SEPARATOR, IMPORT_ANNOTATIONS_COLUMNS 
 import { useCurrentCampaign } from '@/api';
 import { WarningText } from '@/components/ui';
 import { cloudUploadOutline, refreshOutline } from 'ionicons/icons/index.js';
+import { AnalysisSelect } from './AnalysisSelect';
 
 export const ImportAnnotationsFormBloc: React.FC = () => {
   const { campaign } = useCurrentCampaign()
@@ -52,11 +53,12 @@ export const ImportAnnotationsFormBloc: React.FC = () => {
     event.preventDefault();
   }, [])
 
-  return <FormBloc className={ styles.bloc }>
+  return <FormBloc className={ styles.importBloc }>
 
     {/* Information */ }
     <IonNote color="medium"
              children={ `The imported CSV should only contain annotations related to this campaign dataset: ${ campaign?.dataset?.name }` }/>
+    <AnalysisSelect/>
 
     {/* Drag N Drop zone */ }
     <div className={ dragNDropClassName }

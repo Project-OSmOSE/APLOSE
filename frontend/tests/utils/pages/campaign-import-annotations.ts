@@ -1,5 +1,4 @@
 import { expect, Locator, Page, test } from '@playwright/test';
-import { Mock } from '../services';
 import { DETECTOR_CONFIGURATION, UserType } from '../../fixtures';
 import { fileURLToPath } from 'url';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -26,10 +25,6 @@ export class CampaignImportAnnotationsPage {
     return this.page.getByRole('button', { name: 'Import' })
   }
 
-  get backButton(): Locator {
-    return this.page.getByRole('button', { name: 'Back to campaign' })
-  }
-
   get resetFileButton(): Locator {
     return this.page.getByRole('button', { name: 'Reset' })
   }
@@ -39,15 +34,12 @@ export class CampaignImportAnnotationsPage {
   }
 
   constructor(private page: Page,
-              private detail = new CampaignDetailPage(page),
-              private mock = new Mock(page)) {
+              private detail = new CampaignDetailPage(page)) {
   }
 
-  async go(as: UserType, options?: { empty?: boolean, withErrors?: boolean, loadDetectors?: boolean }): Promise<void> {
+  async go(as: UserType): Promise<void> {
     await test.step('Navigate to Campaign create', async () => {
       await this.detail.go(as)
-      await this.mock.detectors(!(options?.loadDetectors ?? false))
-      await this.mock.resultImport()
       await this.detail.importAnnotationsButton.click();
     });
   }
@@ -101,13 +93,6 @@ export class CampaignImportAnnotationsPage {
       await this.selectDetectors(options)
       await this.selectDetectorsConfigurationsStep(options)
     })
-
-  }
-
-  async submit() {
-    await this.mock.annotatorGroups()
-    await this.mock.fileRanges()
-    await this.importButton.click()
   }
 
 }

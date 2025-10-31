@@ -15,7 +15,6 @@ class AnnotationPhaseContextFilter:
         cls, context: Request, queryset=AnnotationPhase.objects.all()
     ) -> QuerySet[AnnotationPhase]:
         """Get queryset depending on the context"""
-
         if context.user.is_staff or context.user.is_superuser:
             return queryset
         return queryset.filter(

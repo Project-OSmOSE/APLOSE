@@ -8,7 +8,7 @@ import { DetectorEntry } from './DetectorEntry';
 
 export const DetectorsFormBloc: React.FC = () => {
   const { ...state } = useImportAnnotationsContext()
-  const { allDetectors, isFetching, error } = useAllDetectors({
+  const { isFetching, error } = useAllDetectors({
     skip: state.fileState !== 'loaded',
   })
 
@@ -16,7 +16,6 @@ export const DetectorsFormBloc: React.FC = () => {
   if (isFetching) return <FormBloc label="Detectors"><IonSpinner/></FormBloc>
   if (error) return <FormBloc label="Detectors"><WarningText message="Fail loading known detectors"
                                                              error={ error }/></FormBloc>
-  if (!allDetectors) return <FormBloc label="Detectors"/>
   return <FormBloc label="Detectors">
 
     { state.fileDetectorNames.map(initialName => <DetectorEntry key={ initialName }
