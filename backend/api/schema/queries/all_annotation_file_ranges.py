@@ -1,6 +1,6 @@
-from backend.api.schema.connections import AnnotationFileRangeConnectionField
 from backend.api.schema.nodes import AnnotationFileRangeNode
+from backend.utils.schema import AuthenticatedDjangoConnectionField
 
-AllAnnotationFileRangesField = AnnotationFileRangeConnectionField(
+AllAnnotationFileRangesField = AuthenticatedDjangoConnectionField(
     AnnotationFileRangeNode
 )

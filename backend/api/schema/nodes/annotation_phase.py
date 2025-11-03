@@ -1,3 +1,5 @@
+import graphene
+import graphene_django_optimizer
 from django.db import models
 from django.db.models import (
     Subquery,
@@ -10,15 +12,12 @@ from django.db.models import (
     Q,
 )
 from django.db.models.functions import Coalesce
-import graphene
-import graphene_django_optimizer
 from graphql import GraphQLResolveInfo
 
-from backend.api.models import AnnotationPhase, AnnotationFileRange, AnnotationTask
 from backend.api.context_filters import AnnotationPhaseContextFilter
+from backend.api.models import AnnotationPhase, AnnotationFileRange, AnnotationTask
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationPhaseFilterSet
-from backend.api.schema.connections import AnnotationFileRangeConnectionField
 from backend.utils.schema import AuthenticatedDjangoConnectionField
 from backend.utils.schema.types import BaseObjectType, BaseNode
 from .annotation_file_range import AnnotationFileRangeNode
@@ -31,7 +30,7 @@ class AnnotationPhaseNode(BaseObjectType):
     annotation_campaign_id = graphene.Field(
         graphene.ID, source="annotation_campaign_id", required=True
     )
-    annotation_file_ranges = AnnotationFileRangeConnectionField(AnnotationFileRangeNode)
+    annotation_file_ranges = AuthenticatedDjangoConnectionField(AnnotationFileRangeNode)
     annotation_spectrograms = AuthenticatedDjangoConnectionField(
         AnnotationSpectrogramNode, source="annotations__spectrogram"
     )

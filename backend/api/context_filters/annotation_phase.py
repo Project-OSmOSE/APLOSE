@@ -12,9 +12,10 @@ class AnnotationPhaseContextFilter:
 
     @classmethod
     def get_queryset(
-        cls, context: Request, queryset=AnnotationPhase.objects.all()
+        cls, context: Request, queryset=AnnotationPhase.objects.all(), **kwargs
     ) -> QuerySet[AnnotationPhase]:
         """Get queryset depending on the context"""
+        queryset = queryset.filter(**kwargs)
         if context.user.is_staff or context.user.is_superuser:
             return queryset
         return queryset.filter(
