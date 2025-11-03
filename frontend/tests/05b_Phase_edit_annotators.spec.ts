@@ -1,6 +1,6 @@
 import { ESSENTIAL, expect, test } from './utils';
 import { gqlURL, interceptRequests } from './utils/mock';
-import { campaign, fileRange, userGroup, USERS } from './utils/mock/types';
+import { campaign, dataset, fileRange, userGroup, USERS } from './utils/mock/types';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
 import { type UpdateFileRangesMutationVariables } from '../src/api/annotation-file-range';
 
@@ -100,11 +100,11 @@ test.describe('Campaign creator', () => {
         }, {
           annotatorId: USERS.superuser.id,
           firstFileIndex: 0,
-          lastFileIndex: campaign.spectrogramsCount - 1,
+          lastFileIndex: dataset.spectrogramCount - 1,
         }, {
           annotatorId: USERS.staff.id,
           firstFileIndex: 0,
-          lastFileIndex: campaign.spectrogramsCount - 1,
+          lastFileIndex: dataset.spectrogramCount - 1,
         },
       ]
       expect(variables.fileRanges).toEqual(expectedRanges)
