@@ -1,10 +1,14 @@
-import { Page, test } from '@playwright/test';
+import { type Locator, Page, test } from '@playwright/test';
 import { Modal, UI } from '../services';
 import { CampaignListPage } from './campaign-list';
 import { expect } from '../index';
 import type { UserType } from '../mock/types';
 
 export class DatasetPage {
+
+  get title(): Locator {
+    return this.page.getByRole('heading', { name: 'Datasets', exact: true })
+  }
 
   constructor(public page: Page,
               private campaignList = new CampaignListPage(page),

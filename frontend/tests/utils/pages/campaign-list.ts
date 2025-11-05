@@ -4,6 +4,10 @@ import type { UserType } from '../mock/types';
 
 export class CampaignListPage {
 
+  get title(): Locator {
+    return this.page.getByRole('heading', { name: 'Annotation campaigns' })
+  }
+
   get card(): Locator {
     return this.page.locator('.campaign-card').first();
   }
@@ -18,7 +22,7 @@ export class CampaignListPage {
 
   async go(as: UserType) {
     await test.step('Navigate to Campaigns', async () => {
-      await this.login.login(as)
+      await this.login.go({ as })
       await expect(this.page.getByRole('heading', { name: 'Annotation campaigns' })).toBeVisible()
     });
   }

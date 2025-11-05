@@ -1,9 +1,6 @@
-import { AbstractAplosePage } from '../types';
-import type { Locator } from '@playwright/test';
+import { type Locator, Page } from '@playwright/test';
 
-export class HomePage extends AbstractAplosePage {
-  
-  pageName = 'home'
+export class HomePage {
 
   get osmoseLink(): Locator {
     return this.page.getByRole('link', { name: 'OSmOSE', exact: true })
@@ -15,6 +12,9 @@ export class HomePage extends AbstractAplosePage {
 
   get loginButton(): Locator {
     return this.page.getByRole('button', { name: 'Login', exact: true })
+  }
+
+  constructor(private page: Page) {
   }
 
   async go() {

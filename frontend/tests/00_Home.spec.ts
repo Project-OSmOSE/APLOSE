@@ -12,7 +12,7 @@ const TEST = {
       })
 
       await Promise.all([
-        page.home.goStep(),
+        test.step(`Navigate`, () => page.home.go()),
         page.waitForRequest(COLLABORATOR_QUERIES.listCollaborators.url),
       ])
 
@@ -38,5 +38,5 @@ const TEST = {
 test.describe('[Home] Visitor', { tag: essential }, () => {
 
   TEST.canNavigate()
-  
+
 })

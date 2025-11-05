@@ -1,26 +1,26 @@
 import { type Locator, Page, Request } from '@playwright/test';
-import { UserType } from '../../fixtures';
 import { HomePage } from './home';
 import { PASSWORD } from '../mock';
 import { REST_MOCK } from '../mock/_rest';
-import { AbstractAplosePage, Params } from '../types'
+import { Params } from '../types'
 
-export class LoginPage extends AbstractAplosePage {
-
-  pageName = 'login'
+export class LoginPage {
 
   get title(): Locator {
     return this.page.getByRole('heading', { name: 'Login', exact: true }).first()
   }
 
-  constructor(protected page: Page,
+  constructor(private page: Page,
               private home: HomePage = new HomePage(page)) {
-    super(page)
   }
 
-  async go() {
+  async go(opts?: Pick<Params, 'as'>) {
     await this.home.go();
     await this.home.loginButton.click();
+    if (opts) {
+      await this.fillForm({ as: opts.as })
+      await this.submit({ method: 'mouse' })
+    }
   }
 
   async fillForm({ as }: Pick<Params, 'as'>) {
@@ -34,11 +34,5 @@ export class LoginPage extends AbstractAplosePage {
       method === 'mouse' ? this.page.getByRole('button', { name: 'Login' }).click() : this.page.keyboard.press('Enter'),
     ])
     return request;
-  }
-
-  async login(as: UserType) {
-    await this.go()
-    await this.fillForm({ as })
-    await this.submit({ method: 'mouse' })
   }
 }

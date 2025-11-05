@@ -2,6 +2,7 @@ import { type Page as PageBase, test as testBase } from '@playwright/test';
 import { Route } from 'playwright-core';
 import { Mock } from './services';
 import {
+  AccountPage,
   AnnotatorPage,
   CampaignCreatePage,
   CampaignDetailPage,
@@ -12,6 +13,7 @@ import {
   DatasetPage,
   HomePage,
   LoginPage,
+  Navbar,
 } from './pages';
 
 interface PageExtension {
@@ -19,6 +21,8 @@ interface PageExtension {
 
   readonly home: HomePage;
   readonly login: LoginPage;
+  readonly navbar: Navbar;
+  readonly account: AccountPage;
   readonly dataset: {
     list: DatasetPage;
     detail: DatasetDetailPage;
@@ -56,6 +60,8 @@ export const test = testBase.extend<Fixture>({
 
       home: new HomePage(page),
       login: new LoginPage(page),
+      navbar: new Navbar(page),
+      account: new AccountPage(page),
       dataset: {
         list: new DatasetPage(page),
         detail: new DatasetDetailPage(page),

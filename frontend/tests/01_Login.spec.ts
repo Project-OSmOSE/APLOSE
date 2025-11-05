@@ -14,7 +14,7 @@ const TEST = {
         token: 'success',
       })
 
-      await page.login.goStep();
+      await test.step(`Navigate`, () => page.login.go());
 
       await test.step('Fill form', () => page.login.fillForm({ as }))
 
@@ -34,7 +34,7 @@ const TEST = {
         token: 'forbidden',
       })
 
-      await page.login.goStep();
+      await test.step(`Navigate`, () => page.login.go());
 
       await test.step('Fill form', () => page.login.fillForm({ as }))
 
