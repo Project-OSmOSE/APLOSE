@@ -9,9 +9,9 @@ import type { Params } from './utils/types';
 
 const TEST = {
 
-  // List
+  // Page
 
-  handleListEmptyState: ({ as }: Pick<Params, 'as'>) =>
+  handlePageEmptyState: ({ as }: Pick<Params, 'as'>) =>
     test(`Handle empty state as ${ as }`, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
@@ -24,7 +24,7 @@ const TEST = {
         expect(page.getByText('No datasets')).toBeVisible())
     }),
 
-  listDisplayLoadedData: ({ as }: Pick<Params, 'as'>) =>
+  pageDisplayLoadedData: ({ as }: Pick<Params, 'as'>) =>
     test(`Display loaded data as ${ as }`, async ({ page }) => {
       await interceptRequests(page, { getCurrentUser: as })
       await test.step(`Navigate`, () => page.datasets.go({ as }));
@@ -119,11 +119,11 @@ const TEST = {
 // Tests
 test.describe('[Dataset list]', { tag: essential }, () => {
 
-  TEST.handleListEmptyState({ as: 'staff' })
-  TEST.handleListEmptyState({ as: 'superuser' })
+  TEST.handlePageEmptyState({ as: 'staff' })
+  TEST.handlePageEmptyState({ as: 'superuser' })
 
-  TEST.listDisplayLoadedData({ as: 'staff' })
-  TEST.listDisplayLoadedData({ as: 'superuser' })
+  TEST.pageDisplayLoadedData({ as: 'staff' })
+  TEST.pageDisplayLoadedData({ as: 'superuser' })
 
 })
 

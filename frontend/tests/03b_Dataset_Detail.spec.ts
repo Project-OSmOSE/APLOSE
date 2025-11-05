@@ -1,76 +1,117 @@
-import { ESSENTIAL, expect, test } from './utils';
-import { UserType } from './fixtures';
+import { essential, expect, test } from './utils';
 import { interceptRequests } from './utils/mock';
 import { spectrogramAnalysis } from './utils/mock/types';
 import type { ImportSpectrogramAnalysisMutationVariables } from '../src/api/spectrogram-analysis';
+import type { Params } from './utils/types';
 
 // Utils
 
 const TEST = {
-  empty: (as: UserType) => {
-    return test('Should display empty state', async ({ page }) => {
+
+  // Page
+
+  handlePageEmptyState: ({ as }: Pick<Params, 'as'>) =>
+    test(`Handle empty state as ${ as }`, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         listSpectrogramAnalysis: 'empty',
         listChannelConfigurations: 'empty',
         listAvailableSpectrogramAnalysisForImport: 'empty',
       })
-      await page.dataset.detail.go(as);
-      await expect(page.locator('.table-content')).not.toBeVisible();
-      await expect(page.getByText('No spectrogram analysis')).toBeVisible();
+      await test.step(`Navigate`, () => page.datasetDetail.go({ as }));
 
-      const modal = await page.dataset.detail.openImportModal()
-      await expect(modal.locator).toContainText('There is no new analysis')
-    });
-  },
-  display: (as: UserType) => {
-    return test('Should display loaded data', async ({ page }) => {
+      await test.step('Display empty message', () =>
+        expect(page.getByText('No spectrogram analysis')).toBeVisible())
+    }),
+
+  pageDisplayLoadedData: ({ as }: Pick<Params, 'as'>) =>
+    test(`Display loaded data as ${ as }`, async ({ page }) => {
+      await interceptRequests(page, { getCurrentUser: as })
+      await test.step(`Navigate`, () => page.datasetDetail.go({ as }));
+
+      await test.step('Display dataset', () =>
+        expect(page.getByText(spectrogramAnalysis.name)).toBeVisible())
+    }),
+
+  // Modal
+
+  handleModalEmptyState: ({ as }: Pick<Params, 'as'>) =>
+    test(`Handle empty state as ${ as }`, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
+        listSpectrogramAnalysis: 'empty',
+        listChannelConfigurations: 'empty',
+        listAvailableSpectrogramAnalysisForImport: 'empty',
       })
-      await page.dataset.detail.go(as);
-      await expect(page.getByText(spectrogramAnalysis.name)).toBeVisible();
+      await test.step(`Navigate`, async () => {
+        await page.datasetDetail.go({ as })
+        await page.datasetDetail.importAnalysis.button.click()
+        await expect(page.datasetDetail.importAnalysis.modal).toBeVisible()
+      });
 
-      const modal = await page.dataset.detail.openImportModal()
-      await expect(modal.locator).toContainText('Test analysis 1')
-      await expect(modal.locator).toContainText('Test analysis 2')
-      await modal.search('1')
-      await expect(modal.locator).toContainText('Test analysis 1')
-      await expect(modal.locator).not.toContainText('Test analysis 2')
-    });
-  },
-  manageAnalysisImport: (as: UserType) => {
-    return test('Should manage import of an analysis', async ({ page }) => {
+      await test.step('Display empty message', () =>
+        expect(page.datasetDetail.importAnalysis.modal).toContainText('There is no new analysis'))
+    }),
+
+  modalDisplayLoadedData: ({ as }: Pick<Params, 'as'>) =>
+    test(`Display loaded data as ${ as }`, async ({ page }) => {
+      await interceptRequests(page, { getCurrentUser: as })
+      await test.step(`Navigate`, async () => {
+        await page.datasetDetail.go({ as })
+        await page.datasetDetail.importAnalysis.button.click()
+        await expect(page.datasetDetail.importAnalysis.modal).toBeVisible()
+      });
+
+      await test.step('Import modal display data', async () => {
+        await expect(page.datasetDetail.importAnalysis.modal).toContainText('Test analysis 1')
+        await expect(page.datasetDetail.importAnalysis.modal).toContainText('Test analysis 2')
+        await page.datasetDetail.importAnalysis.search('1')
+        await expect(page.datasetDetail.importAnalysis.modal).toContainText('Test analysis 1')
+        await expect(page.datasetDetail.importAnalysis.modal).not.toContainText('Test analysis 2')
+      })
+    }),
+
+  importAnalysis: ({ as }: Pick<Params, 'as'>) =>
+    test(`Import an analysis as ${ as }`, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
-        importSpectrogramAnalysis: 'empty',
+        importDataset: 'empty',
       })
-      await page.dataset.detail.go(as);
-      await expect(page.getByText(spectrogramAnalysis.name)).toBeVisible();
-
-      const modal = await page.dataset.detail.openImportModal()
+      await test.step(`Navigate`, async () => {
+        await page.datasetDetail.go({ as })
+        await page.datasetDetail.importAnalysis.button.click()
+        await expect(page.datasetDetail.importAnalysis.modal).toBeVisible()
+      });
 
       const [ request ] = await Promise.all([
         page.waitForRequest('**/graphql'),
-        await modal.importAnalysis(),
+        await page.datasetDetail.importAnalysis.importAnalysisButton.click(),
       ])
       const variables: ImportSpectrogramAnalysisMutationVariables = request.postDataJSON().variables
       expect(variables.name).toEqual('Test analysis 1')
-    })
-  },
+    }),
 }
 
 
 // Tests
+test.describe('[Dataset detail]', { tag: essential }, () => {
 
-test.describe('Staff', ESSENTIAL, () => {
-  TEST.empty('staff')
-  TEST.display('staff')
-  TEST.manageAnalysisImport('staff')
+  TEST.handlePageEmptyState({ as: 'staff' })
+  TEST.handlePageEmptyState({ as: 'superuser' })
+
+  TEST.pageDisplayLoadedData({ as: 'staff' })
+  TEST.pageDisplayLoadedData({ as: 'superuser' })
+
 })
+test.describe('[Dataset detail] Import modal', { tag: essential }, () => {
 
-test.describe('Superuser', ESSENTIAL, () => {
-  TEST.empty('superuser')
-  TEST.display('superuser')
-  TEST.manageAnalysisImport('superuser')
+  TEST.handleModalEmptyState({ as: 'staff' })
+  TEST.handleModalEmptyState({ as: 'superuser' })
+
+  TEST.modalDisplayLoadedData({ as: 'staff' })
+  TEST.modalDisplayLoadedData({ as: 'superuser' })
+
+  TEST.importAnalysis({ as: 'staff' })
+  TEST.importAnalysis({ as: 'superuser' })
+
 })

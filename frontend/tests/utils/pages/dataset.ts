@@ -45,9 +45,4 @@ class ImportDataset {
     await this.modal.getByPlaceholder('Search').fill(text)
   }
 
-  public async importDataset() {
-    await this.modal.locator('.download-dataset').first().click()
-  }
-
-
 }
