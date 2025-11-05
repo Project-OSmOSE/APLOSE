@@ -23,8 +23,8 @@ interface PageExtension {
   readonly login: LoginPage;
   readonly navbar: Navbar;
   readonly account: AccountPage;
+  readonly datasets: DatasetPage;
   readonly dataset: {
-    list: DatasetPage;
     detail: DatasetDetailPage;
   }
   readonly annotator: AnnotatorPage;
@@ -62,8 +62,8 @@ export const test = testBase.extend<Fixture>({
       login: new LoginPage(page),
       navbar: new Navbar(page),
       account: new AccountPage(page),
+      datasets: new DatasetPage(page),
       dataset: {
-        list: new DatasetPage(page),
         detail: new DatasetDetailPage(page),
       },
       annotator: new AnnotatorPage(page),

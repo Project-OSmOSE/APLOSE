@@ -39,7 +39,7 @@ const STEP = {
   accessDataset: (page: Page) =>
     test.step('Access datasets', async () => {
       await page.navbar.datasetsButton.click()
-      await expect(page.dataset.list.title).toBeVisible()
+      await expect(page.datasets.title).toBeVisible()
     }),
   canLogout: (page: Page) =>
     test.step('Logout', async () => {
@@ -80,7 +80,7 @@ const TEST = {
 
 // Tests
 
-test.describe('[Navbar] Allow navigation', { tag: essential }, () => {
+test.describe('[Navbar]', { tag: essential }, () => {
   TEST.canAccessAllButAdmin({ as: 'annotator' })
   TEST.canAccessAll({ as: 'staff' })
   TEST.canAccessAll({ as: 'superuser' })

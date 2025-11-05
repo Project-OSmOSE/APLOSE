@@ -46,7 +46,7 @@ const TEST = {
 
 // Tests
 
-test.describe('[Login] Visitor', () => {
+test.describe('[Login]', () => {
   const as: UserType = 'annotator'
 
   TEST.canLogin({ as, method: 'mouse' })

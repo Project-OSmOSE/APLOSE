@@ -35,7 +35,7 @@ const TEST = {
 
 // Tests
 
-test.describe('[Home] Visitor', { tag: essential }, () => {
+test.describe('[Home]', { tag: essential }, () => {
 
   TEST.canNavigate()
 

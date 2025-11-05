@@ -1,93 +1,144 @@
-import { ESSENTIAL, expect, test } from './utils';
+import { essential, expect, test } from './utils';
 import { interceptRequests } from './utils/mock';
-import type { UserType } from './utils/mock/types';
+import { dataset } from './utils/mock/types';
 import { ImportNewDatasetMutationVariables } from '../src/api/dataset';
 import { type ImportSpectrogramAnalysisMutationVariables } from '../src/api/spectrogram-analysis';
+import type { Params } from './utils/types';
 
 // Utils
 
 const TEST = {
-  empty: (as: UserType) => {
-    return test('Should display empty state', async ({ page }) => {
+
+  // List
+
+  handleListEmptyState: ({ as }: Pick<Params, 'as'>) =>
+    test(`Handle empty state as ${ as }`, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         listDatasets: 'empty',
         listAvailableDatasetsForImport: 'empty',
       })
-      await page.dataset.list.go(as);
-      await expect(page.getByText('No datasets')).toBeVisible();
+      await test.step(`Navigate`, () => page.datasets.go({ as }));
 
-      const modal = await page.dataset.list.openImportModal()
-      await expect(modal.locator).toContainText('There is no new dataset or analysis')
-    });
-  },
-  display: (as: UserType) => {
-    return test('Should display loaded data', async ({ page }) => {
+      await test.step('Display empty message', () =>
+        expect(page.getByText('No datasets')).toBeVisible())
+    }),
+
+  listDisplayLoadedData: ({ as }: Pick<Params, 'as'>) =>
+    test(`Display loaded data as ${ as }`, async ({ page }) => {
+      await interceptRequests(page, { getCurrentUser: as })
+      await test.step(`Navigate`, () => page.datasets.go({ as }));
+
+      await test.step('Display dataset', () =>
+        expect(page.getByText(dataset.name)).toBeVisible())
+    }),
+
+
+  // Modal
+
+  handleModalEmptyState: ({ as }: Pick<Params, 'as'>) =>
+    test(`Handle empty state as ${ as }`, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
+        listDatasets: 'empty',
+        listAvailableDatasetsForImport: 'empty',
       })
-      await page.dataset.list.go(as);
-      await expect(page.getByText('Test dataset')).toBeVisible();
+      await test.step(`Navigate`, async () => {
+        await page.datasets.go({ as })
+        await page.datasets.importDataset.button.click()
+        await expect(page.datasets.importDataset.modal).toBeVisible()
+      });
 
-      const modal = await page.dataset.list.openImportModal()
-      await expect(modal.locator).toContainText('Test import dataset')
-      await expect(modal.locator).toContainText('Test analysis 1')
-      await expect(modal.locator).toContainText('Test analysis 2')
-      await modal.search('1')
-      await expect(modal.locator).toContainText('Test import dataset')
-      await expect(modal.locator).toContainText('Test analysis 1')
-      await expect(modal.locator).not.toContainText('Test analysis 2')
-    });
-  },
-  manageDatasetImport: (as: UserType) => {
-    return test('Should manage import of a dataset', async ({ page }) => {
+      await test.step('Display empty message', async () => {
+        await expect(page.datasets.importDataset.modal).toContainText('There is no new dataset or analysis')
+      })
+    }),
+
+  modalDisplayLoadedData: ({ as }: Pick<Params, 'as'>) =>
+    test(`Display loaded data as ${ as }`, async ({ page }) => {
+      await interceptRequests(page, { getCurrentUser: as })
+      await test.step(`Navigate`, async () => {
+        await page.datasets.go({ as })
+        await page.datasets.importDataset.button.click()
+        await expect(page.datasets.importDataset.modal).toBeVisible()
+      });
+
+      await test.step('Import modal display data', async () => {
+        await expect(page.datasets.importDataset.modal).toContainText('Test import dataset')
+        await expect(page.datasets.importDataset.modal).toContainText('Test analysis 1')
+        await expect(page.datasets.importDataset.modal).toContainText('Test analysis 2')
+        await page.datasets.importDataset.search('1')
+        await expect(page.datasets.importDataset.modal).toContainText('Test import dataset')
+        await expect(page.datasets.importDataset.modal).toContainText('Test analysis 1')
+        await expect(page.datasets.importDataset.modal).not.toContainText('Test analysis 2')
+      })
+    }),
+
+  importDataset: ({ as }: Pick<Params, 'as'>) =>
+    test(`Import a dataset as ${ as }`, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         importDataset: 'empty',
       })
-      await page.dataset.list.go(as);
-      const modal = await page.dataset.list.openImportModal()
+      await test.step(`Navigate`, async () => {
+        await page.datasets.go({ as })
+        await page.datasets.importDataset.button.click()
+        await expect(page.datasets.importDataset.modal).toBeVisible()
+      });
 
       const [ request ] = await Promise.all([
         page.waitForRequest('**/graphql'),
-        await modal.importDataset(),
+        await page.datasets.importDataset.importDatasetButton.click(),
       ])
       const variables: ImportNewDatasetMutationVariables = request.postDataJSON().variables
       expect(variables.name).toEqual('Test import dataset')
-    })
-  },
-  manageAnalysisImport: (as: UserType) => {
-    return test('Should manage import of an analysis', async ({ page }) => {
+    }),
+
+  importAnalysis: ({ as }: Pick<Params, 'as'>) =>
+    test(`Import an analysis as ${ as }`, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         importDataset: 'empty',
       })
-      await page.dataset.list.go(as);
-      const modal = await page.dataset.list.openImportModal()
+      await test.step(`Navigate`, async () => {
+        await page.datasets.go({ as })
+        await page.datasets.importDataset.button.click()
+        await expect(page.datasets.importDataset.modal).toBeVisible()
+      });
 
       const [ request ] = await Promise.all([
         page.waitForRequest('**/graphql'),
-        await modal.importAnalysis(),
+        await page.datasets.importDataset.importAnalysisButton.click(),
       ])
       const variables: ImportSpectrogramAnalysisMutationVariables = request.postDataJSON().variables
       expect(variables.name).toEqual('Test analysis 1')
-    })
-  },
+    }),
 }
 
 
 // Tests
+test.describe('[Dataset list]', { tag: essential }, () => {
 
-test.describe('Staff', ESSENTIAL, () => {
-  TEST.empty('staff')
-  TEST.display('staff')
-  TEST.manageDatasetImport('staff')
-  TEST.manageAnalysisImport('staff')
+  TEST.handleListEmptyState({ as: 'staff' })
+  TEST.handleListEmptyState({ as: 'superuser' })
+
+  TEST.listDisplayLoadedData({ as: 'staff' })
+  TEST.listDisplayLoadedData({ as: 'superuser' })
+
 })
 
-test.describe('Superuser', ESSENTIAL, () => {
-  TEST.empty('superuser')
-  TEST.display('superuser')
-  TEST.manageDatasetImport('superuser')
-  TEST.manageAnalysisImport('superuser')
+test.describe('[Dataset list] Import modal', { tag: essential }, () => {
+
+  TEST.handleModalEmptyState({ as: 'staff' })
+  TEST.handleModalEmptyState({ as: 'superuser' })
+
+  TEST.modalDisplayLoadedData({ as: 'staff' })
+  TEST.modalDisplayLoadedData({ as: 'superuser' })
+
+  TEST.importDataset({ as: 'staff' })
+  TEST.importDataset({ as: 'superuser' })
+
+  TEST.importAnalysis({ as: 'staff' })
+  TEST.importAnalysis({ as: 'superuser' })
+
 })

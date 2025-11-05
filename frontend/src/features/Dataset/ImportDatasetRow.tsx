@@ -50,7 +50,7 @@ export const ImportDatasetRow: React.FC<{
   })
 
   return <ImportRow downloadedIcon={ <FolderCheck size={ 24 } weight="BoldDuotone"/> }
-                    downloadIcon={ <MoveToFolder className="download-dataset" size={ 24 }/> }
+                    downloadIcon={ <MoveToFolder data-testid="download-dataset" size={ 24 }/> }
                     isDownloaded={ isDownloaded }
                     isLoading={ isLoading }
                     name={ dataset.name }

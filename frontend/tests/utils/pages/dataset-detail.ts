@@ -12,7 +12,7 @@ export class DatasetDetailPage {
 
   async go(as: UserType) {
     await test.step('Navigate to Dataset detail', async () => {
-      await this.datasetList.go(as);
+      await this.datasetList.go({ as });
       await this.page.getByText('Test dataset').click()
     });
   }

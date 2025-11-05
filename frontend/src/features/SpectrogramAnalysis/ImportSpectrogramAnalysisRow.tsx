@@ -35,7 +35,7 @@ export const ImportAnalysisRow: React.FC<{
   }, []);
 
   return <ImportRow downloadedIcon={ <FileCheck size={ 24 } weight="BoldDuotone"/> }
-                    downloadIcon={ <FileRight className="download-analysis" size={ 24 }/> }
+                    downloadIcon={ <FileRight data-testid="download-analysis" size={ 24 }/> }
                     isLoading={ isLoading }
                     isDownloaded={ isDownloaded }
                     name={ analysis.name }
