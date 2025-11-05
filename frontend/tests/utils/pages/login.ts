@@ -1,42 +1,39 @@
-import { type Locator, Page, Request, test } from '@playwright/test';
+import { type Locator, Page, Request } from '@playwright/test';
 import { UserType } from '../../fixtures';
 import { HomePage } from './home';
 import { PASSWORD } from '../mock';
 import { REST_MOCK } from '../mock/_rest';
-import { Params } from '../types'
+import { AbstractAplosePage, Params } from '../types'
 
-export class LoginPage {
+export class LoginPage extends AbstractAplosePage {
+
+  pageName = 'login'
 
   get title(): Locator {
     return this.page.getByRole('heading', { name: 'Login', exact: true }).first()
   }
 
-  constructor(private page: Page,
+  constructor(protected page: Page,
               private home: HomePage = new HomePage(page)) {
+    super(page)
   }
 
   async go() {
-    await test.step('Navigate to login', async () => {
-      await this.home.go();
-      await this.page.getByRole('button', { name: 'Login' }).click();
-    });
+    await this.home.go();
+    await this.home.loginButton.click();
   }
 
   async fillForm({ as }: Pick<Params, 'as'>) {
-    await test.step('Fill login form', async () => {
-      await this.page.getByPlaceholder('username').fill(as)
-      await this.page.getByPlaceholder('password').fill(PASSWORD)
-    })
+    await this.page.getByPlaceholder('username').fill(as)
+    await this.page.getByPlaceholder('password').fill(PASSWORD)
   }
 
   async submit({ method }: Pick<Params, 'method'>): Promise<Request> {
-    return await test.step('Submit', async () => {
-      const [ request ] = await Promise.all([
-        this.page.waitForRequest(REST_MOCK.token.url),
-        method === 'mouse' ? this.page.getByRole('button', { name: 'Login' }).click() : this.page.keyboard.press('Enter'),
-      ])
-      return request;
-    })
+    const [ request ] = await Promise.all([
+      this.page.waitForRequest(REST_MOCK.token.url),
+      method === 'mouse' ? this.page.getByRole('button', { name: 'Login' }).click() : this.page.keyboard.press('Enter'),
+    ])
+    return request;
   }
 
   async login(as: UserType) {

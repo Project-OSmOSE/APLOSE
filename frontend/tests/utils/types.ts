@@ -20,7 +20,7 @@ export interface AplosePage {
 }
 
 export class AbstractAplosePage implements AplosePage {
-  pageName: 'Not implemented';
+  pageName = 'Not implemented';
 
   constructor(protected page: Page) {
   }

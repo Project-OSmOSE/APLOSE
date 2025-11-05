@@ -2,6 +2,8 @@ import { AbstractAplosePage } from '../types';
 import type { Locator } from '@playwright/test';
 
 export class HomePage extends AbstractAplosePage {
+  
+  pageName = 'home'
 
   get osmoseLink(): Locator {
     return this.page.getByRole('link', { name: 'OSmOSE', exact: true })
