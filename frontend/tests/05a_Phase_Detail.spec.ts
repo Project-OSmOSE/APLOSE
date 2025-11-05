@@ -10,20 +10,20 @@ import { DOWNLOAD_ANNOTATIONS, DOWNLOAD_PROGRESS } from '../src/consts/links';
 const STEP = {
   accessImportAnnotations: (page: Page) => {
     return test.step('Can import annotations', async () => {
-      await expect(page.campaign.detail.importAnnotationsButton).toBeEnabled();
+      await expect(page.campaignDetail.importAnnotationsButton).toBeEnabled();
     })
   },
   accessDownloadCSV: async (page: Page) => {
     await test.step('Access progress downloads and update', async () => {
-      const modal = await page.campaign.detail.openProgressModal();
+      const modal = await page.campaignDetail.openProgressModal();
       await expect(modal.downloadResultsButton).toBeEnabled();
       await expect(modal.downloadStatusButton).toBeEnabled();
       await modal.close()
     })
   },
   accessManageAnnotators: (page: Page) => test.step('Access manage annotators', async () => {
-    await expect(page.campaign.detail.manageButton).toBeEnabled();
-    const modal = await page.campaign.detail.openProgressModal();
+    await expect(page.campaignDetail.manageButton).toBeEnabled();
+    const modal = await page.campaignDetail.openProgressModal();
     await modal.close()
   }),
 }
@@ -35,13 +35,13 @@ test.describe('Annotator', () => {
     await interceptRequests(page, {
       getCurrentUser: 'annotator',
     })
-    await page.campaign.detail.go('annotator');
+    await page.campaignDetail.go('annotator');
 
     await test.step('Cannot manage', async () => {
-      await expect(page.campaign.detail.manageButton).not.toBeVisible()
+      await expect(page.campaignDetail.manageButton).not.toBeVisible()
     })
 
-    const modal = await page.campaign.detail.openProgressModal();
+    const modal = await page.campaignDetail.openProgressModal();
     await expect(modal.getByText(USERS.annotator.displayName)).toBeVisible();
     await expect(modal.getByText(USERS.creator.displayName)).not.toBeVisible();
 
@@ -55,20 +55,20 @@ test.describe('Annotator', () => {
     await interceptRequests(page, {
       getCurrentUser: 'annotator',
     })
-    await page.campaign.detail.go('annotator');
+    await page.campaignDetail.go('annotator');
     await test.step('See files', async () => {
       await expect(page.locator('.table-content').first()).toBeVisible();
     })
     await test.step('Can search file', async () => {
       const [ request ] = await Promise.all([
         page.waitForRequest(gqlURL),
-        page.campaign.detail.searchFile(spectrogram.filename),
+        page.campaignDetail.searchFile(spectrogram.filename),
       ])
       const variables = request.postDataJSON().variables as ListAnnotationTaskQueryVariables
       expect(variables.search).toEqual(spectrogram.filename)
       const params = new URLSearchParams('?' + page.url().split('?')[1])
       expect(params.get('search')).toEqual(spectrogram.filename)
-      await page.campaign.detail.searchFile(undefined);
+      await page.campaignDetail.searchFile(undefined);
     })
   })
 
@@ -76,7 +76,7 @@ test.describe('Annotator', () => {
     await interceptRequests(page, {
       getCurrentUser: 'annotator',
     })
-    await page.campaign.detail.go('annotator');
+    await page.campaignDetail.go('annotator');
     await page.mock.annotator()
     const button = page.getByTestId('access-button').last()
     await button.waitFor()
@@ -90,7 +90,7 @@ test.describe('Annotator', () => {
     await interceptRequests(page, {
       getCurrentUser: 'annotator',
     })
-    await page.campaign.detail.go('annotator');
+    await page.campaignDetail.go('annotator');
     await page.mock.annotator()
     const button = page.getByTestId('access-button').first()
     await button.waitFor()
@@ -104,11 +104,11 @@ test.describe('Annotator', () => {
     await interceptRequests(page, {
       getCurrentUser: 'annotator',
     })
-    await page.campaign.detail.go('annotator');
+    await page.campaignDetail.go('annotator');
     await page.mock.annotator()
     await Promise.all([
       page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/spectrogram/${ spectrogram.id }`),
-      page.campaign.detail.resumeButton.click(),
+      page.campaignDetail.resumeButton.click(),
     ])
   })
 
@@ -118,19 +118,24 @@ test.describe('Annotator', () => {
       listFileRanges: 'empty',
       listAnnotationTask: 'empty',
     })
-    await page.campaign.detail.go('annotator');
+    await page.campaignDetail.go('annotator');
 
     await test.step('Progress', async () => {
-      const modal = await page.campaign.detail.openProgressModal();
+      const modal = await page.campaignDetail.openProgressModal();
       await expect(modal.getByText('No annotators')).toBeVisible();
       await modal.close()
     })
 
     await test.step('Files', async () => {
       await expect(page.getByText('You have no files to annotate.')).toBeVisible();
-      await expect(page.campaign.detail.resumeButton).not.toBeEnabled();
+      await expect(page.campaignDetail.resumeButton).not.toBeEnabled();
     })
   })
+
+  //TODO: add this test
+  // await test.step('Cannot import annotations', async () => {
+  //   await expect(page.campaignDetail.importAnnotationsButton).not.toBeVisible();
+  // })
 })
 
 test.describe('Campaign creator', () => {
@@ -140,7 +145,7 @@ test.describe('Campaign creator', () => {
       getCurrentUser: 'creator',
       getAnnotationPhase: 'manager',
     })
-    await page.campaign.detail.go('creator');
+    await page.campaignDetail.go('creator');
     await STEP.accessImportAnnotations(page)
   })
 
@@ -149,8 +154,8 @@ test.describe('Campaign creator', () => {
       getCurrentUser: 'creator',
       getAnnotationPhase: 'manager',
     })
-    await page.campaign.detail.go('creator');
-    const modal = await page.campaign.detail.openProgressModal()
+    await page.campaignDetail.go('creator');
+    const modal = await page.campaignDetail.openProgressModal()
 
     await test.step('Results', () => Promise.all([
       page.waitForRequest('**' + DOWNLOAD_ANNOTATIONS(phase.id)),
@@ -163,8 +168,8 @@ test.describe('Campaign creator', () => {
       getCurrentUser: 'creator',
       getAnnotationPhase: 'manager',
     })
-    await page.campaign.detail.go('creator');
-    const modal = await page.campaign.detail.openProgressModal()
+    await page.campaignDetail.go('creator');
+    const modal = await page.campaignDetail.openProgressModal()
 
     await test.step('Status', () => Promise.all([
       page.waitForRequest('**' + DOWNLOAD_PROGRESS(phase.id)),
@@ -177,10 +182,10 @@ test.describe('Campaign creator', () => {
       getCurrentUser: 'creator',
       getAnnotationPhase: 'manager',
     })
-    await page.campaign.detail.go('creator');
+    await page.campaignDetail.go('creator');
     await Promise.all([
       page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/edit-annotators`),
-      page.campaign.detail.manageButton.click(),
+      page.campaignDetail.manageButton.click(),
     ])
   })
 
@@ -192,11 +197,11 @@ test.describe('Campaign creator', () => {
       listSpectrogramAnalysis: 'empty',
       listAnnotationTask: 'empty',
     })
-    await page.campaign.detail.go('creator');
+    await page.campaignDetail.go('creator');
 
     await test.step('Progress', async () => {
-      await expect(page.campaign.detail.manageButton).toBeVisible();
-      const modal = await page.campaign.detail.openProgressModal();
+      await expect(page.campaignDetail.manageButton).toBeVisible();
+      const modal = await page.campaignDetail.openProgressModal();
       await expect(modal.downloadStatusButton).not.toBeVisible();
       await expect(modal.downloadStatusButton).not.toBeVisible();
       await modal.close()
@@ -210,7 +215,7 @@ test('Staff', async ({ page }) => {
     getCurrentUser: 'staff',
     getAnnotationPhase: 'manager',
   })
-  await page.campaign.detail.go('staff');
+  await page.campaignDetail.go('staff');
 
   await STEP.accessImportAnnotations(page)
   await STEP.accessDownloadCSV(page)
@@ -222,7 +227,7 @@ test('Superuser', ESSENTIAL, async ({ page }) => {
     getCurrentUser: 'superuser',
     getAnnotationPhase: 'manager',
   })
-  await page.campaign.detail.go('superuser');
+  await page.campaignDetail.go('superuser');
 
   await STEP.accessImportAnnotations(page)
   await STEP.accessDownloadCSV(page)
