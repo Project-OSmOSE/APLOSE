@@ -151,55 +151,18 @@ const TEST = {
 
 // Tests
 test.describe('[Spectrogram] Annotator can manage weak annotations', { tag: [ '@annotator', ESSENTIAL.tag ] }, () => {
+  const as: UserType = 'annotator'
 
-  TEST.canAddWeakAnnotation({
-    as: 'annotator',
-    phase: AnnotationPhaseType.Annotation,
-    method: 'mouse',
-  })
-  TEST.canAddWeakAnnotation({
-    as: 'annotator',
-    phase: AnnotationPhaseType.Annotation,
-    method: 'shortcut',
-  })
-  TEST.canAddWeakAnnotation({
-    as: 'annotator',
-    phase: AnnotationPhaseType.Verification,
-    method: 'mouse',
-  })
-  TEST.canAddWeakAnnotation({
-    as: 'annotator',
-    phase: AnnotationPhaseType.Verification,
-    method: 'shortcut',
-  })
+  TEST.canAddWeakAnnotation({ as, phase: AnnotationPhaseType.Annotation, method: 'mouse' })
+  TEST.canAddWeakAnnotation({ as, phase: AnnotationPhaseType.Annotation, method: 'shortcut' })
+  TEST.canAddWeakAnnotation({ as, phase: AnnotationPhaseType.Verification, method: 'mouse' })
+  TEST.canAddWeakAnnotation({ as, phase: AnnotationPhaseType.Verification, method: 'shortcut' })
 
-  TEST.canRemoveWeakAnnotation({
-    as: 'annotator',
-    phase: AnnotationPhaseType.Annotation,
-    method: 'mouse',
-  })
-  TEST.canRemoveWeakAnnotation({
-    as: 'annotator',
-    phase: AnnotationPhaseType.Annotation,
-    method: 'shortcut',
-  })
-  TEST.canRemoveWeakAnnotation({
-    as: 'annotator',
-    phase: AnnotationPhaseType.Verification,
-    method: 'mouse',
-  })
-  TEST.canRemoveWeakAnnotation({
-    as: 'annotator',
-    phase: AnnotationPhaseType.Verification,
-    method: 'shortcut',
-  })
+  TEST.canRemoveWeakAnnotation({ as, phase: AnnotationPhaseType.Annotation, method: 'mouse' })
+  TEST.canRemoveWeakAnnotation({ as, phase: AnnotationPhaseType.Annotation, method: 'shortcut' })
+  TEST.canRemoveWeakAnnotation({ as, phase: AnnotationPhaseType.Verification, method: 'mouse' })
+  TEST.canRemoveWeakAnnotation({ as, phase: AnnotationPhaseType.Verification, method: 'shortcut' })
 
-  TEST.canUpdateWeakAnnotationConfidence({
-    as: 'annotator',
-    phase: AnnotationPhaseType.Annotation,
-  })
-  TEST.canUpdateWeakAnnotationConfidence({
-    as: 'annotator',
-    phase: AnnotationPhaseType.Verification,
-  })
+  TEST.canUpdateWeakAnnotationConfidence({ as, phase: AnnotationPhaseType.Annotation })
+  TEST.canUpdateWeakAnnotationConfidence({ as, phase: AnnotationPhaseType.Verification })
 })

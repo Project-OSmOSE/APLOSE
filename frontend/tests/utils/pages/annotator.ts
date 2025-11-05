@@ -161,6 +161,17 @@ export class AnnotatorPage {
     }
   }
 
+  async removeStrong(label: Label, method: 'mouse' | 'shortcut' = 'mouse'): Promise<void> {
+    switch (method) {
+      case 'mouse':
+        await this.page.getByTestId('remove-box').click()
+        break;
+      case 'shortcut':
+        await this.getAnnotationForLabel(label, 'strong').click()
+        await this.page.keyboard.press('Delete')
+        break;
+    }
+  }
 
   getLabel(label: string): Label {
     return {
@@ -218,7 +229,4 @@ export class AnnotatorPage {
     })
   }
 
-  async removeStrong(): Promise<void> {
-    await this.page.locator('.remove-box').click()
-  }
 }

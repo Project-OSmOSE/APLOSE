@@ -1,15 +1,23 @@
-import { Page, test } from '@playwright/test';
-import { AplosePage } from './interface';
+import { AbstractAplosePage } from '../types';
+import type { Locator } from '@playwright/test';
 
-export class HomePage implements AplosePage {
+export class HomePage extends AbstractAplosePage {
 
-  constructor(private page: Page) {
+  get osmoseLink(): Locator {
+    return this.page.getByRole('link', { name: 'OSmOSE', exact: true })
+  }
+
+  get documentationLink(): Locator {
+    return this.page.getByRole('link', { name: 'Documentation', exact: true }).first()
+  }
+
+  get loginButton(): Locator {
+    return this.page.getByRole('button', { name: 'Login', exact: true })
   }
 
   async go() {
-    await test.step('Navigate to home', async () => {
-      await this.page.goto('/');
-      await this.page.waitForLoadState('networkidle');
-    });
+    await this.page.goto('/');
+    await this.page.waitForLoadState('networkidle');
   }
+
 }

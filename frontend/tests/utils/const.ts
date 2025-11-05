@@ -1,11 +1,12 @@
-import { CAMPAIGN } from "../fixtures";
+import { CAMPAIGN } from '../fixtures';
 
-export const ESSENTIAL = { tag: '@essential' };
+export const essential = '@essential';
+export const ESSENTIAL = { tag: essential };
 
 export const URL = {
   OSmOSE: '/',
   doc: '/doc/',
-  admin: '/backend/admin'
+  admin: '/backend/admin',
 }
 
 export const API_URL = {
@@ -13,7 +14,7 @@ export const API_URL = {
   token: '/api/token/',
   user: {
     list: /api\/user\/?/g,
-    self: /api\/user\/self\/?/g
+    self: /api\/user\/self\/?/g,
   },
   campaign: {
     list: /\/api\/annotation-campaign\/?\??.*/g,
@@ -25,7 +26,7 @@ export const API_URL = {
     list: /\/api\/annotation-phase\/?\?/g,
     detail: /\/api\/annotation-phase\/\d\/?/g,
     report: /\/api\/annotation-phase\/-?\d\/report/g,
-    reportStatus: /\/api\/annotation-phase\/-?\d\/report-status/g
+    reportStatus: /\/api\/annotation-phase\/-?\d\/report-status/g,
   },
   dataset: {
     list: '/api/dataset/',
@@ -60,9 +61,9 @@ export const API_URL = {
   },
   annotator: /api\/annotator\/campaign\/-?\d\/phase\/-?\d\/file\/-?\d/g,
   result: {
-    import: /api\/annotation-result\/campaign\/-?\d\/phase\/-?\d\/import\//g
+    import: /api\/annotation-result\/campaign\/-?\d\/phase\/-?\d\/import\//g,
   },
   detector: {
-    list: /api\/detector/g
-  }
+    list: /api\/detector/g,
+  },
 }
