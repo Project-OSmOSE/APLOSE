@@ -49,7 +49,7 @@ query listAnnotationTask(
         annotations_Annotator: $annotationAnnotator
         annotations_AcousticFeatures_Exists: $withAcousticFeatures
     ) {
-        resumeSpectrogramId
+        resumeSpectrogramId(phase: $phaseType, campaignId: $campaignID)
         results {
             id
             filename
@@ -229,11 +229,38 @@ mutation submitTask (
     $campaignID: ID!
     $spectrogramID: ID!
     $phase: AnnotationPhaseType!
+    $annotations: [AnnotationInput]!
+    $taskComments: [AnnotationCommentInput]!
 
     $startedAt: DateTime!
     $endedAt: DateTime!
     $content: String!
 ) {
+    updateAnnotations(input: {
+        campaignId: $campaignID
+        phaseType: $phase
+        spectrogramId: $spectrogramID
+        list: $annotations
+    }) {
+        errors {
+            messages
+            field
+        }
+    }
+
+    updateAnnotationComments(input: {
+        campaignId: $campaignID
+        phaseType: $phase
+        spectrogramId: $spectrogramID
+        list: $taskComments
+        annotationId: null
+    }) {
+        errors {
+            messages
+            field
+        }
+    }
+
     submitAnnotationTask(
         spectrogramId: $spectrogramID
         phaseType: $phase

@@ -10,7 +10,8 @@ import {
 } from '@/api';
 import { AllAnnotationTaskFilterSlice, AllTasksFilters, selectAllTaskFilters } from './all-tasks-filters';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
-import { useNavParams, useQueryParams } from '@/features/UX';
+import { type AploseNavParams, useQueryParams } from '@/features/UX';
+import { useParams } from 'react-router-dom';
 
 const PAGE_SIZE = 20;
 
@@ -25,7 +26,7 @@ const {
 export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
   refetchOnMountOrArgChange?: boolean
 } = {}) => {
-  const { campaignID, phaseType } = useNavParams();
+  const { campaignID, phaseType } = useParams<AploseNavParams>();
   const { campaign } = useCurrentCampaign()
   const { user } = useCurrentUser();
 
@@ -52,7 +53,7 @@ export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
 export const useAnnotationTask = (options: {
   refetchOnMountOrArgChange?: boolean,
 } = {}) => {
-  const { campaignID, phaseType, spectrogramID } = useNavParams();
+  const { campaignID, phaseType, spectrogramID } = useParams<AploseNavParams>();
   const { analysisID } = useAnnotatorAnalysis()
   const { phase } = useCurrentPhase()
   const { params } = useAllTasksFilters()
@@ -74,12 +75,12 @@ export const useAnnotationTask = (options: {
     spectrogram: info.data?.annotationSpectrogramById,
     navigationInfo: info.data?.allAnnotationSpectrograms,
     annotations: info.data?.annotationSpectrogramById?.task?.annotations?.results.filter(r => !!r).map(r => r!),
-    isEditionAuthorized: phase?.canManage && info.data?.annotationSpectrogramById?.isAssigned,
+    isEditionAuthorized: info.data?.annotationSpectrogramById?.isAssigned,
   }), [ info, phase ])
 }
 
 export const useSubmitTask = () => {
-  const { campaignID, phaseType, spectrogramID } = useNavParams();
+  const { campaignID, phaseType, spectrogramID } = useParams<AploseNavParams>();
   const { phase } = useCurrentPhase()
   const [ method, info ] = submitTask.useMutation()
 
@@ -91,6 +92,8 @@ export const useSubmitTask = () => {
       campaignID,
       phase: phaseType,
       spectrogramID,
+      annotations,
+      taskComments,
       startedAt: start.toISOString(),
       endedAt: new Date().toISOString(),
       content: JSON.stringify({ annotations, taskComments }),

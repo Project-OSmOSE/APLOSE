@@ -3,13 +3,14 @@ import { Handle, NodeProps, Position } from '@xyflow/react';
 import styles from './styles.module.scss'
 import { IonNote } from '@ionic/react';
 import { OntologyItem } from './type';
-import { useNavParams } from '@/features/UX';
+import { type OntologyNavParams } from '@/features/UX';
+import { useParams } from 'react-router-dom';
 
 
 type Props = NodeProps & { data: OntologyItem; type: any }
 
 export const OntologyNode: React.FC<Props> = ({ data }) => {
-  const { id } = useNavParams()
+  const { id } = useParams<OntologyNavParams>();
 
   const selected = useMemo(() => data.id.toString() === id, [ data.id, id ])
 

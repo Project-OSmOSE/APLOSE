@@ -1,14 +1,15 @@
 import React, { Fragment } from 'react';
 import { IonNote } from '@ionic/react';
 import { useDataset } from '@/api';
-import { useNavParams } from '@/features/UX';
+import { type DataNavParams } from '@/features/UX';
 
 import { dateToString } from '@/service/function';
 import { FadedText, Link } from '@/components/ui';
 import styles from './styles.module.scss';
+import { useParams } from 'react-router-dom';
 
 export const DatasetInfoCreation: React.FC = () => {
-  const { datasetID: id } = useNavParams()
+  const { datasetID: id } = useParams<DataNavParams>();
   const { dataset } = useDataset({ id })
   if (!dataset) return <Fragment/>
   return <IonNote className={ styles.importNote } color="medium">

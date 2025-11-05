@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { Alert as AlertType } from './type';
 import { Alert } from './Alert';
 import { useAppDispatch } from '@/features/App';
@@ -7,8 +7,8 @@ import { EventSlice } from '@/features/UX/Events';
 // Based on https://medium.com/@mayankvishwakarma.dev/building-an-alert-provider-in-react-using-context-and-custom-hooks-7c90931de088
 
 type AlertContext = {
-  showAlert: (alert: AlertType) => number;
-  hideAlert: (id: number) => void;
+  showAlert: (alert: AlertType) => void;
+  hideAlert: () => void;
 };
 
 type AlertContextProvider = {
@@ -30,37 +30,28 @@ export const useAlert = () => {
 }
 
 export const AlertProvider: React.FC<AlertContextProvider> = ({ children }) => {
-  const [ alerts, setAlerts ] = useState<(AlertType & { id: number })[]>([]);
+  const [ alert, setAlert ] = useState<AlertType | undefined>();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (alerts.length > 0) {
+    if (alert) {
       dispatch(EventSlice.actions.disableShortcuts())
     } else {
       dispatch(EventSlice.actions.enableShortcuts())
     }
-  }, [ alerts ]);
-
-  // Function to hide an alert based on its index
-  const hideAlert = useCallback((id: number) => {
-    setAlerts((prev) => prev.filter(alert => alert.id != id));
-  }, [ setAlerts ]);
+  }, [ alert ]);
 
   // Context value containing the showAlert function
   const contextValue: AlertContext = useMemo(() => ({
-    showAlert: (alert) => {
-      const id = Math.max(0, ...alerts.map(a => a.id)) + 1
-      setAlerts((prev) => [ ...prev, { ...alert, id } ]);
-      return id;
-    },
-    hideAlert,
-  }), [ alerts, setAlerts, hideAlert ]);
+    showAlert: setAlert,
+    hideAlert: () => setAlert(undefined),
+  }), [ setAlert ]);
 
   return (
     <AlertContext.Provider value={ contextValue }>
       { children }
 
-      { alerts.map((alert, key) => <Alert alert={ alert } key={ key } hide={ () => hideAlert(alert.id) }/>) }
+      { alert && <Alert alert={ alert } hide={ () => setAlert(undefined) }/> }
     </AlertContext.Provider>
   )
 }

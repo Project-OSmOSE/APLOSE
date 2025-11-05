@@ -8,12 +8,12 @@ import { formatTime } from '@/service/function';
 export const AnnotationTimeInfo: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
 
   const correctedStartTime = useMemo(() => {
-    if (annotation.update && annotation.update?.startTime !== annotation.startTime) return annotation.update.startTime;
+    if (annotation.update?.startTime !== annotation.startTime) return annotation.update?.startTime;
     return undefined
   }, [ annotation ])
 
   const correctedEndTime = useMemo(() => {
-    if (annotation.update && annotation.update?.endTime !== annotation.endTime) return annotation.update.endTime;
+    if (annotation.update?.endTime !== annotation.endTime) return annotation.update?.endTime;
     return undefined
   }, [ annotation ])
 

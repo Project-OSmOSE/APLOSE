@@ -1,6 +1,5 @@
-import { createSelector, createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { type ListCampaignsQueryVariables } from './annotation-campaign.generated'
-import { AppState } from '@/features/App';
 import { logoutFulfilled } from '@/api';
 
 export type AllCampaignFilters = ListCampaignsQueryVariables
@@ -27,9 +26,7 @@ export const AllAnnotationCampaignFilterSlice = createSlice({
   extraReducers: builder => {
     builder.addMatcher(logoutFulfilled, reset)
   },
+  selectors: {
+    selectFilters: state => state,
+  },
 })
-
-export const selectAllCampaignFilters = createSelector(
-  (state: AppState) => state.AllAnnotationCampaignFilterSlice,
-  (state: AllCampaignFilters) => state,
-)

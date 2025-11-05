@@ -1,36 +1,18 @@
-import { AnnotationGqlAPI, AnnotationRestAPI } from './api';
-import { AnnotationInput } from '@/api/types.gql-generated.ts';
+import { AnnotationRestAPI } from './api';
 import { useCallback, useMemo } from 'react';
-import { useNavParams } from '@/features/UX';
-import { ImportAnnotation } from "./types";
-import { gqlAPI } from "@/api/baseGqlApi.ts";
-import { useAppDispatch } from "@/features/App";
-
-const {
-  updateAnnotations,
-} = AnnotationGqlAPI.endpoints
+import { type AploseNavParams } from '@/features/UX';
+import { ImportAnnotation } from './types';
+import { gqlAPI } from '@/api/baseGqlApi.ts';
+import { useAppDispatch } from '@/features/App';
+import { useParams } from 'react-router-dom';
 
 const {
   importAnnotations,
 } = AnnotationRestAPI.endpoints
 
-export const useUpdateAnnotations = () => {
-  const { campaignID, phaseType, spectrogramID } = useNavParams();
-  const [ method, info ] = updateAnnotations.useMutation()
-
-  const update = useCallback(async (annotations: AnnotationInput[]) => {
-    if (!campaignID || !phaseType || !spectrogramID) return;
-    await method({ campaignID, phase: phaseType, spectrogramID, annotations }).unwrap()
-  }, [ method, campaignID, phaseType, spectrogramID ]);
-
-  return useMemo(() => ({
-    ...info,
-    updateAnnotations: update,
-  }), [ update, info ])
-}
 
 export const useImportAnnotations = () => {
-  const { campaignID } = useNavParams();
+  const { campaignID } = useParams<AploseNavParams>();
   const [ method, info ] = importAnnotations.useMutation()
   const dispatch = useAppDispatch()
 

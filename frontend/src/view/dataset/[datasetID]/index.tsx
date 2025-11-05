@@ -6,11 +6,12 @@ import { DatasetHead, DatasetInfoCreation } from '@/features/Dataset';
 import { ImportAnalysisModalButton, SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 import { ChannelConfigurationTable } from '@/features/ChannelConfiguration';
 import { useDataset } from '@/api';
-import { useNavParams } from '@/features/UX';
+import { type DataNavParams } from '@/features/UX';
+import { useParams } from 'react-router-dom';
 
 
 export const DatasetDetail: React.FC = () => {
-  const { datasetID: id } = useNavParams()
+  const { datasetID: id } = useParams<DataNavParams>();
 
   const { dataset, isLoading, error } = useDataset({ id })
 

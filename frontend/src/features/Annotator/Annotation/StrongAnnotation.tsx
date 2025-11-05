@@ -1,6 +1,6 @@
-import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Annotation } from './slice';
-import { ExtendedDiv, ScaleService } from '@/components/ui';
+import { ExtendedDiv } from '@/components/ui';
 import styles from './styles.module.scss';
 import { MOUSE_DOWN_EVENT } from '@/features/UX/Events';
 import { AnnotationHeadContent } from './Head';
@@ -33,96 +33,72 @@ export const StrongAnnotation: React.FC<{
   }, [ hiddenLabels, annotation ])
 
   // Time / Frequency
-  const _startTime = useRef<number | null | undefined>();
-  const _endTime = useRef<number | null | undefined>();
-  const _startFrequency = useRef<number | null | undefined>();
-  const _endFrequency = useRef<number | null | undefined>();
-  useEffect(() => {
-    _startTime.current = annotation.update?.startTime ?? annotation.startTime;
-    _endTime.current = annotation.update?.endTime ?? annotation.endTime;
-    _startFrequency.current = annotation.update?.startFrequency ?? annotation.startFrequency;
-    _endFrequency.current = annotation.update?.endFrequency ?? annotation.endFrequency;
-  }, [ annotation ]);
+  const startTime = useMemo(() => annotation.update?.startTime ?? annotation.startTime, [ annotation ])
+  const endTime = useMemo(() => annotation.update?.endTime ?? annotation.endTime, [ annotation ])
+  const startFrequency = useMemo(() => annotation.update?.startFrequency ?? annotation.startFrequency, [ annotation ])
+  const endFrequency = useMemo(() => annotation.update?.endFrequency ?? annotation.endFrequency, [ annotation ])
 
   // Scales
   const { timeScale } = useTimeAxis()
   const { frequencyScale } = useFrequencyAxis()
-  const timeScaleRef = useRef<ScaleService>(timeScale);
-  const frequencyScaleRef = useRef<ScaleService>(frequencyScale);
-  useEffect(() => {
-    timeScaleRef.current = timeScale;
-    frequencyScaleRef.current = frequencyScale;
-  }, [ timeScale, frequencyScale ]);
 
   // Positions
   const [ left, setLeft ] = useState<number>(0);
   const [ width, setWidth ] = useState<number>(0);
   const [ top, setTop ] = useState<number>(0);
   const [ height, setHeight ] = useState<number>(0);
-  const _left = useRef<number>(0);
-  const _width = useRef<number>(0);
-  const _top = useRef<number>(0);
-  const _height = useRef<number>(0);
-  useEffect(() => updateLeft, [ timeScaleRef.current, _startTime.current ]);
-  useEffect(() => updateWidth, [ timeScaleRef.current, _startTime.current, _endTime.current ]);
-  useEffect(() => updateTop, [ frequencyScaleRef.current, _endFrequency.current ]);
-  useEffect(() => updateHeight, [ frequencyScaleRef.current, _startFrequency.current, _endFrequency.current ]);
-  const updateLeft = useCallback(() => {
-    if (typeof _startTime.current !== 'number') return;
-    _left.current = timeScaleRef.current.valueToPosition(_startTime.current);
-    setLeft(_left.current)
-  }, [ setLeft ])
-  const updateTop = useCallback(() => {
-    if (typeof _endFrequency.current !== 'number') return;
-    _top.current = frequencyScaleRef.current.valueToPosition(_endFrequency.current);
-    setTop(_top.current)
-  }, [ setTop ])
-  const updateWidth = useCallback(() => {
-    if (typeof _startTime.current !== 'number' || typeof _endTime.current !== 'number') return;
-    _width.current = timeScaleRef.current.valuesToPositionRange(_startTime.current, _endTime.current);
-    setWidth(_width.current)
-  }, [ setWidth ])
-  const updateHeight = useCallback(() => {
-    if (typeof _startFrequency.current !== 'number' || typeof _endFrequency.current !== 'number') return;
-    _height.current = frequencyScaleRef.current.valuesToPositionRange(_startFrequency.current, _endFrequency.current);
-    setHeight(_height.current)
-  }, [ setHeight ])
+  useEffect(() => {
+    if (typeof startTime === 'number') {
+      setLeft(timeScale.valueToPosition(startTime))
+      if (typeof endTime === 'number') {
+        setWidth(timeScale.valuesToPositionRange(startTime, endTime))
+      }
+    }
+
+    if (typeof endFrequency === 'number') {
+      setTop(frequencyScale.valueToPosition(endFrequency))
+      if (typeof startFrequency === 'number') {
+        setHeight(frequencyScale.valuesToPositionRange(startFrequency, endFrequency))
+      }
+    }
+  }, [ timeScale, frequencyScale, annotation ]);
 
   // Movements
   const onTopMove = useCallback((movement: number) => {
-    _top.current += movement;
-    setTop(_top.current)
+    setTop(prev => prev + movement)
   }, [ setTop ])
   const onHeightMove = useCallback((movement: number) => {
-    _height.current += movement;
-    setHeight(_height.current)
+    setHeight(prev => prev + movement)
   }, [ setHeight ])
   const onLeftMove = useCallback((movement: number) => {
-    _left.current += movement;
-    setLeft(_left.current)
+    setLeft(prev => prev + movement)
   }, [ setLeft ])
   const onWidthMove = useCallback((movement: number) => {
-    _width.current += movement;
-    setWidth(_width.current)
+    setWidth(prev => prev + movement)
   }, [ setWidth ])
   const onValidateMove = useCallback(() => {
-    let endFrequency = frequencyScaleRef.current.positionToValue(_top.current);
-    let startFrequency = frequencyScaleRef.current.positionToValue(_top.current + _height.current);
-    let startTime = timeScaleRef.current.positionToValue(_left.current);
-    let endTime = timeScaleRef.current.positionToValue(_left.current + _width.current);
-    if (_startTime.current && formatTime(startTime, true) === formatTime(_startTime.current, true)) startTime = _startTime.current;
-    if (_endTime.current && formatTime(endTime, true) === formatTime(_endTime.current, true)) endTime = _endTime.current;
-    if (_startFrequency.current && _startFrequency.current.toFixed(2) === startFrequency.toFixed(2)) startFrequency = _startFrequency.current;
-    if (_endFrequency.current && _endFrequency.current.toFixed(2) === endFrequency.toFixed(2)) endFrequency = _endFrequency.current;
+    let newStartTime = timeScale.positionToValue(left);
+    let newEndTime = timeScale.positionToValue(left + width);
+    let newEndFrequency = frequencyScale.positionToValue(top);
+    let newStartFrequency = frequencyScale.positionToValue(top + height);
+    if (startTime && formatTime(newStartTime, true) === formatTime(startTime, true)) newStartTime = startTime;
+    if (endTime && formatTime(newEndTime, true) === formatTime(endTime, true)) newEndTime = endTime;
+    if (startFrequency && startFrequency.toFixed(2) === newStartFrequency.toFixed(2)) newStartFrequency = startFrequency;
+    if (endFrequency && endFrequency.toFixed(2) === newEndFrequency.toFixed(2)) newEndFrequency = endFrequency;
     switch (annotation.type) {
       case AnnotationType.Box:
-        updateAnnotation(annotation, { startTime, endTime, startFrequency, endFrequency })
+        updateAnnotation(annotation, {
+          startTime: newStartTime,
+          endTime: newEndTime,
+          startFrequency: newStartFrequency,
+          endFrequency: newEndFrequency,
+        })
         break;
       case AnnotationType.Point:
-        updateAnnotation(annotation, { startTime, startFrequency })
+        updateAnnotation(annotation, { startTime: newStartTime, startFrequency: newStartFrequency })
         break;
     }
-  }, [ updateAnnotation, annotation ])
+  }, [ updateAnnotation, annotation, timeScale, frequencyScale, left, top, height, width, startTime, endTime, startFrequency, endFrequency ])
 
   // Style
   const colorClassName: string = useMemo(() => {

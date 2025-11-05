@@ -19,16 +19,17 @@ export const AnnotationsBloc: React.FC = () => {
   }, [ allAnnotations ])
 
   return <Bloc className={ styles.results }
+               data-testid="annotation-bloc"
                header="Annotations"
                vertical>
     { allAnnotations.length === 0 ?
-        <IonNote color="medium">No results</IonNote> :
-        <Table columns={ 10 }>
-          { sortedAnnotations.map((a, index) => <Fragment key={ index }>
-            { index > 0 && <TableDivider/> }
-            <AnnotationRow annotation={ a }/>
-          </Fragment>) }
-        </Table>
+      <IonNote color="medium">No results</IonNote> :
+      <Table columns={ 10 }>
+        { sortedAnnotations.map((a, index) => <Fragment key={ index }>
+          { index > 0 && <TableDivider/> }
+          <AnnotationRow annotation={ a }/>
+        </Fragment>) }
+      </Table>
     }
   </Bloc>
 }

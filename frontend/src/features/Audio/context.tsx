@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useToast } from '@/components/ui';
 
 type AudioState = 'play' | 'pause'
@@ -174,4 +174,12 @@ export const AudioProvider: React.FC<AudioContextProvider> = ({ children }) => {
       </audio>
     </AudioContext.Provider>
   )
+}
+
+export const useAudio = () => {
+  const context = useContext(AudioContext);
+  if (!context) {
+    throw new Error('useAudio must be used within a AudioProvider');
+  }
+  return context;
 }

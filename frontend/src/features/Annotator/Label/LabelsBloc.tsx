@@ -11,8 +11,7 @@ export const LabelsBloc: React.FC = () => {
     showAllLabels,
   } = useAnnotatorLabel()
 
-  // 'label' class is for playwright tests
-  return <Bloc className={ [ styles.labels, 'label' ].join(' ') }
+  return <Bloc className={ styles.labels }
                header={ <Fragment>
                  Labels
                  { hiddenLabels.length > 0 && <Button onClick={ showAllLabels }

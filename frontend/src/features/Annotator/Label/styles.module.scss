@@ -15,8 +15,11 @@
 }
 
 .labelsButtons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  font-size: 1rem;
+  display: grid;
+  grid-auto-flow: column;
+  gap: .5rem;
+  padding-left: .5rem;
+  align-items: center;
 }
 

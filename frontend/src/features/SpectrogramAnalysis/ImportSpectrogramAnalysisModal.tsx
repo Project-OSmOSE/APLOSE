@@ -7,7 +7,8 @@ import { ImportAnalysisNode, useAvailableSpectrogramAnalysisForImport } from '@/
 import { GenerateDatasetHelpButton } from '@/features/Dataset';
 import { ImportAnalysisRow } from './ImportSpectrogramAnalysisRow';
 import styles from './styles.module.scss';
-import { useFilter, useNavParams, useSort } from '@/features/UX';
+import { type DataNavParams, useFilter, useSort } from '@/features/UX';
+import { useParams } from 'react-router-dom';
 
 export const ImportAnalysisModalButton: React.FC = () => {
   const modal = useModal();
@@ -25,7 +26,7 @@ export const ImportAnalysisModalButton: React.FC = () => {
 }
 
 export const ImportAnalysisModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const { datasetID } = useNavParams()
+  const { datasetID } = useParams<DataNavParams>();
 
   const {
     availableSpectrogramAnalysis,
@@ -68,34 +69,34 @@ export const ImportAnalysisModal: React.FC<{ onClose: () => void }> = ({ onClose
   }, [ setImports ])
 
   return (
-      <Modal onClose={ onClose }
-             className={ [ styles.importModal, (!isLoading && !!availableSpectrogramAnalysis && availableSpectrogramAnalysis.length > 0) ? styles.filled : 'empty' ].join(' ') }>
-        <ModalHeader title="Import an analysis"
-                     onClose={ onClose }/>
+    <Modal onClose={ onClose }
+           className={ [ styles.importModal, (!isLoading && !!availableSpectrogramAnalysis && availableSpectrogramAnalysis.length > 0) ? styles.filled : 'empty' ].join(' ') }>
+      <ModalHeader title="Import an analysis"
+                   onClose={ onClose }/>
 
-        { isLoading && <IonSpinner/> }
+      { isLoading && <IonSpinner/> }
 
-        { !isLoading && (!availableSpectrogramAnalysis || availableSpectrogramAnalysis.length == 0) &&
-            <IonNote>There is no new analysis</IonNote> }
+      { !isLoading && (!availableSpectrogramAnalysis || availableSpectrogramAnalysis.length == 0) &&
+          <IonNote>There is no new analysis</IonNote> }
 
-        { !isLoading && !!availableSpectrogramAnalysis && availableSpectrogramAnalysis.length > 0 && dataset &&
-            <Fragment>
+      { !isLoading && !!availableSpectrogramAnalysis && availableSpectrogramAnalysis.length > 0 && dataset &&
+          <Fragment>
 
-                <IonSearchbar ref={ searchbar } onIonInput={ onSearchUpdated } onIonClear={ onSearchCleared }/>
+              <IonSearchbar ref={ searchbar } onIonInput={ onSearchUpdated } onIonClear={ onSearchCleared }/>
 
-                <div className={ styles.content }>
-                  { searchedAnalysis.map(a => <ImportAnalysisRow key={ [ a.name, a.path ].join(' ') }
-                                                                 analysis={ a }
-                                                                 dataset={ dataset }
-                                                                 imported={ imports.includes(a.name) }
-                                                                 onImported={ onAnalysisImported }/>) }
-                </div>
+              <div className={ styles.content }>
+                { searchedAnalysis.map(a => <ImportAnalysisRow key={ [ a.name, a.path ].join(' ') }
+                                                               analysis={ a }
+                                                               dataset={ dataset }
+                                                               imported={ imports.includes(a.name) }
+                                                               onImported={ onAnalysisImported }/>) }
+              </div>
 
-                <ModalFooter>
-                    <GenerateDatasetHelpButton/>
-                </ModalFooter>
+              <ModalFooter>
+                  <GenerateDatasetHelpButton/>
+              </ModalFooter>
 
-            </Fragment> }
-      </Modal>
+          </Fragment> }
+    </Modal>
   )
 }

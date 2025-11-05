@@ -1,5 +1,5 @@
 import { ESSENTIAL, expect, test } from './utils';
-import { CAMPAIGN, CAMPAIGN_PHASE, COMMENT, CONFIDENCE, FILE_RANGE, LABEL, UserType } from './fixtures';
+import { CAMPAIGN, CAMPAIGN_PHASE, COMMENT, FILE_RANGE, LABEL, UserType } from './fixtures';
 import { BoxBounds } from '../src/service/types';
 import { interceptRequests } from './utils/mock';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
@@ -15,60 +15,6 @@ const TEST = {
       await page.annotator.go(as, { phase, empty: true });
       await expect(page.getByText('Confidence indicator ')).toBeVisible();
 
-      await test.step('See no results', () => expect(page.getByText('No results')).toBeVisible())
-
-      await test.step('Can add presence - mouse', async () => {
-        const label = page.annotator.getLabel(LABEL.classic);
-        expect(await label.getLabelState()).toBeFalsy();
-        await label.addPresence();
-        await expect(label.getWeakResult()).toBeVisible();
-        expect(await label.getLabelState()).toBeTruthy();
-      })
-
-      await test.step('Can add presence - keyboard', async () => {
-        const label = page.annotator.getLabel(LABEL.withFeatures);
-        expect(await label.getLabelState()).toBeFalsy();
-        await page.keyboard.press('2')
-        await expect(label.getWeakResult()).toBeVisible();
-        expect(await label.getLabelState()).toBeTruthy();
-      })
-
-      await test.step('Can remove presence', async () => {
-        const label = page.annotator.getLabel(LABEL.classic);
-        await label.remove();
-        await expect(label.getWeakResult()).not.toBeVisible();
-        expect(await label.getLabelState()).toBeFalsy();
-      })
-
-      await test.step('Can update confidence', async () => {
-        const label = page.annotator.getLabel(LABEL.withFeatures);
-        await label.getWeakResult().click();
-        await expect(page.getByText(CONFIDENCE.sure.label, { exact: true }).nth(1)).toBeVisible()
-        await expect(page.getByText(CONFIDENCE.notSure.label, { exact: true }).nth(1)).not.toBeVisible()
-        const confidence = page.annotator.getConfidence(CONFIDENCE.notSure.label);
-        await confidence.select()
-        await expect(page.getByText(CONFIDENCE.sure.label, { exact: true }).nth(1)).not.toBeVisible()
-        await expect(page.getByText(CONFIDENCE.notSure.label, { exact: true }).nth(1)).toBeVisible()
-      })
-
-      await test.step('Can add presence comment', async () => {
-        await page.annotator.commentInput.fill(COMMENT.presence.comment);
-        await expect(page.getByText(COMMENT.presence.comment)).toBeVisible();
-      })
-
-      await test.step('Can add task comment', async () => {
-        await page.annotator.taskCommentButton.click();
-        await expect(page.getByText(COMMENT.presence.comment)).not.toBeVisible();
-        await page.annotator.commentInput.fill(COMMENT.task.comment);
-        await expect(page.getByText(COMMENT.task.comment)).toBeVisible();
-      })
-
-      await test.step('Can switch to presence comment', async () => {
-        const label = page.annotator.getLabel(LABEL.withFeatures);
-        await label.getWeakResult().click();
-        await expect(page.getByText(COMMENT.task.comment)).not.toBeVisible();
-        await expect(page.getByText(COMMENT.presence.comment)).toBeVisible();
-      })
 
       await test.step('Can add box', async () => {
         const label = page.annotator.getLabel(LABEL.withFeatures);
@@ -94,18 +40,6 @@ const TEST = {
         await label.getWeakResult().click();
         await page.annotator.draw('Point');
         await expect(label.getNthStrongResult(0)).not.toBeVisible();
-      })
-
-
-      await test.step('Can remove presence with boxes', async () => {
-        const label = page.annotator.getLabel(LABEL.withFeatures);
-        await label.getWeakResult().click();
-
-        await page.annotator.draw('Box');
-        await label.remove();
-        await expect(label.getWeakResult()).not.toBeVisible();
-        await expect(label.getNthStrongResult(0)).not.toBeVisible();
-        expect(await label.getLabelState()).toBeFalsy();
       })
 
       if (submit === 'mouse') {

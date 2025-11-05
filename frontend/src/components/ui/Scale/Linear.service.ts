@@ -1,5 +1,5 @@
-import { LinearScaleNode } from "@/api";
-import { ScaleService, Step } from "./types";
+import { LinearScaleNode } from '@/api';
+import { ScaleService, Step } from './types';
 
 export type LinearScale = Pick<LinearScaleNode, 'minValue' | 'maxValue' | 'ratio'>
 
@@ -37,7 +37,7 @@ export class LinearScaleService implements ScaleService {
               } = {
                 pixelOffset: 0,
                 disableValueFloats: false,
-                revert: false
+                revert: false,
               }) {
     if (scale.minValue && scale.minValue > scale.maxValue) throw `Incorrect scale range: min=${ scale.minValue } and max=${ scale.maxValue }`;
   }
@@ -86,14 +86,14 @@ export class LinearScaleService implements ScaleService {
       array.push({
         position: this.options.pixelOffset + Math.floor(this.valueToPosition(this.scale.minValue)),
         value: this.scale.minValue,
-        size: 'regular'
+        size: 'regular',
       })
     }
     if (!array.filter(s => s.size === 'regular').some(s => s.value === this.scale.maxValue)) {
       array.push({
         position: this.options.pixelOffset + Math.floor(this.valueToPosition(this.scale.maxValue)),
         value: this.scale.maxValue,
-        size: 'regular'
+        size: 'regular',
       })
     }
     return array
@@ -152,7 +152,9 @@ export class LinearScaleService implements ScaleService {
   }
 
   private getNumber(first: number, length: number) {
-    return Math.max(0, +Array.from(new Array(length)).map((_, key) => key === 0 ? first : 0).join(''))
+    length = Math.max(1, length); // Avoid length to be 0
+    const numberArray = Array.from(new Array(length)).map((_, key) => key === 0 ? first : 0)
+    return Math.max(0, +numberArray.join(''))
   }
 
 }

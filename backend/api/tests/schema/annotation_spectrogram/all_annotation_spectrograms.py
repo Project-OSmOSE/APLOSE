@@ -60,7 +60,7 @@ query (
         annotations_AcousticFeatures_Exists: $withAcousticFeatures
     ) {
         totalCount
-        resumeSpectrogramId
+        resumeSpectrogramId(phase: $phaseType, campaignId: $campaignID)
         results {
             id
             filename

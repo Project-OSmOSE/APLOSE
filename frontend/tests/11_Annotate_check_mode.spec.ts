@@ -122,7 +122,7 @@ test.describe('"Verification" phase', { tag: '@annotator' }, () => {
     await test.step('Update box label', async () => {
       await page.annotator.boxValidation.validate()
       await page.annotator.boxValidation.expectState(true)
-      await page.locator('.update-box').click()
+      await page.getByTestId('update-box').click()
       await page.getByRole('button', { name: LABEL.withFeatures }).click()
       await page.annotator.boxValidation.expectState(false)
     })
@@ -162,7 +162,7 @@ test.describe('"Verification" phase', { tag: '@annotator' }, () => {
     await test.step('Update box label', async () => {
       await page.annotator.boxValidation.validate()
       await page.annotator.boxValidation.expectState(true)
-      await page.locator('.update-box').click()
+      await page.getByTestId('update-box').click()
       await page.getByRole('button', { name: LABEL.withFeatures }).click()
       await page.annotator.boxValidation.expectState(false)
     })
@@ -203,7 +203,7 @@ test.describe('"Verification" phase', { tag: '@annotator' }, () => {
     await test.step('Remove box', async () => {
       await page.annotator.boxValidation.validate()
       await page.annotator.boxValidation.expectState(true)
-      await page.locator('.remove-box').click()
+      await page.getByTestId('remove-box').click()
       await page.annotator.boxValidation.expectState(false)
     })
 

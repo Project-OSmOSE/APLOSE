@@ -2,7 +2,6 @@ import { useAnnotatorAnnotation } from '@/features/Annotator/Annotation';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { addTaskComment, Comment, removeTaskComment, selectTaskComments, updateTaskComment } from './slice';
 import { useCallback, useMemo } from 'react';
-import type { Annotation } from '@/features/Annotator/Annotation/slice';
 import { getNewItemID } from '@/service/function';
 
 export const useAnnotatorComment = () => {
@@ -21,14 +20,14 @@ export const useAnnotatorComment = () => {
     return allAnnotations.find(a => a.comments?.some(c => c.id === comment.id))
   }, [ allAnnotations ])
 
-  const add = useCallback((comment: string, annotation?: Annotation) => {
+  const add = useCallback((comment: string) => {
     const newComment: Comment = {
       id: getNewItemID([ ...allAnnotations.flatMap(a => a.comments?.filter(c => !!c).map(c => c!) ?? []), ...taskComments ]),
       comment,
     }
-    if (annotation) updateAnnotation(annotation, { comments: [ ...(annotation.comments ?? []), newComment ] })
+    if (focusedAnnotation) updateAnnotation(focusedAnnotation, { comments: [ ...(focusedAnnotation.comments ?? []), newComment ] })
     else dispatch(addTaskComment(newComment))
-  }, [ allAnnotations, taskComments, updateAnnotation ])
+  }, [ allAnnotations, taskComments, updateAnnotation, focusedAnnotation ])
 
   const remove = useCallback((comment: Comment) => {
     const annotation = getCommentAnnotation(comment)
@@ -40,8 +39,10 @@ export const useAnnotatorComment = () => {
     if (comment.comment.trim().length === 0) {
       return remove(comment)
     }
-    dispatch(updateTaskComment(comment))
-  }, [ remove ])
+    const annotation = getCommentAnnotation(comment)
+    if (annotation) updateAnnotation(annotation, { comments: annotation.comments?.map(c => c.id === comment.id ? comment : c) })
+    else dispatch(updateTaskComment(comment))
+  }, [ getCommentAnnotation, remove ])
 
   return {
     taskComments,

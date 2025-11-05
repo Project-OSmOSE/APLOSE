@@ -13,13 +13,14 @@ import {
 import { getNewItemID } from '@/service/function';
 import { AnnotationType, useCurrentUser } from '@/api';
 import { useAnnotatorConfidence } from '@/features/Annotator/Confidence';
-import { useNavParams } from '@/features/UX';
+import { type AploseNavParams } from '@/features/UX';
+import { useParams } from 'react-router-dom';
 
 type AnnotationEqualsType = Pick<Annotation, 'label' | 'confidence' | 'startTime' | 'endTime' | 'startFrequency' | 'endFrequency'>
 
 
 export const useAnnotatorAnnotation = () => {
-  const { phaseType } = useNavParams();
+  const { phaseType } = useParams<AploseNavParams>();
   const { user } = useCurrentUser();
   const { focusedConfidence } = useAnnotatorConfidence()
   const allAnnotations = useAppSelector(state => selectAllAnnotations(state.annotator));
@@ -31,11 +32,11 @@ export const useAnnotatorAnnotation = () => {
 
   const _equals = useCallback((a: AnnotationEqualsType, b: AnnotationEqualsType): boolean => {
     return a.label === b.label
-        && a.confidence === b.confidence
-        && a.startTime === b.startTime
-        && a.endTime === b.endTime
-        && a.startFrequency === b.startFrequency
-        && a.endFrequency === b.endFrequency
+      && a.confidence === b.confidence
+      && a.startTime === b.startTime
+      && a.endTime === b.endTime
+      && a.startFrequency === b.startFrequency
+      && a.endFrequency === b.endFrequency
   }, [])
 
   // Validation
@@ -90,7 +91,7 @@ export const useAnnotatorAnnotation = () => {
     return getNewItemID([ ...allAnnotations, ...allAnnotations.filter(a => !!a.update).map(a => a.update!) ])
   }, [ allAnnotations ])
   const _filterAnnotations = useCallback((annotation: Annotation, properties: Partial<Annotation>): boolean => {
-    let result = false;
+    let result = true;
     for (const [ key, value ] of Object.entries(properties)) {
       result = result && annotation[key as keyof Annotation] === value
     }
@@ -101,7 +102,7 @@ export const useAnnotatorAnnotation = () => {
   }, [ allAnnotations, _filterAnnotations ])
   const getAnnotations = useCallback((properties: Partial<Annotation>) => {
     return allAnnotations.filter(a => _filterAnnotations(a, properties));
-  }, [ allAnnotations ])
+  }, [ allAnnotations, _filterAnnotations ])
   const add = useCallback((annotation: Omit<Annotation, 'id' | 'analysis'>) => {
     const addedAnnotation = dispatch(addAnnotation({
       ...annotation,
@@ -118,9 +119,9 @@ export const useAnnotatorAnnotation = () => {
     } else {
       invalidate(annotation)
     }
-  }, [ phaseType, allAnnotations, invalidate ])
+  }, [ phaseType, allAnnotations, invalidate, getAnnotations ])
   const update = useCallback((annotation: Annotation, update: Partial<Annotation>) => {
-    if (annotation.type === AnnotationType.Weak) return;
+    if (annotation.type === AnnotationType.Weak && 'label' in update) return;
     if (phaseType === 'Annotation' || annotation.annotator === user?.id) {
       annotation = dispatch(updateAnnotation({ id: annotation.id, ...update })).payload as Annotation
       if (update.label && !allAnnotations.find(a => a.label === update.label && a.type === AnnotationType.Weak)) {
@@ -172,6 +173,7 @@ export const useAnnotatorAnnotation = () => {
     focus: useCallback((annotation: Annotation) => {
       dispatch(focusAnnotation(annotation))
     }, []),
+    blur: useCallback(() => dispatch(blur()), []),
     focusedAnnotation,
 
     validate, invalidate,

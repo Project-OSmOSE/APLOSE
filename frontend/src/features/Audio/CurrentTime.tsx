@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { formatTime } from '@/service/function';
-import { useAudio } from './hook';
+import { useAudio } from './context';
 
 export const CurrentTime: React.FC = () => {
   const { time: _time, duration: _duration } = useAudio()

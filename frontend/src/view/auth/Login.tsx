@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import styles from './auth.module.scss';
 import { Footer, Header } from '@/components/layout';
 import { Input } from '@/components/form';
@@ -18,11 +18,6 @@ export const Login: React.FC = () => {
   const [ username, setUsername ] = useState<string>('');
   const [ password, setPassword ] = useState<string>('');
   const [ errors, setErrors ] = useState<{ global?: string, username?: string, password?: string }>({});
-
-  const ref = useRef<{ username: string, password: string }>({ username, password });
-  useEffect(() => {
-    ref.current = { username, password }
-  }, [ username, password ]);
 
   // Service
   const navigate = useNavigate();
@@ -45,31 +40,30 @@ export const Login: React.FC = () => {
     if (isConnected) navigate(from, { replace: true });
   }, [ isConnected ]);
 
-  function onKbdEvent(event: KeyboardEvent) {
+  const submit = useCallback(async () => {
+    setErrors({})
+    if (!username) setErrors({ username: 'This field is required.' })
+    if (!password) setErrors(prev => ({ ...prev, password: 'This field is required.' }))
+    if (!username || !password) return;
+
+    await login({ username, password }).unwrap()
+      .then(() => navigate(from, { replace: true }))
+      .catch(error => setErrors({ global: getErrorMessage(error) }));
+  }, [ setErrors, username, password ])
+
+  const goHome = useCallback(() => {
+    navigate('/');
+  }, [])
+
+  const onKbdEvent = useCallback((event: KeyboardEvent) => {
     switch (event.code) {
       case 'Enter':
       case 'NumpadEnter':
         submit();
         break;
     }
-  }
-
+  }, [ submit ])
   useEvent(NON_FILTERED_KEY_DOWN_EVENT, onKbdEvent);
-
-  const submit = async () => {
-    setErrors({})
-    if (!ref.current.username) setErrors({ username: 'This field is required.' })
-    if (!ref.current.password) setErrors(prev => ({ ...prev, password: 'This field is required.' }))
-    if (!ref.current.username || !ref.current.password) return;
-
-    await login(ref.current).unwrap()
-      .then(() => navigate(from, { replace: true }))
-      .catch(error => setErrors({ global: getErrorMessage(error) }));
-  }
-
-  function goHome() {
-    navigate('/');
-  }
 
   return <div className={ styles.page }>
     <Header buttons={ <Fragment>

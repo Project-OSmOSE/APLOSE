@@ -1,4 +1,4 @@
-import React, { HTMLProps, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import React, { HTMLProps, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   IonButton,
@@ -68,14 +68,11 @@ export const Select: React.FC<SelectProperties> = ({
   const [ isOpen, setIsOpen ] = useState<boolean>(false);
   const [ hasSelectedItem, setHasSelectedItem ] = useState<boolean>(false);
 
-  useEvent(CLICK_EVENT, blur);
-  useEvent(AUX_CLICK_EVENT, blur);
-
   useEffect(() => {
     setHasSelectedItem(false)
   }, [])
 
-  function blur(event: Event) {
+  const blur = useCallback((event: Event) => {
     if (event.target === containerRef.current) return;
     if (event.target === inputRef.current) return;
     if (event.target === selectButtonRef.current) return;
@@ -84,9 +81,11 @@ export const Select: React.FC<SelectProperties> = ({
     if (event.target === iconRef.current) return;
     if (event.target === optionsRef.current) return;
     setIsOpen(false);
-  }
+  }, [ setIsOpen ])
+  useEvent(CLICK_EVENT, blur);
+  useEvent(AUX_CLICK_EVENT, blur);
 
-  const getOptions = (): Array<Item> => {
+  const getOptions = useCallback((): Array<Item> => {
     let values = [ ...parentOptions ];
     if (!required) {
       const none = {
@@ -97,7 +96,7 @@ export const Select: React.FC<SelectProperties> = ({
       else values.push(none)
     }
     return values;
-  }
+  }, [ parentOptions, required, noneFirst, noneLabel ])
 
   const buttonItem: Item = useMemo(() => {
     if (value === undefined || value === -9) {

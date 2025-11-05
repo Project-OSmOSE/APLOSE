@@ -1,4 +1,4 @@
-import React, { Fragment, HTMLProps, ReactNode } from 'react';
+import React, { Fragment, HTMLProps, ReactNode, useCallback } from 'react';
 import style from './extended.module.scss';
 import {
   BottomHandle,
@@ -41,15 +41,15 @@ export const ResizableDiv: React.FC<{
                                     ...props
                                   }) => {
 
-  function onLeftMove(movement: number) {
+  const onLeftMove = useCallback((movement: number) => {
     if (_onLeftMove) _onLeftMove(movement);
     if (onWidthMove) onWidthMove(-movement);
-  }
+  }, [ _onLeftMove, onWidthMove ])
 
-  function onTopMove(movement: number) {
+  const onTopMove = useCallback((movement: number) => {
     if (_onTopMove) _onTopMove(movement);
     if (onHeightMove) onHeightMove(-movement);
-  }
+  }, [ _onTopMove, onHeightMove ])
 
   return (
     <div { ...props }

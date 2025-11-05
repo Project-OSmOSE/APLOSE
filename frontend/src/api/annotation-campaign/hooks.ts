@@ -6,9 +6,10 @@ import {
   type UpdateCampaignFeaturedLabelsMutationVariables,
   useCurrentUser,
 } from '@/api';
-import { AllAnnotationCampaignFilterSlice, AllCampaignFilters, selectAllCampaignFilters } from './all-campaign-filters';
-import { useNavParams, useQueryParams } from '@/features/UX';
+import { AllAnnotationCampaignFilterSlice, AllCampaignFilters } from './all-campaign-filters';
+import { type AploseNavParams, useQueryParams } from '@/features/UX';
 import type { GqlError } from '@/api/utils';
+import { useParams } from 'react-router-dom';
 
 //  API
 
@@ -29,7 +30,7 @@ export const useAllCampaigns = (filters: AllCampaignFilters) => {
 }
 
 export const useCurrentCampaign = () => {
-  const { campaignID: id } = useNavParams();
+  const { campaignID: id } = useParams<AploseNavParams>();
   const info = getCampaign.useQuery({ id: id ?? '' }, { skip: !id })
   const phases = useMemo(() => info.data?.annotationCampaignById?.phases?.map(p => p!), [ info ])
   return useMemo(() => ({
@@ -60,7 +61,7 @@ export const useCreateCampaign = () => {
 }
 
 export const useUpdateCampaignFeaturedLabels = () => {
-  const { campaignID } = useNavParams();
+  const { campaignID } = useParams<AploseNavParams>();
   const [ method, info ] = updateCampaignFeaturedLabels.useMutation();
 
   const update = useCallback(async (variables: Pick<UpdateCampaignFeaturedLabelsMutationVariables, 'labelsWithAcousticFeatures'>) => {
@@ -91,7 +92,7 @@ export const useArchiveCampaign = () => {
 export const useAllCampaignsFilters = () => {
   const { user } = useCurrentUser();
   const { params, updateParams, clearParams } = useQueryParams<AllCampaignFilters>(
-    selectAllCampaignFilters,
+    AllAnnotationCampaignFilterSlice.selectors.selectFilters,
     AllAnnotationCampaignFilterSlice.actions.updateCampaignFilters,
   )
 

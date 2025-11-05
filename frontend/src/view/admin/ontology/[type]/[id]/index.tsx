@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './styles.module.scss'
 import { IonSpinner } from '@ionic/react';
 import { Input, Label } from '@/components/form';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui';
 import { useSound, useSoundCRUD, useSource, useSourceCRUD } from '@/api';
-import { useNavParams } from '@/features/UX';
+import { type OntologyNavParams } from '@/features/UX';
 
 export const OntologyPanel: React.FC = () => {
-  const { type, id } = useNavParams();
+  const { type, id } = useParams<OntologyNavParams>();
 
   const { source, isFetching: isFetchingSource } = useSource({ id, skip: type !== 'source' });
   const { sound, isFetching: isFetchingSound } = useSound({ id, skip: type !== 'sound' });

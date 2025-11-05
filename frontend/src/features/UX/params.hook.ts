@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import { AppState, useAppDispatch, useAppSelector } from '@/features/App';
 import { AnnotationPhaseType } from '@/api';
@@ -47,13 +47,15 @@ export const useQueryParams = <T extends QueryParams>(
   return { params, updateParams, clearParams }
 }
 
-export const useNavParams = () => {
-  return useParams<{
-    type?: 'source' | 'sound', // For ontology
-    id?: string; // For ontology
-    datasetID?: string;
-    campaignID?: string;
-    spectrogramID?: string;
-    phaseType?: AnnotationPhaseType;
-  }>()
+export type OntologyNavParams = {
+  type?: 'source' | 'sound',
+  id?: string;
+}
+export type DataNavParams = {
+  datasetID?: string;
+}
+export type AploseNavParams = {
+  campaignID?: string;
+  spectrogramID?: string;
+  phaseType?: AnnotationPhaseType;
 }

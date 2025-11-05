@@ -12,15 +12,15 @@ import {
 } from '@/api';
 import { type Analysis, getDefaultAnalysisID, setAnalysis } from '@/features/Annotator/Analysis/slice';
 import type { GetAnnotationTaskQueryVariables } from '@/api/annotation-task/annotation-task.generated';
-import { convertGqlToAnnotations } from '@/features/Annotator/Annotation/post.hooks';
+import { convertGqlToAnnotations } from '@/features/Annotator/Annotation/conversions';
 
 
 export type Comment = Omit<AnnotationCommentSerializerInput, 'id'> & { id: number }
 export type Validation = Omit<AnnotationValidationSerializerInput, 'id'> & { id: number }
 export type Features = Omit<AnnotationAcousticFeaturesSerializerInput, 'id'> & { id: number }
 export type Annotation =
-    Omit<AnnotationInput, 'id' | 'isUpdateOf' | 'comments' | 'validations' | 'acousticFeatures'>
-    & {
+  Omit<AnnotationInput, 'id' | 'isUpdateOf' | 'comments' | 'validations' | 'acousticFeatures'>
+  & {
   id: number,
   type: AnnotationType;
   comments?: Comment[];
@@ -60,7 +60,7 @@ export const AnnotatorAnnotationSlice = createSlice({
       state.id = undefined
     },
     addAnnotation: (state, action: { payload: Omit<Annotation, 'analysis'> }) => {
-      if (!state._analysisID) return;
+      if (!state._analysisID || state.allAnnotations.some(a => a.id === action.payload.id)) return;
       const annotation: Annotation = {
         ...action.payload,
         analysis: state._analysisID,
@@ -85,6 +85,9 @@ export const AnnotatorAnnotationSlice = createSlice({
     },
     setTempAnnotation: (state, action: { payload: TempAnnotation }) => {
       state.tempAnnotation = action.payload
+    },
+    clearTempAnnotation: (state) => {
+      state.tempAnnotation = undefined
     },
   },
   extraReducers: builder => {
@@ -130,4 +133,5 @@ export const {
   updateAnnotation,
   removeAnnotation,
   setTempAnnotation,
+  clearTempAnnotation,
 } = AnnotatorAnnotationSlice.actions

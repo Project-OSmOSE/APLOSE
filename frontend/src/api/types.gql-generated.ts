@@ -452,8 +452,7 @@ export type AnnotationFileRangeNodeNodeConnection = {
   pageInfo: PageInfoExtra;
   /** Contains the nodes in this connection. */
   results: Array<Maybe<AnnotationFileRangeNode>>;
-  tasksCount: Scalars['Int']['output'];
-  totalCount: Scalars['Int']['output'];
+  totalCount?: Maybe<Scalars['Int']['output']>;
 };
 
 export type AnnotationInput = {
@@ -957,6 +956,12 @@ export type AnnotationSpectrogramNodeNodeConnectionNextSpectrogramIdArgs = {
 
 export type AnnotationSpectrogramNodeNodeConnectionPreviousSpectrogramIdArgs = {
   spectrogramId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type AnnotationSpectrogramNodeNodeConnectionResumeSpectrogramIdArgs = {
+  campaignId: Scalars['ID']['input'];
+  phase: AnnotationPhaseType;
 };
 
 /** AnnotationTask schema */

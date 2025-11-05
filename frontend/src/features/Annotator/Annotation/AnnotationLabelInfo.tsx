@@ -7,7 +7,7 @@ import { AnnotationType } from '@/api';
 export const AnnotationLabelInfo: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
 
   const correctedLabel = useMemo(() => {
-    if (annotation.update?.label !== annotation.label) return annotation.label;
+    if (annotation.update?.label !== annotation.label) return annotation.update?.label;
     return undefined
   }, [ annotation ])
 

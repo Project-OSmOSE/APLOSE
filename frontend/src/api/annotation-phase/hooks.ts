@@ -1,7 +1,8 @@
 import { AnnotationPhaseGqlAPI } from './api';
 import { useMemo } from 'react';
 import { AnnotationPhaseType } from '@/api';
-import { useNavParams } from '@/features/UX';
+import { type AploseNavParams } from '@/features/UX';
+import { useParams } from 'react-router-dom';
 
 const {
   getAnnotationPhase,
@@ -11,7 +12,7 @@ const {
 } = AnnotationPhaseGqlAPI.endpoints
 
 export const useCurrentPhase = () => {
-  const { campaignID, phaseType } = useNavParams();
+  const { campaignID, phaseType } = useParams<AploseNavParams>();
   const info = getAnnotationPhase.useQuery({
     campaignID: campaignID ?? '',
     phase: phaseType ?? AnnotationPhaseType.Annotation,

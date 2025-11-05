@@ -12,6 +12,7 @@ import {
   campaign,
   colormap,
   completedTasksCount,
+  CONFIDENCES,
   confidenceSet,
   dataset,
   fft,
@@ -61,12 +62,14 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
       desc: confidenceSet.desc,
       confidenceIndicators: confidenceSet.confidenceIndicators.map(c => ({
         label: c.label,
+        isDefault: c.label === CONFIDENCES.sure.label,
       })),
     },
     analysis: {
       edges: [ {
         node: {
           id: spectrogramAnalysis.id,
+          name: spectrogramAnalysis.name,
           legacy: spectrogramAnalysis.legacy,
           fft: {
             nfft: fft.nfft,

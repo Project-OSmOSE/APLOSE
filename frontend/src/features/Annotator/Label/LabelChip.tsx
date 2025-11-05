@@ -6,6 +6,8 @@ import { Kbd, TooltipOverlay, useAlert } from '@/components/ui';
 import { useAnnotatorLabel } from './hooks';
 import { useAnnotatorAnnotation } from '@/features/Annotator/Annotation';
 import { AnnotationType } from '@/api';
+import { useKeyDownEvent } from '@/features/UX';
+import { useAnnotatorConfidence } from '@/features/Annotator/Confidence';
 
 export const AlphanumericKeys = [
   [ '&', 'é', '"', '\'', '(', '-', 'è', '_', 'ç' ],
@@ -23,6 +25,7 @@ export const LabelChip: React.FC<{
     hideLabel,
     showLabel,
   } = useAnnotatorLabel()
+  const { focusedConfidence } = useAnnotatorConfidence()
   const {
     allAnnotations,
     focusedAnnotation,
@@ -40,7 +43,7 @@ export const LabelChip: React.FC<{
   const colorClass = useMemo(() => `ion-color-${ index }`, [ index ])
   const number = useMemo(() => AlphanumericKeys[1][index], [ index ]);
   const key = useMemo(() => AlphanumericKeys[0][index], [ index ]);
-  const isUsed = useMemo(() => allAnnotations.some(a => a.label === label), [ label ])
+  const isUsed = useMemo(() => allAnnotations.some(a => a.label === label), [ allAnnotations, label ])
   const color = useMemo(() => (index % 10).toString(), [ index ])
   const isHidden = useMemo(() => hiddenLabels.includes(label), [ hiddenLabels, label ])
   const buttonColor = useMemo(() => focusedLabel === label ? undefined : color, [ color, focusedLabel, label ])
@@ -48,11 +51,16 @@ export const LabelChip: React.FC<{
 
   const select = useCallback(() => {
     if (focusedAnnotation) return updateAnnotation(focusedAnnotation, { label })
-    const weakProperties = { type: AnnotationType.Weak, label }
+    const weakProperties = {
+      type: AnnotationType.Weak,
+      label,
+      confidence: focusedConfidence,
+    }
     const weak = getAnnotation(weakProperties)
     if (weak) return focus(weak)
     addAnnotation(weakProperties)
-  }, [ focusedAnnotation, updateAnnotation, label, getAnnotation, focus, addAnnotation ])
+  }, [ focusedAnnotation, updateAnnotation, label, getAnnotation, focus, addAnnotation, focusedConfidence ])
+  useKeyDownEvent([ number, key ], select)
 
   const show = useCallback((event: MouseEvent) => {
     event.stopPropagation();
@@ -78,8 +86,7 @@ export const LabelChip: React.FC<{
       actions: [ {
         label: `Remove "${ label }" annotations`,
         callback: () => {
-          const weak = getAnnotation({ type: AnnotationType.Weak, label })
-          if (weak) removeAnnotation(weak)
+          getAnnotations({ label: label }).forEach(removeAnnotation)
         },
       } ],
     })
@@ -88,6 +95,7 @@ export const LabelChip: React.FC<{
   return (
     <IonChip outline={ !isUsed }
              className={ className }
+             data-testid="label-chip"
              onClick={ select }
              color={ color }>
       { focusedLabel === label && <IonIcon src={ checkmarkOutline }/> }
@@ -108,7 +116,7 @@ export const LabelChip: React.FC<{
       }
 
 
-      { isUsed && <div className={ styles.labelButtons }>
+      { isUsed && <div className={ styles.labelsButtons }>
           <TooltipOverlay
               tooltipContent={ <Fragment>
                 <p>{ isHidden ? 'Show' : 'Hide' } corresponding annotations on spectrogram</p>
@@ -121,7 +129,10 @@ export const LabelChip: React.FC<{
 
           <TooltipOverlay
               tooltipContent={ <p>Remove corresponding annotations</p> }>
-              <IonIcon icon={ closeCircle } onClick={ remove } color={ buttonColor }/>
+              <IonIcon icon={ closeCircle }
+                       onClick={ remove }
+                       data-testid="remove-label"
+                       color={ buttonColor }/>
           </TooltipOverlay>
       </div> }
     </IonChip>

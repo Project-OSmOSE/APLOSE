@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect } from 'react';
 import styles from './styles.module.scss'
-import { Navigate, Outlet, useNavigate } from 'react-router-dom';
+import { Navigate, Outlet, useNavigate, useParams } from 'react-router-dom';
 import { Background, Controls, Node, ReactFlow, useOnSelectionChange } from '@xyflow/react';
 import { SoundNode, SourceNode, useAllSounds, useAllSources, useSoundCRUD, useSourceCRUD } from '@/api';
 import { NewNode, NODE_ORIGIN, NODE_TYPES, useGetInitialNodes, useOntologyTreeFlow } from '@/features/Ontology';
-import { useNavParams } from '@/features/UX';
+import { type OntologyNavParams } from '@/features/UX';
 
 
 type DataType = Pick<SoundNode | SourceNode, 'id' | 'englishName'> & {
@@ -12,7 +12,7 @@ type DataType = Pick<SoundNode | SourceNode, 'id' | 'englishName'> & {
 }
 
 export const OntologyTab: React.FC = () => {
-  const { type } = useNavParams();
+  const { type } = useParams<OntologyNavParams>();
 
   const { allSources: initialSources } = useAllSources({ skip: type !== 'source' })
   const {

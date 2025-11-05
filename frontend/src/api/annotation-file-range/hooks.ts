@@ -1,7 +1,8 @@
 import { AnnotationFileRangeGqlAPI } from './api'
 import { type AnnotationFileRangeInput, AnnotationPhaseType } from '@/api';
 import { useCallback, useMemo } from 'react';
-import { useNavParams } from '@/features/UX';
+import { type AploseNavParams } from '@/features/UX';
+import { useParams } from 'react-router-dom';
 
 const {
   listFileRanges,
@@ -9,7 +10,7 @@ const {
 } = AnnotationFileRangeGqlAPI.endpoints
 
 export const useAllFileRanges = () => {
-  const { campaignID, phaseType } = useNavParams();
+  const { campaignID, phaseType } = useParams<AploseNavParams>();
   const info = listFileRanges.useQuery({
     campaignID: campaignID ?? '',
     phaseType: phaseType ?? AnnotationPhaseType.Annotation,
@@ -27,7 +28,7 @@ export const useAllFileRanges = () => {
 }
 
 export const useUpdateFileRanges = () => {
-  const { campaignID, phaseType } = useNavParams();
+  const { campaignID, phaseType } = useParams<AploseNavParams>();
   const [ method, info ] = updateFileRanges.useMutation();
 
   const update = useCallback(async ({

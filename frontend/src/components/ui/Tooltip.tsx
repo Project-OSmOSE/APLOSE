@@ -42,7 +42,7 @@ export const TooltipOverlay: React.FC<{
     const isOverContainer = elements.some(e => e instanceof HTMLDivElement && e.id === containerID);
     if (isOverContainer) setIsOpen(true);
     else setIsShown(false)
-  }, [ containerID ]);
+  }, [ containerID, setIsShown ]);
   useEvent(MOUSE_MOVE_EVENT, onMouseMove);
 
   return <div ref={ containerRef } id={ containerID }>

@@ -16,8 +16,8 @@ export class UI {
     await expect(modal).toBeVisible();
     return Object.assign(modal, {
       async close() {
-        await modal.locator('.close').click();
-      }
+        await modal.getByTestId('close-modal').click();
+      },
     });
   }
 

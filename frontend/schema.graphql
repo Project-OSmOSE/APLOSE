@@ -3303,8 +3303,7 @@ type AnnotationFileRangeNodeNodeConnection {
 
   """Contains the nodes in this connection."""
   results: [AnnotationFileRangeNode]!
-  totalCount: Int!
-  tasksCount: Int!
+  totalCount: Int
 }
 
 """AnnotationFileRange schema"""
@@ -3430,7 +3429,7 @@ type AnnotationSpectrogramNodeNodeConnection {
   """Contains the nodes in this connection."""
   results: [AnnotationSpectrogramNode]!
   totalCount: Int!
-  resumeSpectrogramId: ID
+  resumeSpectrogramId(campaignId: ID!, phase: AnnotationPhaseType!): ID
   previousSpectrogramId(spectrogramId: ID): ID
   nextSpectrogramId(spectrogramId: ID): ID
   currentIndex(spectrogramId: ID): Int

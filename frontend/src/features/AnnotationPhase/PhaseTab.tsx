@@ -6,10 +6,11 @@ import { Button, Link, useAlert, useModal } from '@/components/ui';
 import { AnnotationPhaseType, useCurrentCampaign, useEndPhase } from '@/api';
 import { AnnotationPhaseCreateAnnotationModal, AnnotationPhaseCreateVerificationModal } from './PhaseCreateModal'
 import styles from './styles.module.scss';
-import { useNavParams } from '@/features/UX';
+import { type AploseNavParams } from '@/features/UX';
+import { useParams } from 'react-router-dom';
 
 export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: phaseType }) => {
-  const { campaignID, phaseType: currentPhaseType } = useNavParams();
+  const { campaignID, phaseType: currentPhaseType } = useParams<AploseNavParams>();
   const { campaign, phases, isFetching } = useCurrentCampaign()
   const phase = useMemo(() => phases?.find(p => p.phase === phaseType), [ phases, phaseType ])
 

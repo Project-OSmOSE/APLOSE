@@ -19,6 +19,7 @@ if (isCI) grep.push(/essential/)
 if (grep.length === 0) grep = undefined;
 
 export default defineConfig({
+
   testDir: './tests',
   /* Run tests in files in parallel */
   fullyParallel: !isCI,

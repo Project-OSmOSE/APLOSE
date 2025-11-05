@@ -5,11 +5,12 @@ import { Head } from '@/components/ui';
 
 import { datetimeToString } from '@/service/function';
 import { useDataset } from '@/api';
-import { useNavParams } from '@/features/UX';
+import { type DataNavParams } from '@/features/UX';
 import styles from './styles.module.scss';
+import { useParams } from 'react-router-dom';
 
 export const DatasetHead: React.FC = () => {
-  const { datasetID: id } = useNavParams()
+  const { datasetID: id } = useParams<DataNavParams>();
   const { dataset } = useDataset({ id })
   return <Head title={ dataset?.name }
                subtitle={ dataset?.path }

@@ -10,10 +10,11 @@ import { gqlAPI } from '@/api/baseGqlApi';
 import { useAppDispatch } from '@/features/App';
 import { useAnnotatorCanNavigate } from '@/features/Annotator/Navigation';
 import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
-import { useNavParams } from '@/features/UX';
+import { type AploseNavParams } from '@/features/UX';
+import { useParams } from 'react-router-dom';
 
 export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
-  const { campaignID, phaseType } = useNavParams();
+  const { campaignID, phaseType } = useParams<AploseNavParams>();
   const { campaign } = useCurrentCampaign()
   const { phase } = useCurrentPhase()
   const { spectrogram, isEditionAuthorized, navigationInfo } = useAnnotationTask();
@@ -21,15 +22,14 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
   const dispatch = useAppDispatch()
 
   const onBack = useCallback(() => {
-    dispatch(gqlAPI.util.invalidateTags([{
+    dispatch(gqlAPI.util.invalidateTags([ {
       type: 'AnnotationPhase',
       id: phase?.id,
-    }]))
-  }, [phase])
+    } ]))
+  }, [ phase ])
 
-  // 'page' class is for playwright tests
   return <AnnotatorCanvasContextProvider>
-    <div className={ [styles.page, 'page'].join(' ') }>
+    <div className={ styles.page }>
       <Header size="small"
               canNavigate={ canNavigate }
               buttons={ <Fragment>
@@ -63,9 +63,9 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                         value={ (navigationInfo.currentIndex ?? 0) + 1 }
                         total={ navigationInfo.totalCount }/> }
           { campaign?.archive ? <IonNote>You cannot annotate an archived campaign.</IonNote> :
-              phase?.endedAt ? <IonNote>You cannot annotate an ended phase.</IonNote> :
-                  !spectrogram.isAssigned ? <IonNote>You are not assigned to annotate this file.</IonNote> :
-                      <Fragment/>
+            phase?.endedAt ? <IonNote>You cannot annotate an ended phase.</IonNote> :
+              !spectrogram.isAssigned ? <IonNote>You are not assigned to annotate this file.</IonNote> :
+                <Fragment/>
           }
         </div> }
 

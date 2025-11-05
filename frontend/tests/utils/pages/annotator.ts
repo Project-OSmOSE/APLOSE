@@ -1,20 +1,23 @@
 import { expect, Locator, Page, test } from '@playwright/test';
 import { UserType } from '../../fixtures';
-import { AnnotationResultType, BoxBounds, Phase, PointBounds } from '../../../src/service/types';
+import { Phase } from '../../../src/service/types';
 import { Mock } from '../services';
 import { CampaignDetailPage } from './campaign-detail';
+import { type Annotation, campaign, type Confidence, type Label, spectrogram } from '../mock/types';
+import { AnnotationPhaseType, AnnotationType } from '../../../src/api/types.gql-generated';
+import { gqlURL } from '../mock';
 
-export type Label = {
-  addPresence: () => Promise<void>;
-  selectLabel: () => Promise<void>;
-  getLabelState: () => Promise<boolean>;
-  remove: () => Promise<void>;
-  getWeakResult: () => Locator;
-  getNthStrongResult: (nth: number) => Locator;
-}
-export type Confidence = {
-  select: () => Promise<void>;
-}
+// export type Label = {
+//   addPresence: () => Promise<void>;
+//   selectLabel: () => Promise<void>;
+//   getLabelState: () => Promise<boolean>;
+//   remove: () => Promise<void>;
+//   getWeakResult: () => Locator;
+//   getNthStrongResult: (nth: number) => Locator;
+// }
+// export type Confidence = {
+//   select: () => Promise<void>;
+// }
 
 export type Validation = {
   validate: () => Promise<void>;
@@ -25,7 +28,7 @@ export type Validation = {
 export class AnnotatorPage {
 
   get backToCampaignButton(): Locator {
-    return this.page.getByRole('button', { name: 'Back to Campaign' });
+    return this.page.getByRole('button', { name: 'Back to campaign' });
   }
 
   get commentInput(): Locator {
@@ -36,8 +39,8 @@ export class AnnotatorPage {
     return this.page.getByRole('button', { name: 'Task Comment' });
   }
 
-  get resultsBlock(): Locator {
-    return this.page.locator('.results');
+  get annotationsBlock(): Locator {
+    return this.page.getByTestId('annotation-bloc');
   }
 
   get submitButton(): Locator {
@@ -85,34 +88,102 @@ export class AnnotatorPage {
   }) {
     await test.step('Navigate to Annotator', async () => {
       await this.campaignDetail.go(as)
-      await this.mock.annotator(options.phase ?? 'Annotation', options.empty)
-      await this.campaignDetail.resumeButton.click()
-      await this.mock.annotator(options.phase ?? 'Annotation', options.empty)
+      // await this.mock.annotator(options.phase ?? 'Annotation', options.empty)
+      // await this.campaignDetail.resumeButton.click()
+      // await this.mock.annotator(options.phase ?? 'Annotation', options.empty)
+      await Promise.all([
+        this.page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/spectrogram/${ spectrogram.id }`),
+        this.page.waitForRequest(gqlURL),
+        this.campaignDetail.resumeButton.click(),
+      ])
     });
   }
+
+  getLabelChip(label: Label) {
+    return this.page.getByTestId('label-chip').filter({ hasText: label.name })
+  }
+
+  getConfidenceChip(confidence: Confidence) {
+    return this.page.getByTestId('confidence-chip').getByText(confidence.label, { exact: true })
+  }
+
+  getAnnotationForLabel(label: Label, which: 'weak' | 'strong' = 'weak') {
+    return this.annotationsBlock.getByText(label.name).nth(which === 'weak' ? 0 : 1)
+  }
+
+  async isLabelUsed(label: Label): Promise<boolean> {
+    const outline = await this.getLabelChip(label).getAttribute('outline');
+    return outline !== 'true';
+  }
+
+  async addWeak(label: Label, method: 'mouse' | 'shortcut' = 'mouse') {
+    switch (method) {
+      case 'mouse':
+        await this.getLabelChip(label).click()
+        break;
+      case 'shortcut':
+        await this.page.keyboard.press(label.id, { delay: 1_000 })
+        break;
+    }
+  }
+
+  async removeWeak(label: Label, method: 'mouse' | 'shortcut' = 'mouse') {
+    switch (method) {
+      case 'mouse':
+        await this.getLabelChip(label).getByTestId('remove-label').click()
+        break;
+      case 'shortcut':
+        await this.getAnnotationForLabel(label).click() // Set focus
+        await this.page.keyboard.press('Delete')
+        break;
+    }
+  }
+
+  async confirmeRemoveWeak(label: Label, method: 'mouse' | 'shortcut' = 'mouse') {
+    switch (method) {
+      case 'mouse':
+        await this.page.getByRole('dialog').getByRole('button', { name: `Remove "${ label.name }" annotations` }).click()
+        break;
+      case 'shortcut':
+        await this.page.keyboard.press('Enter')
+        break;
+    }
+  }
+
+  async submit(method: 'mouse' | 'shortcut' = 'mouse') {
+    switch (method) {
+      case 'mouse':
+        await this.submitButton.click()
+        break;
+      case 'shortcut':
+        await this.page.keyboard.press('Enter')
+        break;
+    }
+  }
+
 
   getLabel(label: string): Label {
     return {
       addPresence: async () => {
-        await this.page.locator('.label ion-chip').filter({ hasText: label }).click()
+        await this.page.getByTestId('label-chip').filter({ hasText: label }).click()
       },
       remove: async () => {
-        await this.page.locator('.label ion-chip').filter({ hasText: label }).locator('svg').last().click()
+        await this.page.getByTestId('label-chip').filter({ hasText: label }).locator('svg').last().click()
         const alert = this.page.getByRole('dialog')
         await alert.getByRole('button', { name: `Remove "${ label }" annotations` }).click()
       },
       selectLabel: async () => {
-        await this.page.locator('.label ion-chip').filter({ hasText: label }).click()
+        await this.page.getByTestId('label-chip').filter({ hasText: label }).click()
       },
       getLabelState: async () => {
-        const outline = await this.page.locator('.label ion-chip').filter({ hasText: label }).getAttribute('outline');
+        const outline = await this.page.getByTestId('label-chip').filter({ hasText: label }).getAttribute('outline');
         return outline !== 'true';
       },
       getWeakResult: () => {
-        return this.resultsBlock.getByText(label).first()
+        return this.annotationsBlock.getByText(label).first()
       },
       getNthStrongResult: (nth: number) => {
-        return this.resultsBlock.getByText(label).nth(1 + nth)
+        return this.annotationsBlock.getByText(label).nth(1 + nth)
       },
     }
   }
@@ -129,22 +200,21 @@ export class AnnotatorPage {
     await this.page.evaluate(() => window.scrollTo({ left: 0, top: 0 }))
   }
 
-  async draw(type: Exclude<AnnotationResultType, 'Weak'>): Promise<BoxBounds | PointBounds> {
+  async draw(type: Exclude<AnnotationType, AnnotationType.Weak>): Promise<Pick<Annotation, 'startTime' | 'startFrequency' | 'endTime' | 'endFrequency'>> {
     return test.step(`Draw ${ type }`, async () => {
       await this.scrollTop();
-      const canvas = this.page.locator('canvas.drawable').first()
+      const canvas = this.page.getByTestId('drawable-canvas').first()
       await expect(canvas).toBeVisible()
       await this.page.mouse.move(380, 410)
       await this.page.mouse.down({ button: 'left' })
       if (type === 'Box') await this.page.mouse.move(610, 480)
       await this.page.mouse.up({ button: 'left' })
       return {
-        type,
-        start_time: type === 'Box' ? 2.704 : 4.607,
-        end_time: type === 'Box' ? 4.607 : null,
-        start_frequency: type === 'Box' ? 0 : 29,
-        end_frequency: type === 'Box' ? 29 : null,
-      } as BoxBounds | PointBounds
+        startTime: type === 'Box' ? 2.704 : 4.607,
+        endTime: type === 'Box' ? 4.607 : null,
+        startFrequency: type === 'Box' ? 0 : 29,
+        endFrequency: type === 'Box' ? 29 : null,
+      } as Pick<Annotation, 'startTime' | 'startFrequency' | 'endTime' | 'endFrequency'>
     })
   }
 

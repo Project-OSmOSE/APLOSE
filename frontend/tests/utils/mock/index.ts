@@ -22,6 +22,7 @@ export async function interceptRequests(
     const req = route.request().postDataJSON();
 
     if (!Object.keys(operations).includes(req.operationName)) {
+      console.log(req.operationName);
       return route.fulfill({
         status: 200,
         contentType: 'application/json',

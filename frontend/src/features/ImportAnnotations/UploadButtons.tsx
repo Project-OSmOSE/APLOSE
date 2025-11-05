@@ -2,12 +2,12 @@ import React, { useCallback, useEffect } from 'react';
 import { IonButton, IonSpinner } from '@ionic/react';
 import { useImportAnnotationsContext } from './context';
 import styles from './styles.module.scss';
-import { useNavParams } from '@/features/UX';
+import { type AploseNavParams } from '@/features/UX';
 import { useCurrentCampaign } from '@/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export const UploadButtons: React.FC = () => {
-  const { campaignID, phaseType } = useNavParams();
+  const { campaignID, phaseType } = useParams<AploseNavParams>();
   const { verificationPhase } = useCurrentCampaign()
   const { canImport, upload, ...state } = useImportAnnotationsContext()
   const navigate = useNavigate();

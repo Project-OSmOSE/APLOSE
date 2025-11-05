@@ -5,8 +5,11 @@ import { Textarea } from '@/components/form';
 import { IonButton, IonIcon } from '@ionic/react';
 import { trashBinOutline } from 'ionicons/icons/index.js';
 import { useAnnotatorComment } from './hooks';
+import { useAnnotatorAnnotation } from '@/features/Annotator/Annotation';
+import { swapHorizontalOutline } from 'ionicons/icons';
 
 export const CommentBloc: React.FC = () => {
+  const { blur } = useAnnotatorAnnotation()
   const { focusedComment, add, update, remove } = useAnnotatorComment()
 
   const updateComment = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -23,7 +26,7 @@ export const CommentBloc: React.FC = () => {
               placeholder="Enter your comment"
               style={ { resize: 'none' } }
               value={ focusedComment?.comment ?? '' }
-              onChange={ updateComment }/>
+              onInput={ updateComment }/>
 
     <IonButton color="danger" size="small"
                className={ styles.removeButton }
@@ -31,6 +34,15 @@ export const CommentBloc: React.FC = () => {
                onClick={ () => focusedComment && remove(focusedComment) }>
       Remove
       <IonIcon slot="end" icon={ trashBinOutline }/>
+    </IonButton>
+
+    <IonButton color="medium" fill="clear"
+               size="small"
+               className={ styles.taskCommentButton }
+               disabled={ !focusedComment }
+               onClick={ blur }>
+      <IonIcon slot="start" icon={ swapHorizontalOutline }/>
+      Task comment
     </IonButton>
   </Bloc>
 }

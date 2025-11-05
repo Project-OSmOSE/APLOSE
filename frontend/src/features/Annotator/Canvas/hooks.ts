@@ -1,5 +1,5 @@
 import { useAnnotatorCanvasContext } from './context';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAnnotatorZoom } from '@/features/Annotator/Zoom';
 import { useAnnotatorSpectrogram } from '@/features/Annotator/Spectrogram';
 import { useAnnotatorVisualConfiguration } from '@/features/Annotator/VisualConfiguration';
@@ -136,17 +136,17 @@ export const useAnnotatorCanvas = () => {
   ])
 
   // Manage time update
-  const currentTime = useRef<number>(0)
+  const [ oldTime, setOldTime ] = useState<number>(0)
   useEffect(() => {
     // Scroll if progress bar reach the right edge of the screen
     if (!window || !spectrogram) return;
-    const oldX: number = Math.floor(width * currentTime.current / spectrogram.duration);
+    const oldX: number = Math.floor(width * oldTime / spectrogram.duration);
     const newX: number = Math.floor(width * time / spectrogram.duration);
 
     if ((oldX - window.scrollLeft) < containerWidth && (newX - window.scrollLeft) >= containerWidth) {
       window.scrollLeft += containerWidth;
     }
-    currentTime.current = time;
+    setOldTime(time);
   }, [
     // On time changed
     time, spectrogram?.duration,
@@ -178,7 +178,7 @@ export const useAnnotatorCanvas = () => {
       }
     } else {
       // If no x-coordinate: center on currentTime
-      newCenter = currentTime.current * newTimePxRatio;
+      newCenter = oldTime * newTimePxRatio;
     }
     window.scrollTo({ left: Math.floor(newCenter - containerWidth / 2) })
     _setZoom(zoom);

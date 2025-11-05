@@ -100,6 +100,7 @@ class AnnotationSpectrogramNode(BaseObjectType):
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_audio_path(self: Spectrogram, info, analysis_id: int):
+        print(self.__dict__, self.analysis.all())
         analysis: SpectrogramAnalysis = self.analysis.get(id=analysis_id)
 
         if analysis.dataset.legacy:

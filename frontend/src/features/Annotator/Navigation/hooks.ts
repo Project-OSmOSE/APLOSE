@@ -1,20 +1,16 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import { useAlert } from '@/components/ui';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAllTasksFilters } from '@/api';
 import { useAnnotatorUX } from '@/features/Annotator/UX';
-import { useNavParams } from '@/features/UX';
+import { type AploseNavParams } from '@/features/UX';
 
 export const useAnnotatorCanNavigate = () => {
   const { isUpdated } = useAnnotatorUX();
-  const isUpdatedRef = useRef<boolean>(isUpdated);
-  useEffect(() => {
-    isUpdatedRef.current = isUpdated
-  }, [ isUpdated ]);
   const alert = useAlert();
 
   const canNavigate = useCallback(async (): Promise<boolean> => {
-    if (isUpdatedRef.current) return true;
+    if (isUpdated) return true;
     return new Promise<boolean>((resolve) => {
       alert.showAlert({
         type: 'Warning',
@@ -26,13 +22,13 @@ export const useAnnotatorCanNavigate = () => {
         onCancel: () => resolve(false),
       })
     })
-  }, [ alert ])
+  }, [ alert, isUpdated ])
 
   return { canNavigate }
 }
 
 export const useOpenAnnotator = () => {
-  const { campaignID, phaseType } = useNavParams();
+  const { campaignID, phaseType } = useParams<AploseNavParams>();
   const { params } = useAllTasksFilters()
   const navigate = useNavigate()
 

@@ -38,7 +38,6 @@ export const useToast = () => {
       if (message) text += message;
       if (message && error) text += '\n'
       if (error) text += getErrorMessage(error)
-      console.info('Raised error:', message, error)
       present({
         message: text,
         color: 'danger',

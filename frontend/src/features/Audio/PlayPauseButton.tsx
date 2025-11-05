@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
 import { pause, play } from 'ionicons/icons/index.js';
 import { Kbd, TooltipOverlay } from '@/components/ui';
-import { useAudio } from './hook';
+import { useAudio } from './context';
 
 export const PlayPauseButton: React.FC = () => {
   const audio = useAudio()

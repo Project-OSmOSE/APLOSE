@@ -190,10 +190,8 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
 
   const load = useCallback(async (file: File) => {
     setFileState('loading');
-    console.debug('loading')
     if (!ACCEPT_CSV_MIME_TYPE.includes(file.type)) {
       setFileState('error');
-      console.debug('incorrect mime type')
       return setFileError(new WrongMIMETypeError(file.type))
     }
 
@@ -205,16 +203,13 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
         reader.onerror = () => reject(new UnreadableFileError())
         reader.onload = (event) => {
           const result = event.target?.result;
-          console.debug('loaded rows', result)
           if (!result || typeof result !== 'string') {
-            console.debug('unsupported result')
             reject(new UnsupportedCSVError())
             return;
           }
 
           let lines = result.replaceAll('\r', '').split('\n').map(l => [ l ]);
           lines = lines.map(l => l.flatMap(l => l.split(ACCEPT_CSV_SEPARATOR))).filter(d => d.length > 1);
-          console.debug('lines', JSON.stringify(lines))
           if (lines.length === 0) reject(new EmptyCSVError())
 
           const missingColumns = [];
@@ -222,7 +217,6 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
           for (const column of IMPORT_ANNOTATIONS_COLUMNS.required) {
             if (!headers.includes(column)) missingColumns.push(column);
           }
-          console.debug('missing columns', JSON.stringify(missingColumns))
           if (missingColumns.length > 0)
             throw new Error(`Missing columns: ${ missingColumns.join(', ') }`);
           resolve(lines)
@@ -230,7 +224,6 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
       })
     } catch (error) {
       setFileState('error');
-      console.debug('fail loading rows')
       return setFileError(error)
     }
 
@@ -238,10 +231,8 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
     contentRows.reverse()
     const header = contentRows.pop()!
     contentRows.reverse()
-    console.debug('header', JSON.stringify(header))
     setAnnotations(contentRows.map(r => {
       const confidence__level = r[header.indexOf('confidence_indicator_level')].split('/')
-      console.debug('setAnnotations', JSON.stringify(r))
       return {
         start_datetime: r[header.indexOf('start_datetime')],
         end_datetime: r[header.indexOf('end_datetime')],
@@ -318,7 +309,6 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
   }, [ uploadState, uploadError, file ])
 
   const canImport = useMemo<boolean>(() => {
-    console.debug('canImportMemo', analysisID, fileState, JSON.stringify(selectedDetectorsForImport), JSON.stringify(unknownToConfiguration))
     if (!analysisID) return false;
     if (fileState !== 'loaded') return false
     if (selectedDetectorsForImport.length === 0) return false
@@ -347,7 +337,6 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
     force_datetime?: boolean;
     force_max_frequency?: boolean;
   }) => {
-    console.debug('upload', canImport, uploadState, JSON.stringify(options))
     if (!canImport) return;
     if (uploadState === 'uploading') return;
     const isDatetimeForced = options?.force_datetime !== undefined ? options.force_datetime : (uploadState === 'initial' ? false : forceDatetime)

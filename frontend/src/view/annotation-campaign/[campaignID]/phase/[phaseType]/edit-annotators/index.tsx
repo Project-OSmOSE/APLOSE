@@ -12,10 +12,10 @@ import {
   useCurrentPhase,
   useUpdateFileRanges,
 } from '@/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { QueryStatus } from '@reduxjs/toolkit/query';
 import { FileRangeInputRow } from '@/features/AnnotationFileRange';
-import { useNavParams } from '@/features/UX';
+import { type AploseNavParams } from '@/features/UX';
 
 type SearchItem = {
   type: 'user' | 'group';
@@ -29,7 +29,7 @@ type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
 }
 
 export const EditAnnotators: React.FC = () => {
-  const { phaseType } = useNavParams();
+  const { phaseType } = useParams<AploseNavParams>();
   const {
     campaign,
     isFetching: isFetchingCampaign,

@@ -11,8 +11,8 @@ export const useAnnotatorAnalysis = () => {
 
   return {
     allAnalysis,
-    analysis,
     analysisID,
+    analysis,
     setAnalysis: useCallback((value?: Analysis) => dispatch(setAnalysis(value)), []),
   }
 }

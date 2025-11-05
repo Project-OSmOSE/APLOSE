@@ -42,8 +42,8 @@ export const AnnotatorCanvasWindow: React.FC = () => {
          onPointerLeave={ clearPosition }
          onMouseDown={ e => e.stopPropagation() }>
 
-      {/* 'drawable' class is for playwright tests */ }
-      <canvas className={ canDraw ? `drawable ${ styles.drawable }` : '' }
+      <canvas className={ canDraw ? styles.drawable : '' }
+              data-testid="drawable-canvas"
               ref={ ref => ref && setMainCanvas(ref) }
               height={ height }
               width={ width }

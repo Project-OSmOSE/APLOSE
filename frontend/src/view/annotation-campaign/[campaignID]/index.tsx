@@ -6,13 +6,13 @@ import { dateToString } from '@/service/function';
 import { MailButton } from '@/features/User';
 import { AnnotationPhaseTab } from '@/features/AnnotationPhase';
 import { AnnotationPhaseType, useCurrentCampaign } from '@/api';
-import { Outlet } from 'react-router-dom';
-import { useNavParams } from '@/features/UX';
+import { Outlet, useParams } from 'react-router-dom';
+import { type AploseNavParams } from '@/features/UX';
 
 export { AnnotationCampaignInfo } from './InfoTab'
 
 export const AnnotationCampaignDetail: React.FC = () => {
-  const { campaignID, phaseType } = useNavParams();
+  const { campaignID, phaseType } = useParams<AploseNavParams>();
   const {
     campaign,
     error,

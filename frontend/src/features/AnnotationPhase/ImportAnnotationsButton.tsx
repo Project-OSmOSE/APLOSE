@@ -3,11 +3,12 @@ import { Link, TooltipOverlay } from '@/components/ui';
 import { IonIcon } from '@ionic/react';
 import { cloudDownloadOutline } from 'ionicons/icons/index.js';
 import { useCurrentCampaign } from '@/api';
-import { useNavParams } from '@/features/UX';
+import { type AploseNavParams } from '@/features/UX';
+import { useParams } from 'react-router-dom';
 
 
 export const ImportAnnotationsButton: React.FC = () => {
-  const { campaignID, phaseType } = useNavParams();
+  const { campaignID, phaseType } = useParams<AploseNavParams>();
   const { verificationPhase } = useCurrentCampaign()
 
   const path = useMemo(() => {

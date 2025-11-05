@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Fragment, MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ChangeEvent, Fragment, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './styles.module.scss';
 import { ExtendedDiv, Table, TableContent, TableDivider, TableHead } from '@/components/ui';
 import { Input, type Item, Select } from '@/components/form';
@@ -39,21 +39,11 @@ export const AcousticFeatures: React.FC = () => {
   const initialLeft = useMemo(() => window.innerWidth - 500, [])
 
   const [ top, setTop ] = useState<number>(128);
-  const _top = useRef<number>(128);
   const [ left, setLeft ] = useState<number>(initialLeft);
-  const _left = useRef<number>(initialLeft);
-
-  useEffect(() => {
-    setTop(_top.current)
-  }, [ _top.current ]);
-  useEffect(() => {
-    setLeft(_left.current)
-  }, [ _left.current ]);
 
   useEffect(() => {
     if (!focusedAnnotation?.endTime) return;
     const newLeft = timeScale.valueToPosition(focusedAnnotation.endTime) + 80;
-    _left.current = newLeft;
     setLeft(newLeft);
   }, [ focusedAnnotation ]);
 
@@ -111,18 +101,12 @@ export const AcousticFeatures: React.FC = () => {
   }, [ updateAnnotation, focusedAnnotation, spectrogram ])
 
   const onTopMove = useCallback((move: number) => {
-    setTop(prev => {
-      _top.current = prev + move
-      return prev + move
-    })
-  }, [])
+    setTop(prev => prev + move)
+  }, [ setTop ])
 
   const onLeftMove = useCallback((move: number) => {
-    setLeft(prev => {
-      _left.current = prev + move
-      return prev + move
-    })
-  }, [])
+    setLeft(prev => prev + move)
+  }, [ setLeft ])
 
   const quit = useCallback(() => {
     if (!focusedAnnotation) return

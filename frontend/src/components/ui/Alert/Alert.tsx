@@ -7,7 +7,7 @@ import { IonButton } from '@ionic/react';
 import { NON_FILTERED_KEY_DOWN_EVENT, useEvent } from '@/features/UX';
 
 export const Alert: React.FC<{
-  alert: AlertType & { id: number }
+  alert: AlertType
   hide: () => void;
 }> = ({ alert, hide }) => {
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Signal } from 'signal-ts';
 import { useAppSelector } from '@/features/App';
 import {
@@ -70,5 +70,14 @@ export const useEvent = <T>(signal: Signal<T>, callback: (event: T) => void) => 
     return () => {
       signal.remove(callback);
     }
-  }, []);
+  }, [ callback ]);
+}
+
+export const useKeyDownEvent = (keys: string[], callback: (event: KeyboardEvent) => void) => {
+  const onKbdEvent = useCallback((event: KeyboardEvent) => {
+    if (!keys.includes(event.key)) return
+    event.preventDefault();
+    callback(event);
+  }, [ keys, callback ])
+  useEvent(KEY_DOWN_EVENT, onKbdEvent)
 }

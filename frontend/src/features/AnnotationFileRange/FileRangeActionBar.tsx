@@ -6,11 +6,12 @@ import { ActionBar, Button, Link, Progress, TooltipOverlay } from '@/components/
 import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
 import { useAllAnnotationTasks, useAllTasksFilters, useCurrentPhase } from '@/api';
 import { FileRangeProgressModalButton } from '@/features/AnnotationFileRange';
-import { useNavParams } from '@/features/UX';
+import { type AploseNavParams } from '@/features/UX';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
+import { useParams } from 'react-router-dom';
 
 export const FileRangeActionBar: React.FC = () => {
-  const { campaignID, phaseType } = useNavParams();
+  const { campaignID, phaseType } = useParams<AploseNavParams>();
   const { params, updateParams, clearParams } = useAllTasksFilters({ clearOnLoad: true })
   const { phase } = useCurrentPhase()
   const { allSpectrograms, resumeSpectrogramID } = useAllAnnotationTasks(params)
@@ -18,20 +19,20 @@ export const FileRangeActionBar: React.FC = () => {
 
   const updateSearch = useCallback((search: string) => {
     updateParams({ search })
-  }, [updateParams])
+  }, [ updateParams ])
 
-  const hasFilters = useMemo(() => Object.entries(params).filter(([k, v]) => k !== 'page' && v !== undefined).length > 0, [params]);
+  const hasFilters = useMemo(() => Object.entries(params).filter(([ k, v ]) => k !== 'page' && v !== undefined).length > 0, [ params ]);
 
   const resumeBtnTooltip: string = useMemo(() => {
     if (hasFilters) return 'Cannot resume if filters are activated'
     if (!allSpectrograms || allSpectrograms.length === 0) return 'No files to annotate'
     return 'Resume annotation'
-  }, [hasFilters, allSpectrograms])
+  }, [ hasFilters, allSpectrograms ])
 
   const resume = useCallback(() => {
     if (!resumeSpectrogramID) return;
     openAnnotator(resumeSpectrogramID)
-  }, [resumeSpectrogramID, openAnnotator])
+  }, [ resumeSpectrogramID, openAnnotator ])
 
   return <ActionBar search={ params.search ?? undefined }
                     searchPlaceholder="Search filename"
@@ -44,15 +45,15 @@ export const FileRangeActionBar: React.FC = () => {
                       </IonButton> }
 
                       <div className={ styles.progress }>
-                        { phase && phase.userCompletedTasks && phase.userCompletedTasks!.totalCount > 0 &&
+                        { phase && phase.userCompletedTasksCount && phase.userCompletedTasksCount > 0 &&
                             <Progress label="My progress"
                                       color="primary"
-                                      value={ phase.userFileRanges?.tasksCount ?? 0 }
-                                      total={ phase.userCompletedTasks!.totalCount }/> }
-                        { phase && phase.completedTasks && phase.completedTasks!.totalCount > 0 &&
+                                      value={ phase.userTasksCount ?? 0 }
+                                      total={ phase.userCompletedTasksCount }/> }
+                        { phase && phase.completedTasksCount && phase.completedTasksCount > 0 &&
                             <Progress label="Global progress"
-                                      value={ phase.fileRanges?.tasksCount ?? 0 }
-                                      total={ phase.completedTasks.totalCount }/> }
+                                      value={ phase.tasksCount ?? 0 }
+                                      total={ phase.completedTasksCount }/> }
                         <FileRangeProgressModalButton/>
                       </div>
 

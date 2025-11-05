@@ -12,7 +12,6 @@ export const ModalHeader: React.FC<{
     <h3>{ title ?? <IonSkeletonText animated style={ { width: 256, height: '1ch', justifySelf: 'center' } }/> }</h3>
     { subtitle && <IonNote color="medium">{ subtitle }</IonNote> }
 
-    <IoCloseOutline onClick={ onClose } className={ [ styles.icon, 'close' ].join(' ') } role="button"/>
-    {/* 'close' classname is for playwright tests */ }
+    <IoCloseOutline onClick={ onClose } data-testid="close-modal" className={ styles.icon } role="button"/>
   </div>
 )

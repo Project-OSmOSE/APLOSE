@@ -22,11 +22,12 @@ import { ConfidenceBloc } from '@/features/Annotator/Confidence';
 import { CommentBloc } from '@/features/Annotator/Comment';
 import { AnnotationsBloc } from '@/features/Annotator/Annotation/AnnotationsBloc';
 import { AnnotatorSkeleton } from '@/features/Annotator/Skeleton';
-import { useNavParams } from '@/features/UX';
+import { AploseNavParams } from '@/features/UX';
+import { useParams } from 'react-router-dom';
 
 export const AnnotatorPage: React.FC = () => {
   // const { usedColormap: colormapClass } = useAnnotatorInput(); // TODO: check use: colormapClass was in div classes
-  const { campaignID } = useNavParams();
+  const { campaignID } = useParams<AploseNavParams>();
 
   const {
     spectrogram,

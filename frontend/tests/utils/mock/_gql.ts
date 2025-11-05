@@ -5,7 +5,7 @@ import { LABEL_SET_QUERIES } from './labelSet';
 import { CHANNEL_CONFIGURATION_QUERIES } from './channelConfiguration';
 import { GET_CURRENT_USER_QUERY, USER_QUERIES } from './user';
 import { PHASE_MUTATIONS, PHASE_QUERIES } from './phase';
-import { TASK_QUERIES } from './task';
+import { TASK_MUTATIONS, TASK_QUERIES } from './task';
 import { FILE_RANGE_MUTATIONS, FILE_RANGE_QUERIES } from './fileRange';
 import type { UserType } from './types';
 import { DETECTOR_QUERIES } from './detector';
@@ -41,6 +41,7 @@ type GqlMutations =
   typeof DATASET_MUTATIONS
   & typeof ANALYSIS_MUTATIONS
   & typeof CAMPAIGN_MUTATIONS
+  & typeof TASK_MUTATIONS
   & typeof PHASE_MUTATIONS
   & typeof FILE_RANGE_MUTATIONS
 export type GqlMutation = keyof GqlMutations
@@ -49,6 +50,7 @@ const GQL_MOCK_MUTATIONS: GqlMutations = {
   ...DATASET_MUTATIONS,
   ...ANALYSIS_MUTATIONS,
   ...CAMPAIGN_MUTATIONS,
+  ...TASK_MUTATIONS,
   ...PHASE_MUTATIONS,
   ...FILE_RANGE_MUTATIONS,
   // TODO: add mutations

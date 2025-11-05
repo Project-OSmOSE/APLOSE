@@ -75,6 +75,7 @@ query getCampaign($id: ID!) {
             desc
             confidenceIndicators {
                 label
+                isDefault
             }
         }
         detectors {

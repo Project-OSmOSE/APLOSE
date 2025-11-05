@@ -1,5 +1,5 @@
-import { ScaleService, Step } from "./types";
-import { useCallback, useEffect } from "react";
+import { ScaleService, Step } from './types';
+import { useCallback, useEffect } from 'react';
 
 export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }: {
   canvas?: HTMLCanvasElement,
@@ -19,7 +19,7 @@ export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = 'rgba(0, 0, 0)';
-    context.font = "500 10px 'Exo 2'";
+    context.font = '500 10px \'Exo 2\'';
 
     let previousRatio = 0;
     let offset = 0;
@@ -48,11 +48,11 @@ export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }
       let tickLength = 10;
       let tickWidth = 1;
       switch (step.size) {
-        case "regular":
+        case 'regular':
           tickLength = 15;
           tickWidth = 2;
           break;
-        case "big":
+        case 'big':
           tickLength = 15;
           tickWidth = 4;
           break;
@@ -61,10 +61,10 @@ export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }
       if (pixelSize - tickWidth < tickPosition) tickPosition = pixelSize - tickWidth
 
       switch (orientation) {
-        case "vertical":
+        case 'vertical':
           context.fillRect(canvas.width - tickLength, tickPosition, tickLength, tickWidth);
           break;
-        case "horizontal":
+        case 'horizontal':
           context.fillRect(tickPosition <= canvas.width - 2 ? tickPosition : canvas.width - 2, 0, tickWidth, tickLength);
           break;
       }
@@ -74,20 +74,20 @@ export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }
         const min = Math.min(step.value, step.additionalValue)
         const max = step.value === min ? step.additionalValue : step.value;
         switch (orientation) {
-          case "vertical":
+          case 'vertical':
             context.textBaseline = 'top'
             break;
-          case "horizontal":
-            context.textAlign = "right"
+          case 'horizontal':
+            context.textAlign = 'right'
             break;
         }
         context.fillText(valueToString(min), 0, position);
         switch (orientation) {
-          case "vertical":
+          case 'vertical':
             context.textBaseline = 'bottom'
             break;
-          case "horizontal":
-            context.textAlign = "left"
+          case 'horizontal':
+            context.textAlign = 'left'
             break;
         }
         context.fillText(valueToString(max), 0, position);
@@ -95,7 +95,7 @@ export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }
         let textPosition = position;
         const text = valueToString(step.value)
         switch (orientation) {
-          case "vertical":
+          case 'vertical':
             // "Top align" all labels but first
             if (textPosition < (pixelSize - 5)) {
               context.textBaseline = 'top'
@@ -103,14 +103,14 @@ export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }
               context.textBaseline = 'bottom'
             }
             break;
-          case "horizontal":
+          case 'horizontal':
             if (textPosition === 0) {
-              context.textAlign = "left"
+              context.textAlign = 'left'
             } else if (textPosition > (pixelSize - text.length * 8)) {
-              context.textAlign = "right"
+              context.textAlign = 'right'
               textPosition -= 8;
             } else {
-              context.textAlign = "center"
+              context.textAlign = 'center'
             }
             break;
         }
@@ -119,7 +119,4 @@ export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }
     }
   }, [ canvas, scale, orientation, pixelSize, valueToString ])
 
-  return {
-    draw
-  }
 }

@@ -7,17 +7,18 @@ import { AnnotationType } from '@/api';
 export const AnnotationFrequencyInfo: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
 
   const correctedStartFrequency = useMemo(() => {
-    if (annotation.update && annotation.update?.startFrequency !== annotation.startFrequency) return annotation.update.startFrequency;
+    if (annotation.update?.startFrequency !== annotation.startFrequency) return annotation.update?.startFrequency;
     return undefined
   }, [ annotation ])
 
   const correctedEndFrequency = useMemo(() => {
-    if (annotation.update && annotation.update?.endFrequency !== annotation.endFrequency) return annotation.update.endFrequency;
+    if (annotation.update?.endFrequency !== annotation.endFrequency) return annotation.update?.endFrequency;
     return undefined
   }, [ annotation ])
 
   const isCorrected = useMemo(() => correctedStartFrequency || correctedEndFrequency, [ correctedStartFrequency, correctedEndFrequency ])
 
+  if (annotation.type === AnnotationType.Weak) return <Fragment/>
   return <div className={ styles.info }>
     <IoAnalyticsOutline className={ styles.mainIcon }/>
 

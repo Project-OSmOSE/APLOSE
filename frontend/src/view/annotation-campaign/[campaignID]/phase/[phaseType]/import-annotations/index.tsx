@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { Head } from '@/components/ui';
 import { IonSkeletonText } from '@ionic/react';
 import { useCurrentCampaign } from '@/api';
-import { useNavParams } from '@/features/UX';
+import { type AploseNavParams } from '@/features/UX';
 import {
   DetectorConfigurationsFormBloc,
   DetectorsFormBloc,
@@ -12,10 +12,11 @@ import {
   useImportAnnotationsContext,
 } from '@/features/ImportAnnotations';
 import styles from './styles.module.scss'
+import { useParams } from 'react-router-dom';
 
 export const ImportAnnotations: React.FC = () => {
   const { campaign } = useCurrentCampaign();
-  const { phaseType } = useNavParams()
+  const { phaseType } = useParams<AploseNavParams>();
   const {
     selectedDetectorsForImport,
     reset,

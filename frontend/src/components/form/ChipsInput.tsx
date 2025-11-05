@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import styles from './form.module.scss'
 import { IonChip, IonIcon, IonNote } from '@ionic/react';
 import { closeCircle } from 'ionicons/icons/index.js';
-import styles from './form.module.scss'
 import { Item } from './types';
 import { Label } from './Label';
 
@@ -25,8 +25,13 @@ export const ChipsInput: React.FC<ChipsProperties> = ({
                                                         error,
                                                       }) => {
 
-  const deactivateChip = (chip: Item) => setActiveItemsValues(activeItemsValues.filter(v => v !== chip.value))
-  const activateChip = (chip: Item) => setActiveItemsValues([ ...activeItemsValues, chip.value ])
+  const deactivateChip = useCallback((chip: Item) => {
+    setActiveItemsValues(activeItemsValues.filter(v => v !== chip.value))
+  }, [ setActiveItemsValues, activeItemsValues ])
+
+  const activateChip = useCallback((chip: Item) => {
+    setActiveItemsValues([ ...activeItemsValues, chip.value ])
+  }, [ setActiveItemsValues, activeItemsValues ])
 
   return <div id="aplose-input" className={ [ styles.default, styles.chips ].join(' ') } aria-disabled={ disabled }
               aria-invalid={ !!error }>

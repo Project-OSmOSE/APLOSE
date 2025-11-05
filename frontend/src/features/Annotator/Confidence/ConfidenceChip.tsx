@@ -17,6 +17,7 @@ export const ConfidenceChip: React.FC<{ confidence: string }> = ({ confidence })
 
   return <IonChip color="primary"
                   onClick={ select }
+                  data-testid="confidence-chip"
                   className={ isActive ? styles.active : 'void' }> {/* 'void' className need to be sure the className change when item is not active anymore */ }
     { confidence }
     { isActive && <IonIcon src={ checkmarkOutline } color="light"/> }

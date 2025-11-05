@@ -46,19 +46,18 @@ export const AnnotatorConfidenceSlice = createSlice({
     builder.addMatcher(getCampaignFulfilled, (state: ConfidenceState, action: { payload: GetCampaignQuery }) => {
       state.allConfidences = action.payload.annotationCampaignById?.confidenceSet?.confidenceIndicators?.filter(c => c !== null).map(c => c!) ?? []
       state._defaultConfidence = (state.allConfidences?.find(c => c?.isDefault) ?? state.allConfidences?.find(c => c !== null))?.label
+      if (state._campaignID !== action.payload.annotationCampaignById?.id) {
+        state._campaignID = action.payload.annotationCampaignById?.id
+        state.focus = state._defaultConfidence ?? initialState.focus
+      }
     })
     builder.addMatcher(getAnnotationTaskFulfilled, (state: ConfidenceState, action: {
       payload: GetAnnotationTaskQuery
       meta: { arg: { originalArgs: GetAnnotationTaskQueryVariables } }
     }) => {
-      if (state._campaignID !== action.meta.arg.originalArgs.campaignID) {
-        state._campaignID = action.meta.arg.originalArgs.campaignID
-        state.focus = initialState.focus
-      } else {
-        const annotations = action.payload.annotationSpectrogramById?.task?.annotations?.results.filter(a => a !== null).map(a => a!) ?? []
-        const defaultAnnotation = [ ...convertGqlToAnnotations(annotations) ].reverse().pop();
-        state.focus = defaultAnnotation?.update?.confidence ?? defaultAnnotation?.confidence ?? state._defaultConfidence
-      }
+      const annotations = action.payload.annotationSpectrogramById?.task?.annotations?.results.filter(a => a !== null).map(a => a!) ?? []
+      const defaultAnnotation = [ ...convertGqlToAnnotations(annotations) ].reverse().pop();
+      state.focus = defaultAnnotation?.update?.confidence ?? defaultAnnotation?.confidence ?? state._defaultConfidence ?? initialState.focus
     })
   },
   selectors: {

@@ -1,14 +1,5 @@
 import { restAPI } from '@/api/baseRestApi';
 import { AnnotationPhaseType, type ImportAnnotation } from '@/api';
-import { api } from './annotation.generated'
-
-export const AnnotationGqlAPI = api.enhanceEndpoints({
-  endpoints: {
-    updateAnnotations: {
-      invalidatesTags: [ 'AnnotationTask' ]
-    }
-  }
-})
 
 
 const keys: (keyof ImportAnnotation)[] = [
@@ -42,7 +33,7 @@ export const AnnotationRestAPI = restAPI.injectEndpoints({
               keys.join(','),
               ...annotations.map(a => keys.map(k => `"${ a[k] }"`).join(',')),
             ].join('\n'),
-          }
+          },
         }
       },
     }),

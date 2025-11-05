@@ -9,8 +9,10 @@ export const Bloc: React.FC<{
   centerBody?: boolean,
   smallSpaces?: boolean,
   vertical?: boolean,
-}> = ({ header, children, className, centerBody, smallSpaces, vertical, bodyClassName }) => {
-  return <div className={ [ styles.bloc, className ].join(' ') }>
+  'data-testid'?: string,
+}> = ({ header, children, className, centerBody, smallSpaces, vertical, bodyClassName, ['data-testid']: testID }) => {
+  return <div className={ [ styles.bloc, className ].join(' ') }
+              data-testid={ testID }>
     <h6 className={ styles.header }>
       { header }
     </h6>

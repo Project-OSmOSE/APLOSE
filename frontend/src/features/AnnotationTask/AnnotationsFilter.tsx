@@ -10,12 +10,13 @@ import styles from './styles.module.scss';
 import { Modal, useModal } from '@/components/ui';
 import { DetectorSelect } from '@/features/Detector';
 import { UserSelect } from '@/features/User';
-import { useNavParams } from '@/features/UX';
+import { type AploseNavParams } from '@/features/UX';
+import { useParams } from 'react-router-dom';
 
 export const AnnotationsFilter: React.FC<{
   onUpdate: () => void
 }> = ({ onUpdate }) => {
-  const { phaseType } = useNavParams();
+  const { phaseType } = useParams<AploseNavParams>();
   const { campaign, isFetching } = useCurrentCampaign()
   const { params, updateParams } = useAllTasksFilters()
   const modal = useModal()
