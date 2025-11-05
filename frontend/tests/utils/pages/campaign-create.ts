@@ -17,7 +17,7 @@ export class CampaignCreatePage {
   async go(as: UserType): Promise<void> {
     await test.step('Navigate to Campaign create', async () => {
       await this.list.go(as)
-      await this.list.createButton.click();
+      await this.list.createCampaignButton.click();
     });
   }
 

@@ -25,14 +25,15 @@ interface PageExtension {
   readonly account: AccountPage;
   readonly datasets: DatasetPage;
   readonly datasetDetail: DatasetDetailPage;
-  readonly annotator: AnnotatorPage;
+  readonly campaigns: CampaignListPage;
+
   readonly campaign: {
-    list: CampaignListPage;
     detail: CampaignDetailPage;
     create: CampaignCreatePage;
     edit: CampaignEditPage;
     import: CampaignImportAnnotationsPage;
   }
+  readonly annotator: AnnotatorPage;
 }
 
 export interface Page extends PageBase, PageExtension {
@@ -62,14 +63,15 @@ export const test = testBase.extend<Fixture>({
       account: new AccountPage(page),
       datasets: new DatasetPage(page),
       datasetDetail: new DatasetDetailPage(page),
-      annotator: new AnnotatorPage(page),
+      campaigns: new CampaignListPage(page),
+
       campaign: {
-        list: new CampaignListPage(page),
         detail: new CampaignDetailPage(page),
         create: new CampaignCreatePage(page),
         edit: new CampaignEditPage(page),
         import: new CampaignImportAnnotationsPage(page),
       },
+      annotator: new AnnotatorPage(page),
     }
 
     await use(Object.assign(page, extension))

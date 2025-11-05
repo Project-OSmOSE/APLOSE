@@ -25,7 +25,7 @@ const STEP = {
   accessCampaign: (page: Page) =>
     test.step('Access campaign', async () => {
       await page.navbar.campaignButton.click()
-      await expect(page.campaign.list.title).toBeVisible()
+      await expect(page.campaigns.title).toBeVisible()
     }),
   accessAccountManagement: (page: Page) =>
     test.step('Access account management', async () => {

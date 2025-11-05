@@ -125,7 +125,7 @@ export const CAMPAIGN_QUERIES: {
           {
             id: campaign.id,
             name: campaign.name,
-            datasetName: campaign.name,
+            datasetName: dataset.name,
             isArchived: campaign.isArchived,
             deadline: campaign.deadline,
             tasksCount,

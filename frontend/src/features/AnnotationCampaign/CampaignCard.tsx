@@ -60,9 +60,9 @@ export const Cards: React.FC = () => {
 
   return <div className={ styles.cards }>
     { allCampaigns?.map(c => <div key={ c.id }
-                                  className={ [ styles.card, 'campaign-card' ].join(' ') }
+                                  data-testid="campaign-card"
+                                  className={ styles.card }
                                   onClick={ () => accessDetail(c) } onAuxClick={ () => accessAuxDetail(c) }>
-      {/*campaign-card classname for test purpose*/ }
 
       <div className={ styles.head }>
         <IonBadge color={ getColor(c) } children={ getBadgeLabel(c) }/>
