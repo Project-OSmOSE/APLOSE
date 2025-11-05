@@ -27,6 +27,7 @@ interface PageExtension {
   readonly datasetDetail: DatasetDetailPage;
   readonly campaigns: CampaignListPage;
   readonly campaignDetail: CampaignDetailPage;
+  readonly campaignCreate: CampaignCreatePage;
 
   readonly campaign: {
     create: CampaignCreatePage;
@@ -65,7 +66,7 @@ export const test = testBase.extend<Fixture>({
       datasetDetail: new DatasetDetailPage(page),
       campaigns: new CampaignListPage(page),
       campaignDetail: new CampaignDetailPage(page),
-
+      campaignCreate: new CampaignCreatePage(page),
       campaign: {
         create: new CampaignCreatePage(page),
         edit: new CampaignEditPage(page),
