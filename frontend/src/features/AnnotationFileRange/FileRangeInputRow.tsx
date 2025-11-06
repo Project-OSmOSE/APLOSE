@@ -1,6 +1,6 @@
 import React, { ChangeEvent, Fragment, useState } from 'react';
 import { TableContent, TableDivider, useAlert } from '@/components/ui';
-import styles from '@/view/annotation-campaign/[campaignID]/phase/[phaseType]/edit-annotators/styles.module.scss';
+import styles from './styles.module.scss';
 import { Input } from '@/components/form';
 import { IonButton, IonIcon } from '@ionic/react';
 import { lockClosedOutline, trashBinOutline } from 'ionicons/icons/index.js';
@@ -49,6 +49,7 @@ export const FileRangeInputRow: React.FC<{
       <TableContent>
         <div className={ styles.fileRangeCell }>
           <Input type="number"
+                 data-testid={ `firstFileIndex-${ range.id }` }
                  value={ range.firstFileIndex ?? '' }
                  error={ errors?.find(e => e.field === 'firstFileIndex')?.messages.join(' ') }
                  onChange={ (e: ChangeEvent<HTMLInputElement>) => onUpdate({ firstFileIndex: e.target.valueAsNumber }) }
@@ -57,6 +58,7 @@ export const FileRangeInputRow: React.FC<{
                  disabled={ campaign?.spectrogramsCount === undefined || isLocked }/>
           -
           <Input type="number"
+                 data-testid={ `lastFileIndex-${ range.id }` }
                  value={ range.lastFileIndex ?? '' }
                  error={ errors?.find(e => e.field === 'lastFileIndex')?.messages.join(' ') }
                  onChange={ (e: ChangeEvent<HTMLInputElement>) => onUpdate({ lastFileIndex: e.target.valueAsNumber }) }
@@ -67,11 +69,13 @@ export const FileRangeInputRow: React.FC<{
       </TableContent>
       <TableContent>
         { isLocked ? <IonButton color="medium" fill="outline"
+                                data-testid={ `unlock-${ range.id }` }
                                 data-tooltip={ 'This user has already started to annotate' }
                                 className={ [ styles.annotatorButton, 'tooltip-right' ].join(' ') }
                                 onClick={ unlock }>
           <IonIcon icon={ lockClosedOutline }/>
         </IonButton> : <IonButton color="danger"
+                                  data-testid={ `remove-${ range.id }` }
                                   className={ styles.annotatorButton }
                                   onClick={ () => onDelete(range) }>
           <IonIcon icon={ trashBinOutline }/>

@@ -11,6 +11,7 @@ type InputProperties = {
   startIcon?: string;
   note?: string;
   error?: string;
+  'data-testid'?: string;
 } & InputHTMLAttributes<HTMLInputElement>
 export const Input: React.FC<InputProperties> = ({
                                                    label,
@@ -23,6 +24,7 @@ export const Input: React.FC<InputProperties> = ({
 
                                                    onFocus,
                                                    onBlur,
+                                                   ['data-testid']: testId,
                                                    ...inputArgs
                                                  }) => {
 
@@ -54,7 +56,7 @@ export const Input: React.FC<InputProperties> = ({
                               icon={ startIcon }/> }
       <input { ...inputArgs }
              id={ label }
-             data-testid="input"
+             data-testid={ testId ?? 'input' }
              type={ type }
              required={ required }
              disabled={ disabled }
