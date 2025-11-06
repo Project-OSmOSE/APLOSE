@@ -14,8 +14,12 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
 
   const { params, updatePage } = useAllTasksFilters({ clearOnLoad: true })
 
-  useAllAnnotationTasks({ page: 1 }, { refetchOnMountOrArgChange: true })
-  const { allSpectrograms, pageCount, isFetching, error } = useAllAnnotationTasks(params)
+  const {
+    allSpectrograms,
+    pageCount,
+    isFetching,
+    error,
+  } = useAllAnnotationTasks(params, { refetchOnMountOrArgChange: true })
 
   const isEmpty = useMemo(() => error || !allSpectrograms || allSpectrograms.length === 0 || campaign?.isArchived, [ error, allSpectrograms, campaign ])
 

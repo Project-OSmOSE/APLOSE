@@ -1,7 +1,7 @@
 import { essential, expect, expectNoRequestsOnAction, type Page, test } from './utils';
 import { gqlURL, interceptRequests, mockError } from './utils/mock';
 import type { GqlMutation } from './utils/mock/_gql';
-import { campaign, dataset, spectrogramAnalysis } from './utils/mock/types';
+import { campaign, dataset, spectrogramAnalysis, type UserType } from './utils/mock/types';
 import type { CreateCampaignMutationVariables } from '../src/api/annotation-campaign/annotation-campaign.generated';
 import type { Params } from './utils/types';
 
@@ -40,8 +40,8 @@ const STEP = {
 
 const TEST = {
 
-  canSubmitOnlyRequiredFields: ({ as }: Pick<Params, 'as'>) =>
-    test(`Can submit only required fields as ${ as }`, { tag: essential }, async ({ page }) => {
+  canSubmitOnlyRequiredFields: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Can submit only required fields as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, { getCurrentUser: as })
       await STEP.navigate(page, { as })
 
@@ -72,8 +72,8 @@ const TEST = {
       })
     }),
 
-  canSubmitAllFields: ({ as }: Pick<Params, 'as'>) =>
-    test(`Can submit all fields as ${ as }`, { tag: essential }, async ({ page }) => {
+  canSubmitAllFields: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Can submit all fields as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, { getCurrentUser: as })
       await STEP.navigate(page, { as })
 
@@ -105,8 +105,8 @@ const TEST = {
       })
     }),
 
-  handleSubmissionErrors: ({ as }: Pick<Params, 'as'>) =>
-    test(`Handle submission errors as ${ as }`, { tag: essential }, async ({ page }) => {
+  handleSubmissionErrors: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Handle submission errors as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         createCampaign: 'failed',
@@ -133,8 +133,8 @@ const TEST = {
       })
     }),
 
-  handleEmptyState: ({ as }: Pick<Params, 'as'>) =>
-    test(`Handle empty state as ${ as }`, { tag: essential }, async ({ page }) => {
+  handleEmptyState: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Handle empty state as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         listDatasetsAndAnalysis: 'empty',
@@ -158,13 +158,14 @@ const TEST = {
 
 // Tests
 test.describe('[Campaign create]', () => {
+  const as: UserType = 'annotator'
 
-  TEST.handleEmptyState({ as: 'annotator' })
+  TEST.handleEmptyState({ as, tag: essential })
 
-  TEST.canSubmitOnlyRequiredFields({ as: 'annotator' })
+  TEST.canSubmitOnlyRequiredFields({ as, tag: essential })
 
-  TEST.canSubmitAllFields({ as: 'annotator' })
+  TEST.canSubmitAllFields({ as, tag: essential })
 
-  TEST.handleSubmissionErrors({ as: 'annotator' })
+  TEST.handleSubmissionErrors({ as, tag: essential })
 
 })

@@ -1,6 +1,6 @@
 import { Page, test } from '@playwright/test';
 import { dataset, UserType } from '../mock/types';
-import { CampaignDetailPage } from './campaign-detail';
+import { PhaseDetailPage } from './phase-detail';
 
 export class CampaignEditPage {
 
@@ -14,12 +14,12 @@ export class CampaignEditPage {
   }
 
   constructor(private page: Page,
-              private detail = new CampaignDetailPage(page)) {
+              private detail = new PhaseDetailPage(page)) {
   }
 
   async go(as: UserType) {
     await test.step('Navigate to Campaign detail', async () => {
-      await this.detail.go(as)
+      await this.detail.go({ as })
       await this.detail.manageButton.click();
     });
   }

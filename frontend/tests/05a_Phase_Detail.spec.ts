@@ -1,235 +1,283 @@
-import { ESSENTIAL, expect, Page, test } from './utils';
-import { gqlURL, interceptRequests } from './utils/mock';
-import { campaign, phase, spectrogram, TASKS, USERS } from './utils/mock/types';
+import { essential, expect, test } from './utils';
+import { gqlRegex, interceptRequests } from './utils/mock';
+import { campaign, phase as phaseObj, spectrogram, TASKS, USERS } from './utils/mock/types';
 import type { ListAnnotationTaskQueryVariables } from '../src/api/annotation-task';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
-import { DOWNLOAD_ANNOTATIONS, DOWNLOAD_PROGRESS } from '../src/consts/links';
+import { DOWNLOAD_ANNOTATIONS_URL, DOWNLOAD_PROGRESS_URL } from '../src/consts/links';
+import type { Params } from './utils/types';
+import type { Request } from 'playwright-core';
 
 // Utils
 
-const STEP = {
-  accessImportAnnotations: (page: Page) => {
-    return test.step('Can import annotations', async () => {
-      await expect(page.campaignDetail.importAnnotationsButton).toBeEnabled();
-    })
-  },
-  accessDownloadCSV: async (page: Page) => {
-    await test.step('Access progress downloads and update', async () => {
-      const modal = await page.campaignDetail.openProgressModal();
-      await expect(modal.downloadResultsButton).toBeEnabled();
-      await expect(modal.downloadStatusButton).toBeEnabled();
-      await modal.close()
-    })
-  },
-  accessManageAnnotators: (page: Page) => test.step('Access manage annotators', async () => {
-    await expect(page.campaignDetail.manageButton).toBeEnabled();
-    const modal = await page.campaignDetail.openProgressModal();
-    await modal.close()
-  }),
+const TEST = {
+
+  handleEmptyState: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Handle empty state as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+        listFileRanges: 'empty',
+        listSpectrogramAnalysis: 'empty',
+        listAnnotationTask: 'empty',
+      })
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+
+      await test.step('Display no progress', async () => {
+        await page.phaseDetail.progressModal.button.click()
+        await expect(page.phaseDetail.progressModal.modal.getByText('No annotators')).toBeVisible();
+        await expect(page.phaseDetail.progressModal.statusDownloadLink).not.toBeVisible()
+        await expect(page.phaseDetail.progressModal.resultsDownloadLink).not.toBeVisible()
+        await page.phaseDetail.progressModal.closeButton.click()
+      })
+
+      await test.step('Display no files', () =>
+        expect(page.getByText('You have no files to annotate.')).toBeVisible())
+
+      await test.step('Cannot resume', () =>
+        expect(page.phaseDetail.resumeButton).not.toBeEnabled())
+    }),
+
+  displayData: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Display data as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+      })
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+
+      await test.step('Display progress', async () => {
+        await page.phaseDetail.progressModal.button.click()
+        await expect(page.phaseDetail.progressModal.modal.getByText(USERS.annotator.displayName)).toBeVisible();
+        await expect(page.phaseDetail.progressModal.modal.getByText(USERS.creator.displayName)).not.toBeVisible();
+        await page.phaseDetail.progressModal.closeButton.click()
+      })
+
+      await test.step('Display files', async () =>
+        expect(await page.getByText(spectrogram.filename, { exact: true }).count()).toEqual(2))
+    }),
+
+  canFilterFiles: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Can filter files as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+      })
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+
+      const checkRequest = (request: Request) => {
+        if (!new RegExp(gqlRegex).test(request.url())) return false;
+        return request.postDataJSON().operationName === 'listAnnotationTask'
+      }
+      await page.waitForRequest(checkRequest)
+
+      await test.step('Search file', async () => {
+        const [ request ] = await Promise.all([
+          page.waitForRequest(checkRequest),
+          page.phaseDetail.searchFile(spectrogram.filename),
+        ])
+        console.debug(JSON.stringify(request.postDataJSON()))
+        const variables = request.postDataJSON().variables as ListAnnotationTaskQueryVariables
+        expect(variables.search).toEqual(spectrogram.filename)
+      })
+    }),
+
+  cannotUpdatePhase: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Cannot update phase as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+      })
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+
+      await test.step('Cannot manage', () =>
+        expect(page.campaignDetail.manageButton).not.toBeVisible())
+
+    }),
+
+  cannotDownloadInfo: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Cannot download info as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+      })
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+
+      await test.step('Cannot download progress', async () => {
+        await page.phaseDetail.progressModal.button.click()
+        await expect(page.phaseDetail.progressModal.statusDownloadLink).not.toBeVisible()
+        await expect(page.phaseDetail.progressModal.resultsDownloadLink).not.toBeVisible()
+        await page.phaseDetail.progressModal.closeButton.click()
+      })
+
+    }),
+  canDownloadInfo: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Can download info as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+      })
+      await test.step(`Navigate`, async () => {
+        await page.phaseDetail.go({ as })
+        await page.phaseDetail.progressModal.button.click()
+      })
+
+      await test.step('Can download results', async () => {
+        await expect(page.phaseDetail.progressModal.resultsDownloadLink).toBeVisible()
+        expect(await page.phaseDetail.progressModal.resultsDownloadLink.getAttribute('href')).toEqual(DOWNLOAD_ANNOTATIONS_URL(phaseObj.id))
+      })
+
+      await test.step('Can download status', async () => {
+        await expect(page.phaseDetail.progressModal.statusDownloadLink).toBeVisible()
+        expect(await page.phaseDetail.progressModal.statusDownloadLink.getAttribute('href')).toEqual(DOWNLOAD_PROGRESS_URL(phaseObj.id))
+      })
+
+    }),
+
+  // Annotation
+  canAnnotateSubmittedFile: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Can annotate submitted file as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+      })
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+
+      await test.step('Access annotation', async () => {
+        await Promise.all([
+          page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/spectrogram/${ TASKS.submitted.id }`),
+          page.getByTestId('access-button').last().click(),
+        ])
+      })
+    }),
+  canAnnotateUnsubmittedFile: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Can annotate unsubmitted file as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+      })
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+
+      await test.step('Access annotation', async () => {
+        await Promise.all([
+          page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/spectrogram/${ TASKS.unsubmitted.id }`),
+          page.getByTestId('access-button').first().click(),
+        ])
+      })
+    }),
+  canResumeAnnotation: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Can resume annotation as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+      })
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+
+      await test.step('Access annotation', async () => {
+        await Promise.all([
+          page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/spectrogram/${ TASKS.unsubmitted.id }`),
+          page.phaseDetail.resumeButton.click(),
+        ])
+      })
+    }),
+
+  // Import annotation
+  cannotImportAnnotation: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Cannot import annotation as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+      })
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+
+      await test.step('Cannot import annotations', () =>
+        expect(page.phaseDetail.importAnnotationsButton).not.toBeVisible())
+    }),
+  canImportAnnotation: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Can import annotation as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+      })
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+
+      await test.step('Access import annotation', async () => {
+        await Promise.all([
+          page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/import-annotations`),
+          await page.phaseDetail.importAnnotationsButton.click(),
+        ])
+      })
+    }),
+
+  // Manage annotators
+  cannotManageAnnotators: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Cannot manage annotators as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+      })
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+
+      await test.step('Cannot manage annotators', () =>
+        expect(page.phaseDetail.manageButton).not.toBeVisible())
+    }),
+  canManageAnnotators: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Can manage annotators as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+      })
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+
+      await test.step('Access manage annotators', async () => {
+        await Promise.all([
+          page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/edit-annotators`),
+          await page.phaseDetail.manageButton.click(),
+        ])
+      })
+    }),
+
 }
 
 // Tests
+test.describe('[Phase detail]', () => {
 
-test.describe('Annotator', () => {
-  test('Progress', async ({ page }) => {
-    await interceptRequests(page, {
-      getCurrentUser: 'annotator',
-    })
-    await page.campaignDetail.go('annotator');
+  TEST.handleEmptyState({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.handleEmptyState({ as: 'annotator', phase: AnnotationPhaseType.Verification, tag: essential })
+  TEST.handleEmptyState({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.handleEmptyState({ as: 'staff', phase: AnnotationPhaseType.Annotation })
+  TEST.handleEmptyState({ as: 'superuser', phase: AnnotationPhaseType.Annotation })
 
-    await test.step('Cannot manage', async () => {
-      await expect(page.campaignDetail.manageButton).not.toBeVisible()
-    })
+  TEST.displayData({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.displayData({ as: 'annotator', phase: AnnotationPhaseType.Verification, tag: essential })
 
-    const modal = await page.campaignDetail.openProgressModal();
-    await expect(modal.getByText(USERS.annotator.displayName)).toBeVisible();
-    await expect(modal.getByText(USERS.creator.displayName)).not.toBeVisible();
+  TEST.canFilterFiles({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
 
-    await test.step('Cannot download', async () => {
-      await expect(modal.downloadStatusButton).not.toBeVisible()
-      await expect(modal.downloadStatusButton).not.toBeVisible()
-    })
-  })
+  TEST.canAnnotateSubmittedFile({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.canAnnotateUnsubmittedFile({ as: 'annotator', phase: AnnotationPhaseType.Annotation })
+  TEST.canResumeAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.canResumeAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Verification })
 
-  test('Files', ESSENTIAL, async ({ page }) => {
-    await interceptRequests(page, {
-      getCurrentUser: 'annotator',
-    })
-    await page.campaignDetail.go('annotator');
-    await test.step('See files', async () => {
-      await expect(page.locator('.table-content').first()).toBeVisible();
-    })
-    await test.step('Can search file', async () => {
-      const [ request ] = await Promise.all([
-        page.waitForRequest(gqlURL),
-        page.campaignDetail.searchFile(spectrogram.filename),
-      ])
-      const variables = request.postDataJSON().variables as ListAnnotationTaskQueryVariables
-      expect(variables.search).toEqual(spectrogram.filename)
-      const params = new URLSearchParams('?' + page.url().split('?')[1])
-      expect(params.get('search')).toEqual(spectrogram.filename)
-      await page.campaignDetail.searchFile(undefined);
-    })
-  })
+  TEST.cannotUpdatePhase({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
 
-  test('Can annotate submitted file', ESSENTIAL, async ({ page }) => {
-    await interceptRequests(page, {
-      getCurrentUser: 'annotator',
-    })
-    await page.campaignDetail.go('annotator');
-    await page.mock.annotator()
-    const button = page.getByTestId('access-button').last()
-    await button.waitFor()
-    await Promise.all([
-      page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/spectrogram/${ TASKS.submitted.id }`),
-      button.click(),
-    ])
-  })
+  TEST.cannotDownloadInfo({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.canDownloadInfo({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.canDownloadInfo({ as: 'staff', phase: AnnotationPhaseType.Annotation })
+  TEST.canDownloadInfo({ as: 'superuser', phase: AnnotationPhaseType.Annotation })
 
-  test('Can annotate unsubmitted file', ESSENTIAL, async ({ page }) => {
-    await interceptRequests(page, {
-      getCurrentUser: 'annotator',
-    })
-    await page.campaignDetail.go('annotator');
-    await page.mock.annotator()
-    const button = page.getByTestId('access-button').first()
-    await button.waitFor()
-    await Promise.all([
-      page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/spectrogram/${ TASKS.unsubmitted.id }`),
-      button.click(),
-    ])
-  })
+  TEST.cannotImportAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.cannotImportAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Verification })
+  TEST.canImportAnnotation({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.cannotImportAnnotation({ as: 'creator', phase: AnnotationPhaseType.Verification, tag: essential })
+  TEST.canImportAnnotation({ as: 'staff', phase: AnnotationPhaseType.Annotation })
+  TEST.cannotImportAnnotation({ as: 'staff', phase: AnnotationPhaseType.Verification })
+  TEST.canImportAnnotation({ as: 'superuser', phase: AnnotationPhaseType.Annotation })
+  TEST.cannotImportAnnotation({ as: 'superuser', phase: AnnotationPhaseType.Verification })
 
-  test('Can resume annotation', ESSENTIAL, async ({ page }) => {
-    await interceptRequests(page, {
-      getCurrentUser: 'annotator',
-    })
-    await page.campaignDetail.go('annotator');
-    await page.mock.annotator()
-    await Promise.all([
-      page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/spectrogram/${ spectrogram.id }`),
-      page.campaignDetail.resumeButton.click(),
-    ])
-  })
+  TEST.cannotManageAnnotators({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.cannotManageAnnotators({ as: 'annotator', phase: AnnotationPhaseType.Verification, tag: essential })
+  TEST.canManageAnnotators({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.canManageAnnotators({ as: 'creator', phase: AnnotationPhaseType.Verification, tag: essential })
+  TEST.canManageAnnotators({ as: 'staff', phase: AnnotationPhaseType.Annotation })
+  TEST.canManageAnnotators({ as: 'superuser', phase: AnnotationPhaseType.Annotation })
 
-  test('Empty', ESSENTIAL, async ({ page }) => {
-    await interceptRequests(page, {
-      getCurrentUser: 'annotator',
-      listFileRanges: 'empty',
-      listAnnotationTask: 'empty',
-    })
-    await page.campaignDetail.go('annotator');
-
-    await test.step('Progress', async () => {
-      const modal = await page.campaignDetail.openProgressModal();
-      await expect(modal.getByText('No annotators')).toBeVisible();
-      await modal.close()
-    })
-
-    await test.step('Files', async () => {
-      await expect(page.getByText('You have no files to annotate.')).toBeVisible();
-      await expect(page.campaignDetail.resumeButton).not.toBeEnabled();
-    })
-  })
-
-  //TODO: add this test
-  // await test.step('Cannot import annotations', async () => {
-  //   await expect(page.campaignDetail.importAnnotationsButton).not.toBeVisible();
-  // })
-})
-
-test.describe('Campaign creator', () => {
-
-  test('Can import annotations', async ({ page }) => {
-    await interceptRequests(page, {
-      getCurrentUser: 'creator',
-      getAnnotationPhase: 'manager',
-    })
-    await page.campaignDetail.go('creator');
-    await STEP.accessImportAnnotations(page)
-  })
-
-  test('Can download progress results', async ({ page }) => {
-    await interceptRequests(page, {
-      getCurrentUser: 'creator',
-      getAnnotationPhase: 'manager',
-    })
-    await page.campaignDetail.go('creator');
-    const modal = await page.campaignDetail.openProgressModal()
-
-    await test.step('Results', () => Promise.all([
-      page.waitForRequest('**' + DOWNLOAD_ANNOTATIONS(phase.id)),
-      modal.downloadResultsButton.click(),
-    ]))
-  })
-
-  test('Can download progress status', async ({ page }) => {
-    await interceptRequests(page, {
-      getCurrentUser: 'creator',
-      getAnnotationPhase: 'manager',
-    })
-    await page.campaignDetail.go('creator');
-    const modal = await page.campaignDetail.openProgressModal()
-
-    await test.step('Status', () => Promise.all([
-      page.waitForRequest('**' + DOWNLOAD_PROGRESS(phase.id)),
-      modal.downloadStatusButton.click(),
-    ]))
-  })
-
-  test('Can manage annotators', async ({ page }) => {
-    await interceptRequests(page, {
-      getCurrentUser: 'creator',
-      getAnnotationPhase: 'manager',
-    })
-    await page.campaignDetail.go('creator');
-    await Promise.all([
-      page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/edit-annotators`),
-      page.campaignDetail.manageButton.click(),
-    ])
-  })
-
-  test('Empty', async ({ page }) => {
-    await interceptRequests(page, {
-      getCurrentUser: 'creator',
-      getAnnotationPhase: 'manager',
-      listFileRanges: 'empty',
-      listSpectrogramAnalysis: 'empty',
-      listAnnotationTask: 'empty',
-    })
-    await page.campaignDetail.go('creator');
-
-    await test.step('Progress', async () => {
-      await expect(page.campaignDetail.manageButton).toBeVisible();
-      const modal = await page.campaignDetail.openProgressModal();
-      await expect(modal.downloadStatusButton).not.toBeVisible();
-      await expect(modal.downloadStatusButton).not.toBeVisible();
-      await modal.close()
-    })
-  })
-
-})
-
-test('Staff', async ({ page }) => {
-  await interceptRequests(page, {
-    getCurrentUser: 'staff',
-    getAnnotationPhase: 'manager',
-  })
-  await page.campaignDetail.go('staff');
-
-  await STEP.accessImportAnnotations(page)
-  await STEP.accessDownloadCSV(page)
-  await STEP.accessManageAnnotators(page)
-})
-
-test('Superuser', ESSENTIAL, async ({ page }) => {
-  await interceptRequests(page, {
-    getCurrentUser: 'superuser',
-    getAnnotationPhase: 'manager',
-  })
-  await page.campaignDetail.go('superuser');
-
-  await STEP.accessImportAnnotations(page)
-  await STEP.accessDownloadCSV(page)
-  await STEP.accessManageAnnotators(page)
 })

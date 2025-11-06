@@ -4,8 +4,8 @@ import { fileURLToPath } from 'url';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import path from 'path';
-import { CampaignDetailPage } from './campaign-detail';
 import * as fs from 'node:fs';
+import { PhaseDetailPage } from './phase-detail';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
@@ -19,7 +19,7 @@ type CheckOptions = {
   onlyFirstDetector: boolean,
 }
 
-export class CampaignImportAnnotationsPage {
+export class PhaseImportAnnotationsPage {
 
   get importButton(): Locator {
     return this.page.getByRole('button', { name: 'Import' })
@@ -34,7 +34,7 @@ export class CampaignImportAnnotationsPage {
   }
 
   constructor(private page: Page,
-              private detail = new CampaignDetailPage(page)) {
+              private detail = new PhaseDetailPage(page)) {
   }
 
   async go(as: UserType): Promise<void> {

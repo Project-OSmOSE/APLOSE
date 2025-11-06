@@ -4,6 +4,7 @@ import { AnnotationPhaseType } from '../../src/api';
 export type Method = 'mouse' | 'shortcut'
 
 export type Params = {
+  tag?: string,
   as: UserType,
   phase: AnnotationPhaseType,
   method: Method

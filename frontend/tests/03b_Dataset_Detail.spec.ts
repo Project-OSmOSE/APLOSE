@@ -10,8 +10,8 @@ const TEST = {
 
   // Page
 
-  handlePageEmptyState: ({ as }: Pick<Params, 'as'>) =>
-    test(`Handle empty state as ${ as }`, async ({ page }) => {
+  handlePageEmptyState: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Handle empty state as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         listSpectrogramAnalysis: 'empty',
@@ -24,8 +24,8 @@ const TEST = {
         expect(page.getByText('No spectrogram analysis')).toBeVisible())
     }),
 
-  pageDisplayLoadedData: ({ as }: Pick<Params, 'as'>) =>
-    test(`Display loaded data as ${ as }`, async ({ page }) => {
+  pageDisplayLoadedData: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Display loaded data as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, { getCurrentUser: as })
       await test.step(`Navigate`, () => page.datasetDetail.go({ as }));
 
@@ -35,8 +35,8 @@ const TEST = {
 
   // Modal
 
-  handleModalEmptyState: ({ as }: Pick<Params, 'as'>) =>
-    test(`Handle empty state as ${ as }`, async ({ page }) => {
+  handleModalEmptyState: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Handle empty state as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         listSpectrogramAnalysis: 'empty',
@@ -53,8 +53,8 @@ const TEST = {
         expect(page.datasetDetail.importAnalysis.modal).toContainText('There is no new analysis'))
     }),
 
-  modalDisplayLoadedData: ({ as }: Pick<Params, 'as'>) =>
-    test(`Display loaded data as ${ as }`, async ({ page }) => {
+  modalDisplayLoadedData: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Display loaded data as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, { getCurrentUser: as })
       await test.step(`Navigate`, async () => {
         await page.datasetDetail.go({ as })
@@ -71,8 +71,8 @@ const TEST = {
       })
     }),
 
-  importAnalysis: ({ as }: Pick<Params, 'as'>) =>
-    test(`Import an analysis as ${ as }`, async ({ page }) => {
+  importAnalysis: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Import an analysis as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         importDataset: 'empty',
@@ -94,24 +94,24 @@ const TEST = {
 
 
 // Tests
-test.describe('[Dataset detail]', { tag: essential }, () => {
+test.describe('[Dataset detail]', () => {
 
-  TEST.handlePageEmptyState({ as: 'staff' })
+  TEST.handlePageEmptyState({ as: 'staff', tag: essential })
   TEST.handlePageEmptyState({ as: 'superuser' })
 
-  TEST.pageDisplayLoadedData({ as: 'staff' })
+  TEST.pageDisplayLoadedData({ as: 'staff', tag: essential })
   TEST.pageDisplayLoadedData({ as: 'superuser' })
 
 })
-test.describe('[Dataset detail] Import modal', { tag: essential }, () => {
+test.describe('[Dataset detail] Import modal', () => {
 
-  TEST.handleModalEmptyState({ as: 'staff' })
+  TEST.handleModalEmptyState({ as: 'staff', tag: essential })
   TEST.handleModalEmptyState({ as: 'superuser' })
 
-  TEST.modalDisplayLoadedData({ as: 'staff' })
+  TEST.modalDisplayLoadedData({ as: 'staff', tag: essential })
   TEST.modalDisplayLoadedData({ as: 'superuser' })
 
-  TEST.importAnalysis({ as: 'staff' })
+  TEST.importAnalysis({ as: 'staff', tag: essential })
   TEST.importAnalysis({ as: 'superuser' })
 
 })

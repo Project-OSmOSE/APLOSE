@@ -1,4 +1,4 @@
-import React, {Fragment, useCallback, useEffect, useState} from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 import {
   Link,
@@ -14,9 +14,9 @@ import {
   useModal,
   WarningText,
 } from '@/components/ui';
-import {IonButton, IonIcon, IonNote, IonSpinner} from '@ionic/react';
-import {analytics, caretDown, caretUp, downloadOutline} from 'ionicons/icons/index.js';
-import {createPortal} from 'react-dom';
+import { IonButton, IonIcon, IonNote, IonSpinner } from '@ionic/react';
+import { analytics, caretDown, caretUp, downloadOutline } from 'ionicons/icons/index.js';
+import { createPortal } from 'react-dom';
 import {
   AnnotationFileRangeNode,
   AnnotationTaskNodeNodeConnection,
@@ -26,174 +26,174 @@ import {
   useCurrentPhase,
   UserNode,
 } from '@/api';
-import {DOWNLOAD_ANNOTATIONS, DOWNLOAD_PROGRESS} from '@/consts/links';
+import { DOWNLOAD_ANNOTATIONS_URL, DOWNLOAD_PROGRESS_URL } from '@/consts/links';
 
 type Progression = {
-    user: Pick<UserNode, 'id' | 'displayName' | 'expertise'>;
-    ranges: Array<Pick<AnnotationFileRangeNode, 'id' | 'firstFileIndex' | 'lastFileIndex' | 'filesCount'> & {
-        annotator: Pick<UserNode, 'id'>
-        completedAnnotationTasks?: Maybe<Pick<AnnotationTaskNodeNodeConnection, 'totalCount'>>
-    }>;
-    progress: number; // [0-1]
+  user: Pick<UserNode, 'id' | 'displayName' | 'expertise'>;
+  ranges: Array<Pick<AnnotationFileRangeNode, 'id' | 'firstFileIndex' | 'lastFileIndex' | 'filesCount'> & {
+    annotator: Pick<UserNode, 'id'>
+    completedAnnotationTasks?: Maybe<Pick<AnnotationTaskNodeNodeConnection, 'totalCount'>>
+  }>;
+  progress: number; // [0-1]
 }
 
 type Sort = {
-    entry: 'Annotator' | 'Progress';
-    sort: 'ASC' | 'DESC';
+  entry: 'Annotator' | 'Progress';
+  sort: 'ASC' | 'DESC';
 }
 
 export const FileRangeProgressModalButton: React.FC = () => {
-    const modal = useModal()
-    return <Fragment>
-        <TooltipOverlay tooltipContent={<p>Annotators progression</p>} anchor="right">
-            <IonButton fill="clear" color="medium" onClick={modal.toggle} aria-label="Progress">
-                <IonIcon icon={analytics} slot="icon-only"/>
-            </IonButton>
-        </TooltipOverlay>
-        {modal.isOpen && createPortal(<FileRangeProgressModal onClose={modal.toggle}/>, document.body)}
-    </Fragment>
+  const modal = useModal()
+  return <Fragment>
+    <TooltipOverlay tooltipContent={ <p>Annotators progression</p> } anchor="right">
+      <IonButton fill="clear" color="medium" onClick={ modal.toggle } data-testid="progress">
+        <IonIcon icon={ analytics } slot="icon-only"/>
+      </IonButton>
+    </TooltipOverlay>
+    { modal.isOpen && createPortal(<FileRangeProgressModal onClose={ modal.toggle }/>, document.body) }
+  </Fragment>
 }
 
 export const FileRangeProgressModal: React.FC<{
-    onClose?(): void;
-}> = ({onClose}) => {
-    const {phase} = useCurrentPhase()
-    const {users, isFetching: isLoadingUsers, error: userError} = useAllUsers();
-    const {allFileRanges, isFetching: isLoadingFileRanges, error: fileRangeError} = useAllFileRanges();
+  onClose?(): void;
+}> = ({ onClose }) => {
+  const { phase } = useCurrentPhase()
+  const { users, isFetching: isLoadingUsers, error: userError } = useAllUsers();
+  const { allFileRanges, isFetching: isLoadingFileRanges, error: fileRangeError } = useAllFileRanges();
 
-    const [progress, setProgress] = useState<Array<Progression>>([]);
-    const [sort, setSort] = useState<Sort>({entry: 'Progress', sort: 'DESC'});
+  const [ progress, setProgress ] = useState<Array<Progression>>([]);
+  const [ sort, setSort ] = useState<Sort>({ entry: 'Progress', sort: 'DESC' });
 
-    useEffect(() => {
-        if (!allFileRanges || !users) return;
-        const progression = new Array<Progression>();
-        for (const range of allFileRanges) {
-            let progress: Progression | undefined = progression.find(p => p.user.id === range!.annotator?.id);
-            if (progress) {
-                progress.ranges.push(range!);
-            } else {
-                const user = users.find(u => u!.id === range!.annotator?.id)!
-                progress = {
-                    user,
-                    ranges: [range!],
-                    progress: 0,
-                }
-                progression.push(progress)
-            }
+  useEffect(() => {
+    if (!allFileRanges || !users) return;
+    const progression = new Array<Progression>();
+    for (const range of allFileRanges) {
+      let progress: Progression | undefined = progression.find(p => p.user.id === range!.annotator?.id);
+      if (progress) {
+        progress.ranges.push(range!);
+      } else {
+        const user = users.find(u => u!.id === range!.annotator?.id)!
+        progress = {
+          user,
+          ranges: [ range! ],
+          progress: 0,
         }
-        setProgress(progression.map(p => {
-            const totalFinished = p.ranges.reduce((v, r) => v + (r.completedAnnotationTasks?.totalCount ?? 0), 0);
-            const total = p.ranges.reduce((v, r) => v + (r.filesCount ?? 0), 0);
-            return {...p, progress: total > 0 ? Math.trunc(100 * totalFinished / total) : 0}
-        }));
-    }, [allFileRanges, users]);
-
-    function toggleAnnotatorSort() {
-        if (!sort || sort.entry !== 'Annotator' || sort.sort === 'DESC') {
-            setSort({entry: 'Annotator', sort: 'ASC'})
-        } else {
-            setSort({entry: 'Annotator', sort: 'DESC'})
-        }
+        progression.push(progress)
+      }
     }
+    setProgress(progression.map(p => {
+      const totalFinished = p.ranges.reduce((v, r) => v + (r.completedAnnotationTasks?.totalCount ?? 0), 0);
+      const total = p.ranges.reduce((v, r) => v + (r.filesCount ?? 0), 0);
+      return { ...p, progress: total > 0 ? Math.trunc(100 * totalFinished / total) : 0 }
+    }));
+  }, [ allFileRanges, users ]);
 
-    function toggleProgressSort() {
-        if (!sort || sort.entry !== 'Progress' || sort.sort === 'ASC') {
-            setSort({entry: 'Progress', sort: 'DESC'})
-        } else {
-            setSort({entry: 'Progress', sort: 'ASC'})
-        }
+  function toggleAnnotatorSort() {
+    if (!sort || sort.entry !== 'Annotator' || sort.sort === 'DESC') {
+      setSort({ entry: 'Annotator', sort: 'ASC' })
+    } else {
+      setSort({ entry: 'Annotator', sort: 'DESC' })
     }
+  }
 
-    const sortProgress = useCallback((a: Progression, b: Progression) => {
-        let comparison = 0;
-        switch (sort.entry) {
-            case 'Annotator':
-                comparison = a.user.displayName.toLowerCase().localeCompare(b.user.displayName.toLowerCase());
-                break;
-            case 'Progress':
-                comparison = a.progress - b.progress;
-        }
-        if (sort.sort === 'ASC') return comparison;
-        return -comparison;
-    }, [sort])
+  function toggleProgressSort() {
+    if (!sort || sort.entry !== 'Progress' || sort.sort === 'ASC') {
+      setSort({ entry: 'Progress', sort: 'DESC' })
+    } else {
+      setSort({ entry: 'Progress', sort: 'ASC' })
+    }
+  }
 
-    return (
-        <Modal onClose={onClose} className={styles.modal}>
-            <ModalHeader onClose={onClose} title="Annotators progression"/>
+  const sortProgress = useCallback((a: Progression, b: Progression) => {
+    let comparison = 0;
+    switch (sort.entry) {
+      case 'Annotator':
+        comparison = a.user.displayName.toLowerCase().localeCompare(b.user.displayName.toLowerCase());
+        break;
+      case 'Progress':
+        comparison = a.progress - b.progress;
+    }
+    if (sort.sort === 'ASC') return comparison;
+    return -comparison;
+  }, [ sort ])
 
-            {(isLoadingUsers || isLoadingFileRanges) && <IonSpinner/>}
+  return (
+    <Modal onClose={ onClose } className={ styles.modal }>
+      <ModalHeader onClose={ onClose } title="Annotators progression"/>
 
-            {userError && <WarningText error={userError}/>}
-            {fileRangeError && <WarningText error={fileRangeError}/>}
+      { (isLoadingUsers || isLoadingFileRanges) && <IonSpinner/> }
 
-            {(!isLoadingUsers && !isLoadingFileRanges) && progress.length === 0 && <IonNote>No annotators</IonNote>}
+      { userError && <WarningText error={ userError }/> }
+      { fileRangeError && <WarningText error={ fileRangeError }/> }
 
-            {progress.length > 0 &&
-                <Table columns={2} className={styles.table}>
-                    <TableHead isFirstColumn={true} className={[styles.sortedHead, styles.stickyHead].join(' ')}
-                               onClick={toggleAnnotatorSort}>
-                        <p>Annotator</p>
-                        <IonIcon
-                            className={[styles.up, sort?.entry === 'Annotator' && sort.sort === 'ASC' ? styles.active : ''].join(' ')}
-                            icon={caretUp}/>
-                        <IonIcon
-                            className={[styles.down, sort?.entry === 'Annotator' && sort.sort === 'DESC' ? styles.active : ''].join(' ')}
-                            icon={caretDown}/>
-                    </TableHead>
-                    <TableHead className={[styles.sortedHead, styles.stickyHead].join(' ')}
-                               onClick={toggleProgressSort}>
-                        <p>Progress</p>
-                        <IonIcon
-                            className={[styles.up, sort?.entry === 'Progress' && sort.sort === 'ASC' ? styles.active : ''].join(' ')}
-                            icon={caretUp}/>
-                        <IonIcon
-                            className={[styles.down, sort?.entry === 'Progress' && sort.sort === 'DESC' ? styles.active : ''].join(' ')}
-                            icon={caretDown}/>
-                    </TableHead>
+      { (!isLoadingUsers && !isLoadingFileRanges) && progress.length === 0 && <IonNote>No annotators</IonNote> }
 
-                    {progress.sort(sortProgress).map(p => {
-                        return (
-                            <Fragment key={p.user.displayName}>
-                                <TableDivider/>
-                                <TableContent
-                                    isFirstColumn={true}>{p.user.displayName}&nbsp;{p.user.expertise &&
-                                    <Fragment>( {p.user.expertise} )</Fragment>}</TableContent>
-                                <TableContent className={styles.progressContent}>
-                                    <div>
-                                        {p.ranges.map(r => (
-                                            <Fragment key={r.id}>
-                                                <p>{r.firstFileIndex}</p>
-                                                <Progress value={r.completedAnnotationTasks?.totalCount ?? 0}
-                                                          total={r.filesCount ?? 0}
-                                                          color={r.completedAnnotationTasks?.totalCount === r.filesCount ? 'success' : 'medium'}/>
-                                                <p>{r.lastFileIndex}</p>
-                                            </Fragment>
-                                        ))}
-                                        <p className={styles.total}>{p.progress}%</p>
-                                    </div>
-                                </TableContent>
-                            </Fragment>
-                        );
-                    })}
-                </Table>}
+      { progress.length > 0 &&
+          <Table columns={ 2 } className={ styles.table }>
+              <TableHead isFirstColumn={ true } className={ [ styles.sortedHead, styles.stickyHead ].join(' ') }
+                         onClick={ toggleAnnotatorSort }>
+                  <p>Annotator</p>
+                  <IonIcon
+                      className={ [ styles.up, sort?.entry === 'Annotator' && sort.sort === 'ASC' ? styles.active : '' ].join(' ') }
+                      icon={ caretUp }/>
+                  <IonIcon
+                      className={ [ styles.down, sort?.entry === 'Annotator' && sort.sort === 'DESC' ? styles.active : '' ].join(' ') }
+                      icon={ caretDown }/>
+              </TableHead>
+              <TableHead className={ [ styles.sortedHead, styles.stickyHead ].join(' ') }
+                         onClick={ toggleProgressSort }>
+                  <p>Progress</p>
+                  <IonIcon
+                      className={ [ styles.up, sort?.entry === 'Progress' && sort.sort === 'ASC' ? styles.active : '' ].join(' ') }
+                      icon={ caretUp }/>
+                  <IonIcon
+                      className={ [ styles.down, sort?.entry === 'Progress' && sort.sort === 'DESC' ? styles.active : '' ].join(' ') }
+                      icon={ caretDown }/>
+              </TableHead>
 
-            {phase?.canManage && users && allFileRanges && (
-                <ModalFooter className={styles.footer}>
-                    <div className={styles.buttons}>
-                        {progress.length > 0 && <Fragment>
-                            <Link href={DOWNLOAD_ANNOTATIONS(phase.id)}>
-                                <IonIcon icon={downloadOutline} slot="start"/>
-                                Results (csv)
-                            </Link>
-
-                            <Link href={DOWNLOAD_PROGRESS(phase.id)}>
-                                <IonIcon icon={downloadOutline} slot="start"/>
-                                Status (csv)
-                            </Link>
-                        </Fragment>}
+            { progress.sort(sortProgress).map(p => {
+              return (
+                <Fragment key={ p.user.displayName }>
+                  <TableDivider/>
+                  <TableContent
+                    isFirstColumn={ true }>{ p.user.displayName }&nbsp;{ p.user.expertise &&
+                      <Fragment>( { p.user.expertise } )</Fragment> }</TableContent>
+                  <TableContent className={ styles.progressContent }>
+                    <div>
+                      { p.ranges.map(r => (
+                        <Fragment key={ r.id }>
+                          <p>{ r.firstFileIndex }</p>
+                          <Progress value={ r.completedAnnotationTasks?.totalCount ?? 0 }
+                                    total={ r.filesCount ?? 0 }
+                                    color={ r.completedAnnotationTasks?.totalCount === r.filesCount ? 'success' : 'medium' }/>
+                          <p>{ r.lastFileIndex }</p>
+                        </Fragment>
+                      )) }
+                      <p className={ styles.total }>{ p.progress }%</p>
                     </div>
-                </ModalFooter>
-            )}
-        </Modal>
-    )
+                  </TableContent>
+                </Fragment>
+              );
+            }) }
+          </Table> }
+
+      { phase?.canManage && users && allFileRanges && (
+        <ModalFooter className={ styles.footer }>
+          <div className={ styles.buttons }>
+            { progress.length > 0 && <Fragment>
+                <Link href={ DOWNLOAD_ANNOTATIONS_URL(phase.id) }>
+                    <IonIcon icon={ downloadOutline } slot="start"/>
+                    Results (csv)
+                </Link>
+
+                <Link href={ DOWNLOAD_PROGRESS_URL(phase.id) }>
+                    <IonIcon icon={ downloadOutline } slot="start"/>
+                    Status (csv)
+                </Link>
+            </Fragment> }
+          </div>
+        </ModalFooter>
+      ) }
+    </Modal>
+  )
 }

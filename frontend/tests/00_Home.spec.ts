@@ -1,11 +1,12 @@
 import { essential, expect, test, URL } from './utils';
 import { interceptRequests } from './utils/mock';
 import { COLLABORATOR_QUERIES } from './utils/mock/collaborators';
+import type { Params } from './utils/types';
 
 // Utils
 const TEST = {
-  canNavigate: () =>
-    test(`Can navigate`, { tag: essential }, async ({ page }) => {
+  canNavigate: ({ tag }: Pick<Params, 'tag'>) =>
+    test(`Can navigate`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: 'empty',
         listCollaborators: 'success',
@@ -35,8 +36,8 @@ const TEST = {
 
 // Tests
 
-test.describe('[Home]', { tag: essential }, () => {
+test.describe('[Home]', () => {
 
-  TEST.canNavigate()
+  TEST.canNavigate({ tag: essential })
 
 })

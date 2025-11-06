@@ -11,8 +11,8 @@ import type { Params } from './utils/types';
 
 const TEST = {
 
-  handleEmptyState: ({ as }: Pick<Params, 'as'>) =>
-    test(`Handle empty state as ${ as }`, { tag: essential }, async ({ page }) => {
+  handleEmptyState: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Handle empty state as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         getCampaign: as == 'annotator' ? 'default' : 'manager',
@@ -29,16 +29,13 @@ const TEST = {
         expect(page.getByText('No spectrogram analysis')).toBeVisible())
     }),
 
-  displayCampaign: ({ as }: Pick<Params, 'as'>) =>
-    test(`Display campaign as ${ as }`, { tag: essential }, async ({ page }) => {
+  displayCampaign: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Display campaign as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         getCampaign: as == 'annotator' ? 'default' : 'manager',
       })
-      await test.step(`Navigate`, async () => {
-        await page.campaignDetail.go({ as })
-        await page.campaignDetail.informationTab.click()
-      });
+      await test.step(`Navigate`, () => page.campaignDetail.go({ as }));
 
       await test.step('Display global information', async () => {
         await expect(page.getByRole('heading', { name: campaign.name })).toBeVisible();
@@ -75,16 +72,13 @@ const TEST = {
         expect(page.getByText(confidenceSet.name)).toBeVisible())
     }),
 
-  canAccessDataset: ({ as }: Pick<Params, 'as'>) =>
-    test(`Can access dataset as ${ as }`, { tag: essential }, async ({ page }) => {
+  canAccessDataset: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Can access dataset as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         getCampaign: as == 'annotator' ? 'default' : 'manager',
       })
-      await test.step(`Navigate`, async () => {
-        await page.campaignDetail.go({ as })
-        await page.campaignDetail.informationTab.click()
-      });
+      await test.step(`Navigate`, () => page.campaignDetail.go({ as }));
 
       await test.step('Access dataset', async () => {
         await page.getByRole('button', { name: dataset.name }).click()
@@ -92,16 +86,13 @@ const TEST = {
       })
     }),
 
-  cannotUpdateCampaign: ({ as }: Pick<Params, 'as'>) =>
-    test(`Cannot update campaign as ${ as }`, { tag: essential }, async ({ page }) => {
+  cannotUpdateCampaign: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Cannot update campaign as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         getCampaign: as == 'annotator' ? 'default' : 'manager',
       })
-      await test.step(`Navigate`, async () => {
-        await page.campaignDetail.go({ as })
-        await page.campaignDetail.informationTab.click()
-      });
+      await test.step(`Navigate`, () => page.campaignDetail.go({ as }));
 
       await test.step('Cannot archive', async () => {
         await expect(page.campaignDetail.archiveButton).not.toBeVisible();
@@ -114,16 +105,13 @@ const TEST = {
       })
     }),
 
-  canArchiveCampaign: ({ as }: Pick<Params, 'as'>) =>
-    test(`Can archive campaign as ${ as }`, { tag: essential }, async ({ page }) => {
+  canArchiveCampaign: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Can archive campaign as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         getCampaign: as == 'annotator' ? 'default' : 'manager',
       })
-      await test.step(`Navigate`, async () => {
-        await page.campaignDetail.go({ as })
-        await page.campaignDetail.informationTab.click()
-      });
+      await test.step(`Navigate`, () => page.campaignDetail.go({ as }));
 
       await test.step('Archive', async () => {
         await page.campaignDetail.archiveButton.click();
@@ -140,19 +128,16 @@ const TEST = {
       })
     }),
 
-  canUpdateFeaturedLabels: ({ as }: Pick<Params, 'as'>) =>
-    test(`Can update featured labels as ${ as }`, { tag: essential }, async ({ page }) => {
+  canUpdateFeaturedLabels: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Can update featured labels as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         getCampaign: as == 'annotator' ? 'default' : 'manager',
       })
-      await test.step(`Navigate`, async () => {
-        await page.campaignDetail.go({ as })
-        await page.campaignDetail.informationTab.click()
-        await page.campaignDetail.labelModal.button.click()
-      });
+      await test.step(`Navigate`, () => page.campaignDetail.go({ as }));
 
       await test.step('Update featured labels', async () => {
+        await page.campaignDetail.labelModal.button.click()
         await page.campaignDetail.labelModal.updateButton.click();
 
         expect(await page.campaignDetail.labelModal.hasAcousticFeatures(LABELS.classic)).toBeFalsy()
@@ -176,20 +161,20 @@ const TEST = {
 // Tests
 test.describe('[Campaign detail]', () => {
 
-  TEST.handleEmptyState({ as: 'annotator' })
+  TEST.handleEmptyState({ as: 'annotator', tag: essential })
   TEST.handleEmptyState({ as: 'creator' })
 
-  TEST.displayCampaign({ as: 'annotator' })
+  TEST.displayCampaign({ as: 'annotator', tag: essential })
 
-  TEST.canAccessDataset({ as: 'annotator' })
+  TEST.canAccessDataset({ as: 'annotator', tag: essential })
 
-  TEST.cannotUpdateCampaign({ as: 'annotator' })
+  TEST.cannotUpdateCampaign({ as: 'annotator', tag: essential })
 
-  TEST.canArchiveCampaign({ as: 'creator' })
-  TEST.canArchiveCampaign({ as: 'staff' })
+  TEST.canArchiveCampaign({ as: 'creator', tag: essential })
+  TEST.canArchiveCampaign({ as: 'staff', tag: essential })
   TEST.canArchiveCampaign({ as: 'superuser' })
 
-  TEST.canUpdateFeaturedLabels({ as: 'creator' })
+  TEST.canUpdateFeaturedLabels({ as: 'creator', tag: essential })
   TEST.canUpdateFeaturedLabels({ as: 'staff' })
   TEST.canUpdateFeaturedLabels({ as: 'superuser' })
 

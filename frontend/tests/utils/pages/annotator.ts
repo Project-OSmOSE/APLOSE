@@ -2,10 +2,10 @@ import { expect, Locator, Page, test } from '@playwright/test';
 import { UserType } from '../../fixtures';
 import { Phase } from '../../../src/service/types';
 import { Mock } from '../services';
-import { CampaignDetailPage } from './campaign-detail';
 import { type Annotation, campaign, type Confidence, type Label, spectrogram } from '../mock/types';
 import { AnnotationPhaseType, AnnotationType } from '../../../src/api/types.gql-generated';
 import { gqlURL } from '../mock';
+import { PhaseDetailPage } from './phase-detail';
 
 // export type Label = {
 //   addPresence: () => Promise<void>;
@@ -79,7 +79,7 @@ export class AnnotatorPage {
 
   constructor(private page: Page,
               private mock = new Mock(page),
-              private campaignDetail = new CampaignDetailPage(page)) {
+              private phaseDetailPage = new PhaseDetailPage(page)) {
   }
 
   async go(as: UserType, options?: {
@@ -87,14 +87,14 @@ export class AnnotatorPage {
     empty?: boolean,
   }) {
     await test.step('Navigate to Annotator', async () => {
-      await this.campaignDetail.go(as)
+      await this.phaseDetailPage.go({ as })
       // await this.mock.annotator(options.phase ?? 'Annotation', options.empty)
       // await this.campaignDetail.resumeButton.click()
       // await this.mock.annotator(options.phase ?? 'Annotation', options.empty)
       await Promise.all([
         this.page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/spectrogram/${ spectrogram.id }`),
         this.page.waitForRequest(gqlURL),
-        this.campaignDetail.resumeButton.click(),
+        this.phaseDetailPage.resumeButton.click(),
       ])
     });
   }

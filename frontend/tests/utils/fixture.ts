@@ -7,13 +7,14 @@ import {
   CampaignCreatePage,
   CampaignDetailPage,
   CampaignEditPage,
-  CampaignImportAnnotationsPage,
   CampaignListPage,
   DatasetDetailPage,
   DatasetPage,
   HomePage,
   LoginPage,
   Navbar,
+  PhaseDetailPage,
+  PhaseImportAnnotationsPage,
 } from './pages';
 
 interface PageExtension {
@@ -23,16 +24,19 @@ interface PageExtension {
   readonly login: LoginPage;
   readonly navbar: Navbar;
   readonly account: AccountPage;
+
   readonly datasets: DatasetPage;
   readonly datasetDetail: DatasetDetailPage;
+
   readonly campaigns: CampaignListPage;
   readonly campaignDetail: CampaignDetailPage;
   readonly campaignCreate: CampaignCreatePage;
 
+  readonly phaseDetail: PhaseDetailPage;
+  readonly phaseImport: PhaseImportAnnotationsPage;
+
   readonly campaign: {
-    create: CampaignCreatePage;
     edit: CampaignEditPage;
-    import: CampaignImportAnnotationsPage;
   }
   readonly annotator: AnnotatorPage;
 }
@@ -67,10 +71,10 @@ export const test = testBase.extend<Fixture>({
       campaigns: new CampaignListPage(page),
       campaignDetail: new CampaignDetailPage(page),
       campaignCreate: new CampaignCreatePage(page),
+      phaseDetail: new PhaseDetailPage(page),
+      phaseImport: new PhaseImportAnnotationsPage(page),
       campaign: {
-        create: new CampaignCreatePage(page),
         edit: new CampaignEditPage(page),
-        import: new CampaignImportAnnotationsPage(page),
       },
       annotator: new AnnotatorPage(page),
     }

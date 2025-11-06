@@ -11,23 +11,23 @@ test.describe('Campaign creator', () => {
       getAnnotationPhase: 'manager',
       listDetectors: 'empty',
     })
-    await page.campaign.import.go('creator');
+    await page.phaseImport.go('creator');
     await expect(page.getByRole('heading', { name: 'Import annotations' })).toBeVisible()
 
-    await page.campaign.import.fillAnnotationCheck();
+    await page.phaseImport.fillAnnotationCheck();
 
-    await expect(page.campaign.import.importButton).toBeEnabled({ timeout: 500 })
+    await expect(page.phaseImport.importButton).toBeEnabled({ timeout: 500 })
     const [
       submitResultsRequest,
     ] = await Promise.all([
       page.waitForRequest(new RegExp(REST_MOCK.importAnnotations.url)),
-      page.campaign.import.importButton.click(),
+      page.phaseImport.importButton.click(),
     ])
 
     const expectedLines = submitResultsRequest.postDataJSON().data.replaceAll('"', '').split('\n');
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
-    const fileLines = page.campaign.import.fileData.replaceAll('\r', '').split('\n')
+    const fileLines = page.phaseImport.fileData.replaceAll('\r', '').split('\n')
     expect(expectedLines.length).toEqual(fileLines.length)
   });
 
@@ -37,8 +37,8 @@ test.describe('Campaign creator', () => {
       getAnnotationPhase: 'manager',
       listDetectors: 'empty',
     })
-    await page.campaign.import.go('creator');
-    await page.campaign.import.fillAnnotationCheck({ onlyFirstDetector: true });
+    await page.phaseImport.go('creator');
+    await page.phaseImport.fillAnnotationCheck({ onlyFirstDetector: true });
 
     await expect(page.getByText('detector1', { exact: true })).toBeVisible();
     await expect(page.getByText('detector2', { exact: true })).not.toBeVisible();
@@ -51,8 +51,8 @@ test.describe('Campaign creator', () => {
       getAnnotationPhase: 'manager',
       listDetectors: 'filled',
     })
-    await page.campaign.import.go('creator');
-    await page.campaign.import.importFile();
+    await page.phaseImport.go('creator');
+    await page.phaseImport.importFile();
 
     await test.step('Select Detectors', async () => {
       await expect(page.getByText('detector1Already in database').first()).toBeVisible()
@@ -70,11 +70,11 @@ test.describe('Campaign creator', () => {
       getAnnotationPhase: 'manager',
       listDetectors: 'empty',
     })
-    await page.campaign.import.go('creator')
-    await page.campaign.import.fillAnnotationCheck()
+    await page.phaseImport.go('creator')
+    await page.phaseImport.fillAnnotationCheck()
 
     await test.step('Reset file', async () => {
-      await page.campaign.import.resetFileButton.click()
+      await page.phaseImport.resetFileButton.click()
     })
 
     await expect(page.getByText('Import annotations (csv)')).toBeVisible();

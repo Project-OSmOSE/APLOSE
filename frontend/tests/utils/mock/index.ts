@@ -9,6 +9,7 @@ export * from './user'
 type Operations = GqlOperations & RestOperations;
 
 export const gqlURL = '**/graphql'
+export const gqlRegex = /.*\/graphql/g
 
 export async function interceptRequests(
   page: Page,
@@ -22,7 +23,7 @@ export async function interceptRequests(
     const req = route.request().postDataJSON();
 
     if (!Object.keys(operations).includes(req.operationName)) {
-      console.log(req.operationName);
+      console.debug(req.operationName);
       return route.fulfill({
         status: 200,
         contentType: 'application/json',

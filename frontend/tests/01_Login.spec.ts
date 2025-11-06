@@ -7,8 +7,8 @@ import type { Params } from './utils/types';
 
 // Utils
 const TEST = {
-  canLogin: ({ as, method }: Pick<Params, 'as' | 'method'>) =>
-    test(`Can login as ${ as } using ${ method }`, { tag: essential }, async ({ page }) => {
+  canLogin: ({ as, method, tag }: Pick<Params, 'as' | 'method' | 'tag'>) =>
+    test(`Can login as ${ as } using ${ method }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         token: 'success',
@@ -27,8 +27,8 @@ const TEST = {
       await expect(page.getByRole('heading', { name: 'Annotation Campaigns' })).toBeVisible();
     }),
 
-  canSeeErrors: ({ as, method }: Pick<Params, 'as' | 'method'>) =>
-    test(`Can see errors on failed submit as ${ as } using ${ method }`, { tag: essential }, async ({ page }) => {
+  canSeeErrors: ({ as, method, tag }: Pick<Params, 'as' | 'method' | 'tag'>) =>
+    test(`Can see errors on failed submit as ${ as } using ${ method }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         token: 'forbidden',
@@ -49,9 +49,9 @@ const TEST = {
 test.describe('[Login]', () => {
   const as: UserType = 'annotator'
 
-  TEST.canLogin({ as, method: 'mouse' })
+  TEST.canLogin({ as, method: 'mouse', tag: essential })
   TEST.canLogin({ as, method: 'shortcut' })
 
-  TEST.canSeeErrors({ as, method: 'mouse' })
+  TEST.canSeeErrors({ as, method: 'mouse', tag: essential })
   TEST.canSeeErrors({ as, method: 'shortcut' })
 })

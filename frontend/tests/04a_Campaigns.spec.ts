@@ -8,8 +8,8 @@ import type { Params } from './utils/types';
 // Utils
 const TEST = {
 
-  handleEmptyState: ({ as }: Pick<Params, 'as'>) =>
-    test(`Handle empty states as ${ as }`, { tag: essential }, async ({ page }) => {
+  handleEmptyState: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Handle empty states as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         listCampaigns: 'empty',
@@ -23,8 +23,8 @@ const TEST = {
         expect(page.getByText('No campaigns')).toBeVisible())
     }),
 
-  displayCampaigns: ({ as }: Pick<Params, 'as'>) =>
-    test(`Display campaigns ${ as }`, { tag: essential }, async ({ page }) => {
+  displayCampaigns: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Display campaigns ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, { getCurrentUser: as })
       await test.step(`Navigate`, () => page.campaigns.go({ as }));
 
@@ -37,8 +37,8 @@ const TEST = {
       })
     }),
 
-  filterCampaigns: ({ as }: Pick<Params, 'as'>) =>
-    test(`Filter campaigns ${ as }`, { tag: essential }, async ({ page }) => {
+  filterCampaigns: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Filter campaigns ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, { getCurrentUser: as })
       await test.step(`Navigate`, () => page.campaigns.go({ as }));
 
@@ -137,8 +137,8 @@ const TEST = {
       })
     }),
 
-  accessCampaignCreation: ({ as }: Pick<Params, 'as'>) =>
-    test(`Access campaign creation ${ as }`, { tag: essential }, async ({ page }) => {
+  accessCampaignCreation: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Access campaign creation ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, { getCurrentUser: as })
       await test.step(`Navigate`, () => page.campaigns.go({ as }));
 
@@ -151,12 +151,12 @@ const TEST = {
 test.describe('[Campaign list]', () => {
   const as: UserType = 'annotator'
 
-  TEST.handleEmptyState({ as })
+  TEST.handleEmptyState({ as, tag: essential })
 
-  TEST.displayCampaigns({ as })
+  TEST.displayCampaigns({ as, tag: essential })
 
-  TEST.filterCampaigns({ as })
+  TEST.filterCampaigns({ as, tag: essential })
 
-  TEST.accessCampaignCreation({ as })
+  TEST.accessCampaignCreation({ as, tag: essential })
 
 })
