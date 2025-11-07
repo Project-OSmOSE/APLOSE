@@ -39,8 +39,8 @@ export const useAnnotatorPointer = () => {
     const coords = getCoords(e);
     if (!coords) return;
     return {
-      frequency: frequencyScale.positionToValue(coords.y),
-      time: timeScale.positionToValue(coords.x),
+      frequency: +frequencyScale.positionToValue(coords.y)?.toFixed(3),
+      time: +timeScale.positionToValue(coords.x)?.toFixed(3),
     }
   }, [ getCoords, timeScale, frequencyScale ]);
 

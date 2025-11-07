@@ -106,7 +106,7 @@ export class AnnotatorPage {
     return this.page.getByTestId('confidence-chip').getByText(confidence.label, { exact: true })
   }
 
-  getAnnotationForLabel(label: Label, which: 'weak' | 'strong' = 'weak') {
+  getAnnotationForLabel(label: Label, which: 'weak' | 'strong' = 'weak'): Locator {
     return this.annotationsBlock.getByText(label.name).nth(which === 'weak' ? 0 : 1)
   }
 
@@ -161,12 +161,13 @@ export class AnnotatorPage {
   }
 
   async removeStrong(label: Label, method: 'mouse' | 'shortcut' = 'mouse'): Promise<void> {
+    // Focus
+    await this.getAnnotationForLabel(label, 'strong').click()
     switch (method) {
       case 'mouse':
         await this.page.getByTestId('remove-box').click()
         break;
       case 'shortcut':
-        await this.getAnnotationForLabel(label, 'strong').click()
         await this.page.keyboard.press('Delete')
         break;
     }
@@ -222,8 +223,8 @@ export class AnnotatorPage {
       return {
         startTime: type === 'Box' ? 2.704 : 4.607,
         endTime: type === 'Box' ? 4.607 : null,
-        startFrequency: type === 'Box' ? 0 : 29,
-        endFrequency: type === 'Box' ? 29 : null,
+        startFrequency: type === 'Box' ? 0.000 : 59.000,
+        endFrequency: type === 'Box' ? 59.000 : null,
       } as Pick<Annotation, 'startTime' | 'startFrequency' | 'endTime' | 'endFrequency'>
     })
   }
