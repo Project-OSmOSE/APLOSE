@@ -107,9 +107,10 @@ export const useAnnotatorAnnotation = () => {
     const addedAnnotation = dispatch(addAnnotation({
       ...annotation,
       id: _getNewAnnotationID(),
+      annotator: user?.id,
     })).payload as Annotation
     dispatch(focusAnnotation(addedAnnotation))
-  }, [ _getNewAnnotationID ])
+  }, [ _getNewAnnotationID, user ])
   const remove = useCallback((annotation: Annotation) => {
     if (phaseType === 'Annotation' || annotation.annotator === user?.id) {
       dispatch(removeAnnotation(annotation))
