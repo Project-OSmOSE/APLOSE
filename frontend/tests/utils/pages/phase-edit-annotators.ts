@@ -1,9 +1,13 @@
-import { type Locator, Page, test } from '@playwright/test';
+import { type Locator, Page } from '@playwright/test';
 import { type FileRange } from '../mock/types';
 import { PhaseDetailPage } from './phase-detail';
 import type { Params } from '../types';
 
 export class PhaseEditAnnotatorsPage {
+
+  get title(): Locator {
+    return this.page.getByRole('heading', { name: 'Manage annotators' })
+  }
 
 
   constructor(private page: Page,
@@ -11,10 +15,8 @@ export class PhaseEditAnnotatorsPage {
   }
 
   async go({ as }: Pick<Params, 'as'>) {
-    await test.step('Navigate to Campaign detail', async () => {
-      await this.detail.go({ as })
-      await this.detail.manageButton.click();
-    });
+    await this.detail.go({ as })
+    await this.detail.manageButton.click();
   }
 
   getfirstIndexInput(range: Pick<FileRange, 'id'>): Locator {

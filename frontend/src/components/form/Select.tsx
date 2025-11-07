@@ -35,6 +35,7 @@ type SelectProperties = {
   noneFirst?: boolean;
   error?: string;
   note?: string;
+  'data-testid'?: string;
   isLoading?: boolean;
 } & Omit<HTMLProps<HTMLDivElement>, 'id' | 'ref'>
 
@@ -54,6 +55,7 @@ export const Select: React.FC<SelectProperties> = ({
                                                      error,
                                                      note,
                                                      isLoading = false,
+                                                     ['data-testid']: testId,
                                                      ...props
                                                    }) => {
   const { containerRef: inputRef, top, right } = usePopover();
@@ -134,6 +136,7 @@ export const Select: React.FC<SelectProperties> = ({
               ref={ selectButtonRef }
               aria-disabled={ disabled }
               disabled={ disabled }
+              data-testid={ testId }
               onClick={ () => !disabled && setIsOpen(!isOpen) }
               className={ !value && !hasSelectedItem ? styles.placeholder : '' }
               title={ buttonItem.label }>
@@ -143,6 +146,7 @@ export const Select: React.FC<SelectProperties> = ({
       </button>
 
       { optionsContainer === 'popover' && isOpen && createPortal(<div id="options"
+                                                                      data-testid={ testId ? `${ testId }-options` : undefined }
                                                                       className={ styles.options }
                                                                       style={ { top: top + 8, right } }
                                                                       ref={ optionsRef }>

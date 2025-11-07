@@ -54,11 +54,13 @@ export const DetectorConfigurationEntry: React.FC<{
             })) ?? [] }
             optionsContainer="popover"
             noneLabel="Create new" noneFirst
+            data-testid={ `select-${ initialName }-configuration` }
             placeholder="Select configuration"/>
 
     <Textarea placeholder="Enter new configuration"
               hidden={ configuration === undefined }
               disabled={ !!configuration?.id }
+              data-testid={ `input-${ initialName }-configuration` }
               value={ configuration?.configuration }
               onChange={ onConfigurationTextUpdated }/>
 

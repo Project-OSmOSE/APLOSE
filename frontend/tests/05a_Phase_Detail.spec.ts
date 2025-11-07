@@ -205,6 +205,7 @@ const TEST = {
           page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/import-annotations`),
           await page.phaseDetail.importAnnotationsButton.click(),
         ])
+        await expect(page.phaseImport.title).toBeVisible()
       })
     }),
 
@@ -233,6 +234,7 @@ const TEST = {
           page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/edit-annotators`),
           await page.phaseDetail.manageButton.click(),
         ])
+        await expect(page.phaseEdit.title).toBeVisible()
       })
     }),
 

@@ -58,6 +58,7 @@ type ImportAnnotationsContext = {
 
   unknownToConfiguration: Record<string, DetectorConfiguration>;
   annotations: Annotation[],
+  filteredUploadAnnotations: Annotation[],
 
   canImport: boolean;
   forceDatetime: boolean;
@@ -91,6 +92,7 @@ export const ImportAnnotationsContext = createContext<ImportAnnotationsContext>(
   unknownToKnownDetectors: {},
   unknownToConfiguration: {},
   annotations: [],
+  filteredUploadAnnotations: [],
 
   canImport: false,
   forceDatetime: false,
@@ -183,10 +185,14 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
   const [ annotations, setAnnotations ] = useState<Annotation[]>([]);
   const fileDetectorNames = useMemo(() => [ ...new Set(annotations.map(a => a.initial__detector__name)) ], [ annotations ])
 
+  const filteredUploadAnnotations = useMemo(() => {
+    return annotations.filter(a => selectedDetectorsForImport.includes(a.initial__detector__name))
+  }, [ annotations, selectedDetectorsForImport ])
+
   const remainingUploadDuration = useMemo<number | undefined>(() => {
     if (!uploadDuration) return undefined;
-    return (annotations.length - uploadedCount) * uploadDuration / uploadedCount
-  }, [ annotations, uploadedCount, uploadDuration ]);
+    return (filteredUploadAnnotations.length - uploadedCount) * uploadDuration / uploadedCount
+  }, [ filteredUploadAnnotations, uploadedCount, uploadDuration ]);
 
   const load = useCallback(async (file: File) => {
     setFileState('loading');
@@ -324,14 +330,14 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
   }) => {
     if (!canImport) return;
     if (uploadState !== 'uploading' && !options?.bypassUploadState) return;
-    importAnnotations(annotations.slice(start, start + CHUNK_SIZE).map(a => ({
+    importAnnotations(filteredUploadAnnotations.slice(start, start + CHUNK_SIZE).map(a => ({
         ...a,
         analysis: analysisID!,
         detector__name: unknownToKnownDetectors[a.initial__detector__name] ?? a.initial__detector__name,
         detector_configuration__configuration: unknownToConfiguration[a.initial__detector__name]?.configuration,
       }
     )))
-  }, [ importAnnotations, annotations, canImport, uploadState, unknownToKnownDetectors, unknownToConfiguration ])
+  }, [ importAnnotations, filteredUploadAnnotations, canImport, uploadState, unknownToKnownDetectors, unknownToConfiguration ])
 
   const upload = useCallback((options?: {
     force_datetime?: boolean;
@@ -413,6 +419,7 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
                                               forceDatetime,
                                               forceMaxFrequency,
                                               annotations,
+                                              filteredUploadAnnotations,
                                               upload,
                                               analysisID,
                                               analysis,

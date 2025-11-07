@@ -112,7 +112,7 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
 }
 export const CAMPAIGN_QUERIES: {
   listCampaigns: GqlQuery<ListCampaignsQuery>,
-  getCampaign: GqlQuery<GetCampaignQuery, 'default' | 'manager' | 'withoutConfidence' | 'allowPoint'>,
+  getCampaign: GqlQuery<GetCampaignQuery, 'default' | 'manager' | 'withoutConfidence' | 'allowPoint' | 'multipleAnalysis'>,
 } = {
   listCampaigns: {
     defaultType: 'filled',
@@ -163,6 +163,18 @@ export const CAMPAIGN_QUERIES: {
       annotationCampaignById: {
         ...DEFAULT_GET_CAMPAIGN.annotationCampaignById,
         allowPointAnnotation: true,
+      },
+    },
+    multipleAnalysis: {
+      ...DEFAULT_GET_CAMPAIGN,
+      annotationCampaignById: {
+        ...DEFAULT_GET_CAMPAIGN.annotationCampaignById,
+        analysis: {
+          edges: [
+            { node: { ...DEFAULT_GET_CAMPAIGN.annotationCampaignById.analysis.edges[0].node, id: '1' } },
+            { node: { ...DEFAULT_GET_CAMPAIGN.annotationCampaignById.analysis.edges[0].node, id: '2' } },
+          ],
+        },
       },
     },
   },

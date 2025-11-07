@@ -50,6 +50,7 @@ export const DetectorEntry: React.FC<{
   if (state.fileState !== 'loaded') return <Fragment/>
   return <div className={ [ styles.detectorEntry, isKnown ? '' : styles.unknown ].join(' ') }>
     <IonCheckbox labelPlacement="end" justify="start"
+                 data-testid={ `checkbox-${ initialName }` }
                  color={ !isKnown && !isUpdated ? 'danger' : undefined }
                  checked={ isSelected }
                  disabled={ (!isKnown && !isUpdated) }
@@ -66,6 +67,7 @@ export const DetectorEntry: React.FC<{
         <Select value={ unknownToKnownDetectors[initialName] }
                 options={ allDetectors?.map(d => ({ value: d.id, label: d.name })) ?? [] }
                 onValueSelected={ onDetectorChange }
+                data-testid={ `select-${ initialName }` }
                 optionsContainer="popover"
                 noneLabel={ `Create "${ initialName }"` }
                 placeholder="Assign to detector"/>

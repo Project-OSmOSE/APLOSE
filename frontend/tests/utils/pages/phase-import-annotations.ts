@@ -1,11 +1,11 @@
-import { expect, Locator, Page, test } from '@playwright/test';
-import { DETECTOR_CONFIGURATION, UserType } from '../../fixtures';
+import { Locator, Page, test } from '@playwright/test';
 import { fileURLToPath } from 'url';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import path from 'path';
 import * as fs from 'node:fs';
 import { PhaseDetailPage } from './phase-detail';
+import type { Params } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
@@ -15,11 +15,11 @@ __dirname.pop();
 __dirname.pop();
 const __file = path.join(__dirname.join('/'), 'fixtures', 'annotation_results.csv')
 
-type CheckOptions = {
-  onlyFirstDetector: boolean,
-}
-
 export class PhaseImportAnnotationsPage {
+
+  get title(): Locator {
+    return this.page.getByRole('heading', { name: 'Import annotations' })
+  }
 
   get importButton(): Locator {
     return this.page.getByRole('button', { name: 'Import' })
@@ -37,14 +37,20 @@ export class PhaseImportAnnotationsPage {
               private detail = new PhaseDetailPage(page)) {
   }
 
-  async go(as: UserType): Promise<void> {
-    await test.step('Navigate to Campaign create', async () => {
-      await this.detail.go(as)
-      await this.detail.importAnnotationsButton.click();
-    });
+  async go({ as }: Pick<Params, 'as'>): Promise<void> {
+    await this.detail.go({ as })
+    await this.detail.importAnnotationsButton.click();
   }
 
-  async importFile() {
+  getAnalysisSelect(): Locator {
+    return this.page.getByTestId(`select-analysis`)
+  }
+
+  getAnalysisSelectOptions(): Locator {
+    return this.page.getByTestId(`select-analysis-options`)
+  }
+
+  async importFileStep() {
     return test.step('Import file', async () => {
       const [ fileChooser ] = await Promise.all([
         this.page.waitForEvent('filechooser'),
@@ -54,45 +60,26 @@ export class PhaseImportAnnotationsPage {
     })
   }
 
-  async selectDetectors(options?: CheckOptions) {
-    return test.step('Select Detectors', async () => {
-      await expect(this.page.getByText('Unknown detector').first()).toBeVisible()
-      await this.page.getByText('Assign to detector').first().click()
-      await this.page.locator('#options:visible').getByText('Create').first().click()
-      if (!options?.onlyFirstDetector) {
-        await this.page.getByText('Assign to detector').first().click()
-        await this.page.locator('#options:visible').getByText('Create').first().click()
-        await this.page.getByText('Assign to detector').first().click()
-        await this.page.locator('#options:visible').getByText('Create').first().click()
-      }
+  async selectDetectorStep(name: string) {
+    return test.step(`Select detector ${ name }`, async () => {
+      await this.page.getByTestId(`select-${ name }`).click()
+      await this.page.getByTestId(`select-${ name }-options`).getByText('Create').click()
     })
   }
 
-  async selectDetectorsConfigurationsStep(options?: CheckOptions) {
-    return test.step('Select Detectors configuration', async () => {
-      await this.page.getByText('Select configuration').first().click()
-      await this.page.locator('#options:visible').getByText('Create new').first().click()
-      await this.page.locator('textarea').nth(0).fill(DETECTOR_CONFIGURATION)
-      if (!options?.onlyFirstDetector) {
-        await this.page.getByText('Select configuration').first().click()
-        await this.page.locator('#options:visible').getByText('Create new').first().click()
-        await this.page.locator('textarea').nth(1).fill(DETECTOR_CONFIGURATION)
-        await this.page.getByText('Select configuration').first().click()
-        await this.page.locator('#options:visible').getByText('Create new').first().click()
-        await this.page.locator('textarea').last().fill(DETECTOR_CONFIGURATION)
-      } else {
-        await expect(this.page.getByText('detector2').nth(1)).not.toBeVisible();
-        await expect(this.page.getByText('detector3').nth(1)).not.toBeVisible();
-      }
-    })
+  getConfigurationSelect(detector: string): Locator {
+    return this.page.getByTestId(`select-${ detector }-configuration`)
   }
 
-  async fillAnnotationCheck(options?: CheckOptions) {
-    return test.step('Campaign annotation - Check mode', async () => {
-      await this.importFile();
-      await this.selectDetectors(options)
-      await this.selectDetectorsConfigurationsStep(options)
-    })
+  getConfigurationSelectOptions(detector: string): Locator {
+    return this.page.getByTestId(`select-${ detector }-configuration-options`)
   }
 
+  async enterDetectorConfigurationStep(name: string, configuration: string) {
+    return test.step(`Enter configuration for detector ${ name }`, async () => {
+      await this.getConfigurationSelect(name).click()
+      await this.getConfigurationSelectOptions(name).getByText('Create new').click()
+      await this.page.getByTestId(`input-${ name }-configuration`).fill(configuration)
+    })
+  }
 }

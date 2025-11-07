@@ -16,6 +16,7 @@ export const AnalysisSelect: React.FC = () => {
   if (allAnalysis.length === 1) return <IonNote>Annotations belong to analysis { analysis?.name }</IonNote>
   return <Select value={ analysisID }
                  label="Spectrogram analysis"
+                 data-testid="select-analysis"
                  options={ allAnalysis?.map(a => ({
                    value: a.id,
                    label: a.name,

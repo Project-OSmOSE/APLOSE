@@ -5,7 +5,6 @@ import type { Params } from '../types';
 
 export class PhaseDetailPage {
 
-
   get importAnnotationsButton(): Locator {
     return this.page.locator('button[aria-label=Import]');
   }

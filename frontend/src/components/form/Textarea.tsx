@@ -9,6 +9,7 @@ import { Label } from './Label';
 export type OldTextareaProperties = {
   label?: string;
   error?: string;
+  'data-testid'?: string;
   containerClassName?: string;
 } & TextareaHTMLAttributes<HTMLTextAreaElement>
 
@@ -20,6 +21,7 @@ export const Textarea: React.FC<OldTextareaProperties> = ({
                                                             error,
                                                             required,
                                                             containerClassName,
+                                                            ['data-testid']: testId,
                                                             ...textareaArgs
                                                           }) => {
 
@@ -32,6 +34,7 @@ export const Textarea: React.FC<OldTextareaProperties> = ({
     <div className={ styles.input }>
       <textarea { ...textareaArgs }
                 value={ value }
+                data-testid={ testId }
                 disabled={ disabled }
                 onFocus={ () => dispatch(EventSlice.actions.disableShortcuts()) }
                 onBlur={ () => dispatch(EventSlice.actions.enableShortcuts()) }
