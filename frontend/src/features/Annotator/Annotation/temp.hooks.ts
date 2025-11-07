@@ -43,7 +43,6 @@ export const useAnnotatorTempAnnotation = () => {
     const data = getFreqTime(e);
     if (!data) return;
 
-    console.debug('onStartTempAnnotation', data.time, data.frequency)
     dispatch(setTempAnnotation({
       type: AnnotationType.Box,
       startTime: data.time,
@@ -72,11 +71,9 @@ export const useAnnotatorTempAnnotation = () => {
   useEvent(MOUSE_MOVE_EVENT, onUpdateTempAnnotation);
 
   const onEndNewAnnotation = useCallback((e: PointerEvent<HTMLDivElement>) => {
-    console.debug('onEndNewAnnotation?', focusedLabel, JSON.stringify(tempAnnotation))
     if (tempAnnotation && focusedLabel) {
       const annotation = { ...tempAnnotation }
       const data = getFreqTime(e);
-      console.debug('onEndNewAnnotation', data?.time, data?.frequency)
       if (data) {
         annotation.endTime = data.time;
         annotation.endFrequency = data.frequency;
@@ -106,15 +103,6 @@ export const useAnnotatorTempAnnotation = () => {
       const width = timeScale.valuesToPositionRange(annotation.startTime, annotation.endTime);
       const height = frequencyScale.valuesToPositionRange(annotation.startFrequency, annotation.endFrequency);
       if (width > 2 && height > 2) {
-        console.debug('onEndNewAnnotation', JSON.stringify({
-          type: AnnotationType.Box,
-          startTime: annotation.startTime,
-          startFrequency: annotation.startFrequency,
-          endTime: annotation.endTime,
-          endFrequency: annotation.endFrequency,
-          label: focusedLabel,
-          confidence: focusedConfidence ?? undefined,
-        }))
         addAnnotation({
           type: AnnotationType.Box,
           startTime: annotation.startTime,
@@ -125,13 +113,6 @@ export const useAnnotatorTempAnnotation = () => {
           confidence: focusedConfidence ?? undefined,
         })
       } else if (campaign?.allowPointAnnotation) {
-        console.debug('onEndNewAnnotation', JSON.stringify({
-          type: AnnotationType.Point,
-          startTime: annotation.startTime,
-          startFrequency: annotation.endFrequency,
-          label: focusedLabel,
-          confidence: focusedConfidence ?? undefined,
-        }))
         addAnnotation({
           type: AnnotationType.Point,
           startTime: annotation.startTime,

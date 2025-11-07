@@ -1,4 +1,4 @@
-import { ESSENTIAL, expect, test } from './utils';
+import { annotatorTag, essentialTag, expect, test } from './utils';
 import {
   boxAnnotation,
   campaign,
@@ -7,6 +7,7 @@ import {
   spectrogramAnalysis,
   taskComment,
   TASKS,
+  USERS,
   type UserType,
   weakAnnotation,
   weakAnnotationComment,
@@ -18,22 +19,20 @@ import {
 } from '../src/api/types.gql-generated';
 import { gqlURL, interceptRequests } from './utils/mock';
 import type { SubmitTaskMutationVariables } from '../src/api/annotation-task/annotation-task.generated';
+import type { Params } from './utils/types';
 
-type Params = {
-  as: UserType,
-  phase: AnnotationPhaseType
-}
 
 // Utils
 const TEST = {
-  canAddComments: ({ as, phase }: Params) =>
-    test(`Can add comments on "${ phase } phase`, ESSENTIAL, async ({ page }) => {
+
+  canAddComments: ({ as, phase }: Pick<Params, 'as' | 'phase'>) =>
+    test(`Can add comments on "${ phase } phase`, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: 'annotator',
         getAnnotationPhase: phase,
         getAnnotationTask: 'unsubmitted',
       })
-      await page.annotator.go(as);
+      await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
       await expect(page.getByText('No results')).toBeVisible()
       await page.annotator.addWeak(LABELS.classic)
 
@@ -69,12 +68,13 @@ const TEST = {
         ])
         const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;
         expect(variables.campaignID).toEqual(campaign.id);
-        expect(variables.phase).toEqual(AnnotationPhaseType.Annotation);
+        expect(variables.phase).toEqual(phase);
         expect(variables.spectrogramID).toEqual(TASKS.unsubmitted.id);
         expect(variables.annotations).toEqual([ {
           label: LABELS.classic.name,
           confidence: CONFIDENCES.sure.label,
           analysis: spectrogramAnalysis.id,
+          annotator: USERS[as].id,
           comments: [ {
             comment: weakAnnotationComment.comment,
           } ],
@@ -85,16 +85,18 @@ const TEST = {
       })
     }),
 
-  canRemoveComments: ({ as, phase }: Params) =>
-    test(`Can remove comments on "${ phase } phase`, ESSENTIAL, async ({ page }) => {
+  canRemoveComments: ({ as, phase }: Pick<Params, 'as' | 'phase'>) =>
+    test(`Can remove comments on "${ phase } phase`, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: 'annotator',
         getAnnotationPhase: phase,
         getAnnotationTask: 'submitted',
       })
-      await page.annotator.go(as);
+      await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
 
       await test.step('Clear task comment', async () => {
+        await page.annotator.taskCommentButton.click()
+        await expect(page.getByText(taskComment.comment)).toBeVisible();
         await page.annotator.commentInput.clear();
         await expect(page.getByText(taskComment.comment)).not.toBeVisible();
       })
@@ -104,6 +106,7 @@ const TEST = {
       })
 
       await test.step('Clear annotation comment', async () => {
+        await expect(page.getByText(weakAnnotationComment.comment)).toBeVisible();
         await page.annotator.commentInput.clear();
         await expect(page.getByText(weakAnnotationComment.comment)).not.toBeVisible();
       })
@@ -115,7 +118,7 @@ const TEST = {
         ])
         const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;
         expect(variables.campaignID).toEqual(campaign.id);
-        expect(variables.phase).toEqual(AnnotationPhaseType.Annotation);
+        expect(variables.phase).toEqual(phase);
         expect(variables.spectrogramID).toEqual(TASKS.unsubmitted.id);
         expect(variables.annotations).toEqual([
           {
@@ -123,7 +126,8 @@ const TEST = {
             label: LABELS.classic.name,
             confidence: CONFIDENCES.sure.label,
             analysis: spectrogramAnalysis.id,
-            comments: null,
+            annotator: USERS.annotator.id,
+            comments: [],
           } as AnnotationInput,
           {
             id: +boxAnnotation.id,
@@ -134,7 +138,8 @@ const TEST = {
             label: LABELS.classic.name,
             confidence: CONFIDENCES.notSure.label,
             analysis: spectrogramAnalysis.id,
-            comments: null,
+            annotator: USERS.annotator.id,
+            comments: [],
           } as AnnotationInput ]);
         expect(variables.taskComments).toEqual([]);
       })
@@ -143,7 +148,7 @@ const TEST = {
 
 
 // Tests
-test.describe('[Spectrogram] Annotator can manage comments', { tag: [ '@annotator', ESSENTIAL.tag ] }, () => {
+test.describe('[Spectrogram] Comments', { tag: [ annotatorTag, essentialTag ] }, () => {
   const as: UserType = 'annotator'
 
   TEST.canAddComments({ as, phase: AnnotationPhaseType.Annotation })
