@@ -1,4 +1,4 @@
-import { essential, expect, test } from './utils';
+import { essentialTag, expect, test } from './utils';
 import { gqlURL, interceptRequests } from './utils/mock';
 import { campaign, dataset, fileRange, userGroup, USERS, type UserType } from './utils/mock/types';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
@@ -19,7 +19,7 @@ const TEST = {
         listAnnotationTask: 'empty',
         listUsers: 'empty',
       })
-      await test.step(`Navigate`, () => page.phaseEdit.go({ as }))
+      await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase }))
 
       await test.step(`Display empty message`, () =>
         expect(page.getByText('No annotators')).toBeVisible())
@@ -31,7 +31,7 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseEdit.go({ as }))
+      await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase }))
 
       await test.step('Display existing ranges', async () => {
         await expect(page.getByText(USERS.annotator.displayName)).toBeVisible()
@@ -49,7 +49,7 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseEdit.go({ as }))
+      await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase }))
 
       await test.step('Add new annotator', async () => {
         await page.getByPlaceholder('Search annotator').locator('input').fill(USERS.superuser.firstName);
@@ -123,7 +123,7 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseEdit.go({ as }))
+      await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase }))
 
       await test.step('Cannot edit or remove annotator with finished tasks', async () => {
         await expect(page.phaseEdit.getfirstIndexInput(fileRange)).toBeDisabled()
@@ -161,14 +161,14 @@ const TEST = {
 test.describe('[Phase edit annotators]', () => {
   const as: UserType = 'creator';
 
-  TEST.handleEmptyState({ as, phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.handleEmptyState({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
   TEST.handleEmptyState({ as, phase: AnnotationPhaseType.Verification })
 
-  TEST.displayData({ as, phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.displayData({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
   TEST.displayData({ as, phase: AnnotationPhaseType.Verification })
 
-  TEST.addAnnotator({ as, phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.addAnnotator({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
 
-  TEST.editExistingAnnotator({ as, phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.editExistingAnnotator({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
 
 })

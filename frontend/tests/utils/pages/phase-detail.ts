@@ -1,40 +1,40 @@
 import { Locator, Page } from '@playwright/test';
-import { UI } from '../services';
 import { CampaignListPage } from './campaign-list';
 import type { Params } from '../types';
+import { AnnotationPhaseType } from '../../../src/api/types.gql-generated';
 
 export class PhaseDetailPage {
 
   get importAnnotationsButton(): Locator {
-    return this.page.locator('button[aria-label=Import]');
+    return this.page.getByTestId('import');
   }
 
   get resumeButton(): Locator {
-    return this.page.locator('button[aria-label=Resume]');
+    return this.page.getByTestId('resume').getByRole('button');
   }
 
   get manageButton(): Locator {
-    return this.page.locator('button[aria-label=Manage]');
+    return this.page.getByTestId('manage');
+  }
+
+  get verificationTab(): Locator {
+    return this.page.getByRole('button', { name: 'Verification' });
   }
 
   constructor(private page: Page,
               private list = new CampaignListPage(page),
-              public progressModal = new ProgressModal(page),
-              private ui = new UI(page)) {
+              public progressModal = new ProgressModal(page)) {
   }
 
-  async go({ as }: Pick<Params, 'as'>) {
+  async go({ as, phase }: Pick<Params, 'as' | 'phase'>) {
     await this.list.go({ as })
     await this.list.card.click();
+    if (phase === AnnotationPhaseType.Verification)
+      await this.verificationTab.click()
   }
 
   async searchFile(text: string) {
     await this.page.getByRole('search').locator('input').fill(text)
-    await this.page.keyboard.press('Enter')
-  }
-
-  async clearSearch() {
-    await this.page.getByRole('search').locator('input').clear()
     await this.page.keyboard.press('Enter')
   }
 }

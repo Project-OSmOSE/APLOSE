@@ -18,7 +18,7 @@ export const ImportAnnotationsButton: React.FC = () => {
   if (phaseType !== 'Annotation') return <Fragment/>
   if (!verificationPhase) return <Fragment/>
   return <TooltipOverlay tooltipContent={ <p>Import annotations for verification</p> } anchor="right">
-    <Link appPath={ path } fill="outline" color="medium" aria-label="Import">
+    <Link appPath={ path } fill="outline" color="medium" data-testid="import">
       <IonIcon icon={ cloudDownloadOutline } slot="icon-only"/>
     </Link>
   </TooltipOverlay>

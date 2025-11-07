@@ -1,4 +1,4 @@
-import { essential, expect, Page, test, URL } from './utils';
+import { essentialTag, expect, Page, test, URL } from './utils';
 import { interceptRequests } from './utils/mock';
 import type { Params } from './utils/types';
 
@@ -81,7 +81,7 @@ const TEST = {
 // Tests
 
 test.describe('[Navbar]', () => {
-  TEST.canAccessAllButAdmin({ as: 'annotator', tag: essential })
-  TEST.canAccessAll({ as: 'staff', tag: essential })
+  TEST.canAccessAllButAdmin({ as: 'annotator', tag: essentialTag })
+  TEST.canAccessAll({ as: 'staff', tag: essentialTag })
   TEST.canAccessAll({ as: 'superuser' })
 })

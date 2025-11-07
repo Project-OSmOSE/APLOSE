@@ -1,7 +1,8 @@
 import { CAMPAIGN } from '../fixtures';
 
-export const essential = '@essential';
-export const ESSENTIAL = { tag: essential };
+export const essentialTag = '@essential';
+export const annotatorTag = '@annotator';
+export const ESSENTIAL = { tag: essentialTag };
 
 export const URL = {
   OSmOSE: '/',

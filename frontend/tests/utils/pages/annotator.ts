@@ -1,11 +1,9 @@
 import { expect, Locator, Page, test } from '@playwright/test';
-import { UserType } from '../../fixtures';
-import { Phase } from '../../../src/service/types';
 import { Mock } from '../services';
-import { type Annotation, campaign, type Confidence, type Label, spectrogram } from '../mock/types';
-import { AnnotationPhaseType, AnnotationType } from '../../../src/api/types.gql-generated';
-import { gqlURL } from '../mock';
+import { type Annotation, type Confidence, type Label } from '../mock/types';
+import { AnnotationType } from '../../../src/api/types.gql-generated';
 import { PhaseDetailPage } from './phase-detail';
+import type { Params } from '../types';
 
 // export type Label = {
 //   addPresence: () => Promise<void>;
@@ -82,21 +80,22 @@ export class AnnotatorPage {
               private phaseDetailPage = new PhaseDetailPage(page)) {
   }
 
-  async go(as: UserType, options?: {
-    phase?: Phase,
+  async go({ as, phase }: Pick<Params, 'as' | 'phase'>, options?: {
     empty?: boolean,
   }) {
-    await test.step('Navigate to Annotator', async () => {
-      await this.phaseDetailPage.go({ as })
-      // await this.mock.annotator(options.phase ?? 'Annotation', options.empty)
-      // await this.campaignDetail.resumeButton.click()
-      // await this.mock.annotator(options.phase ?? 'Annotation', options.empty)
-      await Promise.all([
-        this.page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/spectrogram/${ spectrogram.id }`),
-        this.page.waitForRequest(gqlURL),
-        this.phaseDetailPage.resumeButton.click(),
-      ])
-    });
+    await this.phaseDetailPage.go({ as, phase })
+    await this.phaseDetailPage.resumeButton.click()
+
+    // await test.step('Navigate to Annotator', async () => {
+    // await this.mock.annotator(options.phase ?? 'Annotation', options.empty)
+    // await this.campaignDetail.resumeButton.click()
+    // await this.mock.annotator(options.phase ?? 'Annotation', options.empty)
+    // await Promise.all([
+    //   this.page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/spectrogram/${ spectrogram.id }`),
+    //   this.page.waitForRequest(gqlURL),
+    //   this.phaseDetailPage.resumeButton.click(),
+    // ])
+    // });
   }
 
   getLabelChip(label: Label) {

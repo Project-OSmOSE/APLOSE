@@ -37,8 +37,8 @@ export class PhaseImportAnnotationsPage {
               private detail = new PhaseDetailPage(page)) {
   }
 
-  async go({ as }: Pick<Params, 'as'>): Promise<void> {
-    await this.detail.go({ as })
+  async go({ as, phase }: Pick<Params, 'as' | 'phase'>): Promise<void> {
+    await this.detail.go({ as, phase })
     await this.detail.importAnnotationsButton.click();
   }
 

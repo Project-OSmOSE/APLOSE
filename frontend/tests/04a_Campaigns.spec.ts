@@ -1,4 +1,4 @@
-import { essential, expect, test } from './utils';
+import { essentialTag, expect, test } from './utils';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
 import { gqlURL, interceptRequests } from './utils/mock';
 import { campaign, USERS, type UserType } from './utils/mock/types';
@@ -151,12 +151,12 @@ const TEST = {
 test.describe('[Campaign list]', () => {
   const as: UserType = 'annotator'
 
-  TEST.handleEmptyState({ as, tag: essential })
+  TEST.handleEmptyState({ as, tag: essentialTag })
 
-  TEST.displayCampaigns({ as, tag: essential })
+  TEST.displayCampaigns({ as, tag: essentialTag })
 
-  TEST.filterCampaigns({ as, tag: essential })
+  TEST.filterCampaigns({ as, tag: essentialTag })
 
-  TEST.accessCampaignCreation({ as, tag: essential })
+  TEST.accessCampaignCreation({ as, tag: essentialTag })
 
 })

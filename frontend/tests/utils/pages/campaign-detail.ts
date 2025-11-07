@@ -14,10 +14,6 @@ export class CampaignDetailPage {
     return this.page.getByRole('button', { name: 'Archive' });
   }
 
-  get manageButton(): Locator {
-    return this.page.locator('button[aria-label=Manage]');
-  }
-
   constructor(private page: Page,
               private list = new CampaignListPage(page),
               public labelModal = new LabelModal(page)) {

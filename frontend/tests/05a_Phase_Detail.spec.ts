@@ -1,4 +1,4 @@
-import { essential, expect, test } from './utils';
+import { essentialTag, expect, test } from './utils';
 import { gqlRegex, interceptRequests } from './utils/mock';
 import { campaign, phase as phaseObj, spectrogram, TASKS, USERS } from './utils/mock/types';
 import type { ListAnnotationTaskQueryVariables } from '../src/api/annotation-task';
@@ -20,7 +20,7 @@ const TEST = {
         listSpectrogramAnalysis: 'empty',
         listAnnotationTask: 'empty',
       })
-      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
       await test.step('Display no progress', async () => {
         await page.phaseDetail.progressModal.button.click()
@@ -43,7 +43,7 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
       await test.step('Display progress', async () => {
         await page.phaseDetail.progressModal.button.click()
@@ -62,7 +62,7 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
       const checkRequest = (request: Request) => {
         if (!new RegExp(gqlRegex).test(request.url())) return false;
@@ -87,10 +87,10 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
       await test.step('Cannot manage', () =>
-        expect(page.campaignDetail.manageButton).not.toBeVisible())
+        expect(page.phaseDetail.manageButton).not.toBeVisible())
 
     }),
 
@@ -100,7 +100,7 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
       await test.step('Cannot download progress', async () => {
         await page.phaseDetail.progressModal.button.click()
@@ -117,7 +117,7 @@ const TEST = {
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
       await test.step(`Navigate`, async () => {
-        await page.phaseDetail.go({ as })
+        await page.phaseDetail.go({ as, phase })
         await page.phaseDetail.progressModal.button.click()
       })
 
@@ -140,7 +140,7 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
       await test.step('Access annotation', async () => {
         await Promise.all([
@@ -155,7 +155,7 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
       await test.step('Access annotation', async () => {
         await Promise.all([
@@ -170,11 +170,11 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
       await test.step('Access annotation', async () => {
         await Promise.all([
-          page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/spectrogram/${ TASKS.unsubmitted.id }`),
+          page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ phase }/spectrogram/${ TASKS.unsubmitted.id }`),
           page.phaseDetail.resumeButton.click(),
         ])
       })
@@ -187,7 +187,7 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
       await test.step('Cannot import annotations', () =>
         expect(page.phaseDetail.importAnnotationsButton).not.toBeVisible())
@@ -198,7 +198,7 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
       await test.step('Access import annotation', async () => {
         await Promise.all([
@@ -216,7 +216,7 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
       await test.step('Cannot manage annotators', () =>
         expect(page.phaseDetail.manageButton).not.toBeVisible())
@@ -227,11 +227,11 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseDetail.go({ as }))
+      await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
       await test.step('Access manage annotators', async () => {
         await Promise.all([
-          page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/edit-annotators`),
+          page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ phase }/edit-annotators`),
           await page.phaseDetail.manageButton.click(),
         ])
         await expect(page.phaseEdit.title).toBeVisible()
@@ -243,42 +243,42 @@ const TEST = {
 // Tests
 test.describe('[Phase detail]', () => {
 
-  TEST.handleEmptyState({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
-  TEST.handleEmptyState({ as: 'annotator', phase: AnnotationPhaseType.Verification, tag: essential })
-  TEST.handleEmptyState({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.handleEmptyState({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+  TEST.handleEmptyState({ as: 'annotator', phase: AnnotationPhaseType.Verification, tag: essentialTag })
+  TEST.handleEmptyState({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
   TEST.handleEmptyState({ as: 'staff', phase: AnnotationPhaseType.Annotation })
   TEST.handleEmptyState({ as: 'superuser', phase: AnnotationPhaseType.Annotation })
 
-  TEST.displayData({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
-  TEST.displayData({ as: 'annotator', phase: AnnotationPhaseType.Verification, tag: essential })
+  TEST.displayData({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+  TEST.displayData({ as: 'annotator', phase: AnnotationPhaseType.Verification, tag: essentialTag })
 
-  TEST.canFilterFiles({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.canFilterFiles({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
 
-  TEST.canAnnotateSubmittedFile({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.canAnnotateSubmittedFile({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
   TEST.canAnnotateUnsubmittedFile({ as: 'annotator', phase: AnnotationPhaseType.Annotation })
-  TEST.canResumeAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.canResumeAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
   TEST.canResumeAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Verification })
 
-  TEST.cannotUpdatePhase({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.cannotUpdatePhase({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
 
-  TEST.cannotDownloadInfo({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
-  TEST.canDownloadInfo({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.cannotDownloadInfo({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+  TEST.canDownloadInfo({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
   TEST.canDownloadInfo({ as: 'staff', phase: AnnotationPhaseType.Annotation })
   TEST.canDownloadInfo({ as: 'superuser', phase: AnnotationPhaseType.Annotation })
 
-  TEST.cannotImportAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.cannotImportAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
   TEST.cannotImportAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Verification })
-  TEST.canImportAnnotation({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essential })
-  TEST.cannotImportAnnotation({ as: 'creator', phase: AnnotationPhaseType.Verification, tag: essential })
+  TEST.canImportAnnotation({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+  TEST.cannotImportAnnotation({ as: 'creator', phase: AnnotationPhaseType.Verification, tag: essentialTag })
   TEST.canImportAnnotation({ as: 'staff', phase: AnnotationPhaseType.Annotation })
   TEST.cannotImportAnnotation({ as: 'staff', phase: AnnotationPhaseType.Verification })
   TEST.canImportAnnotation({ as: 'superuser', phase: AnnotationPhaseType.Annotation })
   TEST.cannotImportAnnotation({ as: 'superuser', phase: AnnotationPhaseType.Verification })
 
-  TEST.cannotManageAnnotators({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essential })
-  TEST.cannotManageAnnotators({ as: 'annotator', phase: AnnotationPhaseType.Verification, tag: essential })
-  TEST.canManageAnnotators({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essential })
-  TEST.canManageAnnotators({ as: 'creator', phase: AnnotationPhaseType.Verification, tag: essential })
+  TEST.cannotManageAnnotators({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+  TEST.cannotManageAnnotators({ as: 'annotator', phase: AnnotationPhaseType.Verification, tag: essentialTag })
+  TEST.canManageAnnotators({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+  TEST.canManageAnnotators({ as: 'creator', phase: AnnotationPhaseType.Verification, tag: essentialTag })
   TEST.canManageAnnotators({ as: 'staff', phase: AnnotationPhaseType.Annotation })
   TEST.canManageAnnotators({ as: 'superuser', phase: AnnotationPhaseType.Annotation })
 

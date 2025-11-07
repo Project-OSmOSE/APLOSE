@@ -1,5 +1,5 @@
 import type { UserType } from './mock/types';
-import { AnnotationPhaseType } from '../../src/api';
+import { AnnotationPhaseType } from '../../src/api/types.gql-generated';
 
 export type Method = 'mouse' | 'shortcut'
 

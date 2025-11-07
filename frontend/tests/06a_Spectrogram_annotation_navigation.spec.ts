@@ -1,34 +1,33 @@
-import { ESSENTIAL, test } from './utils';
+import { annotatorTag, essentialTag, test } from './utils';
 import { interceptRequests } from './utils/mock';
 import { campaign, type UserType } from './utils/mock/types';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
+import type { Params } from './utils/types';
 
-type Params = {
-  as: UserType,
-  phase: AnnotationPhaseType
-}
 
 // Utils
 const TEST = {
-  canGoBackToCampaign: ({ as, phase }: Params) =>
-    test(`Can go back to campaign on "${ phase } phase`, async ({ page }) => {
+  canGoBackToCampaign: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Can go back to campaign on "${ phase } phase`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
       })
-      await page.annotator.go(as);
-      await Promise.all([
-        page.waitForURL(`/app/annotation-campaign/${ campaign.id }/phase/${ phase }`, { timeout: 500 }),
-        page.annotator.backToCampaignButton.click({ timeout: 500 }),
-      ])
+      await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
+
+      await test.step('Back to campaign', () =>
+        Promise.all([
+          page.waitForURL(`/app/annotation-campaign/${ campaign.id }/phase/${ phase }`, { timeout: 500 }),
+          page.annotator.backToCampaignButton.click({ timeout: 500 }),
+        ]))
     }),
 }
 
 
 // Tests
 
-test.describe('[Spectrogram] Annotator can navigate', { tag: [ '@annotator', ESSENTIAL.tag ] }, () => {
+test.describe('[Spectrogram] Navigation', { tag: [ annotatorTag ] }, () => {
   const as: UserType = 'annotator'
 
-  TEST.canGoBackToCampaign({ as, phase: AnnotationPhaseType.Annotation })
+  TEST.canGoBackToCampaign({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
   TEST.canGoBackToCampaign({ as, phase: AnnotationPhaseType.Verification })
 })

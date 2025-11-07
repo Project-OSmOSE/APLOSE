@@ -14,8 +14,8 @@ export class PhaseEditAnnotatorsPage {
               private detail = new PhaseDetailPage(page)) {
   }
 
-  async go({ as }: Pick<Params, 'as'>) {
-    await this.detail.go({ as })
+  async go({ as, phase }: Pick<Params, 'as' | 'phase'>) {
+    await this.detail.go({ as, phase })
     await this.detail.manageButton.click();
   }
 

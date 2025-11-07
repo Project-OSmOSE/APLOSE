@@ -1,4 +1,4 @@
-import { essential, expect, test } from './utils';
+import { essentialTag, expect, test } from './utils';
 import { interceptRequests } from './utils/mock';
 import { dataset } from './utils/mock/types';
 import { ImportNewDatasetMutationVariables } from '../src/api/dataset';
@@ -119,26 +119,26 @@ const TEST = {
 // Tests
 test.describe('[Dataset list]', () => {
 
-  TEST.handlePageEmptyState({ as: 'staff', tag: essential })
+  TEST.handlePageEmptyState({ as: 'staff', tag: essentialTag })
   TEST.handlePageEmptyState({ as: 'superuser' })
 
-  TEST.pageDisplayLoadedData({ as: 'staff', tag: essential })
+  TEST.pageDisplayLoadedData({ as: 'staff', tag: essentialTag })
   TEST.pageDisplayLoadedData({ as: 'superuser' })
 
 })
 
 test.describe('[Dataset list] Import modal', () => {
 
-  TEST.handleModalEmptyState({ as: 'staff', tag: essential })
+  TEST.handleModalEmptyState({ as: 'staff', tag: essentialTag })
   TEST.handleModalEmptyState({ as: 'superuser' })
 
-  TEST.modalDisplayLoadedData({ as: 'staff', tag: essential })
+  TEST.modalDisplayLoadedData({ as: 'staff', tag: essentialTag })
   TEST.modalDisplayLoadedData({ as: 'superuser' })
 
-  TEST.importDataset({ as: 'staff', tag: essential })
+  TEST.importDataset({ as: 'staff', tag: essentialTag })
   TEST.importDataset({ as: 'superuser' })
 
-  TEST.importAnalysis({ as: 'staff', tag: essential })
+  TEST.importAnalysis({ as: 'staff', tag: essentialTag })
   TEST.importAnalysis({ as: 'superuser' })
 
 })

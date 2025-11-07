@@ -1,4 +1,4 @@
-import { essential, expect, expectNoRequestsOnAction, type Page, test } from './utils';
+import { essentialTag, expect, expectNoRequestsOnAction, type Page, test } from './utils';
 import { gqlURL, interceptRequests, mockError } from './utils/mock';
 import type { GqlMutation } from './utils/mock/_gql';
 import { campaign, dataset, spectrogramAnalysis, type UserType } from './utils/mock/types';
@@ -160,12 +160,12 @@ const TEST = {
 test.describe('[Campaign create]', () => {
   const as: UserType = 'annotator'
 
-  TEST.handleEmptyState({ as, tag: essential })
+  TEST.handleEmptyState({ as, tag: essentialTag })
 
-  TEST.canSubmitOnlyRequiredFields({ as, tag: essential })
+  TEST.canSubmitOnlyRequiredFields({ as, tag: essentialTag })
 
-  TEST.canSubmitAllFields({ as, tag: essential })
+  TEST.canSubmitAllFields({ as, tag: essentialTag })
 
-  TEST.handleSubmissionErrors({ as, tag: essential })
+  TEST.handleSubmissionErrors({ as, tag: essentialTag })
 
 })

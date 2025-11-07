@@ -60,7 +60,7 @@ export const FileRangeActionBar: React.FC = () => {
                       { phase?.canManage && <Fragment>
                         {/* Manage annotators */ }
                           <TooltipOverlay tooltipContent={ <p>Manage annotators</p> } anchor="right">
-                              <Link fill="outline" color="medium" aria-label="Manage"
+                              <Link fill="outline" color="medium" data-testid="manage"
                                     appPath={ `/annotation-campaign/${ campaignID }/phase/${ phaseType }/edit-annotators` }>
                                   <IonIcon icon={ peopleOutline } slot="icon-only"/>
                               </Link>
@@ -72,7 +72,7 @@ export const FileRangeActionBar: React.FC = () => {
 
                       {/* Resume */ }
                       <TooltipOverlay tooltipContent={ <p>{ resumeBtnTooltip }</p> } anchor="right">
-                        <Button color="primary" fill="outline" aria-label="Resume"
+                        <Button color="primary" fill="outline" data-testid="resume"
                                 disabled={ hasFilters || !(allSpectrograms && allSpectrograms.length > 0) || !resumeSpectrogramID }
                                 style={ { pointerEvents: 'unset' } }
                                 onClick={ resume }>

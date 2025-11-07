@@ -1,4 +1,4 @@
-import { essential, expect, test } from './utils';
+import { essentialTag, expect, test } from './utils';
 import { interceptRequests } from './utils/mock';
 import type { Params } from './utils/types';
 import { detectorConfiguration, spectrogramAnalysis, type UserType } from './utils/mock/types';
@@ -17,7 +17,7 @@ const TEST = {
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
         listDetectors: 'empty',
       })
-      await test.step(`Navigate`, () => page.phaseImport.go({ as }))
+      await test.step(`Navigate`, () => page.phaseImport.go({ as, phase }))
 
       await page.phaseImport.importFileStep()
 
@@ -56,7 +56,7 @@ const TEST = {
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
         listDetectors: 'empty',
       })
-      await test.step(`Navigate`, () => page.phaseImport.go({ as }))
+      await test.step(`Navigate`, () => page.phaseImport.go({ as, phase }))
 
       await page.phaseImport.importFileStep()
 
@@ -93,7 +93,7 @@ const TEST = {
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
         listDetectors: 'empty',
       })
-      await test.step(`Navigate`, () => page.phaseImport.go({ as }))
+      await test.step(`Navigate`, () => page.phaseImport.go({ as, phase }))
 
       await test.step('Select analysis', async () => {
         await page.phaseImport.getAnalysisSelect().click()
@@ -134,7 +134,7 @@ const TEST = {
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
         listDetectors: 'filled',
       })
-      await test.step(`Navigate`, () => page.phaseImport.go({ as }))
+      await test.step(`Navigate`, () => page.phaseImport.go({ as, phase }))
 
       await page.phaseImport.importFileStep()
 
@@ -155,7 +155,7 @@ const TEST = {
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
         listDetectors: 'empty',
       })
-      await test.step(`Navigate`, () => page.phaseImport.go({ as }))
+      await test.step(`Navigate`, () => page.phaseImport.go({ as, phase }))
 
       await page.phaseImport.importFileStep()
 
@@ -180,14 +180,14 @@ const TEST = {
 test.describe('[Phase import annotations]', () => {
   const as: UserType = 'creator'
 
-  TEST.importAll({ as, phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.importAll({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
 
-  TEST.importFirst({ as, phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.importFirst({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
 
-  TEST.handleMultipleAnalysis({ as, phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.handleMultipleAnalysis({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
 
-  TEST.handleExistingDetectors({ as, phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.handleExistingDetectors({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
 
-  TEST.canResetImport({ as, phase: AnnotationPhaseType.Annotation, tag: essential })
+  TEST.canResetImport({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
 
 })

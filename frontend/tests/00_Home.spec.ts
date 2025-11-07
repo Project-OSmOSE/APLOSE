@@ -1,4 +1,4 @@
-import { essential, expect, test, URL } from './utils';
+import { essentialTag, expect, test, URL } from './utils';
 import { interceptRequests } from './utils/mock';
 import { COLLABORATOR_QUERIES } from './utils/mock/collaborators';
 import type { Params } from './utils/types';
@@ -38,6 +38,6 @@ const TEST = {
 
 test.describe('[Home]', () => {
 
-  TEST.canNavigate({ tag: essential })
+  TEST.canNavigate({ tag: essentialTag })
 
 })

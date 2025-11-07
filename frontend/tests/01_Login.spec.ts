@@ -1,4 +1,4 @@
-import { essential, expect, test } from './utils';
+import { essentialTag, expect, test } from './utils';
 import { interceptRequests, PASSWORD } from './utils/mock';
 import { TOKEN_ERROR } from './utils/mock/auth';
 import type { UserType } from './utils/mock/types';
@@ -49,9 +49,9 @@ const TEST = {
 test.describe('[Login]', () => {
   const as: UserType = 'annotator'
 
-  TEST.canLogin({ as, method: 'mouse', tag: essential })
+  TEST.canLogin({ as, method: 'mouse', tag: essentialTag })
   TEST.canLogin({ as, method: 'shortcut' })
 
-  TEST.canSeeErrors({ as, method: 'mouse', tag: essential })
+  TEST.canSeeErrors({ as, method: 'mouse', tag: essentialTag })
   TEST.canSeeErrors({ as, method: 'shortcut' })
 })

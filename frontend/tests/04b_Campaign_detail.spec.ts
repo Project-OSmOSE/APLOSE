@@ -1,5 +1,5 @@
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
-import { essential, expect, test } from './utils';
+import { essentialTag, expect, test } from './utils';
 import { dateToString } from '../src/service/function';
 import { gqlURL, interceptRequests } from './utils/mock';
 import { campaign, confidenceSet, dataset, LABELS, labelSet, spectrogramAnalysis, USERS } from './utils/mock/types';
@@ -161,20 +161,20 @@ const TEST = {
 // Tests
 test.describe('[Campaign detail]', () => {
 
-  TEST.handleEmptyState({ as: 'annotator', tag: essential })
+  TEST.handleEmptyState({ as: 'annotator', tag: essentialTag })
   TEST.handleEmptyState({ as: 'creator' })
 
-  TEST.displayCampaign({ as: 'annotator', tag: essential })
+  TEST.displayCampaign({ as: 'annotator', tag: essentialTag })
 
-  TEST.canAccessDataset({ as: 'annotator', tag: essential })
+  TEST.canAccessDataset({ as: 'annotator', tag: essentialTag })
 
-  TEST.cannotUpdateCampaign({ as: 'annotator', tag: essential })
+  TEST.cannotUpdateCampaign({ as: 'annotator', tag: essentialTag })
 
-  TEST.canArchiveCampaign({ as: 'creator', tag: essential })
-  TEST.canArchiveCampaign({ as: 'staff', tag: essential })
+  TEST.canArchiveCampaign({ as: 'creator', tag: essentialTag })
+  TEST.canArchiveCampaign({ as: 'staff', tag: essentialTag })
   TEST.canArchiveCampaign({ as: 'superuser' })
 
-  TEST.canUpdateFeaturedLabels({ as: 'creator', tag: essential })
+  TEST.canUpdateFeaturedLabels({ as: 'creator', tag: essentialTag })
   TEST.canUpdateFeaturedLabels({ as: 'staff' })
   TEST.canUpdateFeaturedLabels({ as: 'superuser' })
 
