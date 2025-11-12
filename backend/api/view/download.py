@@ -85,6 +85,8 @@ class DownloadViewSet(ViewSet):
         # Create a buffer to write the zipfile into
         zip_buffer = io.BytesIO()
 
+        analysis.get_osekit_spectro_dataset_serialized_path()
+
         # Create the zipfile, giving the buffer as the target
         with zipfile.ZipFile(zip_buffer, "w") as zip_file:
             if analysis.legacy:
@@ -99,35 +101,10 @@ class DownloadViewSet(ViewSet):
                     ),
                 )
             else:
-                zip_file.writestr(
-                    "create_analyse.py",
-                    data=f"""import numpy as np
-from osekit.public_api.analysis import Analysis, AnalysisType
-from pandas import Timestamp, Timedelta
-from scipy.signal import ShortTimeFFT
-
-fft = ShortTimeFFT(
-    mfft={analysis.fft.nfft},
-    win=np.array({list(int(item) for item in analysis.fft.window) if analysis.fft.window else []}),
-    hop={round(analysis.fft.window_size * (1 - analysis.fft.overlap))},
-    fs={analysis.fft.sampling_frequency},
-    scale_to={analysis.fft.scaling if analysis.fft.scaling in ["magnitude", "psd"] else None},
-)
-
-analysis = Analysis(
-    analysis_type=AnalysisType.SPECTROGRAM,  # Spectro only
-    begin=Timestamp.fromisoformat("{parser.parse(analysis.start_date.isoformat()).isoformat()}").tz_localize(0),
-    end=Timestamp.fromisoformat("{parser.parse(analysis.end_date.isoformat()).isoformat()}").tz_localize(0),
-    data_duration=Timedelta(f"{analysis.data_duration}s"),
-    sample_rate={analysis.fft.sampling_frequency},
-    name="{analysis.name}",
-    fft=fft,
-    colormap="{analysis.colormap.name}",
-)
-                    """.encode(
-                        "utf-8"
-                    ),
-                )
+                with open(
+                    analysis.get_osekit_spectro_dataset_serialized_path()
+                ) as file:
+                    zip_file.writestr(f"{analysis.name}.json", file.read())
 
         response = HttpResponse(content_type="application/x-zip-compressed")
         response["Content-Disposition"] = f"attachment; filename={analysis.name}.zip"

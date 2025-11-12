@@ -328,12 +328,16 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
     def get_osekit_spectro_dataset(self) -> SpectroDataset:
         """Get OSEkit dataset object"""
         return SpectroDataset.from_json(
-            Path(
-                join(
-                    str(settings.DATASET_IMPORT_FOLDER),
-                    self.dataset.path,
-                    self.path,
-                    f"{self.name}.json",
-                )
+            self.get_osekit_spectro_dataset_serialized_path()
+        )
+
+    def get_osekit_spectro_dataset_serialized_path(self) -> Path:
+        """Get OSEkit dataset object"""
+        return Path(
+            join(
+                str(settings.DATASET_IMPORT_FOLDER),
+                self.dataset.path,
+                self.path,
+                f"{self.name}.json",
             )
         )

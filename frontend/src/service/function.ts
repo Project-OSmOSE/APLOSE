@@ -100,3 +100,28 @@ export function frequencyToString(value: number): string {
   if (newValue % 1 > 0) newValue = newValue.toFixed(1)
   return `${ newValue }k`;
 }
+
+function downloadFile(filename: string, type: string, blob: Blob) {
+  const url = URL.createObjectURL(new File([ blob ], filename, { type }));
+  // Using <a>-linking trick https://stackoverflow.com/a/19328891/2730032
+  const a = document.createElement('a');
+  a.style.display = 'none';
+  a.href = url;
+  a.type = type;
+  a.download = filename;
+  if (!document.body) throw new Error('Unexpectedly missing <body>');
+  document.body.appendChild(a);
+  a.click();
+}
+
+export async function downloadResponseHandler(response: Response, filename: string) {
+  // TODO: reject errors correctly (catchable) - like a standard API error
+  if (response.status !== 200) return `[${ response.status }] ${ response.statusText }`;
+  const type = response.headers.get('content-type')
+  if (!type) throw new Error('No file type provided')
+  downloadFile(filename, type, await response.blob())
+}
+
+export function getDownloadResponseHandler(filename: string) {
+  return (response: Response) => downloadResponseHandler(response, filename)
+}

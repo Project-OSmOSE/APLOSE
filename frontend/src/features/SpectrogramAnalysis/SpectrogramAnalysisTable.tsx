@@ -1,11 +1,11 @@
-import React, { Fragment, useMemo } from 'react';
+import React, { Fragment, useEffect, useMemo } from 'react';
 import { IonIcon, IonNote, IonSpinner } from '@ionic/react';
 import { downloadOutline } from 'ionicons/icons/index.js';
-
 import { dateToString } from '@/service/function';
-import { Link, Table, TableContent, TableDivider, TableHead, WarningText } from '@/components/ui';
+import { Button, Table, TableContent, TableDivider, TableHead, useToast, WarningText } from '@/components/ui';
 import styles from './styles.module.scss'
 import { ListSpectrogramAnalysisQueryVariables, useAllSpectrogramAnalysis } from '@/api';
+import { useDownloadAnalysis } from '@/api/download';
 
 export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVariables> = (option) => {
 
@@ -15,7 +15,14 @@ export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVari
     error,
     isFetching,
   } = useAllSpectrogramAnalysis(option);
-  const analysis = useMemo(() => data?.allSpectrogramAnalysis?.results.filter(r => r && r.spectrograms).map(r => r!), [data])
+  const analysis = useMemo(() => data?.allSpectrogramAnalysis?.results.filter(r => r && r.spectrograms).map(r => r!), [ data ])
+  const [ downloadAnalysis, { error: downloadError } ] = useDownloadAnalysis()
+  const toast = useToast()
+
+  useEffect(() => {
+    if (downloadError) toast.raiseError({ error: downloadError })
+  }, [ downloadError ]);
+
 
   if (isLoading) return <IonSpinner/>
   if (error) return <WarningText error={ error }/>
@@ -52,10 +59,9 @@ export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVari
       <TableContent>{ analysis.fft.windowSize }</TableContent>
       <TableContent>{ analysis.fft.overlap }</TableContent>
       <TableContent className={ styles.downloadCell }>
-        <Link size="small"
-              href={ `/api/download/analysis-export/${ analysis.id }/` }>
+        <Button size="small" color="dark" fill="clear" onClick={ () => downloadAnalysis(analysis) }>
           <IonIcon icon={ downloadOutline } slot="icon-only"/>
-        </Link>
+        </Button>
         <IonNote color="medium">OSEkit v{ analysis.legacy ? '<0.2.5' : '>=0.3.0' }</IonNote>
       </TableContent>
       <TableDivider/>
