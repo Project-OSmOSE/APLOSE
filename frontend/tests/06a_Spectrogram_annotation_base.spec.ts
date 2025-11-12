@@ -1,4 +1,4 @@
-import { annotatorTag, essentialTag, test } from './utils';
+import { annotatorTag, essentialTag, expect, test } from './utils';
 import { interceptRequests } from './utils/mock';
 import { campaign, type UserType } from './utils/mock/types';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
@@ -20,6 +20,18 @@ const TEST = {
           page.annotator.backToCampaignButton.click({ timeout: 500 }),
         ]))
     }),
+
+  displayNoConfidence: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+    test(`Display no confidence on "${ phase } phase`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        getCampaign: 'withoutConfidence',
+      })
+      await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
+
+      await test.step('Do not display confidence', () =>
+        expect(page.getByText('Confidence indicator ')).not.toBeVisible())
+    }),
 }
 
 
@@ -30,4 +42,7 @@ test.describe('[Spectrogram] Navigation', { tag: [ annotatorTag ] }, () => {
 
   TEST.canGoBackToCampaign({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
   TEST.canGoBackToCampaign({ as, phase: AnnotationPhaseType.Verification })
+
+  TEST.displayNoConfidence({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+  TEST.displayNoConfidence({ as, phase: AnnotationPhaseType.Verification })
 })
