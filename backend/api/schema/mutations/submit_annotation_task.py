@@ -1,14 +1,14 @@
 from datetime import datetime
 
+import graphene
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-import graphene
 from graphene import Boolean
 
+from backend.api.context_filters import AnnotationFileRangeContextFilter
 from backend.api.models import Spectrogram, AnnotationTask, Session
 from backend.api.models.annotation.annotation_task import AnnotationTaskSession
-from backend.api.context_filters import AnnotationFileRangeContextFilter
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions, NotFoundError
 
@@ -35,15 +35,16 @@ class SubmitAnnotationTaskMutation(graphene.Mutation):
         started_at: datetime,
         ended_at: datetime,
         content: str,
-    ):  # pylint: disable=redefined-builtin
+    ):
         """Update annotation task status to "FINISHED" and create a new session"""
         try:
             spectrogram: Spectrogram = get_object_or_404(
                 Spectrogram.objects.all(), pk=spectrogram_id
             )
-        except Http404:
-            raise NotFoundError()
-        file_range = AnnotationFileRangeContextFilter.get_node_or_fail(
+        except Http404 as not_found:
+            raise NotFoundError() from not_found
+
+        AnnotationFileRangeContextFilter.get_node_or_fail(
             info.context,
             annotation_phase__annotation_campaign_id=campaign_id,
             annotation_phase__phase=phase_type.value,

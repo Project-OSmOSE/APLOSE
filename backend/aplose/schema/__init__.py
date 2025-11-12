@@ -6,9 +6,7 @@ from .nodes import UserGroupNode, UserNode
 from .queries import AllUserGroupsField, AllUserField, CurrentUserField
 
 
-class AploseQuery(
-    ObjectType,
-):  # pylint: disable=too-few-public-methods
+class AploseQuery(ObjectType):
     """APLOSE queries"""
 
     all_user_groups = AllUserGroupsField
@@ -18,9 +16,7 @@ class AploseQuery(
     current_user = CurrentUserField
 
 
-class AploseMutation(
-    ObjectType,
-):  # pylint: disable=too-few-public-methods
+class AploseMutation(ObjectType):
     """APLOSE mutations"""
 
     user_update_password = UpdateUserPasswordMutation.Field()

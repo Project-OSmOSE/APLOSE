@@ -33,9 +33,7 @@ from .mutations import (
 )
 
 
-class APIMutation(
-    graphene.ObjectType,
-):  # pylint: disable=too-few-public-methods
+class APIMutation(graphene.ObjectType):
     """API GraphQL mutations"""
 
     # Dataset
@@ -62,9 +60,7 @@ class APIMutation(
     submit_annotation_task = SubmitAnnotationTaskMutation.Field()
 
 
-class APIQuery(
-    graphene.ObjectType,
-):  # pylint: disable=too-few-public-methods
+class APIQuery(graphene.ObjectType):
     """API GraphQL queries"""
 
     # Dataset

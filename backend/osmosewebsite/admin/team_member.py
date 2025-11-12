@@ -6,7 +6,6 @@ from backend.utils.admin import get_many_to_many
 
 
 @admin.action(description="Mark selected members as former members")
-# pylint: disable-next=unused-argument
 def make_former(model_admin, request, queryset):
     """TeamMember admin action to make it a former member"""
     queryset.update(is_former_member=True)

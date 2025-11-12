@@ -1,5 +1,4 @@
 """API data GraphQL tests - List datasets for import"""
-# pylint: disable=missing-class-docstring, missing-function-docstring
 import json
 from os.path import join
 

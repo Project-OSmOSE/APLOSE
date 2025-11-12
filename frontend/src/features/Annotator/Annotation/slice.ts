@@ -9,6 +9,8 @@ import {
   GetAnnotationTaskQuery,
   getCampaignFulfilled,
   type GetCampaignQuery,
+  getCurrentUserFulfilled,
+  type GetCurrentUserQuery,
 } from '@/api';
 import { type Analysis, getDefaultAnalysisID, setAnalysis } from '@/features/Annotator/Analysis/slice';
 import type { GetAnnotationTaskQueryVariables } from '@/api/annotation-task/annotation-task.generated';
@@ -38,6 +40,7 @@ type AnnotationState = {
 
   _analysisID?: string;
   _campaignID?: string
+  _userID?: string
 }
 
 const initialState: AnnotationState = {
@@ -100,6 +103,11 @@ export const AnnotatorAnnotationSlice = createSlice({
     }) => {
       state._analysisID = getDefaultAnalysisID({ data: action.payload, id: state._analysisID })
     })
+    builder.addMatcher(getCurrentUserFulfilled, (state: AnnotationState, action: {
+      payload: GetCurrentUserQuery
+    }) => {
+      state._userID = action.payload.currentUser?.id
+    })
     builder.addMatcher(getAnnotationTaskFulfilled, (state: AnnotationState, action: {
       payload: GetAnnotationTaskQuery,
       meta: { arg: { originalArgs: GetAnnotationTaskQueryVariables } }
@@ -109,7 +117,7 @@ export const AnnotatorAnnotationSlice = createSlice({
         state.id = initialState.id
       }
       const annotations = action.payload.annotationSpectrogramById?.task?.annotations?.results.filter(a => a !== null).map(a => a!) ?? []
-      state.allAnnotations = convertGqlToAnnotations(annotations)
+      state.allAnnotations = convertGqlToAnnotations(annotations, action.meta.arg.originalArgs.phaseType, state._userID)
       const defaultAnnotation = [ ...state.allAnnotations ].reverse().pop();
       state.id = defaultAnnotation?.id
     })

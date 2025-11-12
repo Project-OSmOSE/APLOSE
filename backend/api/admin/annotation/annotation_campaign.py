@@ -50,7 +50,6 @@ class AnnotationCampaignAdmin(admin.ModelAdmin):
     ]
 
     @admin.action(description="Archive")
-    # pylint: disable-next=unused-argument
     def archive(self, request, queryset):
         """Hide selected collaborators on HomePage"""
         archived_campaigns = []
@@ -67,7 +66,6 @@ class AnnotationCampaignAdmin(admin.ModelAdmin):
             )
 
     @admin.action(description="/!\\ Unarchive /!\\")
-    # pylint: disable-next=unused-argument
     def unarchive(self, request, queryset):
         """Hide selected collaborators on HomePage"""
         not_archived_campaigns = []

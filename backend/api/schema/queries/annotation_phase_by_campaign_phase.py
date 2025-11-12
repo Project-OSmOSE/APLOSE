@@ -11,9 +11,7 @@ from backend.utils.schema import GraphQLPermissions, GraphQLResolve
 
 
 @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
-def resolve_phase(
-    self, info, campaign_id: int, phase_type: AnnotationPhaseType
-):  # pylint: disable=redefined-builtin
+def resolve_phase(self, info, campaign_id: int, phase_type: AnnotationPhaseType):
     """Get AnnotationPhase by campaignID and phase type"""
     campaign: AnnotationCampaign = AnnotationCampaignContextFilter.get_node_or_fail(
         info.context,

@@ -1,25 +1,22 @@
 from graphene import Mutation, ID
 
-from backend.api.models import AnnotationPhase
 from backend.api.context_filters import AnnotationCampaignContextFilter
+from backend.api.models import AnnotationPhase
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import GraphQLPermissions, GraphQLResolve, ForbiddenError
 
 
-class CreateAnnotationPhase(Mutation):  # pylint: disable=too-few-public-methods
+class CreateAnnotationPhase(Mutation):
     """Create annotation phase of type "Verification" mutation"""
 
     class Arguments:
-        # pylint: disable=too-few-public-methods, missing-class-docstring
         campaign_id = ID(required=True)
         type = AnnotationPhaseType(required=True)
 
     id = ID(required=True)
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
-    def mutate(
-        self, info, campaign_id: int, type: AnnotationPhaseType
-    ):  # pylint: disable=redefined-builtin
+    def mutate(self, info, campaign_id: int, type: AnnotationPhaseType):
         """Archive annotation campaign at current date by request user"""
         campaign = AnnotationCampaignContextFilter.get_edit_node_or_fail(
             info.context,

@@ -18,7 +18,6 @@ class AnnotationTaskNode(BaseObjectType):
     comments = AuthenticatedDjangoConnectionField(AnnotationCommentNode)
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = AnnotationTask
         fields = "__all__"
         filterset_class = AnnotationTaskFilterSet

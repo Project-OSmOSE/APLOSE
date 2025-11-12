@@ -1,4 +1,3 @@
-# pylint: disable=missing-module-docstring, missing-class-docstring, missing-function-docstring
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 

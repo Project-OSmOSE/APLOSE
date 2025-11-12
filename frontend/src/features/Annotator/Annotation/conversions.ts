@@ -5,6 +5,7 @@ import {
   AnnotationInput,
   type AnnotationLabelNode,
   type AnnotationNode,
+  AnnotationPhaseType,
   type AnnotationValidationNode,
   AnnotationValidationSerializerInput,
   type ConfidenceNode,
@@ -23,9 +24,14 @@ export function convertValidationToPost(validation: Validation): AnnotationValid
   }
 }
 
-export function convertGqlToValidation(validations: Maybe<Pick<AnnotationValidationNode, 'id' | 'isValid'>>[]): Validation | undefined {
+export function convertGqlToValidation(validations: Maybe<Pick<AnnotationValidationNode, 'id' | 'isValid'>>[],
+                                       phase: AnnotationPhaseType,
+                                       annotationIsFromCurrentAnnotator: boolean): Validation | undefined {
   validations = validations.filter(v => !!v)
-  if (validations.length === 0) return { isValid: true }
+  if (validations.length === 0) {
+    if (phase === AnnotationPhaseType.Verification && !annotationIsFromCurrentAnnotator) return { isValid: true }
+    else return undefined
+  }
   const v = validations[0]
   return {
     id: +v!.id,
@@ -83,15 +89,17 @@ type Node =
   analysis: Pick<SpectrogramAnalysisNode, 'id'>,
 }
 
-export function convertGqlToAnnotation(annotation: Node): Annotation {
+export function convertGqlToAnnotation(annotation: Node,
+                                       phase: AnnotationPhaseType,
+                                       userId?: string): Annotation {
   return {
     id: +annotation.id,
     update: undefined,
     label: annotation.label.name,
     comments: convertGqlToComments(annotation.comments?.results ?? []),
-    validation: convertGqlToValidation(annotation.validations?.results ?? []),
     type: annotation.type,
     annotator: annotation.annotator?.id,
+    validation: convertGqlToValidation(annotation.validations?.results ?? [], phase, annotation.annotator?.id === userId),
     acousticFeatures: annotation.acousticFeatures ? convertGqlToFeatures(annotation.acousticFeatures) : undefined,
     endFrequency: annotation.endFrequency === null ? undefined : annotation.endFrequency,
     startFrequency: annotation.startFrequency === null ? undefined : annotation.startFrequency,
@@ -103,12 +111,14 @@ export function convertGqlToAnnotation(annotation: Node): Annotation {
   } as Annotation
 }
 
-export function convertGqlToAnnotations(annotations: Node[]): Annotation[] {
+export function convertGqlToAnnotations(annotations: Node[],
+                                        phase: AnnotationPhaseType,
+                                        userId?: string): Annotation[] {
   return annotations.filter(a => !a.isUpdateOf).map(a => {
     const update = annotations.find(a => a.isUpdateOf?.id === a.id);
     return {
-      ...convertGqlToAnnotation(a),
-      update: update ? convertGqlToAnnotation(update) : undefined,
+      ...convertGqlToAnnotation(a, phase, userId),
+      update: update ? convertGqlToAnnotation(update, phase, userId) : undefined,
     }
   })
 }

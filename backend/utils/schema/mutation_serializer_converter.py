@@ -13,12 +13,12 @@ from backend.api.models import (
     AnnotationTask,
     Annotation,
 )
+from backend.api.schema.enums import AnnotationType
 from backend.api.schema.enums import (
     SignalTrendType,
     AnnotationPhaseType,
     AnnotationTaskStatus,
 )
-from backend.api.schema.enums import AnnotationType
 from backend.utils.serializers import EnumField
 
 

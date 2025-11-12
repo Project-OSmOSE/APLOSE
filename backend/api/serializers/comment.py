@@ -17,6 +17,7 @@ class AnnotationCommentSerializer(serializers.ModelSerializer):
     """Annotation comment"""
 
     class Meta:
+        # pylint: disable=duplicate-code
         model = AnnotationComment
         fields = "__all__"
         list_serializer_class = ListSerializer

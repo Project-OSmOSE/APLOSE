@@ -65,6 +65,7 @@ class UpdateUserPasswordMutation(DjangoFormMutation):
         if hasattr(info.context.user, "auth_token"):
             info.context.user.auth_token.delete()
             return data
+        return None
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, **input):

@@ -9,7 +9,6 @@ class WebsiteProjectNode(ApiObjectType):
     """Project node"""
 
     class Meta:
-        # pylint: disable=missing-docstring, too-few-public-methods
         model = Project
         fields = "__all__"
         filter_fields = ["id"]

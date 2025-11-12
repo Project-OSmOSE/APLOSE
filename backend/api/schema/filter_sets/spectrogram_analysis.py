@@ -8,7 +8,6 @@ class SpectrogramAnalysisFilterSet(BaseFilterSet):
     """SpectrogramAnalysis filters"""
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = SpectrogramAnalysis
         fields = {
             "dataset": ("exact",),

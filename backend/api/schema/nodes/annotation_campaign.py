@@ -48,13 +48,13 @@ class AnnotationCampaignNode(BaseObjectType):
 
     spectrograms_count = graphene.Int(required=True)
 
+    # pylint: disable=duplicate-code
     tasks_count = graphene.Int(required=True)
     user_tasks_count = graphene.Int(required=True)
     completed_tasks_count = graphene.Int(required=True)
     user_completed_tasks_count = graphene.Int(required=True)
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = AnnotationCampaign
         fields = "__all__"
         filterset_class = AnnotationCampaignFilterSet
@@ -97,6 +97,7 @@ class AnnotationCampaignNode(BaseObjectType):
 
     @classmethod
     def resolve_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
+        # pylint: disable=duplicate-code
         return (
             super()
             .resolve_queryset(queryset, info)

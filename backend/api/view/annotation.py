@@ -60,43 +60,17 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
             phase = AnnotationPhaseContextFilter.get_edit_node_or_fail(
                 request, annotation_campaign_id=campaign_id, phase=phase_type[0]
             )
-            campaign: AnnotationCampaign = phase.annotation_campaign
         except ForbiddenError:
             return Response(status=status.HTTP_403_FORBIDDEN)
         except NotFoundError:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        print(phase)
 
         reader = csv.DictReader(StringIO(request.data["data"]))
         annotations = []
         for row in reader:
-            confidence = None
-            if row["confidence__label"] and row["confidence__level"] is not None:
-                confidence = campaign.import_new_confidence(
-                    label=row["confidence__label"],
-                    level=row["confidence__level"],
-                )
-
             analysis: Optional[SpectrogramAnalysis] = SpectrogramAnalysis.objects.get(
                 pk=row["analysis"]
             )
-            partial = {
-                "start_frequency": row["start_frequency"] or None,
-                "end_frequency": row["end_frequency"] or None,
-                "label": campaign.import_new_label(row["label__name"]),
-                "confidence": confidence,
-                "annotation_phase": phase,
-                "annotator": None,
-                "analysis": analysis,
-                "annotator_expertise_level": None,
-                "is_update_of": None,
-                "detector_configuration": DetectorConfiguration.objects.get_or_create(
-                    configuration=row["detector_configuration__configuration"],
-                    detector=Detector.objects.get_or_create(name=row["detector__name"])[
-                        0
-                    ],
-                )[0],
-            }
 
             spectrograms = Spectrogram.objects.filter_matches_time_range(
                 start=datetime.fromisoformat(row["start_datetime"]),
@@ -115,60 +89,11 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
                 )
 
             for s in spectrograms:
-                annotation = {**partial, "spectrogram": s}
-
-                start: datetime = datetime.fromisoformat(row["start_datetime"])
-                end: datetime = datetime.fromisoformat(row["end_datetime"])
-                if start < s.start:
-                    start_time = 0
-                else:
-                    start_time = to_seconds(start - s.start)
-                if end > s.end:
-                    end_time = to_seconds(s.end - s.start)
-                else:
-                    end_time = to_seconds(end - s.start)
-                annotation["start_time"] = start_time
-                annotation["end_time"] = end_time
-
-                if (
-                    start_time == 0
-                    and to_seconds(s.end - s.start) == end_time
-                    and (
-                        annotation["start_frequency"] is None
-                        or float(row["start_frequency"]) == 0.0
-                    )
-                    and (
-                        annotation["end_frequency"] is None
-                        or float(row["end_frequency"])
-                        == analysis.fft.sampling_frequency / 2
-                    )
-                ):
-                    annotation["type"] = Annotation.Type.WEAK
-                    annotation["start_frequency"] = None
-                    annotation["end_frequency"] = None
-                    annotation["start_time"] = None
-                    annotation["end_time"] = None
-                elif row["start_datetime"] == row["end_datetime"] and (
-                    row["start_frequency"] == row["end_frequency"]
-                    or annotation["end_frequency"] is None
-                ):
-                    annotation["type"] = Annotation.Type.POINT
-                    annotation["end_frequency"] = None
-                    annotation["end_time"] = None
-                else:
-                    annotation["type"] = Annotation.Type.BOX
-
-                if not Annotation.objects.filter(**annotation).exists():
-                    annotations.append(
-                        {
-                            **annotation,
-                            "spectrogram": annotation["spectrogram"].id,
-                            "analysis": annotation["analysis"].id,
-                            "detector_configuration": annotation[
-                                "detector_configuration"
-                            ].id,
-                        }
-                    )
+                annotation = self._get_annotation_for_spectrogram(
+                    phase, analysis, s, row
+                )
+                if annotation is not None:
+                    annotations.append(annotation)
 
         serializer = AnnotationSerializer(
             data=annotations,
@@ -176,7 +101,8 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
             context={
                 "request": request,
                 "phase": phase,
-                # See AnnotationResultImportSerializer.validate_datetime & AnnotationResultImportSerializer.validate_frequency for force use
+                # See AnnotationResultImportSerializer.validate_datetime
+                # & AnnotationResultImportSerializer.validate_frequency for force use
                 "force_max_frequency": get_boolean_query_param(
                     self.request, "force_max_frequency"
                 ),
@@ -193,3 +119,94 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
         ).update(status=AnnotationTask.Status.CREATED)
 
         return Response(status=status.HTTP_201_CREATED)
+
+    def _get_annotation_for_spectrogram(
+        self,
+        phase: AnnotationPhase,
+        analysis: SpectrogramAnalysis,
+        s: Spectrogram,
+        row: str,
+    ) -> Optional[dict]:
+        campaign: AnnotationCampaign = phase.annotation_campaign
+        confidence = None
+        if row["confidence__label"] and row["confidence__level"] is not None:
+            confidence = campaign.import_new_confidence(
+                label=row["confidence__label"],
+                level=row["confidence__level"],
+            )
+        annotation = {
+            "start_frequency": row["start_frequency"] or None,
+            "end_frequency": row["end_frequency"] or None,
+            "label": campaign.import_new_label(row["label__name"]),
+            "confidence": confidence,
+            "annotation_phase": phase,
+            "annotator": None,
+            "analysis": analysis,
+            "annotator_expertise_level": None,
+            "is_update_of": None,
+            "detector_configuration": DetectorConfiguration.objects.get_or_create(
+                configuration=row["detector_configuration__configuration"],
+                detector=Detector.objects.get_or_create(name=row["detector__name"])[0],
+            )[0],
+            "spectrogram": s,
+        }
+
+        start_time, end_time = self._get_annotation_time_for_spectrogram(s, row)
+        annotation["start_time"] = start_time
+        annotation["end_time"] = end_time
+
+        none_start_frequency = (
+            annotation["start_frequency"] is None
+            or float(row["start_frequency"]) == 0.0
+        )
+        none_end_frequency = (
+            annotation["end_frequency"] is None
+            or float(row["end_frequency"]) == analysis.fft.sampling_frequency / 2
+        )
+
+        if (
+            start_time == 0
+            and to_seconds(s.end - s.start) == end_time
+            and none_start_frequency
+            and none_end_frequency
+        ):
+            annotation["type"] = Annotation.Type.WEAK
+            annotation["start_frequency"] = None
+            annotation["end_frequency"] = None
+            annotation["start_time"] = None
+            annotation["end_time"] = None
+        elif (
+            row["start_datetime"] == row["end_datetime"] or row["end_datetime"] is None
+        ) and (
+            row["start_frequency"] == row["end_frequency"]
+            or annotation["end_frequency"] is None
+        ):
+            annotation["type"] = Annotation.Type.POINT
+            annotation["end_frequency"] = None
+            annotation["end_time"] = None
+        else:
+            annotation["type"] = Annotation.Type.BOX
+
+        if Annotation.objects.filter(**annotation).exists():
+            return None
+        return {
+            **annotation,
+            "spectrogram": annotation["spectrogram"].id,
+            "analysis": annotation["analysis"].id,
+            "detector_configuration": annotation["detector_configuration"].id,
+        }
+
+    def _get_annotation_time_for_spectrogram(
+        self, s: Spectrogram, row: str
+    ) -> (int, int):
+        start: datetime = datetime.fromisoformat(row["start_datetime"])
+        end: datetime = datetime.fromisoformat(row["end_datetime"])
+        if start < s.start:
+            start_time = 0
+        else:
+            start_time = to_seconds(start - s.start)
+        if end > s.end:
+            end_time = to_seconds(s.end - s.start)
+        else:
+            end_time = to_seconds(end - s.start)
+        return start_time, end_time

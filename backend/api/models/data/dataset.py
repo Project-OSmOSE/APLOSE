@@ -14,7 +14,7 @@ from backend.aplose.models import User
 from .__abstract_dataset import AbstractDataset
 
 
-class DatasetManager(Manager):  # pylint: disable=too-few-public-methods
+class DatasetManager(Manager):
     """Dataset manager"""
 
     def get_or_create(self, name: str, path: str, owner: User, legacy: bool = False):

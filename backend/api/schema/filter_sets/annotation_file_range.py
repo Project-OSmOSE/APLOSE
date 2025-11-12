@@ -8,6 +8,7 @@ from backend.utils.schema.filters import BaseFilterSet
 class AnnotationFileRangeFilterSet(BaseFilterSet):
     """AnnotationFileRange filters"""
 
+    # pylint: disable=duplicate-code
     annotation_phase__phase = TypedFilter(
         input_type=AnnotationPhaseType,
         field_name="annotation_phase__phase",
@@ -15,7 +16,6 @@ class AnnotationFileRangeFilterSet(BaseFilterSet):
     )
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = AnnotationFileRange
         fields = {
             "annotator": ("exact",),

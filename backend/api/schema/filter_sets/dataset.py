@@ -7,7 +7,6 @@ class DatasetFilterSet(FilterSet):
     """Dataset filters"""
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = Dataset
         fields = {}
 

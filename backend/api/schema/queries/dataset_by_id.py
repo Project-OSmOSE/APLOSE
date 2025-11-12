@@ -5,7 +5,7 @@ from backend.utils.schema import GraphQLPermissions, GraphQLResolve
 
 
 @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
-def resolve_dataset(self, info, id: int):  # pylint: disable=redefined-builtin
+def resolve_dataset(self, info, id: int):
     """Get dataset by id"""
     return DatasetNode.get_node(info, id)
 

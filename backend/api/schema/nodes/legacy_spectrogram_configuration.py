@@ -15,7 +15,6 @@ class LegacySpectrogramConfigurationNode(BaseObjectType):
     multi_linear_frequency_scale = MultiLinearScaleNode()
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = LegacySpectrogramConfiguration
         fields = "__all__"
         filter_fields = {}

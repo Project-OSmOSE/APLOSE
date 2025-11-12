@@ -5,7 +5,7 @@ from backend.utils.schema import GraphQLPermissions, GraphQLResolve
 
 
 @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
-def resolve_campaign(self, info, id: int):  # pylint: disable=redefined-builtin
+def resolve_campaign(self, info, id: int):
     return AnnotationCampaignNode.get_node(info, id)
 
 

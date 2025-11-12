@@ -2,7 +2,7 @@ import graphene
 from graphene import ObjectType
 
 
-class ImportAnalysisNode(ObjectType):  # pylint: disable=too-few-public-methods
+class ImportAnalysisNode(ObjectType):
     """Type for import dataset"""
 
     name = graphene.NonNull(graphene.String)

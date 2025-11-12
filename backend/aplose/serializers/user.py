@@ -9,7 +9,7 @@ from backend.utils.serializers import EnumField
 
 
 # Serializers have too many false-positives on the following warnings:
-# pylint: disable=missing-function-docstring, abstract-method
+# pylint: disable=abstract-method
 
 
 class UserDisplayNameSerializer(serializers.SlugRelatedField):

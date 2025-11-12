@@ -1,3 +1,4 @@
+"""Annotation spectrogram connections"""
 import graphene
 from django.db.models import Q, Exists, OuterRef
 from graphene_django_pagination import PaginationConnection
@@ -9,9 +10,13 @@ from backend.utils.schema import AuthenticatedDjangoConnectionField
 
 
 class AnnotationSpectrogramConnectionField(AuthenticatedDjangoConnectionField):
+    """Annotation spectrogram connection field"""
+
     @property
     def type(self):
         class NodeConnection(PaginationConnection):
+            """Annotation spectrogram node connection"""
+
             total_count = graphene.NonNull(graphene.Int)
             resume_spectrogram_id = graphene.ID(
                 campaign_id=graphene.ID(required=True),
@@ -23,9 +28,11 @@ class AnnotationSpectrogramConnectionField(AuthenticatedDjangoConnectionField):
 
             class Meta:
                 node = self._type
-                name = "{}NodeConnection".format(self._type._meta.name)
+                name = f"{self._type._meta.name}NodeConnection"
 
             def resolve_total_count(self, info, **kwargs):
+                """Get spectrograms count"""
+                # pylint: disable=no-member
                 return self.iterable.distinct().count()
 
             def resolve_resume_spectrogram_id(
@@ -34,6 +41,8 @@ class AnnotationSpectrogramConnectionField(AuthenticatedDjangoConnectionField):
                 campaign_id: int,
                 phase: AnnotationPhaseType,
             ):
+                """Get spectrograms resume id"""
+                # pylint: disable=no-member
                 resume = self.iterable.filter(
                     ~Exists(
                         AnnotationTask.objects.filter(
@@ -49,6 +58,8 @@ class AnnotationSpectrogramConnectionField(AuthenticatedDjangoConnectionField):
             def resolve_previous_spectrogram_id(
                 self, info, spectrogram_id: int, **kwargs
             ):
+                """Get previous spectrogram id"""
+                # pylint: disable=no-member
                 current_spectrogram = Spectrogram.objects.get(pk=spectrogram_id)
 
                 previous: Spectrogram = self.iterable.filter(

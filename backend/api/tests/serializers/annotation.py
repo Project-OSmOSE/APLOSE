@@ -1,5 +1,3 @@
-# pylint: disable=missing-module-docstring, missing-class-docstring, missing-function-docstring, duplicate-code
-
 from django.test import TestCase
 from freezegun import freeze_time
 
@@ -11,8 +9,8 @@ from backend.api.models import (
     AcousticFeatures,
     SpectrogramAnalysis,
 )
-from backend.aplose.models import User
 from backend.api.serializers import AnnotationSerializer
+from backend.aplose.models import User
 from backend.utils.tests import all_fixtures
 
 features = {

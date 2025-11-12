@@ -43,6 +43,7 @@ class AnnotationTask(models.Model):
     @property
     def annotations(self):
         """Annotations linked to this task"""
+        # pylint: disable=no-member
         if self.annotation_phase.phase == "A":
             return self.spectrogram.annotations.filter(
                 annotation_phase=self.annotation_phase,
@@ -54,6 +55,7 @@ class AnnotationTask(models.Model):
 
     @property
     def comments(self):
+        """Recover task comments"""
         return self.spectrogram.annotation_comments.filter(
             annotation_phase=self.annotation_phase,
             annotation__isnull=True,

@@ -15,7 +15,7 @@ from .__abstract_time_segment import TimeSegment
 from .spectrogram_analysis import SpectrogramAnalysis
 
 
-class SpectrogramManager(Manager):  # pylint: disable=too-few-public-methods
+class SpectrogramManager(Manager):
     """Spectrogram manager"""
 
     def import_all_for_analysis(self, analysis: SpectrogramAnalysis) -> ["Spectrogram"]:

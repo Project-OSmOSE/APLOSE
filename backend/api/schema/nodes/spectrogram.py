@@ -11,7 +11,6 @@ class SpectrogramNode(BaseObjectType):
     duration = Int(required=True)
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = Spectrogram
         fields = "__all__"
         filterset_class = SpectrogramFilterSet

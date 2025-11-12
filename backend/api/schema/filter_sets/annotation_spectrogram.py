@@ -44,38 +44,7 @@ class AnnotationSpectrogramFilterSet(BaseFilterSet):
     def filter_queryset(self, queryset: QuerySet[Spectrogram]):
         queryset = super().filter_queryset(queryset)
 
-        file_ranges = AnnotationFileRange.objects.all()
-        tasks = AnnotationTask.objects.all()
-        annotations = Annotation.objects.all()
-
-        phase_type = self.data.get("phase")
-        if phase_type:
-            file_ranges = file_ranges.filter(annotation_phase__phase=phase_type)
-            tasks = tasks.filter(annotation_phase__phase=phase_type)
-
-        campaign_id = self.data.get("annotation_campaign")
-        if campaign_id:
-            file_ranges = file_ranges.filter(
-                annotation_phase__annotation_campaign_id=campaign_id
-            )
-            tasks = tasks.filter(annotation_phase__annotation_campaign_id=campaign_id)
-            annotations = annotations.filter(
-                annotation_phase__annotation_campaign_id=campaign_id
-            )
-
-        if phase_type and campaign_id:
-            if phase_type == AnnotationPhase.Type.ANNOTATION:
-                annotations = annotations.filter(
-                    annotation_phase__phase=phase_type,
-                    annotation_phase__annotation_campaign_id=campaign_id,
-                )
-
-        annotator_id = self.data.get("annotator")
-        if annotator_id:
-            file_ranges = file_ranges.filter(annotator_id=annotator_id)
-            tasks = tasks.filter(annotator_id=annotator_id)
-            if phase_type == AnnotationPhase.Type.ANNOTATION:
-                annotations = annotations.filter(annotator_id=annotator_id)
+        file_ranges, tasks, annotations = self._get_querysets_for_filter()
 
         # Filter through existing file range
         queryset = queryset.filter(
@@ -140,3 +109,46 @@ class AnnotationSpectrogramFilterSet(BaseFilterSet):
                 queryset = queryset.filter(~q)
 
         return queryset
+
+    def _get_querysets_for_filter(
+        self,
+    ) -> (
+        QuerySet[AnnotationFileRange],
+        QuerySet[AnnotationTask],
+        QuerySet[Annotation],
+    ):
+
+        file_ranges = AnnotationFileRange.objects.all()
+        tasks = AnnotationTask.objects.all()
+        annotations = Annotation.objects.all()
+
+        phase_type = self.data.get("phase")
+        if phase_type:
+            file_ranges = file_ranges.filter(annotation_phase__phase=phase_type)
+            tasks = tasks.filter(annotation_phase__phase=phase_type)
+
+        campaign_id = self.data.get("annotation_campaign")
+        if campaign_id:
+            file_ranges = file_ranges.filter(
+                annotation_phase__annotation_campaign_id=campaign_id
+            )
+            tasks = tasks.filter(annotation_phase__annotation_campaign_id=campaign_id)
+            annotations = annotations.filter(
+                annotation_phase__annotation_campaign_id=campaign_id
+            )
+
+        if phase_type and campaign_id:
+            if phase_type == AnnotationPhase.Type.ANNOTATION:
+                annotations = annotations.filter(
+                    annotation_phase__phase=phase_type,
+                    annotation_phase__annotation_campaign_id=campaign_id,
+                )
+
+        annotator_id = self.data.get("annotator")
+        if annotator_id:
+            file_ranges = file_ranges.filter(annotator_id=annotator_id)
+            tasks = tasks.filter(annotator_id=annotator_id)
+            if phase_type == AnnotationPhase.Type.ANNOTATION:
+                annotations = annotations.filter(annotator_id=annotator_id)
+
+        return file_ranges, tasks, annotations

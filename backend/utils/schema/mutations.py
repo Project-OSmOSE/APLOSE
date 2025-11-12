@@ -1,7 +1,7 @@
 from typing import Optional
 
-from django.db.models import QuerySet
 import graphene
+from django.db.models import QuerySet
 from graphene import InputField, ClientIDMutation, InputObjectType
 from graphene.types.utils import yank_fields_from_attrs
 from graphene_django.rest_framework.mutation import (
@@ -38,9 +38,11 @@ class ListSerializerMutation(ClientIDMutation):
         **options,
     ):
         if not serializer_class:
+            # pylint: disable=broad-exception-raised
             raise Exception("serializer_class is required for the SerializerMutation")
 
         if "update" not in model_operations and "create" not in model_operations:
+            # pylint: disable=broad-exception-raised
             raise Exception('model_operations must contain "create" and/or "update"')
 
         serializer = serializer_class()
@@ -117,8 +119,7 @@ class ListSerializerMutation(ClientIDMutation):
         if serializer.is_valid():
             serializer.save()
             return cls(errors=None)
-        else:
-            errors = []
-            for e in serializer.errors:
-                errors.append(ErrorType.from_errors(e))
-            return cls(errors=errors)
+        errors = []
+        for e in serializer.errors:
+            errors.append(ErrorType.from_errors(e))
+        return cls(errors=errors)

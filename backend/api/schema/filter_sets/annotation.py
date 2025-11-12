@@ -15,7 +15,6 @@ class AnnotationFilterSet(BaseFilterSet):
     annotator = IDFilter(method="fake")
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = Annotation
         fields = {
             "confidence__label": ("exact",),

@@ -11,7 +11,7 @@ class SpectrogramConnection(AuthenticatedDjangoConnectionField):
         class NodeConnection(PaginationConnection):
             class Meta:
                 node = self._type
-                name = "{}NodeConnection".format(self._type._meta.name)
+                name = f"{self._type._meta.name}NodeConnection"
 
             total_count = graphene.NonNull(graphene.Int)
 

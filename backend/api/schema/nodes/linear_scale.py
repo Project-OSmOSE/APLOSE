@@ -6,7 +6,6 @@ class LinearScaleNode(BaseObjectType):
     """LinearScale schema"""
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = LinearScale
         fields = "__all__"
         filter_fields = ()

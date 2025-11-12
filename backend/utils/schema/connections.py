@@ -7,7 +7,6 @@ from .errors import UnauthorizedError
 class AuthenticatedDjangoConnectionField(DjangoPaginationConnectionField):
     """Extended DjangoPaginationConnectionField - Only allow authenticated queries"""
 
-    # pylint: disable=too-many-positional-arguments, too-many-arguments
     @classmethod
     def resolve_queryset(
         cls, connection, iterable, info, args, filtering_args, filterset_class

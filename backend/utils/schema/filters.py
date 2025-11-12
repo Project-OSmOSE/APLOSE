@@ -14,12 +14,12 @@ class IDFormField(GlobalIDFormField):
             return None
 
         try:
-            if type(value) == int:
+            if isinstance(value, int):
                 IntegerField().clean(value)
             else:
                 CharField().clean(value)
-        except ValidationError:
-            raise ValidationError(self.error_messages["invalid"])
+        except ValidationError as exc:
+            raise ValidationError(self.error_messages["invalid"]) from exc
 
         return value
 
@@ -37,7 +37,7 @@ class IDFilter(GlobalIDFilter):
             return qs
         if self.distinct:
             qs = qs.distinct()
-        lookup = "%s__%s" % (self.field_name, self.lookup_expr)
+        lookup = f"{self.field_name}__{self.lookup_expr}"
         qs = self.get_method(qs)(**{lookup: value})
         return qs
 

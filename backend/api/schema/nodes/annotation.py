@@ -1,11 +1,11 @@
+from backend.api.models import Annotation
 from backend.api.schema.enums import AnnotationType
+from backend.api.schema.filter_sets import AnnotationFilterSet
 from backend.utils.schema import AuthenticatedDjangoConnectionField
 from backend.utils.schema.types import BaseObjectType, BaseNode
 from .acoustic_features import AcousticFeaturesNode
 from .annotation_comment import AnnotationCommentNode
 from .annotation_validation import AnnotationValidationNode
-from backend.api.models import Annotation
-from backend.api.schema.filter_sets import AnnotationFilterSet
 
 
 class AnnotationNode(BaseObjectType):
@@ -20,7 +20,6 @@ class AnnotationNode(BaseObjectType):
     )
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = Annotation
         fields = "__all__"
         filterset_class = AnnotationFilterSet

@@ -12,7 +12,7 @@ from graphene_django.types import DjangoObjectTypeOptions
 from graphql import GraphQLResolveInfo
 from requests import Request
 
-from . import NotFoundError
+from .errors import NotFoundError
 from .permissions import GraphQLResolve, GraphQLPermissions
 
 
@@ -26,7 +26,6 @@ class ApiObjectType(DjangoObjectType):
     pk = PK(required=True)
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         abstract = True
 
     @classmethod
@@ -37,9 +36,6 @@ class ApiObjectType(DjangoObjectType):
 
 class ModelContextFilter:
     """Base context filter"""
-
-    def __init__(self):
-        super().__init__()
 
     @classmethod
     def get_queryset(cls, context: Request):
@@ -79,10 +75,7 @@ class BaseObjectType(DjangoObjectType):
         """Resolve Queryset"""
         if cls._meta.context_filter is None:
             return queryset
-        else:
-            return cls._meta.context_filter.get_queryset(
-                info.context, queryset=queryset
-            )
+        return cls._meta.context_filter.get_queryset(info.context, queryset=queryset)
 
     @classmethod
     def get_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):

@@ -1,3 +1,4 @@
+"""Annotation phase context filter"""
 from django.db.models import QuerySet, Q, Exists, OuterRef
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -40,8 +41,8 @@ class AnnotationPhaseContextFilter:
             return get_object_or_404(
                 cls.get_queryset(context, queryset=queryset), **kwargs
             )
-        except Http404:
-            raise NotFoundError()
+        except Http404 as not_found:
+            raise NotFoundError() from not_found
 
     @classmethod
     def get_edit_node_or_fail(cls, context: Request, **kwargs) -> AnnotationPhase:

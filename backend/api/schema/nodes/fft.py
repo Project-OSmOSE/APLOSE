@@ -8,7 +8,6 @@ class FFTNode(BaseObjectType):
     """FFT schema"""
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = FFT
         fields = "__all__"
         filter_fields = {}

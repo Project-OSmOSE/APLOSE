@@ -11,7 +11,6 @@ class ConfidenceSetNode(BaseObjectType):
     """ConfidenceSet schema"""
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = ConfidenceSet
         fields = "__all__"
         filter_fields = "__all__"

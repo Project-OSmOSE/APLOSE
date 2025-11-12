@@ -10,7 +10,6 @@ class ConfidenceNode(BaseObjectType):
     is_default = graphene.Boolean()
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = Confidence
         fields = "__all__"
         filter_fields = "__all__"

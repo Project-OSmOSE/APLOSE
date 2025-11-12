@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0090_auto_20250909_1118'),
+        ("api", "0090_auto_20250909_1118"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='detectorconfiguration',
-            name='configuration',
-            field=models.TextField(default=''),
+            model_name="detectorconfiguration",
+            name="configuration",
+            field=models.TextField(default=""),
             preserve_default=False,
         ),
         migrations.AlterUniqueTogether(
-            name='detectorconfiguration',
-            unique_together={('configuration', 'detector')},
+            name="detectorconfiguration",
+            unique_together={("configuration", "detector")},
         ),
     ]

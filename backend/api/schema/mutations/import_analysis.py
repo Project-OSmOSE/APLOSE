@@ -16,7 +16,7 @@ from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 class ImportAnalysisMutation(Mutation):
     """"Import spectrogram analysis mutation""" ""
 
-    class Arguments:  # pylint: disable=too-few-public-methods, missing-class-docstring
+    class Arguments:
         dataset_name = String(required=True)
         dataset_path = String(required=True)
         legacy = Boolean()

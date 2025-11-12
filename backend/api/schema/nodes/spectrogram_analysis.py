@@ -19,7 +19,6 @@ class SpectrogramAnalysisNode(BaseObjectType):
     legacy_configuration = LegacySpectrogramConfigurationNode()
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = SpectrogramAnalysis
         fields = "__all__"
         filterset_class = SpectrogramAnalysisFilterSet

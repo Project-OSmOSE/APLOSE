@@ -9,7 +9,6 @@ class AnnotationValidationNode(BaseObjectType):
     """AnnotationValidation schema"""
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = AnnotationValidation
         fields = "__all__"
         filterset_class = AnnotationValidationFilterSet

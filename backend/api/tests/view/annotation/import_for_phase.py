@@ -1,5 +1,4 @@
 """Test AnnotationViewSet"""
-# pylint: disable=missing-class-docstring, missing-function-docstring, duplicate-code, too-many-public-methods
 import os
 from typing import Optional
 

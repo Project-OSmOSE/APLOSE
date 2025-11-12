@@ -6,7 +6,7 @@ from backend.utils.schema import GraphQLPermissions, GraphQLResolve
 
 
 @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
-def resolve_spectrogram(self, info, id: int):  # pylint: disable=redefined-builtin
+def resolve_spectrogram(self, info, id: int):
     return Spectrogram.objects.get(pk=id)
 
 

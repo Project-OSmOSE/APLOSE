@@ -47,7 +47,6 @@ class AnnotationPhaseNode(BaseObjectType):
     user_completed_tasks_count = graphene.Int(required=True)
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = AnnotationPhase
         fields = "__all__"
         filterset_class = AnnotationPhaseFilterSet

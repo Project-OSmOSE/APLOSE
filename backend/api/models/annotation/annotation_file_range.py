@@ -44,9 +44,10 @@ class AnnotationFileRange(models.Model):
     )
 
     def save(self, *args, **kwargs):
+        # pylint: disable=no-member
+
         self.files_count = self.last_file_index - self.first_file_index + 1
 
-        # pylint: disable=no-member
         files = self.annotation_phase.annotation_campaign.spectrograms
 
         from_datetime = files[self.first_file_index].start
@@ -80,6 +81,7 @@ class AnnotationFileRange(models.Model):
     @property
     def annotations(self) -> QuerySet[Annotation]:
         """Get file range results"""
+        # pylint: disable=no-member
         if self.annotation_phase.phase == "V":
             campaign_id = self.annotation_phase.annotation_campaign_id
             return Annotation.objects.filter(

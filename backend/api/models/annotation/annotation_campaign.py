@@ -10,15 +10,15 @@ from django.utils import timezone
 
 from backend.aplose.models import User
 from .annotation_file_range import AnnotationFileRange
+from .confidence import Confidence
 from .confidence_set import ConfidenceSet, ConfidenceIndicatorSetIndicator
 from .label import Label
 from .label_set import LabelSet
-from .confidence import Confidence
 from ..common import Archive
 from ..data import Dataset, SpectrogramAnalysis, Spectrogram
 
 
-class AnnotationCampaignManager(Manager):  # pylint: disable=too-few-public-methods
+class AnnotationCampaignManager(Manager):
     """AnnotationCampaign custom manager"""
 
     def filter_user_access(self, user: User):
@@ -120,6 +120,7 @@ class AnnotationCampaign(models.Model):
 
     @property
     def spectrograms(self) -> QuerySet[Spectrogram]:
+        """Recover campaign spectrograms"""
         return Spectrogram.objects.filter(
             analysis__annotation_campaigns=self
         ).distinct()
@@ -191,7 +192,6 @@ class AnnotationCampaignAnalysis(models.Model):
 )
 def check_labels_features_in_label_set(sender, **kwargs):
     """Check added labels in labels_with_acoustic_features does belong to the campaign label_set"""
-    # pylint: disable=unused-argument
     action = kwargs.pop("action", None)
     if action != "pre_add":
         return

@@ -6,6 +6,8 @@ import {
   type GetAnnotationTaskQuery,
   getCampaignFulfilled,
   type GetCampaignQuery,
+  getCurrentUserFulfilled,
+  type GetCurrentUserQuery,
 } from '@/api';
 import type { GetAnnotationTaskQueryVariables } from '@/api/annotation-task/annotation-task.generated';
 import { convertGqlToAnnotations } from '@/features/Annotator/Annotation';
@@ -18,6 +20,7 @@ type ConfidenceState = {
 
   _defaultConfidence?: string;
   _campaignID?: string;
+  _userID?: string;
 }
 
 const initialState: ConfidenceState = {
@@ -51,12 +54,17 @@ export const AnnotatorConfidenceSlice = createSlice({
         state.focus = state._defaultConfidence ?? initialState.focus
       }
     })
+    builder.addMatcher(getCurrentUserFulfilled, (state: ConfidenceState, action: {
+      payload: GetCurrentUserQuery
+    }) => {
+      state._userID = action.payload.currentUser?.id
+    })
     builder.addMatcher(getAnnotationTaskFulfilled, (state: ConfidenceState, action: {
       payload: GetAnnotationTaskQuery
       meta: { arg: { originalArgs: GetAnnotationTaskQueryVariables } }
     }) => {
       const annotations = action.payload.annotationSpectrogramById?.task?.annotations?.results.filter(a => a !== null).map(a => a!) ?? []
-      const defaultAnnotation = [ ...convertGqlToAnnotations(annotations) ].reverse().pop();
+      const defaultAnnotation = [ ...convertGqlToAnnotations(annotations, action.meta.arg.originalArgs.phaseType, state._userID) ].reverse().pop();
       state.focus = defaultAnnotation?.update?.confidence ?? defaultAnnotation?.confidence ?? state._defaultConfidence ?? initialState.focus
     })
   },

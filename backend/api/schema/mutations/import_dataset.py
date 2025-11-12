@@ -25,7 +25,6 @@ class ImportDatasetMutation(Mutation):
     """Import dataset mutation"""
 
     class Arguments:
-        # pylint: disable=too-few-public-methods, missing-class-docstring
         name = String(required=True)
         path = String(required=True)
         legacy = Boolean()

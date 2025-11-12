@@ -1,3 +1,4 @@
+"""Annotation context filter"""
 from django.db.models import QuerySet, Q, Exists, OuterRef
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -64,8 +65,8 @@ class AnnotationContextFilter:
         """Get node or fail depending on the context"""
         try:
             return get_object_or_404(cls.get_queryset(context, **kwargs), **kwargs)
-        except Http404:
-            raise NotFoundError()
+        except Http404 as not_found:
+            raise NotFoundError() from not_found
 
     @classmethod
     def get_edit_node_or_fail(cls, context: Request, **kwargs) -> Annotation:

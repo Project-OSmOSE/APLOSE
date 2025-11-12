@@ -1,5 +1,6 @@
+"""Context filters"""
+from .annotation import AnnotationContextFilter
 from .annotation_campaign import AnnotationCampaignContextFilter
 from .annotation_comment import AnnotationCommentContextFilter
 from .annotation_file_range import AnnotationFileRangeContextFilter
 from .annotation_phase import AnnotationPhaseContextFilter
-from .annotation import AnnotationContextFilter

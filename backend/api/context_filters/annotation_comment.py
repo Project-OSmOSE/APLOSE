@@ -1,3 +1,4 @@
+"""Annotation comment context filter"""
 from django.db.models import QuerySet, Q, Exists, OuterRef
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -18,6 +19,7 @@ class AnnotationCommentContextFilter:
         cls, context: Request, queryset=AnnotationComment.objects.all(), **kwargs
     ) -> QuerySet[AnnotationComment]:
         """Get queryset depending on the context"""
+        # pylint: disable=duplicate-code
         queryset = queryset.filter(**kwargs)
         if context.user.is_staff or context.user.is_superuser:
             return queryset
@@ -51,8 +53,8 @@ class AnnotationCommentContextFilter:
         """Get node or fail depending on the context"""
         try:
             return get_object_or_404(cls.get_queryset(context, **kwargs), **kwargs)
-        except Http404:
-            raise NotFoundError()
+        except Http404 as not_found:
+            raise NotFoundError() from not_found
 
     @classmethod
     def get_edit_node_or_fail(cls, context: Request, **kwargs) -> AnnotationComment:

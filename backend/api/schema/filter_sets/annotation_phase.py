@@ -24,7 +24,6 @@ class AnnotationPhaseFilterSet(BaseFilterSet):
     search = CharFilter(method="search_filter", label="search")
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = AnnotationPhase
         fields = {
             "annotation_campaign_id": ("exact",),
@@ -35,7 +34,6 @@ class AnnotationPhaseFilterSet(BaseFilterSet):
     order_by = OrderingFilter(fields=("phase",))
 
     def search_filter(self, queryset, name, value):
-        # pylint: disable=unused-argument
         """Search an AnnotationPhase"""
         return queryset.filter(
             Q(annotation_campaign__name__icontains=value)

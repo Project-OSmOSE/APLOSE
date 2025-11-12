@@ -22,7 +22,7 @@ from .legacy_spectrogram_configuration import LegacySpectrogramConfiguration
 from .scales import get_frequency_scales, LinearScale, MultiLinearScale
 
 
-class SpectrogramAnalysisManager(Manager):  # pylint: disable=too-few-public-methods
+class SpectrogramAnalysisManager(Manager):
     """Spectrogram analysis manager"""
 
     def import_for_dataset(
@@ -205,6 +205,7 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
     @deprecated("Related to legacy OSEkit")
     def legacy_audio_metadatum_csv(self) -> str:
         """Legacy audio metadata CSV export"""
+        # pylint: disable=no-member
         header = [
             "dataset",
             "analysis",
@@ -254,6 +255,7 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
     @deprecated("Related to legacy OSEkit")
     def legacy_spectrogram_configuration_csv(self) -> str:
         """Legacy spectrogram configuration CSV export"""
+        # pylint: disable=no-member
 
         header = [
             "dataset_name",

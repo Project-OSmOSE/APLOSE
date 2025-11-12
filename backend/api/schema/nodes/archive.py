@@ -8,7 +8,6 @@ class ArchiveNode(BaseObjectType):
     """Archive schema"""
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = Archive
         fields = "__all__"
         filter_fields = "__all__"

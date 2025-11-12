@@ -11,13 +11,9 @@ from ...utils.schema import PK
 class OSmOSEWebsiteQuery(graphene.ObjectType):
     """OSmOSE Website query"""
 
-    # pylint: disable=too-few-public-methods
-
     all_website_projects = DjangoPaginationConnectionField(WebsiteProjectNode)
     website_projet_by_id = Field(WebsiteProjectNode, pk=PK(required=True))
 
-    def resolve_website_projet_by_id(
-        self, info, pk: int
-    ):  # pylint: disable=unused-argument
+    def resolve_website_projet_by_id(self, info, pk: int):
         """Return website project by id"""
         return WebsiteProject.objects.get(pk=pk)

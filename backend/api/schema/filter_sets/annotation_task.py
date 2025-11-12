@@ -16,7 +16,6 @@ class AnnotationTaskFilterSet(BaseFilterSet):
     annotations__annotator = IDFilter(method="fake_filter")
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = AnnotationTask
         fields = {
             "annotator": ("exact",),

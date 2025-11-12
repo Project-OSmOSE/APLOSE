@@ -29,7 +29,6 @@ class SpectrogramFilterSet(BaseFilterSet):
     annotated_with_features = BooleanFilter(method="fake_filter")
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = Spectrogram
         fields = {
             "start": ["exact", "lt", "lte", "gt", "gte"],

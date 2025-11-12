@@ -32,14 +32,11 @@ class DeploymentFilter(MetadataxDeploymentFilter):
     class Meta(MetadataxDeploymentFilter.Meta):
         """Override of Metadatax deployment filter"""
 
-        # pylint: disable=missing-docstring
-
 
 class DeploymentNode(MetadataxDeploymentNode):
     """Override of Metadatax deployment node"""
 
     class Meta:
-        # pylint: disable=missing-docstring, too-few-public-methods
         model = Deployment
         fields = "__all__"
         filterset_class = DeploymentFilter
@@ -49,7 +46,7 @@ class DeploymentNode(MetadataxDeploymentNode):
 class ProjectNodeOverride(MetadataxProjectNode):
     website_project = Field(WebsiteProjectNode)
 
-    class Meta:  # pylint: disable=too-few-public-methods
+    class Meta:
         model = Project
         fields = "__all__"
         filterset_class = ProjectFilter
@@ -83,8 +80,6 @@ class Query(
 
     debug = graphene.Field(DjangoDebug, name="_debug")
 
-    # pylint: disable=too-few-public-methods
-
     all_deployments = DjangoPaginationConnectionField(DeploymentNode)
     all_channel_configurations = DjangoPaginationConnectionField(
         ChannelConfigurationNode, filterset_class=ChannelConfigurationFilterSet
@@ -97,7 +92,7 @@ class Mutation(
     AploseMutation,
     MetadataxMutation,
     graphene.ObjectType,
-):  # pylint: disable=too-few-public-methods
+):
     """Global mutation"""
 
     debug = graphene.Field(DjangoDebug, name="_debug")

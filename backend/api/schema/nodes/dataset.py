@@ -20,7 +20,6 @@ class DatasetNode(BaseObjectType):
     end = graphene.DateTime()
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = Dataset
         fields = "__all__"
         filterset_class = DatasetFilterSet

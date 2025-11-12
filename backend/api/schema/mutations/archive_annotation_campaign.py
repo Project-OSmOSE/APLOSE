@@ -18,20 +18,17 @@ from backend.utils.schema import (
 )
 
 
-class ArchiveAnnotationCampaignMutation(
-    Mutation
-):  # pylint: disable=too-few-public-methods
+class ArchiveAnnotationCampaignMutation(Mutation):
     """Archive annotation campaign mutation"""
 
     class Arguments:
-        # pylint: disable=too-few-public-methods, missing-class-docstring
         id = ID(required=True)
 
     ok = Boolean(required=True)
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     @transaction.atomic
-    def mutate(self, info, id: int):  # pylint: disable=redefined-builtin
+    def mutate(self, info, id: int):
         """Archive annotation campaign at current date by request user"""
         campaign: QuerySet[
             AnnotationCampaign

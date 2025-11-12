@@ -12,7 +12,6 @@ class UserGroupNode(BaseObjectType):
     """User group node"""
 
     class Meta:
-        # pylint: disable=too-few-public-methods, missing-class-docstring
         model = AnnotatorGroup
         exclude = ("annotators",)
         filter_fields = {}
@@ -22,4 +21,5 @@ class UserGroupNode(BaseObjectType):
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_users(self: AnnotatorGroup, info):
+        # pylint: disable=no-member
         return self.annotators.all()

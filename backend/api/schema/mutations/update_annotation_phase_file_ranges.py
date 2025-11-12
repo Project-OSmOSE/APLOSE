@@ -6,8 +6,8 @@ from django.db.models import Q
 from graphene_django.types import ErrorType
 from graphql import GraphQLError
 
-from backend.api.models import AnnotationFileRange, AnnotationPhase
 from backend.api.context_filters import AnnotationPhaseContextFilter
+from backend.api.models import AnnotationFileRange, AnnotationPhase
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 from backend.utils.schema.types import AuthenticatedModelFormMutation
@@ -61,6 +61,7 @@ class UpdateAnnotationFileRangeMutation(AuthenticatedModelFormMutation):
 
 def clean_file_ranges(ids: list[int]):
     """Clean connected ranges to limit the number of different items"""
+    # pylint: disable=duplicate-code
     return_ids = []
     for range_id in ids:
         queryset = AnnotationFileRange.objects.filter(id=range_id)

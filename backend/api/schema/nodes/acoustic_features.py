@@ -9,7 +9,6 @@ class AcousticFeaturesNode(BaseObjectType):
     trend = SignalTrendType()
 
     class Meta:
-        # pylint: disable=missing-class-docstring, too-few-public-methods
         model = AcousticFeatures
         fields = "__all__"
         interfaces = (BaseNode,)
