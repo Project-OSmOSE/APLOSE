@@ -32,17 +32,18 @@ const TEST = {
         getAnnotationTask: 'unsubmitted',
       })
       await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
+      const type = AnnotationType.Box
 
       await expect(page.getByText('No results')).toBeVisible()
-      await page.annotator.addWeak(LABELS.classic)
+      await page.annotator.addWeak(LABELS.classic, { method: 'mouse' })
 
       await test.step('Select weak annotation', async () => {
-        await page.annotator.getAnnotationForLabel(LABELS.classic).click()
+        await page.annotator.getAnnotationForLabel(LABELS.classic, { type: AnnotationType.Weak }).click()
       })
 
       const bounds = await test.step('Add box annotation', async () => {
-        const bounds = await page.annotator.draw(AnnotationType.Box);
-        expect(page.annotator.getAnnotationForLabel(LABELS.classic, 'strong')).toBeTruthy()
+        const bounds = await page.annotator.draw(type);
+        expect(page.annotator.getAnnotationForLabel(LABELS.classic, { type })).toBeTruthy()
         await expect(page.annotator.annotationsBlock.getByText(Math.floor(bounds.startTime).toString()).first()).toBeVisible();
         await expect(page.annotator.annotationsBlock.getByText(Math.floor(bounds.endTime).toString()).first()).toBeVisible();
         await expect(page.annotator.annotationsBlock.getByText(bounds.startFrequency.toString()).first()).toBeVisible();
@@ -53,7 +54,7 @@ const TEST = {
       await test.step('Submit', async () => {
         const [ request ] = await Promise.all([
           page.waitForRequest(gqlURL),
-          page.annotator.submit(),
+          page.annotator.submit({ method: 'mouse' }),
         ])
         const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;
         expect(variables.campaignID).toEqual(campaign.id);
@@ -85,16 +86,17 @@ const TEST = {
         getAnnotationTask: 'submitted',
       })
       await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
+      const type = AnnotationType.Box
 
       await test.step('Remove box annotation', async () => {
-        await page.annotator.removeStrong(LABELS.classic, method)
-        await expect(page.annotator.getAnnotationForLabel(LABELS.classic, 'strong')).not.toBeVisible()
+        await page.annotator.removeStrong(LABELS.classic, { type, method })
+        await expect(page.annotator.getAnnotationForLabel(LABELS.classic, { type })).not.toBeVisible()
       })
 
       await test.step('Submit', async () => {
         const [ request ] = await Promise.all([
           page.waitForRequest(gqlURL),
-          page.annotator.submit(),
+          page.annotator.submit({ method }),
         ])
         const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;
         expect(variables.campaignID).toEqual(campaign.id);
@@ -118,11 +120,12 @@ const TEST = {
         } as AnnotationCommentInput ]);
       })
     }),
+
 }
 
 
 // Tests
-test.describe('[Spectrogram] Strong annotations', { tag: [ annotatorTag, essentialTag ] }, () => {
+test.describe('[Spectrogram] Box annotations', { tag: [ annotatorTag, essentialTag ] }, () => {
   const as: UserType = 'annotator'
 
   TEST.canAddBoxAnnotations({ as, phase: AnnotationPhaseType.Annotation })
@@ -132,4 +135,5 @@ test.describe('[Spectrogram] Strong annotations', { tag: [ annotatorTag, essenti
   TEST.canRemoveBoxAnnotations({ as, phase: AnnotationPhaseType.Annotation, method: 'shortcut' })
   TEST.canRemoveBoxAnnotations({ as, phase: AnnotationPhaseType.Verification, method: 'mouse' })
   TEST.canRemoveBoxAnnotations({ as, phase: AnnotationPhaseType.Verification, method: 'shortcut' })
+
 })

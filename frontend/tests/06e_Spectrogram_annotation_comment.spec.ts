@@ -16,6 +16,7 @@ import {
   type AnnotationCommentInput,
   type AnnotationInput,
   AnnotationPhaseType,
+  AnnotationType,
 } from '../src/api/types.gql-generated';
 import { gqlURL, interceptRequests } from './utils/mock';
 import type { SubmitTaskMutationVariables } from '../src/api/annotation-task/annotation-task.generated';
@@ -34,10 +35,10 @@ const TEST = {
       })
       await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
       await expect(page.getByText('No results')).toBeVisible()
-      await page.annotator.addWeak(LABELS.classic)
+      await page.annotator.addWeak(LABELS.classic, { method: 'mouse' })
 
       await test.step('Select annotation', async () => {
-        await page.annotator.getAnnotationForLabel(LABELS.classic).click()
+        await page.annotator.getAnnotationForLabel(LABELS.classic, { type: AnnotationType.Weak }).click()
       })
 
       await test.step('Add annotation comment', async () => {
@@ -56,7 +57,7 @@ const TEST = {
       })
 
       await test.step('Switch to annotation', async () => {
-        await page.annotator.getAnnotationForLabel(LABELS.classic).click()
+        await page.annotator.getAnnotationForLabel(LABELS.classic, { type: AnnotationType.Weak }).click()
         await expect(page.getByText(taskComment.comment)).not.toBeVisible();
         await expect(page.getByText(weakAnnotationComment.comment)).toBeVisible();
       })
@@ -64,7 +65,7 @@ const TEST = {
       await test.step('Submit', async () => {
         const [ request ] = await Promise.all([
           page.waitForRequest(gqlURL),
-          page.annotator.submit(),
+          page.annotator.submit({ method: 'mouse' }),
         ])
         const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;
         expect(variables.campaignID).toEqual(campaign.id);
@@ -102,7 +103,7 @@ const TEST = {
       })
 
       await test.step('Select annotation', async () => {
-        await page.annotator.getAnnotationForLabel(LABELS.classic).click()
+        await page.annotator.getAnnotationForLabel(LABELS.classic, { type: AnnotationType.Weak }).click()
       })
 
       await test.step('Clear annotation comment', async () => {
@@ -114,7 +115,7 @@ const TEST = {
       await test.step('Submit', async () => {
         const [ request ] = await Promise.all([
           page.waitForRequest(gqlURL),
-          page.annotator.submit(),
+          page.annotator.submit({ method: 'mouse' }),
         ])
         const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;
         expect(variables.campaignID).toEqual(campaign.id);

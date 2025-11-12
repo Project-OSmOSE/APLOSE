@@ -14,13 +14,16 @@ import {
   type AnnotationCommentInput,
   type AnnotationInput,
   AnnotationPhaseType,
+  AnnotationType,
 } from '../src/api/types.gql-generated';
 import type { SubmitTaskMutationVariables } from '../src/api/annotation-task/annotation-task.generated';
 import type { Params } from './utils/types';
 
 // Utils
+const type = AnnotationType.Weak
+
 const TEST = {
-  canAddWeakAnnotation: ({ as, phase, method, tag }: Params) =>
+  canAddWeakAnnotation: ({ as, phase, method, tag }: Pick<Params, 'as' | 'phase' | 'method' | 'tag'>) =>
     test(`Can add weak annotation using ${ method } on "${ phase } phase"`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: 'annotator',
@@ -33,15 +36,15 @@ const TEST = {
 
       await test.step('Add weak annotation', async () => {
         expect(await page.annotator.isLabelUsed(LABELS.classic)).toBeFalsy()
-        await page.annotator.addWeak(LABELS.classic, method)
-        expect(page.annotator.getAnnotationForLabel(LABELS.classic)).toBeTruthy()
+        await page.annotator.addWeak(LABELS.classic, { method })
+        expect(page.annotator.getAnnotationForLabel(LABELS.classic, { type })).toBeTruthy()
         expect(await page.annotator.isLabelUsed(LABELS.classic)).toBeTruthy()
       })
 
       await test.step('Submit', async () => {
         const [ request ] = await Promise.all([
           page.waitForRequest(gqlURL),
-          page.annotator.submit(method),
+          page.annotator.submit({ method }),
         ])
         const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;
         expect(variables.campaignID).toEqual(campaign.id);
@@ -58,7 +61,7 @@ const TEST = {
       })
     }),
 
-  canRemoveWeakAnnotation: ({ as, phase, method, tag }: Params) =>
+  canRemoveWeakAnnotation: ({ as, phase, method, tag }: Pick<Params, 'as' | 'phase' | 'method' | 'tag'>) =>
     test(`Can remove weak annotation using ${ method } on "${ phase } phase`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: 'annotator',
@@ -71,17 +74,17 @@ const TEST = {
 
       await test.step('Remove weak annotation', async () => {
         expect(await page.annotator.isLabelUsed(LABELS.classic)).toBeTruthy()
-        expect(page.annotator.getAnnotationForLabel(LABELS.classic)).toBeTruthy()
-        await page.annotator.removeWeak(LABELS.classic, method)
+        expect(page.annotator.getAnnotationForLabel(LABELS.classic, { type })).toBeTruthy()
+        await page.annotator.removeWeak(LABELS.classic, { method })
         await expect(page.getByRole('dialog').getByText('You are about to remove 2 annotations')).toBeVisible()
-        await page.annotator.confirmeRemoveWeak(LABELS.classic, method)
+        await page.annotator.confirmeRemoveWeak(LABELS.classic, { method })
         expect(await page.annotator.isLabelUsed(LABELS.classic)).toBeFalsy()
       })
 
       await test.step('Submit', async () => {
         const [ request ] = await Promise.all([
           page.waitForRequest(gqlURL),
-          page.annotator.submit(method),
+          page.annotator.submit({ method }),
         ])
         const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;
         expect(variables.campaignID).toEqual(campaign.id);
@@ -105,10 +108,10 @@ const TEST = {
       await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
 
       await expect(page.getByText('No results')).toBeVisible()
-      await page.annotator.addWeak(LABELS.classic)
+      await page.annotator.addWeak(LABELS.classic, { method: 'mouse' })
 
       await test.step('Select annotation', async () => {
-        await page.annotator.getAnnotationForLabel(LABELS.classic).click()
+        await page.annotator.getAnnotationForLabel(LABELS.classic, { type }).click()
       })
 
       await test.step('Update confidence', async () => {
@@ -127,7 +130,7 @@ const TEST = {
       await test.step('Submit', async () => {
         const [ request ] = await Promise.all([
           page.waitForRequest(gqlURL),
-          page.annotator.submit(),
+          page.annotator.submit({ method: 'mouse' }),
         ])
         const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;
         expect(variables.campaignID).toEqual(campaign.id);

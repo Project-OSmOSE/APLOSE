@@ -106,8 +106,8 @@ export class AnnotatorPage {
     return this.page.getByTestId('confidence-chip').getByText(confidence.label, { exact: true })
   }
 
-  getAnnotationForLabel(label: Label, which: 'weak' | 'strong' = 'weak'): Locator {
-    return this.annotationsBlock.getByText(label.name).nth(which === 'weak' ? 0 : 1)
+  getAnnotationForLabel(label: Label, { type }: Pick<Params, 'type'>): Locator {
+    return this.annotationsBlock.getByText(label.name).nth(type === AnnotationType.Weak ? 0 : 1)
   }
 
   async isLabelUsed(label: Label): Promise<boolean> {
@@ -115,7 +115,7 @@ export class AnnotatorPage {
     return outline !== 'true';
   }
 
-  async addWeak(label: Label, method: 'mouse' | 'shortcut' = 'mouse') {
+  async addWeak(label: Label, { method }: Pick<Params, 'method'>) {
     switch (method) {
       case 'mouse':
         await this.getLabelChip(label).click()
@@ -126,19 +126,19 @@ export class AnnotatorPage {
     }
   }
 
-  async removeWeak(label: Label, method: 'mouse' | 'shortcut' = 'mouse') {
+  async removeWeak(label: Label, { method }: Pick<Params, 'method'>) {
     switch (method) {
       case 'mouse':
         await this.getLabelChip(label).getByTestId('remove-label').click()
         break;
       case 'shortcut':
-        await this.getAnnotationForLabel(label).click() // Set focus
+        await this.getAnnotationForLabel(label, { type: AnnotationType.Weak }).click() // Set focus
         await this.page.keyboard.press('Delete')
         break;
     }
   }
 
-  async confirmeRemoveWeak(label: Label, method: 'mouse' | 'shortcut' = 'mouse') {
+  async confirmeRemoveWeak(label: Label, { method }: Pick<Params, 'method'>) {
     switch (method) {
       case 'mouse':
         await this.page.getByRole('dialog').getByRole('button', { name: `Remove "${ label.name }" annotations` }).click()
@@ -149,7 +149,7 @@ export class AnnotatorPage {
     }
   }
 
-  async submit(method: 'mouse' | 'shortcut' = 'mouse') {
+  async submit({ method }: Pick<Params, 'method'>) {
     switch (method) {
       case 'mouse':
         await this.submitButton.click()
@@ -160,9 +160,9 @@ export class AnnotatorPage {
     }
   }
 
-  async removeStrong(label: Label, method: 'mouse' | 'shortcut' = 'mouse'): Promise<void> {
+  async removeStrong(label: Label, { type, method }: Pick<Params, 'type' | 'method'>): Promise<void> {
     // Focus
-    await this.getAnnotationForLabel(label, 'strong').click()
+    await this.getAnnotationForLabel(label, { type }).click()
     switch (method) {
       case 'mouse':
         await this.page.getByTestId('remove-box').click()
@@ -170,40 +170,6 @@ export class AnnotatorPage {
       case 'shortcut':
         await this.page.keyboard.press('Delete')
         break;
-    }
-  }
-
-  getLabel(label: string): Label {
-    return {
-      addPresence: async () => {
-        await this.page.getByTestId('label-chip').filter({ hasText: label }).click()
-      },
-      remove: async () => {
-        await this.page.getByTestId('label-chip').filter({ hasText: label }).locator('svg').last().click()
-        const alert = this.page.getByRole('dialog')
-        await alert.getByRole('button', { name: `Remove "${ label }" annotations` }).click()
-      },
-      selectLabel: async () => {
-        await this.page.getByTestId('label-chip').filter({ hasText: label }).click()
-      },
-      getLabelState: async () => {
-        const outline = await this.page.getByTestId('label-chip').filter({ hasText: label }).getAttribute('outline');
-        return outline !== 'true';
-      },
-      getWeakResult: () => {
-        return this.annotationsBlock.getByText(label).first()
-      },
-      getNthStrongResult: (nth: number) => {
-        return this.annotationsBlock.getByText(label).nth(1 + nth)
-      },
-    }
-  }
-
-  getConfidence(confidence: string): Confidence {
-    return {
-      focusAnnotation: async () => {
-        await this.page.locator('ion-chip').filter({ hasText: confidence }).click()
-      },
     }
   }
 
@@ -221,10 +187,10 @@ export class AnnotatorPage {
       if (type === 'Box') await this.page.mouse.move(610, 480)
       await this.page.mouse.up({ button: 'left' })
       return {
-        startTime: type === 'Box' ? 2.704 : 4.607,
-        endTime: type === 'Box' ? 4.607 : null,
+        startTime: 2.704,
+        endTime: type === 'Box' ? 4.607 : undefined,
         startFrequency: type === 'Box' ? 0.000 : 59.000,
-        endFrequency: type === 'Box' ? 59.000 : null,
+        endFrequency: type === 'Box' ? 59.000 : undefined,
       } as Pick<Annotation, 'startTime' | 'startFrequency' | 'endTime' | 'endFrequency'>
     })
   }
