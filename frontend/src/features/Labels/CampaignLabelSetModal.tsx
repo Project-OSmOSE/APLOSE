@@ -78,6 +78,7 @@ export const LabelSetModal: React.FC<{
                                   error={ formErrors.find((e: ErrorType) => e.field === 'labelsWithAcousticFeatures')?.messages.join(' ') }
                                   labels={ (campaign?.labelSet.labels ?? []).filter(l => l !== null) as Label[] }
                                   labelsWithAcousticFeatures={ labelsWithAcousticFeatures }
+                                  disabled={ disabled }
                                   setLabelsWithAcousticFeatures={ setLabelsWithAcousticFeatures }/>
       </Fragment> }
 

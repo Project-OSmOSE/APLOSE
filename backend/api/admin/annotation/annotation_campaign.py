@@ -2,6 +2,7 @@
 from django.contrib import admin
 from django.contrib import messages
 from django.utils.html import html_safe
+from django.utils.safestring import SafeString
 
 from backend.api.models import AnnotationCampaign
 from backend.utils.admin import get_many_to_many
@@ -109,7 +110,7 @@ class AnnotationCampaignAdmin(admin.ModelAdmin):
         """colormap_tuning information"""
         if obj.allow_colormap_tuning:
             inverted = "(inverted)" if obj.colormap_inverted_default else ""
-            return html_safe(
+            return SafeString(
                 f"""{obj.allow_colormap_tuning}<br/>{obj.colormap_default} {inverted}"""
             )
         return obj.allow_colormap_tuning

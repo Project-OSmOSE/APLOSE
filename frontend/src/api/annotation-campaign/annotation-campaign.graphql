@@ -48,9 +48,11 @@ query getCampaign($id: ID!) {
             name
         }
         labelSet {
+            id
             name
             description
             labels {
+                id
                 name
             }
         }
@@ -71,6 +73,7 @@ query getCampaign($id: ID!) {
             }
         }
         confidenceSet {
+            id
             name
             desc
             confidenceIndicators {
@@ -174,10 +177,16 @@ mutation archiveCampaign($id: ID!) {
 mutation updateCampaignFeaturedLabels(
     $id: ID!
     $labelsWithAcousticFeatures: [ID]!
+    $labelSetID: ID!
+    $confidenceSetID: ID
+    $allowPointAnnotation: Boolean!
 ) {
     updateAnnotationCampaign(input: {
         id: $id
+        allowPointAnnotation: $allowPointAnnotation
         labelsWithAcousticFeatures: $labelsWithAcousticFeatures
+        labelSet: $labelSetID
+        confidenceSet: $confidenceSetID
     }) {
         errors {
             field

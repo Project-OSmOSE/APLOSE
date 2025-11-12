@@ -60,4 +60,6 @@ class AcousticFeatures(models.Model):
     @property
     def inflexion_point_count(self) -> int:
         """Number of inflexion point count"""
-        return self.relative_min_frequency_count + self.relative_min_frequency_count
+        return (self.relative_min_frequency_count or 0) + (
+            self.relative_min_frequency_count or 0
+        )

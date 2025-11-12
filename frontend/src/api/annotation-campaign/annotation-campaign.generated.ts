@@ -17,7 +17,7 @@ export type GetCampaignQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetCampaignQuery = { __typename?: 'Query', annotationCampaignById?: { __typename?: 'AnnotationCampaignNode', id: string, name: string, createdAt: any, instructionsUrl?: string | null, deadline?: any | null, isArchived: boolean, canManage: boolean, allowPointAnnotation: boolean, allowColormapTuning: boolean, allowImageTuning: boolean, colormapDefault?: string | null, colormapInvertedDefault?: boolean | null, description?: string | null, spectrogramsCount: number, dataset: { __typename?: 'DatasetNode', id: string, name: string }, labelSet?: { __typename?: 'LabelSetNode', name: string, description?: string | null, labels: Array<{ __typename?: 'AnnotationLabelNode', name: string } | null> } | null, labelsWithAcousticFeatures?: Array<{ __typename?: 'AnnotationLabelNode', id: string, name: string } | null> | null, owner: { __typename?: 'UserNode', id: string, displayName: string, email: string }, archive?: { __typename?: 'ArchiveNode', date: any, byUser?: { __typename?: 'UserNode', displayName: string } | null } | null, confidenceSet?: { __typename?: 'ConfidenceSetNode', name: string, desc?: string | null, confidenceIndicators?: Array<{ __typename?: 'ConfidenceNode', label: string, isDefault?: boolean | null } | null> | null } | null, detectors?: Array<{ __typename?: 'DetectorNode', id: string, name: string } | null> | null, annotators?: Array<{ __typename?: 'UserNode', id: string, displayName: string } | null> | null, analysis: { __typename?: 'SpectrogramAnalysisNodeConnection', edges: Array<{ __typename?: 'SpectrogramAnalysisNodeEdge', node?: { __typename?: 'SpectrogramAnalysisNode', id: string, name: string, legacy: boolean, colormap: { __typename?: 'ColormapNode', name: string }, fft: { __typename?: 'FFTNode', nfft: number, windowSize: number, overlap: any, samplingFrequency: number }, legacyConfiguration?: { __typename?: 'LegacySpectrogramConfigurationNode', scaleName?: string | null, zoomLevel: number, linearFrequencyScale?: { __typename?: 'LinearScaleNode', ratio: number, minValue: number, maxValue: number } | null, multiLinearFrequencyScale?: { __typename?: 'MultiLinearScaleNode', innerScales?: Array<{ __typename?: 'LinearScaleNode', ratio: number, minValue: number, maxValue: number } | null> | null } | null } | null } | null } | null> }, phases: Array<{ __typename?: 'AnnotationPhaseNode', id: string, phase: Types.AnnotationPhaseType, isOpen: boolean, tasksCount: number, completedTasksCount: number } | null> } | null };
+export type GetCampaignQuery = { __typename?: 'Query', annotationCampaignById?: { __typename?: 'AnnotationCampaignNode', id: string, name: string, createdAt: any, instructionsUrl?: string | null, deadline?: any | null, isArchived: boolean, canManage: boolean, allowPointAnnotation: boolean, allowColormapTuning: boolean, allowImageTuning: boolean, colormapDefault?: string | null, colormapInvertedDefault?: boolean | null, description?: string | null, spectrogramsCount: number, dataset: { __typename?: 'DatasetNode', id: string, name: string }, labelSet?: { __typename?: 'LabelSetNode', id: string, name: string, description?: string | null, labels: Array<{ __typename?: 'AnnotationLabelNode', id: string, name: string } | null> } | null, labelsWithAcousticFeatures?: Array<{ __typename?: 'AnnotationLabelNode', id: string, name: string } | null> | null, owner: { __typename?: 'UserNode', id: string, displayName: string, email: string }, archive?: { __typename?: 'ArchiveNode', date: any, byUser?: { __typename?: 'UserNode', displayName: string } | null } | null, confidenceSet?: { __typename?: 'ConfidenceSetNode', id: string, name: string, desc?: string | null, confidenceIndicators?: Array<{ __typename?: 'ConfidenceNode', label: string, isDefault?: boolean | null } | null> | null } | null, detectors?: Array<{ __typename?: 'DetectorNode', id: string, name: string } | null> | null, annotators?: Array<{ __typename?: 'UserNode', id: string, displayName: string } | null> | null, analysis: { __typename?: 'SpectrogramAnalysisNodeConnection', edges: Array<{ __typename?: 'SpectrogramAnalysisNodeEdge', node?: { __typename?: 'SpectrogramAnalysisNode', id: string, name: string, legacy: boolean, colormap: { __typename?: 'ColormapNode', name: string }, fft: { __typename?: 'FFTNode', nfft: number, windowSize: number, overlap: any, samplingFrequency: number }, legacyConfiguration?: { __typename?: 'LegacySpectrogramConfigurationNode', scaleName?: string | null, zoomLevel: number, linearFrequencyScale?: { __typename?: 'LinearScaleNode', ratio: number, minValue: number, maxValue: number } | null, multiLinearFrequencyScale?: { __typename?: 'MultiLinearScaleNode', innerScales?: Array<{ __typename?: 'LinearScaleNode', ratio: number, minValue: number, maxValue: number } | null> | null } | null } | null } | null } | null> }, phases: Array<{ __typename?: 'AnnotationPhaseNode', id: string, phase: Types.AnnotationPhaseType, isOpen: boolean, tasksCount: number, completedTasksCount: number } | null> } | null };
 
 export type CreateCampaignMutationVariables = Types.Exact<{
   name: Types.Scalars['String']['input'];
@@ -45,6 +45,9 @@ export type ArchiveCampaignMutation = { __typename?: 'Mutation', archiveAnnotati
 export type UpdateCampaignFeaturedLabelsMutationVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
   labelsWithAcousticFeatures: Array<Types.InputMaybe<Types.Scalars['ID']['input']>> | Types.InputMaybe<Types.Scalars['ID']['input']>;
+  labelSetID: Types.Scalars['ID']['input'];
+  confidenceSetID?: Types.InputMaybe<Types.Scalars['ID']['input']>;
+  allowPointAnnotation: Types.Scalars['Boolean']['input'];
 }>;
 
 
@@ -96,9 +99,11 @@ export const GetCampaignDocument = `
       name
     }
     labelSet {
+      id
       name
       description
       labels {
+        id
         name
       }
     }
@@ -119,6 +124,7 @@ export const GetCampaignDocument = `
       }
     }
     confidenceSet {
+      id
       name
       desc
       confidenceIndicators {
@@ -202,9 +208,9 @@ export const ArchiveCampaignDocument = `
 }
     `;
 export const UpdateCampaignFeaturedLabelsDocument = `
-    mutation updateCampaignFeaturedLabels($id: ID!, $labelsWithAcousticFeatures: [ID]!) {
+    mutation updateCampaignFeaturedLabels($id: ID!, $labelsWithAcousticFeatures: [ID]!, $labelSetID: ID!, $confidenceSetID: ID, $allowPointAnnotation: Boolean!) {
   updateAnnotationCampaign(
-    input: {id: $id, labelsWithAcousticFeatures: $labelsWithAcousticFeatures}
+    input: {id: $id, allowPointAnnotation: $allowPointAnnotation, labelsWithAcousticFeatures: $labelsWithAcousticFeatures, labelSet: $labelSetID, confidenceSet: $confidenceSetID}
   ) {
     errors {
       field

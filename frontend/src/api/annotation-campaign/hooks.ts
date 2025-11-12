@@ -62,12 +62,19 @@ export const useCreateCampaign = () => {
 
 export const useUpdateCampaignFeaturedLabels = () => {
   const { campaignID } = useParams<AploseNavParams>();
+  const { campaign } = useCurrentCampaign()
   const [ method, info ] = updateCampaignFeaturedLabels.useMutation();
 
   const update = useCallback(async (variables: Pick<UpdateCampaignFeaturedLabelsMutationVariables, 'labelsWithAcousticFeatures'>) => {
-    if (!campaignID) return;
-    await method({ ...variables, id: campaignID }).unwrap()
-  }, [ method, campaignID ])
+    if (!campaignID || !campaign) return;
+    await method({
+      ...variables,
+      id: campaignID,
+      labelSetID: campaign.labelSet!.id,
+      confidenceSetID: campaign.confidenceSet?.id,
+      allowPointAnnotation: campaign.allowPointAnnotation,
+    }).unwrap()
+  }, [ method, campaignID, campaign ])
 
   return {
     updateCampaignFeaturedLabels: update,
