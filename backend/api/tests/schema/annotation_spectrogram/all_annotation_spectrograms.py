@@ -203,10 +203,15 @@ class AllAnnotationSpectrogramsTestCase(GraphQLTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(content), 4)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        results = content["results"]
+        self.assertEqual(len(results), 4)
+
+        self.assertEqual(content["totalCount"], 4)
+        self.assertEqual(content["resumeSpectrogramId"], "7")
+        self.assertEqual(results[0]["id"], "7")
+        self.assertEqual(results[0]["filename"], "sound007")
+        self.assertEqual(results[0]["task"]["annotations"]["totalCount"], 3)
 
     def test_connected_admin(self):
         self.client.login(username="admin", password="osmose29")
@@ -224,6 +229,7 @@ class AllAnnotationSpectrogramsTestCase(GraphQLTestCase):
         self.assertEqual(len(results), 6)
 
         self.assertEqual(content["totalCount"], 6)
+        self.assertEqual(content["resumeSpectrogramId"], "2")
         self.assertEqual(results[0]["id"], "1")
         self.assertEqual(results[0]["filename"], "sound001")
         self.assertEqual(results[0]["task"]["annotations"]["totalCount"], 3)

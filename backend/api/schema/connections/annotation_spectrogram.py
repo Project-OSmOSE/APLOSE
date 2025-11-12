@@ -1,6 +1,7 @@
 """Annotation spectrogram connections"""
 import graphene
 from django.db.models import Q, Exists, OuterRef
+from dulwich.porcelain import status
 from graphene_django_pagination import PaginationConnection
 from graphql import GraphQLResolveInfo
 
@@ -50,6 +51,7 @@ class AnnotationSpectrogramConnectionField(AuthenticatedDjangoConnectionField):
                             annotator_id=info.context.user.id,
                             annotation_phase__annotation_campaign_id=campaign_id,
                             annotation_phase__phase=phase.value,
+                            status=AnnotationTask.Status.FINISHED,
                         )
                     )
                 ).first()
