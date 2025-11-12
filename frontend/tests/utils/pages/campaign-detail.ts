@@ -2,7 +2,6 @@ import { Locator, Page } from '@playwright/test';
 import { type Label, labelSet } from '../mock/types';
 import { CampaignListPage } from './campaign-list';
 import type { Params } from '../types';
-import { LABEL } from '../../fixtures';
 
 export class CampaignDetailPage {
 
@@ -53,7 +52,7 @@ class LabelModal {
 
   getLabelCheckbox(label: Label): Locator {
     return this.modal.locator('.table-content')
-      .nth((LABEL.set.labels.indexOf(label.name) + 1) * 2 - 1)
+      .nth((labelSet.labels.map(l => l.name).indexOf(label.name) + 1) * 2 - 1)
       .locator('ion-checkbox')
   }
 

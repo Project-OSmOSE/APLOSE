@@ -19,13 +19,13 @@ import { convertCommentsToPost, convertGqlToComments } from '@/features/Annotato
 export function convertValidationToPost(validation: Validation): AnnotationValidationSerializerInput {
   return {
     ...validation,
-    id: validation.id > 0 ? validation.id : undefined,
+    id: validation.id && validation.id > 0 ? validation.id : undefined,
   }
 }
 
 export function convertGqlToValidation(validations: Maybe<Pick<AnnotationValidationNode, 'id' | 'isValid'>>[]): Validation | undefined {
   validations = validations.filter(v => !!v)
-  if (validations.length === 0) return undefined
+  if (validations.length === 0) return { isValid: true }
   const v = validations[0]
   return {
     id: +v!.id,
@@ -50,12 +50,14 @@ export function convertGqlToFeatures(features: Omit<AcousticFeaturesNode, '__typ
 export function convertAnnotationsToPost(annotations: Annotation[]): AnnotationInput[] {
   return [ ...annotations, ...annotations.filter(a => a.update).map(a => ({
     ...a.update,
-    is_update_of: a.id,
+    isUpdateOf: a.id?.toString(),
   } as Annotation)) ].map(a => ({
     ...a,
     type: undefined,
     id: a.id > 0 ? a.id : undefined,
     comments: convertCommentsToPost(a.comments ?? []),
+    validation: undefined,
+    update: undefined,
     validations: a.validation ? [ convertValidationToPost(a.validation) ] : undefined,
     acousticFeatures: a.acousticFeatures ? convertFeaturesToPost(a.acousticFeatures) : undefined,
   } as AnnotationInput))

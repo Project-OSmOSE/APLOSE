@@ -125,21 +125,24 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
     {/* Validation */ }
     <TableContent className={ className } onClick={ onClick }>
       <IonButton className="validate"
-                 color={ annotation.validation ? 'success' : 'medium' }
-                 fill={ annotation.validation ? 'solid' : 'outline' }
+                 data-testid="validate"
+                 color={ annotation.validation?.isValid ? 'success' : 'medium' }
+                 fill={ annotation.validation?.isValid ? 'solid' : 'outline' }
                  onClick={ onValidate }>
         <IonIcon slot="icon-only" icon={ checkmarkOutline }/>
       </IonButton>
       <IonButton className="invalidate"
-                 color={ annotation.validation ? 'medium' : 'danger' }
-                 fill={ annotation.validation ? 'outline' : 'solid' }
+                 data-testid="invalidate"
+                 color={ annotation.validation?.isValid ? 'medium' : 'danger' }
+                 fill={ annotation.validation?.isValid ? 'outline' : 'solid' }
                  onClick={ onInvalidate }>
         <IonIcon slot="icon-only" icon={ closeOutline }/>
       </IonButton>
     </TableContent>
 
 
-    { invalidateModal.isOpen && <InvalidateAnnotationModal onClose={ invalidateModal.close }
-                                                           annotation={ annotation }/> }
+    <InvalidateAnnotationModal isOpen={ invalidateModal.isOpen }
+                               onClose={ invalidateModal.close }
+                               annotation={ annotation }/>
   </Fragment>
 }

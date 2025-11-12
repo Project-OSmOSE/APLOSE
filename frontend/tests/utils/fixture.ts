@@ -1,6 +1,5 @@
 import { type Page as PageBase, test as testBase } from '@playwright/test';
 import { Route } from 'playwright-core';
-import { Mock } from './services';
 import {
   AccountPage,
   AnnotatorPage,
@@ -18,8 +17,6 @@ import {
 } from './pages';
 
 interface PageExtension {
-  readonly mock: Mock;
-
   readonly home: HomePage;
   readonly login: LoginPage;
   readonly navbar: Navbar;
@@ -58,8 +55,6 @@ export const test = testBase.extend<Fixture>({
     });
 
     const extension: PageExtension = {
-      mock: new Mock(page),
-
       home: new HomePage(page),
       login: new LoginPage(page),
       navbar: new Navbar(page),

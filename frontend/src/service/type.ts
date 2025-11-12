@@ -1,5 +1,3 @@
-export type ID = string | number;
-
 export type Paginated<T> = {
   count: number;
   pageCount: number;

@@ -87,6 +87,7 @@ export const useSubmitTask = () => {
   const submit = useCallback(async (annotations: AnnotationInput[],
                                     taskComments: AnnotationCommentInput[],
                                     start: Date) => {
+    console.debug('submit', phaseType)
     if (!campaignID || !phaseType || !spectrogramID) return;
     await method({
       campaignID,

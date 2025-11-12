@@ -6,7 +6,6 @@ import { IonButton, IonCheckbox, IonIcon, IonNote } from '@ionic/react';
 import { IoRemoveCircleOutline } from 'react-icons/io5';
 import { createOutline } from 'ionicons/icons/index.js';
 import { CLICK_EVENT } from '@/features/UX/Events';
-import { SignalTrends } from '@/service/types';
 import { AnnotationType, SignalTrendType, useAnnotationTask, useCurrentCampaign, useCurrentPhase } from '@/api';
 import { useAnnotatorPointer } from '@/features/Annotator/Pointer';
 import { useAnnotatorUX } from '@/features/Annotator/UX';
@@ -203,7 +202,7 @@ export const AcousticFeatures: React.FC = () => {
 
           <TableContent>General</TableContent>
           <TableContent>
-              <Select options={ SignalTrends.map(value => ({ label: value, value } as Item)) }
+              <Select options={ Object.values(SignalTrendType).map(value => ({ label: value, value } as Item)) }
                       placeholder="Select a value"
                       optionsContainer="popover"
                       value={ focusedAnnotation.acousticFeatures.trend ?? undefined }

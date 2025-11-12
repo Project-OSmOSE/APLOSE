@@ -1,27 +1,9 @@
 import { expect, Locator, Page, test } from '@playwright/test';
-import { Mock } from '../services';
 import { type Annotation, type Confidence, type Label } from '../mock/types';
 import { AnnotationType } from '../../../src/api/types.gql-generated';
 import { PhaseDetailPage } from './phase-detail';
 import type { Params } from '../types';
 
-// export type Label = {
-//   addPresence: () => Promise<void>;
-//   selectLabel: () => Promise<void>;
-//   getLabelState: () => Promise<boolean>;
-//   remove: () => Promise<void>;
-//   getWeakResult: () => Locator;
-//   getNthStrongResult: (nth: number) => Locator;
-// }
-// export type Confidence = {
-//   select: () => Promise<void>;
-// }
-
-export type Validation = {
-  validate: () => Promise<void>;
-  invalidate: () => Promise<void>;
-  expectState: (isValid: boolean) => Promise<void>;
-}
 
 export class AnnotatorPage {
 
@@ -45,57 +27,13 @@ export class AnnotatorPage {
     return this.page.getByRole('button', { name: 'Submit & load next recording' })
   }
 
-  private getValidationWithButtons(validateBtn: Locator, invalidateBtn: Locator): Validation {
-    return {
-      validate: async () => {
-        await validateBtn.click()
-      },
-      invalidate: async () => {
-        await invalidateBtn.click()
-        await this.page.getByRole('button', { name: 'Remove' }).last().click()
-      },
-      expectState: async (isValid: boolean) => {
-        await expect(validateBtn).toHaveAttribute('color', isValid ? 'success' : 'medium')
-        await expect(invalidateBtn).toHaveAttribute('color', isValid ? 'medium' : 'danger')
-      },
-    }
-  }
-
-  get presenceValidation(): Validation {
-    return this.getValidationWithButtons(
-      this.page.locator('ion-button.validate').first(),
-      this.page.locator('ion-button.invalidate').first(),
-    )
-  }
-
-  get boxValidation(): Validation {
-    return this.getValidationWithButtons(
-      this.page.locator('ion-button.validate').nth(1),
-      this.page.locator('ion-button.invalidate').nth(1),
-    )
-  }
-
   constructor(private page: Page,
-              private mock = new Mock(page),
               private phaseDetailPage = new PhaseDetailPage(page)) {
   }
 
-  async go({ as, phase }: Pick<Params, 'as' | 'phase'>, options?: {
-    empty?: boolean,
-  }) {
+  async go({ as, phase }: Pick<Params, 'as' | 'phase'>) {
     await this.phaseDetailPage.go({ as, phase })
     await this.phaseDetailPage.resumeButton.click()
-
-    // await test.step('Navigate to Annotator', async () => {
-    // await this.mock.annotator(options.phase ?? 'Annotation', options.empty)
-    // await this.campaignDetail.resumeButton.click()
-    // await this.mock.annotator(options.phase ?? 'Annotation', options.empty)
-    // await Promise.all([
-    //   this.page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/spectrogram/${ spectrogram.id }`),
-    //   this.page.waitForRequest(gqlURL),
-    //   this.phaseDetailPage.resumeButton.click(),
-    // ])
-    // });
   }
 
   getLabelChip(label: Label) {
@@ -110,9 +48,33 @@ export class AnnotatorPage {
     return this.annotationsBlock.getByText(label.name).nth(type === AnnotationType.Weak ? 0 : 1)
   }
 
+  getAnnotationValidateBtn({ type }: Pick<Params, 'type'>): Locator {
+    return this.annotationsBlock.getByTestId('validate').nth(type === AnnotationType.Weak ? 0 : 1)
+  }
+
+  getAnnotationInvalidateBtn({ type }: Pick<Params, 'type'>): Locator {
+    return this.annotationsBlock.getByTestId('invalidate').nth(type === AnnotationType.Weak ? 0 : 1)
+  }
+
+  async invalidateAnnotation({ type }: Pick<Params, 'type'>): Promise<void> {
+    await this.getAnnotationInvalidateBtn({ type }).click()
+    if (type !== AnnotationType.Weak)
+      await this.page.getByRole('dialog').getByRole('button', { name: 'Remove' }).click()
+  }
+
+  async updateBoxAnnotationLabel(newLabel: Label): Promise<void> {
+    await this.getAnnotationInvalidateBtn({ type: AnnotationType.Box }).click()
+    await this.page.getByRole('dialog').getByRole('button', { name: 'Change the label' }).click()
+    await this.page.getByRole('dialog').getByRole('button', { name: newLabel.name }).click()
+  }
+
   async isLabelUsed(label: Label): Promise<boolean> {
     const outline = await this.getLabelChip(label).getAttribute('outline');
     return outline !== 'true';
+  }
+
+  async isAnnotationValid({ type }: Pick<Params, 'type'>): Promise<boolean> {
+    return await this.getAnnotationValidateBtn({ type }).getAttribute('color') === 'success'
   }
 
   async addWeak(label: Label, { method }: Pick<Params, 'method'>) {
@@ -150,6 +112,7 @@ export class AnnotatorPage {
   }
 
   async submit({ method }: Pick<Params, 'method'>) {
+    await this.submitButton.waitFor()
     switch (method) {
       case 'mouse':
         await this.submitButton.click()

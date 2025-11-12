@@ -16,7 +16,7 @@ import { convertGqlToAnnotations } from '@/features/Annotator/Annotation/convers
 
 
 export type Comment = Omit<AnnotationCommentSerializerInput, 'id'> & { id: number }
-export type Validation = Omit<AnnotationValidationSerializerInput, 'id'> & { id: number }
+export type Validation = AnnotationValidationSerializerInput
 export type Features = Omit<AnnotationAcousticFeaturesSerializerInput, 'id'> & { id: number }
 export type Annotation =
   Omit<AnnotationInput, 'id' | 'isUpdateOf' | 'comments' | 'validations' | 'acousticFeatures'>
@@ -79,6 +79,7 @@ export const AnnotatorAnnotationSlice = createSlice({
         action.payload = { ...action.payload, analysis: state._analysisID }
       }
       state.allAnnotations = state.allAnnotations.map(a => a.id === action.payload.id ? action.payload as Annotation : a)
+      console.debug('updateAnnotation', action.payload.id, JSON.stringify(state.allAnnotations))
     },
     removeAnnotation: (state, action: { payload: Annotation }) => {
       state.allAnnotations = state.allAnnotations.filter(a => a.id !== action.payload.id)

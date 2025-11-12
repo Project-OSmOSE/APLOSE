@@ -40,35 +40,14 @@ export const useAnnotatorAnnotation = () => {
   }, [])
 
   // Validation
-  const _getNewValidationID = useCallback(() => {
-    return getNewItemID(allAnnotations.map(a => a.validation).filter(v => v !== undefined).map(v => v!))
-  }, [ allAnnotations ])
   const _updateValidation = useCallback((isValid: boolean, validation?: Annotation['validation']): Annotation['validation'] => {
-    return validation ? { ...validation, isValid } : { isValid, id: _getNewValidationID() }
-  }, [ _getNewValidationID ])
+    return validation ? { ...validation, isValid } : { isValid }
+  }, [])
   const validate = useCallback((annotation: Annotation): Annotation => {
     annotation = dispatch(updateAnnotation({
       id: annotation.id,
       validation: _updateValidation(true, annotation.validation),
       update: undefined,
-    })).payload as Annotation
-    if (annotation.type === AnnotationType.Weak) {
-      const strongAnnotations = allAnnotations.filter(a => a.type !== AnnotationType.Weak && a.label === annotation.label);
-      for (const a of strongAnnotations) {
-        dispatch(updateAnnotation({
-          id: a.id,
-          validation: _updateValidation(true, a.validation),
-          update: undefined,
-        }))
-      }
-    }
-    dispatch(focusAnnotation(annotation))
-    return annotation
-  }, [ allAnnotations, _updateValidation ])
-  const invalidate = useCallback((annotation: Annotation): Annotation => {
-    annotation = dispatch(updateAnnotation({
-      id: annotation.id,
-      validation: _updateValidation(false, annotation.validation),
     })).payload as Annotation
     const otherStrongValidAnnotations = allAnnotations.filter(a => {
       if (a.type === AnnotationType.Weak) return false;
@@ -79,8 +58,26 @@ export const useAnnotatorAnnotation = () => {
     if (annotation.type !== AnnotationType.Weak && otherStrongValidAnnotations.length === 0 && weakAnnotation) {
       dispatch(updateAnnotation({
         id: weakAnnotation.id,
-        validation: _updateValidation(false, weakAnnotation.validation),
+        validation: _updateValidation(true, weakAnnotation.validation),
+        update: undefined,
       }))
+    }
+    dispatch(focusAnnotation(annotation))
+    return annotation
+  }, [ allAnnotations, _updateValidation ])
+  const invalidate = useCallback((annotation: Annotation): Annotation => {
+    annotation = dispatch(updateAnnotation({
+      id: annotation.id,
+      validation: _updateValidation(false, annotation.validation),
+    })).payload as Annotation
+    if (annotation.type === AnnotationType.Weak) {
+      const strongAnnotations = allAnnotations.filter(a => a.type !== AnnotationType.Weak && a.label === annotation.label);
+      for (const a of strongAnnotations) {
+        dispatch(updateAnnotation({
+          id: a.id,
+          validation: _updateValidation(false, a.validation),
+        }))
+      }
     }
     dispatch(focusAnnotation(annotation))
     return annotation
@@ -125,15 +122,14 @@ export const useAnnotatorAnnotation = () => {
     if (annotation.type === AnnotationType.Weak && 'label' in update) return;
     if (phaseType === 'Annotation' || annotation.annotator === user?.id) {
       annotation = dispatch(updateAnnotation({ id: annotation.id, ...update })).payload as Annotation
-      if (update.label && !allAnnotations.find(a => a.label === update.label && a.type === AnnotationType.Weak)) {
-        add({ type: AnnotationType.Weak, label: update.label, confidence: update.confidence ?? focusedConfidence })
-      }
     } else {
       // Verification mode
       const annotationUpdate: Annotation = {
         ...annotation, // Base is initial annotation
         ...(annotation.update ?? { id: _getNewAnnotationID() }), // Add existing update info if exist
         ...update, // Update according provided info
+        annotator: user?.id, // Current user is this update creator
+        validation: undefined,
       }
       if (_equals(annotation, annotationUpdate)) {
         annotation = validate(annotation)
@@ -144,6 +140,9 @@ export const useAnnotatorAnnotation = () => {
         })).payload as Annotation
         annotation = invalidate(annotation)
       }
+    }
+    if (update.label && !allAnnotations.find(a => a.label === update.label && a.type === AnnotationType.Weak)) {
+      add({ type: AnnotationType.Weak, label: update.label, confidence: update.confidence ?? focusedConfidence })
     }
     dispatch(focusAnnotation(annotation))
   }, [ phaseType, allAnnotations, add, focus, _equals, remove, validate, invalidate, user, _getNewAnnotationID, focusedConfidence ])

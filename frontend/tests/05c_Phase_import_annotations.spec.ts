@@ -4,7 +4,6 @@ import type { Params } from './utils/types';
 import { detectorConfiguration, spectrogramAnalysis, type UserType } from './utils/mock/types';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
 import { REST_MOCK } from './utils/mock/_rest';
-import { DETECTOR_CONFIGURATION } from './fixtures';
 
 // Utils
 
@@ -144,7 +143,7 @@ const TEST = {
 
       await test.step('Select Detectors configurations', async () => {
         await page.phaseImport.getConfigurationSelect('detector1').click()
-        await expect(page.phaseImport.getConfigurationSelectOptions('detector1').getByText(DETECTOR_CONFIGURATION)).toBeVisible()
+        await expect(page.phaseImport.getConfigurationSelectOptions('detector1').getByText(detectorConfiguration.configuration)).toBeVisible()
       })
     }),
 

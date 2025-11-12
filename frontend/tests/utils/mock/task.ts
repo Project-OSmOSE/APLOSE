@@ -23,7 +23,7 @@ import {
 
 export const TASK_QUERIES: {
   listAnnotationTask: GqlQuery<ListAnnotationTaskQuery>,
-  getAnnotationTask: GqlQuery<GetAnnotationTaskQuery, 'submitted' | 'unsubmitted'>,
+  getAnnotationTask: GqlQuery<GetAnnotationTaskQuery, 'submitted' | 'submittedAsOwner' | 'unsubmitted'>,
 } = {
   listAnnotationTask: {
     defaultType: 'filled',
@@ -101,6 +101,69 @@ export const TASK_QUERIES: {
                 annotator: {
                   id: USERS.annotator.id,
                   displayName: USERS.annotator.displayName,
+                },
+                label: {
+                  name: LABELS.classic.name,
+                },
+                confidence: {
+                  label: CONFIDENCES.notSure.label,
+                },
+                analysis: {
+                  id: spectrogramAnalysis.id,
+                },
+                comments: null,
+              },
+            ],
+          },
+          comments: {
+            results: [ taskComment ],
+          },
+        },
+      },
+    },
+    submittedAsOwner: {
+      allAnnotationSpectrograms: {
+        totalCount: dataset.spectrogramCount,
+        nextSpectrogramId: (+TASKS.submitted.id + 1)?.toString(),
+        previousSpectrogramId: (+TASKS.submitted.id - 1)?.toString(),
+        currentIndex: 2,
+      },
+      annotationSpectrogramById: {
+        id: TASKS.submitted.id,
+        start: spectrogram.start,
+        filename: spectrogram.filename,
+        duration: spectrogram.duration,
+        path: SPECTROGRAM_PATH,
+        audioPath: AUDIO_PATH,
+        isAssigned: true,
+        task: {
+          status: TASKS.submitted.status,
+          annotations: {
+            results: [
+              {
+                ...weakAnnotation,
+                annotator: {
+                  id: USERS.creator.id,
+                  displayName: USERS.creator.displayName,
+                },
+                label: {
+                  name: LABELS.classic.name,
+                },
+                confidence: {
+                  label: CONFIDENCES.sure.label,
+                },
+                analysis: {
+                  id: spectrogramAnalysis.id,
+                },
+                comments: {
+                  results: [ weakAnnotationComment ],
+                },
+              },
+              {
+                ...boxAnnotation,
+                annotator: {
+                  id: USERS.creator.id,
+                  displayName: USERS.creator.displayName,
                 },
                 label: {
                   name: LABELS.classic.name,
