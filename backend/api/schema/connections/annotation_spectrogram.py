@@ -1,7 +1,6 @@
 """Annotation spectrogram connections"""
 import graphene
 from django.db.models import Q, Exists, OuterRef
-from dulwich.porcelain import status
 from graphene_django_pagination import PaginationConnection
 from graphql import GraphQLResolveInfo
 

@@ -15,7 +15,6 @@ import { convertGqlToAnnotations } from '@/features/Annotator/Annotation';
 export type Confidence = Pick<ConfidenceNode, 'isDefault' | 'label'>
 
 type ConfidenceState = {
-  allConfidences: Confidence[];
   focus?: string;
 
   _defaultConfidence?: string;
@@ -24,7 +23,6 @@ type ConfidenceState = {
 }
 
 const initialState: ConfidenceState = {
-  allConfidences: [],
   focus: undefined,
 
   _defaultConfidence: undefined,
@@ -47,8 +45,8 @@ export const AnnotatorConfidenceSlice = createSlice({
       state.focus = state._defaultConfidence
     })
     builder.addMatcher(getCampaignFulfilled, (state: ConfidenceState, action: { payload: GetCampaignQuery }) => {
-      state.allConfidences = action.payload.annotationCampaignById?.confidenceSet?.confidenceIndicators?.filter(c => c !== null).map(c => c!) ?? []
-      state._defaultConfidence = (state.allConfidences?.find(c => c?.isDefault) ?? state.allConfidences?.find(c => c !== null))?.label
+      const allConfidences = action.payload.annotationCampaignById?.confidenceSet?.confidenceIndicators?.filter(c => c !== null).map(c => c!) ?? []
+      state._defaultConfidence = (allConfidences?.find(c => c?.isDefault) ?? allConfidences?.find(c => c !== null))?.label
       if (state._campaignID !== action.payload.annotationCampaignById?.id) {
         state._campaignID = action.payload.annotationCampaignById?.id
         state.focus = state._defaultConfidence ?? initialState.focus
@@ -69,16 +67,10 @@ export const AnnotatorConfidenceSlice = createSlice({
     })
   },
   selectors: {
-    selectAllConfidences: state => state.allConfidences,
     selectFocus: state => state.focus,
   },
 })
 
 export const {
-  selectAllConfidences,
-  selectFocus,
-} = AnnotatorConfidenceSlice.selectors
-
-export const {
-  focus,
+  focus: focusConfidence,
 } = AnnotatorConfidenceSlice.actions

@@ -29,3 +29,5 @@ export const Account: React.FC = () => {
     </div> }
   </div>
 }
+
+export default Account

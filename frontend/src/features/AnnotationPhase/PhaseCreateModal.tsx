@@ -50,14 +50,12 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
 
   const create = useCallback(async () => {
     if (!campaign) return;
-    if (!labelSet) {
-      return;
-    }
+    if (!labelSet) return;
     await createAnnotationPhase({
       campaignID: campaign.id,
       labelSetID: labelSet.id,
       confidenceSetID,
-      labelsWithAcousticFeatures: labelsWithAcousticFeatures.map(l => l.name),
+      labelsWithAcousticFeatures: labelsWithAcousticFeatures.map(l => l.id),
       allowPointAnnotation,
     }).unwrap()
     await refetch().unwrap()
@@ -103,7 +101,9 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
 
       <div className={ styles.buttons }>
         { (isPostingPhase || isFetchingCampaign) && <IonSpinner/> }
-        <Button color="primary" fill="solid" onClick={ create }>
+        <Button color="primary" fill="solid"
+                disabled={ !campaign || !labelSet }
+                onClick={ create }>
           Create
         </Button>
       </div>
@@ -152,7 +152,9 @@ export const AnnotationPhaseCreateVerificationModal: React.FC<{
         <Button color="primary" fill="clear" onClick={ createAndImport }>
           Create and import annotations
         </Button>
-        <Button color="primary" fill="solid" onClick={ create }>
+        <Button color="primary" fill="solid"
+                disabled={ !campaign }
+                onClick={ create }>
           Create
         </Button>
       </div>

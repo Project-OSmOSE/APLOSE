@@ -16,10 +16,10 @@ export const AllAnnotationCampaignFilterSlice = createSlice({
   name: 'AllAnnotationCampaignFilterSlice',
   initialState: {} as AllCampaignFilters,
   reducers: {
-    updateCampaignFilters: (state: AllCampaignFilters, { payload }: {
+    updateCampaignFilters: (_state: AllCampaignFilters, { payload }: {
       payload: AllCampaignFilters
     }) => {
-      Object.assign(state, payload)
+      return payload
     },
     reset,
   },

@@ -1,17 +1,18 @@
 import { useCallback, useRef } from 'react';
-import { useAnnotatorZoom } from '@/features/Annotator/Zoom';
-import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
+import { selectZoom } from '@/features/Annotator/Zoom';
+import { selectAnalysis } from '@/features/Annotator/Analysis';
 import { useAnnotationTask } from '@/api';
 import { useToast } from '@/components/ui';
-import { useAnnotatorWindow } from '@/features/Annotator/Canvas';
-import { useTimeAxis } from '@/features/Annotator/Axis';
+import { useWindowHeight } from '@/features/Annotator/Canvas';
+import { useTimeScale } from '@/features/Annotator/Axis';
+import { useAppSelector } from '@/features/App';
 
-export const useAnnotatorSpectrogram = () => {
+export const useDrawSpectrogram = () => {
+  const analysis = useAppSelector(selectAnalysis)
+  const zoom = useAppSelector(selectZoom)
   const { spectrogram } = useAnnotationTask()
-  const { analysis } = useAnnotatorAnalysis()
-  const { zoom } = useAnnotatorZoom()
-  const { height } = useAnnotatorWindow()
-  const { timeScale } = useTimeAxis()
+  const height = useWindowHeight()
+  const timeScale = useTimeScale()
   const toast = useToast()
   const images = useRef<Map<number, Array<HTMLImageElement | undefined>>>(new Map);
   const failedImagesSources = useRef<string[]>([])
@@ -33,7 +34,7 @@ export const useAnnotatorSpectrogram = () => {
         let src = spectrogram?.path;
         if (!src) return;
         if (analysis.legacy) {
-          src = `${ src.split(filename)[0] }_${ zoom }_${ index }${ src.split(filename)[1] }`
+          src = `${ src.split(filename)[0] }${ filename }_${ zoom }_${ index }${ src.split(filename)[1] }`
         }
         if (failedImagesSources.current.includes(src)) return;
         console.info(`Will load for zoom ${ zoom }, image ${ index }`)
@@ -59,7 +60,7 @@ export const useAnnotatorSpectrogram = () => {
     })
   }, [ analysis, zoom, failedImagesSources, areAllImagesLoaded, spectrogram, analysis ])
 
-  const drawSpectrogram = useCallback(async (context: CanvasRenderingContext2D) => {
+  return useCallback(async (context: CanvasRenderingContext2D) => {
     if (!areAllImagesLoaded()) await loadImages();
     if (!areAllImagesLoaded()) return;
 
@@ -81,8 +82,4 @@ export const useAnnotatorSpectrogram = () => {
       )
     }
   }, [ images, zoom, spectrogram, timeScale, height, areAllImagesLoaded, loadImages ])
-
-  return {
-    drawSpectrogram,
-  }
 }

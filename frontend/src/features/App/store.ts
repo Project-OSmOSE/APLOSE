@@ -8,7 +8,7 @@ import {
 } from '@/api';
 import { AuthSlice } from '@/features/Auth';
 import { gqlAPI } from '@/api/baseGqlApi';
-import { AnnotatorReducer } from '@/features/Annotator/slice';
+import { AnnotatorReducer } from '@/features/Annotator/reducer';
 import { restAPI } from '@/api/baseRestApi';
 
 export const AppStore = configureStore({

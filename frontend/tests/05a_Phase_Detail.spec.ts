@@ -75,7 +75,6 @@ const TEST = {
           page.waitForRequest(checkRequest),
           page.phaseDetail.searchFile(spectrogram.filename),
         ])
-        console.debug(JSON.stringify(request.postDataJSON()))
         const variables = request.postDataJSON().variables as ListAnnotationTaskQueryVariables
         expect(variables.search).toEqual(spectrogram.filename)
       })

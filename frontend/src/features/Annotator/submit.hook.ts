@@ -2,23 +2,25 @@ import { useCallback } from 'react';
 import { useToast } from '@/components/ui';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAnnotationTask, useSubmitTask } from '@/api';
-import { useAnnotatorUX } from '@/features/Annotator/UX';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 import { useKeyDownEvent } from '@/features/UX/Events';
-import { convertAnnotationsToPost, useAnnotatorAnnotation } from '@/features/Annotator/Annotation';
-import { convertCommentsToPost, useAnnotatorComment } from '@/features/Annotator/Comment';
+import { convertAnnotationsToPost, selectAllAnnotations } from '@/features/Annotator/Annotation';
+import { convertCommentsToPost, selectTaskComments } from '@/features/Annotator/Comment';
 import { type AploseNavParams } from '@/features/UX';
+import { useAppSelector } from '@/features/App';
+import { selectAllFileIsSeen, selectStart } from '@/features/Annotator/UX';
 
 export const useAnnotatorSubmit = () => {
-  const { openAnnotator } = useOpenAnnotator()
+  const openAnnotator = useOpenAnnotator()
   const toast = useToast()
   const navigate = useNavigate();
-  const { allAnnotations } = useAnnotatorAnnotation()
-  const { taskComments } = useAnnotatorComment()
+  const allAnnotations = useAppSelector(selectAllAnnotations)
+  const taskComments = useAppSelector(selectTaskComments)
   const { submitTask, ...info } = useSubmitTask()
 
   const { campaignID, phaseType } = useParams<AploseNavParams>();
-  const { allFileIsSeen, start } = useAnnotatorUX()
+  const allFileIsSeen = useAppSelector(selectAllFileIsSeen)
+  const start = useAppSelector(selectStart)
   const { navigationInfo } = useAnnotationTask()
 
   const submit = useCallback(async () => {

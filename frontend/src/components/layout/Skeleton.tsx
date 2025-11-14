@@ -22,3 +22,5 @@ export const AploseSkeleton: React.FC = () => {
     </div>
   )
 }
+
+export default AploseSkeleton

@@ -23,7 +23,6 @@ export async function interceptRequests(
     const req = route.request().postDataJSON();
 
     if (!Object.keys(operations).includes(req.operationName)) {
-      console.debug(req.operationName);
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -45,13 +44,11 @@ export async function interceptRequests(
     const isKnown = Object.keys(operations).includes(key)
     const mock = isKnown ? _mock[operations[key]] : _mock.success;
     if (isKnown) {
-      console.debug('will intercept known', _mock.url)
       await page.route(_mock.url, route => {
         reqs[key] = route.request().postDataJSON();
         return route.fulfill(mock)
       });
     } else {
-      console.debug('will intercept', _mock.url, mock)
       page.route(new RegExp(_mock.url), route => route.fulfill(mock));
     }
   }

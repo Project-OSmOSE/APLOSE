@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from graphene import Boolean
 
 from backend.api.context_filters import AnnotationFileRangeContextFilter
-from backend.api.models import Spectrogram, AnnotationTask, Session
+from backend.api.models import Spectrogram, AnnotationTask, Session, AnnotationPhase
 from backend.api.models.annotation.annotation_task import AnnotationTaskSession
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions, NotFoundError
@@ -41,21 +41,24 @@ class SubmitAnnotationTaskMutation(graphene.Mutation):
             spectrogram: Spectrogram = get_object_or_404(
                 Spectrogram.objects.all(), pk=spectrogram_id
             )
+            phase: AnnotationPhase = get_object_or_404(
+                AnnotationPhase.objects.all(),
+                annotation_campaign_id=campaign_id,
+                phase=phase_type.value,
+            )
         except Http404 as not_found:
             raise NotFoundError() from not_found
 
         AnnotationFileRangeContextFilter.get_node_or_fail(
             info.context,
-            annotation_phase__annotation_campaign_id=campaign_id,
-            annotation_phase__phase=phase_type.value,
+            annotation_phase=phase,
             from_datetime__lte=spectrogram.start,
             to_datetime__gte=spectrogram.end,
             annotator_id=info.context.user.id,
         )
 
         task: AnnotationTask = AnnotationTask.objects.get_or_create(
-            annotation_phase__annotation_campaign_id=campaign_id,
-            annotation_phase__phase=phase_type.value,
+            annotation_phase=phase,
             annotator_id=info.context.user.id,
             spectrogram_id=spectrogram_id,
         )[0]

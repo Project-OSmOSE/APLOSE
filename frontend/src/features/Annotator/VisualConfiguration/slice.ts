@@ -87,13 +87,6 @@ export const AnnotatorVisualConfigurationSlice = createSlice({
 })
 
 export const {
-  selectBrightness,
-  selectContrast,
-  selectColormap,
-  selectIsColormapReversed,
-} = AnnotatorVisualConfigurationSlice.selectors
-
-export const {
   setBrightness, resetBrightness,
   setContrast, resetContrast,
   setColormap,

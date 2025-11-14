@@ -1,6 +1,7 @@
-export { AnnotatorVisualConfigurationSlice } from './slice'
+export * from './slice'
 export * from './colormaps'
 export * from './hooks'
+export * from './selectors'
 
 export * from './BrightnessSelect'
 export * from './ColormapReverseButton'

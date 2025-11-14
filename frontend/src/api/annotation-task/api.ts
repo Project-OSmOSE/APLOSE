@@ -17,7 +17,7 @@ export const AnnotationTaskGqlAPI = api.enhanceEndpoints({
       } ],
     },
     submitTask: {
-      invalidatesTags: [ 'AnnotationTask', 'AnnotationPhase', ]
-    }
+      invalidatesTags: [ 'AnnotationPhase' ],
+    },
   },
 })

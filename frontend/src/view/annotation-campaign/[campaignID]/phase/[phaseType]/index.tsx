@@ -65,18 +65,18 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
         </TableHead>
         <TableDivider/>
 
-        { allSpectrograms
-          ?.map(s => <SpectrogramRow key={ s!.id }
-                                     spectrogram={ s! }
-                                     task={ s!.task }
-                                     annotations={ s!.task?.annotations }
-                                     validatedAnnotations={ s!.task?.validatedAnnotations }/>) }
+        { !isFetching && allSpectrograms?.map(s => <SpectrogramRow key={ s!.id }
+                                                                   spectrogram={ s! }
+                                                                   task={ s!.task }
+                                                                   annotations={ s!.task?.annotations }
+                                                                   validatedAnnotations={ s!.task?.validatedAnnotations }/>) }
+        { isFetching && <IonSpinner/> }
+
       </Table>
 
       { allSpectrograms && allSpectrograms.length > 0 &&
-          <Pagination currentPage={ params.page } totalPages={ pageCount } setCurrentPage={ updatePage }/> }
+          <Pagination currentPage={ params.page ?? 1 } totalPages={ pageCount } setCurrentPage={ updatePage }/> }
 
-      { isFetching && <IonSpinner/> }
       { error && <WarningText error={ error }/> }
       { !isFetching && !error && (!allSpectrograms || allSpectrograms.length === 0) &&
           <p>You have no files to annotate.</p> }
@@ -86,3 +86,5 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
     </div>
   </div>
 }
+
+export default AnnotationCampaignPhaseDetail

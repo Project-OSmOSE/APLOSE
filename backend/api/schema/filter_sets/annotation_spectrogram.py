@@ -44,7 +44,9 @@ class AnnotationSpectrogramFilterSet(BaseFilterSet):
     def filter_queryset(self, queryset: QuerySet[Spectrogram]):
         queryset = super().filter_queryset(queryset)
 
-        file_ranges, tasks, annotations = self._get_querysets_for_filter()
+        queryset, file_ranges, tasks, annotations = self._get_querysets_for_filter(
+            queryset
+        )
 
         # Filter through existing file range
         queryset = queryset.filter(
@@ -108,16 +110,18 @@ class AnnotationSpectrogramFilterSet(BaseFilterSet):
             else:
                 queryset = queryset.filter(~q)
 
-        return queryset
+        return queryset.distinct()
 
     def _get_querysets_for_filter(
-        self,
+        self, queryset: QuerySet[Spectrogram]
     ) -> (
+        QuerySet[Spectrogram],
         QuerySet[AnnotationFileRange],
         QuerySet[AnnotationTask],
         QuerySet[Annotation],
     ):
 
+        spectrograms = queryset
         file_ranges = AnnotationFileRange.objects.all()
         tasks = AnnotationTask.objects.all()
         annotations = Annotation.objects.all()
@@ -136,6 +140,9 @@ class AnnotationSpectrogramFilterSet(BaseFilterSet):
             annotations = annotations.filter(
                 annotation_phase__annotation_campaign_id=campaign_id
             )
+            spectrograms = spectrograms.filter(
+                analysis__annotation_campaigns__id=campaign_id
+            )
 
         if phase_type and campaign_id:
             if phase_type == AnnotationPhase.Type.ANNOTATION:
@@ -151,4 +158,4 @@ class AnnotationSpectrogramFilterSet(BaseFilterSet):
             if phase_type == AnnotationPhase.Type.ANNOTATION:
                 annotations = annotations.filter(annotator_id=annotator_id)
 
-        return file_ranges, tasks, annotations
+        return spectrograms, file_ranges, tasks, annotations

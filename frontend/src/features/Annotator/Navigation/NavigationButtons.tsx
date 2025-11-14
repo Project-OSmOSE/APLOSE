@@ -7,19 +7,24 @@ import { useAnnotationTask } from '@/api';
 import { useAnnotatorCanNavigate, useOpenAnnotator } from './hooks';
 import { useKeyDownEvent } from '@/features/UX/Events';
 import { useAnnotatorSubmit } from '@/features/Annotator';
+import { useAppSelector } from '@/features/App';
+import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 
 export const NavigationButtons: React.FC = () => {
-  const { isEditionAuthorized, navigationInfo } = useAnnotationTask()
-  const { canNavigate } = useAnnotatorCanNavigate()
-  const { openAnnotator } = useOpenAnnotator()
+  const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
+  const { navigationInfo } = useAnnotationTask()
+  const canNavigate = useAnnotatorCanNavigate()
+  const openAnnotator = useOpenAnnotator()
   const { submit, isLoading } = useAnnotatorSubmit()
 
   const navPrevious = useCallback(async () => {
+    console.debug('navPrevious', isLoading, navigationInfo)
     if (isLoading) return;
     if (!navigationInfo?.previousSpectrogramId) return;
     if (await canNavigate()) openAnnotator(navigationInfo.previousSpectrogramId)
   }, [ openAnnotator, isLoading, navigationInfo ])
   const navNext = useCallback(async () => {
+    console.debug('navPrevious', isLoading, navigationInfo)
     if (isLoading) return;
     if (!navigationInfo?.nextSpectrogramId) return;
     if (await canNavigate()) openAnnotator(navigationInfo.nextSpectrogramId)

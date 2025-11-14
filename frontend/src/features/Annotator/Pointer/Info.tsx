@@ -2,11 +2,12 @@ import React, { Fragment } from 'react';
 import styles from './styles.module.scss';
 import { FadedText } from '@/components/ui';
 import { formatTime } from '@/service/function';
-import { useAnnotatorPointer } from './hooks';
 import { useAnnotationTask } from '@/api';
+import { useAppSelector } from '@/features/App';
+import { selectPosition } from '@/features/Annotator/Pointer';
 
 export const PointerInfo: React.FC = () => {
-  const { position } = useAnnotatorPointer()
+  const position = useAppSelector(selectPosition)
   const { spectrogram } = useAnnotationTask()
 
   if (!position) return <Fragment/>

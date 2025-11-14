@@ -5,3 +5,4 @@ export type {
 export * from './all-tasks-filters'
 export * from './hooks'
 export * from './matchers'
+export * from './selector'

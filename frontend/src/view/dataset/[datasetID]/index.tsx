@@ -38,3 +38,5 @@ export const DatasetDetail: React.FC = () => {
     <DatasetInfoCreation/>
   </Fragment>
 }
+
+export default DatasetDetail

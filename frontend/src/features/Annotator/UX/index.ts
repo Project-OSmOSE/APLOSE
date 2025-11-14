@@ -1,2 +1,2 @@
-export { AnnotatorUXSlice } from './slice'
-export * from './hook'
+export * from './slice'
+export * from './selectors'

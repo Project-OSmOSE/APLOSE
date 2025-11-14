@@ -1,28 +1,27 @@
 import { useCallback } from 'react';
-import { useAnnotatorWindow } from '@/features/Annotator/Canvas';
-import { useFrequencyAxis, useTimeAxis } from '@/features/Annotator/Axis';
-import { clearPosition, type Position, selectPosition, setPosition, type TimeFreqPosition } from './slice';
-import { useAppDispatch, useAppSelector } from '@/features/App';
+import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
+import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
+import { type Position, type TimeFreqPosition } from './slice';
 import { useAnnotatorCanvasContext } from '@/features/Annotator/Canvas/context';
 
-export const useAnnotatorPointer = () => {
-  const { height, width } = useAnnotatorWindow()
-  const { mainCanvas } = useAnnotatorCanvasContext()
-  const { timeScale } = useTimeAxis()
-  const { frequencyScale } = useFrequencyAxis()
-  const dispatch = useAppDispatch()
+export const useIsHoverCanvas = () => {
+  const width = useWindowWidth()
+  const height = useWindowHeight()
 
-  const isSpectroCanvas = useCallback((element: Element): boolean => {
-    return element instanceof HTMLCanvasElement
-      && element.height === Math.floor(height)
-      && element.width === Math.floor(width)
-  }, [ height, width ])
-  const isHoverCanvas = useCallback((e: Position): boolean => {
-    return document.elementsFromPoint(e.clientX, e.clientY).some(isSpectroCanvas);
-  }, [ isSpectroCanvas ])
+  return useCallback((e: Position): boolean => {
+    return document.elementsFromPoint(e.clientX, e.clientY).some((element: Element): boolean => {
+      return element instanceof HTMLCanvasElement
+        && element.height === Math.floor(height)
+        && element.width === Math.floor(width)
+    });
+  }, [ width, height ])
+}
 
-  const getCoords = useCallback((e: Position, corrected: boolean = true): { x: number, y: number } | undefined => {
-    const canvas = mainCanvas;
+export const useGetCoords = () => {
+  const { mainCanvasRef } = useAnnotatorCanvasContext()
+
+  return useCallback((e: Position, corrected: boolean = true): { x: number, y: number } | undefined => {
+    const canvas = mainCanvasRef?.current;
     if (!canvas) return;
     const bounds = canvas.getBoundingClientRect();
     const x = e.clientX - bounds.x
@@ -33,9 +32,15 @@ export const useAnnotatorPointer = () => {
         y: Math.min(Math.max(0, y), bounds.height),
       }
     } else return { x, y }
-  }, [ mainCanvas ])
+  }, [])
+}
 
-  const getFreqTime = useCallback((e: Position): TimeFreqPosition | undefined => {
+export const useGetFreqTime = () => {
+  const getCoords = useGetCoords()
+  const timeScale = useTimeScale()
+  const frequencyScale = useFrequencyScale()
+
+  return useCallback((e: Position): TimeFreqPosition | undefined => {
     const coords = getCoords(e);
     if (!coords) return;
     return {
@@ -43,17 +48,4 @@ export const useAnnotatorPointer = () => {
       time: +timeScale.positionToValue(coords.x)?.toFixed(3),
     }
   }, [ getCoords, timeScale, frequencyScale ]);
-
-  return {
-    isHoverCanvas,
-    getCoords,
-    getFreqTime,
-    position: useAppSelector(state => selectPosition(state.annotator)),
-    setPosition: useCallback((position: TimeFreqPosition) => {
-      dispatch(setPosition(position))
-    }, []),
-    clearPosition: useCallback(() => {
-      dispatch(clearPosition())
-    }, []),
-  }
 }

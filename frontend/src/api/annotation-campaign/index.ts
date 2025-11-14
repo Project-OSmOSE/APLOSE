@@ -13,3 +13,4 @@ export type {
 export * from './hooks'
 export * from './all-campaign-filters'
 export * from './matchers'
+export * from './selector'

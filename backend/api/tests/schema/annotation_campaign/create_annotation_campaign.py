@@ -85,6 +85,32 @@ class CreateAnnotationCampaignTestCase(GraphQLTestCase):
         self.assertFalse(campaign.allow_point_annotation)
         self.assertEqual(campaign.created_at.isoformat(), "2012-01-14T00:00:00+00:00")
 
+    def test_connected_post_only_required(self):
+        self.client.login(username="user1", password="osmose29")
+        old_count = AnnotationCampaign.objects.count()
+        response = self.query(
+            MUTATION,
+            variables={
+                "name": "Test create campaign",
+                "datasetID": 1,
+                "analysisIDs": [1],
+            },
+        )
+        self.assertResponseNoErrors(response)
+
+        self.assertEqual(AnnotationCampaign.objects.count(), old_count + 1)
+        campaign = AnnotationCampaign.objects.latest("id")
+        content = json.loads(response.content)["data"]["createAnnotationCampaign"]
+        self.assertEqual(content["annotationCampaign"]["id"], str(campaign.id))
+
+        self.assertEqual(campaign.dataset.name, "gliderSPAmsDemo")
+        self.assertEqual(list(campaign.analysis.values_list("id", flat=True)), [1])
+        self.assertIsNone(campaign.confidence_set)
+        self.assertIsNone(campaign.label_set)
+        self.assertIsNone(campaign.archive)
+        self.assertFalse(campaign.allow_point_annotation)
+        self.assertEqual(campaign.created_at.isoformat(), "2012-01-14T00:00:00+00:00")
+
     def test_connected_double_post(self):
         self.client.login(username="user1", password="osmose29")
         old_count = AnnotationCampaign.objects.count()

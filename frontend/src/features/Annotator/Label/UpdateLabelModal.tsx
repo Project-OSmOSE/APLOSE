@@ -3,7 +3,8 @@ import { createPortal } from 'react-dom';
 import { Button, Modal, ModalHeader } from '@/components/ui';
 import { IonNote } from '@ionic/react';
 import styles from './styles.module.scss';
-import { useAnnotatorLabel } from './hooks';
+import { useAppSelector } from '@/features/App';
+import { selectAllLabels } from '@/features/Annotator/Label/selectors';
 
 export const UpdateLabelModal: React.FC<{
   isModalOpen: boolean,
@@ -11,7 +12,7 @@ export const UpdateLabelModal: React.FC<{
   selected?: string,
   onUpdate: (label: string) => void;
 }> = ({ isModalOpen, onClose, selected, onUpdate }) => {
-  const { allLabels } = useAnnotatorLabel()
+  const allLabels = useAppSelector(selectAllLabels)
   if (!isModalOpen) return <Fragment/>
   return createPortal(<Modal onClose={ onClose }>
     <ModalHeader title="Update annotation label" onClose={ onClose }/>

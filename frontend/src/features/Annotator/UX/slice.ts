@@ -1,7 +1,7 @@
-import { createSelector, createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { addAnnotation, removeAnnotation, updateAnnotation } from '@/features/Annotator/Annotation/slice';
 import { getAnnotationTaskFulfilled, type GetAnnotationTaskQuery } from '@/api';
-import { setZoom } from '@/features/Annotator/Zoom/slice';
+import { setZoom } from '@/features/Annotator/Zoom';
 import { addTaskComment, removeTaskComment, updateTaskComment } from '@/features/Annotator/Comment/slice';
 import type { GetAnnotationTaskQueryVariables } from '@/api/annotation-task/annotation-task.generated';
 
@@ -79,19 +79,9 @@ export const AnnotatorUXSlice = createSlice({
     selectIsDrawingEnabled: state => state.isDrawingEnabled,
     selectAllFileIsSeen: state => state.allFileIsSeen,
     selectUpdated: state => state.updated,
-    selectStart: createSelector(
-      (state: UXState) => state,
-      (state: UXState) => new Date(state.start),
-    ),
+    selectStart: state => state.start,
   },
 })
-
-export const {
-  selectIsDrawingEnabled,
-  selectAllFileIsSeen,
-  selectUpdated,
-  selectStart,
-} = AnnotatorUXSlice.selectors
 
 export const {
   setAllFileAsSeen,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import './css/bootstrap-4.1.3.min.css';
@@ -11,34 +11,32 @@ import { IonApp, setupIonicReact } from '@ionic/react';
 
 import { StoreProvider, useAppSelector } from '@/features/App';
 
-import { AnnotationCampaignList } from '@/view/annotation-campaign';
-import { AnnotationCampaignDetail, AnnotationCampaignInfo } from '@/view/annotation-campaign/[campaignID]';
-import { AnnotationCampaignPhaseDetail } from '@/view/annotation-campaign/[campaignID]/phase/[phaseType]';
-import { EditAnnotators } from '@/view/annotation-campaign/[campaignID]/phase/[phaseType]/edit-annotators';
-import { AnnotatorPage } from '@/view/annotation-campaign/[campaignID]/phase/[phaseType]/spectrogram/[spectrogramID]';
-import { NewAnnotationCampaign } from '@/view/annotation-campaign/new';
+const Home = lazy(() => import('./view/home/Home'));
+const Login = lazy(() => import('./view/auth/Login'));
+const Account = lazy(() => import('./view/account'));
+const SqlQuery = lazy(() => import('./view/admin/sql'));
+const OntologyPage = lazy(() => import('./view/admin/ontology'));
+const OntologyTab = lazy(() => import('./view/admin/ontology/[type]'));
+const OntologyPanel = lazy(() => import('./view/admin/ontology/[type]/[id]'));
+const DatasetList = lazy(() => import('./view/dataset'));
+const DatasetDetail = lazy(() => import('./view/dataset/[datasetID]'));
+const AnnotationCampaignList = lazy(() => import('./view/annotation-campaign'));
+const NewAnnotationCampaign = lazy(() => import('./view/annotation-campaign/new'));
+const AnnotationCampaignDetail = lazy(() => import('./view/annotation-campaign/[campaignID]'));
+const AnnotationCampaignInfo = lazy(() => import('./view/annotation-campaign/[campaignID]/InfoTab'));
+const AnnotationCampaignPhaseDetail = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]'));
+const EditAnnotators = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/edit-annotators'));
+const ImportAnnotations = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/import-annotations'));
+const AnnotatorPage = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/spectrogram/[spectrogramID]'));
 
-import { DatasetList } from '@/view/dataset';
-import { DatasetDetail } from '@/view/dataset/[datasetID]';
+const AploseSkeleton = lazy(() => import('./components/layout/Skeleton'));
 
-import { Account } from '@/view/account'
-
-import { SqlQuery } from '@/view/admin/sql'
-import { OntologyPage } from '@/view/admin/ontology'
-import { OntologyTab } from '@/view/admin/ontology/[type]';
-import { OntologyPanel } from '@/view/admin/ontology/[type]/[id]';
-
-
-import { Home } from '@/view/home/Home';
-import { Login } from '@/view/auth';
 import { useLoadEventService } from '@/features/UX/Events';
 import { AlertProvider } from '@/components/ui/Alert';
-import { AploseSkeleton } from '@/components/layout';
 import { selectIsConnected } from '@/features/Auth';
 import { ReactFlowProvider } from '@xyflow/react';
 import { selectCurrentUser } from '@/api';
 import { AudioProvider } from '@/features/Audio';
-import { ImportAnnotations } from '@/view/annotation-campaign/[campaignID]/phase/[phaseType]/import-annotations';
 
 
 setupIonicReact({
@@ -73,42 +71,42 @@ const AppContent: React.FC = () => {
   return (
     <Routes>
 
-      <Route index element={ <Home/> }/>
-      <Route path="login" element={ <Login/> }/>
+      <Route index element={ <Suspense><Home/></Suspense> }/>
 
-      { isConnected && <Route element={ <AploseSkeleton/> }>
+      <Route path="login" element={ <Suspense><Login/></Suspense> }/>
+
+      { isConnected && <Route element={ <Suspense><AploseSkeleton/></Suspense> }>
 
           <Route path="dataset">
-              <Route index element={ <DatasetList/> }/>
-              <Route path=":datasetID" element={ <DatasetDetail/> }/>
+              <Route index element={ <Suspense><DatasetList/></Suspense> }/>
+              <Route path=":datasetID" element={ <Suspense><DatasetDetail/></Suspense> }/>
           </Route>
 
           <Route path="annotation-campaign">
-              <Route index element={ <AnnotationCampaignList/> }/>
-              <Route path="new" element={ <NewAnnotationCampaign/> }/>
+              <Route index element={ <Suspense><AnnotationCampaignList/></Suspense> }/>
+              <Route path="new" element={ <Suspense><NewAnnotationCampaign/></Suspense> }/>
               <Route path=":campaignID">
-                  <Route element={ <AnnotationCampaignDetail/> }>
-                      <Route index element={ <AnnotationCampaignInfo/> }/>
-                      <Route path="phase/:phaseType" element={ <AnnotationCampaignPhaseDetail/> }/>
+                  <Route element={ <Suspense><AnnotationCampaignDetail/></Suspense> }>
+                      <Route index element={ <Suspense><AnnotationCampaignInfo/></Suspense> }/>
+                      <Route path="phase/:phaseType" element={ <Suspense><AnnotationCampaignPhaseDetail/></Suspense> }/>
                   </Route>
                   <Route path="phase/:phaseType">
-                      <Route path="edit-annotators" element={ <EditAnnotators/> }/>
-                      <Route path="import-annotations" element={ <ImportAnnotations/> }/>
+                      <Route path="edit-annotators" element={ <Suspense><EditAnnotators/></Suspense> }/>
+                      <Route path="import-annotations" element={ <Suspense><ImportAnnotations/></Suspense> }/>
 
-                      <Route path="spectrogram/:spectrogramID" element={ <AnnotatorPage/> }/>
+                      <Route path="spectrogram/:spectrogramID" element={ <Suspense><AnnotatorPage/></Suspense> }/>
                   </Route>
               </Route>
           </Route>
 
-          <Route path="account" element={ <Account/> }/>
+          <Route path="account" element={ <Suspense><Account/></Suspense> }/>
 
         { currentUser?.isSuperuser &&
             <Route path="admin">
-                <Route path="sql" element={ <SqlQuery/> }/>
-                <Route path="ontology" element={ <OntologyPage/> }>
-                    <Route path=":type">
-                        <Route index element={ <OntologyTab/> }/>
-                        <Route path=":id" element={ <OntologyPanel/> }/>
+                <Route path="sql" element={ <Suspense><SqlQuery/></Suspense> }/>
+                <Route path="ontology" element={ <Suspense><OntologyPage/></Suspense> }>
+                    <Route path=":type" element={ <Suspense><OntologyTab/></Suspense> }>
+                        <Route path=":id" element={ <Suspense><OntologyPanel/></Suspense> }/>
                     </Route>
                 </Route>
             </Route> }

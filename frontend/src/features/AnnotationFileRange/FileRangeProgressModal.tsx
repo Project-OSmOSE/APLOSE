@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 import {
-  Link,
+  Button,
   Modal,
   ModalFooter,
   ModalHeader,
@@ -12,6 +12,7 @@ import {
   TableHead,
   TooltipOverlay,
   useModal,
+  useToast,
   WarningText,
 } from '@/components/ui';
 import { IonButton, IonIcon, IonNote, IonSpinner } from '@ionic/react';
@@ -26,10 +27,10 @@ import {
   useCurrentPhase,
   UserNode,
 } from '@/api';
-import { DOWNLOAD_ANNOTATIONS_URL, DOWNLOAD_PROGRESS_URL } from '@/consts/links';
+import { useDownloadAnnotations, useDownloadProgress } from '@/api/download';
 
 type Progression = {
-  user: Pick<UserNode, 'id' | 'displayName' | 'expertise'>;
+  user: Pick<UserNode, 'id' | 'displayName' | 'expertise' | 'username'>;
   ranges: Array<Pick<AnnotationFileRangeNode, 'id' | 'firstFileIndex' | 'lastFileIndex' | 'filesCount'> & {
     annotator: Pick<UserNode, 'id'>
     completedAnnotationTasks?: Maybe<Pick<AnnotationTaskNodeNodeConnection, 'totalCount'>>
@@ -60,19 +61,30 @@ export const FileRangeProgressModal: React.FC<{
   const { phase } = useCurrentPhase()
   const { users, isFetching: isLoadingUsers, error: userError } = useAllUsers();
   const { allFileRanges, isFetching: isLoadingFileRanges, error: fileRangeError } = useAllFileRanges();
+  const { downloadAnnotations, error: downloadAnnotationsError } = useDownloadAnnotations()
+  const { downloadProgress, error: downloadProgressError } = useDownloadProgress()
+  const toast = useToast()
+
+  useEffect(() => {
+    if (downloadAnnotationsError) toast.raiseError({ error: downloadAnnotationsError })
+  }, [ downloadAnnotationsError ]);
+
+  useEffect(() => {
+    if (downloadProgressError) toast.raiseError({ error: downloadProgressError })
+  }, [ downloadProgressError ]);
 
   const [ progress, setProgress ] = useState<Array<Progression>>([]);
   const [ sort, setSort ] = useState<Sort>({ entry: 'Progress', sort: 'DESC' });
 
   useEffect(() => {
-    if (!allFileRanges || !users) return;
+    if (!allFileRanges || !users || users.length === 0) return;
     const progression = new Array<Progression>();
     for (const range of allFileRanges) {
-      let progress: Progression | undefined = progression.find(p => p.user.id === range!.annotator?.id);
+      let progress: Progression | undefined = progression.find(p => p.user?.id === range!.annotator?.id);
       if (progress) {
         progress.ranges.push(range!);
       } else {
-        const user = users.find(u => u!.id === range!.annotator?.id)!
+        const user = users.find(u => u!.id == range!.annotator?.id)!
         progress = {
           user,
           ranges: [ range! ],
@@ -153,11 +165,11 @@ export const FileRangeProgressModal: React.FC<{
 
             { progress.sort(sortProgress).map(p => {
               return (
-                <Fragment key={ p.user.displayName }>
+                <Fragment key={ p.user.id }>
                   <TableDivider/>
                   <TableContent
-                    isFirstColumn={ true }>{ p.user.displayName }&nbsp;{ p.user.expertise &&
-                      <Fragment>( { p.user.expertise } )</Fragment> }</TableContent>
+                    isFirstColumn={ true }>{ p.user.displayName || p.user.username }&nbsp;{ p.user.expertise &&
+                      <Fragment>({ p.user.expertise })</Fragment> }</TableContent>
                   <TableContent className={ styles.progressContent }>
                     <div>
                       { p.ranges.map(r => (
@@ -181,15 +193,17 @@ export const FileRangeProgressModal: React.FC<{
         <ModalFooter className={ styles.footer }>
           <div className={ styles.buttons }>
             { progress.length > 0 && <Fragment>
-                <Link href={ DOWNLOAD_ANNOTATIONS_URL(phase.id) }>
+                <Button size="small" color="dark" fill="clear"
+                        onClick={ downloadAnnotations }>
                     <IonIcon icon={ downloadOutline } slot="start"/>
                     Results (csv)
-                </Link>
+                </Button>
 
-                <Link href={ DOWNLOAD_PROGRESS_URL(phase.id) }>
+                <Button size="small" color="dark" fill="clear"
+                        onClick={ downloadProgress }>
                     <IonIcon icon={ downloadOutline } slot="start"/>
                     Status (csv)
-                </Link>
+                </Button>
             </Fragment> }
           </div>
         </ModalFooter>

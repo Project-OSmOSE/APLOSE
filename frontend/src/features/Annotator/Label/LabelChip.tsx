@@ -2,12 +2,22 @@ import React, { Fragment, MouseEvent, useCallback, useMemo } from 'react';
 import { IonChip, IonIcon } from '@ionic/react';
 import { checkmarkOutline, closeCircle, eyeOffOutline, eyeOutline } from 'ionicons/icons/index.js';
 import styles from './styles.module.scss';
-import { Kbd, TooltipOverlay, useAlert } from '@/components/ui';
-import { useAnnotatorLabel } from './hooks';
-import { useAnnotatorAnnotation } from '@/features/Annotator/Annotation';
+import { Kbd, TooltipOverlay } from '@/components/ui';
+import {
+  focusAnnotation,
+  selectAllAnnotations,
+  selectAnnotation,
+  useAddAnnotation,
+  useGetAnnotation,
+  useRemoveAnnotation,
+  useUpdateAnnotation,
+} from '@/features/Annotator/Annotation';
 import { AnnotationType } from '@/api';
 import { useKeyDownEvent } from '@/features/UX';
-import { useAnnotatorConfidence } from '@/features/Annotator/Confidence';
+import { selectFocusConfidence } from '@/features/Annotator/Confidence';
+import { useAppDispatch, useAppSelector } from '@/features/App';
+import { setHiddenLabels } from './slice';
+import { selectAllLabels, selectFocusLabel, selectHiddenLabels } from './selectors';
 
 export const AlphanumericKeys = [
   [ '&', 'é', '"', '\'', '(', '-', 'è', '_', 'ç' ],
@@ -17,25 +27,16 @@ export const AlphanumericKeys = [
 export const LabelChip: React.FC<{
   label: string;
 }> = ({ label }) => {
-  const {
-    allLabels,
-    focusedLabel,
-    hiddenLabels,
-    hideAllLabels,
-    hideLabel,
-    showLabel,
-  } = useAnnotatorLabel()
-  const { focusedConfidence } = useAnnotatorConfidence()
-  const {
-    allAnnotations,
-    focusedAnnotation,
-    updateAnnotation,
-    removeAnnotation,
-    getAnnotation,
-    getAnnotations,
-    focus,
-    addAnnotation,
-  } = useAnnotatorAnnotation()
+  const allLabels = useAppSelector(selectAllLabels)
+  const focusedLabel = useAppSelector(selectFocusLabel)
+  const hiddenLabels = useAppSelector(selectHiddenLabels)
+  const focusedConfidence = useAppSelector(selectFocusConfidence)
+  const addAnnotation = useAddAnnotation()
+  const updateAnnotation = useUpdateAnnotation()
+  const focusedAnnotation = useAppSelector(selectAnnotation)
+  const allAnnotations = useAppSelector(selectAllAnnotations)
+  const getAnnotation = useGetAnnotation()
+  const removeAnnotation = useRemoveAnnotation()
   const index = useMemo(() => allLabels.indexOf(label), [ allLabels, label ])
   const className = useMemo(() => {
     return focusedLabel === label ? styles.activeLabel : undefined
@@ -47,50 +48,40 @@ export const LabelChip: React.FC<{
   const color = useMemo(() => (index % 10).toString(), [ index ])
   const isHidden = useMemo(() => hiddenLabels.includes(label), [ hiddenLabels, label ])
   const buttonColor = useMemo(() => focusedLabel === label ? undefined : color, [ color, focusedLabel, label ])
-  const alert = useAlert()
+  const dispatch = useAppDispatch()
 
   const select = useCallback(() => {
-    if (focusedAnnotation) return updateAnnotation(focusedAnnotation, { label })
     const weakProperties = {
       type: AnnotationType.Weak,
       label,
       confidence: focusedConfidence,
     }
     const weak = getAnnotation(weakProperties)
-    if (weak) return focus(weak)
+    if (weak) return dispatch(focusAnnotation(weak))
     addAnnotation(weakProperties)
-  }, [ focusedAnnotation, updateAnnotation, label, getAnnotation, focus, addAnnotation, focusedConfidence ])
+  }, [ focusedAnnotation, updateAnnotation, label, getAnnotation, dispatch, addAnnotation, focusedConfidence ])
   useKeyDownEvent([ number, key ], select)
 
   const show = useCallback((event: MouseEvent) => {
     event.stopPropagation();
     // Hide all but current if ctrlKey pressed
-    if (event.ctrlKey) hideAllLabels()
-    showLabel(label)
-  }, [ label, showLabel, hideAllLabels ])
+    if (event.ctrlKey) dispatch(setHiddenLabels(allLabels))
+    dispatch(setHiddenLabels(hiddenLabels.filter(l => l !== label)))
+  }, [ label, hiddenLabels, dispatch ])
 
   const hide = useCallback((event: MouseEvent) => {
     event.stopPropagation();
     // Hide all but current if ctrlKey pressed => show
     if (event.ctrlKey) show(event)
-    else hideLabel(label)
-  }, [ label, show, hideLabel ])
+    else dispatch(setHiddenLabels([ ...hiddenLabels, label ]))
+  }, [ label, show, dispatch, hiddenLabels ])
 
   const remove = useCallback((event: MouseEvent) => {
     event.stopPropagation();
-    if (!isUsed) return;
-    // if annotations exists with this label: wait for confirmation
-    alert.showAlert({
-      type: 'Warning',
-      message: `You are about to remove ${ getAnnotations({ label }).length } annotations using "${ label }" label. Are you sure?`,
-      actions: [ {
-        label: `Remove "${ label }" annotations`,
-        callback: () => {
-          getAnnotations({ label: label }).forEach(removeAnnotation)
-        },
-      } ],
-    })
-  }, [ label, isUsed, getAnnotations, getAnnotation, removeAnnotation ])
+    const annotation = getAnnotation({ label, type: AnnotationType.Weak })
+    if (!annotation) return;
+    removeAnnotation(annotation)
+  }, [ label, getAnnotation, removeAnnotation ])
 
   return (
     <IonChip outline={ !isUsed }
@@ -108,7 +99,7 @@ export const LabelChip: React.FC<{
                             <Kbd keys={ number } className={ colorClass }/>
                             &npsb;or&npsb;
                             <Kbd keys={ key } className={ colorClass }/>:
-                            &npsb;Choose this label
+                            { '\u00A0' }Choose this label
                           </p>
                         </Fragment> }>
           <p>{ label }</p>

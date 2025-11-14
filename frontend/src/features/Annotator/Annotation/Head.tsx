@@ -5,16 +5,18 @@ import styles from './styles.module.scss';
 import { useAudio } from '@/features/Audio';
 import { UpdateLabelModal } from '@/features/Labels';
 import type { Annotation } from './slice';
-import { useAnnotatorLabel } from '@/features/Annotator/Label';
-import { useAnnotatorAnnotation } from '@/features/Annotator/Annotation/hooks';
+import { useRemoveAnnotation, useUpdateAnnotation } from '@/features/Annotator/Annotation/hooks';
+import { useAppSelector } from '@/features/App';
+import { selectFocusLabel } from '@/features/Annotator/Label';
 
 export const AnnotationHeadContent: React.FC<{
   annotation: Annotation,
 }> = ({ annotation }) => {
   const audio = useAudio()
   const labelUpdateModal = useModal()
-  const { focusedLabel } = useAnnotatorLabel()
-  const { updateAnnotation, removeAnnotation } = useAnnotatorAnnotation()
+  const focusedLabel = useAppSelector(selectFocusLabel)
+  const updateAnnotation = useUpdateAnnotation()
+  const removeAnnotation = useRemoveAnnotation()
 
   const play = useCallback(() => {
     audio.play(annotation.startTime ?? undefined, annotation.endTime ?? undefined)

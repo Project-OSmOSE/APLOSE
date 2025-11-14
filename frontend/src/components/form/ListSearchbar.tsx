@@ -3,13 +3,13 @@ import { IonItem, IonList } from '@ionic/react';
 import { createPortal } from 'react-dom';
 import { usePopover } from '@/components/ui';
 import styles from './form.module.scss';
-import { Item } from './types';
+import { type SearchItem } from './types';
 import { Searchbar } from './Searchbar';
 import { searchFilter } from '@/service/function';
 
 interface Props {
-  values: Array<Item>;
-  onValueSelected?: (value: Item) => void;
+  values: Array<SearchItem>;
+  onValueSelected?: (value: SearchItem) => void;
   placeholder: string;
   className?: string;
   disabled?: boolean;
@@ -19,7 +19,7 @@ export const ListSearchbar: React.FC<Props> = ({ values, placeholder, className,
   const { containerRef, top, left, width } = usePopover()
 
   const [ search, setSearch ] = useState<string>();
-  const [ searchResult, setSearchResult ] = useState<Array<any>>([]);
+  const [ searchResult, setSearchResult ] = useState<Array<SearchItem>>([]);
 
   useEffect(() => setSearchResult(searchFilter(values, search)), [ search ])
 

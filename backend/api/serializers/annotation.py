@@ -70,7 +70,7 @@ class AnnotationSerializer(serializers.ModelSerializer):
             fields["label"].queryset = campaign.label_set.labels
             fields["spectrogram"].queryset = Spectrogram.objects.filter(
                 analysis__in=campaign.analysis.all()
-            )
+            ).distinct()
             fields["analysis"].queryset = SpectrogramAnalysis.objects.filter(
                 id__in=campaign.analysis.values_list("id", flat=True)
             )
@@ -129,6 +129,7 @@ class AnnotationSerializer(serializers.ModelSerializer):
             if float(data["end_frequency"]) > self.fields["end_frequency"].max_value:
                 data["end_frequency"] = self.fields["end_frequency"].max_value
 
+        print(data)
         return super().run_validation(data)
 
     def validate(self, attrs: dict):

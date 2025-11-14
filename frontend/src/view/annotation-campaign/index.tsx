@@ -23,3 +23,5 @@ export const AnnotationCampaignList: React.FC = () => {
     </div>
   </Fragment>
 }
+
+export default AnnotationCampaignList

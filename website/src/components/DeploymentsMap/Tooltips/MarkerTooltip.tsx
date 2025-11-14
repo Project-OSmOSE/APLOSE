@@ -1,12 +1,9 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect } from 'react';
 import styles from './Tooltip.module.scss';
-import { ContactRole, Deployment } from "../../../pages/Projects/ProjectDetail/ProjectDetail";
+import { ContactRole, Deployment } from '../../../pages/Projects/ProjectDetail/ProjectDetail';
 
 
 export const MarkerTooltip: React.FC<{ deployment: Deployment }> = ({ deployment }) => {
-  useEffect(() => {
-    console.log(deployment);
-  }, [ deployment ]);
   return (
     <div className={ styles.tooltip }>
       <p><small>Project:</small> { deployment.project.name }</p>

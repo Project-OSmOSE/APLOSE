@@ -122,6 +122,11 @@ $box-width: 3px;
   display: grid;
   left: min(var(--left, 0), calc(100% - 26rem));
   width: 25rem;
+  border: 1px solid rgba(var(--ion-color-medium-rgb), 0.15) !important;
+  border-radius: 0.5rem;
+  align-self: start;
+  background: white;
+  grid-template-rows: auto 1fr;
 
   h6 {
     cursor: move;
@@ -136,6 +141,8 @@ $box-width: 3px;
     display: grid;
     grid-auto-flow: row;
     gap: 1rem;
+    padding: 1rem;
+    flex-wrap: wrap;
 
     .table {
       overflow: visible;
@@ -174,6 +181,14 @@ $box-width: 3px;
       .cellButton {
         grid-template-columns: 1fr 2ch auto;
       }
+    }
+
+    p {
+      display: grid;
+      grid-auto-flow: column;
+      justify-content: start;
+      align-items: center;
+      gap: 0.25rem;
     }
   }
 
@@ -215,6 +230,26 @@ $box-width: 3px;
   .selectedButton {
     border-radius: 0.5rem;
     box-shadow: var(--aplose-box-shadow);
+  }
+
+  .blocHeader {
+    background: var(--ion-color-light-shade);
+    text-align: center;
+    padding: 0.5rem;
+    border: none !important;
+    border-bottom: 1px solid rgba(var(--ion-color-medium-rgb), 0.15) !important;
+    position: relative;
+
+    &h6, h6 {
+      margin: 0;
+    }
+
+    .showButton {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+    }
   }
 }
 

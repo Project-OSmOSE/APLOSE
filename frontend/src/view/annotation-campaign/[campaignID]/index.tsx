@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import styles from './styles.module.scss';
-import { IonSkeletonText } from '@ionic/react';
+import { IonSkeletonText, IonSpinner } from '@ionic/react';
 import { FadedText, Head, Link, WarningText } from '@/components/ui';
 import { dateToString } from '@/service/function';
 import { MailButton } from '@/features/User';
@@ -15,10 +15,10 @@ export const AnnotationCampaignDetail: React.FC = () => {
   const { campaignID, phaseType } = useParams<AploseNavParams>();
   const {
     campaign,
+    isFetching,
     error,
   } = useCurrentCampaign();
 
-  if (!campaign) return <Fragment/>
   return <Fragment>
 
     <Head title={ campaign?.name } canGoBack
@@ -29,6 +29,7 @@ export const AnnotationCampaignDetail: React.FC = () => {
             </FadedText> :
             <IonSkeletonText animated style={ { width: 512, height: '1ch', justifySelf: 'center' } }/> }/>
 
+    { isFetching && <IonSpinner/> }
     { error && <WarningText error={ error }/> }
 
     { campaign && <div style={ {
@@ -53,3 +54,5 @@ export const AnnotationCampaignDetail: React.FC = () => {
     </div> }
   </Fragment>
 }
+
+export default AnnotationCampaignDetail

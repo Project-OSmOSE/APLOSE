@@ -19,7 +19,7 @@ export const SpectrogramRow: React.FC<{
   validatedAnnotations?: Maybe<Pick<AnnotationNodeNodeConnection, 'totalCount'>>;
 }> = ({ spectrogram, task, annotations, validatedAnnotations }) => {
   const { phase } = useCurrentPhase()
-  const { openAnnotator } = useOpenAnnotator()
+  const openAnnotator = useOpenAnnotator()
 
   const submitted = useMemo(() => task?.status === AnnotationTaskStatus.Finished, [ task ])
   const start = useMemo(() => new Date(spectrogram.start), [ spectrogram ])

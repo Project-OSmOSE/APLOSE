@@ -1,29 +1,13 @@
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, type MutableRefObject, ReactNode, useContext, useRef } from 'react';
 
 type AnnotatorCanvasContext = {
-  window?: HTMLDivElement,
-  setWindow: (canvas: HTMLDivElement) => void,
-
-  mainCanvas?: HTMLCanvasElement,
-  setMainCanvas: (canvas: HTMLCanvasElement) => void,
-
-  xAxisCanvas?: HTMLCanvasElement,
-  setXAxisCanvas: (canvas: HTMLCanvasElement) => void,
-
-  yAxisCanvas?: HTMLCanvasElement,
-  setYAxisCanvas: (canvas: HTMLCanvasElement) => void,
+  windowCanvasRef?: MutableRefObject<HTMLDivElement | null>,
+  mainCanvasRef?: MutableRefObject<HTMLCanvasElement | null>,
+  xAxisCanvasRef?: MutableRefObject<HTMLCanvasElement | null>,
+  yAxisCanvasRef?: MutableRefObject<HTMLCanvasElement | null>,
 }
 
-export const AnnotatorCanvasContext = createContext<AnnotatorCanvasContext>({
-  setWindow: () => {
-  },
-  setMainCanvas: () => {
-  },
-  setXAxisCanvas: () => {
-  },
-  setYAxisCanvas: () => {
-  },
-})
+export const AnnotatorCanvasContext = createContext<AnnotatorCanvasContext>({})
 
 export const useAnnotatorCanvasContext = () => {
   const context = useContext(AnnotatorCanvasContext);
@@ -34,16 +18,16 @@ export const useAnnotatorCanvasContext = () => {
 }
 
 export const AnnotatorCanvasContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [ window, setWindow ] = useState<HTMLDivElement>();
-  const [ mainCanvas, setMainCanvas ] = useState<HTMLCanvasElement>();
-  const [ xAxisCanvas, setXAxisCanvas ] = useState<HTMLCanvasElement>();
-  const [ yAxisCanvas, setYAxisCanvas ] = useState<HTMLCanvasElement>();
+  const windowCanvasRef = useRef<HTMLDivElement | null>(null)
+  const mainCanvasRef = useRef<HTMLCanvasElement | null>(null)
+  const xAxisCanvasRef = useRef<HTMLCanvasElement | null>(null)
+  const yAxisCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
   return <AnnotatorCanvasContext.Provider children={ children }
                                           value={ {
-                                            window, setWindow,
-                                            mainCanvas, setMainCanvas,
-                                            xAxisCanvas, setXAxisCanvas,
-                                            yAxisCanvas, setYAxisCanvas,
+                                            windowCanvasRef,
+                                            mainCanvasRef,
+                                            xAxisCanvasRef,
+                                            yAxisCanvasRef,
                                           } }/>;
 }

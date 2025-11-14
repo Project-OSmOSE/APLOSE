@@ -7,26 +7,32 @@ import { IoRemoveCircleOutline } from 'react-icons/io5';
 import { createOutline } from 'ionicons/icons/index.js';
 import { CLICK_EVENT } from '@/features/UX/Events';
 import { AnnotationType, SignalTrendType, useAnnotationTask, useCurrentCampaign, useCurrentPhase } from '@/api';
-import { useAnnotatorPointer } from '@/features/Annotator/Pointer';
-import { useAnnotatorUX } from '@/features/Annotator/UX';
-import { useAnnotatorAnnotation } from './hooks';
-import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
-import { useTimeAxis } from '@/features/Annotator/Axis';
+import { useGetFreqTime } from '@/features/Annotator/Pointer';
+import {
+  useGetAnnotation,
+  useRemoveAnnotationFeatures,
+  useUpdateAnnotation,
+  useUpdateAnnotationFeatures,
+} from './hooks';
+import { selectAnalysis } from '@/features/Annotator/Analysis';
+import { useTimeScale } from '@/features/Annotator/Axis';
+import { useAppDispatch, useAppSelector } from '@/features/App';
+import { setIsDrawingEnabled } from '@/features/Annotator/UX';
+import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
+import { focusAnnotation } from '@/features/Annotator/Annotation/slice';
 
 export const AcousticFeatures: React.FC = () => {
-  const {
-    focusedAnnotation,
-    focus,
-    getAnnotation,
-    updateAnnotation,
-    updateFeatures,
-    removeFeatures,
-  } = useAnnotatorAnnotation()
+  const analysis = useAppSelector(selectAnalysis)
+  const focusedAnnotation = useAppSelector(selectAnnotation)
+  const updateAnnotation = useUpdateAnnotation()
+  const getAnnotation = useGetAnnotation()
+  const updateFeatures = useUpdateAnnotationFeatures()
+  const removeFeatures = useRemoveAnnotationFeatures()
   const { campaign } = useCurrentCampaign()
   const { phase } = useCurrentPhase()
   const { spectrogram } = useAnnotationTask()
-  const { analysis } = useAnnotatorAnalysis()
-  const { timeScale } = useTimeAxis()
+  const timeScale = useTimeScale()
+  const dispatch = useAppDispatch();
 
   const duration = useMemo(() => {
     if (focusedAnnotation?.type !== AnnotationType.Box) return;
@@ -113,18 +119,20 @@ export const AcousticFeatures: React.FC = () => {
       type: AnnotationType.Weak,
       label: focusedAnnotation.label,
     });
-    if (weak) focus(weak)
-  }, [ getAnnotation, focusedAnnotation, focus ])
+    if (weak) dispatch(focusAnnotation(weak))
+  }, [ getAnnotation, focusedAnnotation, dispatch ])
 
   if (!focusedAnnotation) return <Fragment/>;
-  if (campaign?.labelsWithAcousticFeatures?.find(l => l?.name === focusedAnnotation.label)) return <Fragment/>;
+  if (!campaign?.labelsWithAcousticFeatures?.find(l => l?.name === focusedAnnotation.label)) return <Fragment/>;
   if (focusedAnnotation.type !== AnnotationType.Box) return <Fragment/>;
   // @ts-expect-error: --left isn't recognized
   return <div style={ { top, '--left': `${ left }px` } }
-              className={ [ styles.bloc, styles.features ].join(' ') }
+              className={ styles.features }
               onMouseDown={ e => e.stopPropagation() }>
-    <ExtendedDiv draggable={ true } onTopMove={ onTopMove } onLeftMove={ onLeftMove }
-                 className={ styles.header }><h6>
+    <ExtendedDiv draggable={ true }
+                 onTopMove={ onTopMove }
+                 onLeftMove={ onLeftMove }
+                 className={ styles.blocHeader }><h6>
       Acoustic features
       <IoRemoveCircleOutline onClick={ quit }/>
     </h6></ExtendedDiv>
@@ -257,9 +265,9 @@ const SelectableFrequencyRow: React.FC<{
   max: number | undefined;
   onChange: (value: number | undefined) => void;
 }> = ({ label, value, max, onChange }) => {
-  const { getFreqTime } = useAnnotatorPointer()
-  const { enableDrawing, disableDrawing } = useAnnotatorUX()
+  const getFreqTime = useGetFreqTime()
   const [ isSelecting, setIsSelecting ] = useState<boolean>(false);
+  const dispatch = useAppDispatch()
 
   const onClick = useCallback((event: MouseEvent) => {
     event.stopPropagation()
@@ -271,14 +279,14 @@ const SelectableFrequencyRow: React.FC<{
   const select = useCallback(() => {
     setTimeout(() => CLICK_EVENT.add(onClick), 500);
     setIsSelecting(true)
-    disableDrawing()
-  }, [ disableDrawing, onClick ])
+    dispatch(setIsDrawingEnabled(false))
+  }, [ dispatch, onClick ])
 
   const unselect = useCallback(() => {
     CLICK_EVENT.remove(onClick)
     setIsSelecting(false)
-    enableDrawing()
-  }, [ enableDrawing, onClick ])
+    dispatch(setIsDrawingEnabled(true))
+  }, [ dispatch, onClick ])
 
   const toggleSelection = useCallback(() => {
     if (isSelecting) unselect()

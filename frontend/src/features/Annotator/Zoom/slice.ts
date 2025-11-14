@@ -46,11 +46,7 @@ export const AnnotatorZoomSlice = createSlice({
 })
 
 export const {
-  selectZoom,
-  selectZoomOrigin,
-} = AnnotatorZoomSlice.selectors
-
-export const {
   setZoom,
   setZoomOrigin,
 } = AnnotatorZoomSlice.actions
+

@@ -15,7 +15,7 @@ export const FileRangeActionBar: React.FC = () => {
   const { params, updateParams, clearParams } = useAllTasksFilters({ clearOnLoad: true })
   const { phase } = useCurrentPhase()
   const { allSpectrograms, resumeSpectrogramID } = useAllAnnotationTasks(params)
-  const { openAnnotator } = useOpenAnnotator()
+  const openAnnotator = useOpenAnnotator()
 
   const updateSearch = useCallback((search: string) => {
     updateParams({ search })
@@ -45,15 +45,15 @@ export const FileRangeActionBar: React.FC = () => {
                       </IonButton> }
 
                       <div className={ styles.progress }>
-                        { phase && phase.userCompletedTasksCount && phase.userCompletedTasksCount > 0 &&
-                            <Progress label="My progress"
-                                      color="primary"
-                                      value={ phase.userTasksCount ?? 0 }
-                                      total={ phase.userCompletedTasksCount }/> }
-                        { phase && phase.completedTasksCount && phase.completedTasksCount > 0 &&
-                            <Progress label="Global progress"
-                                      value={ phase.tasksCount ?? 0 }
-                                      total={ phase.completedTasksCount }/> }
+                        { phase && phase.userTasksCount && phase.userTasksCount > 0 ?
+                          <Progress label="My progress"
+                                    color="primary"
+                                    value={ phase.userCompletedTasksCount ?? 0 }
+                                    total={ phase.userTasksCount }/> : <Fragment/> }
+                        { phase && phase.tasksCount && phase.tasksCount > 0 ?
+                          <Progress label="Global progress"
+                                    value={ phase.completedTasksCount ?? 0 }
+                                    total={ phase.tasksCount }/> : <Fragment/> }
                         <FileRangeProgressModalButton/>
                       </div>
 

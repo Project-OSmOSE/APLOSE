@@ -1,12 +1,13 @@
 import React, { Fragment, useMemo } from 'react';
 import { Bloc, Table, TableDivider } from '@/components/ui';
 import styles from './styles.module.scss'
-import { useAnnotatorAnnotation } from './hooks';
 import { IonNote } from '@ionic/react';
 import { AnnotationRow } from './AnnotationRow';
+import { useAppSelector } from '@/features/App';
+import { selectAllAnnotations } from '@/features/Annotator/Annotation/selectors';
 
 export const AnnotationsBloc: React.FC = () => {
-  const { allAnnotations } = useAnnotatorAnnotation()
+  const allAnnotations = useAppSelector(selectAllAnnotations)
 
   const sortedAnnotations = useMemo(() => {
     // Need the spread to sort this readonly array

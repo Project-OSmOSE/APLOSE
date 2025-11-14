@@ -75,9 +75,16 @@ export const NewAnnotationCampaign: React.FC = () => {
       return;
     }
     createCampaign({
-      name, description, instructionsUrl, deadline,
-      datasetID, analysisIDs,
-      allowImageTuning, allowColormapTuning, colormapDefault, colormapInvertedDefault,
+      name,
+      description,
+      instructionsUrl,
+      deadline: deadline || undefined,
+      datasetID,
+      analysisIDs,
+      allowImageTuning,
+      allowColormapTuning,
+      colormapDefault,
+      colormapInvertedDefault,
     })
   }, [ name, description, instructionsUrl, deadline, datasetID, analysisIDs, allowImageTuning, allowColormapTuning, colormapDefault, colormapInvertedDefault ])
 
@@ -162,3 +169,5 @@ export const NewAnnotationCampaign: React.FC = () => {
     </div>
   </div>
 }
+
+export default NewAnnotationCampaign

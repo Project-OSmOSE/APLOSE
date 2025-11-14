@@ -5,6 +5,7 @@ import graphene
 import graphene_django_optimizer
 from django.conf import settings
 from graphql import GraphQLResolveInfo
+from osekit.core_api.spectro_data import SpectroData
 from osekit.core_api.spectro_dataset import SpectroDataset
 
 from backend.api.models import (
@@ -100,21 +101,22 @@ class AnnotationSpectrogramNode(BaseObjectType):
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_audio_path(self: Spectrogram, info, analysis_id: int):
-        print(self.__dict__, self.analysis.all())
         analysis: SpectrogramAnalysis = self.analysis.get(id=analysis_id)
 
+        audio_path: str
         if analysis.dataset.legacy:
-            return path.join(
-                settings.STATIC_URL,
+            audio_path = path.join(
                 analysis.dataset.path,
                 settings.DATASET_FILES_FOLDER,
                 analysis.dataset.get_config_folder(),
                 f"{self.filename}.wav",
             )
-        spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
-        audio_path = str(
-            spectro_dataset.data[self.filename].audio_data.files[0].path
-        ).split("\\dataset\\")[1]
+        else:
+            spectro_data: SpectroData = self.get_spectro_data_for(analysis)
+            audio_path = str(list(spectro_data.audio_data.files)[0].path)
+            audio_path = audio_path.split(str(settings.DATASET_EXPORT_PATH))[1].lstrip(
+                "\\"
+            )
         return path.join(settings.STATIC_URL, settings.DATASET_EXPORT_PATH, audio_path)
 
     path = graphene.String(analysis_id=graphene.ID(required=True), required=True)
@@ -123,8 +125,9 @@ class AnnotationSpectrogramNode(BaseObjectType):
     def resolve_path(self, info, analysis_id: int):
         analysis: SpectrogramAnalysis = self.analysis.get(id=analysis_id)
 
+        spectrogram_path: str
         if analysis.dataset.legacy:
-            folder = f"{analysis.fft.nfft}_{analysis.fft.window_size}_{analysis.fft.overlap*100}"
+            folder = f"{analysis.fft.nfft}_{analysis.fft.window_size}_{int(analysis.fft.overlap*100)}"
             if analysis.legacy_configuration is not None:
                 if analysis.legacy_configuration.linear_frequency_scale is not None:
                     folder = f"{folder}_{analysis.legacy_configuration.linear_frequency_scale.name}"
@@ -133,22 +136,28 @@ class AnnotationSpectrogramNode(BaseObjectType):
                     is not None
                 ):
                     folder = f"{folder}_{analysis.legacy_configuration.multi_linear_frequency_scale.name}"
-            return path.join(
-                settings.STATIC_URL,
+            spectrogram_path = path.join(
                 analysis.dataset.path,
                 settings.DATASET_SPECTRO_FOLDER,
                 analysis.dataset.get_config_folder(),
                 folder,
+                "image",
                 f"{self.filename}.{self.format.name}",
             )
-        spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
-        spectro_dataset_path = str(spectro_dataset.folder).split("\\dataset\\")[1]
+        else:
+            spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
+            spectro_dataset_path = str(spectro_dataset.folder).split(
+                str(settings.DATASET_EXPORT_PATH)
+            )[1]
+            spectrogram_path = path.join(
+                spectro_dataset_path,
+                "spectrogram",  # TODO: avoid static path parts!!!
+                f"{self.filename}.{self.format.name}",
+            ).lstrip("\\")
         return path.join(
             settings.STATIC_URL,
             settings.DATASET_EXPORT_PATH,
-            spectro_dataset_path,
-            "spectrogram",  # TODO: avoid static path parts!!!
-            f"{self.filename}.{self.format.name}",
+            spectrogram_path,
         )
 
     task = graphene.Field(

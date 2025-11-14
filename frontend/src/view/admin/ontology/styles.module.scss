@@ -1,7 +1,7 @@
 .page {
   display: grid;
   height: 100%;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto 1fr;
   gap: 1rem;
   overflow: hidden;
 }

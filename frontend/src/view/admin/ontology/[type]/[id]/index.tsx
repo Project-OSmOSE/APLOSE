@@ -99,3 +99,5 @@ export const OntologyPanel: React.FC = () => {
     </div> }
   </div>
 }
+
+export default OntologyPanel

@@ -19,7 +19,7 @@ import { convertGqlToAnnotations } from '@/features/Annotator/Annotation/convers
 
 export type Comment = Omit<AnnotationCommentSerializerInput, 'id'> & { id: number }
 export type Validation = AnnotationValidationSerializerInput
-export type Features = Omit<AnnotationAcousticFeaturesSerializerInput, 'id'> & { id: number }
+export type Features = AnnotationAcousticFeaturesSerializerInput
 export type Annotation =
   Omit<AnnotationInput, 'id' | 'isUpdateOf' | 'comments' | 'validations' | 'acousticFeatures'>
   & {
@@ -82,7 +82,6 @@ export const AnnotatorAnnotationSlice = createSlice({
         action.payload = { ...action.payload, analysis: state._analysisID }
       }
       state.allAnnotations = state.allAnnotations.map(a => a.id === action.payload.id ? action.payload as Annotation : a)
-      console.debug('updateAnnotation', action.payload.id, JSON.stringify(state.allAnnotations))
     },
     removeAnnotation: (state, action: { payload: Annotation }) => {
       state.allAnnotations = state.allAnnotations.filter(a => a.id !== action.payload.id)
@@ -117,6 +116,7 @@ export const AnnotatorAnnotationSlice = createSlice({
         state.id = initialState.id
       }
       const annotations = action.payload.annotationSpectrogramById?.task?.annotations?.results.filter(a => a !== null).map(a => a!) ?? []
+      console.debug('getAnnotationTaskFulfilled', annotations, action.meta.arg.originalArgs.spectrogramID)
       state.allAnnotations = convertGqlToAnnotations(annotations, action.meta.arg.originalArgs.phaseType, state._userID)
       const defaultAnnotation = [ ...state.allAnnotations ].reverse().pop();
       state.id = defaultAnnotation?.id
@@ -128,12 +128,6 @@ export const AnnotatorAnnotationSlice = createSlice({
     selectTempAnnotation: state => state.tempAnnotation,
   },
 })
-
-export const {
-  selectAllAnnotations,
-  selectID,
-  selectTempAnnotation,
-} = AnnotatorAnnotationSlice.selectors
 
 export const {
   focusAnnotation,

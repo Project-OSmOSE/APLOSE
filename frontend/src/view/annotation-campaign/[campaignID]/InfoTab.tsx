@@ -75,3 +75,5 @@ export const AnnotationCampaignInfo: React.FC = () => {
     </div>) }
   </div>
 }
+
+export default AnnotationCampaignInfo

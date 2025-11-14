@@ -3,7 +3,7 @@ import styles from './styles.module.scss';
 import { Head, Table, TableDivider, TableHead, useToast, WarningText } from '@/components/ui';
 import { IonButton, IonNote, IonSkeletonText, IonSpinner } from '@ionic/react';
 import { getNewItemID } from '@/service/function';
-import { FormBloc, type Item, ListSearchbar } from '@/components/form';
+import { FormBloc, type Item, ListSearchbar, type SearchItem } from '@/components/form';
 import {
   AnnotationFileRangeInput,
   useAllFileRanges,
@@ -17,11 +17,11 @@ import { QueryStatus } from '@reduxjs/toolkit/query';
 import { FileRangeInputRow } from '@/features/AnnotationFileRange';
 import { type AploseNavParams } from '@/features/UX';
 
-type SearchItem = {
-  type: 'user' | 'group';
-  id: string;
-  display: string;
-}
+// type SearchItem = {
+//   type: 'user' | 'group';
+//   id: string;
+//   display: string;
+// }
 
 type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
   id: string;
@@ -72,10 +72,18 @@ export const EditAnnotators: React.FC = () => {
             return count + (last_index - first_index)
           }, 0) + 1
         return count < campaign.spectrogramsCount
-      }).map(u => ({ id: u!.id, display: u!.displayName, type: 'user' } as SearchItem)));
+      }).map(u => ({
+        value: `user-${ u!.id }`,
+        label: u!.displayName || u!.username,
+        searchable: [ ...u!.displayName.split(' '), u!.username ],
+      } as SearchItem)));
     }
     if (groups) {
-      items.push(...groups.map(g => ({ id: g!.id, display: g!.name, type: 'group' } as SearchItem)))
+      items.push(...groups.map(g => ({
+        value: `group-${ g!.id }`,
+        label: g!.name,
+        searchable: [ g!.name ],
+      } as SearchItem)))
     }
     return items;
   }, [ users, campaign, fileRanges, groups ]);
@@ -97,7 +105,7 @@ export const EditAnnotators: React.FC = () => {
         newUsers.push(users.find(a => a.id === id)!);
         break;
       case 'group':
-        newUsers.push(...groups.find(g => g!.id === id)!.users!.filter(u => availableUsers.find(a => a.type === 'user' && a.id === u?.id)));
+        newUsers.push(...groups.find(g => g!.id === id)!.users!.filter(u => availableUsers.find(a => a.value.split('-')[0] === 'user' && a.value.split('-')[1] === u?.id)));
         break
     }
     setFileRanges(prev => {
@@ -146,7 +154,7 @@ export const EditAnnotators: React.FC = () => {
 
       <ListSearchbar placeholder="Search annotator..."
                      disabled={ isFetchingCampaign || isFetchingUsers || isFetchingFileRanges }
-                     values={ availableUsers.map(a => ({ value: `${ a.type }-${ a.id }`, label: a.display })) }
+                     values={ availableUsers }
                      onValueSelected={ addFileRange }/>
 
       {/* Loading */ }
@@ -208,3 +216,5 @@ export const EditAnnotators: React.FC = () => {
     </FormBloc>
   </Fragment>
 }
+
+export default EditAnnotators

@@ -2,7 +2,7 @@ import { ScaleService, Step } from './types';
 import { useCallback, useEffect } from 'react';
 
 export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }: {
-  canvas?: HTMLCanvasElement,
+  canvas?: HTMLCanvasElement | null,
   scale: ScaleService,
   orientation: 'horizontal' | 'vertical',
   pixelSize: number,
@@ -42,7 +42,16 @@ export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }
       }
     }
     for (const step of realSteps) {
-      const position = step.position;
+      let position = step.position;
+      switch (orientation) {
+        case 'horizontal':
+          position = canvas.width - position;
+          break;
+        case 'vertical':
+          position = canvas.height - position
+          break;
+      }
+
 
       // Tick
       let tickLength = 10;
@@ -102,6 +111,7 @@ export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }
             } else {
               context.textBaseline = 'bottom'
             }
+            context.fillText(text, 0, textPosition);
             break;
           case 'horizontal':
             if (textPosition === 0) {
@@ -112,9 +122,9 @@ export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }
             } else {
               context.textAlign = 'center'
             }
+            context.fillText(text, textPosition, 25);
             break;
         }
-        context.fillText(text, 0, textPosition);
       }
     }
   }, [ canvas, scale, orientation, pixelSize, valueToString ])

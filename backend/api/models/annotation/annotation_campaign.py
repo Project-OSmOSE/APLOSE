@@ -100,8 +100,10 @@ class AnnotationCampaign(models.Model):
 
     def get_sorted_files(self) -> QuerySet[Spectrogram]:
         """Return sorted dataset files"""
-        return Spectrogram.objects.filter(analysis__in=self.analysis.all()).order_by(
-            "start", "id"
+        return (
+            Spectrogram.objects.filter(analysis__in=self.analysis.all())
+            .order_by("start", "id")
+            .distinct()
         )
 
     @transaction.atomic

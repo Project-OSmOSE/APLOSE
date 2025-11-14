@@ -27,7 +27,9 @@ export const DocumentationButton: React.FC<{
 export const BackButton: React.FC = () => {
   const navigate = useNavigate()
 
-  const onBack = useCallback(() => navigate(-1), [ navigate ])
+  const onBack = useCallback(() => {
+    navigate(-1)
+  }, [ navigate ])
 
   return <IonButton fill="clear"
                     color="medium"

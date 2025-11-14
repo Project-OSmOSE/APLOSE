@@ -13,7 +13,7 @@ import {
   ContrastSelect,
 } from '@/features/Annotator/VisualConfiguration';
 import { ZoomButtons } from '@/features/Annotator/Zoom';
-import { PointerInfo, useAnnotatorPointer } from '@/features/Annotator/Pointer';
+import { PointerInfo } from '@/features/Annotator/Pointer';
 import { SpectrogramDownloadButton, SpectrogramInfo } from '@/features/Annotator/Spectrogram';
 import { NavigationButtons } from '@/features/Annotator/Navigation';
 import { FocusedAnnotationBloc } from '@/features/Annotator/Annotation';
@@ -24,14 +24,17 @@ import { AnnotationsBloc } from '@/features/Annotator/Annotation/AnnotationsBloc
 import { AnnotatorSkeleton } from '@/features/Annotator/Skeleton';
 import { AploseNavParams } from '@/features/UX';
 import { useParams } from 'react-router-dom';
+import { useAppSelector } from '@/features/App';
+import { selectPosition } from '@/features/Annotator/Pointer';
+import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 
 export const AnnotatorPage: React.FC = () => {
   // const { usedColormap: colormapClass } = useAnnotatorInput(); // TODO: check use: colormapClass was in div classes
   const { campaignID } = useParams<AploseNavParams>();
 
+  const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
   const {
     spectrogram,
-    isEditionAuthorized,
     isFetching,
     error,
   } = useAnnotationTask({ refetchOnMountOrArgChange: true });
@@ -53,7 +56,7 @@ export const AnnotatorPage: React.FC = () => {
     }
   }, [ campaignID ]);
 
-  const { position } = useAnnotatorPointer()
+  const position = useAppSelector(selectPosition)
   useEffect(() => {
     if (position) { // Disable scroll
       document.getElementsByTagName('html')[0].style.overflowY = 'hidden';
@@ -117,3 +120,5 @@ export const AnnotatorPage: React.FC = () => {
     </div>
   </AnnotatorSkeleton>
 }
+
+export default AnnotatorPage

@@ -1,13 +1,15 @@
 import { useMemo } from 'react';
 import { LinearScaleService, MultiScaleService } from '@/components/ui';
 import { useAnnotationTask } from '@/api';
-import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
-import { useAnnotatorWindow } from '@/features/Annotator/Canvas';
+import { selectAnalysis } from '@/features/Annotator/Analysis';
+import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
+import { useAppSelector } from '@/features/App';
 
-export const useTimeAxis = () => {
+export const useTimeScale = () => {
   const { spectrogram } = useAnnotationTask()
-  const { width } = useAnnotatorWindow()
-  const scale = useMemo(() => new LinearScaleService(
+  const width = useWindowWidth()
+
+  return useMemo(() => new LinearScaleService(
     width,
     {
       ratio: 1,
@@ -15,16 +17,13 @@ export const useTimeAxis = () => {
       maxValue: spectrogram?.duration ?? 0,
     },
   ), [ spectrogram, width ])
-
-  return {
-    timeScale: scale,
-  }
 }
 
-export const useFrequencyAxis = () => {
-  const { analysis } = useAnnotatorAnalysis()
-  const { height } = useAnnotatorWindow()
-  const scale = useMemo(() => {
+export const useFrequencyScale = () => {
+  const analysis = useAppSelector(selectAnalysis)
+  const height = useWindowHeight()
+
+  return useMemo(() => {
     const options = {
       pixelOffset: 0,
       disableValueFloats: true,
@@ -50,8 +49,4 @@ export const useFrequencyAxis = () => {
       ratio: 1,
     }, options)
   }, [ analysis, height ]);
-
-  return {
-    frequencyScale: scale,
-  }
 }

@@ -1,22 +1,33 @@
-import { combineSlices } from '@reduxjs/toolkit';
-import { AnnotatorZoomSlice } from './Zoom';
-import { AnnotatorAnalysisSlice } from './Analysis';
-import { AnnotatorVisualConfigurationSlice } from './VisualConfiguration';
-import { AnnotatorAnnotationSlice } from './Annotation';
-import { AnnotatorLabelSlice } from './Label';
-import { AnnotatorConfidenceSlice } from './Confidence';
-import { AnnotatorPointerSlice } from './Pointer';
-import { AnnotatorUXSlice } from './UX';
-import { AnnotatorCommentSlice } from './Comment';
+import { createSlice } from '@reduxjs/toolkit';
+import {
+  getAnnotationTaskFulfilled,
+  type GetAnnotationTaskQueryVariables,
+  getCampaignFulfilled,
+  type GetCampaignQuery,
+} from '@/api';
 
-export const AnnotatorReducer = combineSlices(
-  AnnotatorAnalysisSlice,
-  AnnotatorZoomSlice,
-  AnnotatorVisualConfigurationSlice,
-  AnnotatorAnnotationSlice,
-  AnnotatorLabelSlice,
-  AnnotatorConfidenceSlice,
-  AnnotatorPointerSlice,
-  AnnotatorUXSlice,
-  AnnotatorCommentSlice,
-)
+type AnnotatorState = {
+  campaignID?: string;
+  taskVariables?: GetAnnotationTaskQueryVariables;
+}
+
+
+export const AnnotatorSlice = createSlice({
+  name: 'Annotator',
+  initialState: {},
+  reducers: {},
+  extraReducers: builder => {
+    builder.addMatcher(getCampaignFulfilled, (state: AnnotatorState, action: { payload: GetCampaignQuery }) => {
+      state.campaignID = action.payload.annotationCampaignById?.id
+    })
+    builder.addMatcher(getAnnotationTaskFulfilled, (state: AnnotatorState, action: {
+      meta: { arg: { originalArgs: GetAnnotationTaskQueryVariables } }
+    }) => {
+      state.taskVariables = action.meta.arg.originalArgs
+    })
+  },
+  selectors: {
+    selectCampaignID: (state: AnnotatorState) => state.campaignID,
+    selectTaskVariables: (state: AnnotatorState) => state.taskVariables,
+  },
+})

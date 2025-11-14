@@ -7,18 +7,20 @@ import styles from './styles.module.scss';
 import { IoCheckmarkCircleOutline, IoChevronForwardOutline } from 'react-icons/io5';
 import { AnnotationTaskStatus, useAnnotationTask, useCurrentCampaign, useCurrentPhase } from '@/api';
 import { gqlAPI } from '@/api/baseGqlApi';
-import { useAppDispatch } from '@/features/App';
+import { useAppDispatch, useAppSelector } from '@/features/App';
 import { useAnnotatorCanNavigate } from '@/features/Annotator/Navigation';
 import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
 import { type AploseNavParams } from '@/features/UX';
 import { useParams } from 'react-router-dom';
+import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 
 export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
   const { campaignID, phaseType } = useParams<AploseNavParams>();
   const { campaign } = useCurrentCampaign()
   const { phase } = useCurrentPhase()
-  const { spectrogram, isEditionAuthorized, navigationInfo } = useAnnotationTask();
-  const { canNavigate } = useAnnotatorCanNavigate()
+  const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
+  const { spectrogram, navigationInfo } = useAnnotationTask();
+  const canNavigate = useAnnotatorCanNavigate()
   const dispatch = useAppDispatch()
 
   const onBack = useCallback(() => {

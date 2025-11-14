@@ -1,4 +1,4 @@
-export { AnnotatorAnalysisSlice } from './slice'
-export * from './hooks'
+export * from './slice'
+export * from './selectors'
 
 export * from './AnalysisSelect'

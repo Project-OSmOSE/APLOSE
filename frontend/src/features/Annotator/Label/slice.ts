@@ -75,10 +75,5 @@ export const AnnotatorLabelSlice = createSlice({
 })
 
 export const {
-  selectHiddenLabels,
-  selectFocus,
-} = AnnotatorLabelSlice.selectors
-
-export const {
   setHiddenLabels,
 } = AnnotatorLabelSlice.actions

@@ -20,10 +20,10 @@ export const AllAnnotationTaskFilterSlice = createSlice({
   name: 'AllAnnotationTaskFilterSlice',
   initialState: {} as AllTasksFilters,
   reducers: {
-    updateTaskFilters: (state: AllTasksFilters, { payload }: {
+    updateTaskFilters: (_state: AllTasksFilters, { payload }: {
       payload: AllTasksFilters
     }) => {
-      Object.assign(state, payload)
+      return payload
     },
     reset,
   },
@@ -33,6 +33,6 @@ export const AllAnnotationTaskFilterSlice = createSlice({
 })
 
 export const selectAllTaskFilters = createSelector(
+  (state: AppState) => state,
   (state: AppState) => state.AllAnnotationTaskFilterSlice,
-  (state: AllTasksFilters) => state,
 )

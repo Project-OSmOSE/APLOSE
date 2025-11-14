@@ -1,15 +1,19 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import styles from './styles.module.scss';
 import { Bloc, Button } from '@/components/ui';
-import { useAnnotatorLabel } from './hooks';
 import { LabelChip } from './LabelChip';
+import { useAppDispatch, useAppSelector } from '@/features/App';
+import { selectAllLabels, selectHiddenLabels } from './selectors';
+import { setHiddenLabels } from './slice';
 
 export const LabelsBloc: React.FC = () => {
-  const {
-    allLabels,
-    hiddenLabels,
-    showAllLabels,
-  } = useAnnotatorLabel()
+  const allLabels = useAppSelector(selectAllLabels)
+  const hiddenLabels = useAppSelector(selectHiddenLabels)
+  const dispatch = useAppDispatch()
+
+  const showAllLabels = useCallback(() => {
+    dispatch(setHiddenLabels([]))
+  }, [ dispatch ])
 
   return <Bloc className={ styles.labels }
                header={ <Fragment>

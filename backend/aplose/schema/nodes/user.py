@@ -1,13 +1,14 @@
 """User GraphQL definitions"""
 
-import graphene_django_optimizer
-from django.db.models import QuerySet
+from django.db.models import QuerySet, F, Value, CharField, Case, When, Q, BooleanField
+from django.db.models.functions import Concat
 from graphene import (
     String,
     Boolean,
 )
+from graphql import GraphQLResolveInfo
 
-from backend.aplose.models import User, AploseUser
+from backend.aplose.models import User
 from backend.aplose.schema.enums import ExpertiseLevelType
 from backend.utils.schema.types import BaseObjectType, BaseNode
 
@@ -22,23 +23,37 @@ class UserNode(BaseObjectType):
         interfaces = (BaseNode,)
 
     expertise = ExpertiseLevelType()
-
-    @graphene_django_optimizer.resolver_hints()
-    def resolve_expertise(self: User, info):
-        aplose: QuerySet[AploseUser] = AploseUser.objects.filter(user=self)
-        if aplose.exists():
-            return aplose.first().expertise_level
-        return None
-
-    display_name = String(required=True)
-
-    @graphene_django_optimizer.resolver_hints()
-    def resolve_display_name(self: User, info):
-        return self.get_full_name()
-
+    display_name = String()
     is_admin = Boolean(required=True)
 
-    @graphene_django_optimizer.resolver_hints()
-    def resolve_is_admin(self: User, info):
-        # pylint: disable=no-member
-        return self.is_superuser or self.is_staff
+    @classmethod
+    def resolve_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
+        return (
+            super()
+            .resolve_queryset(queryset, info)
+            .annotate(
+                expertise=F("aplose__expertise_level"),
+                is_admin=Case(
+                    When(is_superuser=True, then=True),
+                    When(is_staff=True, then=True),
+                    default=Value(False),
+                    output_field=BooleanField(),
+                ),
+                display_name=Case(
+                    When(
+                        ~Q(
+                            first_name="",
+                            last_name="",
+                        ),
+                        then=Concat(
+                            F("first_name"),
+                            Value(" "),
+                            F("last_name"),
+                            output_field=CharField(),
+                        ),
+                    ),
+                    default=F("username"),
+                    output_field=CharField(),
+                ),
+            )
+        )

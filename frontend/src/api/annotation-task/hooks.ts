@@ -9,9 +9,11 @@ import {
   useCurrentUser,
 } from '@/api';
 import { AllAnnotationTaskFilterSlice, AllTasksFilters, selectAllTaskFilters } from './all-tasks-filters';
-import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
 import { type AploseNavParams, useQueryParams } from '@/features/UX';
 import { useParams } from 'react-router-dom';
+import { useAppSelector } from '@/features/App';
+import { selectAnalysisID } from '@/features/Annotator/Analysis';
+import { GetAnnotationTaskQueryVariables } from './annotation-task.generated'
 
 const PAGE_SIZE = 20;
 
@@ -50,32 +52,37 @@ export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
   }), [ info ])
 }
 
-export const useAnnotationTask = (options: {
-  refetchOnMountOrArgChange?: boolean,
-} = {}) => {
+export const useGetAnnotationTaskParams = (): GetAnnotationTaskQueryVariables => {
   const { campaignID, phaseType, spectrogramID } = useParams<AploseNavParams>();
-  const { analysisID } = useAnnotatorAnalysis()
-  const { phase } = useCurrentPhase()
-  const { params } = useAllTasksFilters()
+  const analysisID = useAppSelector(selectAnalysisID)
   const { user } = useCurrentUser();
+  const { params } = useAllTasksFilters()
 
-  const info = getAnnotationTask.useQuery({
+  return useMemo(() => ({
     ...params,
     spectrogramID: spectrogramID ?? '',
     campaignID: campaignID ?? '',
     phaseType: phaseType ?? AnnotationPhaseType.Annotation,
     annotatorID: user?.id ?? '',
     analysisID: analysisID ?? '',
-  }, {
+  }), [ params, campaignID, phaseType, spectrogramID, user, analysisID ])
+}
+
+export const useAnnotationTask = (options: {
+  refetchOnMountOrArgChange?: boolean,
+} = {}) => {
+  const { phase } = useCurrentPhase()
+  const params = useGetAnnotationTaskParams()
+
+  const info = getAnnotationTask.useQuery(params, {
     ...options,
-    skip: !user || !campaignID || !spectrogramID || !phaseType || !analysisID,
+    skip: !params.annotatorID || !params.campaignID || !params.spectrogramID || !params.phaseType || !params.analysisID,
   })
   return useMemo(() => ({
     ...info,
     spectrogram: info.data?.annotationSpectrogramById,
     navigationInfo: info.data?.allAnnotationSpectrograms,
     annotations: info.data?.annotationSpectrogramById?.task?.annotations?.results.filter(r => !!r).map(r => r!),
-    isEditionAuthorized: info.data?.annotationSpectrogramById?.isAssigned,
   }), [ info, phase ])
 }
 
@@ -87,7 +94,6 @@ export const useSubmitTask = () => {
   const submit = useCallback(async (annotations: AnnotationInput[],
                                     taskComments: AnnotationCommentInput[],
                                     start: Date) => {
-    console.debug('submit', phaseType)
     if (!campaignID || !phaseType || !spectrogramID) return;
     await method({
       campaignID,

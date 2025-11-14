@@ -106,3 +106,5 @@ export const SqlQuery: React.FC = () => {
                     setCurrentPage={ runQuery }/> }
   </div>
 }
+
+export default SqlQuery

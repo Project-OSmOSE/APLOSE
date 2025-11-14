@@ -59,3 +59,5 @@ export const ImportAnnotations: React.FC = () => {
 
   </ImportAnnotationsContextProvider>
 }
+
+export default ImportAnnotations

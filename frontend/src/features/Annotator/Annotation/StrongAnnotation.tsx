@@ -1,24 +1,29 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { Annotation } from './slice';
+import { Annotation, focusAnnotation } from './slice';
 import { ExtendedDiv } from '@/components/ui';
 import styles from './styles.module.scss';
 import { MOUSE_DOWN_EVENT } from '@/features/UX/Events';
 import { AnnotationHeadContent } from './Head';
 import { AnnotationType, useAnnotationTask } from '@/api';
 import { formatTime } from '@/service/function';
-import { useAnnotatorAnnotation } from './hooks';
-import { useAnnotatorLabel } from '@/features/Annotator/Label';
-import { useAnnotatorUX } from '@/features/Annotator/UX';
-import { useFrequencyAxis, useTimeAxis } from '@/features/Annotator/Axis';
+import { useUpdateAnnotation } from './hooks';
+import { selectAllLabels, selectHiddenLabels } from '@/features/Annotator/Label';
+import { selectCanDraw } from '@/features/Annotator/UX';
+import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
+import { useAppDispatch, useAppSelector } from '@/features/App';
+import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
+import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 
 export const StrongAnnotation: React.FC<{
   annotation: Annotation
 }> = ({ annotation }) => {
-  const { spectrogram, isEditionAuthorized } = useAnnotationTask()
-  const { focus: _focus, focusedAnnotation, updateAnnotation } = useAnnotatorAnnotation()
-  const focus = useCallback(() => _focus(annotation), [ annotation, _focus ])
-  const { allLabels, hiddenLabels } = useAnnotatorLabel()
-  const { canDraw } = useAnnotatorUX()
+  const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
+  const { spectrogram } = useAnnotationTask()
+  const focusedAnnotation = useAppSelector(selectAnnotation)
+  const updateAnnotation = useUpdateAnnotation()
+  const allLabels = useAppSelector(selectAllLabels)
+  const hiddenLabels = useAppSelector(selectHiddenLabels)
+  const canDraw = useAppSelector(selectCanDraw)
   const isActive = useMemo(() => {
     if (!isEditionAuthorized) return false;
     return annotation.id === focusedAnnotation?.id
@@ -31,6 +36,9 @@ export const StrongAnnotation: React.FC<{
     // Hide invalidated annotations
     return annotation.validation?.isValid
   }, [ hiddenLabels, annotation ])
+  const dispatch = useAppDispatch();
+
+  const focus = useCallback(() => dispatch(focusAnnotation(annotation)), [ annotation, dispatch ])
 
   // Time / Frequency
   const startTime = useMemo(() => annotation.update?.startTime ?? annotation.startTime, [ annotation ])
@@ -39,8 +47,8 @@ export const StrongAnnotation: React.FC<{
   const endFrequency = useMemo(() => annotation.update?.endFrequency ?? annotation.endFrequency, [ annotation ])
 
   // Scales
-  const { timeScale } = useTimeAxis()
-  const { frequencyScale } = useFrequencyAxis()
+  const timeScale = useTimeScale()
+  const frequencyScale = useFrequencyScale()
 
   // Positions
   const [ left, setLeft ] = useState<number>(0);

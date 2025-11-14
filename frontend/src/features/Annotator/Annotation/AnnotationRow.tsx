@@ -1,11 +1,11 @@
 import React, { Fragment, MouseEvent, useCallback, useMemo } from 'react';
-import type { Annotation } from './slice';
-import { TableContent, useAlert, useModal } from '@/components/ui';
+import { type Annotation, focusAnnotation } from './slice';
+import { TableContent, useModal } from '@/components/ui';
 import styles from './styles.module.scss';
 import { AnnotationLabelInfo } from './AnnotationLabelInfo';
 import { AnnotationPhaseType, AnnotationType, useAnnotationTask, useCurrentCampaign, useCurrentUser } from '@/api';
-import { useAnnotatorAnnotation } from './hooks';
-import { useAnnotatorCanvas } from '@/features/Annotator/Canvas';
+import { useGetAnnotations, useInvalidateAnnotation, useRemoveAnnotation, useValidateAnnotation } from './hooks';
+import { useFocusCanvasOnTime } from '@/features/Annotator/Canvas';
 import { AnnotationTimeInfo } from './AnnotationTimeInfo';
 import { AnnotationFrequencyInfo } from './AnnotationFrequencyInfo';
 import { AnnotationConfidenceInfo } from '@/features/Annotator/Annotation/AnnotationConfidenceInfo';
@@ -16,16 +16,22 @@ import { IonButton, IonIcon } from '@ionic/react';
 import { checkmarkOutline, closeOutline } from 'ionicons/icons/index.js';
 import { type AploseNavParams, useKeyDownEvent } from '@/features/UX';
 import { useParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/features/App';
+import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 
 export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
   const { phaseType } = useParams<AploseNavParams>();
   const { campaign } = useCurrentCampaign()
-  const { focusedAnnotation, focus, validate, invalidate, removeAnnotation, getAnnotations } = useAnnotatorAnnotation()
+  const focusedAnnotation = useAppSelector(selectAnnotation)
+  const getAnnotations = useGetAnnotations()
+  const validate = useValidateAnnotation()
+  const invalidate = useInvalidateAnnotation()
+  const removeAnnotation = useRemoveAnnotation()
   const { annotations } = useAnnotationTask()
-  const { focusTime } = useAnnotatorCanvas()
+  const focusTime = useFocusCanvasOnTime()
   const { user } = useCurrentUser()
   const invalidateModal = useModal()
-  const alert = useAlert()
+  const dispatch = useAppDispatch();
 
   const completeInfo = useMemo(() => {
     return annotations?.find(a => a.id === annotation.id.toString())
@@ -38,13 +44,13 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
   }, [ isActive ])
 
   const onClick = useCallback(() => {
-    focus(annotation)
+    dispatch(focusAnnotation(annotation))
     if (typeof annotation.startTime !== 'number') return;
     let time: number;
     if (typeof annotation.endTime !== 'number') time = annotation.startTime;
     else time = annotation.startTime + Math.abs(annotation.endTime - annotation.startTime) / 2;
     focusTime(time)
-  }, [ focus, annotation, focusTime ])
+  }, [ dispatch, annotation, focusTime ])
 
   const onValidate = useCallback((event: MouseEvent) => {
     event.stopPropagation()
@@ -59,21 +65,7 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
 
   const remove = useCallback(() => {
     if (!isActive) return;
-    if (annotation.type === AnnotationType.Weak) {
-      // if weak annotations exists with this label: wait for confirmation
-      alert.showAlert({
-        type: 'Warning',
-        message: `You are about to remove ${ getAnnotations({ label: annotation.label }).length } annotations using "${ annotation.label }" label. Are you sure?`,
-        actions: [ {
-          label: `Remove "${ annotation.label }" annotations`,
-          callback: () => {
-            getAnnotations({ label: annotation.label }).forEach(removeAnnotation)
-          },
-        } ],
-      })
-    } else {
-      removeAnnotation(annotation)
-    }
+    removeAnnotation(annotation)
   }, [ annotation, removeAnnotation, isActive, getAnnotations ]);
   useKeyDownEvent([ 'Delete' ], remove);
 
@@ -123,22 +115,23 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
     </TableContent>
 
     {/* Validation */ }
-    <TableContent className={ className } onClick={ onClick }>
-      <IonButton className="validate"
-                 data-testid="validate"
-                 color={ annotation.validation?.isValid ? 'success' : 'medium' }
-                 fill={ annotation.validation?.isValid ? 'solid' : 'outline' }
-                 onClick={ onValidate }>
-        <IonIcon slot="icon-only" icon={ checkmarkOutline }/>
-      </IonButton>
-      <IonButton className="invalidate"
-                 data-testid="invalidate"
-                 color={ annotation.validation?.isValid ? 'medium' : 'danger' }
-                 fill={ annotation.validation?.isValid ? 'outline' : 'solid' }
-                 onClick={ onInvalidate }>
-        <IonIcon slot="icon-only" icon={ closeOutline }/>
-      </IonButton>
-    </TableContent>
+    { phaseType === AnnotationPhaseType.Verification &&
+        <TableContent className={ className } onClick={ onClick }>
+            <IonButton className="validate"
+                       data-testid="validate"
+                       color={ annotation.validation?.isValid ? 'success' : 'medium' }
+                       fill={ annotation.validation?.isValid ? 'solid' : 'outline' }
+                       onClick={ onValidate }>
+                <IonIcon slot="icon-only" icon={ checkmarkOutline }/>
+            </IonButton>
+            <IonButton className="invalidate"
+                       data-testid="invalidate"
+                       color={ annotation.validation?.isValid ? 'medium' : 'danger' }
+                       fill={ annotation.validation?.isValid ? 'outline' : 'solid' }
+                       onClick={ onInvalidate }>
+                <IonIcon slot="icon-only" icon={ closeOutline }/>
+            </IonButton>
+        </TableContent> }
 
 
     <InvalidateAnnotationModal isOpen={ invalidateModal.isOpen }

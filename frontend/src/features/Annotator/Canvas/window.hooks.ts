@@ -1,24 +1,30 @@
 import { useAppSelector } from '@/features/App';
-import { selectZoom } from '@/features/Annotator/Zoom/slice';
+import { selectZoom } from '@/features/Annotator/Zoom';
 import { useMemo } from 'react';
 
-export const SPECTRO_HEIGHT: number = 512;
-export const SPECTRO_WIDTH: number = 1813;
-export const Y_WIDTH: number = 35;
-export const X_HEIGHT: number = 30;
+const SPECTRO_HEIGHT: number = 512;
+const SPECTRO_WIDTH: number = 1813;
+export const Y_AXIS_WIDTH: number = 35;
+export const X_AXIS_HEIGHT: number = 30;
 
-export const useAnnotatorWindow = () => {
-  const zoom = useAppSelector(state => selectZoom(state.annotator))
 
-  return useMemo(() => {
-    const ratio = window.devicePixelRatio * (1920 / (window.screen.width * window.devicePixelRatio));
-    const containerWidth = SPECTRO_WIDTH / ratio;
-    return {
-      containerWidth,
-      width: containerWidth * zoom,
-      height: SPECTRO_HEIGHT / ratio,
-      xAxisHeight: X_HEIGHT,
-      yAxisWidth: Y_WIDTH,
-    }
-  }, [ zoom ])
+const useWindowRatio = () =>
+  useMemo(() => window.devicePixelRatio * (1920 / (window.screen.width * window.devicePixelRatio)), [])
+
+export const useWindowContainerWidth = () => {
+  const ratio = useWindowRatio()
+  return useMemo(() => SPECTRO_WIDTH / ratio, [ ratio ])
+}
+
+export const useWindowWidth = () => {
+  const zoom = useAppSelector(selectZoom)
+  const containerWidth = useWindowContainerWidth()
+
+  return useMemo(() => containerWidth * zoom, [ containerWidth, zoom ])
+}
+
+export const useWindowHeight = () => {
+  const ratio = useWindowRatio()
+
+  return useMemo(() => SPECTRO_HEIGHT / ratio, [ ratio ])
 }

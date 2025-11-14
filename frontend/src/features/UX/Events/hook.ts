@@ -10,9 +10,10 @@ import {
   MOUSE_UP_EVENT,
   NON_FILTERED_KEY_DOWN_EVENT,
 } from './event';
+import { selectAreKbdShortcutsEnabled } from '@/features/UX';
 
 export const useLoadEventService = () => {
-  const areKbdShortcutsEnabled = useAppSelector(state => state.event.areKbdShortcutsEnabled);
+  const areKbdShortcutsEnabled = useAppSelector(selectAreKbdShortcutsEnabled);
   const areKbdShortcutsEnabledRef = useRef<boolean>(areKbdShortcutsEnabled);
 
   useEffect(() => {

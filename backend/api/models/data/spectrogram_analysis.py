@@ -163,6 +163,9 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
         ]
         ordering = ("-created_at",)
 
+    def __str__(self):
+        return f"{self.dataset}: {self.fft}"
+
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

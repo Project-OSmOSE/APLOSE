@@ -15,7 +15,7 @@ import {
   type UserNode,
 } from '@/api';
 import { type Annotation, type Features, type Validation } from './slice';
-import { convertCommentsToPost, convertGqlToComments } from '@/features/Annotator/Comment';
+import { convertCommentsToPost, convertGqlToComments } from '@/features/Annotator/Comment/conversions';
 
 export function convertValidationToPost(validation: Validation): AnnotationValidationSerializerInput {
   return {
@@ -42,7 +42,7 @@ export function convertGqlToValidation(validations: Maybe<Pick<AnnotationValidat
 export function convertFeaturesToPost(features: Features): AnnotationAcousticFeaturesSerializerInput {
   return {
     ...features,
-    id: features.id > 0 ? features.id : undefined,
+    id: features.id && features.id > 0 ? features.id : undefined,
   }
 }
 

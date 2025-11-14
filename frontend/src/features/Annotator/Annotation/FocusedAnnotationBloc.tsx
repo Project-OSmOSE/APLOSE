@@ -1,14 +1,15 @@
 import React, { Fragment } from 'react';
 import { Bloc } from '@/components/ui';
 import styles from './styles.module.scss'
-import { useAnnotatorAnnotation } from './hooks';
 import { AnnotationLabelInfo } from './AnnotationLabelInfo';
 import { AnnotationConfidenceInfo } from './AnnotationConfidenceInfo';
 import { AnnotationTimeInfo } from './AnnotationTimeInfo';
 import { AnnotationFrequencyInfo } from './AnnotationFrequencyInfo';
+import { useAppSelector } from '@/features/App';
+import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 
 export const FocusedAnnotationBloc: React.FC = () => {
-  const { focusedAnnotation } = useAnnotatorAnnotation()
+  const focusedAnnotation = useAppSelector(selectAnnotation)
 
   return <Bloc className={ styles.focusedBloc }
                header="Selected annotation"

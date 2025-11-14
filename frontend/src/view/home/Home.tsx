@@ -54,7 +54,7 @@ export const Home: React.FC = () => {
   )
 }
 
-const Intro: React.FC = () => (
+const Intro: React.FC = React.memo(() => (
   <div className={ styles.bloc }>
     <h2>
       Welcome to the overview page for APLOSE:
@@ -69,9 +69,9 @@ const Intro: React.FC = () => (
       <source src="video/home/démo_APLOSE.mp4" type="video/mp4"/>
     </video>
   </div>
-)
+))
 
-const ManualAnnotation: React.FC = () => (
+const ManualAnnotation: React.FC = React.memo(() => (
   <div className={ styles.bloc }>
     <h2>
       Manual annotation of marine sounds
@@ -94,9 +94,9 @@ const ManualAnnotation: React.FC = () => (
     <img src="images/home/GIF.gif" alt="Glider" className="full-width-margin-top"/>
 
   </div>
-)
+))
 
-const PlatformFeatures: React.FC = () => {
+const PlatformFeatures: React.FC = React.memo(() => {
   const [ index, setIndex ] = useState<number>(0);
   const [ isCarouselOpenedInModal, setIsCarouselOpenedInModal ] = useState<boolean>(false);
 
@@ -131,14 +131,14 @@ const PlatformFeatures: React.FC = () => {
                                                           onClick={ toggleCarouselModal }/>, document.body) }
     </div>
   )
-}
+})
 
 const Carousel: React.FC<{
   index: number;
   onIndexChange(index: number): void;
   isModal: boolean;
   onClick(): void;
-}> = ({ index, onIndexChange, isModal, onClick }) => {
+}> = React.memo(({ index, onIndexChange, isModal, onClick }) => {
   const trainingImages = Array.from(new Array(7)).map((_, i) => i);
   const realIndex = useMemo(() => index % trainingImages.length, [ index, trainingImages ])
 
@@ -163,9 +163,9 @@ const Carousel: React.FC<{
       </IonButton>
     </div>
   </div>
-}
+})
 
-const Resources: React.FC = () => (
+const Resources: React.FC = React.memo(() => (
   <div className={ styles.bloc }>
     <h2>Resources and training</h2>
     <p>
@@ -181,9 +181,9 @@ const Resources: React.FC = () => (
       </Link>
     </div>
   </div>
-)
+))
 
-const Collaboration: React.FC = () => (
+const Collaboration: React.FC = React.memo(() => (
   <div className={ styles.bloc }>
     <h2>Collaboration and open source</h2>
     <p>
@@ -202,9 +202,9 @@ const Collaboration: React.FC = () => (
       All the codes and associate documentations to collaborate can be found on our Github page.
     </p>
   </div>
-)
+))
 
-const Join: React.FC = () => (
+const Join: React.FC = React.memo(() => (
   <div className={ styles.bloc }>
     <h2>Join the APLOSE community</h2>
     <p>
@@ -215,10 +215,9 @@ const Join: React.FC = () => (
       If you want to join us, or have any question, please contact us here!
     </p>
   </div>
-)
+))
 
 const Collaborators: React.FC = () => {
-
   const { data: collaborators } = CollaboratorRestAPI.endpoints.listCollaborator.useQuery()
   return (
     <div className={ styles.bloc }>
@@ -239,3 +238,5 @@ const Collaborators: React.FC = () => {
     </div>
   )
 }
+
+export default Home

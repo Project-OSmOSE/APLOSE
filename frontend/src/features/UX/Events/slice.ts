@@ -10,11 +10,14 @@ export const EventSlice = createSlice({
     areKbdShortcutsEnabled: true,
   } as EventState,
   reducers: {
-    enableShortcuts: (state) => {
+    enableShortcuts: (state: EventState) => {
       state.areKbdShortcutsEnabled = true
     },
-    disableShortcuts: (state) => {
+    disableShortcuts: (state: EventState) => {
       state.areKbdShortcutsEnabled = false
     },
+  },
+  selectors: {
+    selectAreKbdShortcutsEnabled: (state: EventState) => state.areKbdShortcutsEnabled,
   },
 })

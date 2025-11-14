@@ -115,3 +115,5 @@ export const OntologyTab: React.FC = () => {
     <Outlet/>
   </div>
 }
+
+export default OntologyTab

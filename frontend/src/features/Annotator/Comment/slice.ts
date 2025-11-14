@@ -16,7 +16,7 @@ export const AnnotatorCommentSlice = createSlice({
   initialState,
   reducers: {
     addTaskComment: (state, action: { payload: Comment }) => {
-      state.taskComments = [...state.taskComments, action.payload];
+      state.taskComments = [ ...state.taskComments, action.payload ];
     },
     updateTaskComment: (state, action: { payload: Comment }) => {
       state.taskComments = state.taskComments.map(c => c.id === action.payload.id ? action.payload : c)
@@ -39,10 +39,6 @@ export const AnnotatorCommentSlice = createSlice({
     selectTaskComments: state => state.taskComments,
   },
 })
-
-export const {
-  selectTaskComments,
-} = AnnotatorCommentSlice.selectors
 
 export const {
   addTaskComment,

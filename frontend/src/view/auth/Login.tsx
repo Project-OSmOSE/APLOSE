@@ -103,3 +103,5 @@ export const Login: React.FC = () => {
     <Footer/>
   </div>
 }
+
+export default Login

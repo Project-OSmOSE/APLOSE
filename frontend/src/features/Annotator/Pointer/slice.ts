@@ -35,10 +35,6 @@ export const AnnotatorPointerSlice = createSlice({
 })
 
 export const {
-  selectPosition,
-} = AnnotatorPointerSlice.selectors
-
-export const {
   setPosition,
   clearPosition,
 } = AnnotatorPointerSlice.actions

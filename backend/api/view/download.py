@@ -3,7 +3,6 @@ import csv
 import io
 import zipfile
 
-from dateutil import parser
 from django.db import models
 from django.db.models import (
     Case,
@@ -13,8 +12,9 @@ from django.db.models import (
     Subquery,
     QuerySet,
     F,
+    Value,
 )
-from django.db.models.functions import Lower
+from django.db.models.functions import Lower, Concat, Extract
 from django.http import HttpResponse
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -26,11 +26,14 @@ from backend.api.models import (
     AnnotationFileRange,
     Spectrogram,
     AnnotationTask,
+    AnnotationComment,
+    Annotation,
 )
 from backend.api.models import (
     SpectrogramAnalysis,
 )
 from backend.api.context_filters import AnnotationPhaseContextFilter
+from backend.aplose.models import ExpertiseLevel
 from backend.utils.renderers import CSVRenderer
 
 REPORT_HEADERS = [  # headers
@@ -62,6 +65,267 @@ REPORT_HEADERS = [  # headers
     "signal_steps_count",
     "created_at_phase",
 ]
+
+
+def _get_annotations_for_report(
+    phase: AnnotationPhase,
+) -> QuerySet[Annotation]:
+
+    expertise_query = Case(
+        When(
+            annotator_expertise_level=ExpertiseLevel.NOVICE,
+            then=Value("NOVICE"),
+        ),
+        When(
+            annotator_expertise_level=ExpertiseLevel.AVERAGE,
+            then=Value("AVERAGE"),
+        ),
+        When(
+            annotator_expertise_level=ExpertiseLevel.EXPERT,
+            then=Value("EXPERT"),
+        ),
+        default=F("annotator_expertise_level"),
+        output_field=models.CharField(),
+    )
+    type_query = Case(
+        When(type=Annotation.Type.WEAK, then=Value("WEAK")),
+        When(type=Annotation.Type.POINT, then=Value("POINT")),
+        When(type=Annotation.Type.BOX, then=Value("BOX")),
+        default=None,
+        output_field=models.CharField(),
+    )
+    is_box_query = Case(
+        When(annotator_expertise_level=Annotation.Type.WEAK, then=Value(0)),
+        default=Value(1),
+        output_field=models.IntegerField(),
+    )
+    max_confidence = (
+        max(
+            phase.annotation_campaign.confidence_set.confidence_indicators.values_list(
+                "level", flat=True
+            )
+        )
+        if phase.annotation_campaign.confidence_set
+        else 0
+    )
+    confidence_level_query = Case(
+        When(
+            confidence__isnull=False,
+            then=Concat(
+                F("confidence__level"),
+                Value("/"),
+                max_confidence,
+                output_field=models.CharField(),
+            ),
+        ),
+        default=None,
+    )
+    comments_query = Subquery(
+        AnnotationComment.objects.select_related("author")
+        .filter(annotation_id=OuterRef("id"))
+        .annotate(data=Concat(F("comment"), Value(" |- "), F("author__username")))
+        .values_list("data", flat=True)
+    )
+    featured_label_ids = list(
+        phase.annotation_campaign.labels_with_acoustic_features.values_list(
+            "id", flat=True
+        )
+    )
+    signal_quality_query = Case(
+        When(acoustic_features__isnull=False, then=Value("GOOD")),
+        When(
+            label__id__in=featured_label_ids,
+            then=Value("BAD"),
+        ),
+        default=None,
+        output_field=models.CharField(),
+    )
+    phase_type_query = Case(
+        When(
+            annotation_phase__phase=AnnotationPhase.Type.VERIFICATION,
+            then=Value("VERIFICATION"),
+        ),
+        When(
+            annotation_phase__phase=AnnotationPhase.Type.ANNOTATION,
+            then=Value("ANNOTATION"),
+        ),
+        default=None,
+        output_field=models.CharField(),
+    )
+
+    return (
+        Annotation.objects.filter(annotation_phase=phase)
+        .distinct()
+        .select_related(
+            "spectrogram",
+            "label",
+            "confidence",
+            "annotator",
+            "acoustic_features",
+            "detector_configuration__detector",
+            "annotation_phase",
+            "analysis__fft",
+        )
+        .prefetch_related(
+            "annotation_comments",
+            "annotation_comments__author",
+        )
+        .order_by("spectrogram__start", "spectrogram__id", "id")
+        .annotate(
+            dataset=Value(phase.annotation_campaign.dataset.name),
+            filename=F("spectrogram__filename"),
+            annotation=F("label__name"),
+            annotator_expertise=expertise_query,
+            is_box=is_box_query,
+            type_label=type_query,
+            confidence_indicator_label=F("confidence__label"),
+            confidence_indicator_level=confidence_level_query,
+            comments_data=comments_query,
+            signal_quality=signal_quality_query,
+            signal_start_frequency=F("acoustic_features__start_frequency"),
+            signal_end_frequency=F("acoustic_features__end_frequency"),
+            signal_relative_max_frequency_count=F(
+                "acoustic_features__relative_max_frequency_count"
+            ),
+            signal_relative_min_frequency_count=F(
+                "acoustic_features__relative_min_frequency_count"
+            ),
+            signal_has_harmonics=F("acoustic_features__has_harmonics"),
+            signal_trend=F("acoustic_features__trend"),
+            signal_steps_count=F("acoustic_features__steps_count"),
+            _start_time=F("start_time"),
+            _end_time=F("end_time"),
+            _start_frequency=F("start_frequency"),
+            _end_frequency=F("end_frequency"),
+            result_id=F("id"),
+            created_at_phase=phase_type_query,
+        )
+        .extra(
+            select={
+                "start_datetime": """
+                    SELECT 
+                        CASE 
+                            WHEN api_annotation.start_time isnull THEN to_char(f.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            ELSE to_char((f.start + api_annotation.start_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                        END
+                    FROM api_spectrogram f
+                    WHERE api_annotation.spectrogram_id = f.id
+                    """,
+                "end_datetime": """
+                    SELECT 
+                        CASE 
+                            WHEN api_annotation.end_time isnull THEN to_char(f.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            ELSE to_char((f.start + api_annotation.end_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                        END
+                    FROM api_spectrogram f
+                    WHERE api_annotation.spectrogram_id = f.id
+                    """,
+            },
+        )
+        .values(
+            *[
+                i
+                for i in REPORT_HEADERS
+                if i
+                not in (
+                    "annotator",
+                    "comments",
+                    "start_time",
+                    "end_time",
+                    "start_frequency",
+                    "end_frequency",
+                    "type",
+                )
+            ],
+            "annotator__username",
+            "comments_data",
+            "validations",
+            "_start_time",
+            "_end_time",
+            "_start_frequency",
+            "_end_frequency",
+            "type_label",
+        )
+        .annotate(
+            annotator=Case(
+                When(annotator__isnull=False, then=F("annotator__username")),
+                When(
+                    detector_configuration__detector__isnull=False,
+                    then=F("detector_configuration__detector__name"),
+                ),
+                default=Value(""),
+                output_field=models.CharField(),
+            ),
+            comments=F("comments_data"),
+            start_time=Case(
+                When(type=Annotation.Type.WEAK, then=Value(0.0)),
+                default=F("_start_time"),
+                output_field=models.FloatField(),
+            ),
+            end_time=Case(
+                When(type=Annotation.Type.POINT, then=F("_start_time")),
+                When(
+                    type=Annotation.Type.WEAK,
+                    then=Extract(F("spectrogram__end"), lookup_name="epoch")
+                    - Extract(F("spectrogram__start"), lookup_name="epoch"),
+                ),
+                default=F("_end_time"),
+                output_field=models.FloatField(),
+            ),
+            start_frequency=Case(
+                When(type=Annotation.Type.WEAK, then=Value(0.0)),
+                default=F("_start_frequency"),
+                output_field=models.FloatField(),
+            ),
+            end_frequency=Case(
+                When(type=Annotation.Type.POINT, then=F("_start_frequency")),
+                When(
+                    type=Annotation.Type.WEAK,
+                    then=F("analysis__fft__sampling_frequency") / 2,
+                ),
+                default=F("_end_frequency"),
+                output_field=models.FloatField(),
+            ),
+            type=F("type_label"),
+        )
+    )
+
+
+def _get_task_comments_for_report(
+    phase: AnnotationPhase,
+) -> QuerySet[AnnotationComment]:
+    return (
+        AnnotationComment.objects.filter(
+            annotation_phase=phase,
+            annotation__isnull=True,
+        )
+        .select_related(
+            "spectrogram",
+            "author",
+        )
+        .annotate(
+            dataset=Value(phase.annotation_campaign.dataset.name),
+            filename=F("spectrogram__filename"),
+            annotator=F("author__username"),
+            comments=Concat(F("comment"), Value(" |- "), F("author__username")),
+        )
+        .extra(
+            select={
+                "start_datetime": """
+                SELECT 
+                    to_char(f.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                FROM api_spectrogram f
+                WHERE api_annotationcomment.spectrogram_id = f.id
+                """,
+                "end_datetime": """
+                SELECT 
+                    to_char(f.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                FROM api_spectrogram f
+                WHERE api_annotationcomment.spectrogram_id = f.id
+                """,
+            },
+        )
+    )
 
 
 class DownloadViewSet(ViewSet):
@@ -102,7 +366,9 @@ class DownloadViewSet(ViewSet):
                 )
             else:
                 with open(
-                    analysis.get_osekit_spectro_dataset_serialized_path()
+                    analysis.get_osekit_spectro_dataset_serialized_path(),
+                    "r",
+                    encoding="utf-8",
                 ) as file:
                     zip_file.writestr(f"{analysis.name}.json", file.read())
 
@@ -121,7 +387,7 @@ class DownloadViewSet(ViewSet):
     def download_phase_annotations(self, request, pk=None):
         """Download annotation results csv"""
         phase: AnnotationPhase = AnnotationPhaseContextFilter.get_node_or_fail(
-            request, pk
+            request, pk=pk
         )
         campaign = phase.annotation_campaign
 
@@ -163,11 +429,11 @@ class DownloadViewSet(ViewSet):
             return [user, query]
 
         results = (
-            self._report_get_results()
+            _get_annotations_for_report(phase)
             .annotate(**dict(map(map_validations, validate_users)))
             .values(*headers)
         )
-        comments = self._report_get_task_comments().values(
+        comments = _get_task_comments_for_report(phase).values(
             "dataset",
             "filename",
             "annotator",
@@ -189,7 +455,7 @@ class DownloadViewSet(ViewSet):
     def download_phase_progression(self, request, pk=None):
         """Returns the CSV report on tasks status for the given campaign"""
         phase: AnnotationPhase = AnnotationPhaseContextFilter.get_node_or_fail(
-            request, pk
+            request, pk=pk
         )
         campaign = phase.annotation_campaign
 
@@ -223,8 +489,8 @@ class DownloadViewSet(ViewSet):
                 spectrogram_id=OuterRef("pk"), annotator__username=user
             )
             range_sub = file_ranges.filter(
-                from_datetime__gte=OuterRef("start"),
-                to_datetime__lte=OuterRef("end"),
+                from_datetime__lte=OuterRef("start"),
+                to_datetime__gte=OuterRef("end"),
                 annotator__username=user,
             )
             query = Case(
@@ -239,8 +505,8 @@ class DownloadViewSet(ViewSet):
 
         writer.writerows(
             list(
-                all_files.values("analysis__dataset__name", "filename", "pk")
-                .annotate(dataset=F("analysis__dataset__name"), **data)
+                all_files.values("filename", "pk")
+                .annotate(dataset=Value(phase.annotation_campaign.dataset.name), **data)
                 .values(*header)
             )
         )

@@ -1,42 +1,48 @@
 import React from 'react';
 import styles from './styles.module.scss';
-import { useAnnotatorCanvas, useAnnotatorWindow } from '@/features/Annotator/Canvas';
+import {
+  useAnnotatorCanvasContext,
+  useWindowHeight,
+  useWindowWidth,
+  X_AXIS_HEIGHT,
+  Y_AXIS_WIDTH,
+} from '@/features/Annotator/Canvas';
 import { useAxis } from '@/components/ui';
 import { formatTime, frequencyToString } from '@/service/function';
-import { useFrequencyAxis, useTimeAxis } from './hooks'
+import { useFrequencyScale, useTimeScale } from './hooks'
 
 export const TimeAxis: React.FC = () => {
-  const { timeScale } = useTimeAxis()
-  const { width, xAxisHeight } = useAnnotatorWindow()
-  const { xAxisCanvas, setXAxisCanvas } = useAnnotatorCanvas()
+  const timeScale = useTimeScale()
+  const width = useWindowWidth()
+  const { xAxisCanvasRef } = useAnnotatorCanvasContext()
   useAxis({
-    canvas: xAxisCanvas,
+    canvas: xAxisCanvasRef?.current,
     pixelSize: width,
     orientation: 'horizontal',
     valueToString: formatTime,
     scale: timeScale,
   })
 
-  return <canvas ref={ ref => !!ref && setXAxisCanvas(ref) }
+  return <canvas ref={ xAxisCanvasRef }
                  className={ styles.xAxis }
                  width={ width }
-                 height={ xAxisHeight }/>
+                 height={ X_AXIS_HEIGHT }/>
 }
 
 export const FrequencyAxis: React.FC = () => {
-  const { frequencyScale } = useFrequencyAxis()
-  const { height, yAxisWidth } = useAnnotatorWindow()
-  const { yAxisCanvas, setYAxisCanvas } = useAnnotatorCanvas()
+  const frequencyScale = useFrequencyScale()
+  const height = useWindowHeight()
+  const { yAxisCanvasRef } = useAnnotatorCanvasContext()
   useAxis({
-    canvas: yAxisCanvas,
+    canvas: yAxisCanvasRef?.current,
     pixelSize: height,
     orientation: 'vertical',
     valueToString: frequencyToString,
     scale: frequencyScale,
   })
 
-  return <canvas ref={ ref => !!ref && setYAxisCanvas(ref) }
+  return <canvas ref={ yAxisCanvasRef }
                  className={ styles.yAxis }
-                 width={ yAxisWidth }
+                 width={ Y_AXIS_WIDTH }
                  height={ height }/>
 }

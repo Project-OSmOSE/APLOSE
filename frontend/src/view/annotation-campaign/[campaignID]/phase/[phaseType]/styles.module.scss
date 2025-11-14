@@ -36,6 +36,10 @@
       --padding-top: 0 !important;
       --padding-bottom: 0 !important;
     }
+
+    ion-spinner {
+      grid-column: 1 / -1;
+    }
   }
 }
 

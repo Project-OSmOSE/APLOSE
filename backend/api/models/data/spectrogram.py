@@ -4,11 +4,13 @@ from datetime import datetime, timedelta
 from os.path import join
 from pathlib import Path
 
+from OSmOSE.core_api.spectro_dataset import SpectroDataset
 from django.conf import settings
 from django.db import models
 from django.db.models import Q, F, Manager, QuerySet
 from metadatax.data.models import FileFormat
 from osekit.config import TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
+from osekit.core_api.spectro_data import SpectroData
 
 from .__abstract_file import AbstractFile
 from .__abstract_time_segment import TimeSegment
@@ -150,3 +152,7 @@ class Spectrogram(AbstractFile, TimeSegment, models.Model):
         return f"{self.filename}.{self.format}"
 
     analysis = models.ManyToManyField(SpectrogramAnalysis, related_name="spectrograms")
+
+    def get_spectro_data_for(self, analysis: SpectrogramAnalysis) -> SpectroData:
+        spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
+        return [d for d in spectro_dataset.data if d.name == self.filename].pop()

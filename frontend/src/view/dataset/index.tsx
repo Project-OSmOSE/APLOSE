@@ -14,3 +14,5 @@ export const DatasetList: React.FC = () => (<Fragment>
 
   </Fragment>
 )
+
+export default DatasetList

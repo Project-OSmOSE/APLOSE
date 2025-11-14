@@ -1,54 +1,60 @@
-import { useAnnotatorAnnotation } from '@/features/Annotator/Annotation';
+import { selectAllAnnotations, selectAnnotation, useUpdateAnnotation } from '@/features/Annotator/Annotation';
 import { useAppDispatch, useAppSelector } from '@/features/App';
-import { addTaskComment, Comment, removeTaskComment, selectTaskComments, updateTaskComment } from './slice';
-import { useCallback, useMemo } from 'react';
+import { addTaskComment, Comment, removeTaskComment, updateTaskComment } from './slice';
+import { selectTaskComments } from './selectors';
+import { useCallback } from 'react';
 import { getNewItemID } from '@/service/function';
 
-export const useAnnotatorComment = () => {
-  const { allAnnotations, focusedAnnotation, updateAnnotation } = useAnnotatorAnnotation()
-  const taskComments = useAppSelector(state => selectTaskComments(state.annotator))
-  const dispatch = useAppDispatch();
 
-  const focusedComment = useMemo(() => {
-    let comments = taskComments
-    if (focusedAnnotation) comments = focusedAnnotation.comments ?? []
-    if (comments.length > 0) return comments[0]
-    return undefined
-  }, [ focusedAnnotation, taskComments ])
+const useGetCommentAnnotation = () => {
+  const allAnnotations = useAppSelector(selectAllAnnotations)
 
-  const getCommentAnnotation = useCallback((comment: Comment) => {
+  return useCallback((comment: Comment) => {
     return allAnnotations.find(a => a.comments?.some(c => c.id === comment.id))
   }, [ allAnnotations ])
+}
 
-  const add = useCallback((comment: string) => {
+export const useAddComment = () => {
+  const allAnnotations = useAppSelector(selectAllAnnotations)
+  const focusedAnnotation = useAppSelector(selectAnnotation)
+  const taskComments = useAppSelector(selectTaskComments)
+  const updateAnnotation = useUpdateAnnotation()
+  const dispatch = useAppDispatch();
+
+  return useCallback((comment: string) => {
     const newComment: Comment = {
       id: getNewItemID([ ...allAnnotations.flatMap(a => a.comments?.filter(c => !!c).map(c => c!) ?? []), ...taskComments ]),
       comment,
     }
     if (focusedAnnotation) updateAnnotation(focusedAnnotation, { comments: [ ...(focusedAnnotation.comments ?? []), newComment ] })
     else dispatch(addTaskComment(newComment))
-  }, [ allAnnotations, taskComments, updateAnnotation, focusedAnnotation ])
+  }, [ dispatch, allAnnotations, taskComments, updateAnnotation, focusedAnnotation ])
+}
 
-  const remove = useCallback((comment: Comment) => {
+export const useRemoveComment = () => {
+  const getCommentAnnotation = useGetCommentAnnotation()
+  const updateAnnotation = useUpdateAnnotation()
+  const dispatch = useAppDispatch();
+
+  return useCallback((comment: Comment) => {
     const annotation = getCommentAnnotation(comment)
     if (annotation) updateAnnotation(annotation, { comments: annotation.comments?.filter(c => c.id !== comment.id) })
     else dispatch(removeTaskComment(comment))
-  }, [ getCommentAnnotation, updateAnnotation ])
+  }, [ dispatch, getCommentAnnotation, updateAnnotation ])
+}
 
-  const update = useCallback((comment: Comment) => {
+export const useUpdateComment = () => {
+  const getCommentAnnotation = useGetCommentAnnotation()
+  const remove = useRemoveComment()
+  const updateAnnotation = useUpdateAnnotation()
+  const dispatch = useAppDispatch();
+
+  return useCallback((comment: Comment) => {
     if (comment.comment.trim().length === 0) {
       return remove(comment)
     }
     const annotation = getCommentAnnotation(comment)
     if (annotation) updateAnnotation(annotation, { comments: annotation.comments?.map(c => c.id === comment.id ? comment : c) })
     else dispatch(updateTaskComment(comment))
-  }, [ getCommentAnnotation, remove ])
-
-  return {
-    taskComments,
-    focusedComment,
-    add,
-    update,
-    remove,
-  }
+  }, [ dispatch, getCommentAnnotation, remove, updateAnnotation ])
 }

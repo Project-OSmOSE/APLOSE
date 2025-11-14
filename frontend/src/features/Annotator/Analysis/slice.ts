@@ -51,9 +51,5 @@ export const AnnotatorAnalysisSlice = createSlice({
 })
 
 export const {
-  selectID,
-} = AnnotatorAnalysisSlice.selectors
-
-export const {
   setAnalysis,
 } = AnnotatorAnalysisSlice.actions

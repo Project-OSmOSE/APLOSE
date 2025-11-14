@@ -3,3 +3,10 @@ export interface Item {
   label: string;
   img?: string;
 }
+
+export interface SearchItem {
+  value: string;
+  searchable: string[];
+  label: string;
+  img?: string;
+}

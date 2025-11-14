@@ -4,18 +4,26 @@ import styles from './styles.module.scss'
 import { Textarea } from '@/components/form';
 import { IonButton, IonIcon } from '@ionic/react';
 import { trashBinOutline } from 'ionicons/icons/index.js';
-import { useAnnotatorComment } from './hooks';
-import { useAnnotatorAnnotation } from '@/features/Annotator/Annotation';
+import { useAddComment, useRemoveComment, useUpdateComment } from './hooks';
 import { swapHorizontalOutline } from 'ionicons/icons';
+import { useAppDispatch, useAppSelector } from '@/features/App';
+import { selectFocusedComment } from './selectors';
+import { blur, selectAnnotation } from '@/features/Annotator/Annotation';
 
 export const CommentBloc: React.FC = () => {
-  const { blur } = useAnnotatorAnnotation()
-  const { focusedComment, add, update, remove } = useAnnotatorComment()
+  const focusedAnnotation = useAppSelector(selectAnnotation)
+  const focusedComment = useAppSelector(selectFocusedComment)
+  const add = useAddComment()
+  const update = useUpdateComment()
+  const remove = useRemoveComment()
+  const dispatch = useAppDispatch()
 
   const updateComment = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
     if (focusedComment) update({ ...focusedComment, comment: event.target.value })
     else add(event.target.value)
-  }, [ focusedComment, add, update ])
+  }, [ focusedComment, dispatch, update, add ])
+
+  const onSelectTask = useCallback(() => dispatch(blur()), [ dispatch ])
 
   return <Bloc className={ styles.comments }
                bodyClassName={ styles.body }
@@ -39,8 +47,8 @@ export const CommentBloc: React.FC = () => {
     <IonButton color="medium" fill="clear"
                size="small"
                className={ styles.taskCommentButton }
-               disabled={ !focusedComment }
-               onClick={ blur }>
+               disabled={ !focusedAnnotation }
+               onClick={ onSelectTask }>
       <IonIcon slot="start" icon={ swapHorizontalOutline }/>
       Task comment
     </IonButton>

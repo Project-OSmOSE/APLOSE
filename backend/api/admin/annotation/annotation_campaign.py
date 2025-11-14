@@ -1,12 +1,18 @@
 """API annotation annotation campaign administration"""
 from django.contrib import admin
 from django.contrib import messages
-from django.utils.html import html_safe
 from django.utils.safestring import SafeString
 
 from backend.api.models import AnnotationCampaign
 from backend.utils.admin import get_many_to_many
 from ..common import IsArchivedFilter
+from ...models.annotation.annotation_campaign import AnnotationCampaignAnalysis
+
+
+class AnnotationCampaignAnalysisRelationInline(admin.TabularInline):
+    """Confidence entry with relation related fields"""
+
+    model = AnnotationCampaignAnalysis
 
 
 @admin.register(AnnotationCampaign)
@@ -33,6 +39,7 @@ class AnnotationCampaignAdmin(admin.ModelAdmin):
         "image_tuning",
         "colormap_tuning",
     )
+    inlines = (AnnotationCampaignAnalysisRelationInline,)
 
     search_fields = (
         "name",

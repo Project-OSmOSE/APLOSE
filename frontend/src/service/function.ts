@@ -1,6 +1,6 @@
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { SerializedError } from '@reduxjs/toolkit';
-import { Item } from '@/components/form';
+import { type SearchItem } from '@/components/form';
 
 export function getErrorMessage(error: FetchBaseQueryError | SerializedError | unknown | string | undefined): string | undefined {
   if (!error) return undefined;
@@ -30,13 +30,12 @@ export function pluralize(data?: any[] | null) {
   return data.length > 1 ? 's' : ''
 }
 
-export function searchFilter(values: Array<Item>, search: string | undefined): Array<Item> {
+export function searchFilter(values: Array<SearchItem>, search: string | undefined): Array<SearchItem> {
   if (!search) return []
   const searchData = search.split(' ').filter(s => s).map(s => s.toLowerCase());
   return values.filter(value => {
-      const valueData = value.label.split(' ').filter(v => v).map(v => v.toLowerCase());
       for (const s of searchData) {
-        if (valueData.find(v => v.includes(s))) continue;
+        if (value.searchable.find(v => v.includes(s))) continue;
         return false;
       }
       return true;
@@ -80,7 +79,7 @@ export function datetimeToString(date?: Date | string): string | undefined {
 }
 
 export function formatTime(rawSeconds?: number, withMs: boolean = false): string {
-  if (!rawSeconds) return ''
+  if (rawSeconds === undefined) return ''
   const hours: number = Math.floor(rawSeconds / 3600);
   const minutes: number = Math.floor(rawSeconds / 60) % 60;
   const seconds: number = Math.floor(rawSeconds) % 60;

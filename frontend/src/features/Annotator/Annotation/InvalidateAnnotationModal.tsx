@@ -1,29 +1,32 @@
 import React, { Fragment, useCallback } from 'react';
 import { Button, Modal, ModalHeader, useModal } from '@/components/ui';
-import { Annotation } from './slice'
+import { Annotation, focusAnnotation } from './slice'
 import { AnnotationType } from '@/api';
-import { useAnnotatorAnnotation } from './hooks';
+import { useInvalidateAnnotation, useUpdateAnnotation } from './hooks';
 import { UpdateLabelModal } from '@/features/Labels';
 import { createPortal } from 'react-dom';
+import { useAppDispatch } from '@/features/App';
 
 export const InvalidateAnnotationModal: React.FC<{
   isOpen: boolean,
   onClose: () => void;
   annotation: Annotation
 }> = ({ onClose, annotation, isOpen }) => {
-  const { focus, invalidate, updateAnnotation } = useAnnotatorAnnotation()
+  const updateAnnotation = useUpdateAnnotation()
+  const invalidate = useInvalidateAnnotation()
   const labelModal = useModal()
+  const dispatch = useAppDispatch();
 
   const move = useCallback(() => {
     onClose();
-    focus(annotation)
-  }, [ onClose, focus, annotation ]);
+    dispatch(focusAnnotation(annotation))
+  }, [ onClose, dispatch, annotation ]);
 
   const askUpdateLabel = useCallback(() => {
     onClose();
-    focus(annotation);
+    dispatch(focusAnnotation(annotation))
     labelModal.open()
-  }, [ labelModal, focus, annotation ]);
+  }, [ labelModal, dispatch, annotation ]);
 
   const updateLabel = useCallback((label: string) => {
     if (!annotation) return;

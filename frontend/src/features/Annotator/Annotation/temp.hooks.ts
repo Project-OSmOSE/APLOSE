@@ -1,32 +1,25 @@
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { MouseEvent, PointerEvent, useCallback } from 'react';
-import { clearTempAnnotation, selectTempAnnotation, setTempAnnotation } from './slice';
-import { useFrequencyAxis, useTimeAxis } from '@/features/Annotator/Axis';
+import { clearTempAnnotation, setTempAnnotation } from './slice';
+import { selectTempAnnotation } from './selectors';
+import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
 import { AnnotationType, useCurrentCampaign } from '@/api';
 import { MOUSE_DOWN_EVENT, MOUSE_MOVE_EVENT, MOUSE_UP_EVENT, useEvent } from '@/features/UX/Events';
-import { useAnnotatorPointer } from '@/features/Annotator/Pointer';
-import { useAnnotatorUX } from '@/features/Annotator/UX';
+import { clearPosition, setPosition, useGetFreqTime, useIsHoverCanvas } from '@/features/Annotator/Pointer';
 import { formatTime } from '@/service/function';
-import { useAnnotatorLabel } from '@/features/Annotator/Label';
-import { useAnnotatorConfidence } from '@/features/Annotator/Confidence';
+import { selectFocusLabel } from '@/features/Annotator/Label';
+import { selectFocusConfidence } from '@/features/Annotator/Confidence';
 import { useToast } from '@/components/ui';
-import { useAnnotatorAnnotation } from '@/features/Annotator/Annotation';
+import { useAddAnnotation } from '@/features/Annotator/Annotation';
+import { selectIsDrawingEnabled } from '@/features/Annotator/UX';
 
-export const useAnnotatorTempAnnotation = () => {
-  const { campaign } = useCurrentCampaign()
-  const { isHoverCanvas, getFreqTime, setPosition, clearPosition } = useAnnotatorPointer()
-  const tempAnnotation = useAppSelector(state => selectTempAnnotation(state.annotator))
-  const { isDrawingEnabled } = useAnnotatorUX()
-  const { focusedLabel } = useAnnotatorLabel()
-  const { focusedConfidence } = useAnnotatorConfidence()
-  const { addAnnotation } = useAnnotatorAnnotation()
-  const dispatch = useAppDispatch();
-  const toast = useToast()
 
-  const { timeScale } = useTimeAxis()
-  const { frequencyScale } = useFrequencyAxis()
+export const useDrawTempAnnotation = () => {
+  const tempAnnotation = useAppSelector(selectTempAnnotation)
+  const timeScale = useTimeScale()
+  const frequencyScale = useFrequencyScale()
 
-  const drawTempAnnotation = useCallback((context: CanvasRenderingContext2D) => {
+  return useCallback((context: CanvasRenderingContext2D) => {
     if (!tempAnnotation) return;
     context.strokeStyle = 'blue';
     context.strokeRect(
@@ -36,6 +29,22 @@ export const useAnnotatorTempAnnotation = () => {
       frequencyScale.valuesToPositionRange(tempAnnotation.startFrequency!, tempAnnotation.endFrequency!),
     );
   }, [ tempAnnotation, timeScale, frequencyScale ])
+}
+
+export const useTempAnnotationsEvents = () => {
+  const tempAnnotation = useAppSelector(selectTempAnnotation)
+  const isDrawingEnabled = useAppSelector(selectIsDrawingEnabled);
+  const timeScale = useTimeScale()
+  const frequencyScale = useFrequencyScale()
+  const focusedLabel = useAppSelector(selectFocusLabel)
+  const focusedConfidence = useAppSelector(selectFocusConfidence)
+  const { campaign } = useCurrentCampaign()
+
+  const addAnnotation = useAddAnnotation()
+  const getFreqTime = useGetFreqTime()
+  const isHoverCanvas = useIsHoverCanvas()
+  const dispatch = useAppDispatch();
+  const toast = useToast()
 
   const onStartTempAnnotation = useCallback((e: MouseEvent<HTMLCanvasElement>) => {
     if (!isDrawingEnabled) return;
@@ -57,7 +66,7 @@ export const useAnnotatorTempAnnotation = () => {
     const isHover = isHoverCanvas(e)
     const data = getFreqTime(e);
     if (data) {
-      if (isHover) setPosition(data)
+      if (isHover) dispatch(setPosition(data))
       if (tempAnnotation) {
         dispatch(setTempAnnotation({
           ...tempAnnotation,
@@ -66,8 +75,8 @@ export const useAnnotatorTempAnnotation = () => {
         }))
       }
     }
-    if (!isHover || !data) clearPosition()
-  }, [ isHoverCanvas, getFreqTime, setPosition, clearPosition, tempAnnotation ])
+    if (!isHover || !data) dispatch(clearPosition())
+  }, [ isHoverCanvas, getFreqTime, dispatch, tempAnnotation ])
   useEvent(MOUSE_MOVE_EVENT, onUpdateTempAnnotation);
 
   const onEndNewAnnotation = useCallback((e: PointerEvent<HTMLDivElement>) => {
@@ -123,13 +132,9 @@ export const useAnnotatorTempAnnotation = () => {
       }
     }
     dispatch(clearTempAnnotation())
-    if (!isHoverCanvas(e)) clearPosition()
-  }, [ clearPosition, addAnnotation, getFreqTime, timeScale, frequencyScale, campaign, focusedLabel, focusedConfidence, tempAnnotation ])
+    if (!isHoverCanvas(e)) dispatch(clearPosition())
+  }, [ dispatch, addAnnotation, getFreqTime, timeScale, frequencyScale, campaign, focusedLabel, focusedConfidence, tempAnnotation ])
   useEvent(MOUSE_UP_EVENT, onEndNewAnnotation);
 
-  return {
-    tempAnnotation,
-    drawTempAnnotation,
-    onStartTempAnnotation,
-  }
+  return { onStartTempAnnotation }
 }
