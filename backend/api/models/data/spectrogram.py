@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from os.path import join
 from pathlib import Path
 
-from OSmOSE.core_api.spectro_dataset import SpectroDataset
+from osekit.core_api.spectro_dataset import SpectroDataset
 from django.conf import settings
 from django.db import models
 from django.db.models import Q, F, Manager, QuerySet

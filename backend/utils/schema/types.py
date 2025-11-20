@@ -10,7 +10,7 @@ from graphene_django.forms.mutation import DjangoModelFormMutation
 from graphene_django.rest_framework.mutation import SerializerMutation
 from graphene_django.types import DjangoObjectTypeOptions
 from graphql import GraphQLResolveInfo
-from requests import Request
+from rest_framework.request import Request
 
 from .errors import NotFoundError
 from .permissions import GraphQLResolve, GraphQLPermissions

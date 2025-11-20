@@ -6,7 +6,7 @@ from graphene import relay, Field
 from graphene_django.debug import DjangoDebug
 from graphene_django_pagination import DjangoPaginationConnectionField
 from metadatax.acquisition.models import Deployment, Project, ChannelConfiguration
-from metadatax.acquisition.schema import (
+from metadatax.acquisition.schema.channel_configuration import (
     ChannelConfigurationNode as MxChannelConfigurationNode,
     ChannelConfigurationFilter as MxChannelConfigurationFilter,
 )
