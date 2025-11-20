@@ -3,6 +3,11 @@
 from django.db import migrations, models
 
 
+def clean_start_status(apps, schema_editor):
+    task_model = apps.get_model("api", "AnnotationTask")
+    task_model.objects.filter(status="S").update(status="C")
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -65,4 +70,6 @@ class Migration(migrations.Migration):
                 to="api.annotationphase",
             ),
         ),
+        # Clean
+        migrations.RunPython(clean_start_status, migrations.RunPython.noop),
     ]

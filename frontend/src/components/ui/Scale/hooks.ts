@@ -1,17 +1,18 @@
-import { ScaleService, Step } from './types';
+import { Step } from './types';
 import { useCallback, useEffect } from 'react';
 
-export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }: {
+export const useAxis = ({ canvas, steps, orientation, pixelSize, valueToString, displaySmallStepValue }: {
   canvas?: HTMLCanvasElement | null,
-  scale: ScaleService,
+  steps: Step[],
   orientation: 'horizontal' | 'vertical',
   pixelSize: number,
   valueToString: (value: number) => string;
+  displaySmallStepValue: boolean;
 }) => {
 
   useEffect(() => {
     draw()
-  }, [ canvas, pixelSize, valueToString, orientation, scale ]);
+  }, [ canvas, pixelSize, valueToString, orientation, steps ]);
 
   const draw = useCallback(() => {
     const context = canvas?.getContext('2d');
@@ -23,7 +24,7 @@ export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }
 
     let previousRatio = 0;
     let offset = 0;
-    const scaleSteps = scale.getSteps().sort((a: Step, b: Step) => (a.correspondingRatio ?? 0) - (b.correspondingRatio ?? 0));
+    const scaleSteps = steps.sort((a: Step, b: Step) => (a.correspondingRatio ?? 0) - (b.correspondingRatio ?? 0));
     const maxRatio = Math.max(...scaleSteps.map(s => s.correspondingRatio ?? 0));
     const realSteps = new Array<Step>();
     for (const step of scaleSteps) {
@@ -79,6 +80,7 @@ export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }
       }
 
       // Text
+      if (step.size === 'small' && !displaySmallStepValue) continue;
       if (step.additionalValue) {
         const min = Math.min(step.value, step.additionalValue)
         const max = step.value === min ? step.additionalValue : step.value;
@@ -127,6 +129,6 @@ export const useAxis = ({ canvas, scale, orientation, pixelSize, valueToString }
         }
       }
     }
-  }, [ canvas, scale, orientation, pixelSize, valueToString ])
+  }, [ canvas, steps, orientation, pixelSize, valueToString, displaySmallStepValue ])
 
 }

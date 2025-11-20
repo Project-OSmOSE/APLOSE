@@ -100,6 +100,11 @@ def migrate_analysis_and_legacy_configuration(apps, schema_editor):
     legacy_configuration_model.objects.bulk_create(legacy_conf_creation)
 
 
+def set_datasets_as_legacy(apps, schema_editor):
+    dataset_model = apps.get_model("api", "Dataset")
+    dataset_model.objects.all().update(legacy=True)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -409,4 +414,6 @@ class Migration(migrations.Migration):
             "SELECT setval('api_spectrogramanalysis_id_seq', (SELECT max(id) from api_spectrogramanalysis)) ",
             migrations.RunSQL.noop,
         ),
+        # Clean
+        migrations.RunPython(set_datasets_as_legacy, migrations.RunPython.noop),
     ]

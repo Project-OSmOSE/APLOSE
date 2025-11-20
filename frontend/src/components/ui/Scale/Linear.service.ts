@@ -66,9 +66,8 @@ export class LinearScaleService implements ScaleService {
     return Math.abs(this.positionToValue(max) - this.positionToValue(min));
   }
 
-  getSteps(): Array<Step> {
-    const bigStepsRange = this.getMinBigStepsRange();
-    const smallStepsRange = this.getMinSmallStepsRange(bigStepsRange);
+  getSteps(regularStepsRange = this.getMinBigStepsRange(),
+           smallStepsRange = this.getMinSmallStepsRange(regularStepsRange)): Array<Step> {
 
     const array = new Array<Step>();
 
@@ -77,7 +76,7 @@ export class LinearScaleService implements ScaleService {
          value <= Math.round(this.scale.maxValue / innerSteps) * innerSteps; value += innerSteps) {
       if (value < this.scale.minValue || value > this.scale.maxValue) continue;
       const position: number = this.options.pixelOffset + Math.floor(this.valueToPosition(value));
-      if (value % bigStepsRange === 0)
+      if (value % regularStepsRange === 0)
         array.push({ position, value, size: 'regular' })
       else if (smallStepsRange > 0 && value % smallStepsRange === 0)
         array.push({ position, value, size: 'small' })
