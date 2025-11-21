@@ -1,18 +1,18 @@
-import { PageTitle } from "../../components/PageTitle";
+import { PageTitle } from '../../components/PageTitle';
 
 import imgTitle from '../../img/illust/sperm-whale-tail_1920_thin.webp';
 
 import './Projects.css';
 
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { getYear, useFetchArray, useFetchGql } from "../../utils";
-import { Project } from "../../models/project";
-import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from "@ionic/react";
-import { Pagination } from "../../components/Pagination/Pagination";
-import { DeploymentsMap } from "../../components/DeploymentsMap";
-import { gql } from "graphql-request";
-import { Deployment } from "./ProjectDetail/ProjectDetail";
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { getYear, useFetchArray, useFetchGql } from '../../utils';
+import { Project } from '../../models/project';
+import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/react';
+import { Pagination } from '../../components/Pagination/Pagination';
+import { DeploymentsMap } from '../../components/DeploymentsMap';
+import { gql } from 'graphql-request';
+import { Deployment } from './ProjectDetail/ProjectDetail';
 
 
 export const Projects: React.FC = () => {
@@ -25,7 +25,7 @@ export const Projects: React.FC = () => {
   const [ projects, setProjects ] = useState<Array<Project>>([]);
 
   const [ deployments, setDeployments ] = useState<Array<Deployment>>([]);
-  const [ selectedDeployment, setSelectedDeployment ] = useState<Deployment | undefined>();
+  const [ selectedDeploymentID, setSelectedDeploymentID ] = useState<string | undefined>();
 
   const fetchProjects = useFetchArray<{ count: number, results: Array<Project> }>('/api/projects');
     const fetchDeployments = useFetchGql<{ allDeployments?: { results: Deployment[] } }>(gql`
@@ -39,25 +39,6 @@ export const Projects: React.FC = () => {
                     project {
                         id
                         name
-                        accessibility
-                        projectGoal
-                        contacts {
-                            edges {
-                                node {
-                                    id
-                                    contact {
-                                        id
-                                        firstName
-                                        lastName
-                                        website
-                                    }
-                                    role
-                                }
-                            }
-                        }
-                        websiteProject {
-                            id
-                        }
                     }
                     site {
                         id
@@ -68,15 +49,7 @@ export const Projects: React.FC = () => {
                         name
                     }
                     deploymentDate
-                    deploymentVessel
                     recoveryDate
-                    recoveryVessel
-                    bathymetricDepth
-                    platform {
-                        id
-                        name
-                    }
-                    description
                     contacts {
                         edges {
                             node {
@@ -94,9 +67,7 @@ export const Projects: React.FC = () => {
                     channelConfigurations {
                         edges {
                             node {
-                                id
                                 recorderSpecification {
-                                    id
                                     samplingFrequency
                                 }
                             }
@@ -134,9 +105,9 @@ export const Projects: React.FC = () => {
       <div className="content">
 
         <DeploymentsMap allDeployments={ deployments }
-                        level='project'
-                        selectedDeployment={ selectedDeployment }
-                        setSelectedDeployment={ setSelectedDeployment }/>
+                        level="project"
+                        selectedDeploymentID={ selectedDeploymentID }
+                        setSelectedDeploymentID={ setSelectedDeploymentID }/>
 
         { projects.map(data => (
           <IonCard key={ data.id } href={ `/projects/${ data.id }` }>

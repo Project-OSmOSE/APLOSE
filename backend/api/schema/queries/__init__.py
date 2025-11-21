@@ -9,6 +9,7 @@ from .all_datasets import AllDatasetField
 from .all_datasets_for_import import AllDatasetForImportField
 from .all_detectors import AllDetectorsField
 from .all_label_sets import AllLabelSetField
+from .annotation_labels_for_deployment_id import AnnotationLabelsForDeploymentIdField
 from .all_spectrogram_analysis import AllSpectrogramAnalysisField
 from .annotation_campaign_by_id import AnnotationCampaignByIdField
 from .annotation_phase_by_campaign_phase import AnnotationPhaseByCampaignPhase

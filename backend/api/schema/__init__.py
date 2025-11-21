@@ -17,6 +17,7 @@ from .queries import (
     AnnotationCampaignByIdField,
     AllAnnotationPhaseField,
     AnnotationPhaseByCampaignPhase,
+    AnnotationLabelsForDeploymentIdField,
 )
 from .mutations import (
     ImportAnalysisMutation,
@@ -74,6 +75,7 @@ class APIQuery(graphene.ObjectType):
 
     # Label
     all_label_sets = AllLabelSetField
+    annotation_labels_for_deployment_id = AnnotationLabelsForDeploymentIdField
 
     # Confidence
     all_confidence_sets = AllConfidenceSetField
