@@ -1,6 +1,8 @@
+from typing import Optional
+
 import graphene
 from django.db.models import QuerySet, Count, Min, Max
-from graphql import GraphQLResolveInfo
+from graphql import GraphQLResolveInfo, FieldNode
 
 from backend.api.models import Dataset
 from backend.api.schema.filter_sets import DatasetFilterSet
@@ -35,7 +37,7 @@ class DatasetNode(BaseObjectType):
                 spectrogram_count=Count(
                     "spectrogram_analysis__spectrograms", distinct=True
                 ),
-                start=Min("spectrogram_analysis__spectrograms__start"),
-                end=Max("spectrogram_analysis__spectrograms__end"),
+                start=Min("spectrogram_analysis__start"),
+                end=Max("spectrogram_analysis__end"),
             )
         )

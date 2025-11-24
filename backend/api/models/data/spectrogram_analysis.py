@@ -9,7 +9,7 @@ from typing import Optional
 from dateutil import parser
 from django.conf import settings
 from django.db import models
-from django.db.models import CheckConstraint, Q, Manager
+from django.db.models import CheckConstraint, Q, Manager, Min, Max
 from osekit.core_api.spectro_dataset import SpectroDataset
 from typing_extensions import deprecated
 
@@ -192,20 +192,17 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
     dynamic_min = models.FloatField()
     dynamic_max = models.FloatField()
 
-    # TODO:
-    #  @property
-    #  def full_spectrogram_path(self) -> Path:
-    #      """Return full image path"""
-    #      return Path(
-    #          join(
-    #              str(settings.DATASET_IMPORT_FOLDER),
-    #              self.dataset.path,
-    #              self.path,
-    #              "spectrogram" if not self.legacy else "image",
-    #          )
-    #      )
+    start = models.DateTimeField()
+    end = models.DateTimeField()
 
-    @deprecated("Related to legacy OSEkit")
+    def save(self, *args, **kwargs):
+        # pylint: disable=no-member
+        info = self.spectrograms.aggregate(start=Min("start"), end=Max("end"))
+        self.start = info["start"]
+        self.end = info["end"]
+        super().save(*args, **kwargs)
+
+    @deprecated("Related to legacy OSEkit")  # Legacy
     def legacy_audio_metadatum_csv(self) -> str:
         """Legacy audio metadata CSV export"""
         # pylint: disable=no-member
@@ -255,7 +252,7 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
 
         return "\n".join([",".join(line) for line in data])
 
-    @deprecated("Related to legacy OSEkit")
+    @deprecated("Related to legacy OSEkit")  # Legacy
     def legacy_spectrogram_configuration_csv(self) -> str:
         """Legacy spectrogram configuration CSV export"""
         # pylint: disable=no-member
