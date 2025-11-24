@@ -54,9 +54,16 @@ export const gqlAPI = createApi({
     'CurrentUser', 'User',
   ],
   reducerPath: 'gql',
-  baseQuery: graphqlRequestBaseQuery({
-    client,
-    prepareHeaders: prepareGqlHeaders,
-  }),
+  baseQuery: async (args, api, extraOptions) => {
+    const result: any = await graphqlRequestBaseQuery({
+      client,
+      prepareHeaders: prepareGqlHeaders,
+    })(args, api, extraOptions)
+    if (!('error' in result) && 'data' in result && 'errors' in result.data) {
+      result.error = result.data.errors
+    }
+    console.log(result)
+    return result
+  },
   endpoints: () => ({}),
 })
