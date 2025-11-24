@@ -24,6 +24,7 @@ class AnnotationLabelNode(BaseObjectType):
         queryset = Annotation.objects.filter(label=self)
         if deployment_id is not None:
             queryset = queryset.filter(
+                # pylint: disable=line-too-long
                 annotation_phase__annotation_campaign__dataset__related_channel_configurations__deployment_id=deployment_id
             )
         return queryset.count()

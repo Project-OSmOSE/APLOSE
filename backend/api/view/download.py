@@ -38,19 +38,22 @@ from backend.utils.renderers import CSVRenderer
 
 REPORT_HEADERS = [  # headers
     "dataset",
+    "analysis",
     "filename",
     "result_id",
     "is_update_of_id",
-    "start_time",
-    "end_time",
-    "start_frequency",
-    "end_frequency",
+    "start_time",  # Legacy
+    "end_time",  # Legacy
+    "start_frequency",  # Legacy
+    "end_frequency",  # Legacy
+    "min_frequency",
+    "max_frequency",
     "annotation",
     "annotator",
     "annotator_expertise",
     "start_datetime",
     "end_datetime",
-    "is_box",
+    "is_box",  # Legacy
     "type",
     "confidence_indicator_label",
     "confidence_indicator_level",
@@ -195,10 +198,23 @@ def _get_annotations_for_report(
             signal_steps_count=F("acoustic_features__steps_count"),
             _start_time=F("start_time"),
             _end_time=F("end_time"),
-            _start_frequency=F("start_frequency"),
-            _end_frequency=F("end_frequency"),
+            min_frequency=Case(
+                When(type=Annotation.Type.WEAK, then=Value(0.0)),
+                default=F("start_frequency"),
+                output_field=models.FloatField(),
+            ),
+            max_frequency=Case(
+                When(type=Annotation.Type.POINT, then=F("start_frequency")),
+                When(
+                    type=Annotation.Type.WEAK,
+                    then=F("analysis__fft__sampling_frequency") / 2,
+                ),
+                default=F("end_frequency"),
+                output_field=models.FloatField(),
+            ),
             result_id=F("id"),
             created_at_phase=phase_type_query,
+            analysis_name=F("analysis__name"),
         )
         .extra(
             select={
@@ -235,6 +251,7 @@ def _get_annotations_for_report(
                     "start_frequency",
                     "end_frequency",
                     "type",
+                    "analysis",
                 )
             ],
             "annotator__username",
@@ -242,9 +259,8 @@ def _get_annotations_for_report(
             "validations",
             "_start_time",
             "_end_time",
-            "_start_frequency",
-            "_end_frequency",
             "type_label",
+            "analysis_name",
         )
         .annotate(
             annotator=Case(
@@ -272,21 +288,10 @@ def _get_annotations_for_report(
                 default=F("_end_time"),
                 output_field=models.FloatField(),
             ),
-            start_frequency=Case(
-                When(type=Annotation.Type.WEAK, then=Value(0.0)),
-                default=F("_start_frequency"),
-                output_field=models.FloatField(),
-            ),
-            end_frequency=Case(
-                When(type=Annotation.Type.POINT, then=F("_start_frequency")),
-                When(
-                    type=Annotation.Type.WEAK,
-                    then=F("analysis__fft__sampling_frequency") / 2,
-                ),
-                default=F("_end_frequency"),
-                output_field=models.FloatField(),
-            ),
+            start_frequency=F("min_frequency"),
+            end_frequency=F("max_frequency"),
             type=F("type_label"),
+            analysis=F("analysis_name"),
         )
     )
 
