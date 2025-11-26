@@ -70,8 +70,8 @@ class SpectrogramAnalysisManager(Manager):
                 dataset=dataset,
                 name=name,
                 path=path,
-                start_date=datetime.fromisoformat(audio["start_date"]),
-                end_date=datetime.fromisoformat(audio["end_date"]),
+                start=datetime.fromisoformat(audio["start_date"]),
+                end=datetime.fromisoformat(audio["end_date"]),
                 data_duration=int(audio["audio_file_dataset_duration"]),
                 fft=fft,
                 colormap=colormap,
@@ -138,8 +138,8 @@ class SpectrogramAnalysisManager(Manager):
             name=sd.name,
             path=str(sd.folder).split(dataset.path)[1].strip("\\").strip("/"),
             owner=owner,
-            start_date=sd.begin.tz_convert(timezone.utc),
-            end_date=sd.end.tz_convert(timezone.utc),
+            start=sd.begin.tz_convert(timezone.utc),
+            end=sd.end.tz_convert(timezone.utc),
             data_duration=sd.data_duration.seconds,
             fft=fft,
             colormap=colormap,
@@ -191,9 +191,6 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
 
     dynamic_min = models.FloatField()
     dynamic_max = models.FloatField()
-
-    start = models.DateTimeField()
-    end = models.DateTimeField()
 
     def save(self, *args, **kwargs):
         # pylint: disable=no-member

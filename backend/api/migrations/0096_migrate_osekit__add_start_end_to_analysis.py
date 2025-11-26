@@ -4,7 +4,7 @@ from django.db import migrations, models
 from django.db.models import Min, Max
 
 
-def add_stat_end(apps, schema_editor):
+def add_start_end(apps, schema_editor):
     analysis_model = apps.get_model("api", "SpectrogramAnalysis")
 
     for analysis in analysis_model.objects.all():

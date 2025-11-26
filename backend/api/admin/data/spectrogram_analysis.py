@@ -20,8 +20,8 @@ class SpectrogramAnalysisAdmin(admin.ModelAdmin):
         "fft",
         "colormap",
         "dynamic",
-        "start_date",
-        "end_date",
+        "start",
+        "end",
         "legacy",
     )
     search_fields = ["name", "dataset__name"]
