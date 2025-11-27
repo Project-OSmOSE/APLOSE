@@ -19,7 +19,7 @@ python-dateutil = ">=2.4"
 metadatax = {url = "https://github.com/PAM-Standardization/metadatax/releases/download/v0.4.13/metadatax-0.4.13.tar.gz"}
 #metadatax = {path = "../metadatax", develop=true}
 whitenoise = "^6.9.0"
-osekit = "^0.2.5"
+osekit = "^0.4.0"
 graphene-django = "^3.2.3"
 graphene-django-pagination = {url = "https://github.com/instruct-br/graphene-django-pagination/archive/master.zip"}
 django-filter = ">=2"

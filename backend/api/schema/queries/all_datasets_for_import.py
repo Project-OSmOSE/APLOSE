@@ -31,6 +31,7 @@ def resolve_all_datasets_available_for_import() -> [ImportDatasetNode]:
         json_path = join(settings.DATASET_IMPORT_FOLDER, folder, "dataset.json")
         if not exists(json_path):
             continue
+        print(json_path)
         dataset = OSEkitDataset.from_json(Path(json_path))
         d = ImportDatasetNode()
         d.name = folder
