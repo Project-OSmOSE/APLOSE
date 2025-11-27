@@ -9,7 +9,7 @@ from typing import Optional
 from dateutil import parser
 from django.conf import settings
 from django.db import models
-from django.db.models import CheckConstraint, Q, Manager, Min, Max
+from django.db.models import CheckConstraint, Q, Manager
 from osekit.core_api.spectro_dataset import SpectroDataset
 from typing_extensions import deprecated
 
@@ -191,13 +191,6 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
 
     dynamic_min = models.FloatField()
     dynamic_max = models.FloatField()
-
-    def save(self, *args, **kwargs):
-        # pylint: disable=no-member
-        info = self.spectrograms.aggregate(start=Min("start"), end=Max("end"))
-        self.start = info["start"]
-        self.end = info["end"]
-        super().save(*args, **kwargs)
 
     @deprecated("Related to legacy OSEkit")  # Legacy
     def legacy_audio_metadatum_csv(self) -> str:

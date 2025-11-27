@@ -8,14 +8,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 export const UploadButtons: React.FC = () => {
   const { campaignID, phaseType } = useParams<AploseNavParams>();
-  const { verificationPhase } = useCurrentCampaign()
+  const { annotationPhase } = useCurrentCampaign()
   const { canImport, upload, ...state } = useImportAnnotationsContext()
   const navigate = useNavigate();
 
   const back = useCallback(() => {
-    if (verificationPhase) navigate(`/annotation-campaign/${ campaignID }/phase/${ verificationPhase.id }`)
+    if (annotationPhase) navigate(`/annotation-campaign/${ campaignID }/phase/${ annotationPhase.phase }`)
     else navigate(`/annotation-campaign/${ campaignID }/phase/${ phaseType }`)
-  }, [ campaignID, verificationPhase, phaseType ])
+  }, [ campaignID, annotationPhase, phaseType ])
 
   useEffect(() => {
     if (state.uploadState === 'uploaded') back()

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { chevronBackOutline } from 'ionicons/icons/index.js';
 import { TooltipOverlay } from './Tooltip';
 import { Link } from './Link';
+import { helpOutline } from 'ionicons/icons';
 
 type Props = {
   disabledExplanation?: string;
@@ -43,4 +44,12 @@ export const BackButton: React.FC = () => {
     <IonIcon icon={ chevronBackOutline } slot="start"/>
     Back
   </IonButton>
+}
+
+export const HelpButton: React.FC<{ url: string }> = ({ url }) => {
+  const open = useCallback(() => window.open(url, '_blank'), [])
+  return <Button fill="clear" color="warning" onClick={ open }>
+    Help
+    <IonIcon icon={ helpOutline } slot="end"/>
+  </Button>
 }

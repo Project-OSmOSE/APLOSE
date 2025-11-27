@@ -40,10 +40,10 @@ REPORT_HEADERS = [  # headers
     "dataset",
     "analysis",
     "filename",
-    "result_id",
+    "annotation_id",
     "is_update_of_id",
-    "start_time",  # Legacy
-    "end_time",  # Legacy
+    "start_time",
+    "end_time",
     "start_frequency",  # Legacy
     "end_frequency",  # Legacy
     "min_frequency",
@@ -212,7 +212,7 @@ def _get_annotations_for_report(
                 default=F("end_frequency"),
                 output_field=models.FloatField(),
             ),
-            result_id=F("id"),
+            annotation_id=F("id"),
             created_at_phase=phase_type_query,
             analysis_name=F("analysis__name"),
         )
@@ -420,7 +420,7 @@ class DownloadViewSet(ViewSet):
         def map_validations(user: str) -> [str, Case]:
             validation_sub = AnnotationValidation.objects.filter(
                 annotator__username=user,
-                result_id=OuterRef("id"),
+                annotation_id=OuterRef("id"),
             )
 
             query = Case(

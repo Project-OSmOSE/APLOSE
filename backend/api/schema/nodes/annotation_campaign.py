@@ -23,6 +23,7 @@ from backend.api.models import (
     AnnotationFileRange,
     Detector,
     AnnotationTask,
+    Spectrogram,
 )
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationCampaignFilterSet
@@ -45,8 +46,6 @@ class AnnotationCampaignNode(BaseObjectType):
     can_manage = graphene.Boolean(required=True)
 
     dataset_name = graphene.String(required=True)
-
-    spectrograms_count = graphene.Int(required=True)
 
     # pylint: disable=duplicate-code
     tasks_count = graphene.Int(required=True)
@@ -95,14 +94,25 @@ class AnnotationCampaignNode(BaseObjectType):
         """Resolve featured labels"""
         return self.labels_with_acoustic_features.all()
 
+    spectrograms_count = graphene.Int(required=True)
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_spectrograms_count(self: AnnotationCampaign, info):
+        return (
+            Spectrogram.objects.filter(analysis__annotation_campaigns=self)
+            .distinct()
+            .count()
+        )
+
     @classmethod
     def resolve_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
         # pylint: disable=duplicate-code
         return (
             super()
             .resolve_queryset(queryset, info)
+            .select_related("dataset")
+            .prefetch_related("phases")
             .annotate(
-                spectrograms_count=Count("analysis__spectrograms", distinct=True),
                 phase_types=ArrayAgg("phases__phase", distinct=True),
                 dataset_name=F("dataset__name"),
                 is_archived=ExpressionWrapper(
@@ -118,7 +128,7 @@ class AnnotationCampaignNode(BaseObjectType):
                     ),
                     output_field=models.BooleanField(),
                 ),
-                tasks_count=Coalesce(
+                tasks_count=Coalesce(  # 0.03774690628051758 + 0.0019426345825195312
                     Subquery(
                         AnnotationFileRange.objects.filter(
                             annotation_phase__annotation_campaign_id=OuterRef("pk"),

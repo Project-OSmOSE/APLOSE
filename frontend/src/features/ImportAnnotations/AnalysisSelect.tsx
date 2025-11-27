@@ -25,5 +25,5 @@ export const AnalysisSelect: React.FC = () => {
                  optionsContainer="popover"
                  required
                  placeholder="Select a spectrogram analysis"
-                 note="Select the analysis on which the annotations where made"/>
+                 note="Select the analysis on which the annotations were made"/>
 }

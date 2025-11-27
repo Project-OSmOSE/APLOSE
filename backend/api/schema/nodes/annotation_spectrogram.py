@@ -122,7 +122,7 @@ class AnnotationSpectrogramNode(BaseObjectType):
     path = graphene.String(analysis_id=graphene.ID(required=True), required=True)
 
     @graphene_django_optimizer.resolver_hints()
-    def resolve_path(self, info, analysis_id: int):
+    def resolve_path(self: Spectrogram, info, analysis_id: int):
         analysis: SpectrogramAnalysis = self.analysis.get(id=analysis_id)
 
         spectrogram_path: str

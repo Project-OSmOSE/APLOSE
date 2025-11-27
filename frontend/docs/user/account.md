@@ -4,7 +4,7 @@ Your account can be managed by following the "Account" link in the navigation le
 
 ![](/user/account.png)
 
-::: tip Recommended
+::: tip
 We recommend to update your password at your first connexion.
 :::
 

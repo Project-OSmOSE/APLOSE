@@ -482,6 +482,7 @@ export type AnnotationLabelNode = BaseNode & {
   labelsetSet: LabelSetNodeConnection;
   metadataxLabel?: Maybe<LabelNode>;
   name: Scalars['String']['output'];
+  uses: Scalars['Int']['output'];
 };
 
 
@@ -529,6 +530,12 @@ export type AnnotationLabelNodeLabelsetSetArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
+
+/** Label schema */
+export type AnnotationLabelNodeUsesArgs = {
+  deploymentId?: InputMaybe<Scalars['ID']['input']>;
+};
+
 export type AnnotationLabelNodeConnection = {
   __typename?: 'AnnotationLabelNodeConnection';
   /** Contains the nodes in this connection. */
@@ -544,6 +551,15 @@ export type AnnotationLabelNodeEdge = {
   cursor: Scalars['String']['output'];
   /** The item at the end of the edge */
   node?: Maybe<AnnotationLabelNode>;
+};
+
+export type AnnotationLabelNodeNodeConnection = {
+  __typename?: 'AnnotationLabelNodeNodeConnection';
+  /** Pagination data for this connection. */
+  pageInfo: PageInfoExtra;
+  /** Contains the nodes in this connection. */
+  results: Array<Maybe<AnnotationLabelNode>>;
+  totalCount?: Maybe<Scalars['Int']['output']>;
 };
 
 /** Annotation schema */
@@ -930,6 +946,7 @@ export type AnnotationSpectrogramNodeEdge = {
   node?: Maybe<AnnotationSpectrogramNode>;
 };
 
+/** Annotation spectrogram node connection */
 export type AnnotationSpectrogramNodeNodeConnection = {
   __typename?: 'AnnotationSpectrogramNodeNodeConnection';
   currentIndex?: Maybe<Scalars['Int']['output']>;
@@ -944,21 +961,25 @@ export type AnnotationSpectrogramNodeNodeConnection = {
 };
 
 
+/** Annotation spectrogram node connection */
 export type AnnotationSpectrogramNodeNodeConnectionCurrentIndexArgs = {
   spectrogramId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
+/** Annotation spectrogram node connection */
 export type AnnotationSpectrogramNodeNodeConnectionNextSpectrogramIdArgs = {
   spectrogramId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
+/** Annotation spectrogram node connection */
 export type AnnotationSpectrogramNodeNodeConnectionPreviousSpectrogramIdArgs = {
   spectrogramId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
+/** Annotation spectrogram node connection */
 export type AnnotationSpectrogramNodeNodeConnectionResumeSpectrogramIdArgs = {
   campaignId: Scalars['ID']['input'];
   phase: AnnotationPhaseType;
@@ -4959,6 +4980,7 @@ export type Query = {
   allUsers?: Maybe<UserNodeNodeConnection>;
   allWebsiteProjects?: Maybe<WebsiteProjectNodeNodeConnection>;
   annotationCampaignById?: Maybe<AnnotationCampaignNode>;
+  annotationLabelsForDeploymentId?: Maybe<AnnotationLabelNodeNodeConnection>;
   annotationPhaseByCampaignPhase?: Maybe<AnnotationPhaseNode>;
   annotationSpectrogramById?: Maybe<AnnotationSpectrogramNode>;
   audioPropertyById?: Maybe<AudioPropertiesNode>;
@@ -6160,6 +6182,22 @@ export type QueryAnnotationCampaignByIdArgs = {
 
 
 /** Global query */
+export type QueryAnnotationLabelsForDeploymentIdArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  annotation_AnnotationPhase_AnnotationCampaignId?: InputMaybe<Scalars['ID']['input']>;
+  annotation_AnnotationPhase_Phase?: InputMaybe<AnnotationPhaseType>;
+  annotation_AnnotatorId?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  deploymentId: Scalars['ID']['input'];
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Global query */
 export type QueryAnnotationPhaseByCampaignPhaseArgs = {
   campaignId: Scalars['ID']['input'];
   phaseType: AnnotationPhaseType;
@@ -6835,7 +6873,7 @@ export type SpectrogramAnalysisNode = BaseNode & {
   description?: Maybe<Scalars['String']['output']>;
   dynamicMax: Scalars['Float']['output'];
   dynamicMin: Scalars['Float']['output'];
-  endDate?: Maybe<Scalars['DateTime']['output']>;
+  end?: Maybe<Scalars['DateTime']['output']>;
   fft: FftNode;
   /** The ID of the object */
   id: Scalars['ID']['output'];
@@ -6845,7 +6883,7 @@ export type SpectrogramAnalysisNode = BaseNode & {
   owner: UserNode;
   path: Scalars['String']['output'];
   spectrograms?: Maybe<SpectrogramNodeNodeConnection>;
-  startDate?: Maybe<Scalars['DateTime']['output']>;
+  start?: Maybe<Scalars['DateTime']['output']>;
 };
 
 
@@ -7285,7 +7323,7 @@ export type UserNode = BaseNode & {
   createdPhases: AnnotationPhaseNodeConnection;
   datasetSet: DatasetNodeConnection;
   dateJoined: Scalars['DateTime']['output'];
-  displayName: Scalars['String']['output'];
+  displayName?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   endedPhases: AnnotationPhaseNodeConnection;
   expertise?: Maybe<ExpertiseLevelType>;

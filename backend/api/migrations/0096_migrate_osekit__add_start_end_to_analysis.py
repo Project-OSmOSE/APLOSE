@@ -33,17 +33,5 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(blank=True, null=True),
             preserve_default=False,
         ),
-        migrations.RunPython(add_stat_end, migrations.RunPython.noop),
-        migrations.AlterField(
-            model_name="spectrogramanalysis",
-            name="end",
-            field=models.DateTimeField(),
-            preserve_default=False,
-        ),
-        migrations.AlterField(
-            model_name="spectrogramanalysis",
-            name="start",
-            field=models.DateTimeField(),
-            preserve_default=False,
-        ),
+        migrations.RunPython(add_start_end, migrations.RunPython.noop),
     ]

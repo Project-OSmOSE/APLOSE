@@ -21,11 +21,11 @@ export const AnnotationCampaignInfo: React.FC = () => {
 
     {/* GLOBAL */ }
     <AnnotationCampaignArchiveButton/>
+    <AnnotationCampaignInstructionsButton/>
     { campaign.archive && <FadedText>
         Archived
         on { dateToString(campaign.archive.date) } by { campaign.archive.byUser?.displayName }
     </FadedText> }
-    <AnnotationCampaignInstructionsButton/>
     { campaign.deadline && <div>
         <FadedText>Deadline</FadedText>
         <p>{ dateToString(campaign.deadline) }</p>
@@ -50,7 +50,7 @@ export const AnnotationCampaignInfo: React.FC = () => {
 
         <div className={ styles.bloc }>
             <div>
-                <FadedText>Confidence indicator set</FadedText>
+                <FadedText>Confidence set</FadedText>
               { !campaign.confidenceSet && <p>No confidence</p> }{ campaign.confidenceSet &&
                 <p>{ campaign.confidenceSet.name }</p> }
             </div>

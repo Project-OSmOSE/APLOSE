@@ -1,4 +1,4 @@
-# Gérer les utilisateurs
+# Gestion des utilisateurs
 
 Pour gérer les utilisateurs, vous devez accéder à la partie Administration.
 

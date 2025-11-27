@@ -51,8 +51,8 @@ export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVari
       <TableContent>Spectrogram</TableContent>
       <TableContent>{ dateToString(analysis.createdAt) }</TableContent>
       <TableContent>{ analysis.spectrograms!.totalCount }</TableContent>
-      <TableContent>{ dateToString(analysis.spectrograms!.start) }</TableContent>
-      <TableContent>{ dateToString(analysis.spectrograms!.end) }</TableContent>
+      <TableContent>{ dateToString(analysis.start) }</TableContent>
+      <TableContent>{ dateToString(analysis.end) }</TableContent>
       <TableContent>{ analysis.dataDuration }</TableContent>
       <TableContent>{ analysis.fft.samplingFrequency }</TableContent>
       <TableContent>{ analysis.fft.nfft }</TableContent>
@@ -62,7 +62,7 @@ export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVari
         <Button size="small" color="dark" fill="clear" onClick={ () => downloadAnalysis(analysis) }>
           <IonIcon icon={ downloadOutline } slot="icon-only"/>
         </Button>
-        <IonNote color="medium">OSEkit v{ analysis.legacy ? '<0.2.5' : '>=0.3.0' }</IonNote>
+        { analysis.legacy && <IonNote color="medium">{ 'OSEkit v<0.2.5' }</IonNote> }
       </TableContent>
       <TableDivider/>
     </Fragment>) }

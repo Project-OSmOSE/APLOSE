@@ -122,7 +122,7 @@ export const AnnotationPhaseCreateVerificationModal: React.FC<{
     if (!campaign) return;
     await createVerificationPhase({ campaignID: campaign.id }).unwrap()
     await refetch().unwrap()
-    navigate(`/annotation-campaign/${ campaign.id }/phase/Verification'`)
+    navigate(`/annotation-campaign/${ campaign.id }/phase/Verification`)
   }, [ campaign, createVerificationPhase ])
 
   const createAndImport = useCallback(async () => {

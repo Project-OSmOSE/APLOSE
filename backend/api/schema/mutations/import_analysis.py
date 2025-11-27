@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Min, Max
 from graphene import (
     String,
     Mutation,
@@ -46,5 +47,10 @@ class ImportAnalysisMutation(Mutation):
             dataset, name, path, owner=info.context.user
         )
         Spectrogram.objects.import_all_for_analysis(analysis)
+
+        info = analysis.spectrograms.aggregate(start=Min("start"), end=Max("end"))
+        analysis.start = info["start"]
+        analysis.end = info["end"]
+        analysis.save()
 
         return ImportAnalysisMutation(ok=True)

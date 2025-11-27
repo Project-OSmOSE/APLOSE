@@ -17,11 +17,6 @@ import { QueryStatus } from '@reduxjs/toolkit/query';
 import { FileRangeInputRow } from '@/features/AnnotationFileRange';
 import { type AploseNavParams } from '@/features/UX';
 
-// type SearchItem = {
-//   type: 'user' | 'group';
-//   id: string;
-//   display: string;
-// }
 
 type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
   id: string;
@@ -75,7 +70,7 @@ export const EditAnnotators: React.FC = () => {
       }).map(u => ({
         value: `user-${ u!.id }`,
         label: u!.displayName || u!.username,
-        searchable: [ ...u!.displayName.split(' '), u!.username ],
+        searchable: [ ...u!.displayName!.split(' '), u!.username ],
       } as SearchItem)));
     }
     if (groups) {

@@ -1,11 +1,11 @@
-import { useHistory, useLocation } from "react-router-dom";
-import { Parser } from "html-to-react";
+import { useHistory, useLocation } from 'react-router-dom';
+import { Parser } from 'html-to-react';
 
 export const API_FETCH_INIT = {
   method: 'GET',
   headers: {
     'Accept': 'application/json',
-  }
+  },
 }
 
 export const useFetchDetail = <T>(listPageURL: string, apiURL: string) => {
@@ -54,12 +54,12 @@ export const useFetchGql = <T>(query: string) => {
 
   return async (): Promise<T | undefined> => {
     try {
-      const body = JSON.stringify({query})
-      const response = await fetch('/api/graphql', {
+      const body = JSON.stringify({ query })
+      const response = await fetch('http://localhost:8080/api/graphql', {
         method: 'POST',
         body,
         headers: {
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json',
         },
       });
       if (!response.ok) throw response;
@@ -77,23 +77,23 @@ export const useFetchGql = <T>(query: string) => {
 export const getFormattedDate = (date?: string) => {
   if (!date) return;
   return Intl.DateTimeFormat('en-US', {
-    dateStyle: 'long'
+    dateStyle: 'long',
   }).format(new Date(date)).replaceAll('/', '-');
 }
 
 export const getYear = (date?: string) => {
   if (!date) return;
   return Intl.DateTimeFormat('en-US', {
-    year: 'numeric'
+    year: 'numeric',
   }).format(new Date(date));
 }
 
 export const parseHTML = (body: string) => {
   const pImgContainer: Array<string> | null = body.match(/<p([\s\w="]*?)>(<img([\w\W]+?)\/>)+<\/p>/g);
-  if (!pImgContainer) return Parser().parse(body ?? "");
+  if (!pImgContainer) return Parser().parse(body ?? '');
   for (const pContainer of pImgContainer) {
     const div = document.createElement('div');
-    div.className = "figure-container";
+    div.className = 'figure-container';
     const imgData: Array<string> | null = pContainer.match(/<img(.+?)\/>/g);
     if (!imgData) continue;
     for (const img of imgData) {
@@ -103,7 +103,7 @@ export const parseHTML = (body: string) => {
     }
     body = body.replace(pContainer, div.outerHTML);
   }
-  return Parser().parse(body ?? "");
+  return Parser().parse(body ?? '');
 }
 
 export const getFigureFromImgHTML = (img: string): HTMLElement | undefined => {
@@ -115,7 +115,7 @@ export const getFigureFromImgHTML = (img: string): HTMLElement | undefined => {
   if (imgTag.alt) {
     const caption = document.createElement('figcaption');
     caption.innerText = imgTag.alt;
-    caption.className = "text-muted";
+    caption.className = 'text-muted';
     figure.appendChild(caption);
   }
 

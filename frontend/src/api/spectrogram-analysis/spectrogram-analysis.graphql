@@ -14,6 +14,8 @@ query listSpectrogramAnalysis(
             createdAt
             legacy
             dataDuration
+            start
+            end
             fft {
                 samplingFrequency
                 nfft
@@ -22,8 +24,6 @@ query listSpectrogramAnalysis(
             }
             spectrograms {
                 totalCount
-                start
-                end
             }
         }
     }

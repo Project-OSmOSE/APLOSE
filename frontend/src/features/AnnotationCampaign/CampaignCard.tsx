@@ -21,7 +21,7 @@ export const Cards: React.FC = () => {
 
 
   const getLink = useCallback((campaign: Campaign) => {
-    if (campaign.phaseTypes.length > 0)
+    if (campaign.phaseTypes.filter(p => p !== null).length > 0)
       return `/annotation-campaign/${ campaign.id }/phase/Annotation`;
     return `/annotation-campaign/${ campaign.id }`
   }, [])

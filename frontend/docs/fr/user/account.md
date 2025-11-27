@@ -1,10 +1,10 @@
-# Manage your account
+# Gérer votre compte
 
 Votre compte peut être géré en suivant le lien "Account" dans le panneau de navigation.
 
 ![](/user/account.png)
 
-::: tip Recommandé
+::: tip
 
 Nous vous recommandons de mettre à jour votre mot de passe après votre première connexion.
 

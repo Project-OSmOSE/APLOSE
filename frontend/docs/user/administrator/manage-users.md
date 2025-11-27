@@ -1,4 +1,4 @@
-# Manage users
+# User management
 
 To manage users you must access the Administration part.
 
