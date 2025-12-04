@@ -2465,7 +2465,7 @@ type UserNode implements BaseNode {
   annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationCommentNodeConnection!
   annotationResultsValidation(offset: Int, before: String, after: String, first: Int, last: Int, annotator: ID): AnnotationValidationNodeConnection!
   expertise: ExpertiseLevelType
-  displayName: String
+  displayName: String!
   isAdmin: Boolean!
 }
 

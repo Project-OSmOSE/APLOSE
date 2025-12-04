@@ -2,8 +2,9 @@
 from typing import Optional
 
 from django.core.handlers.wsgi import WSGIRequest
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.exceptions import InvalidToken
 from whitenoise.middleware import WhiteNoiseMiddleware
 
 from backend.aplose.models import User
@@ -16,7 +17,10 @@ class StaticFilesMiddleware(WhiteNoiseMiddleware):
         if not request.COOKIES or "token" not in request.COOKIES:
             return None
         token = request.COOKIES["token"]
-        validated_token = JWTAuthentication().get_validated_token(token)
+        try:
+            validated_token = JWTAuthentication().get_validated_token(token)
+        except InvalidToken as e:
+            return HttpResponse(e.detail, status=401)
         return JWTAuthentication().get_user(validated_token)
 
     def __call__(self, request: WSGIRequest):

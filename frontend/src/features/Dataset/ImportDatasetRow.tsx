@@ -42,7 +42,7 @@ export const ImportDatasetRow: React.FC<{
   const filteredAnalysis = useFilter({
     items: dataset.analysis?.filter(a => a !== null).map(a => a!) ?? [],
     search,
-    itemToStringArray: (analysis: ImportAnalysisNode) => [ analysis.name, analysis.path ],
+    itemToStringArray: (analysis: ImportAnalysisNode) => [ dataset.name, dataset.path, analysis.name, analysis.path ],
   })
   const searchAnalysis = useSort({
     items: filteredAnalysis,

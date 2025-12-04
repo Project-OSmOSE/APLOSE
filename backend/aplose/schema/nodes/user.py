@@ -23,7 +23,7 @@ class UserNode(BaseObjectType):
         interfaces = (BaseNode,)
 
     expertise = ExpertiseLevelType()
-    display_name = String()
+    display_name = String(required=True)
     is_admin = Boolean(required=True)
 
     @classmethod

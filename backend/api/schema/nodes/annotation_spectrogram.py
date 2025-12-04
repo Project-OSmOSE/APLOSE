@@ -1,4 +1,5 @@
 from os import path
+from pathlib import PureWindowsPath
 from typing import Optional
 
 import graphene
@@ -106,10 +107,10 @@ class AnnotationSpectrogramNode(BaseObjectType):
         audio_path: str
         if analysis.dataset.legacy:
             audio_path = path.join(
-                analysis.dataset.path,
-                settings.DATASET_FILES_FOLDER,
-                analysis.dataset.get_config_folder(),
-                f"{self.filename}.wav",
+                PureWindowsPath(analysis.dataset.path),
+                PureWindowsPath(settings.DATASET_FILES_FOLDER),
+                PureWindowsPath(analysis.dataset.get_config_folder()),
+                PureWindowsPath(f"{self.filename}.wav"),
             )
         else:
             spectro_data: SpectroData = self.get_spectro_data_for(analysis)
@@ -117,7 +118,11 @@ class AnnotationSpectrogramNode(BaseObjectType):
             audio_path = audio_path.split(str(settings.DATASET_EXPORT_PATH))[1].lstrip(
                 "\\"
             )
-        return path.join(settings.STATIC_URL, settings.DATASET_EXPORT_PATH, audio_path)
+        return path.join(
+            PureWindowsPath(settings.STATIC_URL),
+            PureWindowsPath(settings.DATASET_EXPORT_PATH),
+            PureWindowsPath(audio_path),
+        )
 
     path = graphene.String(analysis_id=graphene.ID(required=True), required=True)
 
@@ -137,12 +142,12 @@ class AnnotationSpectrogramNode(BaseObjectType):
                 ):
                     folder = f"{folder}_{analysis.legacy_configuration.multi_linear_frequency_scale.name}"
             spectrogram_path = path.join(
-                analysis.dataset.path,
-                settings.DATASET_SPECTRO_FOLDER,
-                analysis.dataset.get_config_folder(),
-                folder,
-                "image",
-                f"{self.filename}.{self.format.name}",
+                PureWindowsPath(analysis.dataset.path),
+                PureWindowsPath(settings.DATASET_SPECTRO_FOLDER),
+                PureWindowsPath(analysis.dataset.get_config_folder()),
+                PureWindowsPath(folder),
+                PureWindowsPath("image"),
+                PureWindowsPath(f"{self.filename}.{self.format.name}"),
             )
         else:
             spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
@@ -150,14 +155,14 @@ class AnnotationSpectrogramNode(BaseObjectType):
                 str(settings.DATASET_EXPORT_PATH)
             )[1]
             spectrogram_path = path.join(
-                spectro_dataset_path,
-                "spectrogram",  # TODO: avoid static path parts!!!
-                f"{self.filename}.{self.format.name}",
+                PureWindowsPath(spectro_dataset_path),
+                PureWindowsPath("spectrogram"),  # TODO: avoid static path parts!!!
+                PureWindowsPath(f"{self.filename}.{self.format.name}"),
             ).lstrip("\\")
         return path.join(
-            settings.STATIC_URL,
-            settings.DATASET_EXPORT_PATH,
-            spectrogram_path,
+            PureWindowsPath(settings.STATIC_URL),
+            PureWindowsPath(settings.DATASET_EXPORT_PATH),
+            PureWindowsPath(spectrogram_path),
         )
 
     task = graphene.Field(

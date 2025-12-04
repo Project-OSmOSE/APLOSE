@@ -7323,7 +7323,7 @@ export type UserNode = BaseNode & {
   createdPhases: AnnotationPhaseNodeConnection;
   datasetSet: DatasetNodeConnection;
   dateJoined: Scalars['DateTime']['output'];
-  displayName?: Maybe<Scalars['String']['output']>;
+  displayName: Scalars['String']['output'];
   email: Scalars['String']['output'];
   endedPhases: AnnotationPhaseNodeConnection;
   expertise?: Maybe<ExpertiseLevelType>;

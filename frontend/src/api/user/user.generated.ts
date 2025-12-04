@@ -4,12 +4,12 @@ import { gqlAPI } from '@/api/baseGqlApi';
 export type GetCurrentUserQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type GetCurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'UserNode', id: string, displayName?: string | null, isAdmin: boolean, isSuperuser: boolean, username: string, email: string } | null };
+export type GetCurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'UserNode', id: string, displayName: string, isAdmin: boolean, isSuperuser: boolean, username: string, email: string } | null };
 
 export type ListUsersQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListUsersQuery = { __typename?: 'Query', allUsers?: { __typename?: 'UserNodeNodeConnection', results: Array<{ __typename?: 'UserNode', id: string, displayName?: string | null, username: string, expertise?: Types.ExpertiseLevelType | null } | null> } | null, allUserGroups?: { __typename?: 'UserGroupNodeNodeConnection', results: Array<{ __typename?: 'UserGroupNode', id: string, name: string, users?: Array<{ __typename?: 'UserNode', id: string } | null> | null } | null> } | null };
+export type ListUsersQuery = { __typename?: 'Query', allUsers?: { __typename?: 'UserNodeNodeConnection', results: Array<{ __typename?: 'UserNode', id: string, displayName: string, username: string, expertise?: Types.ExpertiseLevelType | null } | null> } | null, allUserGroups?: { __typename?: 'UserGroupNodeNodeConnection', results: Array<{ __typename?: 'UserGroupNode', id: string, name: string, users?: Array<{ __typename?: 'UserNode', id: string } | null> | null } | null> } | null };
 
 export type UpdateCurrentUserPasswordMutationVariables = Types.Exact<{
   oldPassword: Types.Scalars['String']['input'];

@@ -11,7 +11,7 @@ export type GetDatasetByIdQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetDatasetByIdQuery = { __typename?: 'Query', datasetById?: { __typename?: 'DatasetNode', id: string, name: string, path: string, description?: string | null, start?: any | null, end?: any | null, createdAt: any, legacy: boolean, owner: { __typename?: 'UserNode', displayName?: string | null } } | null };
+export type GetDatasetByIdQuery = { __typename?: 'Query', datasetById?: { __typename?: 'DatasetNode', id: string, name: string, path: string, description?: string | null, start?: any | null, end?: any | null, createdAt: any, legacy: boolean, owner: { __typename?: 'UserNode', displayName: string } } | null };
 
 export type ListAvailableDatasetsForImportQueryVariables = Types.Exact<{ [key: string]: never; }>;
 

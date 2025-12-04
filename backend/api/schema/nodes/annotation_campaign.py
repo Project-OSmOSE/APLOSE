@@ -78,13 +78,16 @@ class AnnotationCampaignNode(BaseObjectType):
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_annotators(self: AnnotationCampaign, info):
-        return User.objects.filter(
-            Exists(
-                AnnotationFileRange.objects.filter(
-                    annotation_phase__annotation_campaign_id=self.id,
-                    annotator_id=OuterRef("id"),
+        return UserNode.resolve_queryset(
+            User.objects.filter(
+                Exists(
+                    AnnotationFileRange.objects.filter(
+                        annotation_phase__annotation_campaign_id=self.id,
+                        annotator_id=OuterRef("id"),
+                    )
                 )
-            )
+            ),
+            info,
         )
 
     labels_with_acoustic_features = graphene.List(AnnotationLabelNode)

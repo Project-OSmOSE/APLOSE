@@ -16,10 +16,10 @@
 
 .labelsButtons {
   font-size: 1rem;
-  display: grid;
-  grid-auto-flow: column;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: .5rem;
   padding-left: .5rem;
-  align-items: center;
 }
 
