@@ -1,0 +1,80 @@
+.annotator {
+  display: grid;
+  align-items: center;
+  align-content: start;
+  justify-items: center;
+  grid-template-areas:
+          "spectrogram"
+          "blocs"
+  "download";
+  gap: 1rem;
+  grid-template-rows: auto 1fr auto;
+
+  .spectrogramContainer {
+    grid-area: spectrogram;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 0.25rem;
+
+    .spectrogramData,
+    .spectrogramNavigation {
+      display: grid;
+      align-items: center;
+      grid-auto-flow: column;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      justify-items: center;
+
+      .audioNavigation {
+        display: grid;
+        grid-auto-flow: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .spectrogramConfiguration {
+        display: grid;
+        align-items: center;
+        gap: 0.5rem;
+        grid-auto-flow: column;
+
+        > div {
+          display: flex;
+          flex-direction: row;
+          gap: 0.2rem;
+        }
+
+        input[type=range] {
+          width: 10rem;
+        }
+      }
+
+      > *:last-child {
+        justify-self: end;
+      }
+
+      > *:first-child {
+        justify-self: start;
+      }
+    }
+  }
+
+  .blocContainer {
+    grid-area: blocs;
+    justify-self: stretch;
+    display: grid;
+    padding: 0 2rem;
+    gap: 2rem;
+    grid-template-columns: 32ch 2fr 1fr;
+    grid-template-areas: "current labels confidence" "comments results results";
+  }
+
+  .downloadButtons {
+    grid-area: download;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    grid-auto-flow: column;
+  }
+}

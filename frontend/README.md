@@ -46,18 +46,6 @@ Then, it must be imported into the application css:
 npm install react-bootstrap
 ```
 
-- [react-confirm](https://github.com/haradakunihiko/react-confirm) - v0.3.0
-
-```bash
-npm install react-confirm
-```
-
-- [superagent](https://github.com/ladjs/superagent) - v8.1.2
-
-```bash
-npm install superagent
-npm install --save-dev @types/superagent
-```
 
 - [uuid](https://github.com/uuidjs/uuid) - v9.0.1
 

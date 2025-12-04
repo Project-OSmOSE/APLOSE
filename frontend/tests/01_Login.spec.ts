@@ -1,34 +1,57 @@
-import { ESSENTIAL, expect, test } from './utils';
-import { LoginPage } from './utils/pages';
-import { AUTH } from './fixtures';
+import { essentialTag, expect, test } from './utils';
+import { interceptRequests, PASSWORD } from './utils/mock';
+import { TOKEN_ERROR } from './utils/mock/auth';
+import type { UserType } from './utils/mock/types';
+import type { Params } from './utils/types';
 
-test('Login - Unauthorized', ESSENTIAL, async ({ page }) => {
-  await page.login.go();
-  await page.login.fillForm();
-  await page.login.submit({ status: 401, submitAction: 'button' });
-  await expect(page.getByText(LoginPage.SERVER_ERROR)).toBeVisible();
-})
 
-test('Login - Success', ESSENTIAL, async ({ page }) => {
-  await page.login.go();
-  await page.login.fillForm();
-  await page.mock.userSelf('annotator')
-  const request = await page.login.submit({ status: 200, submitAction: 'button' });
-  expect(await request.postDataJSON()).toEqual({
-    username: AUTH.username,
-    password: AUTH.password
-  })
-  await expect(page.getByRole('heading', { name: 'Annotation Campaigns' })).toBeVisible();
-})
+// Utils
+const TEST = {
+  canLogin: ({ as, method, tag }: Pick<Params, 'as' | 'method' | 'tag'>) =>
+    test(`Can login as ${ as } using ${ method }`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        token: 'success',
+      })
 
-test('Login - Success with Enter key', ESSENTIAL, async ({ page }) => {
-  await page.login.go();
-  await page.login.fillForm();
-  await page.mock.userSelf('annotator')
-  const request = await page.login.submit({ status: 200, submitAction: 'enterKey' });
-  expect(await request.postDataJSON()).toEqual({
-    username: AUTH.username,
-    password: AUTH.password
-  })
-  await expect(page.getByRole('heading', { name: 'Annotation Campaigns' })).toBeVisible();
+      await test.step(`Navigate`, () => page.login.go());
+
+      await test.step('Fill form', () => page.login.fillForm({ as }))
+
+      const request = await test.step('Submit', () => page.login.submit({ method }))
+
+      expect(await request.postDataJSON()).toEqual({
+        username: as,
+        password: PASSWORD,
+      })
+      await expect(page.getByRole('heading', { name: 'Annotation Campaigns' })).toBeVisible();
+    }),
+
+  canSeeErrors: ({ as, method, tag }: Pick<Params, 'as' | 'method' | 'tag'>) =>
+    test(`Can see errors on failed submit as ${ as } using ${ method }`, { tag }, async ({ page }) => {
+      await interceptRequests(page, {
+        getCurrentUser: as,
+        token: 'forbidden',
+      })
+
+      await test.step(`Navigate`, () => page.login.go());
+
+      await test.step('Fill form', () => page.login.fillForm({ as }))
+
+      await test.step('Submit', () => page.login.submit({ method }))
+
+      await expect(page.getByText(TOKEN_ERROR)).toBeVisible();
+    }),
+}
+
+// Tests
+
+test.describe('[Login]', () => {
+  const as: UserType = 'annotator'
+
+  TEST.canLogin({ as, method: 'mouse', tag: essentialTag })
+  TEST.canLogin({ as, method: 'shortcut' })
+
+  TEST.canSeeErrors({ as, method: 'mouse', tag: essentialTag })
+  TEST.canSeeErrors({ as, method: 'shortcut' })
 })

@@ -2,30 +2,30 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   schema: 'schema.graphql',
-  documents: "src/features/**/*.graphql",
+  documents: "src/api/**/*.graphql",
   ignoreNoDocuments: true,
   watch: true,
   generates: {
-    'src/features/gql/types.generated.ts': {
+    'src/api/types.gql-generated.ts': {
       plugins: [ 'typescript' ],
     },
     'src/': {
       preset: 'near-operation-file',
       presetConfig: {
-        baseTypesPath: '/features/gql/types.generated.ts',
+        baseTypesPath: '/api/types.gql-generated.ts',
       },
       plugins: [
         'typescript-operations',
         {
           'typescript-rtk-query': {
-            importBaseApiFrom: '@/features/gql/baseApi.ts',
+            importBaseApiFrom: '@/api/baseGqlApi',
             importBaseApiAlternateName: 'gqlAPI',
           }
         }
       ],
     },
     '.introspection.json': {
-      plugins: ['introspection']
+      plugins: [ 'introspection' ]
     }
   },
 }

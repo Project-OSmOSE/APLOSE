@@ -1,16 +1,16 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import styles from "./panel.module.scss";
-import { IoClose, IoFunnel, IoFunnelOutline, IoRefresh } from "react-icons/io5";
-import { FilterRef, SampleRateFilter } from "./Filters";
-import { Deployment } from "../../../pages/Projects/ProjectDetail/ProjectDetail";
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import styles from './panel.module.scss';
+import { IoClose, IoFunnel, IoFunnelOutline, IoRefresh } from 'react-icons/io5';
+import { FilterRef, SampleRateFilter } from './Filters';
+import { type LightDeployment } from '../../../pages/Projects/ProjectDetail/ProjectDetail';
 
 type FilterProps = {
-  allDeployments: Array<Deployment>,
-  onFilter: (filteredDeployments: Array<Deployment>) => void
+  allDeployments: Array<LightDeployment>,
+  onFilter: (filteredDeployments: Array<LightDeployment>) => void
 }
 export const FilterPanel: React.FC<FilterProps> = ({
                                                      allDeployments,
-                                                     onFilter
+                                                     onFilter,
                                                    }) => {
   const [ isOpen, setIsOpen ] = useState<boolean>(false);
 

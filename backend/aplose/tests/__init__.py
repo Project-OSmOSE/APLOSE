@@ -1,2 +1,2 @@
 """APLOSE tests"""
-from .views import *
+from .schema import *

@@ -2,3 +2,7 @@
   pk: 1
   fields:
     name: Detector 1
+- model: api.detector
+  pk: 2
+  fields:
+    name: Detector 2

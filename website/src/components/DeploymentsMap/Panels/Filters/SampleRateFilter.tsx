@@ -6,14 +6,14 @@ import React, {
   useImperativeHandle,
   useMemo,
   useRef,
-  useState
-} from "react";
-import { RangeSlider } from "../../../Inputs/RangeSlider";
-import { FilterRef } from "./FilterRef";
-import { Deployment } from "../../../../pages/Projects/ProjectDetail/ProjectDetail";
+  useState,
+} from 'react';
+import { RangeSlider } from '../../../Inputs/RangeSlider';
+import { FilterRef } from './FilterRef';
+import { Deployment, type LightDeployment } from '../../../../pages/Projects/ProjectDetail/ProjectDetail';
 
 export const SampleRateFilter = React.forwardRef<FilterRef, {
-  deployments: Array<Deployment>,
+  deployments: Array<LightDeployment>,
   onUpdates: () => void;
 }>(({ deployments, onUpdates }, ref) => {
   const minInput = useRef<HTMLInputElement | null>(null);
@@ -69,7 +69,7 @@ export const SampleRateFilter = React.forwardRef<FilterRef, {
   }, [ greatestSampleRate, minSampleRate ])
 
   const forwardedRef = useMemo(() => ({
-    filterDeployment: (d: Deployment) => {
+    filterDeployment: (d: LightDeployment) => {
       return !!d.channelConfigurations.edges
         .map(e => e?.node?.recorderSpecification?.samplingFrequency)
         .filter(f => f !== undefined)

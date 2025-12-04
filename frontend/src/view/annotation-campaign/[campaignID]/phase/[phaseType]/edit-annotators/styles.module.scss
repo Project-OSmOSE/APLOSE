@@ -1,0 +1,60 @@
+
+.annotators {
+  width: 36rem;
+  justify-self: center;
+  height: 100%;
+  overflow: auto;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+
+  .table {
+    align-content: start;
+  }
+
+  b {
+    font-weight: 600;
+  }
+
+  p .separator:last-child {
+    display: none;
+  }
+
+  .buttons {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas: "back spinner create";
+    align-items: center;
+
+    ion-spinner {
+      grid-area: spinner;
+    }
+
+    ion-button:first-child {
+      grid-area: back;
+      justify-self: start;
+    }
+
+    ion-button:last-child {
+      grid-area: create;
+      justify-self: end;
+    }
+  }
+
+  &.initial .importBloc {
+    align-self: stretch;
+    grid-template-rows: auto 1fr;
+  }
+
+  &.loaded {
+    grid-template-rows: auto auto 1fr auto;
+
+    &.withConfig {
+      grid-template-rows: auto auto auto 1fr auto;
+    }
+  }
+
+  .fileRangeHead {
+    grid-auto-flow: row;
+    gap: 0;
+  }
+}

@@ -11,7 +11,6 @@ class FFTAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "nfft",
-        "window",
         "window_size",
         "overlap",
         "sampling_frequency",

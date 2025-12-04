@@ -1,0 +1,58 @@
+.phase {
+  display: grid;
+  gap: 1.5rem;
+  height: 100%;
+  overflow: hidden;
+
+  .progress {
+    display: grid;
+    gap: 2rem;
+
+    grid-auto-flow: column;
+    justify-content: center;
+  }
+
+  .filterButtons {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 1rem;
+  }
+
+  .tasks {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+    align-items: start;
+    grid-template-rows: auto 1fr;
+    min-height: 0;
+    max-height: 100%;
+    overflow: auto;
+
+    &.empty {
+      grid-template-rows: auto auto 1fr;
+    }
+
+    .filesTable ion-button {
+      --padding-top: 0 !important;
+      --padding-bottom: 0 !important;
+    }
+
+    ion-spinner {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.filterModal {
+  overflow: visible !important;
+
+  > * {
+    overflow: visible !important;
+  }
+}
+
+.dateFilterModal {
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  column-gap: 0.5rem !important;
+}

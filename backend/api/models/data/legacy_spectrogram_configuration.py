@@ -34,6 +34,11 @@ class LegacySpectrogramConfiguration(models.Model):
     def __str__(self):
         return self.folder
 
+    spectrogram_analysis = models.OneToOneField(
+        "SpectrogramAnalysis",
+        on_delete=models.CASCADE,
+        related_name="legacy_configuration",
+    )
     folder = models.CharField(max_length=255)
     audio_files_subtypes = ArrayField(
         models.CharField(max_length=255), blank=True, null=True

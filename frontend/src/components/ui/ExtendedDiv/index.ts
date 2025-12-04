@@ -1,3 +1,4 @@
-export {
-  Extended as ExtendedDiv,
-} from './Extended'
+export * from './DraggableDiv'
+export * from './ExtendedDiv'
+export * from './Handles'
+export * from './ResizableDiv'

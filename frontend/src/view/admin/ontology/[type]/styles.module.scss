@@ -1,0 +1,7 @@
+.tabContent {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+}

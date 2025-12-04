@@ -1,0 +1,13 @@
+query listLabelSets {
+    allLabelSets {
+        results {
+            id
+            name
+            description
+            labels {
+                id
+                name
+            }
+        }
+    }
+}

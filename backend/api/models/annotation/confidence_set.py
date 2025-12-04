@@ -1,6 +1,6 @@
 """Confidence model"""
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 
 from .confidence import Confidence
 
@@ -27,6 +27,23 @@ class ConfidenceSet(models.Model):
     #  def max_level(self):
     #      """Give the max level among confidence indicators"""
     #      return max(i.level for i in self.confidence_indicators.all())
+
+    @staticmethod
+    def create_for_campaign(
+        campaign: "AnnotationCampaign",
+        confidences: QuerySet[Confidence] = Confidence.objects.none(),
+        index: int = 0,
+    ):
+        """Recover new confidence set based on the campaign name"""
+        real_name = campaign.name if index == 0 else f"{campaign.name} ({index})"
+        if ConfidenceSet.objects.filter(name=real_name).exists():
+            return ConfidenceSet.create_for_campaign(campaign, confidences, index + 1)
+        confidence_set: ConfidenceSet = ConfidenceSet.objects.create(name=real_name)
+        for confidence in confidences.all():
+            ConfidenceIndicatorSetIndicator.objects.create(
+                confidence_set=confidence_set, confidence=confidence
+            )
+        return confidence_set
 
 
 class ConfidenceIndicatorSetIndicator(models.Model):

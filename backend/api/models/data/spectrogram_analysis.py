@@ -1,11 +1,12 @@
 """Spectrogram analysis model"""
 import csv
-import json
-from datetime import datetime
+from ast import literal_eval
+from datetime import datetime, timezone
 from os.path import join
 from pathlib import Path
 from typing import Optional
 
+from dateutil import parser
 from django.conf import settings
 from django.db import models
 from django.db.models import CheckConstraint, Q, Manager
@@ -21,7 +22,7 @@ from .legacy_spectrogram_configuration import LegacySpectrogramConfiguration
 from .scales import get_frequency_scales, LinearScale, MultiLinearScale
 
 
-class SpectrogramAnalysisManager(Manager):  # pylint: disable=too-few-public-methods
+class SpectrogramAnalysisManager(Manager):
     """Spectrogram analysis manager"""
 
     def import_for_dataset(
@@ -65,47 +66,51 @@ class SpectrogramAnalysisManager(Manager):  # pylint: disable=too-few-public-met
                     spectro["custom_frequency_scale"],
                     int(audio["dataset_sr"]),
                 )
-            return SpectrogramAnalysis.objects.create(
+            sa = SpectrogramAnalysis.objects.create(
                 dataset=dataset,
                 name=name,
                 path=path,
-                start_date=datetime.fromisoformat(audio["start_date"]),
-                end_date=datetime.fromisoformat(audio["end_date"]),
+                start=datetime.fromisoformat(audio["start_date"]),
+                end=datetime.fromisoformat(audio["end_date"]),
                 data_duration=int(audio["audio_file_dataset_duration"]),
                 fft=fft,
-                legacy_configuration=LegacySpectrogramConfiguration.objects.create(
-                    folder=Path(path).parts[-1],
-                    zoom_level=spectro["zoom_level"],
-                    hp_filter_min_frequency=spectro["hp_filter_min_freq"],
-                    data_normalization=spectro["data_normalization"],
-                    spectrogram_normalization=spectro["spectro_normalization"],
-                    zscore_duration=spectro["zscore_duration"]
-                    if spectro["data_normalization"] == "zscore"
-                    else None,
-                    window_type=spectro["window_type"],
-                    peak_voltage=spectro["peak_voltage"]
-                    if spectro["data_normalization"] == "instrument"
-                    and "peak_voltage" in spectro
-                    else None,
-                    sensitivity_dB=spectro["sensitivity_dB"]
-                    if spectro["data_normalization"] == "instrument"
-                    and "sensitivity_dB" in spectro
-                    else None,
-                    frequency_resolution=spectro["frequency_resolution"]
-                    if "frequency_resolution" in spectro
-                    else None,
-                    temporal_resolution=spectro["temporal_resolution"]
-                    if "temporal_resolution" in spectro
-                    else None,
-                    linear_frequency_scale=custom_frequency_scale[0],
-                    multi_linear_frequency_scale=custom_frequency_scale[1],
-                ),
                 colormap=colormap,
                 dynamic_min=int(spectro["dynamic_min"]),
                 dynamic_max=int(spectro["dynamic_max"]),
                 owner=owner,
                 legacy=True,
             )
+            LegacySpectrogramConfiguration.objects.create(
+                spectrogram_analysis_id=sa.id,
+                folder=Path(path).parts[-1],
+                zoom_level=spectro["zoom_level"],
+                hp_filter_min_frequency=spectro["hp_filter_min_freq"],
+                data_normalization=spectro["data_normalization"],
+                spectrogram_normalization=spectro["spectro_normalization"],
+                zscore_duration=spectro["zscore_duration"]
+                if spectro["data_normalization"] == "zscore"
+                else None,
+                window_type=spectro["window_type"],
+                peak_voltage=spectro["peak_voltage"]
+                if spectro["data_normalization"] == "instrument"
+                and "peak_voltage" in spectro
+                else None,
+                sensitivity_dB=spectro["sensitivity_dB"]
+                if spectro["data_normalization"] == "instrument"
+                and "sensitivity_dB" in spectro
+                else None,
+                frequency_resolution=spectro["frequency_resolution"]
+                if "frequency_resolution" in spectro
+                else None,
+                temporal_resolution=spectro["temporal_resolution"]
+                if "temporal_resolution" in spectro
+                else None,
+                linear_frequency_scale=custom_frequency_scale[0],
+                multi_linear_frequency_scale=custom_frequency_scale[1],
+                audio_files_subtypes=literal_eval(audio["sample_bits"]),
+                channel_count=audio["channel_count"],
+            )
+            return sa
 
         sd = SpectroDataset.from_json(
             Path(
@@ -122,19 +127,19 @@ class SpectrogramAnalysisManager(Manager):  # pylint: disable=too-few-public-met
         dynamic_max = [d.v_lim[1] for d in sd.data]
         fft, _ = FFT.objects.get_or_create(
             nfft=sd.fft.mfft,
-            window=json.dumps(list(sd.fft.win)),
             window_size=sd.fft.win.size,
             overlap=1 - (sd.fft.hop / sd.fft.win.size),
             sampling_frequency=sd.fft.fs,
             scaling=sd.fft.scaling,
+            legacy=False,
         )
         return SpectrogramAnalysis.objects.create(
             dataset=dataset,
             name=sd.name,
             path=str(sd.folder).split(dataset.path)[1].strip("\\").strip("/"),
             owner=owner,
-            start_date=sd.begin,
-            end_date=sd.end,
+            start=sd.begin.tz_convert(timezone.utc),
+            end=sd.end.tz_convert(timezone.utc),
             data_duration=sd.data_duration.seconds,
             fft=fft,
             colormap=colormap,
@@ -153,11 +158,13 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
         constraints = [
             CheckConstraint(
                 name="spectrogram_analysis_legacy",
-                check=Q(legacy=False, data_duration__isnull=False)
-                | Q(legacy=True, legacy_configuration__isnull=False),
+                check=Q(legacy=True) | Q(legacy=False, data_duration__isnull=False),
             )
         ]
         ordering = ("-created_at",)
+
+    def __str__(self):
+        return f"{self.dataset}: {self.fft}"
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -181,33 +188,14 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
     colormap = models.ForeignKey(
         Colormap, on_delete=models.PROTECT, related_name="spectrogram_analysis"
     )
-    legacy_configuration = models.ForeignKey(
-        LegacySpectrogramConfiguration,
-        on_delete=models.PROTECT,
-        related_name="spectrogram_analysis",
-        blank=True,
-        null=True,
-    )
 
     dynamic_min = models.FloatField()
     dynamic_max = models.FloatField()
 
-    # TODO:
-    #  @property
-    #  def full_spectrogram_path(self) -> Path:
-    #      """Return full image path"""
-    #      return Path(
-    #          join(
-    #              str(settings.DATASET_IMPORT_FOLDER),
-    #              self.dataset.path,
-    #              self.path,
-    #              "spectrogram" if not self.legacy else "image",
-    #          )
-    #      )
-
-    @deprecated("Related to legacy OSEkit")
+    @deprecated("Related to legacy OSEkit")  # Legacy
     def legacy_audio_metadatum_csv(self) -> str:
         """Legacy audio metadata CSV export"""
+        # pylint: disable=no-member
         header = [
             "dataset",
             "analysis",
@@ -236,11 +224,15 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
                 metadatum_data.append(str(self.spectrograms.count()))
             elif label == "start_date":
                 metadatum_data.append(
-                    str(min(*self.spectrograms.values_list("start", flat=True)))
+                    parser.parse(
+                        str(min(*self.spectrograms.values_list("start", flat=True)))
+                    ).isoformat()
                 )
             elif label == "end_date":
                 metadatum_data.append(
-                    str(max(*self.spectrograms.values_list("end", flat=True)))
+                    parser.parse(
+                        str(max(*self.spectrograms.values_list("end", flat=True)))
+                    ).isoformat()
                 )
             elif label == "dataset_sr":
                 metadatum_data.append(str(self.fft.sampling_frequency))
@@ -250,9 +242,10 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
 
         return "\n".join([",".join(line) for line in data])
 
-    @deprecated("Related to legacy OSEkit")
+    @deprecated("Related to legacy OSEkit")  # Legacy
     def legacy_spectrogram_configuration_csv(self) -> str:
         """Legacy spectrogram configuration CSV export"""
+        # pylint: disable=no-member
 
         header = [
             "dataset_name",
@@ -325,12 +318,16 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
     def get_osekit_spectro_dataset(self) -> SpectroDataset:
         """Get OSEkit dataset object"""
         return SpectroDataset.from_json(
-            Path(
-                join(
-                    str(settings.DATASET_IMPORT_FOLDER),
-                    self.dataset.path,
-                    self.path,
-                    f"{self.name}.json",
-                )
+            self.get_osekit_spectro_dataset_serialized_path()
+        )
+
+    def get_osekit_spectro_dataset_serialized_path(self) -> Path:
+        """Get OSEkit dataset object"""
+        return Path(
+            join(
+                str(settings.DATASET_IMPORT_FOLDER),
+                self.dataset.path,
+                self.path,
+                f"{self.name}.json",
             )
         )

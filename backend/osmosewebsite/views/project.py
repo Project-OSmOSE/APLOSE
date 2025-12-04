@@ -38,7 +38,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @decorators.action(detail=True)
     def deployments(self, request, pk):
         """List all deployments"""
-        # pylint: disable=unused-argument
         project: Project = self.get_object()
         queryset = self.deployments_queryset.filter(
             project_id=project.metadatax_project_id,

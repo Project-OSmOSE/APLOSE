@@ -1,14 +1,15 @@
-import React, { CSSProperties, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { IonNote } from "@ionic/react";
-import styles from './ui.module.scss'
-import { createPortal } from "react-dom";
-import { MOUSE_MOVE_EVENT, useEvent } from "@/service/events";
+import React, { CSSProperties, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { IonNote } from '@ionic/react';
 import { v4 as uuidv4 } from 'uuid';
-import { usePopover } from "@/service/ui/popover.ts";
+import { MOUSE_MOVE_EVENT, useEvent } from '@/features/UX/Events';
+import { usePopover } from '@/components/ui';
+import styles from './ui.module.scss'
+
 
 export const TooltipOverlay: React.FC<{
   children: ReactNode;
-  tooltipContent: ReactNode;
+  tooltipContent: ReactNode | string;
   title?: string;
   anchor?: 'left' | 'right'
 }> = ({ children, tooltipContent, title, anchor = 'left' }) => {
@@ -41,7 +42,7 @@ export const TooltipOverlay: React.FC<{
     const isOverContainer = elements.some(e => e instanceof HTMLDivElement && e.id === containerID);
     if (isOverContainer) setIsOpen(true);
     else setIsShown(false)
-  }, [ containerID ]);
+  }, [ containerID, setIsShown ]);
   useEvent(MOUSE_MOVE_EVENT, onMouseMove);
 
   return <div ref={ containerRef } id={ containerID }>

@@ -6,16 +6,18 @@ from pathlib import Path
 
 from django.conf import settings
 from django.db import models
-from django.db.models import Q, F, Manager
+from django.db.models import Q, F, Manager, QuerySet
 from metadatax.data.models import FileFormat
 from osekit.config import TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
+from osekit.core_api.spectro_data import SpectroData
+from osekit.core_api.spectro_dataset import SpectroDataset
 
 from .__abstract_file import AbstractFile
 from .__abstract_time_segment import TimeSegment
 from .spectrogram_analysis import SpectrogramAnalysis
 
 
-class SpectrogramManager(Manager):  # pylint: disable=too-few-public-methods
+class SpectrogramManager(Manager):
     """Spectrogram manager"""
 
     def import_all_for_analysis(self, analysis: SpectrogramAnalysis) -> ["Spectrogram"]:
@@ -114,6 +116,24 @@ class SpectrogramManager(Manager):  # pylint: disable=too-few-public-methods
         Spectrogram.analysis.through.objects.bulk_create(spectrogram_analysis_rel)
         return spectrograms
 
+    def filter_for_file_range(self, file_range: "AnnotationFileRange"):
+        """Get files for a given file range"""
+        return self.filter(
+            analysis__dataset_id=file_range.annotation_phase.annotation_campaign.dataset_id,
+            start__gte=file_range.from_datetime,
+            end__lte=file_range.to_datetime,
+        )
+
+    def filter_matches_time_range(
+        self, start: datetime, end: datetime
+    ) -> QuerySet["Spectrogram"]:
+        """Get files from absolute start and ends"""
+        return self.filter(
+            Q(start__lte=start, end__gt=start)
+            | Q(start__gte=start, end__lte=end)
+            | Q(start__lt=end, end__gte=end)
+        ).order_by("start", "id")
+
 
 class Spectrogram(AbstractFile, TimeSegment, models.Model):
     """Spectrogram model"""
@@ -132,3 +152,7 @@ class Spectrogram(AbstractFile, TimeSegment, models.Model):
         return f"{self.filename}.{self.format}"
 
     analysis = models.ManyToManyField(SpectrogramAnalysis, related_name="spectrograms")
+
+    def get_spectro_data_for(self, analysis: SpectrogramAnalysis) -> SpectroData:
+        spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
+        return [d for d in spectro_dataset.data if d.name == self.filename].pop()

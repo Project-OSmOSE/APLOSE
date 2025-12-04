@@ -1,31 +1,118 @@
-import React, { Fragment, useEffect, useMemo, useState } from "react";
-import { IoCaretUp, IoClose, IoDownloadOutline, IoOpenOutline } from "react-icons/io5";
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import { IoCaretUp, IoClose, IoDownloadOutline, IoOpenOutline } from 'react-icons/io5';
 import styles from './panel.module.scss'
-import { useFetchGql } from "../../../utils";
-import { gql } from "graphql-request";
+import { useFetchGql } from '../../../utils';
+import { gql } from 'graphql-request';
 import { Deployment } from '../../../pages/Projects/ProjectDetail/ProjectDetail'
-import { ContactLink, InstitutionLink } from "../ContactLink";
+import { ContactLink, InstitutionLink } from '../ContactLink';
 
+type Label = {
+  id: string,
+  name: string,
+  uses: number
+}
 export const DeploymentPanel: React.FC<{
-  deployment: Deployment | undefined,
+  deploymentID: string;
   onClose: () => void,
   disableProjectLink?: boolean;
 }> = ({
-        deployment,
+        deploymentID,
         onClose,
         disableProjectLink = false,
       }) => {
 
-  const [ labels, setLabels ] = useState<Array<any>>([]);
+  const [ deployment, setDeployment ] = useState<Deployment | undefined>();
+  const [ labels, setLabels ] = useState<Array<Label>>([]);
   const isOpenAccess = useMemo(() => deployment?.project.accessibility === 'Open access', [ deployment ]);
     const fetchLabels = useFetchGql(gql`
         query {
-            allApiLabels(annotationresult_AnnotationCampaignPhase_AnnotationCampaign_Datasets_RelatedChannelConfiguration_DeploymentId: ${ deployment?.id }, orderBy: "id") {
+            annotationLabelsForDeploymentId(deploymentId: ${deploymentID}) {
                 results {
                     id
                     name
-                    annotationresultSet(annotationCampaignPhase_AnnotationCampaign_Datasets_RelatedChannelConfiguration_DeploymentId: ${deployment?.id}) {
-                        totalCount
+                    uses(deploymentId: ${deploymentID})
+                }
+            }
+        }
+    `)
+    const fetchDeployment = useFetchGql(gql`
+        query {
+            deploymentById(id: ${deploymentID}) {
+                id
+                name
+                latitude
+                longitude
+                project {
+                    id
+                    name
+                    accessibility
+                    projectGoal
+                    contacts {
+                        edges {
+                            node {
+                                id
+                                role
+                                contact {
+                                    id
+                                    firstName
+                                    lastName
+                                    website
+                                }
+                                institution {
+                                    id
+                                    name
+                                    website
+                                }
+                            }
+                        }
+                    }
+                }
+                site {
+                    id
+                    name
+                }
+                campaign {
+                    id
+                    name
+                }
+                platform {
+                    id
+                    name
+                }
+                deploymentDate
+                deploymentVessel
+                recoveryDate
+                recoveryVessel
+                bathymetricDepth
+                description
+                contacts {
+                    edges {
+                        node {
+                            id
+                            role
+                            contact {
+                                id
+                                firstName
+                                lastName
+                                website
+                            }
+                            institution {
+                                id
+                                name
+                                website
+                            }
+                        }
+                    }
+                }
+                channelConfigurations {
+                    edges {
+                        node {
+                            id
+                            recorderSpecification {
+                                id
+                                samplingFrequency
+                            }
+                        }
                     }
                 }
             }
@@ -33,9 +120,14 @@ export const DeploymentPanel: React.FC<{
     `)
 
   useEffect(() => {
+    if (!deploymentID) return;
+    fetchDeployment().then((data: any) => setDeployment(data?.deploymentById))
+  }, [ deploymentID ]);
+
+  useEffect(() => {
     if (!deployment) return;
     fetchLabels().then((data: any) => {
-      setLabels((data?.allApiLabels?.results ?? []).filter((d: any) => !!d) as Deployment[])
+      setLabels((data?.annotationLabelsForDeploymentId?.results ?? []).filter((d: any) => !!d) as Label[])
     })
   }, [ deployment ]);
 
@@ -94,13 +186,13 @@ const DownloadAction: React.FC<{ deployment: Deployment }> = ({ deployment }) =>
 
 const Project: React.FC<{ project: Deployment['project'], disableProjectLink: boolean }> = ({
                                                                                               project,
-                                                                                              disableProjectLink
+                                                                                              disableProjectLink,
                                                                                             }) => {
   return <Fragment>
     <small>Project</small>
     <p>
       { project.name }
-      { !!(project as any).websiteProject &&
+      { !!(project as any).websiteProject && !disableProjectLink &&
           <a href={ `/projects/${ (project as any).websiteProject.id }` }> <IoOpenOutline/> </a> }
       { project.projectGoal && <Fragment>
           <br/>
@@ -176,13 +268,13 @@ const Platform: React.FC<{ platform: Deployment['platform'] }> = ({ platform }) 
   </Fragment>
 }
 
-const Labels: React.FC<{ labels?: any[] }> = ({ labels }) => {
+const Labels: React.FC<{ labels?: Label[] }> = ({ labels }) => {
   if (!labels || labels.length === 0) return <Fragment/>
   return <Fragment>
     <small>Labels</small>
     <p>
       { labels.map((label: any) => <span key={ label.id }>
-        { label.name } ({ label.annotationresultSet.totalCount })
+        { label.name } ({ label.uses })
         <br/>
       </span>) }
     </p>
@@ -199,6 +291,6 @@ const Description: React.FC<{ description: Deployment['description'] }> = ({ des
     </small>
     <p onClick={ _ => isOpen ? null : setIsOpen(true) }
        className={ isOpen ? '' : styles.dropDownClosed }
-       dangerouslySetInnerHTML={ { __html: description.split(/[\n\r]/g).filter(e => !!e).join("<br/>") } }/>
+       dangerouslySetInnerHTML={ { __html: description.split(/[\n\r]/g).filter(e => !!e).join('<br/>') } }/>
   </Fragment>
 }

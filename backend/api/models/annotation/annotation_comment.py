@@ -33,3 +33,5 @@ class AnnotationComment(models.Model):
     spectrogram = models.ForeignKey(
         Spectrogram, on_delete=models.CASCADE, related_name="annotation_comments"
     )
+
+    created_at = models.DateTimeField(auto_now_add=True)

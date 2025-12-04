@@ -2,7 +2,6 @@
 from django.conf import settings
 from django.db import models
 
-from .annotation_phase import AnnotationPhase
 from ..common import Session
 from ..data import Spectrogram
 
@@ -26,7 +25,7 @@ class AnnotationTask(models.Model):
     status = models.TextField(choices=Status.choices, default=Status.CREATED)
 
     annotation_phase = models.ForeignKey(
-        AnnotationPhase, on_delete=models.CASCADE, related_name="annotation_tasks"
+        "AnnotationPhase", on_delete=models.CASCADE, related_name="annotation_tasks"
     )
     annotator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -40,6 +39,27 @@ class AnnotationTask(models.Model):
     sessions = models.ManyToManyField(
         Session, related_name="annotation_tasks", through="AnnotationTaskSession"
     )
+
+    @property
+    def annotations(self):
+        """Annotations linked to this task"""
+        # pylint: disable=no-member
+        if self.annotation_phase.phase == "A":
+            return self.spectrogram.annotations.filter(
+                annotation_phase=self.annotation_phase,
+                annotator=self.annotator,
+            )
+        return self.spectrogram.annotations.filter(
+            annotation_phase=self.annotation_phase,
+        )
+
+    @property
+    def comments(self):
+        """Recover task comments"""
+        return self.spectrogram.annotation_comments.filter(
+            annotation_phase=self.annotation_phase,
+            annotation__isnull=True,
+        )
 
 
 class AnnotationTaskSession(models.Model):

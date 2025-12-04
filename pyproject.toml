@@ -19,11 +19,12 @@ python-dateutil = ">=2.4"
 metadatax = {url = "https://github.com/PAM-Standardization/metadatax/releases/download/v0.4.13/metadatax-0.4.13.tar.gz"}
 #metadatax = {path = "../metadatax", develop=true}
 whitenoise = "^6.9.0"
-osekit = "^0.2.5"
+osekit = "^0.4.0"
 graphene-django = "^3.2.3"
 graphene-django-pagination = {url = "https://github.com/instruct-br/graphene-django-pagination/archive/master.zip"}
 django-filter = ">=2"
 graphene-django-optimizer = "^0.10.0"
+django-graphene-auth = "^1.1.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
@@ -48,7 +49,22 @@ omit = ["backend/asgi.py", "backend/wsgi.py", "backend/settings/*", "backend/api
 show_missing = true
 
 [tool.pylint.messages_control]
-disable = ["too-many-ancestors", ]
+disable = [
+    "too-many-ancestors",
+    "too-many-arguments",
+    "too-many-positional-arguments",
+    "too-many-branches",
+    "too-many-function-args",
+    "arguments-renamed",
+    "arguments-differ",
+    "missing-module-docstring",
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "too-few-public-methods",
+    "redefined-builtin",
+    "unused-argument",
+    "no-member",
+]
 
 
 [tool.pylint.MASTER]

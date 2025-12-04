@@ -1,5 +1,4 @@
 """Tests for SQL ViewSet"""
-# pylint: disable=missing-class-docstring, missing-function-docstring
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
