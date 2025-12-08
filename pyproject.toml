@@ -19,7 +19,6 @@ python-dateutil = ">=2.4"
 metadatax = {url = "https://github.com/PAM-Standardization/metadatax/releases/download/v0.4.13/metadatax-0.4.13.tar.gz"}
 #metadatax = {path = "../metadatax", develop=true}
 whitenoise = "^6.9.0"
-# TODO: Update to next OSEkit
 osekit = "^0.4.1"
 #osekit = {path = "./OSEkit", develop=true}
 graphene-django = "^3.2.3"

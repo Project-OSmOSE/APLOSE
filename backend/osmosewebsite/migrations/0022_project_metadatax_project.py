@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("metadatax", "0022_auto_20240911_1902"),
+        ("acquisition", "0004_project_related_bibliography"),
         ("osmosewebsite", "0021_auto_20240909_0918"),
     ]
 
