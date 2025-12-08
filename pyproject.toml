@@ -20,7 +20,7 @@ metadatax = {url = "https://github.com/PAM-Standardization/metadatax/releases/do
 #metadatax = {path = "../metadatax", develop=true}
 whitenoise = "^6.9.0"
 # TODO: Update to next OSEkit
-osekit = "^0.4.0"
+osekit = "^0.4.1"
 #osekit = {path = "./OSEkit", develop=true}
 graphene-django = "^3.2.3"
 graphene-django-pagination = {url = "https://github.com/instruct-br/graphene-django-pagination/archive/master.zip"}
