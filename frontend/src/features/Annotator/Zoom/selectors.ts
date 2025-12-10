@@ -25,7 +25,7 @@ export const selectMaxZoom = createSelector(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (_state: AppState, _campaignID?: string) => undefined,
   ],
-  (analysis) => analysis?.legacyConfiguration?.zoomLevel ?? 1,
+  (analysis) => analysis?.legacyConfiguration?.zoomLevel ?? 0,
 )
 
 export const selectZoomInLevel = createSelector(
