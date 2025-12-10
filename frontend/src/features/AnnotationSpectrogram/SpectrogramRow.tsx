@@ -11,6 +11,7 @@ import { Button, TableContent, TableDivider } from '@/components/ui';
 import { IonIcon } from '@ionic/react';
 import { checkmarkCircle, chevronForwardOutline, ellipseOutline } from 'ionicons/icons/index.js';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
+import { formatTime } from '@/service/function';
 
 export const SpectrogramRow: React.FC<{
   spectrogram: Pick<AnnotationSpectrogramNode, 'id' | 'filename' | 'duration' | 'start'>,
@@ -23,12 +24,11 @@ export const SpectrogramRow: React.FC<{
 
   const submitted = useMemo(() => task?.status === AnnotationTaskStatus.Finished, [ task ])
   const start = useMemo(() => new Date(spectrogram.start), [ spectrogram ])
-  const duration = useMemo(() => new Date(spectrogram.duration), [ spectrogram ])
 
   return <Fragment>
     <TableContent isFirstColumn={ true } disabled={ submitted }>{ spectrogram.filename }</TableContent>
     <TableContent disabled={ submitted }>{ start.toUTCString() }</TableContent>
-    <TableContent disabled={ submitted }>{ duration.toUTCString().split(' ')[4] }</TableContent>
+    <TableContent disabled={ submitted }>{ formatTime(spectrogram.duration) }</TableContent>
     <TableContent disabled={ submitted }>{ annotations?.totalCount ?? 0 }</TableContent>
     { phase?.phase == 'Verification' &&
         <TableContent disabled={ submitted }>{ validatedAnnotations?.totalCount ?? 0 }</TableContent> }
