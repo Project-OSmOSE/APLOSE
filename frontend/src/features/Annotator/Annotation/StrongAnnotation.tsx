@@ -8,7 +8,7 @@ import { AnnotationType, useAnnotationTask } from '@/api';
 import { formatTime } from '@/service/function';
 import { useUpdateAnnotation } from './hooks';
 import { selectAllLabels, selectHiddenLabels } from '@/features/Annotator/Label';
-import { selectCanDraw } from '@/features/Annotator/UX';
+import { selectIsDrawingEnabled } from '@/features/Annotator/UX';
 import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
@@ -23,7 +23,7 @@ export const StrongAnnotation: React.FC<{
   const updateAnnotation = useUpdateAnnotation()
   const allLabels = useAppSelector(selectAllLabels)
   const hiddenLabels = useAppSelector(selectHiddenLabels)
-  const canDraw = useAppSelector(selectCanDraw)
+  const isDrawingEnabled = useAppSelector(selectIsDrawingEnabled)
   const isActive = useMemo(() => {
     if (!isEditionAuthorized) return false;
     return annotation.id === focusedAnnotation?.id
@@ -124,14 +124,14 @@ export const StrongAnnotation: React.FC<{
       styles.header,
       stickSideClass,
       colorClassName,
-      canDraw ? '' : styles.editDisabled,
+      isDrawingEnabled ? '' : styles.editDisabled,
       top < 24 ? styles.bellow : styles.over,
     ].join(' ')
-  }, [ spectrogram, annotation, colorClassName, canDraw, top ])
+  }, [ spectrogram, annotation, colorClassName, isDrawingEnabled, top ])
 
   if (annotation.type === AnnotationType.Weak) return <Fragment/>
   if (isHidden) return <Fragment/>
-  return <ExtendedDiv resizable={ isActive && canDraw }
+  return <ExtendedDiv resizable={ isActive && isDrawingEnabled }
                       top={ top } left={ left }
                       width={ annotation.type === AnnotationType.Box ? width : undefined }
                       height={ annotation.type === AnnotationType.Box ? height : undefined }
@@ -148,11 +148,11 @@ export const StrongAnnotation: React.FC<{
                         annotation.type === AnnotationType.Box ? styles.annotation : styles.point,
                         colorClassName,
                         isActive ? '' : styles.disabled,
-                        canDraw ? '' : styles.editDisabled,
+                        isDrawingEnabled ? '' : styles.editDisabled,
                       ].join(' ') }>
 
     { (isMouseHover || isActive) &&
-        <ExtendedDiv draggable={ isActive && canDraw }
+        <ExtendedDiv draggable={ isActive && isDrawingEnabled }
                      onTopMove={ onTopMove } onLeftMove={ onLeftMove }
                      onUp={ onValidateMove }
                      onMouseEnter={ () => setIsMouseHover(true) }

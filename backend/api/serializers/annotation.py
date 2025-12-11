@@ -129,7 +129,6 @@ class AnnotationSerializer(serializers.ModelSerializer):
             if float(data["end_frequency"]) > self.fields["end_frequency"].max_value:
                 data["end_frequency"] = self.fields["end_frequency"].max_value
 
-        print(data)
         return super().run_validation(data)
 
     def validate(self, attrs: dict):

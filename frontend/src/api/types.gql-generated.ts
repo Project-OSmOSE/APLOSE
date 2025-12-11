@@ -37,7 +37,6 @@ export type Scalars = {
   HydrophoneDirectivityEnum: { input: any; output: any; }
   /** Django Primary key */
   PK: { input: any; output: any; }
-  RoleEnum: { input: any; output: any; }
   SignalPluralityEnum: { input: any; output: any; }
   SignalShapeEnum: { input: any; output: any; }
   StatusEnum: { input: any; output: any; }
@@ -2148,7 +2147,7 @@ export type ContactNodeRolesArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   projects_Id?: InputMaybe<Scalars['Decimal']['input']>;
   projects_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  role?: InputMaybe<Scalars['RoleEnum']['input']>;
+  role?: InputMaybe<RoleEnum>;
 };
 
 export type ContactNodeConnection = {
@@ -2186,7 +2185,7 @@ export type ContactRoleNode = Node & {
   institution?: Maybe<InstitutionNode>;
   /** Should have at least one 'Main Contact' */
   projects: ProjectNodeOverrideConnection;
-  role?: Maybe<Scalars['RoleEnum']['output']>;
+  role?: Maybe<RoleEnum>;
 };
 
 
@@ -2636,7 +2635,7 @@ export type DeploymentNodeContactsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   projects_Id?: InputMaybe<Scalars['Decimal']['input']>;
   projects_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  role?: InputMaybe<Scalars['RoleEnum']['input']>;
+  role?: InputMaybe<RoleEnum>;
 };
 
 
@@ -3654,7 +3653,7 @@ export type InstitutionNodeRolesArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   projects_Id?: InputMaybe<Scalars['Decimal']['input']>;
   projects_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  role?: InputMaybe<Scalars['RoleEnum']['input']>;
+  role?: InputMaybe<RoleEnum>;
 };
 
 export type InstitutionNodeConnection = {
@@ -4569,7 +4568,7 @@ export type ProjectNodeContactsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   projects_Id?: InputMaybe<Scalars['Decimal']['input']>;
   projects_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  role?: InputMaybe<Scalars['RoleEnum']['input']>;
+  role?: InputMaybe<RoleEnum>;
 };
 
 
@@ -4745,7 +4744,7 @@ export type ProjectNodeOverrideContactsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   projects_Id?: InputMaybe<Scalars['Decimal']['input']>;
   projects_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  role?: InputMaybe<Scalars['RoleEnum']['input']>;
+  role?: InputMaybe<RoleEnum>;
 };
 
 
@@ -5390,7 +5389,7 @@ export type QueryAllContactRolesArgs = {
   ordering?: InputMaybe<Scalars['String']['input']>;
   projects_Id?: InputMaybe<Scalars['Decimal']['input']>;
   projects_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  role?: InputMaybe<Scalars['RoleEnum']['input']>;
+  role?: InputMaybe<RoleEnum>;
 };
 
 
@@ -6493,6 +6492,17 @@ export type RecorderSpecificationNodeNodeConnection = {
   results: Array<Maybe<RecorderSpecificationNode>>;
   totalCount?: Maybe<Scalars['Int']['output']>;
 };
+
+export enum RoleEnum {
+  ContactPoint = 'Contact_Point',
+  DatasetProducer = 'Dataset_Producer',
+  DatasetSupplier = 'Dataset_Supplier',
+  Funder = 'Funder',
+  MainContact = 'Main_Contact',
+  ProductionDatabase = 'Production_Database',
+  ProjectManager = 'Project_Manager',
+  ProjectOwner = 'Project_Owner'
+}
 
 /** From SignalTrend */
 export enum SignalTrendType {

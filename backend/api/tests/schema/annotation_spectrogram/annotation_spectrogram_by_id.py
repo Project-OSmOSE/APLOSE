@@ -122,7 +122,6 @@ class AnnotationSpectrogramByIDTestCase(GraphQLTestCase):
         response = self.query(QUERY, variables=VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
-        print(content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_owner(self):

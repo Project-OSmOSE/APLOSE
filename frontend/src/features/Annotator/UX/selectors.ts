@@ -4,8 +4,17 @@ import { selectFocusLabel } from '@/features/Annotator/Label';
 import { selectAnnotator, selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 
 
-export const selectIsDrawingEnabled = createSelector(
+const _selectIsDrawingEnabled = createSelector(
   selectAnnotator, AnnotatorUXSlice.selectors.selectIsDrawingEnabled,
+)
+
+export const selectIsDrawingEnabled = createSelector(
+  [
+    // Input selectors
+    selectTaskIsEditionAuthorized,
+    _selectIsDrawingEnabled,
+  ],
+  (isEditionAuthorized, isDrawingEnabled) => isEditionAuthorized && isDrawingEnabled,
 )
 
 export const selectAllFileIsSeen = createSelector(
@@ -24,9 +33,8 @@ export const selectStart = createSelector(
 export const selectCanDraw = createSelector(
   [
     // Input selectors
-    selectTaskIsEditionAuthorized,
     selectIsDrawingEnabled,
     selectFocusLabel,
   ],
-  (isEditionAuthorized, isDrawingEnabled, focusedLabel) => isEditionAuthorized && isDrawingEnabled && !!focusedLabel,
+  (isDrawingEnabled, focusedLabel) => isDrawingEnabled && !!focusedLabel,
 )

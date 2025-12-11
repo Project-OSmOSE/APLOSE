@@ -32,7 +32,7 @@ export const AnnotatorUXSlice = createSlice({
   initialState,
   reducers: {
     setIsDrawingEnabled: (state, action: { payload: boolean }) => {
-      state.allFileIsSeen = action.payload;
+      state.isDrawingEnabled = action.payload;
     },
     setAllFileAsSeen: (state) => {
       state.allFileIsSeen = true;

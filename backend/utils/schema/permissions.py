@@ -36,8 +36,6 @@ class GraphQLResolve:
                 return fn(*args, **kwargs)
             except Exception as e:
 
-                print(traceback.format_exc())
-
                 if isinstance(e, GraphQLError):
                     raise e
 
