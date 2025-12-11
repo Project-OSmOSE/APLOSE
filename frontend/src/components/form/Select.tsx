@@ -74,7 +74,7 @@ export const Select: React.FC<SelectProperties> = ({
     setHasSelectedItem(false)
   }, [])
 
-  const blur = useCallback((event: Event) => {
+  const blur = useCallback((event: MouseEvent) => {
     if (event.target === containerRef.current) return;
     if (event.target === inputRef.current) return;
     if (event.target === selectButtonRef.current) return;
