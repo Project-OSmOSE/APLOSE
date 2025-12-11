@@ -8,5 +8,5 @@ export const MOUSE_DOWN_EVENT: Signal<MouseEvent | ReactMouseEvent> = new Signal
 export const MOUSE_MOVE_EVENT: Signal<MouseEvent | ReactMouseEvent> = new Signal<MouseEvent | ReactMouseEvent>();
 export const MOUSE_UP_EVENT: Signal<MouseEvent | ReactMouseEvent> = new Signal<MouseEvent | ReactMouseEvent>();
 
-export const CLICK_EVENT: Signal<Event> = new Signal<Event>();
-export const AUX_CLICK_EVENT: Signal<Event> = new Signal<Event>();
+export const CLICK_EVENT: Signal<MouseEvent | ReactMouseEvent> = new Signal<MouseEvent | ReactMouseEvent>();
+export const AUX_CLICK_EVENT: Signal<MouseEvent | ReactMouseEvent> = new Signal<MouseEvent | ReactMouseEvent>();

@@ -96,11 +96,25 @@ class SubmitAnnotationTaskMutation(graphene.Mutation):
         task.status = AnnotationTask.Status.FINISHED
         task.save()
 
+        a = [
+            {
+                **a,
+                "acoustic_features": {
+                    **a.acoustic_features,
+                    "trend": a.acoustic_features.trend.value
+                    if a.acoustic_features.trend is not None
+                    else None,
+                }
+                if a.acoustic_features is not None
+                else None,
+            }
+            for a in annotations
+        ]
         session = Session.objects.create(
             start=started_at,
             end=ended_at,
             session_output={
-                "results": annotations,
+                "results": a,
                 "task_comments": task_comments,
             },
         )

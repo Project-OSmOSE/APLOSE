@@ -5,7 +5,7 @@ import { Input, type Item, Select } from '@/components/form';
 import { IonButton, IonCheckbox, IonIcon, IonNote } from '@ionic/react';
 import { IoRemoveCircleOutline } from 'react-icons/io5';
 import { createOutline } from 'ionicons/icons/index.js';
-import { CLICK_EVENT } from '@/features/UX/Events';
+import { CLICK_EVENT, useEvent } from '@/features/UX/Events';
 import { AnnotationType, SignalTrendType, useAnnotationTask, useCurrentCampaign, useCurrentPhase } from '@/api';
 import { useGetFreqTime } from '@/features/Annotator/Pointer';
 import {
@@ -269,24 +269,28 @@ const SelectableFrequencyRow: React.FC<{
   const [ isSelecting, setIsSelecting ] = useState<boolean>(false);
   const dispatch = useAppDispatch()
 
+  const [ isClickEventActive, setIsClickEventActive ] = useState<boolean>(false);
+
   const onClick = useCallback((event: MouseEvent) => {
     event.stopPropagation()
+    if (!isClickEventActive) return;
     const position = getFreqTime(event)
     if (position) onChange(position.frequency)
     unselect()
-  }, [ getFreqTime ]);
+  }, [ getFreqTime, isClickEventActive ]);
+  useEvent(CLICK_EVENT, onClick)
 
   const select = useCallback(() => {
-    setTimeout(() => CLICK_EVENT.add(onClick), 500);
+    setTimeout(() => setIsClickEventActive(true), 500);
     setIsSelecting(true)
     dispatch(setIsDrawingEnabled(false))
-  }, [ dispatch, onClick ])
+  }, [ dispatch ])
 
   const unselect = useCallback(() => {
-    CLICK_EVENT.remove(onClick)
+    setIsClickEventActive(false)
     setIsSelecting(false)
     dispatch(setIsDrawingEnabled(true))
-  }, [ dispatch, onClick ])
+  }, [ dispatch ])
 
   const toggleSelection = useCallback(() => {
     if (isSelecting) unselect()
