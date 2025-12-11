@@ -51,11 +51,10 @@ export type SubmitTaskMutationVariables = Types.Exact<{
   taskComments: Array<Types.InputMaybe<Types.AnnotationCommentInput>> | Types.InputMaybe<Types.AnnotationCommentInput>;
   startedAt: Types.Scalars['DateTime']['input'];
   endedAt: Types.Scalars['DateTime']['input'];
-  content: Types.Scalars['String']['input'];
 }>;
 
 
-export type SubmitTaskMutation = { __typename?: 'Mutation', updateAnnotations?: { __typename?: 'UpdateAnnotationsMutationPayload', errors?: Array<Array<{ __typename?: 'ErrorType', messages: Array<string>, field: string } | null> | null> | null } | null, updateAnnotationComments?: { __typename?: 'UpdateAnnotationCommentsMutationPayload', errors?: Array<Array<{ __typename?: 'ErrorType', messages: Array<string>, field: string } | null> | null> | null } | null, submitAnnotationTask?: { __typename?: 'SubmitAnnotationTaskMutation', ok: boolean } | null };
+export type SubmitTaskMutation = { __typename?: 'Mutation', submitAnnotationTask?: { __typename?: 'SubmitAnnotationTaskMutation', ok: boolean } | null };
 
 
 export const ListAnnotationTaskDocument = `
@@ -209,30 +208,15 @@ export const GetAnnotationTaskDocument = `
 }
     `;
 export const SubmitTaskDocument = `
-    mutation submitTask($campaignID: ID!, $spectrogramID: ID!, $phase: AnnotationPhaseType!, $annotations: [AnnotationInput]!, $taskComments: [AnnotationCommentInput]!, $startedAt: DateTime!, $endedAt: DateTime!, $content: String!) {
-  updateAnnotations(
-    input: {campaignId: $campaignID, phaseType: $phase, spectrogramId: $spectrogramID, list: $annotations}
-  ) {
-    errors {
-      messages
-      field
-    }
-  }
-  updateAnnotationComments(
-    input: {campaignId: $campaignID, phaseType: $phase, spectrogramId: $spectrogramID, list: $taskComments, annotationId: null}
-  ) {
-    errors {
-      messages
-      field
-    }
-  }
+    mutation submitTask($campaignID: ID!, $spectrogramID: ID!, $phase: AnnotationPhaseType!, $annotations: [AnnotationInput]!, $taskComments: [AnnotationCommentInput]!, $startedAt: DateTime!, $endedAt: DateTime!) {
   submitAnnotationTask(
     spectrogramId: $spectrogramID
     phaseType: $phase
     campaignId: $campaignID
     startedAt: $startedAt
     endedAt: $endedAt
-    content: $content
+    annotations: $annotations
+    taskComments: $taskComments
   ) {
     ok
   }

@@ -103,7 +103,6 @@ export const useSubmitTask = () => {
       taskComments,
       startedAt: start.toISOString(),
       endedAt: new Date().toISOString(),
-      content: JSON.stringify({ annotations, taskComments }),
     }).unwrap()
   }, [ method, campaignID, phaseType, spectrogramID, phase ]);
 

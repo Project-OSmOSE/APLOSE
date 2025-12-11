@@ -8,6 +8,7 @@ from graphene_django.rest_framework.mutation import (
     SerializerMutationOptions,
 )
 from graphene_django.types import ErrorType
+from rest_framework.serializers import BaseSerializer
 
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 from .mutation_serializer_converter import fields_for_serializer
@@ -114,7 +115,7 @@ class ListSerializerMutation(ClientIDMutation):
             info.context.user
         )
         kwargs = cls.get_serializer_kwargs(root, info, **input)
-        serializer = cls._meta.serializer_class(**kwargs)
+        serializer: BaseSerializer = cls._meta.serializer_class(**kwargs)
 
         if serializer.is_valid():
             serializer.save()

@@ -234,40 +234,15 @@ mutation submitTask (
 
     $startedAt: DateTime!
     $endedAt: DateTime!
-    $content: String!
 ) {
-    updateAnnotations(input: {
-        campaignId: $campaignID
-        phaseType: $phase
-        spectrogramId: $spectrogramID
-        list: $annotations
-    }) {
-        errors {
-            messages
-            field
-        }
-    }
-
-    updateAnnotationComments(input: {
-        campaignId: $campaignID
-        phaseType: $phase
-        spectrogramId: $spectrogramID
-        list: $taskComments
-        annotationId: null
-    }) {
-        errors {
-            messages
-            field
-        }
-    }
-
     submitAnnotationTask(
         spectrogramId: $spectrogramID
         phaseType: $phase
         campaignId: $campaignID
         startedAt: $startedAt
         endedAt: $endedAt
-        content: $content
+        annotations: $annotations
+        taskComments: $taskComments
     ) {
         ok
     }

@@ -11,6 +11,8 @@ from backend.api.models import Spectrogram, AnnotationTask, Session, AnnotationP
 from backend.api.models.annotation.annotation_task import AnnotationTaskSession
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions, NotFoundError
+from .update_annotations import UpdateAnnotationsMutation
+from .update_annotation_comments import UpdateAnnotationCommentsMutation
 
 
 class SubmitAnnotationTaskMutation(graphene.Mutation):
@@ -18,9 +20,12 @@ class SubmitAnnotationTaskMutation(graphene.Mutation):
         campaign_id = graphene.ID(required=True)
         phase_type = AnnotationPhaseType(required=True)
         spectrogram_id = graphene.ID(required=True)
+
+        annotations = UpdateAnnotationsMutation.Input.list.type
+        task_comments = UpdateAnnotationCommentsMutation.Input.list.type
+
         started_at = graphene.DateTime(required=True)
         ended_at = graphene.DateTime(required=True)
-        content = graphene.String(required=True)
 
     ok = Boolean(required=True)
 
@@ -32,9 +37,10 @@ class SubmitAnnotationTaskMutation(graphene.Mutation):
         campaign_id: int,
         phase_type: AnnotationPhaseType,
         spectrogram_id: int,
+        annotations: [any],
+        task_comments: [any],
         started_at: datetime,
         ended_at: datetime,
-        content: str,
     ):
         """Update annotation task status to "FINISHED" and create a new session"""
         try:
@@ -48,6 +54,31 @@ class SubmitAnnotationTaskMutation(graphene.Mutation):
             )
         except Http404 as not_found:
             raise NotFoundError() from not_found
+
+        annotation_mutation = UpdateAnnotationsMutation()
+        annotation_mutation.mutate(
+            None,
+            info=info,
+            input={
+                "campaign_id": campaign_id,
+                "phase_type": phase_type,
+                "spectrogram_id": spectrogram_id,
+                "list": annotations,
+            },
+        )
+
+        comments_mutation = UpdateAnnotationCommentsMutation()
+        comments_mutation.mutate(
+            None,
+            info=info,
+            input={
+                "campaign_id": campaign_id,
+                "phase_type": phase_type,
+                "spectrogram_id": spectrogram_id,
+                "annotation_id": None,
+                "list": task_comments,
+            },
+        )
 
         AnnotationFileRangeContextFilter.get_node_or_fail(
             info.context,
@@ -66,7 +97,12 @@ class SubmitAnnotationTaskMutation(graphene.Mutation):
         task.save()
 
         session = Session.objects.create(
-            start=started_at, end=ended_at, session_output=content
+            start=started_at,
+            end=ended_at,
+            session_output={
+                "results": annotations,
+                "task_comments": task_comments,
+            },
         )
         AnnotationTaskSession.objects.create(
             annotation_task=task,

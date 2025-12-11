@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useToast } from '@/components/ui';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAnnotationTask, useSubmitTask } from '@/api';
@@ -16,7 +16,7 @@ export const useAnnotatorSubmit = () => {
   const navigate = useNavigate();
   const allAnnotations = useAppSelector(selectAllAnnotations)
   const taskComments = useAppSelector(selectTaskComments)
-  const { submitTask, ...info } = useSubmitTask()
+  const { submitTask, isSuccess, error, ...info } = useSubmitTask()
 
   const { campaignID, phaseType } = useParams<AploseNavParams>();
   const allFileIsSeen = useAppSelector(selectAllFileIsSeen)
@@ -31,22 +31,26 @@ export const useAnnotatorSubmit = () => {
       });
       if (!force) return;
     }
-    try {
-      await submitTask(
-        convertAnnotationsToPost(allAnnotations),
-        convertCommentsToPost(taskComments),
-        start,
-      )
-      if (navigationInfo?.nextSpectrogramId) {
-        openAnnotator(navigationInfo.nextSpectrogramId);
-      } else {
-        navigate(`/annotation-campaign/${ campaignID }/phase/${ phaseType }`)
-      }
-    } catch (error: any) {
-      toast.raiseError({ error })
-    }
+    submitTask(
+      convertAnnotationsToPost(allAnnotations),
+      convertCommentsToPost(taskComments),
+      start,
+    )
   }, [ openAnnotator, toast, navigate, allAnnotations, submitTask, allFileIsSeen, start, navigationInfo, campaignID, phaseType, taskComments ])
   useKeyDownEvent([ 'Enter', 'Tab', 'NumpadEnter' ], submit)
 
-  return { submit, ...info }
+  useEffect(() => {
+    if (!isSuccess) return;
+    if (navigationInfo?.nextSpectrogramId) {
+      openAnnotator(navigationInfo.nextSpectrogramId);
+    } else {
+      navigate(`/annotation-campaign/${ campaignID }/phase/${ phaseType }`)
+    }
+  }, [ isSuccess ]);
+
+  useEffect(() => {
+    if (error) toast.raiseError({ error })
+  }, [ error ]);
+
+  return { submit, isSuccess, error, ...info }
 }
