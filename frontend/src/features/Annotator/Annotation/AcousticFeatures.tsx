@@ -251,7 +251,7 @@ export const AcousticFeatures: React.FC = () => {
           <TableContent>Has harmonics</TableContent>
           <TableContent>
               <IonCheckbox checked={ !!focusedAnnotation.acousticFeatures.hasHarmonics }
-                           onChange={ e => updateFeatures(focusedAnnotation, { hasHarmonics: e.currentTarget.checked }) }/>
+                           onIonChange={ (e: CustomEvent) => updateFeatures(focusedAnnotation, { hasHarmonics: e.detail.checked }) }/>
           </TableContent>
 
       </Table> }

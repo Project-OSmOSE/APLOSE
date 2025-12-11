@@ -215,7 +215,6 @@ export const useRemoveAnnotation = () => {
   return useCallback((annotation: Annotation) => remove(annotation), [ remove ])
 }
 
-
 export const useUpdateAnnotationFeatures = () => {
   const dispatch = useAppDispatch();
 
