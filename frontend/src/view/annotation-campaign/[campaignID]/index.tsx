@@ -8,6 +8,7 @@ import { AnnotationPhaseTab } from '@/features/AnnotationPhase';
 import { AnnotationPhaseType, useCurrentCampaign } from '@/api';
 import { Outlet, useParams } from 'react-router-dom';
 import { type AploseNavParams } from '@/features/UX';
+import { NBSP } from '@/service/type';
 
 export { AnnotationCampaignInfo } from './InfoTab'
 
@@ -24,7 +25,7 @@ export const AnnotationCampaignDetail: React.FC = () => {
     <Head title={ campaign?.name } canGoBack
           subtitle={ campaign ? <FadedText>
               Created on { dateToString(campaign.createdAt) } by { campaign.owner.displayName }
-              { campaign.owner.email && <Fragment>&nbsp;<MailButton user={ campaign.owner }/>
+              { campaign.owner.email && <Fragment>{ NBSP }<MailButton user={ campaign.owner }/>
               </Fragment> }
             </FadedText> :
             <IonSkeletonText animated style={ { width: 512, height: '1ch', justifySelf: 'center' } }/> }/>

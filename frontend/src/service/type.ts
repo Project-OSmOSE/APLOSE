@@ -5,3 +5,5 @@ export type Paginated<T> = {
   previous: string;
   results: Array<T>;
 }
+
+export const NBSP = '\u00A0'

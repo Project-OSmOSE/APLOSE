@@ -8,6 +8,7 @@ import { Prec } from '@codemirror/state';
 import styles from './styles.module.scss'
 import { useCurrentUser } from '@/api';
 import { SQLRestAPI } from '@/api/sql';
+import { NBSP } from '@/service/type';
 
 
 export const SqlQuery: React.FC = () => {
@@ -82,7 +83,7 @@ export const SqlQuery: React.FC = () => {
            setupEditor();
          } }/>
 
-    <Button fill="outline" className={ styles.run } onClick={ () => runQuery(1) }>Run query &nbsp; <Kbd
+    <Button fill="outline" className={ styles.run } onClick={ () => runQuery(1) }>Run query{ NBSP }<Kbd
       keys={ [ 'ctrl', 'enter' ] }/></Button>
 
     <Button fill="outline" className={ styles.download }

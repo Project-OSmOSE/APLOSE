@@ -3,6 +3,7 @@ import type { Annotation } from './slice';
 import styles from './styles.module.scss';
 import { IoAnalyticsOutline, IoChevronForwardOutline } from 'react-icons/io5';
 import { AnnotationType } from '@/api';
+import { NBSP } from '@/service/type';
 
 export const AnnotationFrequencyInfo: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
 
@@ -25,14 +26,14 @@ export const AnnotationFrequencyInfo: React.FC<{ annotation: Annotation }> = ({ 
     <p className={ isCorrected ? 'disabled' : undefined }>
       { annotation.startFrequency!.toFixed(2) }Hz
       { annotation.type === AnnotationType.Box && <Fragment>
-          &nbsp;<IoChevronForwardOutline/> { annotation.endFrequency!.toFixed(2) }Hz
+        { NBSP }<IoChevronForwardOutline/> { annotation.endFrequency!.toFixed(2) }Hz
       </Fragment> }
     </p>
 
     { isCorrected && <p>
       { (correctedStartFrequency ?? annotation.startFrequency!).toFixed(2) }Hz
       { annotation.type === AnnotationType.Box && <Fragment>
-          &nbsp;<IoChevronForwardOutline/> { (correctedEndFrequency ?? annotation.endFrequency!).toFixed(2) }Hz
+        { NBSP }<IoChevronForwardOutline/> { (correctedEndFrequency ?? annotation.endFrequency!).toFixed(2) }Hz
       </Fragment> }
     </p> }
   </div>

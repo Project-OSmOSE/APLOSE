@@ -18,6 +18,7 @@ import { selectFocusConfidence } from '@/features/Annotator/Confidence';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { setHiddenLabels } from './slice';
 import { selectAllLabels, selectFocusLabel, selectHiddenLabels } from './selectors';
+import { NBSP } from '@/service/type';
 
 export const AlphanumericKeys = [
   [ '&', 'é', '"', '\'', '(', '-', 'è', '_', 'ç' ],
@@ -97,9 +98,9 @@ export const LabelChip: React.FC<{
                         tooltipContent={ <Fragment>
                           <p>
                             <Kbd keys={ number } className={ colorClass }/>
-                            &npsb;or&npsb;
+                            { NBSP }or{ NBSP }
                             <Kbd keys={ key } className={ colorClass }/>:
-                            { '\u00A0' }Choose this label
+                            { NBSP }Choose this label
                           </p>
                         </Fragment> }>
           <p>{ label }</p>

@@ -4,6 +4,7 @@ import styles from './styles.module.scss';
 import { IoChevronForwardOutline, IoTimeOutline } from 'react-icons/io5';
 import { AnnotationType } from '@/api';
 import { formatTime } from '@/service/function';
+import { NBSP } from '@/service/type';
 
 export const AnnotationTimeInfo: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
 
@@ -25,14 +26,14 @@ export const AnnotationTimeInfo: React.FC<{ annotation: Annotation }> = ({ annot
     <p className={ isCorrected ? 'disabled' : undefined }>
       { formatTime(annotation.startTime!, true) }
       { annotation.type === AnnotationType.Box && <Fragment>
-          &nbsp;<IoChevronForwardOutline/> { formatTime(annotation.endTime!, true) }
+        { NBSP }<IoChevronForwardOutline/> { formatTime(annotation.endTime!, true) }
       </Fragment> }
     </p>
 
     { isCorrected && <p>
       { formatTime(correctedStartTime ?? annotation.startTime!, true) }
       { annotation.type === AnnotationType.Box && <Fragment>
-          &nbsp;<IoChevronForwardOutline/> { formatTime(correctedEndTime ?? annotation.endTime!, true) }
+        { NBSP }<IoChevronForwardOutline/> { formatTime(correctedEndTime ?? annotation.endTime!, true) }
       </Fragment> }
     </p> }
   </div>

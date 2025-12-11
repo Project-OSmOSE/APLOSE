@@ -28,6 +28,7 @@ import {
   UserNode,
 } from '@/api';
 import { useDownloadAnnotations, useDownloadProgress } from '@/api/download';
+import { NBSP } from '@/service/type';
 
 type Progression = {
   user: Pick<UserNode, 'id' | 'displayName' | 'expertise' | 'username'>;
@@ -168,7 +169,7 @@ export const FileRangeProgressModal: React.FC<{
                 <Fragment key={ p.user.id }>
                   <TableDivider/>
                   <TableContent
-                    isFirstColumn={ true }>{ p.user.displayName || p.user.username }&nbsp;{ p.user.expertise &&
+                    isFirstColumn={ true }>{ p.user.displayName || p.user.username }{ NBSP }{ p.user.expertise &&
                       <Fragment>({ p.user.expertise })</Fragment> }</TableContent>
                   <TableContent className={ styles.progressContent }>
                     <div>

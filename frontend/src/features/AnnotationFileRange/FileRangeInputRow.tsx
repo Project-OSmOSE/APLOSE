@@ -5,6 +5,7 @@ import { Input } from '@/components/form';
 import { IonButton, IonIcon } from '@ionic/react';
 import { lockClosedOutline, trashBinOutline } from 'ionicons/icons/index.js';
 import { AnnotationFileRangeInput, ErrorType, useCurrentCampaign, UserNode } from '@/api';
+import { NBSP } from '@/service/type';
 
 type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
   id: string;
@@ -43,7 +44,7 @@ export const FileRangeInputRow: React.FC<{
   return (
     <Fragment key={ range.id }>
       <TableContent isFirstColumn={ true }>
-        { annotator.displayName }&nbsp;{ annotator.expertise &&
+        { annotator.displayName }{ NBSP }{ annotator.expertise &&
           <Fragment>( { annotator.expertise } )</Fragment> }
       </TableContent>
       <TableContent>
