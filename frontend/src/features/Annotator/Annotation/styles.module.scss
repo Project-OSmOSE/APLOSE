@@ -9,6 +9,10 @@ $box-width: 3px;
 
   &.disabled {
     opacity: 0.75;
+
+    .header .inner {
+      cursor: default;
+    }
   }
 
   &.editDisabled {
@@ -85,7 +89,7 @@ $box-width: 3px;
     gap: 0.5rem;
     white-space: nowrap;
     position: relative;
-    cursor: default !important;
+    cursor: move;
 
     > * {
       font-size: .9rem;

@@ -18,13 +18,11 @@ export const NavigationButtons: React.FC = () => {
   const { submit, isLoading } = useAnnotatorSubmit()
 
   const navPrevious = useCallback(async () => {
-    console.debug('navPrevious', isLoading, navigationInfo)
     if (isLoading) return;
     if (!navigationInfo?.previousSpectrogramId) return;
     if (await canNavigate()) openAnnotator(navigationInfo.previousSpectrogramId)
   }, [ openAnnotator, isLoading, navigationInfo ])
   const navNext = useCallback(async () => {
-    console.debug('navPrevious', isLoading, navigationInfo)
     if (isLoading) return;
     if (!navigationInfo?.nextSpectrogramId) return;
     if (await canNavigate()) openAnnotator(navigationInfo.nextSpectrogramId)

@@ -1,5 +1,5 @@
-import React, { MouseEvent, ReactNode, useCallback, useEffect, useRef } from 'react';
-import { MOUSE_MOVE_EVENT, MOUSE_UP_EVENT } from '@/features/UX/Events';
+import React, { MouseEvent, ReactNode, useCallback, useRef, useState } from 'react';
+import { MOUSE_MOVE_EVENT, MOUSE_UP_EVENT, useEvent } from '@/features/UX/Events';
 import style from './extended.module.scss';
 
 export const DraggableDiv: React.FC<{
@@ -16,40 +16,40 @@ export const DraggableDiv: React.FC<{
         children, className,
         onMouseDown,
       }) => {
+  const [ isMoveEventActive, setIsMoveEventActive ] = useState<boolean>(false);
+  const [ isUpEventActive, setIsUpEventActive ] = useState<boolean>(false);
+
   const div = useRef<HTMLDivElement | null>(null);
 
   const mouseMove = useCallback((event: MouseEvent) => {
     event.stopPropagation();
     event.preventDefault();
+    if (!isMoveEventActive) return;
     if (onXMove) onXMove(event.movementX);
     if (onYMove) onYMove(event.movementY);
-  }, [ onXMove, onYMove ])
+  }, [ onXMove, onYMove, isMoveEventActive ])
+  useEvent(MOUSE_MOVE_EVENT, mouseMove)
 
   const mouseUp = useCallback(() => {
+    if (!isUpEventActive) return;
     if (onUp && draggable) onUp()
-    MOUSE_MOVE_EVENT.remove(mouseMove)
-    MOUSE_UP_EVENT.remove(mouseUp)
-  }, [ onUp, draggable, mouseMove ])
+    setIsMoveEventActive(false)
+    setIsUpEventActive(false)
+  }, [ onUp, draggable, mouseMove, isUpEventActive ])
+  useEvent(MOUSE_UP_EVENT, mouseUp)
 
   const mouseDown = useCallback((event: MouseEvent) => {
     event.stopPropagation();
     event.preventDefault();
 
     if (draggable) {
-      MOUSE_MOVE_EVENT.add(mouseMove)
-      MOUSE_UP_EVENT.add(mouseUp)
+      setIsMoveEventActive(true)
+      setIsUpEventActive(true)
     }
 
     if (!onMouseDown) return;
     if ((event.target as any)?.className == div.current?.className) onMouseDown(event);
   }, [ mouseMove, draggable, mouseUp, onMouseDown ])
-
-  useEffect(() => {
-    return () => {
-      MOUSE_MOVE_EVENT.remove(mouseMove)
-      MOUSE_UP_EVENT.remove(mouseUp)
-    }
-  }, []);
 
   return (
     <div ref={ div }

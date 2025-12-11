@@ -84,6 +84,7 @@ export const StrongAnnotation: React.FC<{
   const onWidthMove = useCallback((movement: number) => {
     setWidth(prev => prev + movement)
   }, [ setWidth ])
+
   const onValidateMove = useCallback(() => {
     let newStartTime = timeScale.positionToValue(left);
     let newEndTime = timeScale.positionToValue(left + width);
@@ -103,7 +104,10 @@ export const StrongAnnotation: React.FC<{
         })
         break;
       case AnnotationType.Point:
-        updateAnnotation(annotation, { startTime: newStartTime, startFrequency: newStartFrequency })
+        updateAnnotation(annotation, {
+          startTime: newStartTime,
+          startFrequency: newStartFrequency,
+        })
         break;
     }
   }, [ updateAnnotation, annotation, timeScale, frequencyScale, left, top, height, width, startTime, endTime, startFrequency, endFrequency ])
