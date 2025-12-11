@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import styles from './styles.module.scss';
 import { FadedText } from '@/components/ui';
 import { formatTime } from '@/service/function';
@@ -10,10 +10,10 @@ export const PointerInfo: React.FC = () => {
   const position = useAppSelector(selectPosition)
   const { spectrogram } = useAnnotationTask()
 
-  if (!position) return <Fragment/>
-  return <div className={ styles.pointerInfo }>
+  return <div className={ [ styles.pointerInfo, position ? '' : styles.hidden ].join(' ') }>
     <FadedText>Pointer</FadedText>
-    <p>{ position.frequency.toFixed(2) }Hz
-      / { formatTime(position.time, (spectrogram?.duration ?? 0) < 60) }</p>
+    { position ?
+      <p>{ position.frequency.toFixed(2) }Hz
+        / { formatTime(position.time, (spectrogram?.duration ?? 0) < 60) }</p> : <p>0</p> }
   </div>
 }
