@@ -122,7 +122,7 @@ $box-width: 3px;
   position: absolute !important;
   overflow: hidden;
   user-select: none;
-  z-index: 2;
+  z-index: 9;
   display: grid;
   left: min(var(--left, 0), calc(100% - 26rem));
   width: 25rem;
