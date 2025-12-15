@@ -44,7 +44,7 @@ export const useFrequencyScale = () => {
       )
     }
     return new LinearScaleService(height, {
-      maxValue: analysis?.fft.samplingFrequency ?? 0,
+      maxValue: (analysis?.fft.samplingFrequency ?? 0) / 2,
       minValue: 0,
       ratio: 1,
     }, options)

@@ -92,6 +92,7 @@ type Node =
 export function convertGqlToAnnotation(annotation: Node,
                                        phase: AnnotationPhaseType,
                                        userId?: string): Annotation {
+  console.log(annotation)
   return {
     id: +annotation.id,
     update: undefined,

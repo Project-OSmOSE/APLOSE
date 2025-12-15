@@ -82,7 +82,10 @@ export const useAnnotationTask = (options: {
     ...info,
     spectrogram: info.data?.annotationSpectrogramById,
     navigationInfo: info.data?.allAnnotationSpectrograms,
-    annotations: info.data?.annotationSpectrogramById?.task?.annotations?.results.filter(r => !!r).map(r => r!),
+    annotations: [
+      ...info.data?.annotationSpectrogramById?.task?.userAnnotations?.results ?? [],
+      ...info.data?.annotationSpectrogramById?.task?.annotationsToCheck?.results ?? [],
+    ].filter(r => !!r).map(r => r!),
   }), [ info, phase ])
 }
 
@@ -106,10 +109,16 @@ export const useSubmitTask = () => {
     }).unwrap()
   }, [ method, campaignID, phaseType, spectrogramID, phase ]);
 
-  return useMemo(() => ({
+  return useMemo(() => {
+    const error = info.error ?? info.data?.submitAnnotationTask?.annotationErrors ?? info.data?.submitAnnotationTask?.taskCommentsErrors;
+    return {
     ...info,
-    submitTask: submit,
-  }), [ submit, info ])
+      submitTask: submit,
+      isSuccess: info.isSuccess && !error,
+      isError: !!error,
+      error
+    }
+  }, [ submit, info ])
 }
 
 

@@ -5,6 +5,7 @@ from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from graphene import Boolean
+from graphene_django.types import ErrorType
 
 from backend.api.context_filters import AnnotationFileRangeContextFilter
 from backend.api.models import Spectrogram, AnnotationTask, Session, AnnotationPhase
@@ -28,6 +29,17 @@ class SubmitAnnotationTaskMutation(graphene.Mutation):
         ended_at = graphene.DateTime(required=True)
 
     ok = Boolean(required=True)
+
+    annotation_errors = graphene.List(
+        graphene.List(
+            ErrorType, description="May contain more than one error for same field."
+        )
+    )
+    task_comments_errors = graphene.List(
+        graphene.List(
+            ErrorType, description="May contain more than one error for same field."
+        )
+    )
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     @transaction.atomic
@@ -56,29 +68,33 @@ class SubmitAnnotationTaskMutation(graphene.Mutation):
             raise NotFoundError() from not_found
 
         annotation_mutation = UpdateAnnotationsMutation()
-        annotation_mutation.mutate(
+        annotation_payload = annotation_mutation.mutate_and_get_payload(
             None,
             info=info,
-            input={
-                "campaign_id": campaign_id,
-                "phase_type": phase_type,
-                "spectrogram_id": spectrogram_id,
-                "list": annotations,
-            },
+            campaign_id=campaign_id,
+            phase_type=phase_type,
+            spectrogram_id=spectrogram_id,
+            list=annotations,
         )
+        if annotation_payload.errors:
+            return SubmitAnnotationTaskMutation(
+                ok=False, annotation_errors=annotation_payload.errors
+            )
 
         comments_mutation = UpdateAnnotationCommentsMutation()
-        comments_mutation.mutate(
+        comments_payload = comments_mutation.mutate_and_get_payload(
             None,
             info=info,
-            input={
-                "campaign_id": campaign_id,
-                "phase_type": phase_type,
-                "spectrogram_id": spectrogram_id,
-                "annotation_id": None,
-                "list": task_comments,
-            },
+            campaign_id=campaign_id,
+            phase_type=phase_type,
+            spectrogram_id=spectrogram_id,
+            annotation_id=None,
+            list=task_comments,
         )
+        if comments_payload.errors:
+            return SubmitAnnotationTaskMutation(
+                ok=False, task_comments_errors=comments_payload.errors
+            )
 
         AnnotationFileRangeContextFilter.get_node_or_fail(
             info.context,

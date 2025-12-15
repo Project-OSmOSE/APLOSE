@@ -12,6 +12,7 @@ class AnnotationFilterSet(BaseFilterSet):
         field_name="acoustic_features", lookup_expr="isnull", exclude=True
     )
     is_valid = BooleanFilter(method="fake")
+    is_updated = BooleanFilter(method="fake")
     annotator = IDFilter(method="fake")
 
     class Meta:
@@ -29,6 +30,11 @@ class AnnotationFilterSet(BaseFilterSet):
     def filter_queryset(self, queryset: QuerySet[Annotation]):
         annotator_id = self.data.get("annotator")
         if annotator_id:
+            if self.data.get("is_updated") is True:
+                queryset = queryset.filter(updated_to__annotator_id=annotator_id)
+            elif self.data.get("is_updated") is False:
+                queryset = queryset.filter(~Q(updated_to__annotator_id=annotator_id))
+
             if self.data.get("is_valid") is not None:
                 queryset = queryset.filter(
                     Q(annotator_id=annotator_id)

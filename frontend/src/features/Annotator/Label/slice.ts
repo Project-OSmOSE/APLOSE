@@ -61,7 +61,10 @@ export const AnnotatorLabelSlice = createSlice({
         state._campaignID = action.meta.arg.originalArgs.campaignID
         state.focus = initialState.focus
       } else {
-        const annotations = action.payload.annotationSpectrogramById?.task?.annotations?.results.filter(a => a !== null).map(a => a!) ?? []
+        const annotations = [
+            ...action.payload.annotationSpectrogramById?.task?.userAnnotations?.results ?? [],
+          ...action.payload.annotationSpectrogramById?.task?.annotationsToCheck?.results ?? [],
+        ].filter(a => a !== null).map(a => a!) ?? []
         const defaultAnnotation = [ ...convertGqlToAnnotations(annotations, action.meta.arg.originalArgs.phaseType, state._userID) ].reverse().pop();
         state.focus = defaultAnnotation?.update?.label ?? defaultAnnotation?.label
       }

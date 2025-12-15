@@ -67,7 +67,7 @@ export const AnnotatorPage: React.FC = () => {
 
   if (isFetching) return <AnnotatorSkeleton children={ <IonSpinner/> }/>
   if (error) return <AnnotatorSkeleton children={ <WarningText error={ error }/> }/>
-  if (!spectrogram) return <AnnotatorSkeleton/>
+  if (!spectrogram) return <AnnotatorSkeleton><div></div></AnnotatorSkeleton>
 
   return <AnnotatorSkeleton>
     <div className={ styles.annotator }>

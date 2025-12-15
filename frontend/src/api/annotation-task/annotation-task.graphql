@@ -61,7 +61,8 @@ query listAnnotationTask(
                 campaignId: $campaignID
             ) {
                 status
-                annotations(
+
+                userAnnotations(
                     annotator: $annotationAnnotator
                     label_Name: $annotationLabel
                     confidence_Label: $annotationConfidence
@@ -70,10 +71,20 @@ query listAnnotationTask(
                 ) {
                     totalCount
                 }
-
-                validatedAnnotations: annotations(
-                    isValid: true
+                annotationsToCheck(
                     annotator: $annotationAnnotator
+                    isUpdated: false # Since I need the count, if it is updated it will be counted on 'userAnnotation'
+                    label_Name: $annotationLabel
+                    confidence_Label: $annotationConfidence
+                    detectorConfiguration_Detector: $annotationDetector
+                    acousticFeatures_Exists: $withAcousticFeatures
+                ) {
+                    totalCount
+                }
+
+                validAnnotationsToCheck: annotationsToCheck(
+                    annotator: $annotationAnnotator
+                    isValid: true
                     label_Name: $annotationLabel
                     confidence_Label: $annotationConfidence
                     detectorConfiguration_Detector: $annotationDetector
@@ -124,7 +135,7 @@ query getAnnotationTask(
         ) {
             status
 
-            comments(
+            userComments(
                 author: $annotatorID,
                 annotationPhase_Phase: $phaseType
             ) {
@@ -134,7 +145,61 @@ query getAnnotationTask(
                 }
             }
 
-            annotations {
+            userAnnotations {
+                results {
+                    id
+                    type
+                    startTime
+                    endTime
+                    startFrequency
+                    endFrequency
+                    label {
+                        name
+                    }
+                    confidence {
+                        label
+                    }
+                    detectorConfiguration {
+                        detector {
+                            id
+                            name
+                        }
+                    }
+                    annotator {
+                        id,
+                        displayName
+                    }
+                    comments(author: $annotatorID) {
+                        results{
+                            id
+                            comment
+                        }
+                    }
+                    validations(annotator: $annotatorID) {
+                        results {
+                            id
+                            isValid
+                        }
+                    }
+                    isUpdateOf {
+                        id
+                    }
+                    acousticFeatures {
+                        id
+                        startFrequency
+                        endFrequency
+                        trend
+                        stepsCount
+                        relativeMinFrequencyCount
+                        relativeMaxFrequencyCount
+                        hasHarmonics
+                    }
+                    analysis {
+                        id
+                    }
+                }
+            }
+            annotationsToCheck {
                 results {
                     id
                     type
@@ -245,5 +310,13 @@ mutation submitTask (
         taskComments: $taskComments
     ) {
         ok
+        annotationErrors {
+            field
+            messages
+        }
+        taskCommentsErrors {
+            field
+            messages
+        }
     }
 }

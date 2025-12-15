@@ -68,8 +68,9 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
         { !isFetching && allSpectrograms?.map(s => <SpectrogramRow key={ s!.id }
                                                                    spectrogram={ s! }
                                                                    task={ s!.task }
-                                                                   annotations={ s!.task?.annotations }
-                                                                   validatedAnnotations={ s!.task?.validatedAnnotations }/>) }
+                                                                   userAnnotations={ s!.task?.userAnnotations }
+                                                                   validAnnotationsToCheck={ s!.task?.validAnnotationsToCheck }
+                                                                   annotationsToCheck={ s!.task?.annotationsToCheck }/>) }
         { isFetching && <IonSpinner/> }
 
       </Table>

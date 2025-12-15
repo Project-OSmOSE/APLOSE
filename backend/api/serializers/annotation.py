@@ -90,7 +90,9 @@ class AnnotationSerializer(serializers.ModelSerializer):
         if spectrogram is not None:
             validator = validators.MaxValueValidator(
                 spectrogram.duration,
-                message=FloatField.default_error_messages["max_value"],
+                message=FloatField.default_error_messages["max_value"].format(
+                    max_value=spectrogram.duration
+                ),
             )
             fields["start_time"].max_value = spectrogram.duration
             fields["start_time"].validators.append(validator)
@@ -103,7 +105,9 @@ class AnnotationSerializer(serializers.ModelSerializer):
         if sampling_frequency is not None:
             validator = validators.MaxValueValidator(
                 sampling_frequency / 2,
-                message=FloatField.default_error_messages["max_value"],
+                message=FloatField.default_error_messages["max_value"].format(
+                    max_value=sampling_frequency / 2
+                ),
             )
             fields["start_frequency"].max_value = sampling_frequency / 2
             fields["start_frequency"].validators.append(validator)

@@ -495,6 +495,7 @@ export type AnnotationLabelNodeAnnotationSetArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
   isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -630,6 +631,7 @@ export type AnnotationNodeUpdatedToArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
   isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -788,6 +790,7 @@ export type AnnotationPhaseNodeAnnotationsArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
   isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -901,6 +904,7 @@ export type AnnotationSpectrogramNodeAnnotationsArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
   isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -989,18 +993,19 @@ export type AnnotationSpectrogramNodeNodeConnectionResumeSpectrogramIdArgs = {
 export type AnnotationTaskNode = BaseNode & {
   __typename?: 'AnnotationTaskNode';
   annotationPhase: AnnotationPhaseNode;
-  annotations?: Maybe<AnnotationNodeNodeConnection>;
+  annotationsToCheck?: Maybe<AnnotationNodeNodeConnection>;
   annotator: UserNode;
-  comments?: Maybe<AnnotationCommentNodeNodeConnection>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
   spectrogram: AnnotationSpectrogramNode;
   status: AnnotationTaskStatus;
+  userAnnotations?: Maybe<AnnotationNodeNodeConnection>;
+  userComments?: Maybe<AnnotationCommentNodeNodeConnection>;
 };
 
 
 /** AnnotationTask schema */
-export type AnnotationTaskNodeAnnotationsArgs = {
+export type AnnotationTaskNodeAnnotationsToCheckArgs = {
   acousticFeatures_Exists?: InputMaybe<Scalars['Boolean']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
   annotator?: InputMaybe<Scalars['ID']['input']>;
@@ -1008,6 +1013,7 @@ export type AnnotationTaskNodeAnnotationsArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
   isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -1018,7 +1024,26 @@ export type AnnotationTaskNodeAnnotationsArgs = {
 
 
 /** AnnotationTask schema */
-export type AnnotationTaskNodeCommentsArgs = {
+export type AnnotationTaskNodeUserAnnotationsArgs = {
+  acousticFeatures_Exists?: InputMaybe<Scalars['Boolean']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  annotator?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  confidence_Label?: InputMaybe<Scalars['String']['input']>;
+  detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
+  isValid?: InputMaybe<Scalars['Boolean']['input']>;
+  label_Name?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** AnnotationTask schema */
+export type AnnotationTaskNodeUserCommentsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationPhase_Phase?: InputMaybe<AnnotationPhaseType>;
   annotation_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1967,6 +1992,7 @@ export type ConfidenceNodeAnnotationSetArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
   isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -2752,6 +2778,7 @@ export type DetectorConfigurationNodeAnnotationsArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
   isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -6913,6 +6940,7 @@ export type SpectrogramAnalysisNodeAnnotationsArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
   isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -7052,6 +7080,7 @@ export type SpectrogramNodeAnnotationsArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
   isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -7137,7 +7166,9 @@ export type StorageSpecificationNodeNodeConnection = {
 
 export type SubmitAnnotationTaskMutation = {
   __typename?: 'SubmitAnnotationTaskMutation';
+  annotationErrors?: Maybe<Array<Maybe<Array<Maybe<ErrorType>>>>>;
   ok: Scalars['Boolean']['output'];
+  taskCommentsErrors?: Maybe<Array<Maybe<Array<Maybe<ErrorType>>>>>;
 };
 
 export type TagNode = Node & {
@@ -7430,6 +7461,7 @@ export type UserNodeAnnotationsArgs = {
   confidence_Label?: InputMaybe<Scalars['String']['input']>;
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
   isValid?: InputMaybe<Scalars['Boolean']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;

@@ -61,7 +61,10 @@ export const AnnotatorConfidenceSlice = createSlice({
       payload: GetAnnotationTaskQuery
       meta: { arg: { originalArgs: GetAnnotationTaskQueryVariables } }
     }) => {
-      const annotations = action.payload.annotationSpectrogramById?.task?.annotations?.results.filter(a => a !== null).map(a => a!) ?? []
+      const annotations = [
+          ...action.payload.annotationSpectrogramById?.task?.userAnnotations?.results ?? [],
+        ...action.payload.annotationSpectrogramById?.task?.annotationsToCheck?.results ?? [],
+      ].filter(a => a !== null).map(a => a!) ?? []
       const defaultAnnotation = [ ...convertGqlToAnnotations(annotations, action.meta.arg.originalArgs.phaseType, state._userID) ].reverse().pop();
       state.focus = defaultAnnotation?.update?.confidence ?? defaultAnnotation?.confidence ?? state._defaultConfidence ?? initialState.focus
     })
