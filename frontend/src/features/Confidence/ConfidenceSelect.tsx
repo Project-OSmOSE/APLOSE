@@ -25,6 +25,7 @@ export const ConfidenceSelect: React.FC<{
                  placeholder={ placeholder }
                  optionsContainer="popover"
                  options={ options }
+                 noneLabel='All'
                  value={ value?.label ?? valueLabel }
                  onValueSelected={ setConfidence }/>
 }

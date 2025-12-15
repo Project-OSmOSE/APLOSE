@@ -27,6 +27,7 @@ export const LabelSelect: React.FC<{
                  optionsContainer="popover"
                  options={ options }
                  value={ value?.name ?? valueName }
+                 noneLabel='All'
                  isLoading={ isLoading }
                  onValueSelected={ setLabel }/>
 }
