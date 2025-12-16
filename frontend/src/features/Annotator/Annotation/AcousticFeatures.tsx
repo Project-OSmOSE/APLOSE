@@ -17,7 +17,7 @@ import {
 import { selectAnalysis } from '@/features/Annotator/Analysis';
 import { useTimeScale } from '@/features/Annotator/Axis';
 import { useAppDispatch, useAppSelector } from '@/features/App';
-import { setIsDrawingEnabled } from '@/features/Annotator/UX';
+import { endPositionSelection, selectIsSelectingPositionForAnnotation, selectPosition } from '@/features/Annotator/UX';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 import { focusAnnotation } from '@/features/Annotator/Annotation/slice';
 
@@ -274,30 +274,28 @@ const SelectableFrequencyRow: React.FC<{
   const [ isSelecting, setIsSelecting ] = useState<boolean>(false);
   const dispatch = useAppDispatch()
   const focusedAnnotation = useAppSelector(selectAnnotation)
-
-  const [ isClickEventActive, setIsClickEventActive ] = useState<boolean>(false);
+  const isSelectingAnnotationFrequency = useAppSelector(selectIsSelectingPositionForAnnotation)
 
   const onClick = useCallback((event: MouseEvent) => {
     event.stopPropagation()
-    if (!isClickEventActive) return;
+    if (!isSelecting) return;
+    if (!isSelectingAnnotationFrequency) return;
     if (!focusedAnnotation) return;
     if (!isInAnnotation(event, focusedAnnotation)) return;
     const position = getFreqTime(event)
     if (position) onChange(position.frequency)
     unselect()
-  }, [ getFreqTime, isInAnnotation, isClickEventActive, focusedAnnotation ]);
+  }, [ getFreqTime, isSelecting, isInAnnotation, isSelectingAnnotationFrequency, focusedAnnotation ]);
   useEvent(CLICK_EVENT, onClick)
 
   const select = useCallback(() => {
-    setTimeout(() => setIsClickEventActive(true), 500);
-    setIsSelecting(true)
-    dispatch(setIsDrawingEnabled(false))
-  }, [ dispatch ])
+    setTimeout(() => setIsSelecting(true), 100);
+    if (focusedAnnotation) dispatch(selectPosition(focusedAnnotation))
+  }, [ dispatch, focusedAnnotation ])
 
   const unselect = useCallback(() => {
-    setIsClickEventActive(false)
     setIsSelecting(false)
-    dispatch(setIsDrawingEnabled(true))
+    dispatch(endPositionSelection())
   }, [ dispatch ])
 
   const toggleSelection = useCallback(() => {

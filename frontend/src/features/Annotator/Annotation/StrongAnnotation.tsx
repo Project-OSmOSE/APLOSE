@@ -8,7 +8,7 @@ import { AnnotationType, useAnnotationTask } from '@/api';
 import { formatTime } from '@/service/function';
 import { useUpdateAnnotation } from './hooks';
 import { selectAllLabels, selectHiddenLabels } from '@/features/Annotator/Label';
-import { selectIsDrawingEnabled } from '@/features/Annotator/UX';
+import { selectIsDrawingEnabled, selectIsSelectingPositionForAnnotation } from '@/features/Annotator/UX';
 import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
@@ -37,6 +37,7 @@ export const StrongAnnotation: React.FC<{
     return annotation.validation?.isValid
   }, [ hiddenLabels, annotation ])
   const dispatch = useAppDispatch();
+  const isSelectingAnnotationFrequency = useAppSelector(selectIsSelectingPositionForAnnotation)
 
   const focus = useCallback(() => dispatch(focusAnnotation(annotation)), [ annotation, dispatch ])
 
@@ -153,6 +154,7 @@ export const StrongAnnotation: React.FC<{
                         colorClassName,
                         isActive ? '' : styles.disabled,
                         isDrawingEnabled ? '' : styles.editDisabled,
+                        isActive && isSelectingAnnotationFrequency ? styles.pointerSelect : ''
                       ].join(' ') }>
 
     { (isMouseHover || isActive) &&

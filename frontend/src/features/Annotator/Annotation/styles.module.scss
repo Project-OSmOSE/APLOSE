@@ -21,6 +21,11 @@ $box-width: 3px;
       pointer-events: none !important;
     }
   }
+
+  &.pointerSelect {
+    pointer-events: auto !important;
+    cursor: crosshair;
+  }
 }
 
 .point {

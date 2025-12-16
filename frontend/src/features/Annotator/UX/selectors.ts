@@ -17,6 +17,10 @@ export const selectIsDrawingEnabled = createSelector(
   (isEditionAuthorized, isDrawingEnabled) => isEditionAuthorized && isDrawingEnabled,
 )
 
+export const selectIsSelectingPositionForAnnotation = createSelector(
+  selectAnnotator, AnnotatorUXSlice.selectors.selectIsSelectingPositionForAnnotation,
+)
+
 export const selectAllFileIsSeen = createSelector(
   selectAnnotator, AnnotatorUXSlice.selectors.selectAllFileIsSeen,
 )
