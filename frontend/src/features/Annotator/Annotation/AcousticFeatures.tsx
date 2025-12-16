@@ -7,7 +7,7 @@ import { IoRemoveCircleOutline } from 'react-icons/io5';
 import { createOutline } from 'ionicons/icons/index.js';
 import { CLICK_EVENT, useEvent } from '@/features/UX/Events';
 import { AnnotationType, SignalTrendType, useAnnotationTask, useCurrentCampaign, useCurrentPhase } from '@/api';
-import { useGetFreqTime } from '@/features/Annotator/Pointer';
+import { useGetFreqTime, useIsInAnnotation } from '@/features/Annotator/Pointer';
 import {
   useGetAnnotation,
   useRemoveAnnotationFeatures,
@@ -188,12 +188,12 @@ export const AcousticFeatures: React.FC = () => {
 
           <SelectableFrequencyRow label="Start"
                                   value={ focusedAnnotation.acousticFeatures.startFrequency ?? undefined }
-                                  max={ analysis?.fft.samplingFrequency }
+                                  max={ (analysis?.fft.samplingFrequency ?? 0) / 2 }
                                   onChange={ startFrequency => updateFeatures(focusedAnnotation, { startFrequency }) }/>
 
           <SelectableFrequencyRow label="End"
                                   value={ focusedAnnotation.acousticFeatures.endFrequency ?? undefined }
-                                  max={ analysis?.fft.samplingFrequency }
+                                  max={ (analysis?.fft.samplingFrequency ?? 0) / 2 }
                                   onChange={ endFrequency => updateFeatures(focusedAnnotation, { endFrequency }) }/>
 
         {/* Time */ }
@@ -270,18 +270,22 @@ const SelectableFrequencyRow: React.FC<{
   onChange: (value: number | undefined) => void;
 }> = ({ label, value, max, onChange }) => {
   const getFreqTime = useGetFreqTime()
+  const isInAnnotation = useIsInAnnotation()
   const [ isSelecting, setIsSelecting ] = useState<boolean>(false);
   const dispatch = useAppDispatch()
+  const focusedAnnotation = useAppSelector(selectAnnotation)
 
   const [ isClickEventActive, setIsClickEventActive ] = useState<boolean>(false);
 
   const onClick = useCallback((event: MouseEvent) => {
     event.stopPropagation()
     if (!isClickEventActive) return;
+    if (!focusedAnnotation) return;
+    if (!isInAnnotation(event, focusedAnnotation)) return;
     const position = getFreqTime(event)
     if (position) onChange(position.frequency)
     unselect()
-  }, [ getFreqTime, isClickEventActive ]);
+  }, [ getFreqTime, isInAnnotation, isClickEventActive, focusedAnnotation ]);
   useEvent(CLICK_EVENT, onClick)
 
   const select = useCallback(() => {

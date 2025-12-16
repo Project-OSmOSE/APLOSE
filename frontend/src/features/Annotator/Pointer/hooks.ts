@@ -3,6 +3,7 @@ import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
 import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
 import { type Position, type TimeFreqPosition } from './slice';
 import { useAnnotatorCanvasContext } from '@/features/Annotator/Canvas/context';
+import type { AnnotationNode } from '@/api';
 
 export const useIsHoverCanvas = () => {
   const width = useWindowWidth()
@@ -48,4 +49,18 @@ export const useGetFreqTime = () => {
       time: +timeScale.positionToValue(coords.x)?.toFixed(3),
     }
   }, [ getCoords, timeScale, frequencyScale ]);
+}
+
+export const useIsInAnnotation = () => {
+  const getFreqTime = useGetFreqTime()
+
+  return useCallback((event: Position, annotation: Pick<AnnotationNode, 'startFrequency' | 'endFrequency' | 'startTime' | 'endTime'>) => {
+    const position = getFreqTime(event);
+    if (!position) return false;
+    if (annotation.startTime && position.time < annotation.startTime) return false
+    if (annotation.endTime && position.time > annotation.endTime) return false
+    if (annotation.startFrequency && position.frequency < annotation.startFrequency) return false
+    return !(annotation.endFrequency && position.frequency > annotation.endFrequency);
+
+  }, [getFreqTime])
 }
