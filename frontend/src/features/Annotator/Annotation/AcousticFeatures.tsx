@@ -277,8 +277,8 @@ const SelectableFrequencyRow: React.FC<{
   const isSelectingAnnotationFrequency = useAppSelector(selectIsSelectingPositionForAnnotation)
 
   const onClick = useCallback((event: MouseEvent) => {
-    event.stopPropagation()
     if (!isSelecting) return;
+    event.stopPropagation()
     if (!isSelectingAnnotationFrequency) return;
     if (!focusedAnnotation) return;
     if (!isInAnnotation(event, focusedAnnotation)) return;

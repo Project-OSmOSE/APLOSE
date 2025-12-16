@@ -22,9 +22,9 @@ export const DraggableDiv: React.FC<{
   const div = useRef<HTMLDivElement | null>(null);
 
   const mouseMove = useCallback((event: MouseEvent) => {
+    if (!isMoveEventActive) return;
     event.stopPropagation();
     event.preventDefault();
-    if (!isMoveEventActive) return;
     if (onXMove) onXMove(event.movementX);
     if (onYMove) onYMove(event.movementY);
   }, [ onXMove, onYMove, isMoveEventActive ])
