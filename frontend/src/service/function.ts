@@ -39,7 +39,7 @@ export function searchFilter(values: Array<SearchItem>, search: string | undefin
   const searchData = search.split(' ').filter(s => s).map(s => s.toLowerCase());
   return values.filter(value => {
       for (const s of searchData) {
-        if (value.searchable.find(v => v.includes(s))) continue;
+        if (value.searchable.find(v => v.toLowerCase().includes(s.toLowerCase()))) continue;
         return false;
       }
       return true;
