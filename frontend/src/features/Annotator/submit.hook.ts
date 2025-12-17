@@ -37,7 +37,7 @@ export const useAnnotatorSubmit = () => {
       start,
     )
   }, [ openAnnotator, toast, navigate, allAnnotations, submitTask, allFileIsSeen, start, navigationInfo, campaignID, phaseType, taskComments ])
-  useKeyDownEvent([ 'Enter', 'Tab', 'NumpadEnter' ], submit)
+  useKeyDownEvent([ 'Enter', 'NumpadEnter' ], submit)
 
   useEffect(() => {
     if (!isSuccess) return;
