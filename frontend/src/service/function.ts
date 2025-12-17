@@ -3,7 +3,6 @@ import { SerializedError } from '@reduxjs/toolkit';
 import { type SearchItem } from '@/components/form';
 
 export function getErrorMessage(error: FetchBaseQueryError | SerializedError | unknown | string | undefined): string | undefined {
-  console.debug('error', error)
   if (!error) return undefined;
   if (typeof error === 'string') return error;
   if ((error as SerializedError).message) return (error as SerializedError).message;

@@ -15,6 +15,7 @@ from backend.api.models import (
     AnnotationFileRange,
     AnnotationTask,
     SpectrogramAnalysis,
+    AnnotationPhase,
 )
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationSpectrogramFilterSet
@@ -30,6 +31,7 @@ def get_task(
     campaign_id: int,
     phase: AnnotationPhaseType,
 ) -> Optional[AnnotationTask]:
+    print("get_task")
     try:
         return AnnotationTask.objects.get(
             spectrogram_id=spectrogram.id,
@@ -38,7 +40,12 @@ def get_task(
             annotation_phase__phase=phase.value,
         )
     except AnnotationTask.DoesNotExist:
-        return None
+        return AnnotationTask(
+            spectrogram_id=spectrogram.id,
+            annotator_id=info.context.user.id,
+            annotation_phase__annotation_campaign_id=campaign_id,
+            annotation_phase__phase=phase.value,
+        )
 
 
 class AnnotationSpectrogramNode(BaseObjectType):
@@ -185,4 +192,13 @@ class AnnotationSpectrogramNode(BaseObjectType):
                 annotation_phase__phase=phase.value,
             )
         except AnnotationTask.DoesNotExist:
-            return None
+            return AnnotationTask(
+                id=-1,
+                status="C",
+                spectrogram_id=self.id,
+                annotator_id=info.context.user.id,
+                annotation_phase=AnnotationPhase.objects.get(
+                    annotation_campaign_id=campaign_id,
+                    phase=phase.value,
+                ),
+            )

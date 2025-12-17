@@ -1,3 +1,4 @@
+import graphene
 from django.db.models import Q
 
 from backend.api.models import (

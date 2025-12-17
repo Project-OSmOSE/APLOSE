@@ -62,7 +62,6 @@ export const gqlAPI = createApi({
     if (!('error' in result) && 'data' in result && 'errors' in result.data) {
       result.error = result.data.errors
     }
-    console.log(result)
     return result
   },
   endpoints: () => ({}),
