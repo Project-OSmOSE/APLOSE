@@ -57,7 +57,11 @@ class AnnotationPhaseNode(BaseObjectType):
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_has_annotations(self: AnnotationPhase, info):
-        return self.annotations.exists()
+        if self.phase == AnnotationPhase.Type.ANNOTATION:
+            return self.annotations.exists()
+        return self.annotation_campaign.phases.get(
+            phase=AnnotationPhase.Type.ANNOTATION
+        ).annotations.exists()
 
     @classmethod
     def resolve_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):

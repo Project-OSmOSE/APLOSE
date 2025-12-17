@@ -49,7 +49,6 @@ export const useAnnotatorSubmit = () => {
   }, [ isSuccess ]);
 
   useEffect(() => {
-    console.log(error, info.data)
     if (error) toast.raiseError({ error })
   }, [ error ]);
 
