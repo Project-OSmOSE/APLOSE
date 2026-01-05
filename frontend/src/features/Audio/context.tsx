@@ -151,7 +151,10 @@ export const AudioProvider: React.FC<AudioContextProvider> = ({ children }) => {
     time, state, source, duration,
     stopTime, setStopTime,
     playbackRate, setPlaybackRate,
-    setSource, clearSource: () => setSource(undefined),
+    setSource,
+    clearSource: () => {
+      setSource(undefined)
+    },
     seek, play, pause, download,
   }), [ time, source, playbackRate, duration, setPlaybackRate, state, stopTime, setStopTime, setSource, pause, play, seek, download ]);
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { Fragment, useCallback, useMemo } from 'react';
 import { Select } from '@/components/form';
 import { useAudio } from './context';
 
@@ -16,6 +16,7 @@ export const PlaybackRateSelect: React.FC = () => {
     audio.setPlaybackRate(rate)
   }, [ audio.setPlaybackRate ])
 
+  if (!audio.source) return <Fragment/>
   return <Select placeholder="Select playback rate"
                  options={ options }
                  value={ audio.playbackRate }

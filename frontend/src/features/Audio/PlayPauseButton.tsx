@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
 import { pause, play } from 'ionicons/icons/index.js';
 import { Kbd, TooltipOverlay } from '@/components/ui';
@@ -18,6 +18,7 @@ export const PlayPauseButton: React.FC = () => {
     }
   }, [ audio.state ])
 
+  if (!audio.source) return <Fragment/>
   return <TooltipOverlay title="Shortcut" tooltipContent={ <p><Kbd keys="space"/> : Play/Pause audio</p> }>
     <IonButton color={ 'primary' }
                shape={ 'round' }

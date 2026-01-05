@@ -11,6 +11,8 @@ class FFT(models.Model):
             "window_size",
             "overlap",
             "sampling_frequency",
+            "scaling",
+            "legacy",
         )
 
     def __str__(self):

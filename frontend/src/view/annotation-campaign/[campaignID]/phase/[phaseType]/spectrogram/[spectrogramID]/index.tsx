@@ -42,6 +42,7 @@ export const AnnotatorPage: React.FC = () => {
 
   useEffect(() => {
     if (spectrogram?.audioPath) audio.setSource(spectrogram.audioPath)
+    else audio.clearSource()
 
     return () => {
       audio.clearSource() // TODO: check behavior when navigating between files
