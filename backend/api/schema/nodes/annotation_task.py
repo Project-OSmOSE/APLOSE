@@ -42,6 +42,7 @@ class AnnotationTaskNode(BaseObjectType):
             author_id=self.annotator_id,
             annotation_phase_id=self.annotation_phase_id,
             spectrogram_id=self.spectrogram_id,
+            annotation__isnull=True,
         )
 
     def resolve_annotations_to_check(self: AnnotationTask, info, **kwargs):
