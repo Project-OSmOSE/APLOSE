@@ -7,8 +7,8 @@ export const TimeBar: React.FC = () => {
   const audio = useAudio();
   const width = useWindowWidth()
 
-  if (!audio.source) return <Fragment/>
+  if (!audio.source || !audio.duration) return <Fragment/>
   return (
-    <div className={ styles.timeBar } style={ { left: audio.time * width / (audio.duration ?? 1) } }/>
+    <div className={ styles.timeBar } style={ { left: audio.time * width / audio.duration } }/>
   )
 }
