@@ -89,6 +89,7 @@ export const AnnotationsFilter: React.FC<{
       <LabelSelect placeholder="Filter by label"
                    options={ campaign?.labelSet?.labels ?? [] }
                    valueName={ params.annotationLabel ?? undefined }
+                   disabled={ params.withAnnotations !== true }
                    onSelected={ setLabel }
                    isLoading={ isFetching }/>
 

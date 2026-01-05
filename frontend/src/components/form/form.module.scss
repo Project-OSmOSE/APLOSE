@@ -140,7 +140,7 @@
     }
   }
 
-  &[aria-disabled=true] button {
+  button[aria-disabled=true]  {
     cursor: default;
   }
 

@@ -22,7 +22,7 @@ import { Label } from './Label';
 
 export type SelectValue = number | string | undefined;
 
-type SelectProperties = {
+export type SelectProperties = {
   label?: string;
   required?: boolean;
   placeholder: string;

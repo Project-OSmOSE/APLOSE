@@ -1,17 +1,21 @@
 import React, { useCallback, useMemo } from 'react';
-import { Item, Select } from '@/components/form';
+import { Item, Select, type SelectProperties } from '@/components/form';
 import { AnnotationLabelNode, Maybe } from '@/api';
 
 type Label = Pick<AnnotationLabelNode, 'name'>;
 
 export const LabelSelect: React.FC<{
-  placeholder: string;
   options: Maybe<Label>[]
   value?: Label,
   valueName?: string,
   onSelected: (label?: Label) => void
-  isLoading?: boolean;
-}> = ({ placeholder, options: _options, value, valueName, onSelected, isLoading }) => {
+} & Omit<SelectProperties, 'optionsContainer' | 'onValueSelected' | 'options'>> = ({
+                                                     options: _options,
+                                                     value,
+                                                     valueName,
+                                                     onSelected,
+                                                     ...params
+                                                   }) => {
 
   const options: Item[] = useMemo(() => _options.filter(l => l !== null).map(l => ({
     label: l!.name,
@@ -23,11 +27,10 @@ export const LabelSelect: React.FC<{
   }, [ onSelected, _options ])
 
   return <Select label="Label"
-                 placeholder={ placeholder }
                  optionsContainer="popover"
                  options={ options }
                  value={ value?.name ?? valueName }
-                 noneLabel='All'
-                 isLoading={ isLoading }
-                 onValueSelected={ setLabel }/>
+                 noneLabel="All"
+                 onValueSelected={ setLabel }
+                 { ...params }/>
 }
