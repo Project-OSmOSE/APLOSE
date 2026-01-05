@@ -16,15 +16,15 @@ export const DateFilter: React.FC<{
   const [ filterModalOpen, setFilterModalOpen ] = useState<boolean>(false);
 
   const minDate: string = useMemo(() => {
-    if (!params.to) return '';
-    const date = params.to.split('');
+    if (!params.from) return '';
+    const date = params.from.split('');
     date.pop();
     return date.join('');
   }, [ params ]);
 
   const maxDate: string = useMemo(() => {
-    if (!params.from) return '';
-    const date = params.from.split('');
+    if (!params.to) return '';
+    const date = params.to.split('');
     date.pop();
     return date.join('');
   }, [ params ]);
@@ -45,20 +45,20 @@ export const DateFilter: React.FC<{
   }
 
   const setMin = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    updateParams({ to: getDateString(event) })
+    updateParams({ from: getDateString(event) })
     onUpdate()
   }, [])
   const resetMin = useCallback(() => {
-    updateParams({ to: undefined })
+    updateParams({ from: undefined })
     onUpdate()
   }, [])
 
   const setMax = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    updateParams({ from: getDateString(event) })
+    updateParams({ to: getDateString(event) })
     onUpdate()
   }, [])
   const resetMax = useCallback(() => {
-    updateParams({ from: undefined })
+    updateParams({ to: undefined })
     onUpdate()
   }, [])
 
