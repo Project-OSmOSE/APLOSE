@@ -3,7 +3,14 @@ import { type Annotation, focusAnnotation } from './slice';
 import { TableContent, useModal } from '@/components/ui';
 import styles from './styles.module.scss';
 import { AnnotationLabelInfo } from './AnnotationLabelInfo';
-import { AnnotationPhaseType, AnnotationType, useAnnotationTask, useCurrentCampaign, useCurrentUser } from '@/api';
+import {
+  AnnotationPhaseType,
+  AnnotationType,
+  type GetAnnotationTaskQuery,
+  useAnnotationTask,
+  useCurrentCampaign, useCurrentPhase,
+  useCurrentUser,
+} from '@/api';
 import { useGetAnnotations, useInvalidateAnnotation, useRemoveAnnotation, useValidateAnnotation } from './hooks';
 import { useFocusCanvasOnTime } from '@/features/Annotator/Canvas';
 import { AnnotationTimeInfo } from './AnnotationTimeInfo';
@@ -19,9 +26,14 @@ import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 
+type Spectro = NonNullable<GetAnnotationTaskQuery['annotationSpectrogramById']>
+type Task = NonNullable<Spectro['task']>
+type CompleteInfo = Pick<NonNullable<NonNullable<Task['userAnnotations']>['results'][number]>, 'detectorConfiguration' | 'annotator'>
+
 export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
   const { phaseType } = useParams<AploseNavParams>();
   const { campaign } = useCurrentCampaign()
+  const { phase } = useCurrentPhase()
   const focusedAnnotation = useAppSelector(selectAnnotation)
   const getAnnotations = useGetAnnotations()
   const validate = useValidateAnnotation()
@@ -33,9 +45,12 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
   const invalidateModal = useModal()
   const dispatch = useAppDispatch();
 
-  const completeInfo = useMemo(() => {
+  const completeInfo: CompleteInfo | undefined = useMemo(() => {
+    if (annotation.annotationPhase == phase?.id) {
+      return { annotator: user }
+    }
     return annotations?.find(a => a.id === annotation.id.toString())
-  }, [ annotations, annotation ])
+  }, [ annotations, annotation, user, phase ])
 
   const isActive = useMemo(() => annotation.id === focusedAnnotation?.id ? styles.active : undefined, [ annotation, focusedAnnotation ])
 
@@ -123,14 +138,14 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
                        color={ annotation.validation?.isValid ? 'success' : 'medium' }
                        fill={ annotation.validation?.isValid ? 'solid' : 'outline' }
                        onClick={ onValidate }>
-                <IonIcon slot="icon-only" icon={ checkmarkOutline }/>
+              <IonIcon slot="icon-only" icon={ checkmarkOutline }/>
             </IonButton>
             <IonButton className="invalidate"
                        data-testid="invalidate"
                        color={ annotation.validation?.isValid ? 'medium' : 'danger' }
                        fill={ annotation.validation?.isValid ? 'outline' : 'solid' }
                        onClick={ onInvalidate }>
-                <IonIcon slot="icon-only" icon={ closeOutline }/>
+              <IonIcon slot="icon-only" icon={ closeOutline }/>
             </IonButton>
           </Fragment> : <Fragment/> }
         </TableContent> }

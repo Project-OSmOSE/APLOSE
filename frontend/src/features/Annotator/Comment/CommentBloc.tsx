@@ -9,10 +9,12 @@ import { swapHorizontalOutline } from 'ionicons/icons';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectFocusedComment } from './selectors';
 import { blur, selectAnnotation } from '@/features/Annotator/Annotation';
+import { useCurrentUser } from '@/api';
 
 export const CommentBloc: React.FC = () => {
   const focusedAnnotation = useAppSelector(selectAnnotation)
   const focusedComment = useAppSelector(selectFocusedComment)
+  const { user } = useCurrentUser();
   const add = useAddComment()
   const update = useUpdateComment()
   const remove = useRemoveComment()
@@ -33,6 +35,7 @@ export const CommentBloc: React.FC = () => {
               rows={ 5 }
               placeholder="Enter your comment"
               style={ { resize: 'none' } }
+              disabled={ focusedAnnotation?.annotator !== user?.id }
               value={ focusedComment?.comment ?? '' }
               onInput={ updateComment }/>
 

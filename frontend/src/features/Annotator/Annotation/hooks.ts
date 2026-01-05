@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { addAnnotation, type Annotation, blur, focusAnnotation, removeAnnotation, updateAnnotation } from './slice';
 import { selectAllAnnotations } from './selectors'
 import { getNewItemID } from '@/service/function';
-import { AnnotationType, useCurrentUser } from '@/api';
+import { AnnotationType, useCurrentPhase, useCurrentUser } from '@/api';
 import { selectFocusConfidence } from '@/features/Annotator/Confidence';
 import { type AploseNavParams } from '@/features/UX';
 import { useParams } from 'react-router-dom';
@@ -70,16 +70,19 @@ export const useGetAnnotation = () => {
 export const useAddAnnotation = () => {
   const getNewID = useGetNewAnnotationID()
   const { user } = useCurrentUser();
+  const { phase } = useCurrentPhase()
   const dispatch = useAppDispatch();
 
-  return useCallback((annotation: Omit<Annotation, 'id' | 'analysis'>) => {
+  return useCallback((annotation: Omit<Annotation, 'id' | 'analysis' | 'annotationPhase'>) => {
+    if (!phase) return;
     const addedAnnotation = dispatch(addAnnotation({
       ...annotation,
+      annotationPhase: phase.id,
       id: getNewID(),
       annotator: user?.id,
     })).payload as Annotation
     dispatch(focusAnnotation(addedAnnotation))
-  }, [ dispatch, getNewID, user ])
+  }, [ dispatch, getNewID, user, phase ])
 }
 
 export const useValidateAnnotation = () => {

@@ -144,6 +144,11 @@ class AnnotationSerializer(serializers.ModelSerializer):
             if float(data["end_frequency"]) > self.fields["end_frequency"].max_value:
                 data["end_frequency"] = self.fields["end_frequency"].max_value
 
+        if data.get("comments"):
+            data["comments"] = [
+                {**c, "annotation": data.get("id")} for c in data.get("comments", [])
+            ]
+
         if data.get("validations"):
             data["validations"] = [
                 {**v, "annotation": data.get("id")} for v in data.get("validations", [])

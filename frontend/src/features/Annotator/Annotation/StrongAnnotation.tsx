@@ -34,7 +34,7 @@ export const StrongAnnotation: React.FC<{
     // Hide updated annotations
     if (annotation.update) return false;
     // Hide invalidated annotations
-    return !annotation.validation || !annotation.validation.isValid
+    return annotation.validation?.isValid == false;
   }, [ hiddenLabels, annotation ])
   const dispatch = useAppDispatch();
   const isSelectingAnnotationFrequency = useAppSelector(selectIsSelectingPositionForAnnotation)
