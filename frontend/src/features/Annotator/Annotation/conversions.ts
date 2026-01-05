@@ -5,6 +5,7 @@ import {
   AnnotationInput,
   type AnnotationLabelNode,
   type AnnotationNode,
+  type AnnotationPhaseNode,
   AnnotationPhaseType,
   type AnnotationValidationNode,
   AnnotationValidationSerializerInput,
@@ -87,6 +88,7 @@ type Node =
   }>,
   label: Pick<AnnotationLabelNode, 'name'>,
   analysis: Pick<SpectrogramAnalysisNode, 'id'>,
+  annotationPhase: Pick<AnnotationPhaseNode, 'id'>
 }
 
 export function convertGqlToAnnotation(annotation: Node,
@@ -94,6 +96,7 @@ export function convertGqlToAnnotation(annotation: Node,
                                        userId?: string): Annotation {
   return {
     id: +annotation.id,
+    annotationPhase: annotation.annotationPhase.id,
     update: undefined,
     label: annotation.label.name,
     comments: convertGqlToComments(annotation.comments?.results ?? []),

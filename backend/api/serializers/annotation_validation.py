@@ -1,6 +1,7 @@
 """Annotation comment serializer"""
 from typing import Optional
 
+from django.db.models import QuerySet
 from rest_framework import serializers
 from rest_framework.fields import empty
 
@@ -29,10 +30,26 @@ class AnnotationValidationSerializer(serializers.ModelSerializer):
             },
         }
 
-    def run_validation(self, data=empty):
-        user: Optional[User] = self.context["user"] if "user" in self.context else None
-        data["annotator"] = user.id or data["annotator"]
-        data["annotation"] = (
-            self.context["annotation_id"] if "annotation_id" in self.context else None
-        )
+    def __init__(self, instance=None, data=empty, **kwargs):
+        if isinstance(instance, QuerySet):
+            if instance.count() == 1:
+                instance = instance.first()
+            elif not instance.exists():
+                instance = None
+        super().__init__(instance, data, **kwargs)
+
+    def run_validation(self, data: dict = empty):
+
+        if not data.get("annotator") and self.context.get("user") is not None:
+            data["annotator"] = self.context.get("user").id
+
+        if data.get("id"):
+            self.instance = AnnotationValidation.objects.get(pk=data.get("id"))
+        elif data.get("annotation") and data.get("annotator"):
+            instance = AnnotationValidation.objects.filter(
+                annotation_id=data.get("annotation"),
+                annotator_id=data.get("annotator"),
+            )
+            self.instance = instance.first() if instance.exists() else None
+
         return super().run_validation(data)

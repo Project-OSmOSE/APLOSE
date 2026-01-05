@@ -2062,7 +2062,7 @@ type DetectorConfigurationNode implements BaseNode {
   id: ID!
   configuration: String!
   detector: DetectorNode!
-  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValid: Boolean, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
+  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
 }
 
 type AnnotationNodeConnection {
@@ -2107,7 +2107,7 @@ type AnnotationNode implements BaseNode {
   isUpdateOf: AnnotationNode
   createdAt: DateTime!
   lastUpdatedAt: DateTime!
-  updatedTo(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValid: Boolean, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
+  updatedTo(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
   annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationCommentNodeConnection!
   validations(
     """Query limit"""
@@ -2156,7 +2156,7 @@ type AnnotationLabelNode implements BaseNode {
   id: ID!
   name: String!
   metadataxLabel: LabelNode
-  annotationSet(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValid: Boolean, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
+  annotationSet(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
   labelsetSet(offset: Int, before: String, after: String, first: Int, last: Int, name: String, description: String, labels: ID): LabelSetNodeConnection!
   annotationcampaignSet(
     offset: Int
@@ -2385,7 +2385,7 @@ type UserNode implements BaseNode {
     """Ordering"""
     orderBy: String
   ): SpectrogramAnalysisNodeConnection!
-  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValid: Boolean, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
+  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
   archives(offset: Int, before: String, after: String, first: Int, last: Int, date: DateTime, byUser: ID): ArchiveNodeConnection!
   annotationTasks(
     offset: Int
@@ -2586,7 +2586,7 @@ type SpectrogramAnalysisNode implements BaseNode {
     """Ordering"""
     orderBy: String
   ): SpectrogramNodeNodeConnection
-  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValid: Boolean, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
+  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
   annotationCampaigns(
     offset: Int
     before: String
@@ -2762,7 +2762,7 @@ type SpectrogramNode implements BaseNode {
     """Ordering"""
     orderBy: String
   ): SpectrogramAnalysisNodeConnection!
-  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValid: Boolean, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
+  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
   annotationTasks(
     offset: Int
     before: String
@@ -3104,7 +3104,7 @@ type AnnotationSpectrogramNode implements BaseNode {
     """Ordering"""
     orderBy: String
   ): SpectrogramAnalysisNodeConnection!
-  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValid: Boolean, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
+  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
   annotationTasks(
     offset: Int
     before: String
@@ -3192,7 +3192,7 @@ type AnnotationTaskNode implements BaseNode {
     label_Name: String
     detectorConfiguration_Detector: ID
     acousticFeatures_Exists: Boolean
-    isValid: Boolean
+    isValidatedBy: ID
     isUpdated: Boolean
     annotator: ID
   ): AnnotationNodeNodeConnection
@@ -3230,7 +3230,7 @@ type AnnotationTaskNode implements BaseNode {
     label_Name: String
     detectorConfiguration_Detector: ID
     acousticFeatures_Exists: Boolean
-    isValid: Boolean
+    isValidatedBy: ID
     isUpdated: Boolean
     annotator: ID
   ): AnnotationNodeNodeConnection
@@ -3252,7 +3252,7 @@ type AnnotationPhaseNode implements BaseNode {
   createdBy: UserNode!
   endedAt: DateTime
   endedBy: UserNode
-  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValid: Boolean, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
+  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
   annotationTasks(
     offset: Int
     before: String
@@ -3632,7 +3632,7 @@ type ConfidenceNode implements BaseNode {
   id: ID!
   label: String!
   level: Int!
-  annotationSet(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValid: Boolean, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
+  annotationSet(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
   confidenceIndicatorSets(offset: Int, before: String, after: String, first: Int, last: Int, name: String, desc: String, confidenceIndicators: ID): ConfidenceSetNodeConnection!
   isDefault: Boolean
 }
@@ -4576,6 +4576,7 @@ input AnnotationInput {
   endTime: Float
   startFrequency: Float
   endFrequency: Float
+  annotationPhase: String!
   annotator: String
   analysis: String!
   detectorConfiguration: String

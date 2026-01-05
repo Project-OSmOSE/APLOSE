@@ -1,6 +1,7 @@
 import graphene
+from django.db.models import Q
 
-from backend.api.models import Spectrogram
+from backend.api.models import Spectrogram, AnnotationPhase
 from backend.api.context_filters import (
     AnnotationPhaseContextFilter,
     AnnotationContextFilter,
@@ -21,17 +22,31 @@ class UpdateAnnotationsMutation(ListSerializerMutation):
         exclude_fields = (
             "type",
             "annotator_expertise_level",
-            "annotation_phase",
             "spectrogram",
         )
 
     @classmethod
     def get_serializer_queryset(cls, root, info, **input):
-        return AnnotationContextFilter.get_edit_queryset(
+        if input.get("phase_type").value == AnnotationPhaseType.Annotation:
+            return AnnotationContextFilter.get_edit_queryset(
+                info.context,
+                annotation_phase__annotation_campaign_id=input["campaign_id"],
+                annotation_phase__phase=AnnotationPhase.Type.ANNOTATION,
+                spectrogram_id=input["spectrogram_id"],
+            )
+        return AnnotationContextFilter.get_queryset(
             info.context,
             annotation_phase__annotation_campaign_id=input["campaign_id"],
-            annotation_phase__phase=input["phase_type"].value,
             spectrogram_id=input["spectrogram_id"],
+        ).filter(
+            Q(
+                annotation_phase__phase=AnnotationPhase.Type.VERIFICATION,
+                annotator_id=info.context.user.id,
+            )
+            | (
+                Q(annotation_phase__phase=AnnotationPhase.Type.ANNOTATION)
+                & ~Q(annotator_id=info.context.user.id)
+            )
         )
 
     @classmethod

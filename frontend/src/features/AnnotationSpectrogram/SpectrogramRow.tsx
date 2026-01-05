@@ -1,5 +1,5 @@
 import {
-  AnnotationNodeNodeConnection,
+  AnnotationNodeNodeConnection, AnnotationPhaseType,
   type AnnotationSpectrogramNode,
   AnnotationTaskNode,
   AnnotationTaskStatus,
@@ -27,8 +27,13 @@ export const SpectrogramRow: React.FC<{
   const start = useMemo(() => new Date(spectrogram.start), [ spectrogram ])
 
   const allAnnotationsCount = useMemo(() => {
-    return (userAnnotations?.totalCount ?? 0) + (annotationsToCheck?.totalCount ?? 0)
-  }, [userAnnotations, annotationsToCheck])
+    switch (phase?.phase) {
+      case AnnotationPhaseType.Annotation:
+        return (userAnnotations?.totalCount ?? 0)
+      case AnnotationPhaseType.Verification:
+        return (annotationsToCheck?.totalCount ?? 0)
+    }
+  }, [phase, userAnnotations, annotationsToCheck])
 
   const validAnnotationsCount = useMemo(() => {
     return (userAnnotations?.totalCount ?? 0) + (validAnnotationsToCheck?.totalCount ?? 0)

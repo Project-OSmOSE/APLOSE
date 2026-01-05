@@ -84,7 +84,7 @@ query listAnnotationTask(
 
                 validAnnotationsToCheck: annotationsToCheck(
                     annotator: $annotationAnnotator
-                    isValid: true
+                    isValidatedBy: $annotatorID
                     label_Name: $annotationLabel
                     confidence_Label: $annotationConfidence
                     detectorConfiguration_Detector: $annotationDetector
@@ -128,7 +128,6 @@ query getAnnotationTask(
 
         isAssigned(phase: $phaseType, campaignId: $campaignID)
 
-
         task(
             phase: $phaseType
             campaignId: $campaignID
@@ -148,6 +147,9 @@ query getAnnotationTask(
             userAnnotations {
                 results {
                     id
+                    annotationPhase {
+                        id
+                    }
                     type
                     startTime
                     endTime
@@ -202,6 +204,9 @@ query getAnnotationTask(
             annotationsToCheck {
                 results {
                     id
+                    annotationPhase {
+                        id
+                    }
                     type
                     startTime
                     endTime

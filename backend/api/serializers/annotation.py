@@ -2,7 +2,7 @@ from typing import Optional
 
 from django.core import validators
 from django.db import transaction
-from django.db.models import Max
+from django.db.models import Max, QuerySet
 from rest_framework import serializers
 from rest_framework.fields import empty, FloatField
 
@@ -58,6 +58,14 @@ class AnnotationSerializer(serializers.ModelSerializer):
             "start_frequency": {"min_value": 0},
             "end_frequency": {"min_value": 0},
         }
+
+    def __init__(self, instance=None, data=empty, **kwargs):
+        if isinstance(instance, QuerySet):
+            if instance.count() == 1:
+                instance = instance.first()
+            elif not instance.exists():
+                instance = None
+        super().__init__(instance, data, **kwargs)
 
     def get_fields(self):
         fields = super().get_fields()
@@ -116,13 +124,16 @@ class AnnotationSerializer(serializers.ModelSerializer):
 
         return fields
 
-    def run_validation(self, data=empty):
-        phase: Optional[AnnotationPhase] = self.context.get("phase", None)
-        spectrogram: Optional[Spectrogram] = self.context.get("spectrogram", None)
-        annotator: Optional[User] = self.context.get("user", None)
-        data["annotation_phase"] = phase.id if phase else None
-        data["spectrogram"] = spectrogram.id if spectrogram else data["spectrogram"]
-        data["annotator"] = annotator.id if annotator else None
+    def run_validation(self, data: dict = empty):
+
+        if not data.get("annotation_phase") and self.context.get("phase"):
+            data["annotation_phase"] = self.context.get("phase").id
+
+        if not data.get("spectrogram") and self.context.get("user"):
+            data["spectrogram"] = self.context.get("spectrogram").id
+
+        if not data.get("annotator") and self.context.get("user"):
+            data["annotator"] = self.context.get("user").id
 
         if self.context.get("force_max_frequency", False):
             if (
@@ -132,6 +143,15 @@ class AnnotationSerializer(serializers.ModelSerializer):
                 data["start_frequency"] = self.fields["start_frequency"].max_value
             if float(data["end_frequency"]) > self.fields["end_frequency"].max_value:
                 data["end_frequency"] = self.fields["end_frequency"].max_value
+
+        if data.get("validations"):
+            data["validations"] = [
+                {**v, "annotation": data.get("id")} for v in data.get("validations", [])
+            ]
+
+        if self.instance:
+            if isinstance(self.instance, QuerySet):
+                self.instance = self.instance.first()
 
         return super().run_validation(data)
 
@@ -265,16 +285,13 @@ class AnnotationSerializer(serializers.ModelSerializer):
     def update_validations(self, instance: Annotation, validated_data):
         instances = AnnotationValidation.objects.filter(
             annotation=instance,
-            annotator=instance.annotator,
+            annotator=self.context.get("user"),
         )
         serializer = AnnotationValidationSerializer(
             instances,
             data=validated_data,
             many=True,
-            context={
-                "user": instance.annotator,
-                "annotation_id": instance.id,
-            },
+            context=self.context,
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()

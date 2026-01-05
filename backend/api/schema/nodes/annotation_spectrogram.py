@@ -31,7 +31,6 @@ def get_task(
     campaign_id: int,
     phase: AnnotationPhaseType,
 ) -> Optional[AnnotationTask]:
-    print("get_task")
     try:
         return AnnotationTask.objects.get(
             spectrogram_id=spectrogram.id,

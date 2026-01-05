@@ -28,9 +28,15 @@ class GraphQLResolve:
 
     def __call__(self, fn, *args, **kwargs):
         def wrapper(*args, **kwargs):
-            info: Optional[GraphQLResolveInfo] = args[1]
+            info: Optional[GraphQLResolveInfo] = None
+            if "info" in kwargs:
+                info = kwargs["info"]
+            else:
+                for arg in args:
+                    if isinstance(arg, GraphQLResolveInfo):
+                        info = arg
 
-            self.check_permission(info.context.user)
+            self.check_permission(info.context.user if info else None)
 
             try:
                 return fn(*args, **kwargs)
@@ -47,14 +53,14 @@ class GraphQLResolve:
 
         return wrapper
 
-    def check_permission(self, user: User):
+    def check_permission(self, user: Optional[User]):
         """Check user responds to the given permission"""
         if self.permission in [
             GraphQLPermissions.AUTHENTICATED,
             GraphQLPermissions.STAFF_OR_SUPERUSER,
             GraphQLPermissions.SUPERUSER,
         ]:
-            if not user.is_authenticated:
+            if user is None or not user.is_authenticated:
                 raise UnauthorizedError()
 
         if self.permission == GraphQLPermissions.STAFF_OR_SUPERUSER:

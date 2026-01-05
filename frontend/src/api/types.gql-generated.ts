@@ -458,6 +458,7 @@ export type AnnotationFileRangeNodeNodeConnection = {
 export type AnnotationInput = {
   acousticFeatures?: InputMaybe<AnnotationAcousticFeaturesSerializerInput>;
   analysis: Scalars['String']['input'];
+  annotationPhase: Scalars['String']['input'];
   annotator?: InputMaybe<Scalars['String']['input']>;
   comments?: InputMaybe<Array<InputMaybe<AnnotationCommentSerializerInput>>>;
   confidence?: InputMaybe<Scalars['String']['input']>;
@@ -496,7 +497,7 @@ export type AnnotationLabelNodeAnnotationSetArgs = {
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
-  isValid?: InputMaybe<Scalars['Boolean']['input']>;
+  isValidatedBy?: InputMaybe<Scalars['ID']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -632,7 +633,7 @@ export type AnnotationNodeUpdatedToArgs = {
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
-  isValid?: InputMaybe<Scalars['Boolean']['input']>;
+  isValidatedBy?: InputMaybe<Scalars['ID']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -791,7 +792,7 @@ export type AnnotationPhaseNodeAnnotationsArgs = {
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
-  isValid?: InputMaybe<Scalars['Boolean']['input']>;
+  isValidatedBy?: InputMaybe<Scalars['ID']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -905,7 +906,7 @@ export type AnnotationSpectrogramNodeAnnotationsArgs = {
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
-  isValid?: InputMaybe<Scalars['Boolean']['input']>;
+  isValidatedBy?: InputMaybe<Scalars['ID']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -1014,7 +1015,7 @@ export type AnnotationTaskNodeAnnotationsToCheckArgs = {
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
-  isValid?: InputMaybe<Scalars['Boolean']['input']>;
+  isValidatedBy?: InputMaybe<Scalars['ID']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -1033,7 +1034,7 @@ export type AnnotationTaskNodeUserAnnotationsArgs = {
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
-  isValid?: InputMaybe<Scalars['Boolean']['input']>;
+  isValidatedBy?: InputMaybe<Scalars['ID']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -1993,7 +1994,7 @@ export type ConfidenceNodeAnnotationSetArgs = {
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
-  isValid?: InputMaybe<Scalars['Boolean']['input']>;
+  isValidatedBy?: InputMaybe<Scalars['ID']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -2779,7 +2780,7 @@ export type DetectorConfigurationNodeAnnotationsArgs = {
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
-  isValid?: InputMaybe<Scalars['Boolean']['input']>;
+  isValidatedBy?: InputMaybe<Scalars['ID']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -6941,7 +6942,7 @@ export type SpectrogramAnalysisNodeAnnotationsArgs = {
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
-  isValid?: InputMaybe<Scalars['Boolean']['input']>;
+  isValidatedBy?: InputMaybe<Scalars['ID']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -7081,7 +7082,7 @@ export type SpectrogramNodeAnnotationsArgs = {
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
-  isValid?: InputMaybe<Scalars['Boolean']['input']>;
+  isValidatedBy?: InputMaybe<Scalars['ID']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -7462,7 +7463,7 @@ export type UserNodeAnnotationsArgs = {
   detectorConfiguration_Detector?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isUpdated?: InputMaybe<Scalars['Boolean']['input']>;
-  isValid?: InputMaybe<Scalars['Boolean']['input']>;
+  isValidatedBy?: InputMaybe<Scalars['ID']['input']>;
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;

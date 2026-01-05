@@ -48,8 +48,7 @@ class AnnotationTaskNode(BaseObjectType):
         if self.annotation_phase.phase == AnnotationPhase.Type.ANNOTATION:
             return Annotation.objects.none()
         return Annotation.objects.filter(
-            annotation_phase=self.annotation_phase.annotation_campaign.phases.get(
-                phase=AnnotationPhase.Type.ANNOTATION
-            ),
+            annotation_phase__annotation_campaign=self.annotation_phase.annotation_campaign,
+            annotation_phase__phase=AnnotationPhase.Type.ANNOTATION,
             spectrogram_id=self.spectrogram_id,
         ).filter(~Q(annotator_id=self.annotator_id))

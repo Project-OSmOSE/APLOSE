@@ -105,7 +105,7 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
           className={ [ className, completeInfo?.annotator?.id === user?.id ? 'disabled' : '' ].join(' ') }
           onClick={ onClick }>
           <RiUser3Fill/>
-          <p>{ completeInfo?.annotator?.displayName }</p>
+          <p>{ completeInfo?.annotator?.displayName } { completeInfo?.annotator?.id === user?.id ? '(self)' : '' }</p>
         </TableContent>
     ) }
 
@@ -117,6 +117,7 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
     {/* Validation */ }
     { phaseType === AnnotationPhaseType.Verification &&
         <TableContent className={ className } onClick={ onClick }>
+          { completeInfo?.annotator?.id !== user?.id ? <Fragment>
             <IonButton className="validate"
                        data-testid="validate"
                        color={ annotation.validation?.isValid ? 'success' : 'medium' }
@@ -131,6 +132,7 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
                        onClick={ onInvalidate }>
                 <IonIcon slot="icon-only" icon={ closeOutline }/>
             </IonButton>
+          </Fragment> : <Fragment/> }
         </TableContent> }
 
 
