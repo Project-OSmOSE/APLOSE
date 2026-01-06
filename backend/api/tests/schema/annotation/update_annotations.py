@@ -41,6 +41,7 @@ presence_annotation = {
     "endFrequency": None,
     "acousticFeatures": None,
     "analysis": "1",
+    "annotationPhase": "1",
 }
 box_annotation = {
     "label": "Boat",
@@ -59,6 +60,7 @@ box_annotation = {
         "trend": "Modulated",
     },
     "analysis": "1",
+    "annotationPhase": "1",
 }
 
 

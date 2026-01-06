@@ -2,10 +2,11 @@
     "datasets": {
         "my_first_analysis": {
             "class": "SpectroDataset",
-            "json": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\processed\\my_first_analysis\\my_first_analysis.json"
-        },
+            "analysis": "my_first_analysis",
+            "json": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\processed\\my_first_analysis\\my_first_analysis.json"        },
         "original": {
             "class": "AudioDataset",
+            "analysis": "original",
             "json": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\data\\audio\\original\\original.json"
         }
     },

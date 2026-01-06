@@ -10,10 +10,11 @@ mutation (
     $campaignID: ID!
     $spectrogramID: ID!
     $phase: AnnotationPhaseType!
+    $annotations: [AnnotationInput]!
+    $taskComments: [AnnotationCommentInput]!
 
     $startedAt: DateTime!
     $endedAt: DateTime!
-    $content: String!
 ) {
     submitAnnotationTask(
         spectrogramId: $spectrogramID
@@ -21,9 +22,18 @@ mutation (
         campaignId: $campaignID
         startedAt: $startedAt
         endedAt: $endedAt
-        content: $content
+        annotations: $annotations
+        taskComments: $taskComments
     ) {
         ok
+        annotationErrors {
+            field
+            messages
+        }
+        taskCommentsErrors {
+            field
+            messages
+        }
     }
 }
 """
@@ -34,6 +44,8 @@ BASE_VARIABLES = {
     "startedAt": "2018-02-01T00:00:00Z",
     "endedAt": "2018-02-01T00:00:00Z",
     "content": "",
+    "annotations": [],
+    "taskComments": [],
 }
 
 

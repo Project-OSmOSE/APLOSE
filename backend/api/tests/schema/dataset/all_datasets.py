@@ -54,8 +54,8 @@ class AllDatasetsTestCase(GraphQLTestCase):
         self.assertEqual(content[0]["id"], "1")
 
         self.assertEqual(content[0]["spectrogramCount"], 11)
-        self.assertEqual(content[0]["start"], "2012-10-03T10:00:00+00:00")
-        self.assertEqual(content[0]["end"], "2012-10-03T20:15:00+00:00")
+        self.assertEqual(content[0]["start"], "2010-08-19T00:00:00+00:00")
+        self.assertEqual(content[0]["end"], "2013-11-02T00:00:00+00:00")
 
         self.assertEqual(content[0]["analysisCount"], 2)
         self.assertEqual(content[0]["spectrogramAnalysis"]["results"][0]["id"], "1")

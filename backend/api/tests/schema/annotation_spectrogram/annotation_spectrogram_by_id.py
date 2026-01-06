@@ -32,7 +32,7 @@ query (
         ) {
             status
 
-            comments(
+            comments: userComments(
                 author: $annotatorID,
                 annotationPhase_Phase: $phaseType
             ) {
@@ -42,7 +42,7 @@ query (
                 }
             }
 
-            annotations {
+            annotations: userAnnotations {
                 results {
                     id
                     type
@@ -137,7 +137,9 @@ class AnnotationSpectrogramByIDTestCase(GraphQLTestCase):
 
         content = json.loads(response.content)["data"]["annotationSpectrogramById"]
         self.assertEqual(content["id"], "7")
-        self.assertIsNone(content["task"])
+        self.assertEqual(content["task"]["status"], "Created")
+        self.assertEqual(content["task"]["comments"]["results"], [])
+        self.assertEqual(content["task"]["annotations"]["results"], [])
 
     def test_connected_empty_user(self):
         self.client.login(username="user4", password="osmose29")
@@ -165,7 +167,9 @@ class AnnotationSpectrogramByIDTestCase(GraphQLTestCase):
 
         content = json.loads(response.content)["data"]["annotationSpectrogramById"]
         self.assertEqual(content["id"], "7")
-        self.assertIsNone(content["task"])
+        self.assertEqual(content["task"]["status"], "Created")
+        self.assertEqual(content["task"]["comments"]["results"], [])
+        self.assertEqual(content["task"]["annotations"]["results"], [])
 
     def test_connected_annotator(self):
         self.client.login(username="user2", password="osmose29")

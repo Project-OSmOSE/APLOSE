@@ -3145,7 +3145,7 @@ type AnnotationSpectrogramNode implements BaseNode {
   ): AnnotationCommentNodeNodeConnection
   duration: Int!
   isAssigned(campaignId: ID!, phase: AnnotationPhaseType!): Boolean!
-  audioPath(analysisId: ID!): String!
+  audioPath(analysisId: ID!): String
   path(analysisId: ID!): String!
   task(campaignId: ID!, phase: AnnotationPhaseType!): AnnotationTaskNode
 }

@@ -16,6 +16,12 @@
                 "peak_voltage": 1.0,
                 "sensitivity": 1.0
             },
+            "normalization": 1,
+            "normalization_values": {
+                "mean": null,
+                "peak": null,
+                "std": null
+            },
             "sample_rate": 128000
         },
         "2022_07_17_05_53_30_000000+0000": {
@@ -33,6 +39,12 @@
                 "gain_db": 0.0,
                 "peak_voltage": 1.0,
                 "sensitivity": 1.0
+            },
+            "normalization": 1,
+            "normalization_values": {
+                "mean": null,
+                "peak": null,
+                "std": null
             },
             "sample_rate": 128000
         },
@@ -52,6 +64,12 @@
                 "peak_voltage": 1.0,
                 "sensitivity": 1.0
             },
+            "normalization": 1,
+            "normalization_values": {
+                "mean": null,
+                "peak": null,
+                "std": null
+            },
             "sample_rate": 128000
         },
         "2022_07_17_10_15_42_000000+0000": {
@@ -69,6 +87,12 @@
                 "gain_db": 0.0,
                 "peak_voltage": 1.0,
                 "sensitivity": 1.0
+            },
+            "normalization": 1,
+            "normalization_values": {
+                "mean": null,
+                "peak": null,
+                "std": null
             },
             "sample_rate": 128000
         },
@@ -88,6 +112,12 @@
                 "peak_voltage": 1.0,
                 "sensitivity": 1.0
             },
+            "normalization": 1,
+            "normalization_values": {
+                "mean": null,
+                "peak": null,
+                "std": null
+            },
             "sample_rate": 128000
         },
         "2022_07_17_21_11_11_000000+0000": {
@@ -106,6 +136,12 @@
                 "peak_voltage": 1.0,
                 "sensitivity": 1.0
             },
+            "normalization": 1,
+            "normalization_values": {
+                "mean": null,
+                "peak": null,
+                "std": null
+            },
             "sample_rate": 128000
         },
         "2022_07_17_23_22_17_000000+0000": {
@@ -123,6 +159,12 @@
                 "gain_db": 0.0,
                 "peak_voltage": 1.0,
                 "sensitivity": 1.0
+            },
+            "normalization": 1,
+            "normalization_values": {
+                "mean": null,
+                "peak": null,
+                "std": null
             },
             "sample_rate": 128000
         }

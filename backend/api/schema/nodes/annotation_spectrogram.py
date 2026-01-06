@@ -114,7 +114,9 @@ class AnnotationSpectrogramNode(BaseObjectType):
         audio_path: str
         if analysis.dataset.legacy:
             audio_path = path.join(
-                analysis.dataset.path.split(settings.DATASET_EXPORT_PATH.stem + "/")[1],
+                analysis.dataset.path.split(
+                    settings.DATASET_EXPORT_PATH.stem + "/"
+                ).pop(),
                 PureWindowsPath(settings.DATASET_FILES_FOLDER),
                 PureWindowsPath(analysis.dataset.get_config_folder()),
                 PureWindowsPath(f"{self.filename}.wav"),
@@ -136,8 +138,8 @@ class AnnotationSpectrogramNode(BaseObjectType):
                 return None
 
             audio_path = str(audio_file.path)
-            audio_path = audio_path.split(str(settings.DATASET_EXPORT_PATH))[1].lstrip(
-                "\\"
+            audio_path = (
+                audio_path.split(str(settings.DATASET_EXPORT_PATH)).pop().lstrip("\\")
             )
         return path.join(
             PureWindowsPath(settings.STATIC_URL),
@@ -166,7 +168,7 @@ class AnnotationSpectrogramNode(BaseObjectType):
                 PureWindowsPath(
                     analysis.dataset.path.split(
                         settings.DATASET_EXPORT_PATH.stem + "/"
-                    )[1]
+                    ).pop()
                 ),
                 PureWindowsPath(settings.DATASET_SPECTRO_FOLDER),
                 PureWindowsPath(analysis.dataset.get_config_folder()),

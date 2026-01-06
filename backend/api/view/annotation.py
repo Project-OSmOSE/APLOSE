@@ -139,7 +139,7 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
             "end_frequency": row["end_frequency"] or None,
             "label": campaign.import_new_label(row["label__name"]),
             "confidence": confidence,
-            "annotation_phase": phase,
+            "annotation_phase": phase.id,
             "annotator": None,
             "analysis": analysis,
             "annotator_expertise_level": None,

@@ -41,7 +41,6 @@ class SubmitAnnotationTaskMutation(graphene.Mutation):
         )
     )
 
-    @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     @transaction.atomic
     def mutate(
         self,
@@ -55,6 +54,9 @@ class SubmitAnnotationTaskMutation(graphene.Mutation):
         ended_at: datetime,
     ):
         """Update annotation task status to "FINISHED" and create a new session"""
+        GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED).check_permission(
+            info.context.user
+        )
         try:
             spectrogram: Spectrogram = get_object_or_404(
                 Spectrogram.objects.all(), pk=spectrogram_id

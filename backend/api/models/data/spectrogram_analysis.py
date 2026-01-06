@@ -15,6 +15,7 @@ from typing_extensions import deprecated
 
 from backend.aplose.models import User
 from .__abstract_analysis import AbstractAnalysis
+from .__abstract_time_segment import TimeSegment
 from .colormap import Colormap
 from .dataset import Dataset
 from .fft import FFT

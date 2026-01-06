@@ -72,7 +72,7 @@ query (
                 campaignId: $campaignID
             ) {
                 status
-                annotations(
+                annotations: userAnnotations(
                     annotator: $annotationAnnotator
                     label_Name: $annotationLabel
                     confidence_Label: $annotationConfidence
@@ -81,8 +81,8 @@ query (
                 ) {
                     totalCount
                 }
-                validatedAnnotations: annotations(
-                    isValid: true
+                validatedAnnotations: annotationsToCheck(
+                    isValidatedBy: $annotatorID
                     annotator: $annotationAnnotator
                     label_Name: $annotationLabel
                     confidence_Label: $annotationConfidence
