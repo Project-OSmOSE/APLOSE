@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { CampaignListPage } from './campaign-list';
 import { selectInAlert } from '../functions';
 import { type Dataset } from '../mock/types';
@@ -47,6 +47,7 @@ export class CampaignCreatePage {
   async go({ as }: Pick<Params, 'as'>): Promise<void> {
     await this.list.go({ as })
     await this.list.createCampaignButton.click()
+    await expect(this.page.getByRole('heading', { name: 'Create Annotation Campaign', exact: true })).toBeVisible()
   }
 
   async selectDataset(dataset: Dataset) {
