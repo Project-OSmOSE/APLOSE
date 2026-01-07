@@ -1,9 +1,8 @@
 import { essentialTag, expect, test } from './utils';
 import { gqlRegex, interceptRequests } from './utils/mock';
-import { campaign, phase as phaseObj, spectrogram, TASKS, USERS } from './utils/mock/types';
+import { campaign, spectrogram, TASKS, USERS } from './utils/mock/types';
 import type { ListAnnotationTaskQueryVariables } from '../src/api/annotation-task';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
-import { DOWNLOAD_ANNOTATIONS_URL, DOWNLOAD_PROGRESS_URL } from '../src/consts/links';
 import type { Params } from './utils/types';
 import type { Request } from 'playwright-core';
 
@@ -121,13 +120,11 @@ const TEST = {
       })
 
       await test.step('Can download results', async () => {
-        await expect(page.phaseDetail.progressModal.resultsDownloadLink).toBeVisible()
-        expect(await page.phaseDetail.progressModal.resultsDownloadLink.getAttribute('href')).toEqual(DOWNLOAD_ANNOTATIONS_URL(phaseObj.id))
+        await expect(page.phaseDetail.progressModal.resultsDownloadLink).toBeEnabled()
       })
 
       await test.step('Can download status', async () => {
-        await expect(page.phaseDetail.progressModal.statusDownloadLink).toBeVisible()
-        expect(await page.phaseDetail.progressModal.statusDownloadLink.getAttribute('href')).toEqual(DOWNLOAD_PROGRESS_URL(phaseObj.id))
+        await expect(page.phaseDetail.progressModal.statusDownloadLink).toBeEnabled()
       })
 
     }),

@@ -50,11 +50,11 @@ class ProgressModal {
   }
 
   get statusDownloadLink(): Locator {
-    return this.modal.getByRole('link', { name: 'Status' })
+    return this.modal.getByRole('button', { name: 'Status' })
   }
 
   get resultsDownloadLink(): Locator {
-    return this.modal.getByRole('link', { name: 'Results' })
+    return this.modal.getByRole('button', { name: 'Results' })
   }
 
   get closeButton(): Locator {
