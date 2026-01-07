@@ -63,7 +63,6 @@ const TEST = {
           analysisIDs: [ spectrogramAnalysis.id ],
           instructionsUrl: '',
           description: '',
-          deadline: '',
           allowImageTuning: false,
           allowColormapTuning: false,
           colormapDefault: null,
