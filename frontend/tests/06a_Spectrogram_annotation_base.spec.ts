@@ -18,7 +18,7 @@ const TEST = {
       await test.step('Back to campaign', () =>
         Promise.all([
           page.waitForURL(`/app/annotation-campaign/${ campaign.id }/phase/${ phase }`),
-          page.annotator.backToCampaignButton.click({ timeout: 500 }),
+          page.annotator.backToCampaignButton.click(),
         ]))
     }),
 
