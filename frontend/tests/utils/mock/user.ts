@@ -62,6 +62,7 @@ export const USER_QUERIES: {
       allUsers: {
         results: Object.values(USERS).map(u => ({
           id: u.id,
+          username: u.username,
           displayName: u.displayName,
           expertise: u.expertise,
         })),

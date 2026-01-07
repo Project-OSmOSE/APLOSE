@@ -33,8 +33,6 @@ export const ANALYSIS_QUERIES: {
           },
           spectrograms: {
             totalCount: 99,
-            start: spectrogramAnalysis.startDate,
-            end: spectrogramAnalysis.endDate,
           },
         } ],
       },

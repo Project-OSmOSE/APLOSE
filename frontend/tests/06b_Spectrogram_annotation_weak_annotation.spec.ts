@@ -4,6 +4,7 @@ import {
   campaign,
   CONFIDENCES,
   LABELS,
+  phase as phaseObj,
   spectrogramAnalysis,
   taskComment,
   TASKS,
@@ -51,6 +52,7 @@ const TEST = {
         expect(variables.phase).toEqual(phase);
         expect(variables.spectrogramID).toEqual(TASKS.unsubmitted.id);
         expect(variables.annotations).toEqual([ {
+          annotationPhase: phaseObj.id,
           label: LABELS.classic.name,
           confidence: CONFIDENCES.sure.label,
           analysis: spectrogramAnalysis.id,
@@ -137,6 +139,7 @@ const TEST = {
         expect(variables.phase).toEqual(phase);
         expect(variables.spectrogramID).toEqual(TASKS.unsubmitted.id);
         expect(variables.annotations).toEqual([ {
+          annotationPhase: phaseObj.id,
           label: LABELS.classic.name,
           confidence: CONFIDENCES.notSure.label,
           analysis: spectrogramAnalysis.id,

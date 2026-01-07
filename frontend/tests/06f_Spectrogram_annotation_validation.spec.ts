@@ -5,6 +5,8 @@ import {
   campaign,
   CONFIDENCES,
   LABELS,
+  otherPhase,
+  phase as phaseObj,
   spectrogramAnalysis,
   taskComment,
   TASKS,
@@ -43,6 +45,7 @@ const STEP = {
       expect(variables.spectrogramID).toEqual(TASKS.unsubmitted.id);
       const expectedAnnotations: AnnotationInput[] = [
         {
+          annotationPhase: otherPhase.id,
           id: +weakAnnotation.id,
           comments: [ {
             id: +weakAnnotationComment.id,
@@ -58,6 +61,7 @@ const STEP = {
             },
           ],
         }, {
+          annotationPhase: otherPhase.id,
           id: +boxAnnotation.id,
           startTime: boxAnnotation.startTime,
           endTime: boxAnnotation.endTime,
@@ -94,6 +98,8 @@ const TEST = {
         getAnnotationTask: 'submittedAsOwner',
       })
       await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
+
+      await page.waitForTimeout(500)
 
       await test.step(`Display valid state`, async () => {
         expect(await page.annotator.isAnnotationValid({ type: AnnotationType.Weak })).toBeTruthy()
@@ -208,12 +214,14 @@ const TEST = {
       })
 
       await STEP.submit(page, { weak: false, box: false }, {
+        annotationPhase: phaseObj.id,
         comments: [],
         label: LABELS.featured.name,
         annotator: USERS.annotator.id,
         confidence: CONFIDENCES.notSure.label,
         analysis: spectrogramAnalysis.id,
       }, {
+        annotationPhase: phaseObj.id,
         isUpdateOf: boxAnnotation.id,
         startTime: boxAnnotation.startTime,
         endTime: boxAnnotation.endTime,
@@ -253,6 +261,7 @@ const TEST = {
       })
 
       await STEP.submit(page, { weak: true, box: true }, {
+        annotationPhase: phaseObj.id,
         comments: [],
         label: LABELS.featured.name,
         annotator: USERS.annotator.id,

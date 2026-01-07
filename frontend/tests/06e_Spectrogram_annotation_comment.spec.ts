@@ -4,6 +4,7 @@ import {
   campaign,
   CONFIDENCES,
   LABELS,
+  phase as phaseObj,
   spectrogramAnalysis,
   taskComment,
   TASKS,
@@ -72,6 +73,7 @@ const TEST = {
         expect(variables.phase).toEqual(phase);
         expect(variables.spectrogramID).toEqual(TASKS.unsubmitted.id);
         expect(variables.annotations).toEqual([ {
+          annotationPhase: phaseObj.id,
           label: LABELS.classic.name,
           confidence: CONFIDENCES.sure.label,
           analysis: spectrogramAnalysis.id,
@@ -123,6 +125,7 @@ const TEST = {
         expect(variables.spectrogramID).toEqual(TASKS.unsubmitted.id);
         expect(variables.annotations).toEqual([
           {
+            annotationPhase: phaseObj.id,
             id: +weakAnnotation.id,
             label: LABELS.classic.name,
             confidence: CONFIDENCES.sure.label,
@@ -131,6 +134,7 @@ const TEST = {
             comments: [],
           } as AnnotationInput,
           {
+            annotationPhase: phaseObj.id,
             id: +boxAnnotation.id,
             startTime: boxAnnotation.startTime,
             endTime: boxAnnotation.endTime,

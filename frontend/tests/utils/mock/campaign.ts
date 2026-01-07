@@ -58,6 +58,7 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
       displayName: USERS.annotator.displayName,
     } ],
     confidenceSet: {
+      id: confidenceSet.id,
       name: confidenceSet.name,
       desc: confidenceSet.desc,
       confidenceIndicators: confidenceSet.confidenceIndicators.map(c => ({

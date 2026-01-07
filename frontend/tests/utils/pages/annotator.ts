@@ -145,7 +145,7 @@ export class AnnotatorPage {
       await this.scrollTop();
       const canvas = this.page.getByTestId('drawable-canvas').first()
       await expect(canvas).toBeVisible()
-      await this.page.mouse.move(380, 410)
+      await this.page.mouse.move(380, 368)
       await this.page.mouse.down({ button: 'left' })
       if (type === 'Box') await this.page.mouse.move(610, 480)
       await this.page.mouse.up({ button: 'left' })

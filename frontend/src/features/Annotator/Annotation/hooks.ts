@@ -141,6 +141,7 @@ export const useInvalidateAnnotation = () => {
 export const useUpdateAnnotation = () => {
   const { phaseType } = useParams<AploseNavParams>();
   const { user } = useCurrentUser();
+  const {phase} = useCurrentPhase()
   const allAnnotations = useAppSelector(selectAllAnnotations);
   const focusedConfidence = useAppSelector(selectFocusConfidence);
   const getNewID = useGetNewAnnotationID()
@@ -151,6 +152,7 @@ export const useUpdateAnnotation = () => {
   const dispatch = useAppDispatch();
 
   return useCallback((annotation: Annotation, update: Partial<Annotation>) => {
+    if (!phase) return;
     if (annotation.type === AnnotationType.Weak && 'label' in update) return;
     if (phaseType === 'Annotation' || annotation.annotator === user?.id) {
       annotation = dispatch(updateAnnotation({ id: annotation.id, ...update })).payload as Annotation
@@ -162,6 +164,7 @@ export const useUpdateAnnotation = () => {
         ...update, // Update according provided info
         annotator: user?.id, // Current user is this update creator
         validation: undefined,
+        annotationPhase: phase.id,
       }
       if (_equals(annotation, annotationUpdate)) {
         annotation = validate(annotation)
@@ -177,7 +180,7 @@ export const useUpdateAnnotation = () => {
       add({ type: AnnotationType.Weak, label: update.label, confidence: update.confidence ?? focusedConfidence })
     }
     dispatch(focusAnnotation(annotation))
-  }, [ dispatch, phaseType, allAnnotations, add, focus, _equals, validate, invalidate, user, getNewID, focusedConfidence ])
+  }, [ dispatch, phaseType, allAnnotations, add, focus, _equals, validate, invalidate, user, getNewID, focusedConfidence, phase ])
 }
 
 export const useRemoveAnnotation = () => {

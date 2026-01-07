@@ -10,6 +10,8 @@ import {
   CONFIDENCES,
   dataset,
   LABELS,
+  otherPhase,
+  phase,
   spectrogram,
   SPECTROGRAM_PATH,
   spectrogramAnalysis,
@@ -75,10 +77,11 @@ export const TASK_QUERIES: {
         isAssigned: true,
         task: {
           status: TASKS.submitted.status,
-          annotations: {
+          userAnnotations: {
             results: [
               {
                 ...weakAnnotation,
+                annotationPhase: { id: phase.id },
                 annotator: {
                   id: USERS.annotator.id,
                   displayName: USERS.annotator.displayName,
@@ -98,6 +101,7 @@ export const TASK_QUERIES: {
               },
               {
                 ...boxAnnotation,
+                annotationPhase: { id: phase.id },
                 annotator: {
                   id: USERS.annotator.id,
                   displayName: USERS.annotator.displayName,
@@ -115,7 +119,7 @@ export const TASK_QUERIES: {
               },
             ],
           },
-          comments: {
+          userComments: {
             results: [ taskComment ],
           },
         },
@@ -138,10 +142,11 @@ export const TASK_QUERIES: {
         isAssigned: true,
         task: {
           status: TASKS.submitted.status,
-          annotations: {
+          userAnnotations: {
             results: [
               {
                 ...weakAnnotation,
+                annotationPhase: { id: otherPhase.id },
                 annotator: {
                   id: USERS.creator.id,
                   displayName: USERS.creator.displayName,
@@ -161,6 +166,7 @@ export const TASK_QUERIES: {
               },
               {
                 ...boxAnnotation,
+                annotationPhase: { id: otherPhase.id },
                 annotator: {
                   id: USERS.creator.id,
                   displayName: USERS.creator.displayName,
@@ -178,7 +184,7 @@ export const TASK_QUERIES: {
               },
             ],
           },
-          comments: {
+          userComments: {
             results: [ taskComment ],
           },
         },
@@ -201,8 +207,8 @@ export const TASK_QUERIES: {
         isAssigned: true,
         task: {
           status: TASKS.unsubmitted.status,
-          annotations: null,
-          comments: null,
+          userAnnotations: null,
+          userComments: null,
         },
       },
     },

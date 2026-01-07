@@ -35,7 +35,7 @@ export const CommentBloc: React.FC = () => {
               rows={ 5 }
               placeholder="Enter your comment"
               style={ { resize: 'none' } }
-              disabled={ focusedAnnotation?.annotator !== user?.id }
+              disabled={ focusedAnnotation && focusedAnnotation?.annotator !== user?.id }
               value={ focusedComment?.comment ?? '' }
               onInput={ updateComment }/>
 

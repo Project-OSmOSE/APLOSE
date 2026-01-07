@@ -4,7 +4,9 @@ const deadline = new Date()
 deadline.setTime(0)
 
 export type Campaign = Omit<AnnotationCampaignNode,
-  'dataset' | 'annotators' | 'confidenceSet' | 'owner' | 'analysis' | 'archive' | 'labelSet' | 'labelsWithAcousticFeatures' | 'detectors' | 'phases' | 'canManage'
+  'dataset' | 'annotators' | 'confidenceSet' | 'owner' | 'analysis' | 'archive' | 'labelSet' |
+  'labelsWithAcousticFeatures' | 'detectors' | 'phases' | 'canManage' | 'datasetName' | 'completedTasksCount' |
+  'tasksCount' | 'phaseTypes' | 'userTasksCount' | 'userCompletedTasksCount' | 'spectrogramsCount'
 >
 export const campaign: Campaign = {
   id: '1',
