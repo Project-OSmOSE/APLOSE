@@ -1,4 +1,4 @@
-import { type Locator, Page } from '@playwright/test';
+import { expect, type Locator, Page } from '@playwright/test';
 import type { Params } from '../types';
 import { Navbar } from './navbar';
 
@@ -16,6 +16,7 @@ export class DatasetPage {
   async go({ as }: Pick<Params, 'as'>) {
     await this.navbar.go({ as })
     await this.navbar.datasetsButton.click()
+    await expect(this.page.getByRole('heading', { name: 'Datasets', exact: true })).toBeVisible()
   }
 
 }
