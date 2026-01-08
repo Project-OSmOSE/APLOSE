@@ -155,24 +155,13 @@ class AnnotationSpectrogramNode(BaseObjectType):
 
         spectrogram_path: str
         if analysis.dataset.legacy:
-            folder = f"{analysis.fft.nfft}_{analysis.fft.window_size}_{int(analysis.fft.overlap*100)}"
-            if analysis.legacy_configuration is not None:
-                if analysis.legacy_configuration.linear_frequency_scale is not None:
-                    folder = f"{folder}_{analysis.legacy_configuration.linear_frequency_scale.name}"
-                if (
-                    analysis.legacy_configuration.multi_linear_frequency_scale
-                    is not None
-                ):
-                    folder = f"{folder}_{analysis.legacy_configuration.multi_linear_frequency_scale.name}"
             spectrogram_path = path.join(
                 PureWindowsPath(
                     analysis.dataset.path.split(
                         settings.DATASET_EXPORT_PATH.stem + "/"
                     ).pop()
                 ),
-                PureWindowsPath(settings.DATASET_SPECTRO_FOLDER),
-                PureWindowsPath(analysis.dataset.get_config_folder()),
-                PureWindowsPath(folder),
+                PureWindowsPath(analysis.path),
                 PureWindowsPath("image"),
                 PureWindowsPath(f"{self.filename}.{self.format.name}"),
             )
