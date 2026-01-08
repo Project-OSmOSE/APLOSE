@@ -118,7 +118,9 @@ class AnnotationSpectrogramNode(BaseObjectType):
                     settings.DATASET_EXPORT_PATH.stem + "/"
                 ).pop(),
                 PureWindowsPath(settings.DATASET_FILES_FOLDER),
-                PureWindowsPath(analysis.dataset.get_config_folder()),
+                PureWindowsPath(
+                    f"{int(analysis.data_duration)}_{analysis.fft.sampling_frequency}"
+                ),
                 PureWindowsPath(f"{self.filename}.wav"),
             )
         else:
