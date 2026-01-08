@@ -1,7 +1,7 @@
 """ APLOSE API Routing"""
 from rest_framework import routers
 
-from backend.api.view import (
+from backend.api.views import (
     AnnotationViewSet,
     DownloadViewSet,
 )
