@@ -953,6 +953,22 @@ files = [
 ]
 
 [[package]]
+name = "django-seed"
+version = "0.3.1"
+description = "Seed your Django project with fake data"
+optional = false
+python-versions = "*"
+groups = ["main", "dev"]
+files = [
+    {file = "django-seed-0.3.1.tar.gz", hash = "sha256:93e65d2c10449c464b83e9031be02763ec10e786aa064d649c4dd5ad06fa0eea"},
+]
+
+[package.dependencies]
+django = ">=1.11"
+Faker = ">=0.7.7"
+toposort = ">=1.5"
+
+[[package]]
 name = "django-tinymce"
 version = "3.7.1"
 description = "A Django application that contains a widget to render a"
@@ -1051,7 +1067,7 @@ version = "19.13.0"
 description = "Faker is a Python package that generates fake data for you."
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main", "dev"]
 files = [
     {file = "Faker-19.13.0-py3-none-any.whl", hash = "sha256:da880a76322db7a879c848a0771e129338e0a680a9f695fd9a3e7a6ac82b45e1"},
     {file = "Faker-19.13.0.tar.gz", hash = "sha256:14ccb0aec342d33aa3889a864a56e5b3c2d56bce1b89f9189f4fbc128b9afc1e"},
@@ -2127,13 +2143,13 @@ files = [
 
 [[package]]
 name = "metadatax"
-version = "0.4.13"
+version = "0.4.12"
 description = "PAM acquisition metadata"
 optional = false
 python-versions = ">=3.9,<4.0"
 groups = ["main"]
 files = [
-    {file = "metadatax-0.4.13.tar.gz", hash = "sha256:aa2e583098eb22842ffc48e2744f6cc16b31b83005997337914f8b72e10ed34d"},
+    {file = "v0.4.12.tar.gz", hash = "sha256:bcfd93bea6ada8e54bd4888b3dee172864c87f131cc2350f235ae6d52003e6c1"},
 ]
 
 [package.dependencies]
@@ -2152,7 +2168,7 @@ python-dotenv = ">=1.0.1,<2.0.0"
 
 [package.source]
 type = "url"
-url = "https://github.com/PAM-Standardization/metadatax/releases/download/v0.4.13/metadatax-0.4.13.tar.gz"
+url = "https://github.com/PAM-Standardization/metadatax/archive/refs/tags/v0.4.12.tar.gz"
 
 [[package]]
 name = "mistune"
@@ -3784,6 +3800,18 @@ files = [
 ]
 
 [[package]]
+name = "toposort"
+version = "1.10"
+description = "Implements a topological sort algorithm."
+optional = false
+python-versions = "*"
+groups = ["main", "dev"]
+files = [
+    {file = "toposort-1.10-py3-none-any.whl", hash = "sha256:cbdbc0d0bee4d2695ab2ceec97fe0679e9c10eab4b2a87a9372b929e70563a87"},
+    {file = "toposort-1.10.tar.gz", hash = "sha256:bfbb479c53d0a696ea7402601f4e693c97b0367837c8898bc6471adfca37a6bd"},
+]
+
+[[package]]
 name = "tornado"
 version = "6.5.2"
 description = "Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed."
@@ -3983,4 +4011,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "83d044d9492b9d9caf69a8d711f3f0d549bcf490e2f345ccd846997feaeb9477"
+content-hash = "0e8e9c6aa9b2d9d6178b3ef13c6af9f5db1f1c59191900aef6c21bb547ae63f0"

@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("ontology", "0004_clean"),
         ("equipment", "0003_clean"),
-        ("data", "0004_alter_verbose_name_plural_for_properties"),
+        ("data", "0003_clean"),
         ("api", "0083_update_filerange_bornes_to_datetime"),
     ]
 

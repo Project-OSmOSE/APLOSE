@@ -3,7 +3,7 @@ import json
 from freezegun import freeze_time
 from graphene_django.utils import GraphQLTestCase
 
-from backend.api.models import Archive, AnnotationPhase
+from backend.api.models import AnnotationPhase
 from backend.api.tests.fixtures import ALL_FIXTURES
 
 QUERY = """

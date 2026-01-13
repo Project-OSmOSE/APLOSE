@@ -12,7 +12,7 @@ def create_png_file_format(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("data", "0004_alter_verbose_name_plural_for_properties"),
+        ("data", "0003_clean"),
         ("api", "0087_migrate_osekit__analysis"),
     ]
 

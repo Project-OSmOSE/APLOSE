@@ -5,7 +5,7 @@
     name: spectro_config1
     description: null
     owner: 1
-    path: spectro_config1
+    path: processed/spectrogram/15_128000/spectro_config1
     dataset: 1
     data_duration: 10.0
     fft: 1
@@ -23,7 +23,7 @@
     name: spectro_config2
     description: null
     owner: 1
-    path: spectro_config2
+    path: processed/spectrogram/15_128000/spectro_config2
     dataset: 1
     data_duration: 10.0
     fft: 2
@@ -41,7 +41,7 @@
     name: spectro_config3
     description: null
     owner: 1
-    path: spectro_config3
+    path: processed/spectrogram/15_128000/spectro_config3
     dataset: 2
     data_duration: 10.0
     fft: 2

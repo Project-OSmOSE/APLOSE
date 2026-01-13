@@ -32,6 +32,9 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework",
     "drf_spectacular",
+    "backend.api.apps.ApiConfig",
+    "backend.osmosewebsite.apps.OsmoseWebsiteConfig",
+    "backend.aplose.apps.AploseConfig",
     "tinymce",
     "django_admin_multiple_choice_list_filter",
     "django_better_admin_arrayfield",
@@ -44,9 +47,6 @@ INSTALLED_APPS = [
     "metadatax.acquisition",
     "metadatax.equipment",
     "metadatax.data",
-    "backend.api.apps.ApiConfig",
-    "backend.osmosewebsite.apps.OsmoseWebsiteConfig",
-    "backend.aplose.apps.AploseConfig",
     "backend.sql.apps.SqlConfig",
 ]
 
