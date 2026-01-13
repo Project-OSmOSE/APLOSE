@@ -5,10 +5,12 @@ authors:
   given-names: "Erwan"
 - family-names: "Morin"
   given-names: "Élodie"
+  affiliation: "ENSTA, Lab-STICC UMR CNRS 6285"
 - family-names: "Vovard"
   given-names: "Romain"
 title: "APLOSE: a scalable web-based annotation tool for marine bioacoustics - public repository"
 version: 1.6.4
 doi: 10.5281/zenodo.10468000
 date-released: 2024-01-08
+license: MIT
 url: "https://github.com/Project-OSmOSE/osmose-app"
