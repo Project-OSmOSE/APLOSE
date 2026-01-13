@@ -69,8 +69,8 @@ export const AcousticFeatures: React.FC = () => {
         break;
       case SignalTrendType.Descending:
         updateFeatures(focusedAnnotation, {
-          startFrequency: focusedAnnotation.startFrequency,
-          endFrequency: focusedAnnotation.endFrequency,
+          startFrequency: focusedAnnotation.endFrequency,
+          endFrequency: focusedAnnotation.startFrequency,
         });
         break;
     }

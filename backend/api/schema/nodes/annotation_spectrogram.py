@@ -113,14 +113,14 @@ class AnnotationSpectrogramNode(BaseObjectType):
 
         audio_path: str
         if analysis.dataset.legacy:
+            folders = analysis.path.split("/")
+            folders.pop()
             audio_path = path.join(
                 analysis.dataset.path.split(
                     settings.DATASET_EXPORT_PATH.stem + "/"
                 ).pop(),
                 PureWindowsPath(settings.DATASET_FILES_FOLDER),
-                PureWindowsPath(
-                    f"{int(analysis.data_duration)}_{analysis.fft.sampling_frequency}"
-                ),
+                PureWindowsPath(folders.pop()),
                 PureWindowsPath(f"{self.filename}.wav"),
             )
         else:
