@@ -342,7 +342,7 @@ class CreateUpdateOfResultTestCase(TestCase):
         )
         self.assertTrue(serializer.is_valid(raise_exception=True))
         serializer.save()
-        expected_result = {**serializer.data}
+        # expected_result = {**serializer.data}
         # self.assertDictEqual(
         #     expected_result,
         #     {
@@ -358,14 +358,14 @@ class CreateUpdateOfResultTestCase(TestCase):
             serializer.instance.id,
         )
 
-        updated_serializer = AnnotationSerializer(
-            instance=Annotation.objects.get(pk=1),
-            context={
-                "user": User.objects.get(pk=3),
-                "phase": AnnotationPhase.objects.get(pk=1),
-                "spectrogram": Spectrogram.objects.get(pk=7),
-            },
-        )
+        # updated_serializer = AnnotationSerializer(
+        #     instance=Annotation.objects.get(pk=1),
+        #     context={
+        #         "user": User.objects.get(pk=3),
+        #         "phase": AnnotationPhase.objects.get(pk=1),
+        #         "spectrogram": Spectrogram.objects.get(pk=7),
+        #     },
+        # )
         # self.assertDictEqual(
         #     updated_serializer.data["updated_to"][0],
         #     {

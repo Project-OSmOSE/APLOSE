@@ -60,7 +60,6 @@ class EndAnnotationPhaseTestCase(GraphQLTestCase):
         self.assertIsNone(phase.ended_at)
         self.assertIsNone(phase.ended_by_id)
 
-        old_count = Archive.objects.count()
         self.client.login(username=username, password="osmose29")
         response = self.query(QUERY, variables=BASE_VARIABLES)
         self.assertResponseNoErrors(response)

@@ -146,6 +146,7 @@ VARIABLES_FOR_SPECTROGRAM = {
 
 
 class AllAnnotationSpectrogramsTestCase(GraphQLTestCase):
+    # pylint: disable=too-many-public-methods
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ALL_FIXTURES
