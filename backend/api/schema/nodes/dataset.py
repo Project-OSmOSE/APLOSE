@@ -1,8 +1,6 @@
-from typing import Optional
-
 import graphene
 from django.db.models import QuerySet, Count, Min, Max
-from graphql import GraphQLResolveInfo, FieldNode
+from graphql import GraphQLResolveInfo
 
 from backend.api.models import Dataset
 from backend.api.schema.filter_sets import DatasetFilterSet

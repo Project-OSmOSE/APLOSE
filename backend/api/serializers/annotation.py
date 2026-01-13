@@ -6,6 +6,7 @@ from django.db.models import Max, QuerySet
 from rest_framework import serializers
 from rest_framework.fields import empty, FloatField
 
+from backend.api.context_filters import AnnotationCommentContextFilter
 from backend.api.models import (
     Annotation,
     AnnotationPhase,
@@ -15,9 +16,8 @@ from backend.api.models import (
     AnnotationValidation,
     SpectrogramAnalysis,
 )
-from backend.aplose.models import ExpertiseLevel, User
+from backend.aplose.models import ExpertiseLevel
 from backend.utils.serializers import EnumField, ListSerializer
-from backend.api.context_filters import AnnotationCommentContextFilter
 from .acoustic_features import AnnotationAcousticFeaturesSerializer
 from .annotation_validation import AnnotationValidationSerializer
 from .comment import AnnotationCommentSerializer
@@ -60,6 +60,7 @@ class AnnotationSerializer(serializers.ModelSerializer):
         }
 
     def __init__(self, instance=None, data=empty, **kwargs):
+        # pylint: disable=duplicate-code
         if isinstance(instance, QuerySet):
             if instance.count() == 1:
                 instance = instance.first()

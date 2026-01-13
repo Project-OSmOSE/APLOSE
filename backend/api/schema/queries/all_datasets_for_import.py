@@ -6,10 +6,10 @@ from typing import Optional
 
 import graphene
 from django.conf import settings
+from typing_extensions import deprecated
 from osekit.public_api.dataset import (
     Dataset as OSEkitDataset,
 )
-from typing_extensions import deprecated
 
 from backend.api.schema.nodes import ImportDatasetNode
 from backend.utils.schema import GraphQLPermissions, GraphQLResolve

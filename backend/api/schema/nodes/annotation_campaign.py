@@ -12,7 +12,6 @@ from django.db.models import (
     Subquery,
     Func,
     Value,
-    Count,
 )
 from django.db.models.functions import Coalesce
 from graphql import GraphQLResolveInfo

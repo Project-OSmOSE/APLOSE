@@ -1,12 +1,10 @@
 """Annotation comment serializer"""
-from typing import Optional
 
 from django.db.models import QuerySet
 from rest_framework import serializers
 from rest_framework.fields import empty
 
 from backend.api.models import AnnotationValidation
-from backend.aplose.models import User
 from backend.utils.serializers import ListSerializer
 
 
@@ -31,6 +29,7 @@ class AnnotationValidationSerializer(serializers.ModelSerializer):
         }
 
     def __init__(self, instance=None, data=empty, **kwargs):
+        # pylint: disable=duplicate-code
         if isinstance(instance, QuerySet):
             if instance.count() == 1:
                 instance = instance.first()

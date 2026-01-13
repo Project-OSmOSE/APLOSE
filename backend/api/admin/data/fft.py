@@ -8,6 +8,7 @@ from backend.api.models import FFT
 class FFTAdmin(admin.ModelAdmin):
     """FFT presentation in DjangoAdmin"""
 
+    # pylint: disable=duplicate-code
     list_display = (
         "id",
         "nfft",

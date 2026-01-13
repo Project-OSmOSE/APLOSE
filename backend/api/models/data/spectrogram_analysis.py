@@ -1,7 +1,7 @@
 """Spectrogram analysis model"""
 import csv
 from ast import literal_eval
-from datetime import datetime, timezone
+from datetime import datetime
 from os.path import join
 from pathlib import Path
 from typing import Optional
@@ -10,12 +10,11 @@ from dateutil import parser
 from django.conf import settings
 from django.db import models
 from django.db.models import CheckConstraint, Q, Manager
-from osekit.core_api.spectro_dataset import SpectroDataset
 from typing_extensions import deprecated
+from osekit.core_api.spectro_dataset import SpectroDataset
 
 from backend.aplose.models import User
 from .__abstract_analysis import AbstractAnalysis
-from .__abstract_time_segment import TimeSegment
 from .colormap import Colormap
 from .dataset import Dataset
 from .fft import FFT

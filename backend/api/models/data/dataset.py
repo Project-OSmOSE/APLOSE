@@ -7,8 +7,8 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Manager
 from metadatax.acquisition.models import ChannelConfiguration
-from osekit.public_api.dataset import Dataset as OSEkitDataset
 from typing_extensions import deprecated
+from osekit.public_api.dataset import Dataset as OSEkitDataset
 
 from backend.aplose.models import User
 from .__abstract_dataset import AbstractDataset
