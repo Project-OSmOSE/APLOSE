@@ -17,7 +17,7 @@ export const DetectorConfigurationEntry: React.FC<{
     skip: state.fileState !== 'loaded',
   })
   const knownDetector = useMemo(() => {
-    return allDetectors?.find(d => d.id === unknownToKnownDetectors[initialName])
+    return allDetectors?.find(d => d.id == unknownToKnownDetectors[initialName]?.id)
   }, [ allDetectors, unknownToKnownDetectors, initialName ])
   const knownConfigurations = useMemo(() => {
     const detector = knownDetector ?? allDetectors?.find(d => d.name === initialName)

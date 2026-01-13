@@ -43,9 +43,11 @@ export const DetectorEntry: React.FC<{
     if (typeof id === 'undefined' || (typeof id === 'string' && isNaN(+id)) || (typeof id === 'number' && id === -9)) {
       createUnknownDetector(initialName)
     } else {
-      assignUnknownToKnownDetector(initialName, typeof id === 'string' ? id : id?.toString())
+      const d = allDetectors?.find(d => d.id == id)
+      if (!d) return;
+      assignUnknownToKnownDetector(initialName, d)
     }
-  }, [ initialName, createUnknownDetector, assignUnknownToKnownDetector ])
+  }, [ initialName, createUnknownDetector, assignUnknownToKnownDetector, allDetectors ])
 
   if (state.fileState !== 'loaded') return <Fragment/>
   return <div className={ [ styles.detectorEntry, isKnown ? '' : styles.unknown ].join(' ') }>
@@ -64,7 +66,7 @@ export const DetectorEntry: React.FC<{
     { !isKnown && <div className={ styles.unknown }>
         <IonNote color={ !isKnown && !isUpdated ? 'danger' : 'medium' }>Unknown detector</IonNote>
 
-        <Select value={ unknownToKnownDetectors[initialName] }
+        <Select value={ unknownToKnownDetectors[initialName]?.id }
                 options={ allDetectors?.map(d => ({ value: d.id, label: d.name })) ?? [] }
                 onValueSelected={ onDetectorChange }
                 data-testid={ `select-${ initialName }` }

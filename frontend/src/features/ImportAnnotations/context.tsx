@@ -2,6 +2,8 @@ import React, { createContext, ReactNode, useCallback, useContext, useEffect, us
 import { ACCEPT_CSV_MIME_TYPE, ACCEPT_CSV_SEPARATOR, IMPORT_ANNOTATIONS_COLUMNS } from '@/consts/csv';
 import { type ImportAnnotation, type SpectrogramAnalysisNode, useCurrentCampaign, useImportAnnotations } from '@/api';
 import { QueryStatus } from '@reduxjs/toolkit/query';
+import type { Detector } from '../../../tests/utils/mock/types';
+import { Record } from '@solar-icons/react';
 
 const CHUNK_SIZE = 200;
 
@@ -54,7 +56,7 @@ type ImportAnnotationsContext = {
   /** List of initial names (as in csv) */
   selectedDetectorsForImport: string[],
   /** Record of initial names (as in csv) and the ID of the known detector or undefined if its needs to be created */
-  unknownToKnownDetectors: Record<string, undefined | string>;
+  unknownToKnownDetectors: Record<string, undefined | Detector>;
 
   unknownToConfiguration: Record<string, DetectorConfiguration>;
   annotations: Annotation[],
@@ -76,7 +78,7 @@ type ImportAnnotationsContext = {
   selectDetectorForImport(initialName: string): void;
   unselectDetectorForImport(initialName: string): void;
   createUnknownDetector(initialName: string): void;
-  assignUnknownToKnownDetector(initialName: string, id: string): void;
+  assignUnknownToKnownDetector(initialName: string, detector: Detector): void;
   assignUnknownToConfiguration(initialName: string, configuration: DetectorConfiguration): void;
   upload(options?: {
     force_datetime?: boolean;
@@ -169,7 +171,7 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
   const [ fileError, setFileError ] = useState<any>();
   const [ file, setFile ] = useState<File>();
   const [ selectedDetectorsForImport, setSelectedDetectorsForImport ] = useState<string[]>([]);
-  const [ unknownToKnownDetectors, setUnknownToKnownDetectors ] = useState<Record<string, string | undefined>>({});
+  const [ unknownToKnownDetectors, setUnknownToKnownDetectors ] = useState<Record<string, Detector | undefined>>({});
   const [ unknownToConfiguration, setUnknownToConfiguration ] = useState<Record<string, DetectorConfiguration>>({});
 
   const [ uploadState, setUploadState ] = useState<UploadStatus>('initial')
@@ -237,6 +239,8 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
     contentRows.reverse()
     const header = contentRows.pop()!
     contentRows.reverse()
+    console.debug(header)
+    console.debug(contentRows)
     setAnnotations(contentRows.map(r => {
       const confidence__level = r[header.indexOf('confidence_indicator_level')].split('/')
       return {
@@ -244,7 +248,7 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
         end_datetime: r[header.indexOf('end_datetime')],
         start_frequency: +r[header.indexOf('start_frequency')],
         end_frequency: +r[header.indexOf('end_frequency')],
-        label__name: r[header.indexOf('label')],
+        label__name: r[header.indexOf('annotation')],
         confidence__label: r[header.indexOf('confidence_indicator_label')],
         confidence__level: confidence__level.length > 0 ? +confidence__level[0] : undefined,
         initial__detector__name: r[header.indexOf('annotator')],
@@ -285,10 +289,16 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
     setSelectedDetectorsForImport(prev => [ ...new Set([ ...prev, initialName ]) ])
   }, [ setUnknownToKnownDetectors ])
 
-  const assignUnknownToKnownDetector = useCallback((initialName: string, id: string) => {
-    setUnknownToKnownDetectors(prev => ({ ...prev, [initialName]: id }))
+  const assignUnknownToKnownDetector = useCallback((initialName: string, detector: Detector) => {
+    console.debug('assignUnknownToKnownDetector', initialName, detector)
+    setUnknownToKnownDetectors(prev => ({ ...prev, [initialName]: detector }))
+    setUnknownToConfiguration(prev => ({ ...prev, [initialName]:  { configuration: '' } }))
     setSelectedDetectorsForImport(prev => [ ...new Set([ ...prev, initialName ]) ])
   }, [ setUnknownToKnownDetectors, setSelectedDetectorsForImport ])
+
+  useEffect(() => {
+    console.debug('> unknownToKnownDetectors', unknownToKnownDetectors)
+  }, [unknownToKnownDetectors]);
 
   const assignUnknownToConfiguration = useCallback((initialName: string, configuration: DetectorConfiguration) => {
     setUnknownToConfiguration(prev => ({ ...prev, [initialName]: configuration }))
@@ -330,10 +340,11 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
   }) => {
     if (!canImport) return;
     if (uploadState !== 'uploading' && !options?.bypassUploadState) return;
+    console.debug('> uploadChunk', unknownToKnownDetectors)
     importAnnotations(filteredUploadAnnotations.slice(start, start + CHUNK_SIZE).map(a => ({
         ...a,
         analysis: analysisID!,
-        detector__name: unknownToKnownDetectors[a.initial__detector__name] ?? a.initial__detector__name,
+        detector__name: unknownToKnownDetectors[a.initial__detector__name]?.name ?? a.initial__detector__name,
         detector_configuration__configuration: unknownToConfiguration[a.initial__detector__name]?.configuration,
       }
     )))
@@ -359,7 +370,7 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
       force_datetime: isDatetimeForced,
       force_max_frequency: isMaxFrequencyForced,
     })
-  }, [ canImport, uploadState, forceDatetime, forceMaxFrequency, uploadedCount ])
+  }, [ canImport, uploadState, forceDatetime, forceMaxFrequency, uploadedCount, uploadChunk ])
 
   // Update duration and remainingDurationEstimation
   useEffect(() => {
