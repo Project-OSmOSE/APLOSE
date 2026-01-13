@@ -5,6 +5,7 @@
   "type": "module",
   "homepage": ".",
   "proxy": "http://localhost:8000",
+  "license": "MIT",
   "scripts": {
     "dev": "concurrently \"npm run graphql:generate\" \"vite\"",
     "wait:all": "wait-on http://localhost:8000/backend/admin && wait-on http://localhost:5173/app",
