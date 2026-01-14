@@ -125,10 +125,10 @@ export class AnnotatorPage {
 
   async removeStrong(label: Label, { type, method }: Pick<Params, 'type' | 'method'>): Promise<void> {
     // Focus
-    await this.getAnnotationForLabel(label, { type }).click()
+    await this.getAnnotationForLabel(label, { type }).click({ force: true})
     switch (method) {
       case 'mouse':
-        await this.page.getByTestId('remove-box').click({ force: true})
+        await this.page.getByTestId('remove-box').click()
         break;
       case 'shortcut':
         await this.page.keyboard.press('Delete')
