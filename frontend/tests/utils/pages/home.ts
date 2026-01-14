@@ -19,7 +19,7 @@ export class HomePage {
 
   async go() {
     await this.page.goto('/');
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
 }
