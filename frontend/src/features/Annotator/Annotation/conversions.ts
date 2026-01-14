@@ -118,7 +118,7 @@ export function convertGqlToAnnotations(annotations: Node[],
                                         phase: AnnotationPhaseType,
                                         userId?: string): Annotation[] {
   return annotations.filter(a => !a.isUpdateOf).map(a => {
-    const update = annotations.find(a => a.isUpdateOf?.id === a.id);
+    const update = annotations.find(u => u.isUpdateOf?.id === a.id);
     return {
       ...convertGqlToAnnotation(a, phase, userId),
       update: update ? convertGqlToAnnotation(update, phase, userId) : undefined,
