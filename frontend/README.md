@@ -1,6 +1,6 @@
 # aplose-frontend
 
-See [global README file](../README.md) and [React + Vite-related documentation](../docs/react.md) for more documentation.
+See [global README file](../README) and [React + Vite-related documentation](../docs/react.md) for more documentation.
 
 For more information about what the application can do or how to use the annotator, see the [user guide](../docs/user_guide_annotator.md).
 

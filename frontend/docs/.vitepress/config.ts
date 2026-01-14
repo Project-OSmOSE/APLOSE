@@ -83,6 +83,7 @@ export default defineConfig({
             {
               text: 'Developer',
               items: [
+                { text: 'Local installation', link: '/dev/local' },
                 { text: 'Docker installation', link: '/dev/docker' },
               ],
             },
