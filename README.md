@@ -19,11 +19,15 @@
 
 **APLOSE**, a scalable web-based annotation tool for marine bioacoustics.
 
+[Presentation](#presentation) •
+[Usage](#usage) •
 [Documentation](https://project-osmose.github.io/APLOSE)
 
 <br/>
 
 </div>
+
+### Presentation
 
 **APLOSE** is developed and maintained by the [OSmOSE team](https://osmose.ifremer.fr/) in an academic 
 research setting, without any direct commercial purpose and in accordance with 
@@ -36,9 +40,9 @@ reference dataset of AI or to check detectors output.
 **APLOSE** allows to create participative annotation campaign where many users can annotate 
 your data, without the need of sending hard-drives. The annotation process can consist 
 of two phases : "Annotation" and "Verification". The "Annotation" phase allows to create 
-new annotations on a clear spectrogram. On the "Verification" phase, you can check other user's 
-annotations or event detectors output on the spectrogram, you can also edit the annotations
-or add missing ones.
+new annotations on a clear spectrogram. On the "Verification" phase, you can check other 
+user's annotations or event detectors output on the spectrogram, you can also edit the 
+annotations or add missing ones.
 
 All the annotations are stored in a database and can be exported at any time.
 
@@ -49,8 +53,30 @@ It rely on spectrograms pre-calculated with our package [OSEkit](https://github.
 The project is part of an initiative to disseminate knowledge and share
 research tools in accordance with the principles of open science.
 
+<br/>
 
+### Usage
 
+This software is distributed under the MIT license.
+
+You are free to use, modify, and redistribute it, provided that you retain the copyright 
+notices and license text, in accordance with the terms of this license.
+
+See the [LICENSE](./LICENSE) file for the full text.
+
+Some third-party libraries are used in this project. Details of their licenses are 
+available in the repository [dependency graph](https://github.com/Project-OSmOSE/APLOSE/network/dependencies).
+
+This software must not be sold.
+
+If you use this software in scientific work, please cite it in accordance with the 
+[CITATION](./CITATION.cff) file.
+
+This software is provided for research and teaching purposes. It is provided “as is,” 
+without warranty. The authors and the institution cannot be held responsible for any 
+damage resulting from its use.
+
+<br/>
 <br/>
 <div align="center">
 
