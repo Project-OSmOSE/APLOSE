@@ -128,7 +128,7 @@ export class AnnotatorPage {
     await this.getAnnotationForLabel(label, { type }).click()
     switch (method) {
       case 'mouse':
-        await this.page.getByTestId('remove-box').click()
+        await this.page.getByTestId('remove-box').click({ force: true})
         break;
       case 'shortcut':
         await this.page.keyboard.press('Delete')
