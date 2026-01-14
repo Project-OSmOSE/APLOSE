@@ -1,0 +1,38 @@
+- model: api.legacyspectrogramconfiguration
+  pk: 1
+  fields:
+    spectrogram_analysis: 1
+    folder: spectro_config1
+    zoom_level: 3
+    hp_filter_min_frequency: 0
+    data_normalization: 0
+    frequency_resolution: 0
+    spectrogram_normalization: 0
+    zscore_duration: 0
+    window_type: Hamming
+
+- model: api.legacyspectrogramconfiguration
+  pk: 2
+  fields:
+    spectrogram_analysis: 2
+    folder: spectro_config2
+    zoom_level: 3
+    hp_filter_min_frequency: 0
+    data_normalization: 0
+    frequency_resolution: 0
+    spectrogram_normalization: 0
+    zscore_duration: 0
+    window_type: Hamming
+
+- model: api.legacyspectrogramconfiguration
+  pk: 3
+  fields:
+    spectrogram_analysis: 3
+    folder: spectro_config3
+    zoom_level: 3
+    hp_filter_min_frequency: 0
+    data_normalization: 0
+    frequency_resolution: 0
+    spectrogram_normalization: 0
+    zscore_duration: 0
+    window_type: Hamming

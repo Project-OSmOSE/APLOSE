@@ -1,0 +1,13 @@
+.filterModal {
+  overflow: visible !important;
+
+  > * {
+    overflow: visible !important;
+  }
+}
+
+.dateFilterModal {
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  column-gap: 0.5rem !important;
+}

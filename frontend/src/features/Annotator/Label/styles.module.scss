@@ -1,0 +1,25 @@
+.activeLabel {
+  background: var(--ion-color-base);
+  color: var(--ion-color-contrast);
+}
+
+.labels {
+  grid-area: labels;
+
+  .showButton {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.labelsButtons {
+  font-size: 1rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: .5rem;
+  padding-left: .5rem;
+}
+

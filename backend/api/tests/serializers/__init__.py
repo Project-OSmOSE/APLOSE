@@ -1,2 +1,1 @@
-"""Serializer test case"""
-from .annotation import *
+from .annotation import CreateTestCase, UpdateTestCase, CreateUpdateOfResultTestCase

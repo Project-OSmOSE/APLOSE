@@ -1,18 +1,25 @@
-import { Page, test } from '@playwright/test';
-import { AplosePage } from './interface';
-import { Mock } from "../services";
+import { type Locator, Page } from '@playwright/test';
 
-export class HomePage implements AplosePage {
+export class HomePage {
 
-  constructor(private page: Page,
-              private mock: Mock = new Mock(page)) {
+  get osmoseLink(): Locator {
+    return this.page.getByRole('link', { name: 'OSmOSE', exact: true })
+  }
+
+  get documentationLink(): Locator {
+    return this.page.getByRole('link', { name: 'Documentation', exact: true }).first()
+  }
+
+  get loginButton(): Locator {
+    return this.page.getByRole('button', { name: 'Login', exact: true })
+  }
+
+  constructor(private page: Page) {
   }
 
   async go() {
-    await test.step('Navigate to home', async () => {
-      await this.mock.userSelf(null);
-      await this.mock.collaborators();
-      await this.page.goto('/app/');
-    });
+    await this.page.goto('/');
+    await this.page.waitForLoadState('domcontentloaded');
   }
+
 }

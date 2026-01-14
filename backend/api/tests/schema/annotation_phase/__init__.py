@@ -1,0 +1,6 @@
+"""API annotation annotation_phase GraphQL tests"""
+from .all_annotation_phases import AllAnnotationPhasesTestCase
+from .annotation_phase_by_campaign_phase import AnnotationPhaseByCampaignPhaseTestCase
+from .create_annotation_phase import CreateAnnotationPhaseTestCase
+from .end_annotation_phase import EndAnnotationPhaseTestCase
+from .update_annotation_phase_file_ranges import UpdateAnnotationPhaseFileRangesTestCase

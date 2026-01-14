@@ -1,13 +1,3 @@
-export type ID = string | number;
-
-
-type BaseType = string | number | boolean
-export type QueryParams = { [key in string]: BaseType | Array<BaseType> }
-
-export type Optionable<T> = {
-  [P in keyof T]?: T[P];
-}
-
 export type Paginated<T> = {
   count: number;
   pageCount: number;
@@ -16,7 +6,4 @@ export type Paginated<T> = {
   results: Array<T>;
 }
 
-export type PaginationParams = {
-  page: number,
-  page_size?: number,
-}
+export const NBSP = '\u00A0'

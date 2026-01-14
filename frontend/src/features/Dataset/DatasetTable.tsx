@@ -1,0 +1,67 @@
+import React, { Fragment, useMemo } from 'react';
+import { IonNote, IonSkeletonText } from '@ionic/react';
+
+import { Table, TableContent, TableDivider, TableHead, WarningText } from '@/components/ui';
+import { dateToString } from '@/service/function';
+
+import { DatasetName } from './DatasetInfo';
+import { useAllDatasets } from '@/api';
+
+export const DatasetTable: React.FC = () => {
+
+  const { allDatasets, error, isFetching } = useAllDatasets();
+
+  const heads = useMemo(() => {
+    return <Fragment>
+      <TableHead topSticky isFirstColumn={ true }>
+        Name
+      </TableHead>
+      <TableHead topSticky>Created at</TableHead>
+      <TableHead topSticky>Number of analysis</TableHead>
+      <TableHead topSticky>Number of files</TableHead>
+      <TableHead topSticky>Start date</TableHead>
+      <TableHead topSticky>End date</TableHead>
+      <TableDivider/>
+    </Fragment>
+  }, [ isFetching ])
+
+  if (error) return <WarningText error={ error }/>
+
+  if (isFetching) {
+    const skeletons = Array.from(new Array(7));
+    return <Table columns={ 9 }>
+      { heads }
+
+      { skeletons.map((_, i) => <Fragment key={ i }>
+        <TableContent isFirstColumn={ true }>
+          <IonSkeletonText animated style={ { width: 256, justifySelf: 'center' } }/>
+        </TableContent>
+        <TableContent><IonSkeletonText animated style={ { width: 128 } }/></TableContent>
+        <TableContent><IonSkeletonText animated style={ { width: 32, justifySelf: 'center' } }/></TableContent>
+        <TableContent><IonSkeletonText animated style={ { width: 32, justifySelf: 'center' } }/></TableContent>
+        <TableContent><IonSkeletonText animated style={ { width: 96 } }/></TableContent>
+        <TableContent><IonSkeletonText animated style={ { width: 96 } }/></TableContent>
+        <TableDivider/>
+      </Fragment>) }
+    </Table>
+  }
+
+
+  if (!allDatasets || allDatasets.length === 0) return <IonNote color="medium" style={ { textAlign: 'center' } }>
+    No datasets
+  </IonNote>
+
+  return <Table columns={ 9 }>
+    { heads }
+
+    { allDatasets.map(d => <Fragment key={ d.name }>
+      <TableContent isFirstColumn={ true }><DatasetName { ...d } link/></TableContent>
+      <TableContent>{ dateToString(d.createdAt) }</TableContent>
+      <TableContent>{ d.analysisCount }</TableContent>
+      <TableContent>{ d.spectrogramCount ?? 0 }</TableContent>
+      <TableContent>{ d.start && dateToString(d.start) }</TableContent>
+      <TableContent>{ d.end && dateToString(d.end) }</TableContent>
+      <TableDivider/>
+    </Fragment>) }
+  </Table>
+}

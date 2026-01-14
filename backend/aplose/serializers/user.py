@@ -1,5 +1,4 @@
 """User DRF serializers file"""
-from django.contrib.auth.password_validation import validate_password
 from django.template.defaultfilters import upper
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
@@ -10,7 +9,7 @@ from backend.utils.serializers import EnumField
 
 
 # Serializers have too many false-positives on the following warnings:
-# pylint: disable=missing-function-docstring, abstract-method
+# pylint: disable=abstract-method
 
 
 class UserDisplayNameSerializer(serializers.SlugRelatedField):
@@ -61,14 +60,3 @@ class UserSerializer(serializers.ModelSerializer):
             "is_staff",
             "is_superuser",
         ]
-
-
-class UserPasswordUpdateSerializer(serializers.Serializer):
-    """Update password serializer"""
-
-    old_password = serializers.CharField(required=True)
-    new_password = serializers.CharField(required=True)
-
-    def validate_new_password(self, value):
-        validate_password(value)
-        return value

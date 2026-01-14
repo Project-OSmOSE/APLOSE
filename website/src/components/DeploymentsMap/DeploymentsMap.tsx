@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import {
   CircleMarker,
   DivIcon,
@@ -9,34 +9,34 @@ import {
   Layer,
   Map as LeafletMap,
   MarkerCluster,
-  MarkerClusterGroup
+  MarkerClusterGroup,
 } from 'leaflet';
 import { ClusterTooltip, MarkerTooltip } from './Tooltips';
 import { clearMap, initMap, setMapView } from './map.functions';
 import './DeploymentsMap.css'
-import { getColorLuma, intToRGB } from "./utils.functions";
-import { DeploymentPanel, FilterPanel } from "./Panels";
-import { Deployment } from "../../pages/Projects/ProjectDetail/ProjectDetail";
+import { getColorLuma, intToRGB } from './utils.functions';
+import { DeploymentPanel, FilterPanel } from './Panels';
+import { Deployment, type LightDeployment } from '../../pages/Projects/ProjectDetail/ProjectDetail';
 
 interface Feature {
   properties: {
-    deployment: Deployment;
+    deployment: LightDeployment;
   }
 }
 
 export const DeploymentsMap: React.FC<{
   level: 'project' | 'deployment',
   projectID?: number;
-  allDeployments: Array<Deployment>;
-  selectedDeployment: Deployment | undefined;
-  setSelectedDeployment: (deployment: Deployment | undefined) => void;
-}> = ({ level, projectID, allDeployments, selectedDeployment, setSelectedDeployment }) => {
+  allDeployments: Array<LightDeployment>;
+  selectedDeploymentID?: string;
+  setSelectedDeploymentID: (id: string | undefined) => void;
+}> = ({ level, projectID, allDeployments, selectedDeploymentID, setSelectedDeploymentID }) => {
   const map = useRef<LeafletMap | null>(null);
   const clusterGroup = useRef<MarkerClusterGroup | null>(null);
-  const mapID: string = useMemo(() => "map" + projectID ? '-' + projectID : '', [ projectID ]);
+  const mapID: string = useMemo(() => 'map' + projectID ? '-' + projectID : '', [ projectID ]);
   const deploymentsMarkers = useRef<Map<string, CircleMarker>>(new Map());
 
-  const [ filteredDeployments, setFilteredDeployments ] = useState<Array<Deployment>>([]);
+  const [ filteredDeployments, setFilteredDeployments ] = useState<Array<LightDeployment>>([]);
 
   useEffect(() => {
     if (map.current) clearMap(map.current);
@@ -47,10 +47,10 @@ export const DeploymentsMap: React.FC<{
 
   useEffect(() => {
     for (const [ deploymentID, marker ] of deploymentsMarkers.current.entries()) {
-      marker.options.color = deploymentID === selectedDeployment?.id ? 'white' : 'black';
+      marker.options.color = deploymentID === selectedDeploymentID ? 'white' : 'black';
       marker.redraw()
     }
-  }, [ selectedDeployment ]);
+  }, [ selectedDeploymentID ]);
 
   useEffect(() => {
     if (!map.current) return;
@@ -64,7 +64,7 @@ export const DeploymentsMap: React.FC<{
   }, [ allDeployments, filteredDeployments ]);
 
   const setDeploymentsToMap = (map: LeafletMap,
-                               deployments: Array<Deployment>): void => {
+                               deployments: Array<LightDeployment>): void => {
 
     clusterGroup.current = new MarkerClusterGroup({
       maxClusterRadius: 40,
@@ -76,19 +76,19 @@ export const DeploymentsMap: React.FC<{
         const projects = [ ...new Set(allDeployments.map(d => d.project.id)) ]
         const campaigns = [ ...new Set(allDeployments.map(d => d.campaign?.id).filter(id => id !== undefined)) ]
         cluster.bindTooltip(renderToStaticMarkup(<ClusterTooltip deployments={ allDeployments }/>))
-        let color = "#999999"
+        let color = '#999999'
         switch (level) {
-          case "project":
+          case 'project':
             if (projects.length === 1) color = intToRGB(+projects[0]);
             break;
-          case "deployment":
+          case 'deployment':
             if (campaigns.length === 1) color = intToRGB(+campaigns[0]!);
             break;
         }
         icon.options.className += ' cluster-icon';
         return new DivIcon({
           ...icon.options,
-          html: `<div style="background-color: ${ color }; color: ${ getColorLuma(color) > 120 ? 'black' : 'white' };"><span>${ cluster.getAllChildMarkers().length }</span></div>`
+          html: `<div style="background-color: ${ color }; color: ${ getColorLuma(color) > 120 ? 'black' : 'white' };"><span>${ cluster.getAllChildMarkers().length }</span></div>`,
         });
       },
     });
@@ -98,24 +98,24 @@ export const DeploymentsMap: React.FC<{
         deployment,
       },
       geometry: {
-        "type": "Point",
-        "coordinates": [ deployment.longitude, deployment.latitude ]
-      }
+        'type': 'Point',
+        'coordinates': [ deployment.longitude, deployment.latitude ],
+      },
     })) as any, {
       pointToLayer(feature: Feature, latlng: LatLng): Layer {
         const marker = new CircleMarker(latlng, {
           color: 'black',
           fillColor: intToRGB(+(level === 'project' ? feature.properties.deployment.project.id : feature.properties.deployment.campaign?.id ?? feature.properties.deployment.id)),
           fillOpacity: 1,
-          radius: 10
+          radius: 10,
         });
         deploymentsMarkers.current.set(feature.properties.deployment.id, marker);
         return marker;
       },
       onEachFeature(feature: Feature, layer: Layer) {
         layer.bindTooltip(renderToStaticMarkup(<MarkerTooltip deployment={ feature.properties.deployment }/>))
-        layer.on({ click: () => setSelectedDeployment(feature.properties.deployment) })
-      }
+        layer.on({ click: () => setSelectedDeploymentID(feature.properties.deployment.id) })
+      },
     }))
     map.addLayer(clusterGroup.current);
   }
@@ -123,8 +123,9 @@ export const DeploymentsMap: React.FC<{
   return <div id="map-container">
     <div id={ mapID } className="map"/>
     <FilterPanel allDeployments={ allDeployments } onFilter={ setFilteredDeployments }/>
-    <DeploymentPanel deployment={ selectedDeployment }
-                     disableProjectLink={ !!projectID }
-                     onClose={ () => setSelectedDeployment(undefined) }/>
+
+    { selectedDeploymentID && <DeploymentPanel deploymentID={ selectedDeploymentID }
+                                               disableProjectLink={ !!projectID }
+                                               onClose={ () => setSelectedDeploymentID(undefined) }/> }
   </div>
 }

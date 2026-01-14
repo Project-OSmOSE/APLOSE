@@ -1,0 +1,4 @@
+from backend.api.schema.nodes import AnnotationCampaignNode
+from backend.utils.schema import AuthenticatedDjangoConnectionField
+
+AllAnnotationCampaignsField = AuthenticatedDjangoConnectionField(AnnotationCampaignNode)

@@ -1,62 +1,87 @@
-import { ESSENTIAL, expect, Page, test, URL } from './utils';
+import { essentialTag, expect, Page, test, URL } from './utils';
+import { interceptRequests } from './utils/mock';
+import type { Params } from './utils/types';
 
 // Utils
 
 const STEP = {
-  hasAdminLink: (page: Page) => test.step('Has admin link', async () => {
-    const url = await page.getByRole('link', { name: 'Admin' }).getAttribute('href')
-    expect(url).toEqual(URL.admin)
-  }),
-  canAccessDataset: (page: Page) => test.step('Can access datasets', async () => {
-    await page.mock.datasets()
-    await page.mock.datasetsToImport()
-    await page.getByRole('button', { name: 'Datasets' }).click()
-    await expect(page.getByRole('heading', { name: 'Datasets' })).toBeVisible();
-  })
+  // Links
+  hasDocumentationLink: (page: Page) =>
+    test.step('Has documentation link', async () => {
+      const url = await page.navbar.documentationLink.getAttribute('href')
+      expect(url).toEqual(URL.doc)
+    }),
+  hasAdminLink: (page: Page) =>
+    test.step('Has admin link', async () => {
+      const url = await page.navbar.adminLink.getAttribute('href')
+      expect(url).toEqual(URL.admin)
+    }),
+  hasNoAdminLink: (page: Page) =>
+    test.step('Has no admin link', async () => {
+      await expect(page.navbar.adminLink).not.toBeVisible()
+    }),
+
+  // Buttons
+  accessCampaign: (page: Page) =>
+    test.step('Access campaign', async () => {
+      await page.navbar.campaignButton.click()
+      await expect(page.campaigns.title).toBeVisible()
+    }),
+  accessAccountManagement: (page: Page) =>
+    test.step('Access account management', async () => {
+      await page.navbar.accountManagementButton.click()
+      await expect(page.account.title).toBeVisible()
+    }),
+  cannotAccessDataset: (page: Page) =>
+    test.step('Cannot access datasets', async () => {
+      await expect(page.navbar.datasetsButton).not.toBeVisible()
+    }),
+  accessDataset: (page: Page) =>
+    test.step('Access datasets', async () => {
+      await page.navbar.datasetsButton.click()
+      await expect(page.datasets.title).toBeVisible()
+    }),
+  canLogout: (page: Page) =>
+    test.step('Logout', async () => {
+      await page.navbar.logoutButton.click()
+      await expect(page.login.title).toBeVisible();
+    }),
+}
+
+const TEST = {
+  canAccessAllButAdmin: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`can access all but admin as ${ as }`, { tag }, async ({ page }) => {
+      await interceptRequests(page, { getCurrentUser: as })
+      await test.step(`Navigate`, () => page.navbar.go({ as }));
+
+      await STEP.hasDocumentationLink(page)
+      await STEP.hasNoAdminLink(page)
+      await STEP.accessCampaign(page)
+      await STEP.accessAccountManagement(page)
+      await STEP.cannotAccessDataset(page)
+
+      await STEP.canLogout(page)
+    }),
+
+  canAccessAll: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`can access all as ${ as }`, { tag }, async ({ page }) => {
+      await interceptRequests(page, { getCurrentUser: as })
+      await test.step(`Navigate`, () => page.navbar.go({ as }));
+
+      await STEP.hasDocumentationLink(page)
+      await STEP.hasAdminLink(page)
+      await STEP.accessCampaign(page)
+      await STEP.accessAccountManagement(page)
+      await STEP.accessDataset(page)
+
+      await STEP.canLogout(page)
+    }),
 }
 
 // Tests
 
-test('Annotator', ESSENTIAL, async ({ page }) => {
-  await page.campaign.list.go('annotator');
-
-  await test.step('can access campaign', async () => {
-    await page.getByRole('button', { name: 'Annotation campaigns' }).click()
-    await expect(page.getByRole('heading', { name: 'Annotation campaigns' })).toBeVisible()
-  })
-
-  await test.step('Can access documentation', async () => {
-    const url = await page.getByRole('link', { name: 'Documentation', exact: true }).first().getAttribute('href')
-    expect(url).toEqual(URL.doc)
-  })
-
-  await test.step('Can access account', async () => {
-    await page.getByRole('button', { name: 'Account', exact: true }).click()
-    await expect(page.getByRole('heading', { name: 'Account' })).toBeVisible()
-  })
-
-  await test.step('cannot access datasets', async () => {
-    await expect(page.getByRole('button', { name: 'Datasets' })).not.toBeVisible();
-  })
-
-  await test.step('cannot access administration', async () => {
-    await expect(page.getByRole('link', { name: 'Admin' })).not.toBeVisible();
-  })
-
-  await test.step('Can logout', async () => {
-    await page.getByRole('button', { name: 'Logout' }).click()
-    await expect(page.getByRole('heading', { name: 'Login' })).toBeVisible();
-  })
-})
-
-test('Staff', ESSENTIAL, async ({ page }) => {
-  await page.campaign.list.go('staff');
-  await STEP.hasAdminLink(page);
-  await STEP.canAccessDataset(page)
-})
-
-test('Superuser', ESSENTIAL, async ({ page }) => {
-  await page.campaign.list.go('superuser');
-  await STEP.hasAdminLink(page);
-  await STEP.canAccessDataset(page)
+test.describe('[Navbar]', () => {
+  TEST.canAccessAllButAdmin({ as: 'annotator', tag: essentialTag })
+  TEST.canAccessAll({ as: 'staff', tag: essentialTag })
+  TEST.canAccessAll({ as: 'superuser' })
 })

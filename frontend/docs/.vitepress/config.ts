@@ -1,13 +1,11 @@
 import { defineConfig } from 'vitepress'
-// @ts-ignore
-import packageJSON from '../../../package.json';
 
 // https://vitepress.dev/reference/site-config
 // https://vitepress.dev/reference/default-theme-config
 // https://vitepress.dev/reference/default-theme-sidebar
 export default defineConfig({
-  title: "APLOSE",
-  description: "A web-based annotation plateform developed by and for Marine Passive Acoustic Monitoring researchers",
+  title: 'APLOSE',
+  description: 'A web-based annotation plateform developed by and for Marine Passive Acoustic Monitoring researchers',
   cleanUrls: true,
   lastUpdated: true,
 
@@ -23,44 +21,64 @@ export default defineConfig({
           { text: 'OSmOSE', link: 'https://osmose.ifremer.fr/', target: '_blank' },
         ],
         sidebar: {
-          '/user': [
-            {
-              text: 'Annotation',
-              items: [
-                { text: 'Access APLOSE', link: '/user/' },
-                { text: 'Annotation campaign', link: '/user/campaign' },
-                { text: 'Annotate', link: '/user/annotator' },
-                {
-                  text: 'Campaign creator',
-                  items: [
-                    { text: 'Generate a dataset', link: '/user/campaign-creator/generate-dataset' },
-                    { text: 'Import a dataset', link: '/user/campaign-creator/import-dataset' },
-                    { text: 'Create a campaign', link: '/user/campaign-creator/create-campaign' },
-                    { text: 'Add phases', link: '/user/campaign-creator/add-phase' },
-                    { text: 'Import annotations', link: '/user/campaign-creator/import-results' },
-                    { text: 'Manage annotators', link: '/user/campaign-creator/manage-annotators' },
-                    { text: 'View results', link: '/user/campaign-creator/view-results' },
-                  ]
-                },
-                {
-                  text: 'Administrator',
-                  items: [
-                    { text: 'Administration presentation', link: '/user/administrator/presentation' },
-                    { text: 'Manage users', link: '/user/administrator/manage-users' },
-                  ]
-                },
-                { text: 'Terminology', link: '/user/terminology' },
-              ],
-            },
-            {
-              text: 'Manage account',
-              link: '/user/account'
-            },
-            {
-              text: 'FAQ',
-              link: '/user/faq'
-            }
-          ],
+          '/user': {
+            base: '/user',
+            items: [
+              { text: 'Start using APLOSE', link: '/' },
+              { text: 'Manage your account', link: '/account' },
+              {
+                text: 'Data',
+                base: '/user/data',
+                collapsed: true,
+                items: [
+                  { text: 'Generate a dataset', link: '/generate' },
+                  { text: 'Import a dataset', link: '/import' },
+                  { text: 'Manage a dataset', link: '/manage' },
+                ],
+              },
+              {
+                text: 'Annotation Campaign',
+                base: '/user/annotation-campaign',
+                items: [
+                  { text: 'All campaigns', link: '/all' },
+                  { text: 'Campaign detail', link: '/detail' },
+                  { text: 'Phase detail', link: '/phase-detail' },
+                  { text: 'Phase progress and results', link: '/phase-progress-result' },
+                  {
+                    text: 'Manage',
+                    collapsed: true,
+                    items: [
+                      { text: 'Create a campaign', link: '/create' },
+                      { text: 'Add an "Annotation" phase', link: '/add-annotation-phase' },
+                      { text: 'Add a "Verification" phase', link: '/add-verification-phase' },
+                      { text: 'Manage annotators', link: '/manage-annotators' },
+                      { text: 'Import annotations', link: '/import-annotations' },
+                    ],
+                  },
+                ],
+              },
+              {
+                text: 'Annotation',
+                base: '/user/annotation',
+                items: [
+                  { text: 'Overview', link: '/overview' },
+                  { text: 'Annotate', link: '/annotate' },
+
+                ],
+              },
+              {
+                text: 'Administrator',
+                base: '/user/administrator',
+                collapsed: true,
+                items: [
+                  { text: 'Overview', link: '/overview' },
+                  { text: 'User management', link: '/manage-users' },
+                ],
+              },
+              { text: 'Terminology', link: '/terminology' },
+              { text: 'FAQ', link: '/faq' },
+            ],
+          },
           '/dev': [
             {
               text: 'Developer',
@@ -70,7 +88,7 @@ export default defineConfig({
             },
           ],
         },
-      }
+      },
     },
     fr: {
       label: 'Français',
@@ -83,52 +101,73 @@ export default defineConfig({
           { text: 'OSmOSE', link: 'https://osmose.ifremer.fr/', target: '_blank' },
         ],
         sidebar: {
-          '/fr/user': [
-            {
-              text: 'Annotation',
-              items: [
-                { text: 'Accéder à APLOSE', link: '/fr/user/' },
-                { text: 'Campagnes d\'annotation', link: '/fr/user/campaign' },
-                { text: 'Annoter', link: '/fr/user/annotator' },
-                {
-                  text: 'Créateur de campagne',
-                  items: [
-                    { text: 'Générer un dataset', link: '/fr/user/campaign-creator/generate-dataset' },
-                    { text: 'Importer un dataset', link: '/fr/user/campaign-creator/import-dataset' },
-                    { text: 'Créer une campagne', link: '/fr/user/campaign-creator/create-campaign' },
-                    { text: 'Ajouter des phases', link: '/fr/user/campaign-creator/add-phase' },
-                    { text: 'Importer des annotations', link: '/fr/user/campaign-creator/import-results' },
-                    { text: 'Gérer les annotateurs', link: '/fr/user/campaign-creator/manage-annotators' },
-                    { text: 'Voir les résultats', link: '/fr/user/campaign-creator/view-results' },
-                  ]
-                },
-                {
-                  text: 'Administrateur',
-                  items: [
-                    { text: 'Présentation de l\'administration', link: '/fr/user/administrator/presentation' },
-                    { text: 'Gérer les utilisateurs', link: '/fr/user/administrator/manage-users' },
-                  ]
-                },
-                { text: 'Terminologie', link: '/fr/user/terminology' },
-              ],
-            },
-            {
-              text: 'Gestion du compte',
-              link: '/fr/user/account'
-            },
-            {
-              text: 'FAQ',
-              link: '/fr/user/faq'
-            }
-          ],
+          'fr/user': {
+            base: '/fr/user',
+            items: [
+              { text: 'Commencer à utiliser APLOSE', link: '/' },
+              { text: 'Gérer votre compte', link: '/account' },
+              {
+                text: 'Données',
+                base: '/fr/user/data',
+                collapsed: true,
+                items: [
+                  { text: 'Générer un dataset', link: '/generate' },
+                  { text: 'Importer un dataset', link: '/import' },
+                  { text: 'Gérer un dataset', link: '/manage' },
+                ],
+              },
+              {
+                text: 'Campagnes d\'annotation',
+                base: '/fr/user/annotation-campaign',
+                items: [
+                  { text: 'Liste des campagnes', link: '/all' },
+                  { text: 'Détail d\'une campagne', link: '/detail' },
+                  { text: 'Détail d\'une phase', link: '/phase-detail' },
+                  { text: 'Progression et résultats', link: '/phase-progress-result' },
+                  {
+                    text: 'Gestion',
+                    collapsed: true,
+                    items: [
+                      { text: 'Créer une campagne', link: '/create' },
+                      { text: 'Ajouter une phase d\'"Annotation"', link: '/add-annotation-phase' },
+                      { text: 'Ajouter une phase de "Verification"', link: '/add-verification-phase' },
+                      { text: 'Gérer les annotateurs', link: '/manage-annotators' },
+                      { text: 'Importer des annotations', link: '/import-annotations' },
+                    ],
+                  },
+                ],
+              },
+              {
+                text: 'Annotation',
+                base: '/fr/user/annotation',
+                items: [
+                  { text: 'Présentation', link: '/overview' },
+                  { text: 'Annoter', link: '/annotate' },
+                ],
+              },
+              {
+                text: 'Administrator',
+                base: '/fr/user/administrator',
+                collapsed: true,
+                items: [
+                  { text: 'Présentation', link: '/overview' },
+                  { text: 'Gestion des utilisateurs', link: '/manage-users' },
+                ],
+              },
+
+
+              { text: 'Terminologie', link: '/terminology' },
+              { text: 'FAQ', link: '/faq' },
+            ],
+          },
         },
-      }
-    }
+      },
+    },
   },
 
   themeConfig: {
     logo: '/logo.png',
-    outline: "deep",
+    outline: 'deep',
     // https://vitepress.dev/reference/default-theme-config
     socialLinks: [
       { icon: 'github', link: 'https://github.com/Project-OSmOSE/osmose-app' },
@@ -140,7 +179,7 @@ export default defineConfig({
           fr: {
             translations: {
               button: {
-                buttonText: 'Rechercher'
+                buttonText: 'Rechercher',
               },
               modal: {
                 noResultsText: 'Pas de résultats pour',
@@ -148,17 +187,17 @@ export default defineConfig({
                   navigateText: 'pour naviguer',
                   selectText: 'pour sélectionner',
                   closeText: 'pour fermer',
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   markdown: {
     image: {
-      lazyLoading: true
-    }
+      lazyLoading: true,
+    },
   },
 })

@@ -2,21 +2,21 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './styles.css';
 
-function getParentTag(tagTitle: string, ontology: any){
-  let parentTagTitle: string = "";
-  if(ontology[tagTitle].parentTag){
+function getParentTag(tagTitle: string, ontology: any) {
+  let parentTagTitle: string = '';
+  if (ontology[tagTitle].parentTag) {
     parentTagTitle = ontology[tagTitle].parentTag;
   }
   return parentTagTitle;
 }
 
-function createLi(tagTitle: string, ontology: any){
+function createLi(tagTitle: string, ontology: any) {
   let liElem;
-  if(tagTitle){
+  if (tagTitle) {
     liElem =
       <li>
-        <Link to={'ontology?' + tagTitle}> 
-          {ontology[tagTitle].engName} 
+        <Link to={ 'ontology?' + tagTitle }>
+          { ontology[tagTitle].engName }
         </Link>
       </li>
     ;
@@ -30,19 +30,18 @@ export interface BreadCrumbProps {
 }
 
 export const BreadCrumb: React.FC<BreadCrumbProps> = ({
-  tagTitle,
-  ontology
-}) => {
-  console.log(ontology)
+                                                        tagTitle,
+                                                        ontology,
+                                                      }) => {
 
   return (
-<div className="breadcrumb-container my-3">
-  <nav aria-label="breadcrumb">
-    <ol className="breadcrumb" id="ariane">
-      {createLi(getParentTag(tagTitle, ontology), ontology)}
-      <li>{ontology[tagTitle].engName}</li>
-    </ol>
-  </nav>
-</div>
+    <div className="breadcrumb-container my-3">
+      <nav aria-label="breadcrumb">
+        <ol className="breadcrumb" id="ariane">
+          { createLi(getParentTag(tagTitle, ontology), ontology) }
+          <li>{ ontology[tagTitle].engName }</li>
+        </ol>
+      </nav>
+    </div>
   );
 }

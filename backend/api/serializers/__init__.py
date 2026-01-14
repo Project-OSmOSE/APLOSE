@@ -1,10 +1,5 @@
-"""
-DRF serializers module to be used in viewsets
-"""
-
-from backend.api.serializers.dataset import (
-    DatasetSerializer,
-)
-from backend.api.serializers.label_set import LabelSetSerializer
-from .annotation import *
-from .data import *
+"""API serializer"""
+from .acoustic_features import AnnotationAcousticFeaturesSerializer
+from .annotation import AnnotationSerializer
+from .annotation_validation import AnnotationValidationSerializer
+from .comment import AnnotationCommentSerializer

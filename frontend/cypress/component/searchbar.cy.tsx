@@ -1,6 +1,5 @@
 import { setupIonicReact } from '@ionic/react';
-import { Item } from "@/types/item.ts";
-import { Searchbar } from "@/components/form";
+import { Item, ListSearchbar } from '@/components/form';
 
 setupIonicReact({
   mode: 'md',
@@ -16,9 +15,9 @@ const options: Array<Item> = [
 describe('Searchbar', () => {
   beforeEach(() => {
     const stub = cy.stub().as('onValueSelected')
-    cy.mount(<Searchbar values={ options }
-                        placeholder={ placeholder }
-                        onValueSelected={ stub }/>)
+    cy.mount(<ListSearchbar values={ options }
+                            placeholder={ placeholder }
+                            onValueSelected={ stub }/>)
   })
 
   it('renders', () => {

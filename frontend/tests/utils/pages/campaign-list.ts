@@ -1,38 +1,36 @@
-import { Locator, Page, test } from '@playwright/test';
-import { UserType } from '../../fixtures';
-import { LoginPage } from './login';
-import { Mock } from '../services';
-import { API_URL } from '../const';
+import { type Locator, type Page } from '@playwright/test';
+import type { Params } from '../types';
+import { Navbar } from './navbar';
 
 export class CampaignListPage {
 
-  get card(): Locator {
-    return this.page.locator('.campaign-card').first();
+  get title(): Locator {
+    return this.page.getByRole('heading', { name: 'Annotation campaigns' })
   }
 
-  get createButton(): Locator {
+  get card(): Locator {
+    return this.page.getByTestId('campaign-card').first();
+  }
+
+  get createCampaignButton(): Locator {
     return this.page.getByRole('button', { name: 'New annotation campaign' })
   }
 
   constructor(private page: Page,
-              private login = new LoginPage(page),
-              private mock = new Mock(page)) {
+              private navbar = new Navbar(page)) {
   }
 
-  async go(as: UserType, options?: { empty: boolean }) {
-    await test.step('Navigate to Campaigns', async () => {
-      await this.mock.userSelf(as)
-      await this.mock.campaigns(options?.empty)
-      await this.login.login(as)
-      await this.mock.campaigns(options?.empty)
-      await this.page.waitForRequest(API_URL.campaign.list)
-      await this.page.locator('ion-spinner').waitFor({ state: 'hidden' });
-    });
+  async go({ as }: Pick<Params, 'as'>) {
+    await this.navbar.go({ as })
   }
 
-  async search(text: string | undefined) {
-    if (text) await this.page.getByRole('search').locator('input').fill(text)
-    else await this.page.getByRole('search').locator('input').clear()
+  async search(text: string) {
+    await this.page.getByRole('search').locator('input').fill(text)
+    await this.page.keyboard.press('Enter')
+  }
+
+  async clearSearch(text: string) {
+    await this.page.getByRole('search').locator('input').clear()
     await this.page.keyboard.press('Enter')
   }
 

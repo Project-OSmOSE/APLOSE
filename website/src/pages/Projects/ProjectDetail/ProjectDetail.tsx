@@ -1,15 +1,15 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getYear, useFetchDetail, useFetchGql } from "../../../utils";
-import { Project } from "../../../models/project";
-import { CollaboratorsBanner } from "../../../components/CollaboratorsBanner/CollaboratorsBanner";
-import { ContactList } from "../../../components/ContactList/ContactList";
-import { HTMLContent } from "../../../components/HTMLContent/HTMLContent";
-import { Back } from "../../../components/Back/Back";
-import { DeploymentsMap } from "../../../components/DeploymentsMap";
-import { DeploymentsTimeline } from "../../../components/DeploymentsTimeline";
+import React, { Fragment, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { getYear, useFetchDetail, useFetchGql } from '../../../utils';
+import { Project } from '../../../models/project';
+import { CollaboratorsBanner } from '../../../components/CollaboratorsBanner/CollaboratorsBanner';
+import { ContactList } from '../../../components/ContactList/ContactList';
+import { HTMLContent } from '../../../components/HTMLContent/HTMLContent';
+import { Back } from '../../../components/Back/Back';
+import { DeploymentsMap } from '../../../components/DeploymentsMap';
+import { DeploymentsTimeline } from '../../../components/DeploymentsTimeline';
 import './ProjectDetail.css';
-import { gql } from "graphql-request";
+import { gql } from 'graphql-request';
 
 export type Contact = {
   id: string;
@@ -85,13 +85,26 @@ export type Deployment = {
   }
 }
 
+export type LightDeployment =
+  Pick<Deployment, 'id' | 'name' | 'longitude' | 'latitude' | 'deploymentDate' | 'recoveryDate' | 'contacts' | 'campaign' | 'site'>
+  & {
+  project: Pick<Deployment['project'], 'id' | 'name'>
+  channelConfigurations: {
+    edges: {
+      node: {
+        recorderSpecification: Pick<Deployment['channelConfigurations']['edges'][number]['node']['recorderSpecification'], 'samplingFrequency'>
+      }
+    }[]
+  }
+}
+
 export const ProjectDetail: React.FC = () => {
   const { id: projectID } = useParams<{ id: string; }>();
 
   const [ project, setProject ] = useState<Project>();
 
   const [ deployments, setDeployments ] = useState<Array<Deployment>>([]);
-  const [ selectedDeployment, setSelectedDeployment ] = useState<any | undefined>();
+  const [ selectedDeploymentID, setSelectedDeploymentID ] = useState<string | undefined>();
 
   const fetchDetail = useFetchDetail<Project>('/projects', '/api/projects');
     const fetchDeployments = useFetchGql<{ allDeployments?: { results: Deployment[] } }>(gql`
@@ -105,25 +118,6 @@ export const ProjectDetail: React.FC = () => {
                     project {
                         id
                         name
-                        accessibility
-                        projectGoal
-                        contacts {
-                            edges {
-                                node {
-                                    id
-                                    role
-                                    contact {
-                                        id
-                                        firstName
-                                        lastName
-                                    }
-                                    institution {
-                                        id
-                                        name
-                                    }
-                                }
-                            }
-                        }
                     }
                     site {
                         id
@@ -134,15 +128,7 @@ export const ProjectDetail: React.FC = () => {
                         name
                     }
                     deploymentDate
-                    deploymentVessel
                     recoveryDate
-                    recoveryVessel
-                    bathymetricDepth
-                    platform {
-                        id
-                        name
-                    }
-                    description
                     contacts {
                         edges {
                             node {
@@ -163,9 +149,7 @@ export const ProjectDetail: React.FC = () => {
                     channelConfigurations {
                         edges {
                             node {
-                                id
                                 recorderSpecification {
-                                    id
                                     samplingFrequency
                                 }
                             }
@@ -215,14 +199,13 @@ export const ProjectDetail: React.FC = () => {
 
       { deployments.length > 0 && <Fragment>
           <DeploymentsMap projectID={ +projectID }
-                          level='deployment'
+                          level="deployment"
                           allDeployments={ deployments }
-                          selectedDeployment={ selectedDeployment }
-                          setSelectedDeployment={ setSelectedDeployment }/>
+                          selectedDeploymentID={ selectedDeploymentID }
+                          setSelectedDeploymentID={ setSelectedDeploymentID }/>
 
           <DeploymentsTimeline deployments={ deployments as any }
-                               selectedDeployment={ selectedDeployment as any }
-                               setSelectedDeployment={ setSelectedDeployment }/>
+                               setSelectedDeploymentID={ setSelectedDeploymentID }/>
       </Fragment> }
 
       { project?.collaborators && <CollaboratorsBanner collaborators={ project.collaborators }></CollaboratorsBanner> }

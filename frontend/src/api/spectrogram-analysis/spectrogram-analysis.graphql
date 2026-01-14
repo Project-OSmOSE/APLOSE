@@ -1,0 +1,55 @@
+query listSpectrogramAnalysis(
+    $datasetID: ID
+    $annotationCampaignID: ID
+) {
+    allSpectrogramAnalysis(
+        orderBy: "-createdAt"
+        dataset: $datasetID
+        annotationCampaigns_Id: $annotationCampaignID
+    ) {
+        results {
+            id
+            name
+            description
+            createdAt
+            legacy
+            dataDuration
+            start
+            end
+            fft {
+                samplingFrequency
+                nfft
+                windowSize
+                overlap
+            }
+            spectrograms {
+                totalCount
+            }
+        }
+    }
+}
+
+query listAvailableSpectrogramAnalysisForImport(
+    $datasetID: ID!
+) {
+    allAnalysisForImport(datasetId: $datasetID) {
+        name
+        path
+    }
+    datasetById(id: $datasetID) {
+        name
+        path
+    }
+}
+
+mutation importSpectrogramAnalysis(
+    $datasetName: String!
+    $datasetPath: String!
+    $legacy: Boolean
+    $name: String!
+    $path: String!
+) {
+    importSpectrogramAnalysis(datasetName: $datasetName, datasetPath: $datasetPath, legacy: $legacy, name: $name, path: $path) {
+        ok
+    }
+}

@@ -1,0 +1,26 @@
+.page {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+  overflow: auto;
+
+  .info {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+
+    > p {
+      display: grid;
+      grid-auto-flow: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .progress {
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: center;
+      width: 20rem;
+    }
+  }
+}

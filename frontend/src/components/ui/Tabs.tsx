@@ -1,6 +1,6 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode } from 'react';
 import styles from './ui.module.scss'
-import { Link, LinkProps } from "@/components/ui/Link.tsx";
+import { Link, LinkProps } from './Link';
 
 export const Tabs: React.FC<{ children: ReactNode }> = ({ children }) =>
   <div className={ styles.tabs } children={ children }/>
@@ -9,4 +9,4 @@ export const Tabs: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const Tab: React.FC<LinkProps & { active?: boolean }> = ({ className, active, ...props }) =>
   <Link { ...props }
         className={ [ styles.tab, active ? styles.active : '', className ].join(' ') }
-        color='medium'/>
+        color="medium"/>

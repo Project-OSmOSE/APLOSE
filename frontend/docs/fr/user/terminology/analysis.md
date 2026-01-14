@@ -1,0 +1,2 @@
+Chaque dataset peut faire l'objet de plusieurs analyses. L'analyse contient des spectrogrammes prétraités pour une configuration définie (FFT, colormap...).
+Ces configurations peuvent être consultées sur APLOSE à des fins d'annotation.

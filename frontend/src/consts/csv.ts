@@ -8,10 +8,9 @@ export const IMPORT_ANNOTATIONS_COLUMNS = {
     'end_datetime',
     'annotation',
     'annotator',
-    'is_box',
   ],
   optional: [
     'confidence_indicator_label',
-    'confidence_indicator_level'
-  ]
+    'confidence_indicator_level',
+  ],
 }

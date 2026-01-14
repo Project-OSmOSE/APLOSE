@@ -1,0 +1,2 @@
+dataset,start_frequency,end_frequency,label__name,detector__name,start_datetime,end_datetime,is_box,confidence__label,confidence__level,analysis,detector_configuration__configuration
+Dataset,32416,53916,click,nnini,2032-10-03T10:00:00+00:00,2032-10-03T10:15:00+00:00,1,sure,1,1,test

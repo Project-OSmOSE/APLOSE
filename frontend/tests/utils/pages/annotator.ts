@@ -1,31 +1,14 @@
 import { expect, Locator, Page, test } from '@playwright/test';
-import { UserType } from '../../fixtures';
-import { AnnotationResultType, BoxBounds, Phase, PointBounds } from '../../../src/service/types';
-import { Mock } from "../services";
-import { CampaignDetailPage } from "./campaign-detail";
+import { type Annotation, type Confidence, type Label } from '../mock/types';
+import { AnnotationType } from '../../../src/api/types.gql-generated';
+import { PhaseDetailPage } from './phase-detail';
+import type { Params } from '../types';
 
-export type Label = {
-  addPresence: () => Promise<void>;
-  selectLabel: () => Promise<void>;
-  getLabelState: () => Promise<boolean>;
-  remove: () => Promise<void>;
-  getWeakResult: () => Locator;
-  getNthStrongResult: (nth: number) => Locator;
-}
-export type Confidence = {
-  select: () => Promise<void>;
-}
-
-export type Validation = {
-  validate: () => Promise<void>;
-  invalidate: () => Promise<void>;
-  expectState: (isValid: boolean) => Promise<void>;
-}
 
 export class AnnotatorPage {
 
   get backToCampaignButton(): Locator {
-    return this.page.getByRole('button', { name: 'Back to Campaign' });
+    return this.page.getByRole('button', { name: 'Back to campaign' });
   }
 
   get commentInput(): Locator {
@@ -36,102 +19,120 @@ export class AnnotatorPage {
     return this.page.getByRole('button', { name: 'Task Comment' });
   }
 
-  get resultsBlock(): Locator {
-    return this.page.locator('.results');
+  get annotationsBlock(): Locator {
+    return this.page.getByTestId('annotation-bloc');
   }
 
   get submitButton(): Locator {
     return this.page.getByRole('button', { name: 'Submit & load next recording' })
   }
 
-  private getValidationWithButtons(validateBtn: Locator, invalidateBtn: Locator): Validation {
-    return {
-      validate: async () => {
-        await validateBtn.click()
-      },
-      invalidate: async () => {
-        await invalidateBtn.click()
-        await this.page.getByRole('button', { name: 'Remove' }).last().click()
-      },
-      expectState: async (isValid: boolean) => {
-        await expect(validateBtn).toHaveAttribute('color', isValid ? 'success' : 'medium')
-        await expect(invalidateBtn).toHaveAttribute('color', isValid ? 'medium' : 'danger')
-      }
-    }
-  }
-
-  get presenceValidation(): Validation {
-    return this.getValidationWithButtons(
-      this.page.locator('ion-button.validate').first(),
-      this.page.locator('ion-button.invalidate').first(),
-    )
-  }
-
-  get boxValidation(): Validation {
-    return this.getValidationWithButtons(
-      this.page.locator('ion-button.validate').nth(1),
-      this.page.locator('ion-button.invalidate').nth(1),
-    )
-  }
-
   constructor(private page: Page,
-              private mock = new Mock(page),
-              private detail = new CampaignDetailPage(page)) {
+              private phaseDetailPage = new PhaseDetailPage(page)) {
   }
 
-  async go(as: UserType, options: {
-    phase: Phase,
-    empty?: boolean,
-    noConfidence?: boolean
-    allowPoint?: boolean
-  }) {
-    await test.step('Navigate to Annotator', async () => {
-      await this.detail.go(as, {
-        noConfidence: options.noConfidence,
-        phase: options.phase,
-        allowPoint: options.allowPoint
-      })
-      await this.mock.confidenceSetDetail()
-      await this.mock.detectors()
-      await this.mock.labelSetDetail()
-      await this.mock.campaignDetail(false, options?.phase, !options.noConfidence, options.allowPoint)
-      await this.mock.annotator(options.phase, options.empty)
-      await this.detail.resumeButton.click()
-      await this.mock.annotator(options.phase, options.empty)
-    });
+  async go({ as, phase }: Pick<Params, 'as' | 'phase'>) {
+    await this.phaseDetailPage.go({ as, phase })
+    await this.phaseDetailPage.resumeButton.click()
   }
 
-  getLabel(label: string): Label {
-    return {
-      addPresence: async () => {
-        await this.page.locator('.label ion-chip').filter({ hasText: label }).click()
-      },
-      remove: async () => {
-        await this.page.locator('.label ion-chip').filter({ hasText: label }).locator('svg').last().click()
-        const alert = this.page.getByRole('dialog')
-        await alert.getByRole('button', { name: `Remove "${ label }" annotations` }).click()
-      },
-      selectLabel: async () => {
-        await this.page.locator('.label ion-chip').filter({ hasText: label }).click()
-      },
-      getLabelState: async () => {
-        const outline = await this.page.locator('.label ion-chip').filter({ hasText: label }).getAttribute('outline');
-        return outline !== 'true';
-      },
-      getWeakResult: () => {
-        return this.resultsBlock.getByText(label).first()
-      },
-      getNthStrongResult: (nth: number) => {
-        return this.resultsBlock.getByText(label).nth(1 + nth)
-      },
+  getLabelChip(label: Label) {
+    return this.page.getByTestId('label-chip').filter({ hasText: label.name })
+  }
+
+  getConfidenceChip(confidence: Confidence) {
+    return this.page.getByTestId('confidence-chip').getByText(confidence.label, { exact: true })
+  }
+
+  getAnnotationForLabel(label: Label, { type }: Pick<Params, 'type'>): Locator {
+    return this.annotationsBlock.getByText(label.name).nth(type === AnnotationType.Weak ? 0 : 1)
+  }
+
+  getAnnotationValidateBtn({ type }: Pick<Params, 'type'>): Locator {
+    return this.annotationsBlock.getByTestId('validate').nth(type === AnnotationType.Weak ? 0 : 1)
+  }
+
+  getAnnotationInvalidateBtn({ type }: Pick<Params, 'type'>): Locator {
+    return this.annotationsBlock.getByTestId('invalidate').nth(type === AnnotationType.Weak ? 0 : 1)
+  }
+
+  async invalidateAnnotation({ type }: Pick<Params, 'type'>): Promise<void> {
+    await this.getAnnotationInvalidateBtn({ type }).click()
+    if (type !== AnnotationType.Weak)
+      await this.page.getByRole('dialog').getByRole('button', { name: 'Remove' }).click()
+  }
+
+  async updateBoxAnnotationLabel(newLabel: Label): Promise<void> {
+    await this.getAnnotationInvalidateBtn({ type: AnnotationType.Box }).click()
+    await this.page.getByRole('dialog').getByRole('button', { name: 'Change the label' }).click()
+    await this.page.getByRole('dialog').getByRole('button', { name: newLabel.name }).click()
+  }
+
+  async isLabelUsed(label: Label): Promise<boolean> {
+    const outline = await this.getLabelChip(label).getAttribute('outline');
+    return outline !== 'true';
+  }
+
+  async isAnnotationValid({ type }: Pick<Params, 'type'>): Promise<boolean> {
+    return await this.getAnnotationValidateBtn({ type }).getAttribute('color') === 'success'
+  }
+
+  async addWeak(label: Label, { method }: Pick<Params, 'method'>) {
+    switch (method) {
+      case 'mouse':
+        await this.getLabelChip(label).click()
+        break;
+      case 'shortcut':
+        await this.page.keyboard.press(label.id, { delay: 1_000 })
+        break;
     }
   }
 
-  getConfidence(confidence: string): Confidence {
-    return {
-      select: async () => {
-        await this.page.locator('ion-chip').filter({ hasText: confidence }).click()
-      }
+  async removeWeak(label: Label, { method }: Pick<Params, 'method'>) {
+    switch (method) {
+      case 'mouse':
+        await this.getLabelChip(label).getByTestId('remove-label').click()
+        break;
+      case 'shortcut':
+        await this.getAnnotationForLabel(label, { type: AnnotationType.Weak }).click() // Set focus
+        await this.page.keyboard.press('Delete')
+        break;
+    }
+  }
+
+  async confirmeRemoveWeak(label: Label, { method }: Pick<Params, 'method'>) {
+    switch (method) {
+      case 'mouse':
+        await this.page.getByRole('dialog').getByRole('button', { name: `Remove "${ label.name }" annotations` }).click()
+        break;
+      case 'shortcut':
+        await this.page.keyboard.press('Enter')
+        break;
+    }
+  }
+
+  async submit({ method }: Pick<Params, 'method'>) {
+    await this.submitButton.waitFor()
+    switch (method) {
+      case 'mouse':
+        await this.submitButton.click()
+        break;
+      case 'shortcut':
+        await this.page.keyboard.press('Enter')
+        break;
+    }
+  }
+
+  async removeStrong(label: Label, { type, method }: Pick<Params, 'type' | 'method'>): Promise<void> {
+    // Focus
+    await this.getAnnotationForLabel(label, { type }).click({ force: true})
+    switch (method) {
+      case 'mouse':
+        await this.page.getByTestId('remove-box').click()
+        break;
+      case 'shortcut':
+        await this.page.keyboard.press('Delete')
+        break;
     }
   }
 
@@ -139,26 +140,22 @@ export class AnnotatorPage {
     await this.page.evaluate(() => window.scrollTo({ left: 0, top: 0 }))
   }
 
-  async draw(type: Exclude<AnnotationResultType, 'Weak'>): Promise<BoxBounds | PointBounds> {
+  async draw(type: Exclude<AnnotationType, AnnotationType.Weak>): Promise<Pick<Annotation, 'startTime' | 'startFrequency' | 'endTime' | 'endFrequency'>> {
     return test.step(`Draw ${ type }`, async () => {
       await this.scrollTop();
-      const canvas = this.page.locator('canvas.drawable').first()
+      const canvas = this.page.getByTestId('drawable-canvas').first()
       await expect(canvas).toBeVisible()
-      await this.page.mouse.move(380, 410)
+      await this.page.mouse.move(380, 368)
       await this.page.mouse.down({ button: 'left' })
       if (type === 'Box') await this.page.mouse.move(610, 480)
       await this.page.mouse.up({ button: 'left' })
       return {
-        type,
-        start_time: type === 'Box' ? 2.704 : 4.607,
-        end_time: type === 'Box' ? 4.607 : null,
-        start_frequency: type === 'Box' ? 0 : 29,
-        end_frequency: type === 'Box' ? 29 : null,
-      } as BoxBounds | PointBounds
+        startTime: 2.704,
+        endTime: type === 'Box' ? 4.607 : undefined,
+        startFrequency: type === 'Box' ? 0.000 : 59.000,
+        endFrequency: type === 'Box' ? 59.000 : undefined,
+      } as Pick<Annotation, 'startTime' | 'startFrequency' | 'endTime' | 'endFrequency'>
     })
   }
 
-  async removeStrong(): Promise<void> {
-    await this.page.locator('.remove-box').click()
-  }
 }

@@ -1,0 +1,20 @@
+"""API data fft administration"""
+from django.contrib import admin
+
+from backend.api.models import FFT
+
+
+@admin.register(FFT)
+class FFTAdmin(admin.ModelAdmin):
+    """FFT presentation in DjangoAdmin"""
+
+    # pylint: disable=duplicate-code
+    list_display = (
+        "id",
+        "nfft",
+        "window_size",
+        "overlap",
+        "sampling_frequency",
+        "scaling",
+        "legacy",
+    )

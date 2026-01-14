@@ -1,42 +1,49 @@
-import { Page, test } from '@playwright/test';
-import { Mock, Modal, UI } from '../services';
-import { UserType } from '../../fixtures';
-import { CampaignListPage } from './campaign-list';
-
-type ImportModalExtend = {
-  search: (text: string) => Promise<void>;
-}
-
-export interface ImportModal extends Modal, ImportModalExtend {
-}
+import { expect, type Locator, Page } from '@playwright/test';
+import type { Params } from '../types';
+import { Navbar } from './navbar';
 
 export class DatasetPage {
 
-  constructor(private page: Page,
-              private campaignList = new CampaignListPage(page),
-              private mock = new Mock(page),
-              private ui = new UI(page)) {
+  get title(): Locator {
+    return this.page.getByRole('heading', { name: 'Datasets', exact: true })
   }
 
-  async go(as: UserType, options?: { empty: boolean }) {
-    await test.step('Navigate to Datasets', async () => {
-      await this.campaignList.go(as);
-      await this.mock.datasets(options?.empty)
-      await this.mock.datasetsToImport(options?.empty)
-      await this.page.getByRole('button', { name: 'Datasets' }).click()
-      await this.mock.datasets(options?.empty)
-      await this.mock.datasetsToImport(options?.empty)
-    });
+  constructor(public page: Page,
+              private navbar = new Navbar(page),
+              public importDataset = new ImportDataset(page)) {
   }
 
-  async openImportModal(): Promise<ImportModal> {
-    const modal = await this.ui.openModal({ name: 'Import dataset' })
-    return Object.assign(modal, {
-      async search(text: string) {
-        await modal.getByPlaceholder('Search').fill(text)
-      }
-    } as ImportModalExtend);
+  async go({ as }: Pick<Params, 'as'>) {
+    await this.navbar.go({ as })
+    await this.navbar.datasetsButton.click()
+    await expect(this.page.getByRole('heading', { name: 'Datasets', exact: true })).toBeVisible()
   }
 
+}
+
+class ImportDataset {
+
+  get button(): Locator {
+    return this.page.getByRole('button', { name: 'Import dataset' });
+  }
+
+  get modal(): Locator {
+    return this.page.getByRole('dialog').first()
+  }
+
+  get importDatasetButton(): Locator {
+    return this.modal.getByTestId('download-dataset').first()
+  }
+
+  get importAnalysisButton(): Locator {
+    return this.modal.getByTestId('download-analysis').first()
+  }
+
+  constructor(private page: Page) {
+  }
+
+  public async search(text: string) {
+    await this.modal.getByPlaceholder('Search').fill(text)
+  }
 
 }

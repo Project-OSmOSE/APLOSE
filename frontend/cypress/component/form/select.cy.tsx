@@ -1,6 +1,5 @@
 import { setupIonicReact } from '@ionic/react';
-import { Select } from "@/components/form";
-import { Item } from "@/types/item.ts";
+import { Item, Select } from '@/components/form';
 
 const label = 'My label';
 const placeholder = 'My placeholder';
@@ -8,7 +7,7 @@ const options: Array<Item> = [
   { label: 'First', value: 1 },
   { label: 'Second', value: 2 },
 ];
-const noneLabel = "My none label";
+const noneLabel = 'My none label';
 
 
 setupIonicReact({
@@ -64,7 +63,8 @@ describe('Select', () => {
                        optionsContainer="popover"
                        required={ true }
                        noneLabel={ noneLabel }
-                       onValueSelected={ () => {} }
+                       onValueSelected={ () => {
+                       } }
                        placeholder={ placeholder }/>)
 
       cy.get('#aplose-input').should('contain', `${ label }*`)
@@ -78,9 +78,10 @@ describe('Select', () => {
                        optionsContainer="popover"
                        error="My custom error"
                        noneLabel={ noneLabel }
-                       onValueSelected={ () => {} }
+                       onValueSelected={ () => {
+                       } }
                        placeholder={ placeholder }/>)
-      cy.get('#aplose-input').should('contain', "My custom error")
+      cy.get('#aplose-input').should('contain', 'My custom error')
     })
   })
 
@@ -125,7 +126,8 @@ describe('Select', () => {
                        optionsContainer="alert"
                        required={ true }
                        noneLabel={ noneLabel }
-                       onValueSelected={ () => {} }
+                       onValueSelected={ () => {
+                       } }
                        placeholder={ placeholder }/>)
 
       cy.get('#aplose-input').should('contain', `${ label }*`)
@@ -137,9 +139,10 @@ describe('Select', () => {
                        optionsContainer="popover"
                        error="My custom error"
                        noneLabel={ noneLabel }
-                       onValueSelected={ () => {} }
+                       onValueSelected={ () => {
+                       } }
                        placeholder={ placeholder }/>)
-      cy.get('#aplose-input').should('contain', "My custom error")
+      cy.get('#aplose-input').should('contain', 'My custom error')
     })
   })
 })

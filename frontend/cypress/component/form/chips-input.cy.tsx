@@ -1,13 +1,12 @@
 import { setupIonicReact } from '@ionic/react';
-import { ChipsInput } from '@/components/form';
-import { Item } from "@/types/item";
+import { ChipsInput, Item } from '@/components/form';
 
 const label = 'My label';
 const options: Array<Item> = [
   { label: 'First', value: 1 },
   { label: 'Second', value: 2 },
 ];
-const activeItems: Array<string | number> = [1];
+const activeItems: Array<string | number> = [ 1 ];
 
 setupIonicReact({
   mode: 'md',
@@ -37,7 +36,7 @@ describe('Chips input', () => {
   it('can select new item', () => {
     const selectItem = options[1];
     cy.get('#aplose-input ion-chip').contains(selectItem.label).click()
-    cy.get('@setActiveItemsValues').should('have.been.calledWithMatch', [...activeItems, selectItem.value])
+    cy.get('@setActiveItemsValues').should('have.been.calledWithMatch', [ ...activeItems, selectItem.value ])
   })
 
   it('can unselect item', () => {
@@ -51,7 +50,8 @@ describe('Chips input', () => {
                          required={ true }
                          items={ options }
                          activeItemsValues={ activeItems }
-                         setActiveItemsValues={ () => {} }/>)
+                         setActiveItemsValues={ () => {
+                         } }/>)
     cy.get('#aplose-input').should('contain', `${ label }*`)
   })
 
@@ -60,7 +60,8 @@ describe('Chips input', () => {
                          error="My custom error"
                          items={ options }
                          activeItemsValues={ activeItems }
-                         setActiveItemsValues={ () => {} }/>)
-    cy.get('#aplose-input').should('contain', "My custom error")
+                         setActiveItemsValues={ () => {
+                         } }/>)
+    cy.get('#aplose-input').should('contain', 'My custom error')
   })
 })
