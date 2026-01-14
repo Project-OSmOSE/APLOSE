@@ -34,7 +34,7 @@ variables:
 osmose_front:
   script:
     - test -n "${CI_JOB_TOKEN}" && docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} ${CI_REGISTRY} || true
-    - docker build -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${APP_NAME}:${APP_VERSION} --build-arg UID=${UID} --build-arg GID=${GID} -f ./dockerfiles/front.dockerfile .
+    - docker build -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${APP_NAME}:${APP_VERSION} --build-arg UID=202377 --build-arg GID=11436 -f ./dockerfiles/front.dockerfile .
     - docker push ${REGISTRY_PATH} ${CI_REGISTRY}/${CI_PROJECT_PATH}/${APP_NAME}:${APP_VERSION}
   stage: build_image
   rules:
@@ -44,13 +44,13 @@ osmose_front:
   variables:
     APP_NAME: osmose_front
     APP_VERSION: $CI_COMMIT_TAG
-    CI_REGISTRY: $REGISTRY
-    CI_PROJECT_PATH: $PROJECT_PATH
+    CI_REGISTRY: gitlab-registry.ifremer.fr
+    CI_PROJECT_PATH: dev-ops/shared_docker_image_factory/imt_osmose
 
 osmose_back:
   script:
     - test -n "${CI_JOB_TOKEN}" && docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} ${CI_REGISTRY} || true
-    - docker build -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${APP_NAME}:${APP_VERSION} --build-arg UID=${UID} --build-arg GID=${GID} -f ./dockerfiles/back.dockerfile .
+    - docker build -t ${CI_REGISTRY}/${CI_PROJECT_PATH}/${APP_NAME}:${APP_VERSION} --build-arg UID=202377 --build-arg GID=11436 -f ./dockerfiles/back.dockerfile .
     - docker push ${REGISTRY_PATH} ${CI_REGISTRY}/${CI_PROJECT_PATH}/${APP_NAME}:${APP_VERSION}
   stage: build_image
   rules:
@@ -60,5 +60,5 @@ osmose_back:
   variables:
     APP_NAME: osmose_back
     APP_VERSION: $CI_COMMIT_TAG
-    CI_REGISTRY: $REGISTRY
-    CI_PROJECT_PATH: $PROJECT_PATH
+    CI_REGISTRY: gitlab-registry.ifremer.fr
+    CI_PROJECT_PATH: dev-ops/shared_docker_image_factory/imt_osmose
