@@ -10,6 +10,7 @@ import {
   type AnnotationValidationNode,
   AnnotationValidationSerializerInput,
   type ConfidenceNode,
+  type DetectorConfigurationNode,
   type DetectorNode,
   type Maybe,
   type SpectrogramAnalysisNode,
@@ -55,6 +56,7 @@ export function convertGqlToFeatures(features: Omit<AcousticFeaturesNode, '__typ
 }
 
 export function convertAnnotationsToPost(annotations: Annotation[]): AnnotationInput[] {
+  console.log(annotations)
   return [ ...annotations, ...annotations.filter(a => a.update).map(a => ({
     ...a.update,
     isUpdateOf: a.id?.toString(),
@@ -75,7 +77,7 @@ type Node =
   & {
   isUpdateOf?: Maybe<Pick<AnnotationNode, 'id'>>,
   annotator?: Maybe<Pick<UserNode, 'id'>>,
-  detectorConfiguration?: Maybe<{
+  detectorConfiguration?: Maybe<Pick<DetectorConfigurationNode, 'id'> &{
     detector: Pick<DetectorNode, 'id'>
   }>,
   confidence?: Maybe<Pick<ConfidenceNode, 'label'>>,
@@ -109,7 +111,7 @@ export function convertGqlToAnnotation(annotation: Node,
     endTime: annotation.endTime === null ? undefined : annotation.endTime,
     startTime: annotation.startTime === null ? undefined : annotation.startTime,
     confidence: annotation.confidence?.label,
-    detectorConfiguration: annotation.detectorConfiguration?.detector.id,
+    detectorConfiguration: annotation.detectorConfiguration?.id,
     analysis: annotation.analysis.id,
   } as Annotation
 }
