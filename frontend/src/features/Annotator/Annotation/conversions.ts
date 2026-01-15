@@ -56,6 +56,7 @@ export function convertGqlToFeatures(features: Omit<AcousticFeaturesNode, '__typ
 }
 
 export function convertAnnotationsToPost(annotations: Annotation[]): AnnotationInput[] {
+  console.log(annotations)
   return [ ...annotations, ...annotations.filter(a => a.update).map(a => ({
     ...a.update,
     isUpdateOf: a.id?.toString(),
