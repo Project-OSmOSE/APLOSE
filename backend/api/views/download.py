@@ -156,9 +156,13 @@ def _get_annotations_for_report(
         output_field=models.CharField(),
     )
 
+    annotations = Annotation.objects.filter(
+        annotation_phase__annotation_campaign_id=phase.annotation_campaign_id
+    )
+    if phase.phase == AnnotationPhase.Type.ANNOTATION:
+        annotations = annotations.filter(annotation_phase=phase)
     return (
-        Annotation.objects.filter(annotation_phase=phase)
-        .distinct()
+        annotations.distinct()
         .select_related(
             "spectrogram",
             "label",
