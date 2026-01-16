@@ -96,19 +96,21 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
       id: LABELS.featured.id,
       name: LABELS.featured.name,
     } ],
-    phases: [ {
-      id: phase.id,
-      phase: AnnotationPhaseType.Annotation,
-      tasksCount,
-      completedTasksCount,
-      isOpen: phase.isOpen,
-    }, {
-      id: '2',
-      phase: AnnotationPhaseType.Verification,
-      tasksCount,
-      completedTasksCount,
-      isOpen: phase.isOpen,
-    } ],
+    phases: {
+      results: [ {
+        id: phase.id,
+        phase: AnnotationPhaseType.Annotation,
+        tasksCount,
+        completedTasksCount,
+        isOpen: phase.isOpen,
+      }, {
+        id: '2',
+        phase: AnnotationPhaseType.Verification,
+        tasksCount,
+        completedTasksCount,
+        isOpen: phase.isOpen,
+      } ],
+    },
   },
 }
 export const CAMPAIGN_QUERIES: {
@@ -134,6 +136,9 @@ export const CAMPAIGN_QUERIES: {
             userTasksCount,
             userCompletedTasksCount,
             phaseTypes: [ AnnotationPhaseType.Annotation ],
+            accessiblePhases: {
+              results: [ { phase: AnnotationPhaseType.Annotation } ]
+            },
           },
         ],
       },

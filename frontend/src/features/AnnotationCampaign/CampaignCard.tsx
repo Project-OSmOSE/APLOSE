@@ -21,8 +21,8 @@ export const Cards: React.FC = () => {
 
 
   const getLink = useCallback((campaign: Campaign) => {
-    if (campaign.phaseTypes.filter(p => p !== null).length > 0)
-      return `/annotation-campaign/${ campaign.id }/phase/Annotation`;
+    if (campaign.accessiblePhases && campaign.accessiblePhases.results.filter(p => p !== null).length > 0)
+      return `/annotation-campaign/${ campaign.id }/phase/${campaign.accessiblePhases.results.filter(p => p !== null)[0].phase}`;
     return `/annotation-campaign/${ campaign.id }`
   }, [])
   const accessDetail = useCallback((campaign: Campaign) => navigate(getLink(campaign)), [ getLink ]);

@@ -249,7 +249,7 @@ export type AnnotationCampaignNode = BaseNode & {
   name: Scalars['String']['output'];
   owner: UserNode;
   phaseTypes: Array<Maybe<AnnotationPhaseType>>;
-  phases: Array<Maybe<AnnotationPhaseNode>>;
+  phases?: Maybe<AnnotationPhaseNodeNodeConnection>;
   spectrogramsCount: Scalars['Int']['output'];
   tasksCount: Scalars['Int']['output'];
   userCompletedTasksCount: Scalars['Int']['output'];
@@ -267,6 +267,25 @@ export type AnnotationCampaignNodeAnalysisArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** AnnotationCampaign schema */
+export type AnnotationCampaignNodePhasesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  annotationCampaignId?: InputMaybe<Scalars['ID']['input']>;
+  annotationCampaign_OwnerId?: InputMaybe<Scalars['ID']['input']>;
+  annotationFileRanges_AnnotatorId?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  isCampaignArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
+  phase?: InputMaybe<AnnotationPhaseType>;
+  search?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AnnotationCampaignNodeConnection = {

@@ -21,6 +21,11 @@ query listCampaigns(
             isArchived
             datasetName
             phaseTypes
+            accessiblePhases: phases(annotationFileRanges_AnnotatorId: $annotatorID) {
+                results {
+                    phase
+                }
+            }
             tasksCount
             completedTasksCount
             userTasksCount
@@ -125,11 +130,13 @@ query getCampaign($id: ID!) {
         }
         spectrogramsCount
         phases {
-            id
-            phase
-            isOpen
-            tasksCount
-            completedTasksCount
+            results {
+                id
+                phase
+                isOpen
+                tasksCount
+                completedTasksCount
+            }
         }
     }
 }
