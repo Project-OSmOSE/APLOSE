@@ -4,9 +4,8 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework.request import Request
 
-from backend.api.models import AnnotationFileRange
+from backend.api.models import AnnotationFileRange, AnnotationPhase
 from backend.utils.schema import ForbiddenError, NotFoundError
-from .annotation_phase import AnnotationPhaseContextFilter
 
 
 class AnnotationFileRangeContextFilter:
@@ -21,8 +20,8 @@ class AnnotationFileRangeContextFilter:
             return queryset
         return queryset.filter(
             Exists(
-                AnnotationPhaseContextFilter.get_queryset(
-                    context, id=OuterRef("annotation_phase_id")
+                AnnotationPhase.objects.filter_viewable_by(context.user).filter(
+                    id=OuterRef("annotation_phase_id")
                 )
             )
         )

@@ -4,7 +4,6 @@ from django.conf import settings
 from django.db import models
 
 from .annotation import Annotation
-from .annotation_phase import AnnotationPhase
 from ..data import Spectrogram
 
 
@@ -23,7 +22,7 @@ class AnnotationComment(models.Model):
         default=None,
     )
     annotation_phase = models.ForeignKey(
-        AnnotationPhase, on_delete=models.CASCADE, related_name="annotation_comments"
+        "AnnotationPhase", on_delete=models.CASCADE, related_name="annotation_comments"
     )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,

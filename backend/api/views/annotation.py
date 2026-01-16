@@ -9,7 +9,6 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from backend.api.context_filters import AnnotationPhaseContextFilter
 from backend.api.models import (
     Annotation,
     AnnotationPhase,
@@ -22,7 +21,6 @@ from backend.api.models import (
 )
 from backend.api.serializers import AnnotationSerializer
 from backend.utils.filters import ModelFilter, get_boolean_query_param
-from backend.utils.schema import ForbiddenError, NotFoundError
 
 
 def to_seconds(delta: timedelta) -> float:
@@ -56,14 +54,12 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
                 "Import should always be made on annotation campaign",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        try:
-            phase = AnnotationPhaseContextFilter.get_edit_node_or_fail(
-                request, annotation_campaign_id=campaign_id, phase=phase_type[0]
-            )
-        except ForbiddenError:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        except NotFoundError:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        phase = AnnotationPhase.objects.get_editable_or_fail(
+            user=request.user,
+            annotation_campaign_id=campaign_id,
+            phase=phase_type.value,
+        )
 
         reader = csv.DictReader(StringIO(request.data["data"]))
         annotations = []

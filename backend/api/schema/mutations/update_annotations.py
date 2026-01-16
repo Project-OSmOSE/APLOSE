@@ -1,11 +1,10 @@
 import graphene
 from django.db.models import Q
 
-from backend.api.models import Spectrogram, AnnotationPhase
 from backend.api.context_filters import (
-    AnnotationPhaseContextFilter,
     AnnotationContextFilter,
 )
+from backend.api.models import Spectrogram, AnnotationPhase
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.serializers import AnnotationSerializer
 from backend.utils.schema.mutations import ListSerializerMutation
@@ -51,8 +50,8 @@ class UpdateAnnotationsMutation(ListSerializerMutation):
 
     @classmethod
     def get_serializer_context(cls, root, info, **input):
-        phase = AnnotationPhaseContextFilter.get_node_or_fail(
-            info.context,
+        phase = AnnotationPhase.objects.get_viewable_or_fail(
+            info.context.user,
             annotation_campaign_id=input["campaign_id"],
             phase=input["phase_type"].value,
         )

@@ -5,11 +5,14 @@ from django.utils import timezone
 
 from backend.aplose.models import User
 from backend.utils.models import Enum
+from backend.api.managers import AnnotationPhaseManager
 from .annotation_campaign import AnnotationCampaign
 
 
 class AnnotationPhase(models.Model):
     """Annotation campaign phase"""
+
+    objects = AnnotationPhaseManager()
 
     class Type(Enum):
         """Available type of phases of the annotation campaign"""

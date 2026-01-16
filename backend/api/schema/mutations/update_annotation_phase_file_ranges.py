@@ -6,7 +6,6 @@ from django.db.models import Q
 from graphene_django.types import ErrorType
 from graphql import GraphQLError
 
-from backend.api.context_filters import AnnotationPhaseContextFilter
 from backend.api.models import AnnotationFileRange, AnnotationPhase
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions
@@ -119,8 +118,10 @@ class UpdateAnnotationPhaseFileRangesMutation(graphene.Mutation):
         file_ranges: [AnnotationFileRangeInput],
         force: bool = False,
     ):
-        phase = AnnotationPhaseContextFilter.get_edit_node_or_fail(
-            info.context, annotation_campaign_id=campaign_id, phase=phase_type.value
+        phase = AnnotationPhase.objects.get_editable_or_fail(
+            user=info.context.user,
+            annotation_campaign_id=campaign_id,
+            phase=phase_type.value,
         )
 
         new_instance_ids = []

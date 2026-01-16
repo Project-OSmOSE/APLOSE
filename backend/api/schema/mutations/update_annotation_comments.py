@@ -1,10 +1,9 @@
 import graphene
 
 from backend.api.context_filters import (
-    AnnotationPhaseContextFilter,
     AnnotationCommentContextFilter,
 )
-from backend.api.models import Spectrogram
+from backend.api.models import Spectrogram, AnnotationPhase
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.serializers import AnnotationCommentSerializer
 from backend.utils.schema.mutations import ListSerializerMutation
@@ -40,8 +39,8 @@ class UpdateAnnotationCommentsMutation(ListSerializerMutation):
     @classmethod
     def get_serializer_context(cls, root, info, **input):
         # pylint: disable=duplicate-code
-        phase = AnnotationPhaseContextFilter.get_node_or_fail(
-            info.context,
+        phase = AnnotationPhase.objects.get_viewable_or_fail(
+            info.context.user,
             annotation_campaign_id=input["campaign_id"],
             phase=input["phase_type"].value,
         )

@@ -14,7 +14,6 @@ from django.db.models import (
 from django.db.models.functions import Coalesce
 from graphql import GraphQLResolveInfo
 
-from backend.api.context_filters import AnnotationPhaseContextFilter
 from backend.api.models import AnnotationPhase, AnnotationFileRange, AnnotationTask
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationPhaseFilterSet
@@ -50,7 +49,7 @@ class AnnotationPhaseNode(BaseObjectType):
         model = AnnotationPhase
         fields = "__all__"
         filterset_class = AnnotationPhaseFilterSet
-        context_filter = AnnotationPhaseContextFilter
+        # context_filter = AnnotationPhaseContextFilter
         interfaces = (BaseNode,)
 
     has_annotations = graphene.Field(graphene.Boolean, required=True)

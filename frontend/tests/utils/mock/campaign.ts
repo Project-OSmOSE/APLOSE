@@ -135,8 +135,7 @@ export const CAMPAIGN_QUERIES: {
             completedTasksCount,
             userTasksCount,
             userCompletedTasksCount,
-            phaseTypes: [ AnnotationPhaseType.Annotation ],
-            accessiblePhases: {
+            phases: {
               results: [ { phase: AnnotationPhaseType.Annotation } ]
             },
           },

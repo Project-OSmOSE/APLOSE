@@ -1,15 +1,17 @@
 query listCampaigns(
-    $isArchived: Boolean
-    $phase: AnnotationPhaseType
-    $ownerID: ID
-    $annotatorID: ID
+    $userID: ID!
+
     $search: String
+    $filter_isArchived: Boolean
+    $filter_phase: AnnotationPhaseType
+    $filter_ownerID: ID
+    $filter_annotatorID: ID
 ) {
     allAnnotationCampaigns(
-        isArchived: $isArchived
-        phases_Phase: $phase
-        ownerId: $ownerID
-        phases_AnnotationFileRanges_AnnotatorId: $annotatorID
+        isArchived: $filter_isArchived
+        phases_Phase: $filter_phase
+        ownerId: $filter_ownerID
+        phases_AnnotationFileRanges_AnnotatorId: $filter_annotatorID
         search: $search
 
         orderBy: "name"
@@ -20,8 +22,7 @@ query listCampaigns(
             deadline
             isArchived
             datasetName
-            phaseTypes
-            accessiblePhases: phases(annotationFileRanges_AnnotatorId: $annotatorID) {
+            phases(annotationFileRanges_AnnotatorId: $userID) {
                 results {
                     phase
                 }
@@ -34,7 +35,7 @@ query listCampaigns(
     }
 }
 
-query getCampaign($id: ID!) {
+query getCampaign($id: ID!, $userID: ID!) {
     annotationCampaignById(id: $id) {
         id
         name
@@ -129,7 +130,7 @@ query getCampaign($id: ID!) {
             }
         }
         spectrogramsCount
-        phases {
+        phases(annotationFileRanges_AnnotatorId: $userID) {
             results {
                 id
                 phase

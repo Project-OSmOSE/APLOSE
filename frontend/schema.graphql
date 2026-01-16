@@ -2295,7 +2295,6 @@ type AnnotationCampaignNode implements BaseNode {
     """Ordering"""
     orderBy: String
   ): AnnotationPhaseNodeNodeConnection
-  phaseTypes: [AnnotationPhaseType]!
   isArchived: Boolean!
   canManage: Boolean!
   datasetName: String!

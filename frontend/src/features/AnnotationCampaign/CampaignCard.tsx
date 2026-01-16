@@ -21,8 +21,9 @@ export const Cards: React.FC = () => {
 
 
   const getLink = useCallback((campaign: Campaign) => {
-    if (campaign.accessiblePhases && campaign.accessiblePhases.results.filter(p => p !== null).length > 0)
-      return `/annotation-campaign/${ campaign.id }/phase/${campaign.accessiblePhases.results.filter(p => p !== null)[0].phase}`;
+    const phases = campaign.phases?.results.filter(p => p !== null) ?? []
+    if (phases.length > 0)
+      return `/annotation-campaign/${ campaign.id }/phase/${phases.filter(p => p !== null)[0].phase}`;
     return `/annotation-campaign/${ campaign.id }`
   }, [])
   const accessDetail = useCallback((campaign: Campaign) => navigate(getLink(campaign)), [ getLink ]);
@@ -72,8 +73,8 @@ export const Cards: React.FC = () => {
 
       <div className={ styles.property }>
         <IonIcon className={ styles.icon } icon={ crop }/>
-        <p className={ styles.label }>Phase{ pluralize(c.phaseTypes) }:</p>
-        <p>{ c.phaseTypes.length > 0 ? c.phaseTypes.join(', ') : 'No phase' }</p>
+        <p className={ styles.label }>Phase{ pluralize(c.phases?.results) }:</p>
+        <p>{ c.phases && c.phases?.results.length > 0 ? c.phases?.results.join(', ') : 'No phase' }</p>
       </div>
 
       { c.userTasksCount > 0 && <Progress label="My progress"

@@ -1,7 +1,6 @@
 import graphene
 
 from backend.api.context_filters import (
-    AnnotationPhaseContextFilter,
     AnnotationCampaignContextFilter,
 )
 from backend.api.models import AnnotationCampaign
@@ -17,9 +16,8 @@ def resolve_phase(self, info, campaign_id: int, phase_type: AnnotationPhaseType)
         info.context,
         pk=campaign_id,
     )
-    return AnnotationPhaseContextFilter.get_node_or_fail(
-        info.context,
-        queryset=AnnotationPhaseNode.get_queryset(campaign.phases, info),
+    return campaign.phases.get_viewable_or_fail(
+        info.context.user,
         annotation_campaign_id=campaign.id,
         phase=phase_type.value,
     )

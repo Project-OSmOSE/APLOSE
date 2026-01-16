@@ -39,8 +39,6 @@ from .label import AnnotationLabelNode
 class AnnotationCampaignNode(BaseObjectType):
     """AnnotationCampaign schema"""
 
-    phase_types = graphene.List(AnnotationPhaseType, required=True)
-
     archive = ArchiveNode()
     is_archived = graphene.Boolean(required=True)
     can_manage = graphene.Boolean(required=True)
@@ -116,7 +114,6 @@ class AnnotationCampaignNode(BaseObjectType):
             .select_related("dataset")
             .prefetch_related("phases")
             .annotate(
-                phase_types=ArrayAgg("phases__phase", distinct=True),
                 dataset_name=F("dataset__name"),
                 is_archived=ExpressionWrapper(
                     Q(archive__isnull=False),
