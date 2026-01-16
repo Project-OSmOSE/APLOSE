@@ -1340,8 +1340,8 @@ type LabelNode implements Node {
   description: String
   children(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], sourceId: ID, sourceId_In: [ID], soundId: ID, soundId_In: [ID], parentId: ID, parentId_In: [ID], children_Id: Decimal, children_Id_In: [ID], nickname: String, nickname_Icontains: String, acousticDetectors_Id: Decimal, acousticDetectors_Id_In: [ID], channelConfigurationDetectorSpecifications_Id: Decimal, channelConfigurationDetectorSpecifications_Id_In: [ID], shape: SignalShapeEnum, plurality: SignalPluralityEnum, minFrequency: Int, minFrequency_Lt: Int, minFrequency_Lte: Int, minFrequency_Gt: Int, minFrequency_Gte: Int, maxFrequency: Int, maxFrequency_Lt: Int, maxFrequency_Lte: Int, maxFrequency_Gt: Int, maxFrequency_Gte: Int, meanDuration: Float, meanDuration_Lt: Float, meanDuration_Lte: Float, meanDuration_Gt: Float, meanDuration_Gte: Float, labels_Id: Decimal): LabelNodeConnection!
   acousticDetectors(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], equipment_Id: Decimal, equipment_Id_In: [ID], detectedLabels_Id: Decimal, detectedLabels_Id_In: [ID], minFrequency: Int, minFrequency_Lt: Int, minFrequency_Lte: Int, minFrequency_Gt: Int, minFrequency_Gte: Int, maxFrequency: Int, maxFrequency_Lt: Int, maxFrequency_Lte: Int, maxFrequency_Gt: Int, maxFrequency_Gte: Int, algorithmName: String, algorithmName_Icontains: String): AcousticDetectorSpecificationNodeConnection!
-  channelConfigurationDetectorSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], detectorId: ID, detectorId_In: [ID], labels_Id: Decimal, labels_Id_In: [ID], channelConfiguration_Id: Decimal, channelConfiguration_Id_In: [ID], outputFormats: String): ChannelConfigurationDetectorSpecificationNodeConnection!
   labelSet(offset: Int, before: String, after: String, first: Int, last: Int, annotation_AnnotationPhase_AnnotationCampaignId: ID, annotation_AnnotationPhase_Phase: AnnotationPhaseType, annotation_AnnotatorId: ID): AnnotationLabelNodeConnection!
+  channelConfigurationDetectorSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], detectorId: ID, detectorId_In: [ID], labels_Id: Decimal, labels_Id_In: [ID], channelConfiguration_Id: Decimal, channelConfiguration_Id_In: [ID], outputFormats: String): ChannelConfigurationDetectorSpecificationNodeConnection!
 }
 
 """An object with an ID"""
@@ -2270,7 +2270,31 @@ type AnnotationCampaignNode implements BaseNode {
   owner: UserNode!
   confidenceSet: ConfidenceSetNode
   archive: ArchiveNode
-  phases: [AnnotationPhaseNode]!
+  phases(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotationCampaignId: ID
+    annotationCampaign_OwnerId: ID
+    annotationFileRanges_AnnotatorId: ID
+    isCampaignArchived: Boolean
+    phase: AnnotationPhaseType
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationPhaseNodeNodeConnection
   phaseTypes: [AnnotationPhaseType]!
   isArchived: Boolean!
   canManage: Boolean!
@@ -3654,6 +3678,15 @@ type ConfidenceSetNodeEdge {
   cursor: String!
 }
 
+type AnnotationPhaseNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [AnnotationPhaseNode]!
+  totalCount: Int
+}
+
 """An enumeration."""
 enum ApiAnnotationAnnotatorExpertiseLevelChoices {
   """Expert"""
@@ -4218,15 +4251,6 @@ type AnnotationCampaignNodeNodeConnection {
 
   """Contains the nodes in this connection."""
   results: [AnnotationCampaignNode]!
-  totalCount: Int
-}
-
-type AnnotationPhaseNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [AnnotationPhaseNode]!
   totalCount: Int
 }
 

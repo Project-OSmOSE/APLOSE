@@ -159,6 +159,17 @@ class AnnotationSerializer(serializers.ModelSerializer):
             if isinstance(self.instance, QuerySet):
                 self.instance = self.instance.first()
 
+        phase: Optional[AnnotationPhase] = (
+            self.context["phase"] if "phase" in self.context else None
+        )
+        if (
+            phase is not None
+            and phase.phase == AnnotationPhase.Type.VERIFICATION
+            and "annotator" in data
+            and data.get("detector_configuration", None) is not None
+        ):
+            data.pop("annotator")
+
         return super().run_validation(data)
 
     def validate(self, attrs: dict):
@@ -175,16 +186,6 @@ class AnnotationSerializer(serializers.ModelSerializer):
         ):
             attrs["start_frequency"] = end_frequency
             attrs["end_frequency"] = start_frequency
-        phase: Optional[AnnotationPhase] = (
-            self.context["phase"] if "phase" in self.context else None
-        )
-        if (
-            phase is not None
-            and phase.phase == AnnotationPhase.Type.VERIFICATION
-            and "annotator" in attrs
-            and attrs.get("detector_configuration", None) is not None
-        ):
-            attrs.pop("annotator")
 
         return super().validate(attrs)
 

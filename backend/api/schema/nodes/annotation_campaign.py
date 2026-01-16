@@ -28,6 +28,7 @@ from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationCampaignFilterSet
 from backend.aplose.models import User
 from backend.aplose.schema import UserNode
+from backend.utils.schema import AuthenticatedDjangoConnectionField
 from backend.utils.schema.types import BaseObjectType, BaseNode
 from .annotation_phase import AnnotationPhaseNode
 from .archive import ArchiveNode
@@ -59,7 +60,7 @@ class AnnotationCampaignNode(BaseObjectType):
         context_filter = AnnotationCampaignContextFilter
         interfaces = (BaseNode,)
 
-    phases = graphene.List(AnnotationPhaseNode, required=True)
+    phases = AuthenticatedDjangoConnectionField(AnnotationPhaseNode)
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_phases(self: AnnotationCampaign, info, **kwargs):
