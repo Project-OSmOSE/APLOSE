@@ -11,7 +11,7 @@ def resolve_phase(self, info, campaign_id: int, phase_type: AnnotationPhaseType)
     """Get AnnotationPhase by campaignID and phase type"""
     return AnnotationPhase.objects.get_viewable_or_fail(
         info.context.user,
-        annotation_campaign_id=campaign_id.id,
+        annotation_campaign_id=campaign_id,
         phase=phase_type.value,
     )
 
