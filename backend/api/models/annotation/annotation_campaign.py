@@ -2,22 +2,62 @@
 from typing import Optional
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.db.models import signals, Q, QuerySet
+from django.db.models import signals, Q, QuerySet, Exists, OuterRef
 from django.dispatch import receiver
 from django.utils import timezone
 
-from backend.api.managers.annotation.annotation_campaign import (
-    AnnotationCampaignManager,
-)
-from backend.aplose.models import User
+from backend.utils.managers import CustomManager
 from .confidence import Confidence
 from .confidence_set import ConfidenceSet, ConfidenceIndicatorSetIndicator
 from .label import Label
 from .label_set import LabelSet
+from .annotation_phase import AnnotationPhase
 from ..common import Archive
 from ..data import Dataset, SpectrogramAnalysis, Spectrogram
+
+
+class AnnotationCampaignManager(CustomManager):
+    """AnnotationCampaign custom manager"""
+
+    def filter_viewable_by(self, user: User, **kwargs):
+        qs = super().filter_viewable_by(user, **kwargs)
+
+        # Admin can view all campaigns
+        if user.is_staff or user.is_superuser:
+            return qs
+
+        return qs.filter(
+            # Campaign owner can view their campaigns
+            Q(owner_id=user.id)
+            |
+            # Other can only view campaigns with assigned open phase
+            (
+                # Open campaigns
+                Q(archive__isnull=True)
+                # Assigned open phases
+                & Exists(
+                    AnnotationPhase.objects.filter_viewable_by(
+                        user, annotation_campaign_id=OuterRef("pk")
+                    )
+                )
+            )
+        )
+
+    def filter_editable_by(self, user: User, **kwargs):
+        qs = super().filter_viewable_by(user, **kwargs)
+
+        # Only open campaigns can be edited
+        open_campaigns = qs.filter(archive__isnull=True)
+
+        # Admin can edit all campaigns
+        if user.is_staff or user.is_superuser:
+            return open_campaigns
+
+        # Campaign owner can edit their campaigns
+        return open_campaigns.filter(owner_id=user.id)
 
 
 class AnnotationCampaign(models.Model):
