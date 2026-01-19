@@ -50,35 +50,55 @@ cp -r ./example_datasets/netcdf_example ./volumes/datawork/dataset/
 # Note: You may need to manually update datasets.csv if copying
 ```
 
-### 3. Use in APLOSE
+### 3. Import into APLOSE
 
 1. Start APLOSE (or restart if already running)
 2. Navigate to the Dataset Import page in the web interface
-3. Import the `netcdf_example` dataset
+3. Import the `netcdf_example` dataset:
+   - **Legacy import**: Check the "Legacy" checkbox - uses CSV files
+   - **OSEkit import**: Leave "Legacy" unchecked - uses JSON files
+   - Both methods work with NetCDF spectrograms!
 4. Create an annotation campaign using the imported dataset
 5. Start annotating - you'll see the interactive NetCDF visualizations!
 
+**Tip:** If you encounter import errors, try the other format. Legacy format is more battle-tested.
+
 ## Dataset Structure
 
-The generated dataset follows the OSEkit format:
+The generated dataset includes **both OSEkit and Legacy formats** for maximum compatibility:
 
 ```
 netcdf_example/
-├── dataset.json                      # Main dataset configuration
+├── dataset.json                      # OSEkit main configuration
 ├── data/
 │   └── audio/
-│       └── original/
-│           └── original.json         # Audio dataset metadata
+│       ├── 10_48000/                 # Legacy format
+│       │   ├── metadata.csv          # Audio metadata (CSV)
+│       │   └── timestamp.csv         # File timestamps (CSV)
+│       └── original/                 # OSEkit format
+│           └── original.json         # Audio metadata (JSON)
 └── processed/
-    └── netcdf_analysis/
-        ├── netcdf_analysis.json      # Analysis configuration
-        └── spectrogram/
-            ├── 2024_01_01_00_00_00_000000.nc
-            ├── 2024_01_01_02_00_00_000000.nc
-            ├── 2024_01_01_04_00_00_000000.nc
-            ├── 2024_01_01_06_00_00_000000.nc
-            └── 2024_01_01_08_00_00_000000.nc
+    ├── netcdf_analysis/              # OSEkit format
+    │   ├── netcdf_analysis.json      # Analysis configuration (JSON)
+    │   └── spectrogram/
+    │       ├── 2024_01_01_00_00_00_000000.nc
+    │       ├── 2024_01_01_02_00_00_000000.nc
+    │       ├── 2024_01_01_04_00_00_000000.nc
+    │       ├── 2024_01_01_06_00_00_000000.nc
+    │       └── 2024_01_01_08_00_00_000000.nc
+    └── spectrogram/                  # Legacy format
+        └── 10_48000/
+            └── 2048_2048_1536_linear/
+                ├── metadata.csv      # Spectrogram metadata (CSV)
+                └── image/
+                    ├── 2024_01_01_00_00_00_000000.nc
+                    ├── 2024_01_01_02_00_00_000000.nc
+                    ├── 2024_01_01_04_00_00_000000.nc
+                    ├── 2024_01_01_06_00_00_000000.nc
+                    └── 2024_01_01_08_00_00_000000.nc
 ```
+
+**Note:** NetCDF files are duplicated in both locations to support either import method. Choose the format that works best for your workflow.
 
 ## NetCDF File Format
 
