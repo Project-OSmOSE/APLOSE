@@ -1,5 +1,6 @@
 """Spectrogram model"""
 import csv
+import json
 from datetime import datetime, timedelta
 from os.path import join
 from pathlib import Path
@@ -80,14 +81,27 @@ class SpectrogramManager(Manager):
         existing_spectrograms = []
         new_spectrograms = []
 
-        # Check if we have NetCDF files
+        # Check if we have NetCDF files (works for both legacy and OSEkit formats)
         file_extension = "png"
-        if not analysis.dataset.legacy:
+
+        if analysis.dataset.legacy:
+            # Check in legacy location for NetCDF files
+            legacy_spectro_path = join(
+                settings.DATASET_IMPORT_FOLDER,
+                analysis.dataset.path,
+                analysis.path,
+                "image"
+            )
+            if Path(legacy_spectro_path).exists():
+                nc_files = list(Path(legacy_spectro_path).glob("*.nc"))
+                if nc_files:
+                    file_extension = "nc"
+        else:
+            # Check in OSEkit location for NetCDF files
             spectro_dataset = analysis.get_osekit_spectro_dataset()
             if spectro_dataset.folder:
                 spectro_folder = Path(spectro_dataset.folder) / "spectrogram"
                 if spectro_folder.exists():
-                    # Check for .nc files
                     nc_files = list(spectro_folder.glob("*.nc"))
                     if nc_files:
                         file_extension = "nc"
