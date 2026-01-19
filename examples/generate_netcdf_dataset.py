@@ -193,33 +193,67 @@ def create_dataset_structure(base_path: str, dataset_name: str = "netcdf_example
     dataset_path = Path(base_path) / dataset_name
     dataset_path.mkdir(parents=True, exist_ok=True)
 
-    # Create subdirectories
+    # Configuration
+    duration = 10  # seconds
+    sample_rate = 48000
+    window_size = 2048
+    hop_size = 512
+    nfft = 2048
+    overlap = window_size - hop_size
+
+    # Create subdirectories for both OSEkit and legacy formats
+    # OSEkit format
     audio_path = dataset_path / "data" / "audio" / "original"
     spectro_path = dataset_path / "processed" / "netcdf_analysis" / "spectrogram"
     audio_path.mkdir(parents=True, exist_ok=True)
     spectro_path.mkdir(parents=True, exist_ok=True)
 
+    # Legacy format
+    legacy_audio_path = dataset_path / "data" / "audio" / f"{duration}_{sample_rate}"
+    legacy_spectro_path = dataset_path / "processed" / "spectrogram" / f"{duration}_{sample_rate}" / f"{nfft}_{window_size}_{overlap}_linear"
+    legacy_spectro_image_path = legacy_spectro_path / "image"
+    legacy_audio_path.mkdir(parents=True, exist_ok=True)
+    legacy_spectro_image_path.mkdir(parents=True, exist_ok=True)
+
     # Generate 5 spectrograms
     base_time = datetime(2024, 1, 1, 0, 0, 0)
     spectro_files = []
     spectro_data_dict = {}
+    timestamp_entries = []
 
     for i in range(5):
         begin_time = base_time + timedelta(hours=i*2)
         filename = begin_time.strftime("%Y_%m_%d_%H_%M_%S_%f")
 
-        # Create NetCDF file
+        # Create NetCDF file in OSEkit location
         nc_file = spectro_path / f"{filename}.nc"
         create_netcdf_file(
             str(nc_file),
             begin_time,
-            duration=10.0,
-            sample_rate=48000,
-            window_size=2048,
-            hop_size=512,
+            duration=duration,
+            sample_rate=sample_rate,
+            window_size=window_size,
+            hop_size=hop_size,
+        )
+
+        # Also create in legacy location
+        legacy_nc_file = legacy_spectro_image_path / f"{filename}.nc"
+        create_netcdf_file(
+            str(legacy_nc_file),
+            begin_time,
+            duration=duration,
+            sample_rate=sample_rate,
+            window_size=window_size,
+            hop_size=hop_size,
         )
 
         spectro_files.append(filename)
+
+        # Add timestamp entry
+        timestamp_entries.append({
+            'filename': f"{filename}.wav",  # Reference to audio file
+            'timestamp': begin_time.isoformat()
+        })
 
         # Build spectro data entry
         end_time = begin_time + timedelta(seconds=10)
@@ -315,16 +349,90 @@ def create_dataset_structure(base_path: str, dataset_name: str = "netcdf_example
         json.dump(dataset_json, f, indent=2)
     print(f"Created: {dataset_json_path}")
 
+    # Create legacy CSV files
+    # Audio metadata.csv
+    audio_metadata_csv = legacy_audio_path / "metadata.csv"
+    with open(audio_metadata_csv, 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=[
+            'sample_bits', 'channel_count', 'start_date', 'end_date',
+            'dataset_sr', 'audio_file_dataset_duration', 'audio_file_count'
+        ])
+        writer.writeheader()
+        writer.writerow({
+            'sample_bits': "['PCM-16']",
+            'channel_count': 1,
+            'start_date': base_time.isoformat(),
+            'end_date': (base_time + timedelta(hours=10)).isoformat(),
+            'dataset_sr': sample_rate,
+            'audio_file_dataset_duration': duration,
+            'audio_file_count': len(spectro_files)
+        })
+    print(f"Created: {audio_metadata_csv}")
+
+    # Audio timestamp.csv
+    audio_timestamp_csv = legacy_audio_path / "timestamp.csv"
+    with open(audio_timestamp_csv, 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=['filename', 'timestamp'])
+        writer.writeheader()
+        writer.writerows(timestamp_entries)
+    print(f"Created: {audio_timestamp_csv}")
+
+    # Spectrogram metadata.csv
+    spectro_metadata_csv = legacy_spectro_path / "metadata.csv"
+    freq_resolution = sample_rate / nfft
+    temporal_resolution = hop_size / sample_rate
+    with open(spectro_metadata_csv, 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=[
+            'dataset_sr', 'nfft', 'window_size', 'overlap', 'colormap',
+            'zoom_level', 'dynamic_min', 'dynamic_max', 'spectro_duration',
+            'data_normalization', 'hp_filter_min_freq', 'sensitivity_dB',
+            'peak_voltage', 'spectro_normalization', 'gain_dB',
+            'zscore_duration', 'window_type', 'frequency_resolution',
+            'temporal_resolution', 'audio_file_dataset_overlap',
+            'custom_frequency_scale'
+        ])
+        writer.writeheader()
+        writer.writerow({
+            'dataset_sr': sample_rate,
+            'nfft': nfft,
+            'window_size': window_size,
+            'overlap': overlap,
+            'colormap': 'viridis',
+            'zoom_level': 1,
+            'dynamic_min': 0,
+            'dynamic_max': 100,
+            'spectro_duration': duration,
+            'data_normalization': 'instrument',
+            'hp_filter_min_freq': 0,
+            'sensitivity_dB': 0.0,
+            'peak_voltage': 1.0,
+            'spectro_normalization': 'density',
+            'gain_dB': 0,
+            'zscore_duration': '',
+            'window_type': 'hann',
+            'frequency_resolution': freq_resolution,
+            'temporal_resolution': temporal_resolution,
+            'audio_file_dataset_overlap': 0,
+            'custom_frequency_scale': 'linear'
+        })
+    print(f"Created: {spectro_metadata_csv}")
+
     # Update datasets.csv in the parent directory
     update_datasets_csv(base_path, dataset_name)
 
     print(f"\n✓ Dataset created successfully at: {dataset_path}")
-    print(f"✓ Generated {len(spectro_files)} NetCDF spectrograms")
+    print(f"✓ Generated {len(spectro_files)} NetCDF spectrograms (in both OSEkit and legacy locations)")
+    print(f"✓ Created all required CSV metadata files (audio and spectrogram)")
     print(f"✓ Updated datasets.csv with entry for '{dataset_name}'")
+    print(f"\nDataset structure:")
+    print(f"  - OSEkit format: dataset.json + processed/netcdf_analysis/")
+    print(f"  - Legacy format: data/audio/{duration}_{sample_rate}/ + processed/spectrogram/")
     print(f"\nTo import this dataset into APLOSE:")
     print(f"1. The dataset is ready at: {dataset_path}")
     print(f"2. If generated in volumes/datawork/dataset/, it's already accessible to Docker")
     print(f"3. Use the APLOSE web interface to import the dataset")
+    print(f"   - You can import as legacy format (uses CSV files)")
+    print(f"   - Or as OSEkit format (uses JSON files)")
     print(f"4. The NetCDF spectrograms will be automatically detected and displayed")
 
     return dataset_path
