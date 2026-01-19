@@ -4,39 +4,20 @@ from typing import Optional
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.db.models import signals, Manager, Q, Exists, OuterRef, QuerySet
+from django.db.models import signals, Q, QuerySet
 from django.dispatch import receiver
 from django.utils import timezone
 
+from backend.api.managers.annotation.annotation_campaign import (
+    AnnotationCampaignManager,
+)
 from backend.aplose.models import User
-from .annotation_file_range import AnnotationFileRange
 from .confidence import Confidence
 from .confidence_set import ConfidenceSet, ConfidenceIndicatorSetIndicator
 from .label import Label
 from .label_set import LabelSet
 from ..common import Archive
 from ..data import Dataset, SpectrogramAnalysis, Spectrogram
-
-
-class AnnotationCampaignManager(Manager):
-    """AnnotationCampaign custom manager"""
-
-    def filter_user_access(self, user: User):
-        """Only provide authorized campaigns"""
-        if user.is_staff or user.is_superuser:
-            return self.all()
-        return self.filter(
-            Q(owner_id=user.id)
-            | (
-                Q(archive__isnull=True)
-                & Exists(
-                    AnnotationFileRange.objects.filter(
-                        annotation_phase__annotation_campaign_id=OuterRef("pk"),
-                        annotator_id=user.id,
-                    )
-                )
-            )
-        )
 
 
 class AnnotationCampaign(models.Model):

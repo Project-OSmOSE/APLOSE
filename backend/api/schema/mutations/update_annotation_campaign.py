@@ -2,7 +2,6 @@
 from django import forms
 
 from backend.api.models import AnnotationCampaign
-from backend.api.context_filters import AnnotationCampaignContextFilter
 from backend.utils.schema.types import AuthenticatedModelFormMutation
 
 
@@ -19,5 +18,5 @@ class UpdateAnnotationCampaignForm(forms.ModelForm):
 
 class UpdateAnnotationCampaignMutation(AuthenticatedModelFormMutation):
     class Meta:
+        model = AnnotationCampaign
         form_class = UpdateAnnotationCampaignForm
-        context_filter = AnnotationCampaignContextFilter

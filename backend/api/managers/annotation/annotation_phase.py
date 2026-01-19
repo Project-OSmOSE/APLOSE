@@ -1,22 +1,20 @@
 """Phase model manager"""
-from django.core.exceptions import (
-    ObjectDoesNotExist,
-)
-from django.db import models
+from django.contrib.auth.models import User
 from django.db.models import Q, Exists, OuterRef
 
 from backend.api.models.annotation.annotation_file_range import AnnotationFileRange
-from backend.aplose.models import User
-from backend.utils.schema import ForbiddenError, NotFoundError
+from backend.utils.managers import CustomManager
 
 
-class AnnotationPhaseManager(models.Manager):
-    def filter_viewable_by(self, user: User):
+class AnnotationPhaseManager(CustomManager):
+    def filter_viewable_by(self, user: User, **kwargs):
+        qs = super().filter_viewable_by(user, **kwargs)
+
         # Admin can view all phases
         if user.is_staff or user.is_superuser:
-            return self.all()
+            return qs
 
-        return self.filter(
+        return qs.filter(
             # Campaign owner can view its phases
             Q(annotation_campaign__owner_id=user.id)
             |
@@ -36,9 +34,11 @@ class AnnotationPhaseManager(models.Manager):
             )
         )
 
-    def filter_editable_by(self, user: User):
+    def filter_editable_by(self, user: User, **kwargs):
+        qs = super().filter_viewable_by(user, **kwargs)
+
         # Only open phases can be edited
-        open_phases = self.filter(
+        open_phases = qs.filter(
             annotation_campaign__archive__isnull=True,
             ended_at__isnull=True,
             ended_by__isnull=True,
@@ -50,17 +50,3 @@ class AnnotationPhaseManager(models.Manager):
 
         # Campaign owner can edit its phases
         return open_phases.filter(annotation_campaign__owner_id=user.id)
-
-    def get_viewable_or_fail(self, user: User, **kwargs):
-        try:
-            return self.filter_viewable_by(user).get(**kwargs)
-        except ObjectDoesNotExist:
-            raise NotFoundError()
-
-    def get_editable_or_fail(self, user: User, **kwargs):
-        self.get_viewable_or_fail(**kwargs)
-
-        try:
-            return self.filter_editable_by(user).get(**kwargs)
-        except ObjectDoesNotExist:
-            raise ForbiddenError()

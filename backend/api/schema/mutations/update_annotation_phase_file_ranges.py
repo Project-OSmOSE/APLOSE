@@ -55,6 +55,7 @@ class AnnotationFileRangeForm(forms.ModelForm):
 
 class UpdateAnnotationFileRangeMutation(AuthenticatedModelFormMutation):
     class Meta:
+        model = AnnotationFileRange
         form_class = AnnotationFileRangeForm
 
 

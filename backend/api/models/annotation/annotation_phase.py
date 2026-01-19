@@ -3,10 +3,9 @@ from django.conf import settings
 from django.db import models, transaction
 from django.utils import timezone
 
+from backend.api.managers.annotation.annotation_phase import AnnotationPhaseManager
 from backend.aplose.models import User
 from backend.utils.models import Enum
-from backend.api.managers import AnnotationPhaseManager
-from .annotation_campaign import AnnotationCampaign
 
 
 class AnnotationPhase(models.Model):
@@ -28,7 +27,7 @@ class AnnotationPhase(models.Model):
 
     phase = models.CharField(choices=Type.choices, max_length=1)
     annotation_campaign = models.ForeignKey(
-        AnnotationCampaign,
+        "AnnotationCampaign",
         on_delete=models.CASCADE,
         related_name="phases",
     )

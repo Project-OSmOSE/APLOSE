@@ -1,6 +1,5 @@
 import graphene
 import graphene_django_optimizer
-from django.contrib.postgres.aggregates import ArrayAgg
 from django.db import models
 from django.db.models import (
     Exists,
@@ -16,7 +15,6 @@ from django.db.models import (
 from django.db.models.functions import Coalesce
 from graphql import GraphQLResolveInfo
 
-from backend.api.context_filters import AnnotationCampaignContextFilter
 from backend.api.models import (
     AnnotationCampaign,
     AnnotationFileRange,
@@ -24,7 +22,6 @@ from backend.api.models import (
     AnnotationTask,
     Spectrogram,
 )
-from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationCampaignFilterSet
 from backend.aplose.models import User
 from backend.aplose.schema import UserNode
@@ -55,7 +52,6 @@ class AnnotationCampaignNode(BaseObjectType):
         model = AnnotationCampaign
         fields = "__all__"
         filterset_class = AnnotationCampaignFilterSet
-        context_filter = AnnotationCampaignContextFilter
         interfaces = (BaseNode,)
 
     phases = AuthenticatedDjangoConnectionField(AnnotationPhaseNode)

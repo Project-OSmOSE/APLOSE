@@ -1,5 +1,4 @@
 """GraphQL types"""
-from typing import Optional
 
 import graphene
 import graphene_django_optimizer
@@ -8,7 +7,6 @@ from graphene import Int
 from graphene_django import DjangoObjectType
 from graphene_django.forms.mutation import DjangoModelFormMutation
 from graphene_django.rest_framework.mutation import SerializerMutation
-from graphene_django.types import DjangoObjectTypeOptions
 from graphql import GraphQLResolveInfo
 from rest_framework.request import Request
 
@@ -47,10 +45,6 @@ class ModelContextFilter:
         raise NotFoundError()
 
 
-class BaseObjectTypeMeta(DjangoObjectTypeOptions):
-    context_filter: Optional[ModelContextFilter.__class__] = None
-
-
 class BaseObjectType(DjangoObjectType):
     """Base object type"""
 
@@ -58,24 +52,13 @@ class BaseObjectType(DjangoObjectType):
         abstract = True
 
     @classmethod
-    def __init_subclass_with_meta__(
-        cls,
-        context_filter: Optional[ModelContextFilter.__class__] = None,
-        _meta=None,
-        **kwargs,
-    ):
-        if not _meta:
-            _meta = BaseObjectTypeMeta(cls)
-        if context_filter is not None:
-            _meta.context_filter = context_filter
-        super().__init_subclass_with_meta__(_meta=_meta, **kwargs)
-
-    @classmethod
     def resolve_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
         """Resolve Queryset"""
-        if cls._meta.context_filter is None:
-            return queryset
-        return cls._meta.context_filter.get_queryset(info.context, queryset=queryset)
+        if cls._meta.model and hasattr(cls._meta.model.objects, "filter_viewable_by"):
+            return cls._meta.model.objects.from_queryset(queryset).filter_viewable_by(
+                user=info.context.user,
+            )
+        return queryset
 
     @classmethod
     def get_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
@@ -103,15 +86,6 @@ class AuthenticatedModelFormMutation(DjangoModelFormMutation):
         abstract = True
 
     @classmethod
-    def __init_subclass_with_meta__(
-        cls,
-        context_filter: Optional[ModelContextFilter.__class__] = None,
-        **kwargs,
-    ):
-        cls._context_filter = context_filter
-        return super().__init_subclass_with_meta__(**kwargs)
-
-    @classmethod
     def mutate_and_get_payload(cls, root, info, **input):
         GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED).check_permission(
             info.context.user
@@ -123,9 +97,14 @@ class AuthenticatedModelFormMutation(DjangoModelFormMutation):
         pk = input.get("id", None)
 
         kwargs = super().get_form_kwargs(root, info, **input)
-        if pk and cls._context_filter:
-            kwargs["instance"] = cls._context_filter.get_edit_node_or_fail(
-                info.context, pk=pk
+        if (
+            pk
+            and cls._meta.model
+            and hasattr(cls._meta.model.objects, "get_editable_or_fail")
+        ):
+            kwargs["instance"] = cls._meta.model.objects.get_editable_or_fail(
+                user=info.context.user,
+                pk=pk,
             )
 
         return kwargs
