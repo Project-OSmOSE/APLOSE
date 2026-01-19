@@ -324,12 +324,12 @@ def create_dataset_structure(base_path: str, dataset_name: str = "netcdf_example
             "netcdf_analysis": {
                 "class": "SpectroDataset",
                 "analysis": "netcdf_analysis",
-                "json": "processed/netcdf_analysis/netcdf_analysis.json"
+                "json": f"/opt/datawork/dataset/{dataset_name}/processed/netcdf_analysis/netcdf_analysis.json"
             },
             "original": {
                 "class": "AudioDataset",
                 "analysis": "original",
-                "json": "data/audio/original/original.json"
+                "json": f"/opt/datawork/dataset/{dataset_name}/data/audio/original/original.json"
             }
         },
         "depth": 100,
