@@ -1,10 +1,7 @@
 import graphene
 from django.db.models import Q
 
-from backend.api.context_filters import (
-    AnnotationContextFilter,
-)
-from backend.api.models import Spectrogram, AnnotationPhase
+from backend.api.models import Spectrogram, AnnotationPhase, AnnotationFileRange
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.serializers import AnnotationSerializer
 from backend.utils.schema.mutations import ListSerializerMutation
@@ -27,14 +24,14 @@ class UpdateAnnotationsMutation(ListSerializerMutation):
     @classmethod
     def get_serializer_queryset(cls, root, info, **input):
         if input.get("phase_type").value == AnnotationPhaseType.Annotation:
-            return AnnotationContextFilter.get_edit_queryset(
-                info.context,
+            return AnnotationFileRange.objects.filter_editable_by(
+                user=info.context.user,
                 annotation_phase__annotation_campaign_id=input["campaign_id"],
                 annotation_phase__phase=AnnotationPhase.Type.ANNOTATION,
                 spectrogram_id=input["spectrogram_id"],
             )
-        return AnnotationContextFilter.get_queryset(
-            info.context,
+        return AnnotationFileRange.objects.get_viewable_or_fail(
+            user=info.context.user,
             annotation_phase__annotation_campaign_id=input["campaign_id"],
             spectrogram_id=input["spectrogram_id"],
         ).filter(
