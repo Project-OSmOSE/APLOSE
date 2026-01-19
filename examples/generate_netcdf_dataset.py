@@ -7,6 +7,7 @@ that can be imported into APLOSE for testing and demonstration purposes.
 """
 
 import os
+import csv
 import json
 import numpy as np
 from pathlib import Path
@@ -137,6 +138,55 @@ def create_netcdf_file(
     return ds
 
 
+def update_datasets_csv(base_path: str, dataset_name: str):
+    """Update the datasets.csv file with the new dataset entry"""
+
+    csv_path = Path(base_path) / "datasets.csv"
+
+    # Create CSV if it doesn't exist
+    if not csv_path.exists():
+        with open(csv_path, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['path', 'dataset', 'spectro_duration', 'dataset_sr', 'file_type', 'identifier'])
+        print(f"Created: {csv_path}")
+
+    # Read existing entries
+    existing_entries = []
+    entry_exists = False
+
+    with open(csv_path, 'r', newline='') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row['dataset'] == dataset_name and row['path'] == dataset_name:
+                # Update existing entry
+                row['spectro_duration'] = '10'
+                row['dataset_sr'] = '48000'
+                row['file_type'] = '.nc'
+                row['identifier'] = 'netcdf'
+                entry_exists = True
+            existing_entries.append(row)
+
+    # Add new entry if it doesn't exist
+    if not entry_exists:
+        existing_entries.append({
+            'path': dataset_name,
+            'dataset': dataset_name,
+            'spectro_duration': '10',
+            'dataset_sr': '48000',
+            'file_type': '.nc',
+            'identifier': 'netcdf'
+        })
+
+    # Write back to CSV
+    with open(csv_path, 'w', newline='') as f:
+        fieldnames = ['path', 'dataset', 'spectro_duration', 'dataset_sr', 'file_type', 'identifier']
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(existing_entries)
+
+    print(f"Updated: {csv_path}")
+
+
 def create_dataset_structure(base_path: str, dataset_name: str = "netcdf_example"):
     """Create the complete dataset structure with JSON files and NetCDF spectrograms"""
 
@@ -265,13 +315,17 @@ def create_dataset_structure(base_path: str, dataset_name: str = "netcdf_example
         json.dump(dataset_json, f, indent=2)
     print(f"Created: {dataset_json_path}")
 
+    # Update datasets.csv in the parent directory
+    update_datasets_csv(base_path, dataset_name)
+
     print(f"\n✓ Dataset created successfully at: {dataset_path}")
     print(f"✓ Generated {len(spectro_files)} NetCDF spectrograms")
+    print(f"✓ Updated datasets.csv with entry for '{dataset_name}'")
     print(f"\nTo import this dataset into APLOSE:")
-    print(f"1. Copy the '{dataset_name}' folder to your APLOSE data directory")
-    print(f"   (typically /opt/datawork/dataset/{dataset_name})")
-    print(f"2. Use the APLOSE web interface to import the dataset")
-    print(f"3. The NetCDF spectrograms will be automatically detected and displayed")
+    print(f"1. The dataset is ready at: {dataset_path}")
+    print(f"2. If generated in volumes/datawork/dataset/, it's already accessible to Docker")
+    print(f"3. Use the APLOSE web interface to import the dataset")
+    print(f"4. The NetCDF spectrograms will be automatically detected and displayed")
 
     return dataset_path
 
