@@ -87,7 +87,7 @@ export const NetCDFSpectrogram: React.FC = () => {
         zmax: zmax,
         hovertemplate: 'Time: %{x:.2f}s<br>Frequency: %{y:.0f}Hz<br>Power: %{z:.1f}dB<extra></extra>',
         colorbar: {
-          title: 'dB',
+          title: { text: 'dB' },
           len: 0.9,
           x: 1.02,
         },
@@ -103,13 +103,13 @@ export const NetCDFSpectrogram: React.FC = () => {
       height: height,
       margin: { l: 60, r: 120, t: 20, b: 50 },
       xaxis: {
-        title: 'Time (s)',
+        title: { text: 'Time (s)' },
         showgrid: true,
         zeroline: false,
         range: [netcdfData.time[0], netcdfData.time[netcdfData.time.length - 1]],
       },
       yaxis: {
-        title: 'Frequency (Hz)',
+        title: { text: 'Frequency (Hz)' },
         showgrid: true,
         zeroline: false,
         range: [netcdfData.frequency[0], netcdfData.frequency[netcdfData.frequency.length - 1]],
@@ -130,7 +130,7 @@ export const NetCDFSpectrogram: React.FC = () => {
     scrollZoom: true,
     doubleClick: 'reset' as const,
     responsive: true,
-    modeBarButtonsToRemove: ['lasso2d', 'select2d'],
+    modeBarButtonsToRemove: ['lasso2d', 'select2d'] as any,
     modeBarButtonsToAdd: [],
   }), []);
 
