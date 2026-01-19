@@ -1,0 +1,9 @@
+# Ignore all files in volumes directory (contains runtime data)
+*
+
+# Except for structure and documentation
+!.gitignore
+!datawork/
+!datawork/dataset/
+!datawork/dataset/README.md
+!datawork/dataset/datasets.csv
