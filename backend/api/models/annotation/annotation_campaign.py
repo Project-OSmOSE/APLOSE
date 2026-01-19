@@ -10,11 +10,11 @@ from django.dispatch import receiver
 from django.utils import timezone
 
 from backend.utils.managers import CustomManager
+from .annotation_phase import AnnotationPhase
 from .confidence import Confidence
 from .confidence_set import ConfidenceSet, ConfidenceIndicatorSetIndicator
 from .label import Label
 from .label_set import LabelSet
-from .annotation_phase import AnnotationPhase
 from ..common import Archive
 from ..data import Dataset, SpectrogramAnalysis, Spectrogram
 
@@ -34,14 +34,9 @@ class AnnotationCampaignManager(CustomManager):
             Q(owner_id=user.id)
             |
             # Other can only view campaigns with assigned open phase
-            (
-                # Open campaigns
-                Q(archive__isnull=True)
-                # Assigned open phases
-                & Exists(
-                    AnnotationPhase.objects.filter_viewable_by(
-                        user, annotation_campaign_id=OuterRef("pk")
-                    )
+            Exists(
+                AnnotationPhase.objects.filter_viewable_by(
+                    user, annotation_campaign_id=OuterRef("pk")
                 )
             )
         )

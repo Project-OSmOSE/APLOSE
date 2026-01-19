@@ -1,17 +1,75 @@
 """File range model"""
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Exists, Subquery, OuterRef, signals, Func, F, Q, QuerySet
 from django.dispatch import receiver
 
+from backend.utils.managers import CustomManager
 from .annotation import Annotation
 from .annotation_task import AnnotationTask
 from ..data import Spectrogram
 
 
+class AnnotationFileRangeManager(CustomManager):
+    """AnnotationCampaign custom manager"""
+
+    def filter_viewable_by(self, user: User, **kwargs):
+        qs = super().filter_viewable_by(user, **kwargs)
+
+        # Admin can view all file ranges
+        if user.is_staff or user.is_superuser:
+            return qs
+
+        return qs.filter(
+            # Campaign owner can view its file ranges
+            Q(annotation_phase__annotation_campaign__owner_id=user.id)
+            |
+            # Phase creator can view its file ranges
+            Q(annotation_phase__created_by_id=user.id)
+            |
+            # Other can only view campaigns with assigned open phase
+            Q(
+                # Assigned file range
+                annotator=user,
+                # Open phase
+                annotation_phase__ended_at__isnull=True,
+                annotation_phase__ended_by__isnull=True,
+                # Open campaigns
+                annotation_phase__annotation_campaign__archive__isnull=True,
+            )
+        )
+
+    def filter_editable_by(self, user: User, **kwargs):
+        qs = super().filter_viewable_by(user, **kwargs)
+
+        # Only open campaign and phase file ranges can be edited
+        open_campaigns = qs.filter(
+            # Open campaigns
+            annotation_phase__annotation_campaign__archive__isnull=True,
+            # Open phase
+            annotation_phase__ended_at__isnull=True,
+            annotation_phase__ended_by__isnull=True,
+        )
+
+        # Admin can edit all file ranges
+        if user.is_staff or user.is_superuser:
+            return open_campaigns
+
+        return open_campaigns.filter(
+            # Campaign owner can edit their file ranges
+            Q(annotation_phase__annotation_campaign__owner_id=user.id)
+            |
+            # Phase creator can edit their file ranges
+            Q(annotation_phase__created_by_id=user.id)
+        )
+
+
 class AnnotationFileRange(models.Model):
     """Gives a range of files to annotate by an annotator within a campaign"""
+
+    objects = AnnotationFileRangeManager()
 
     class Meta:
         ordering = ["first_file_index"]

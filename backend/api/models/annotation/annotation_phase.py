@@ -22,18 +22,13 @@ class AnnotationPhaseManager(CustomManager):
             # Campaign owner can view its phases
             Q(annotation_campaign__owner_id=user.id)
             |
+            # Phase creator can view them
+            Q(created_by_id=user.id)
+            |
             # Other can only view assigned open phase
-            (
-                Q(
-                    annotation_campaign__archive__isnull=True,
-                    ended_at__isnull=True,
-                    ended_by__isnull=True,
-                )  # Is open
-                & Exists(
-                    AnnotationFileRange.objects.filter(
-                        annotation_phase_id=OuterRef("pk"),
-                        annotator_id=user.id,
-                    )  # Is assigned
+            Exists(
+                AnnotationFileRange.objects.filter_viewable_by(
+                    user, annotation_phase_id=OuterRef("pk")
                 )
             )
         )
