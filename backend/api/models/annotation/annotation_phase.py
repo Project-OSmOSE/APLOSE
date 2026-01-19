@@ -6,11 +6,11 @@ from django.db.models import Q, Exists, OuterRef
 from django.utils import timezone
 
 from .annotation_file_range import AnnotationFileRange
-from backend.utils.managers import CustomManager
+from backend.utils.managers import CustomManager, CustomQuerySet
 from backend.utils.models import Enum
 
 
-class AnnotationPhaseManager(CustomManager):
+class AnnotationPhaseQuerySet(CustomQuerySet):
     def filter_viewable_by(self, user: User, **kwargs):
         qs = super().filter_viewable_by(user, **kwargs)
 
@@ -54,7 +54,7 @@ class AnnotationPhaseManager(CustomManager):
 class AnnotationPhase(models.Model):
     """Annotation campaign phase"""
 
-    objects = AnnotationPhaseManager()
+    objects = models.Manager.from_queryset(AnnotationPhaseQuerySet)()
 
     class Type(Enum):
         """Available type of phases of the annotation campaign"""

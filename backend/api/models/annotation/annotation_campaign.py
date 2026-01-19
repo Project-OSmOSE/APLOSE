@@ -9,7 +9,7 @@ from django.db.models import signals, Q, QuerySet, Exists, OuterRef
 from django.dispatch import receiver
 from django.utils import timezone
 
-from backend.utils.managers import CustomManager
+from backend.utils.managers import CustomManager, CustomQuerySet
 from .annotation_phase import AnnotationPhase
 from .confidence import Confidence
 from .confidence_set import ConfidenceSet, ConfidenceIndicatorSetIndicator
@@ -19,7 +19,7 @@ from ..common import Archive
 from ..data import Dataset, SpectrogramAnalysis, Spectrogram
 
 
-class AnnotationCampaignManager(CustomManager):
+class AnnotationCampaignQuerySet(CustomQuerySet):
     """AnnotationCampaign custom manager"""
 
     def filter_viewable_by(self, user: User, **kwargs):
@@ -58,7 +58,7 @@ class AnnotationCampaignManager(CustomManager):
 class AnnotationCampaign(models.Model):
     """Campaign to make annotation on the designated dataset with the given label set and confidence indicator set"""
 
-    objects = AnnotationCampaignManager()
+    objects = models.Manager.from_queryset(AnnotationCampaignQuerySet)()
 
     class Meta:
         ordering = ["name"]

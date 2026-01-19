@@ -6,18 +6,18 @@ from django.db import models
 from django.db.models import Q, Exists, OuterRef
 
 from backend.aplose.models import AploseUser, ExpertiseLevel
-from backend.utils.managers import CustomManager
+from backend.utils.managers import CustomQuerySet
 from backend.utils.models import Enum
 from .acoustic_features import AcousticFeatures
+from .annotation_file_range import AnnotationFileRange
+from .annotation_phase import AnnotationPhase
 from .confidence import Confidence
 from .detector_configuration import DetectorConfiguration
 from .label import Label
-from .annotation_file_range import AnnotationFileRange
-from .annotation_phase import AnnotationPhase
 from ..data import Spectrogram, SpectrogramAnalysis
 
 
-class AnnotationManager(CustomManager):
+class AnnotationQuerySet(CustomQuerySet):
     def filter_viewable_by(self, user: User, **kwargs):
         qs = super().filter_viewable_by(user, **kwargs)
 
@@ -91,7 +91,7 @@ class Annotation(models.Model):
     This table contains the resulting label associations for specific annotation_tasks
     """
 
-    objects = AnnotationManager()
+    objects = models.Manager.from_queryset(AnnotationQuerySet)()
 
     class Type(Enum):
         """Type of annotation result"""

@@ -1,9 +1,6 @@
 import graphene
 
-from backend.api.context_filters import (
-    AnnotationCommentContextFilter,
-)
-from backend.api.models import Spectrogram, AnnotationPhase
+from backend.api.models import Spectrogram, AnnotationPhase, AnnotationComment
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.serializers import AnnotationCommentSerializer
 from backend.utils.schema.mutations import ListSerializerMutation
@@ -22,8 +19,8 @@ class UpdateAnnotationCommentsMutation(ListSerializerMutation):
 
     @classmethod
     def get_serializer_queryset(cls, root, info, **input):
-        return AnnotationCommentContextFilter.get_edit_queryset(
-            info.context,
+        return AnnotationComment.objects.get_editable_or_fail(
+            user=info.context.user,
             annotation_phase__annotation_campaign_id=input["campaign_id"],
             annotation_phase__phase=input["phase_type"].value,
             spectrogram_id=input["spectrogram_id"],

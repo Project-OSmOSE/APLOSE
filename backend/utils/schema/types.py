@@ -54,8 +54,8 @@ class BaseObjectType(DjangoObjectType):
     @classmethod
     def resolve_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
         """Resolve Queryset"""
-        if cls._meta.model and hasattr(cls._meta.model.objects, "filter_viewable_by"):
-            return cls._meta.model.objects.from_queryset(queryset).filter_viewable_by(
+        if hasattr(queryset, "filter_viewable_by"):
+            return queryset.filter_viewable_by(
                 user=info.context.user,
             )
         return queryset

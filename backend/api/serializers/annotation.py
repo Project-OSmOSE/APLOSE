@@ -6,7 +6,6 @@ from django.db.models import Max, QuerySet
 from rest_framework import serializers
 from rest_framework.fields import empty, FloatField
 
-from backend.api.context_filters import AnnotationCommentContextFilter
 from backend.api.models import (
     Annotation,
     AnnotationPhase,
@@ -15,6 +14,7 @@ from backend.api.models import (
     Confidence,
     AnnotationValidation,
     SpectrogramAnalysis,
+    AnnotationComment,
 )
 from backend.aplose.models import ExpertiseLevel
 from backend.utils.serializers import EnumField, ListSerializer
@@ -268,8 +268,8 @@ class AnnotationSerializer(serializers.ModelSerializer):
         return self.Meta.model.objects.get(pk=instance.id)
 
     def update_comments(self, instance: Annotation, validated_data):
-        instances = AnnotationCommentContextFilter.get_edit_queryset(
-            self.context["request"],
+        instances = AnnotationComment.objects.filter_editable_by(
+            user=self.context.get("request").user,
             annotation_phase=instance.annotation_phase,
             spectrogram=instance.spectrogram,
             author_id=instance.annotator,

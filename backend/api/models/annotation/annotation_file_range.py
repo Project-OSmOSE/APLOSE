@@ -6,13 +6,12 @@ from django.db import models
 from django.db.models import Exists, Subquery, OuterRef, signals, Func, F, Q, QuerySet
 from django.dispatch import receiver
 
-from backend.utils.managers import CustomManager
-from .annotation import Annotation
+from backend.utils.managers import CustomManager, CustomQuerySet
 from .annotation_task import AnnotationTask
 from ..data import Spectrogram
 
 
-class AnnotationFileRangeManager(CustomManager):
+class AnnotationFileRangeQuerySet(CustomQuerySet):
     """AnnotationCampaign custom manager"""
 
     def filter_viewable_by(self, user: User, **kwargs):
@@ -69,7 +68,7 @@ class AnnotationFileRangeManager(CustomManager):
 class AnnotationFileRange(models.Model):
     """Gives a range of files to annotate by an annotator within a campaign"""
 
-    objects = AnnotationFileRangeManager()
+    objects = models.Manager.from_queryset(AnnotationFileRangeQuerySet)()
 
     class Meta:
         ordering = ["first_file_index"]
@@ -135,27 +134,6 @@ class AnnotationFileRange(models.Model):
             start__gte=self.from_datetime,
             end__lte=self.to_datetime,
         ).distinct()
-
-    @property
-    def annotations(self) -> QuerySet[Annotation]:
-        """Get file range results"""
-        # pylint: disable=no-member
-        if self.annotation_phase.phase == "V":
-            campaign_id = self.annotation_phase.annotation_campaign_id
-            return Annotation.objects.filter(
-                annotation_phase__annotation_campaign_id=campaign_id,
-                spectrogram__start__gte=self.from_datetime,
-                spectrogram__end__lte=self.to_datetime,
-            ).filter(
-                (Q(annotation_phase_id=self.id) & Q(annotator_id=self.annotator_id))
-                | (~Q(annotation_phase_id=self.id) & ~Q(annotator_id=self.annotator_id))
-            )
-        return Annotation.objects.filter(
-            annotation_phase=self.annotation_phase,
-            annotator_id=self.annotator_id,
-            spectrogram__start__gte=self.from_datetime,
-            spectrogram__end__lte=self.to_datetime,
-        )
 
     # TODO:
     #  def _get_tasks(self) -> QuerySet[AnnotationTask]:
