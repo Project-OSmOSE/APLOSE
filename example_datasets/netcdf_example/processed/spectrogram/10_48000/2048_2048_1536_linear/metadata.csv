@@ -1,0 +1,2 @@
+dataset_sr,nfft,window_size,overlap,colormap,zoom_level,dynamic_min,dynamic_max,spectro_duration,data_normalization,hp_filter_min_freq,sensitivity_dB,peak_voltage,spectro_normalization,gain_dB,zscore_duration,window_type,frequency_resolution,temporal_resolution,audio_file_dataset_overlap,custom_frequency_scale
+48000,2048,2048,1536,viridis,1,0,100,10,instrument,0,0.0,1.0,density,0,,hann,23.4375,0.010666666666666666,0,linear

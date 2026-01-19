@@ -1,0 +1,28 @@
+{
+  "datasets": {
+    "netcdf_analysis": {
+      "class": "SpectroDataset",
+      "analysis": "netcdf_analysis",
+      "json": "/opt/datawork/dataset/netcdf_example/processed/netcdf_analysis/netcdf_analysis.json"
+    },
+    "original": {
+      "class": "AudioDataset",
+      "analysis": "original",
+      "json": "/opt/datawork/dataset/netcdf_example/data/audio/original/original.json"
+    }
+  },
+  "depth": 100,
+  "folder": "/opt/datawork/dataset/netcdf_example",
+  "gps_coordinates": [
+    60.39,
+    5.32
+  ],
+  "instrument": {
+    "end_to_end_db": 150.0,
+    "gain_db": 0.0,
+    "peak_voltage": 1.0,
+    "sensitivity": 1.0
+  },
+  "strptime_format": "%Y_%m_%d_%H_%M_%S_%f",
+  "timezone": "UTC"
+}
