@@ -26,14 +26,11 @@ class AnnotationCommentQuerySet(CustomQuerySet):
             Q(annotation_phase__created_by_id=user.id)
             |
             # Other can only view created comments from assigned annotations
-            (
-                # Other can only view comments from assigned annotations
-                Exists(
-                    Annotation.objects.get_viewable_or_fail(
-                        user=user,
-                        annotation_phase_id=OuterRef("annotation_phase_id"),
-                        spectrogram_id=OuterRef("spectrogram_id"),
-                    )
+            Exists(
+                Annotation.objects.filter_viewable_by(
+                    user=user,
+                    annotation_phase_id=OuterRef("annotation_phase_id"),
+                    spectrogram_id=OuterRef("spectrogram_id"),
                 )
             )
         )

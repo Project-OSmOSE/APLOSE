@@ -163,7 +163,6 @@ class AnnotationSpectrogramByIDTestCase(GraphQLTestCase):
                 "annotatorID": 1,
             },
         )
-        print(response.content)
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["annotationSpectrogramById"]
