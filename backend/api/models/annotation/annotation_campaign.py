@@ -9,7 +9,7 @@ from django.db.models import signals, Q, QuerySet, Exists, OuterRef
 from django.dispatch import receiver
 from django.utils import timezone
 
-from backend.utils.managers import CustomManager, CustomQuerySet
+from backend.utils.managers import CustomQuerySet
 from .annotation_phase import AnnotationPhase
 from .confidence import Confidence
 from .confidence_set import ConfidenceSet, ConfidenceIndicatorSetIndicator

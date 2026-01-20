@@ -19,12 +19,11 @@ class UpdateAnnotationCommentsMutation(ListSerializerMutation):
 
     @classmethod
     def get_serializer_queryset(cls, root, info, **input):
-        return AnnotationComment.objects.get_editable_or_fail(
+        return AnnotationComment.objects.filter_editable_by(
             user=info.context.user,
             annotation_phase__annotation_campaign_id=input["campaign_id"],
             annotation_phase__phase=input["phase_type"].value,
             spectrogram_id=input["spectrogram_id"],
-            author_id=info.context.user.id,
             annotation_id=input["annotation_id"]
             if input.get("annotation_id")
             else None,

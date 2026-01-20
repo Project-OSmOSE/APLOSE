@@ -21,6 +21,7 @@ from backend.api.models import (
 )
 from backend.api.serializers import AnnotationSerializer
 from backend.utils.filters import ModelFilter, get_boolean_query_param
+from backend.utils.schema import ForbiddenError, NotFoundError
 
 
 def to_seconds(delta: timedelta) -> float:
@@ -55,11 +56,22 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        phase = AnnotationPhase.objects.get_editable_or_fail(
-            user=request.user,
-            annotation_campaign_id=campaign_id,
-            phase=phase_type.value,
-        )
+        try:
+            phase = AnnotationPhase.objects.get_editable_or_fail(
+                user=request.user,
+                annotation_campaign_id=campaign_id,
+                phase=phase_type,
+            )
+        except ForbiddenError:
+            return Response(
+                f"You do not have access to edition of phase {phase_type} for campaign #{campaign_id}",
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        except NotFoundError:
+            return Response(
+                f"Phase {phase_type} not found for campaign #{campaign_id}",
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         reader = csv.DictReader(StringIO(request.data["data"]))
         annotations = []

@@ -5,9 +5,9 @@ from django.db import models, transaction
 from django.db.models import Q, Exists, OuterRef
 from django.utils import timezone
 
-from .annotation_file_range import AnnotationFileRange
-from backend.utils.managers import CustomManager, CustomQuerySet
+from backend.utils.managers import CustomQuerySet
 from backend.utils.models import Enum
+from .annotation_file_range import AnnotationFileRange
 
 
 class AnnotationPhaseQuerySet(CustomQuerySet):

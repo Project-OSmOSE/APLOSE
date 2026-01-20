@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import Exists, Subquery, OuterRef, signals, Func, F, Q, QuerySet
 from django.dispatch import receiver
 
-from backend.utils.managers import CustomManager, CustomQuerySet
+from backend.utils.managers import CustomQuerySet
 from .annotation_task import AnnotationTask
 from ..data import Spectrogram
 
