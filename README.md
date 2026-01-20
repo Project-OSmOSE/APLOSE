@@ -5,10 +5,15 @@
 [![][coverage-badge]][coverage-link]
 
 [ci-badge]: https://github.com/Project-OSmOSE/osmose-app/actions/workflows/continuous-integration.yml/badge.svg
+
 [ci-link]: https://github.com/Project-OSmOSE/osmose-app/actions/workflows/continuous-integration.yml
+
 [black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
+
 [black-link]: https://github.com/psf/black
+
 [coverage-badge]: https://Project-OSmOSE.github.io/osmose-app/coverage/badge.svg
+
 [coverage-link]: https://Project-OSmOSE.github.io/osmose-app/coverage
 
 In this repository there are actually 2 projets : APLOSE software and OSmOSE team's website.
@@ -17,6 +22,7 @@ The backend is shared by the 2 projects but is located in distincts Django apps.
 \> Read the [documentation](https://project-osmose.github.io/APLOSE/)
 
 ### APLOSE
+
 APLOSE is a scalable web-based annotation tool for marine bioacoustics.
 It allows the annotations of audio spectrograms. It is currently used for
 marine bioacoustics studies but its usage can be extended to all kind of
@@ -26,6 +32,7 @@ APLOSE is composed of a React frontend, located in "frontend" folder, and
 a Django backend, located in the "backend" folder ("api" app).
 
 ### OSmOSE team's website
+
 OSmOSE team's website is composed of a React frontend, located in "website" folder, and
 a Django backend, located in the "backend" folder ("osmosewebsite" app).
 
@@ -33,7 +40,8 @@ a Django backend, located in the "backend" folder ("osmosewebsite" app).
 
 ## Deployment
 
-For Ifremer infrastructure follow the comments in the .gitlab-ci.yml file, otherwise use the docker-compose.yml file (you should create a .env file with the required variables, see [possible variables](#possible-env-variable)).
+For Ifremer infrastructure follow the comments in the .gitlab-ci.yml file, otherwise use the docker-compose.yml file (
+you should create a .env file with the required variables, see [possible variables](#possible-env-variable)).
 
 ## Development
 
@@ -82,7 +90,8 @@ coverage html
 
 #### Cypress testing
 
-We use [Cypress](https://docs.cypress.io) for end to end testing. Examples of cypress tests are kept in `frontend/cypress/examples`, they should be deleted once we have a solid E2E test base.
+We use [Cypress](https://docs.cypress.io) for end to end testing. Examples of cypress tests are kept in
+`frontend/cypress/examples`, they should be deleted once we have a solid E2E test base.
 
 ```bash
 cd frontend
@@ -103,10 +112,13 @@ poetry run black backend
 
 ### Tooling & maintenance
 
-To update a package to a specific version do not directly edit the pyproject.toml file but rather use the following command:
+To update a package to a specific version do not directly edit the pyproject.toml file but rather use the following
+command:
+
 ```bash
 poetry add --group dev "pylint==2.14.5"
 ```
+
 Here `--group dev` because this is a dev tool, if it's a library to also be used in production you can drop that option.
 
 If you want to changes pylint rules, the configuration options are in the `pyproject.toml` file.

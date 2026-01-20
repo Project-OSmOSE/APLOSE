@@ -2,7 +2,12 @@ import graphene
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from backend.api.models import Spectrogram, AnnotationPhase, AnnotationFileRange
+from backend.api.models import (
+    Spectrogram,
+    AnnotationPhase,
+    AnnotationFileRange,
+    Annotation,
+)
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.serializers import AnnotationSerializer
 from backend.utils.schema.mutations import ListSerializerMutation
@@ -24,22 +29,17 @@ class UpdateAnnotationsMutation(ListSerializerMutation):
 
     @classmethod
     def get_serializer_queryset(cls, root, info, **input):
-        spectrogram: Spectrogram = get_object_or_404(
-            Spectrogram.objects.all(), pk=input["spectrogram_id"]
-        )
         if input.get("phase_type").value == AnnotationPhaseType.Annotation:
-            return AnnotationFileRange.objects.filter_editable_by(
+            return Annotation.objects.filter_editable_by(
                 user=info.context.user,
                 annotation_phase__annotation_campaign_id=input["campaign_id"],
                 annotation_phase__phase=AnnotationPhase.Type.ANNOTATION,
-                from_datetime__lt=spectrogram.end,
-                to_datetime__gt=spectrogram.start,
+                spectrogram_id=input["spectrogram_id"],
             )
-        return AnnotationFileRange.objects.filter_viewable_by(
+        return Annotation.objects.filter_viewable_by(
             user=info.context.user,
             annotation_phase__annotation_campaign_id=input["campaign_id"],
-            from_datetime__lt=spectrogram.end,
-            to_datetime__gt=spectrogram.start,
+            spectrogram_id=input["spectrogram_id"],
         ).filter(
             Q(
                 annotation_phase__phase=AnnotationPhase.Type.VERIFICATION,
