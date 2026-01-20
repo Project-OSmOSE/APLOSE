@@ -3,12 +3,12 @@
     "netcdf_analysis": {
       "class": "SpectroDataset",
       "analysis": "netcdf_analysis",
-      "json": "processed/netcdf_analysis/netcdf_analysis.json"
+      "json": "/opt/datawork/dataset/netcdf_example/processed/netcdf_analysis/netcdf_analysis.json"
     },
     "original": {
       "class": "AudioDataset",
       "analysis": "original",
-      "json": "data/audio/original/original.json"
+      "json": "/opt/datawork/dataset/netcdf_example/data/audio/original/original.json"
     }
   },
   "depth": 100,
