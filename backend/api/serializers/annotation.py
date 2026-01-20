@@ -272,9 +272,8 @@ class AnnotationSerializer(serializers.ModelSerializer):
             user=self.context.get("request").user,
             annotation_phase=instance.annotation_phase,
             spectrogram=instance.spectrogram,
-            author_id=instance.annotator,
             annotation_id=instance.id,
-        )
+        ).filter(author=instance.annotator)
         serializer = AnnotationCommentSerializer(
             instances,
             data=validated_data,
