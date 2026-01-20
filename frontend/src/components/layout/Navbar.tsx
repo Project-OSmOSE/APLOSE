@@ -40,6 +40,7 @@ export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
           </Link>
           { user?.isAdmin && <Fragment>
               <Link appPath="/dataset" onClick={ close }>Datasets</Link>
+              <Link appPath="/spectrogram-example" onClick={ close }>Spectrogram Example</Link>
           </Fragment> }
         </div>
 
