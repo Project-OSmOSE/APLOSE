@@ -37,7 +37,12 @@ export const NetCDFViewer: React.FC<NetCDFViewerProps> = ({ spectrogramPath }) =
         setLoading(true);
 
         // Call backend API to parse NetCDF file
-        const response = await fetch(`/backend/api/netcdf/parse?path=${encodeURIComponent(spectrogramPath)}`);
+        // If spectrogramPath is empty, backend will serve the built-in example
+        const url = spectrogramPath
+          ? `/api/netcdf/parse/?path=${encodeURIComponent(spectrogramPath)}`
+          : `/api/netcdf/parse/`;
+
+        const response = await fetch(url);
 
         if (!response.ok) {
           throw new Error(`Failed to load NetCDF: ${response.statusText}`);

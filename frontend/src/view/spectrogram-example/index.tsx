@@ -9,8 +9,9 @@ import { NetCDFViewer } from './NetCDFViewer';
  * Uses a standalone NetCDF viewer with Plotly for interactive visualization.
  */
 export const SpectrogramExamplePage: React.FC = () => {
-  // Path to example NetCDF file (relative to backend datawork directory)
-  const spectrogramPath = '/opt/datawork/dataset/netcdf_example/processed/netcdf_analysis/spectrogram/2024_01_01_00_00_00_000000.nc';
+  // Use the static example spectrogram included in the Docker image
+  // No path needed - the backend will serve the built-in example by default
+  const spectrogramPath = '';
 
   return (
     <div className={ styles.pageContainer }>
@@ -18,11 +19,11 @@ export const SpectrogramExamplePage: React.FC = () => {
 
         <div className={ styles.header }>
           <h1>NetCDF Spectrogram Example</h1>
-          <p>Interactive Plotly visualization of a NetCDF spectrogram file</p>
+          <p>Interactive Plotly visualization of a synthetic spectrogram</p>
           <p className={ styles.note }>
-            <strong>Note:</strong> This is a demonstration page showing NetCDF file visualization.
-            For full annotation capabilities, create an annotation campaign and import the
-            {' '}<code>netcdf_example</code> dataset.
+            <strong>Note:</strong> This demonstrates NetCDF file visualization with a built-in example.
+            The spectrogram contains synthetic whale-like calls, chirps, and pulses.
+            For real data visualization, create an annotation campaign and import a dataset.
           </p>
         </div>
 
