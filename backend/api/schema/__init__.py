@@ -22,6 +22,7 @@ from .queries import (
 from .mutations import (
     ImportAnalysisMutation,
     ImportDatasetMutation,
+    ImportSimpleDatasetMutation,
     CreateAnnotationCampaignMutation,
     UpdateAnnotationCampaignMutation,
     UpdateAnnotationPhaseFileRangesMutation,
@@ -39,6 +40,7 @@ class APIMutation(graphene.ObjectType):
 
     # Dataset
     import_dataset = ImportDatasetMutation.Field()
+    import_simple_dataset = ImportSimpleDatasetMutation.Field()
 
     # Spectrogram analysis
     import_spectrogram_analysis = ImportAnalysisMutation.Field()
