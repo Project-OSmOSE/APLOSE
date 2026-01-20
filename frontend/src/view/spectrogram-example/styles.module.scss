@@ -1,9 +1,17 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
 .exampleContainer {
   display: flex;
   flex-direction: column;
   height: 100%;
   padding: 20px;
   gap: 20px;
+  overflow: auto;
 }
 
 .header {
@@ -19,9 +27,25 @@
   }
 
   p {
-    margin: 0;
+    margin: 5px 0;
     color: var(--ion-color-medium);
     font-size: 14px;
+  }
+
+  .note {
+    margin-top: 15px;
+    padding: 10px;
+    background: var(--ion-color-warning-tint);
+    border-radius: 4px;
+    font-size: 13px;
+
+    code {
+      padding: 2px 6px;
+      background: var(--ion-color-light);
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 12px;
+    }
   }
 }
 
@@ -29,30 +53,142 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  min-height: 500px;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-}
-
-.spectrogramData {
-  display: flex;
-  justify-content: space-between;
   padding: 15px;
-  border-bottom: 1px solid var(--ion-color-light);
-  background: var(--ion-color-light);
 }
 
-.spectrogramConfiguration {
+// NetCDF Viewer styles
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  gap: 15px;
+
+  p {
+    color: var(--ion-color-medium);
+  }
+}
+
+.errorContainer {
+  padding: 30px;
+  text-align: center;
+  color: var(--ion-color-danger);
+
+  h3 {
+    margin: 0 0 15px 0;
+  }
+
+  p {
+    margin: 10px 0;
+  }
+
+  .helpText {
+    margin-top: 20px;
+    padding: 15px;
+    background: var(--ion-color-light);
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--ion-color-medium);
+
+    code {
+      display: block;
+      margin-top: 10px;
+      padding: 8px;
+      background: var(--ion-color-light-shade);
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 12px;
+      word-break: break-all;
+    }
+  }
+}
+
+.plotContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 15px;
+}
+
+.controls {
   display: flex;
   gap: 15px;
   align-items: center;
+  padding: 10px;
+  background: var(--ion-color-light);
+  border-radius: 4px;
   flex-wrap: wrap;
 
-  > div {
+  .control {
     display: flex;
-    gap: 8px;
     align-items: center;
+    gap: 8px;
+
+    label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ion-color-dark);
+    }
+
+    select,
+    input {
+      padding: 5px 10px;
+      border: 1px solid var(--ion-color-medium);
+      border-radius: 4px;
+      font-size: 13px;
+
+      &:focus {
+        outline: none;
+        border-color: var(--ion-color-primary);
+      }
+    }
+
+    input[type="number"] {
+      width: 80px;
+    }
+  }
+
+  .resetButton {
+    padding: 6px 12px;
+    background: var(--ion-color-primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+
+    &:hover {
+      background: var(--ion-color-primary-shade);
+    }
+  }
+}
+
+.plot {
+  flex: 1;
+  min-height: 400px;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.info {
+  padding: 10px;
+  background: var(--ion-color-light);
+  border-radius: 4px;
+  font-size: 13px;
+
+  p {
+    margin: 5px 0;
+    color: var(--ion-color-dark);
+
+    strong {
+      color: var(--ion-color-primary);
+    }
   }
 }
