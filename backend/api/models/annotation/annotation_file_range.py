@@ -4,14 +4,14 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Exists, Subquery, OuterRef, signals, Func, F, Q, QuerySet
 from django.dispatch import receiver
+from django_extension.models import ExtendedQuerySet
 
 from backend.aplose.models import User
-from backend.utils.managers import CustomQuerySet
 from .annotation_task import AnnotationTask
 from ..data import Spectrogram
 
 
-class AnnotationFileRangeQuerySet(CustomQuerySet):
+class AnnotationFileRangeQuerySet(ExtendedQuerySet):
     """AnnotationCampaign custom manager"""
 
     def filter_viewable_by(self, user: User, **kwargs):
