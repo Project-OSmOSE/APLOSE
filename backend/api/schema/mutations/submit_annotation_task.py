@@ -4,6 +4,7 @@ import graphene
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django_extension.schema.errors import NotFoundError
 from graphene import Boolean
 from graphene_django.types import ErrorType
 
@@ -16,7 +17,7 @@ from backend.api.models import (
 )
 from backend.api.models.annotation.annotation_task import AnnotationTaskSession
 from backend.api.schema.enums import AnnotationPhaseType
-from backend.utils.schema import GraphQLResolve, GraphQLPermissions, NotFoundError
+from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 from .update_annotation_comments import UpdateAnnotationCommentsMutation
 from .update_annotations import UpdateAnnotationsMutation
 

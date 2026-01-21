@@ -3,11 +3,11 @@ import logging
 import traceback
 from enum import Enum
 
+from django_extension.schema.errors import UnauthorizedError, ForbiddenError
 from graphql import GraphQLResolveInfo, GraphQLError
 from typing_extensions import Optional
 
 from backend.aplose.models import User
-from .errors import UnauthorizedError, ForbiddenError
 
 logger = logging.getLogger(__name__)
 
