@@ -6,6 +6,7 @@ import graphene
 import graphene_django_optimizer
 from django.conf import settings
 from django.utils import timezone
+from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 from graphql import GraphQLResolveInfo
 from osekit.core_api.spectro_data import SpectroData
 from osekit.core_api.spectro_dataset import SpectroDataset
@@ -20,7 +21,7 @@ from backend.api.models import (
 )
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationSpectrogramFilterSet
-from backend.utils.schema import NotFoundError, AuthenticatedDjangoConnectionField
+from backend.utils.schema import NotFoundError
 from backend.utils.schema.types import BaseObjectType, BaseNode, ModelContextFilter
 from .annotation_comment import AnnotationCommentNode
 from .annotation_task import AnnotationTaskNode
@@ -51,7 +52,7 @@ def get_task(
 class AnnotationSpectrogramNode(BaseObjectType):
 
     duration = graphene.Int(required=True)
-    annotation_comments = AuthenticatedDjangoConnectionField(AnnotationCommentNode)
+    annotation_comments = AuthenticatedPaginationConnectionField(AnnotationCommentNode)
 
     class Meta:
         model = Spectrogram

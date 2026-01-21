@@ -13,6 +13,7 @@ from django.db.models import (
     Value,
 )
 from django.db.models.functions import Coalesce
+from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 from graphql import GraphQLResolveInfo
 
 from backend.api.models import (
@@ -25,7 +26,6 @@ from backend.api.models import (
 from backend.api.schema.filter_sets import AnnotationCampaignFilterSet
 from backend.aplose.models import User
 from backend.aplose.schema import UserNode
-from backend.utils.schema import AuthenticatedDjangoConnectionField
 from backend.utils.schema.types import BaseObjectType, BaseNode
 from .annotation_phase import AnnotationPhaseNode
 from .archive import ArchiveNode
@@ -54,7 +54,7 @@ class AnnotationCampaignNode(BaseObjectType):
         filterset_class = AnnotationCampaignFilterSet
         interfaces = (BaseNode,)
 
-    phases = AuthenticatedDjangoConnectionField(AnnotationPhaseNode)
+    phases = AuthenticatedPaginationConnectionField(AnnotationPhaseNode)
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_phases(self: AnnotationCampaign, info, **kwargs):

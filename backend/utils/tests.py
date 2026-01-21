@@ -1,4 +1,4 @@
-"""Util test case classes with common behavior"""
+"""Util test case classes with common behaviour"""
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.response import Response

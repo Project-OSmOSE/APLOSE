@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 
 from backend.api.models import (
     AnnotationTask,
@@ -8,7 +9,6 @@ from backend.api.models import (
 )
 from backend.api.schema.enums import AnnotationTaskStatus
 from backend.api.schema.filter_sets import AnnotationTaskFilterSet
-from backend.utils.schema import AuthenticatedDjangoConnectionField
 from backend.utils.schema.types import BaseObjectType, BaseNode
 from .annotation import AnnotationNode
 from .annotation_comment import AnnotationCommentNode
@@ -25,9 +25,9 @@ class AnnotationTaskNode(BaseObjectType):
         filterset_class = AnnotationTaskFilterSet
         interfaces = (BaseNode,)
 
-    user_annotations = AuthenticatedDjangoConnectionField(AnnotationNode)
-    user_comments = AuthenticatedDjangoConnectionField(AnnotationCommentNode)
-    annotations_to_check = AuthenticatedDjangoConnectionField(AnnotationNode)
+    user_annotations = AuthenticatedPaginationConnectionField(AnnotationNode)
+    user_comments = AuthenticatedPaginationConnectionField(AnnotationCommentNode)
+    annotations_to_check = AuthenticatedPaginationConnectionField(AnnotationNode)
 
     def resolve_user_annotations(self: AnnotationTask, info, **kwargs):
         return Annotation.objects.filter(

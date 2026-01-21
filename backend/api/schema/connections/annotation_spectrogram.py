@@ -1,15 +1,15 @@
 """Annotation spectrogram connections"""
 import graphene
 from django.db.models import Q, Exists, OuterRef
+from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 from graphene_django_pagination import PaginationConnection
 from graphql import GraphQLResolveInfo
 
 from backend.api.models import Spectrogram, AnnotationTask
 from backend.api.schema.enums import AnnotationPhaseType
-from backend.utils.schema import AuthenticatedDjangoConnectionField
 
 
-class AnnotationSpectrogramConnectionField(AuthenticatedDjangoConnectionField):
+class AnnotationSpectrogramConnectionField(AuthenticatedPaginationConnectionField):
     """Annotation spectrogram connection field"""
 
     @property
