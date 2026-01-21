@@ -3,13 +3,11 @@
 import graphene
 import graphene_django_optimizer
 from django.db.models import QuerySet
-from django_extension.schema.errors import NotFoundError
 from graphene import Int
 from graphene_django import DjangoObjectType
 from graphene_django.forms.mutation import DjangoModelFormMutation
 from graphene_django.rest_framework.mutation import SerializerMutation
 from graphql import GraphQLResolveInfo
-from rest_framework.request import Request
 
 from .permissions import GraphQLResolve, GraphQLPermissions
 
@@ -30,19 +28,6 @@ class ApiObjectType(DjangoObjectType):
     def get_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
         """Resolve Queryset"""
         return graphene_django_optimizer.query(queryset, info)
-
-
-class ModelContextFilter:
-    """Base context filter"""
-
-    @classmethod
-    def get_queryset(cls, context: Request):
-        return QuerySet().none()
-
-    @classmethod
-    def get_edit_node_or_fail(cls, context: Request, pk: int):
-        """Get node with edit rights or fail depending on the context"""
-        raise NotFoundError()
 
 
 class BaseObjectType(DjangoObjectType):
