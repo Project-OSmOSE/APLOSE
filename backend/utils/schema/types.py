@@ -3,6 +3,7 @@
 import graphene
 import graphene_django_optimizer
 from django.db.models import QuerySet
+from django_extension.schema.errors import NotFoundError
 from graphene import Int
 from graphene_django import DjangoObjectType
 from graphene_django.forms.mutation import DjangoModelFormMutation
@@ -10,7 +11,6 @@ from graphene_django.rest_framework.mutation import SerializerMutation
 from graphql import GraphQLResolveInfo
 from rest_framework.request import Request
 
-from .errors import NotFoundError
 from .permissions import GraphQLResolve, GraphQLPermissions
 
 

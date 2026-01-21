@@ -5,6 +5,7 @@ from typing import Optional
 
 from django.db import transaction
 from django_extension.filters import get_boolean_query_param
+from django_extension.schema.errors import ForbiddenError, NotFoundError
 from rest_framework import viewsets, permissions, status, serializers
 from rest_framework.decorators import action
 from rest_framework.request import Request
@@ -21,7 +22,6 @@ from backend.api.models import (
     AnnotationTask,
 )
 from backend.api.serializers import AnnotationSerializer
-from backend.utils.schema import ForbiddenError, NotFoundError
 
 
 def to_seconds(delta: timedelta) -> float:
