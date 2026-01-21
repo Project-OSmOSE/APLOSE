@@ -1,15 +1,60 @@
 """Phase model"""
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models, transaction
+from django.db.models import Q, Exists, OuterRef
 from django.utils import timezone
 
-from backend.aplose.models import User
+from backend.utils.managers import CustomQuerySet
 from backend.utils.models import Enum
-from .annotation_campaign import AnnotationCampaign
+from .annotation_file_range import AnnotationFileRange
+
+
+class AnnotationPhaseQuerySet(CustomQuerySet):
+    def filter_viewable_by(self, user: User, **kwargs):
+        qs = super().filter_viewable_by(user, **kwargs)
+
+        # Admin can view all phases
+        if user.is_staff or user.is_superuser:
+            return qs
+
+        return qs.filter(
+            # Campaign owner can view its phases
+            Q(annotation_campaign__owner_id=user.id)
+            |
+            # Phase creator can view them
+            Q(created_by_id=user.id)
+            |
+            # Other can only view assigned open phase
+            Exists(
+                AnnotationFileRange.objects.filter_viewable_by(
+                    user, annotation_phase_id=OuterRef("pk")
+                )
+            )
+        )
+
+    def filter_editable_by(self, user: User, **kwargs):
+        qs = super().filter_viewable_by(user, **kwargs)
+
+        # Only open phases can be edited
+        open_phases = qs.filter(
+            annotation_campaign__archive__isnull=True,
+            ended_at__isnull=True,
+            ended_by__isnull=True,
+        )
+
+        # Admin can edit all phases
+        if user.is_staff or user.is_superuser:
+            return open_phases
+
+        # Campaign owner can edit its phases
+        return open_phases.filter(annotation_campaign__owner_id=user.id)
 
 
 class AnnotationPhase(models.Model):
     """Annotation campaign phase"""
+
+    objects = models.Manager.from_queryset(AnnotationPhaseQuerySet)()
 
     class Type(Enum):
         """Available type of phases of the annotation campaign"""
@@ -25,7 +70,7 @@ class AnnotationPhase(models.Model):
 
     phase = models.CharField(choices=Type.choices, max_length=1)
     annotation_campaign = models.ForeignKey(
-        AnnotationCampaign,
+        "AnnotationCampaign",
         on_delete=models.CASCADE,
         related_name="phases",
     )

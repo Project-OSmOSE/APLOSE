@@ -1,10 +1,12 @@
 import graphene
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
-from backend.api.models import Spectrogram, AnnotationPhase
-from backend.api.context_filters import (
-    AnnotationPhaseContextFilter,
-    AnnotationContextFilter,
+from backend.api.models import (
+    Spectrogram,
+    AnnotationPhase,
+    AnnotationFileRange,
+    Annotation,
 )
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.serializers import AnnotationSerializer
@@ -28,14 +30,14 @@ class UpdateAnnotationsMutation(ListSerializerMutation):
     @classmethod
     def get_serializer_queryset(cls, root, info, **input):
         if input.get("phase_type").value == AnnotationPhaseType.Annotation:
-            return AnnotationContextFilter.get_edit_queryset(
-                info.context,
+            return Annotation.objects.filter_editable_by(
+                user=info.context.user,
                 annotation_phase__annotation_campaign_id=input["campaign_id"],
                 annotation_phase__phase=AnnotationPhase.Type.ANNOTATION,
                 spectrogram_id=input["spectrogram_id"],
             )
-        return AnnotationContextFilter.get_queryset(
-            info.context,
+        return Annotation.objects.filter_viewable_by(
+            user=info.context.user,
             annotation_phase__annotation_campaign_id=input["campaign_id"],
             spectrogram_id=input["spectrogram_id"],
         ).filter(
@@ -51,8 +53,8 @@ class UpdateAnnotationsMutation(ListSerializerMutation):
 
     @classmethod
     def get_serializer_context(cls, root, info, **input):
-        phase = AnnotationPhaseContextFilter.get_node_or_fail(
-            info.context,
+        phase = AnnotationPhase.objects.get_viewable_or_fail(
+            info.context.user,
             annotation_campaign_id=input["campaign_id"],
             phase=input["phase_type"].value,
         )

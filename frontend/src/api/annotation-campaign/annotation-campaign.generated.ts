@@ -2,18 +2,20 @@ import * as Types from '../types.gql-generated';
 
 import { gqlAPI } from '@/api/baseGqlApi';
 export type ListCampaignsQueryVariables = Types.Exact<{
-  isArchived?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
-  phase?: Types.InputMaybe<Types.AnnotationPhaseType>;
-  ownerID?: Types.InputMaybe<Types.Scalars['ID']['input']>;
-  annotatorID?: Types.InputMaybe<Types.Scalars['ID']['input']>;
+  userID: Types.Scalars['ID']['input'];
   search?: Types.InputMaybe<Types.Scalars['String']['input']>;
+  filter_isArchived?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
+  filter_phase?: Types.InputMaybe<Types.AnnotationPhaseType>;
+  filter_ownerID?: Types.InputMaybe<Types.Scalars['ID']['input']>;
+  filter_annotatorID?: Types.InputMaybe<Types.Scalars['ID']['input']>;
 }>;
 
 
-export type ListCampaignsQuery = { __typename?: 'Query', allAnnotationCampaigns?: { __typename?: 'AnnotationCampaignNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCampaignNode', id: string, name: string, deadline?: any | null, isArchived: boolean, datasetName: string, phaseTypes: Array<Types.AnnotationPhaseType | null>, tasksCount: number, completedTasksCount: number, userTasksCount: number, userCompletedTasksCount: number, accessiblePhases?: { __typename?: 'AnnotationPhaseNodeNodeConnection', results: Array<{ __typename?: 'AnnotationPhaseNode', phase: Types.AnnotationPhaseType } | null> } | null } | null> } | null };
+export type ListCampaignsQuery = { __typename?: 'Query', allAnnotationCampaigns?: { __typename?: 'AnnotationCampaignNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCampaignNode', id: string, name: string, deadline?: any | null, isArchived: boolean, datasetName: string, tasksCount: number, completedTasksCount: number, userTasksCount: number, userCompletedTasksCount: number, phases?: { __typename?: 'AnnotationPhaseNodeNodeConnection', results: Array<{ __typename?: 'AnnotationPhaseNode', phase: Types.AnnotationPhaseType } | null> } | null } | null> } | null };
 
 export type GetCampaignQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
+  userID: Types.Scalars['ID']['input'];
 }>;
 
 
@@ -55,12 +57,12 @@ export type UpdateCampaignFeaturedLabelsMutation = { __typename?: 'Mutation', up
 
 
 export const ListCampaignsDocument = `
-    query listCampaigns($isArchived: Boolean, $phase: AnnotationPhaseType, $ownerID: ID, $annotatorID: ID, $search: String) {
+    query listCampaigns($userID: ID!, $search: String, $filter_isArchived: Boolean, $filter_phase: AnnotationPhaseType, $filter_ownerID: ID, $filter_annotatorID: ID) {
   allAnnotationCampaigns(
-    isArchived: $isArchived
-    phases_Phase: $phase
-    ownerId: $ownerID
-    phases_AnnotationFileRanges_AnnotatorId: $annotatorID
+    isArchived: $filter_isArchived
+    phases_Phase: $filter_phase
+    ownerId: $filter_ownerID
+    phases_AnnotationFileRanges_AnnotatorId: $filter_annotatorID
     search: $search
     orderBy: "name"
   ) {
@@ -70,8 +72,7 @@ export const ListCampaignsDocument = `
       deadline
       isArchived
       datasetName
-      phaseTypes
-      accessiblePhases: phases(annotationFileRanges_AnnotatorId: $annotatorID) {
+      phases(annotationFileRanges_AnnotatorId: $userID) {
         results {
           phase
         }
@@ -85,7 +86,7 @@ export const ListCampaignsDocument = `
 }
     `;
 export const GetCampaignDocument = `
-    query getCampaign($id: ID!) {
+    query getCampaign($id: ID!, $userID: ID!) {
   annotationCampaignById(id: $id) {
     id
     name
@@ -180,7 +181,7 @@ export const GetCampaignDocument = `
       }
     }
     spectrogramsCount
-    phases {
+    phases(annotationFileRanges_AnnotatorId: $userID) {
       results {
         id
         phase
@@ -229,7 +230,7 @@ export const UpdateCampaignFeaturedLabelsDocument = `
 
 const injectedRtkApi = gqlAPI.injectEndpoints({
   endpoints: (build) => ({
-    listCampaigns: build.query<ListCampaignsQuery, ListCampaignsQueryVariables | void>({
+    listCampaigns: build.query<ListCampaignsQuery, ListCampaignsQueryVariables>({
       query: (variables) => ({ document: ListCampaignsDocument, variables })
     }),
     getCampaign: build.query<GetCampaignQuery, GetCampaignQueryVariables>({

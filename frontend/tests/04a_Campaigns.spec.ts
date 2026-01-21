@@ -3,6 +3,7 @@ import { AnnotationPhaseType } from '../src/api/types.gql-generated';
 import { gqlURL, interceptRequests } from './utils/mock';
 import { campaign, USERS, type UserType } from './utils/mock/types';
 import type { Params } from './utils/types';
+import { AllCampaignFilters } from "../src/api";
 
 
 // Utils
@@ -50,16 +51,17 @@ const TEST = {
           page.waitForRequest(gqlURL),
           page.campaigns.search('Test campaign'),
         ])
-        expect(request.postDataJSON().variables.isArchived).toBeFalsy()
-        expect(request.postDataJSON().variables.phase).toBeFalsy()
-        expect(request.postDataJSON().variables.ownerID).toBeFalsy()
-        expect(request.postDataJSON().variables.annotatorID).toEqual(+USERS.annotator.id)
-        expect(request.postDataJSON().variables.search).toEqual('Test campaign') // Updated
+        const variables: AllCampaignFilters = request.postDataJSON().variables
+        expect(variables.filter_isArchived).toBeFalsy()
+        expect(variables.filter_phase).toBeFalsy()
+        expect(variables.filter_ownerID).toBeFalsy()
+        expect(variables.filter_annotatorID).toEqual(+USERS.annotator.id)
+        expect(variables.search).toEqual('Test campaign') // Updated
         const params = new URLSearchParams('?' + page.url().split('?')[1])
-        expect(JSON.parse(params.get('isArchived'))).toBeFalsy()
-        expect(JSON.parse(params.get('phase'))).toBeFalsy()
-        expect(JSON.parse(params.get('ownerID'))).toBeFalsy()
-        expect(JSON.parse(params.get('annotatorID'))).toEqual(+USERS.annotator.id)
+        expect(JSON.parse(params.get('filter_isArchived'))).toBeFalsy()
+        expect(JSON.parse(params.get('filter_phase'))).toBeFalsy()
+        expect(JSON.parse(params.get('filter_ownerID'))).toBeFalsy()
+        expect(JSON.parse(params.get('filter_annotatorID'))).toEqual(+USERS.annotator.id)
         expect(params.get('search')).toEqual('Test campaign') // Updated
       })
 
@@ -68,17 +70,17 @@ const TEST = {
           page.waitForRequest(gqlURL),
           page.getByText('Archived: False').click(),
         ])
-
-        expect(request.postDataJSON().variables.isArchived).toBeTruthy() // Updated
-        expect(request.postDataJSON().variables.phase).toBeFalsy()
-        expect(request.postDataJSON().variables.ownerID).toBeFalsy()
-        expect(request.postDataJSON().variables.annotatorID).toEqual(+USERS.annotator.id)
-        expect(request.postDataJSON().variables.search).toEqual('Test campaign')
+        const variables: AllCampaignFilters = request.postDataJSON().variables
+        expect(variables.filter_isArchived).toBeTruthy() // Updated
+        expect(variables.filter_phase).toBeFalsy()
+        expect(variables.filter_ownerID).toBeFalsy()
+        expect(variables.filter_annotatorID).toEqual(+USERS.annotator.id)
+        expect(variables.search).toEqual('Test campaign')
         const params = new URLSearchParams('?' + page.url().split('?')[1])
-        expect(JSON.parse(params.get('isArchived'))).toBeTruthy() // Updated
-        expect(JSON.parse(params.get('phase'))).toBeFalsy()
-        expect(JSON.parse(params.get('ownerID'))).toBeFalsy()
-        expect(JSON.parse(params.get('annotatorID'))).toEqual(+USERS.annotator.id)
+        expect(JSON.parse(params.get('filter_isArchived'))).toBeTruthy() // Updated
+        expect(JSON.parse(params.get('filter_phase'))).toBeFalsy()
+        expect(JSON.parse(params.get('filter_ownerID'))).toBeFalsy()
+        expect(JSON.parse(params.get('filter_annotatorID'))).toEqual(+USERS.annotator.id)
         expect(params.get('search')).toEqual('Test campaign')
       })
 
@@ -87,16 +89,16 @@ const TEST = {
           page.waitForRequest(gqlURL),
           page.getByText('Has verification').click(),
         ])
-        expect(request.postDataJSON().variables.isArchived).toBeTruthy()
-        expect(request.postDataJSON().variables.phase).toEqual(AnnotationPhaseType.Verification)
-        expect(request.postDataJSON().variables.ownerID).toBeFalsy()
-        expect(request.postDataJSON().variables.annotatorID).toEqual(+USERS.annotator.id)
+        expect(request.postDataJSON().variables.filter_isArchived).toBeTruthy()
+        expect(request.postDataJSON().variables.filter_phase).toEqual(AnnotationPhaseType.Verification)
+        expect(request.postDataJSON().variables.filter_ownerID).toBeFalsy()
+        expect(request.postDataJSON().variables.filter_annotatorID).toEqual(+USERS.annotator.id)
         expect(request.postDataJSON().variables.search).toEqual('Test campaign')
         const params = new URLSearchParams('?' + page.url().split('?')[1])
-        expect(JSON.parse(params.get('isArchived'))).toBeTruthy()
-        expect(params.get('phase')).toEqual(AnnotationPhaseType.Verification) // Updated
-        expect(JSON.parse(params.get('ownerID'))).toBeFalsy()
-        expect(JSON.parse(params.get('annotatorID'))).toEqual(+USERS.annotator.id)
+        expect(JSON.parse(params.get('filter_isArchived'))).toBeTruthy()
+        expect(params.get('filter_phase')).toEqual(AnnotationPhaseType.Verification) // Updated
+        expect(JSON.parse(params.get('filter_ownerID'))).toBeFalsy()
+        expect(JSON.parse(params.get('filter_annotatorID'))).toEqual(+USERS.annotator.id)
         expect(params.get('search')).toEqual('Test campaign')
       })
 
@@ -105,16 +107,16 @@ const TEST = {
           page.waitForRequest(gqlURL),
           page.getByText('Owned campaigns').click(),
         ])
-        expect(request.postDataJSON().variables.isArchived).toBeTruthy()
-        expect(request.postDataJSON().variables.phase).toEqual(AnnotationPhaseType.Verification)
-        expect(request.postDataJSON().variables.ownerID).toEqual(+USERS.annotator.id) // Updated
-        expect(request.postDataJSON().variables.annotatorID).toEqual(+USERS.annotator.id)
+        expect(request.postDataJSON().variables.filter_isArchived).toBeTruthy()
+        expect(request.postDataJSON().variables.filter_phase).toEqual(AnnotationPhaseType.Verification)
+        expect(request.postDataJSON().variables.filter_ownerID).toEqual(+USERS.annotator.id) // Updated
+        expect(request.postDataJSON().variables.filter_annotatorID).toEqual(+USERS.annotator.id)
         expect(request.postDataJSON().variables.search).toEqual('Test campaign')
         const params = new URLSearchParams('?' + page.url().split('?')[1])
-        expect(JSON.parse(params.get('isArchived'))).toBeTruthy()
-        expect(params.get('phase')).toEqual(AnnotationPhaseType.Verification)
-        expect(JSON.parse(params.get('ownerID'))).toEqual(+USERS.annotator.id) // Updated
-        expect(JSON.parse(params.get('annotatorID'))).toEqual(+USERS.annotator.id)
+        expect(JSON.parse(params.get('filter_isArchived'))).toBeTruthy()
+        expect(params.get('filter_phase')).toEqual(AnnotationPhaseType.Verification)
+        expect(JSON.parse(params.get('filter_ownerID'))).toEqual(+USERS.annotator.id) // Updated
+        expect(JSON.parse(params.get('filter_annotatorID'))).toEqual(+USERS.annotator.id)
         expect(params.get('search')).toEqual('Test campaign')
       })
 
@@ -123,16 +125,16 @@ const TEST = {
           page.waitForRequest(gqlURL),
           page.getByText('My work').click(),
         ])
-        expect(request.postDataJSON().variables.isArchived).toBeTruthy()
-        expect(request.postDataJSON().variables.phase).toEqual(AnnotationPhaseType.Verification)
-        expect(request.postDataJSON().variables.ownerID).toEqual(+USERS.annotator.id)
-        expect(request.postDataJSON().variables.annotatorID).toBeFalsy() // Updated
+        expect(request.postDataJSON().variables.filter_isArchived).toBeTruthy()
+        expect(request.postDataJSON().variables.filter_phase).toEqual(AnnotationPhaseType.Verification)
+        expect(request.postDataJSON().variables.filter_ownerID).toEqual(+USERS.annotator.id)
+        expect(request.postDataJSON().variables.filter_annotatorID).toBeFalsy() // Updated
         expect(request.postDataJSON().variables.search).toEqual('Test campaign')
         const params = new URLSearchParams('?' + page.url().split('?')[1])
-        expect(JSON.parse(params.get('isArchived'))).toBeTruthy()
-        expect(params.get('phase')).toEqual(AnnotationPhaseType.Verification)
-        expect(JSON.parse(params.get('ownerID'))).toEqual(+USERS.annotator.id)
-        expect(JSON.parse(params.get('annotatorID'))).toBeFalsy() // Updated
+        expect(JSON.parse(params.get('filter_isArchived'))).toBeTruthy()
+        expect(params.get('filter_phase')).toEqual(AnnotationPhaseType.Verification)
+        expect(JSON.parse(params.get('filter_ownerID'))).toEqual(+USERS.annotator.id)
+        expect(JSON.parse(params.get('filter_annotatorID'))).toBeFalsy() // Updated
         expect(params.get('search')).toEqual('Test campaign')
       })
     }),

@@ -8,22 +8,17 @@
                     "2022_07_17_00_25_46_000000+0000": {
                         "begin": "2022_07_17_00_25_46_000000+0000",
                         "end": "2022_07_17_00_25_56_000000+0000",
-                        "path": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\data\\audio\\original\\channelA_2022_07_17_00_25_46_seg000.wav"
+                        "path": "..\\..\\data\\audio\\original\\channelA_2022_07_17_00_25_46_seg000.wav"
                     }
                 },
-                "instrument": {
-                    "end_to_end_db": 150.0,
-                    "gain_db": 0.0,
-                    "peak_voltage": 1.0,
-                    "sensitivity": 1.0
-                },
+                "instrument": null,
                 "normalization": 1,
                 "normalization_values": {
                     "mean": null,
                     "peak": null,
                     "std": null
                 },
-                "sample_rate": 24000
+                "sample_rate": 128000
             },
             "begin": "2022-07-17T00:25:46.000000+0000",
             "colormap": "viridis",
@@ -31,8 +26,8 @@
             "files": {},
             "sft": null,
             "v_lim": [
-                0.0,
-                170.0
+                -120.0,
+                0.0
             ]
         },
         "2022_07_17_05_53_26_000000+0000": {
@@ -43,22 +38,17 @@
                     "2022_07_17_05_53_30_000000+0000": {
                         "begin": "2022_07_17_05_53_30_000000+0000",
                         "end": "2022_07_17_05_53_40_000000+0000",
-                        "path": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\data\\audio\\original\\channelA_2022_07_17_05_53_30_seg069.wav"
+                        "path": "..\\..\\data\\audio\\original\\channelA_2022_07_17_05_53_30_seg069.wav"
                     }
                 },
-                "instrument": {
-                    "end_to_end_db": 150.0,
-                    "gain_db": 0.0,
-                    "peak_voltage": 1.0,
-                    "sensitivity": 1.0
-                },
+                "instrument": null,
                 "normalization": 1,
                 "normalization_values": {
                     "mean": null,
                     "peak": null,
                     "std": null
                 },
-                "sample_rate": 24000
+                "sample_rate": 128000
             },
             "begin": "2022-07-17T05:53:26.000000+0000",
             "colormap": "viridis",
@@ -66,8 +56,8 @@
             "files": {},
             "sft": null,
             "v_lim": [
-                0.0,
-                170.0
+                -120.0,
+                0.0
             ]
         },
         "2022_07_17_05_53_36_000000+0000": {
@@ -78,22 +68,17 @@
                     "2022_07_17_05_53_30_000000+0000": {
                         "begin": "2022_07_17_05_53_30_000000+0000",
                         "end": "2022_07_17_05_53_40_000000+0000",
-                        "path": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\data\\audio\\original\\channelA_2022_07_17_05_53_30_seg069.wav"
+                        "path": "..\\..\\data\\audio\\original\\channelA_2022_07_17_05_53_30_seg069.wav"
                     }
                 },
-                "instrument": {
-                    "end_to_end_db": 150.0,
-                    "gain_db": 0.0,
-                    "peak_voltage": 1.0,
-                    "sensitivity": 1.0
-                },
+                "instrument": null,
                 "normalization": 1,
                 "normalization_values": {
                     "mean": null,
                     "peak": null,
                     "std": null
                 },
-                "sample_rate": 24000
+                "sample_rate": 128000
             },
             "begin": "2022-07-17T05:53:36.000000+0000",
             "colormap": "viridis",
@@ -101,8 +86,8 @@
             "files": {},
             "sft": null,
             "v_lim": [
-                0.0,
-                170.0
+                -120.0,
+                0.0
             ]
         },
         "2022_07_17_09_10_06_000000+0000": {
@@ -113,22 +98,17 @@
                     "2022_07_17_09_10_09_000000+0000": {
                         "begin": "2022_07_17_09_10_09_000000+0000",
                         "end": "2022_07_17_09_10_19_000000+0000",
-                        "path": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\data\\audio\\original\\channelA_2022_07_17_09_10_09_seg272.wav"
+                        "path": "..\\..\\data\\audio\\original\\channelA_2022_07_17_09_10_09_seg272.wav"
                     }
                 },
-                "instrument": {
-                    "end_to_end_db": 150.0,
-                    "gain_db": 0.0,
-                    "peak_voltage": 1.0,
-                    "sensitivity": 1.0
-                },
+                "instrument": null,
                 "normalization": 1,
                 "normalization_values": {
                     "mean": null,
                     "peak": null,
                     "std": null
                 },
-                "sample_rate": 24000
+                "sample_rate": 128000
             },
             "begin": "2022-07-17T09:10:06.000000+0000",
             "colormap": "viridis",
@@ -136,8 +116,8 @@
             "files": {},
             "sft": null,
             "v_lim": [
-                0.0,
-                170.0
+                -120.0,
+                0.0
             ]
         },
         "2022_07_17_09_10_16_000000+0000": {
@@ -148,22 +128,17 @@
                     "2022_07_17_09_10_09_000000+0000": {
                         "begin": "2022_07_17_09_10_09_000000+0000",
                         "end": "2022_07_17_09_10_19_000000+0000",
-                        "path": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\data\\audio\\original\\channelA_2022_07_17_09_10_09_seg272.wav"
+                        "path": "..\\..\\data\\audio\\original\\channelA_2022_07_17_09_10_09_seg272.wav"
                     }
                 },
-                "instrument": {
-                    "end_to_end_db": 150.0,
-                    "gain_db": 0.0,
-                    "peak_voltage": 1.0,
-                    "sensitivity": 1.0
-                },
+                "instrument": null,
                 "normalization": 1,
                 "normalization_values": {
                     "mean": null,
                     "peak": null,
                     "std": null
                 },
-                "sample_rate": 24000
+                "sample_rate": 128000
             },
             "begin": "2022-07-17T09:10:16.000000+0000",
             "colormap": "viridis",
@@ -171,8 +146,8 @@
             "files": {},
             "sft": null,
             "v_lim": [
-                0.0,
-                170.0
+                -120.0,
+                0.0
             ]
         },
         "2022_07_17_10_15_36_000000+0000": {
@@ -183,22 +158,17 @@
                     "2022_07_17_10_15_42_000000+0000": {
                         "begin": "2022_07_17_10_15_42_000000+0000",
                         "end": "2022_07_17_10_15_52_000000+0000",
-                        "path": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\data\\audio\\original\\channelA_2022_07_17_10_15_42_seg235.wav"
+                        "path": "..\\..\\data\\audio\\original\\channelA_2022_07_17_10_15_42_seg235.wav"
                     }
                 },
-                "instrument": {
-                    "end_to_end_db": 150.0,
-                    "gain_db": 0.0,
-                    "peak_voltage": 1.0,
-                    "sensitivity": 1.0
-                },
+                "instrument": null,
                 "normalization": 1,
                 "normalization_values": {
                     "mean": null,
                     "peak": null,
                     "std": null
                 },
-                "sample_rate": 24000
+                "sample_rate": 128000
             },
             "begin": "2022-07-17T10:15:36.000000+0000",
             "colormap": "viridis",
@@ -206,8 +176,8 @@
             "files": {},
             "sft": null,
             "v_lim": [
-                0.0,
-                170.0
+                -120.0,
+                0.0
             ]
         },
         "2022_07_17_10_15_46_000000+0000": {
@@ -218,22 +188,17 @@
                     "2022_07_17_10_15_42_000000+0000": {
                         "begin": "2022_07_17_10_15_42_000000+0000",
                         "end": "2022_07_17_10_15_52_000000+0000",
-                        "path": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\data\\audio\\original\\channelA_2022_07_17_10_15_42_seg235.wav"
+                        "path": "..\\..\\data\\audio\\original\\channelA_2022_07_17_10_15_42_seg235.wav"
                     }
                 },
-                "instrument": {
-                    "end_to_end_db": 150.0,
-                    "gain_db": 0.0,
-                    "peak_voltage": 1.0,
-                    "sensitivity": 1.0
-                },
+                "instrument": null,
                 "normalization": 1,
                 "normalization_values": {
                     "mean": null,
                     "peak": null,
                     "std": null
                 },
-                "sample_rate": 24000
+                "sample_rate": 128000
             },
             "begin": "2022-07-17T10:15:46.000000+0000",
             "colormap": "viridis",
@@ -241,8 +206,8 @@
             "files": {},
             "sft": null,
             "v_lim": [
-                0.0,
-                170.0
+                -120.0,
+                0.0
             ]
         },
         "2022_07_17_19_00_06_000000+0000": {
@@ -253,22 +218,17 @@
                     "2022_07_17_19_00_06_000000+0000": {
                         "begin": "2022_07_17_19_00_06_000000+0000",
                         "end": "2022_07_17_19_00_16_000000+0000",
-                        "path": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\data\\audio\\original\\channelA_2022_07_17_19_00_06_seg063.wav"
+                        "path": "..\\..\\data\\audio\\original\\channelA_2022_07_17_19_00_06_seg063.wav"
                     }
                 },
-                "instrument": {
-                    "end_to_end_db": 150.0,
-                    "gain_db": 0.0,
-                    "peak_voltage": 1.0,
-                    "sensitivity": 1.0
-                },
+                "instrument": null,
                 "normalization": 1,
                 "normalization_values": {
                     "mean": null,
                     "peak": null,
                     "std": null
                 },
-                "sample_rate": 24000
+                "sample_rate": 128000
             },
             "begin": "2022-07-17T19:00:06.000000+0000",
             "colormap": "viridis",
@@ -276,8 +236,8 @@
             "files": {},
             "sft": null,
             "v_lim": [
-                0.0,
-                170.0
+                -120.0,
+                0.0
             ]
         },
         "2022_07_17_21_11_06_000000+0000": {
@@ -288,22 +248,17 @@
                     "2022_07_17_21_11_11_000000+0000": {
                         "begin": "2022_07_17_21_11_11_000000+0000",
                         "end": "2022_07_17_21_11_21_000000+0000",
-                        "path": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\data\\audio\\original\\channelA_2022_07_17_21_11_11_seg012.wav"
+                        "path": "..\\..\\data\\audio\\original\\channelA_2022_07_17_21_11_11_seg012.wav"
                     }
                 },
-                "instrument": {
-                    "end_to_end_db": 150.0,
-                    "gain_db": 0.0,
-                    "peak_voltage": 1.0,
-                    "sensitivity": 1.0
-                },
+                "instrument": null,
                 "normalization": 1,
                 "normalization_values": {
                     "mean": null,
                     "peak": null,
                     "std": null
                 },
-                "sample_rate": 24000
+                "sample_rate": 128000
             },
             "begin": "2022-07-17T21:11:06.000000+0000",
             "colormap": "viridis",
@@ -311,8 +266,8 @@
             "files": {},
             "sft": null,
             "v_lim": [
-                0.0,
-                170.0
+                -120.0,
+                0.0
             ]
         },
         "2022_07_17_21_11_16_000000+0000": {
@@ -323,22 +278,17 @@
                     "2022_07_17_21_11_11_000000+0000": {
                         "begin": "2022_07_17_21_11_11_000000+0000",
                         "end": "2022_07_17_21_11_21_000000+0000",
-                        "path": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\data\\audio\\original\\channelA_2022_07_17_21_11_11_seg012.wav"
+                        "path": "..\\..\\data\\audio\\original\\channelA_2022_07_17_21_11_11_seg012.wav"
                     }
                 },
-                "instrument": {
-                    "end_to_end_db": 150.0,
-                    "gain_db": 0.0,
-                    "peak_voltage": 1.0,
-                    "sensitivity": 1.0
-                },
+                "instrument": null,
                 "normalization": 1,
                 "normalization_values": {
                     "mean": null,
                     "peak": null,
                     "std": null
                 },
-                "sample_rate": 24000
+                "sample_rate": 128000
             },
             "begin": "2022-07-17T21:11:16.000000+0000",
             "colormap": "viridis",
@@ -346,8 +296,8 @@
             "files": {},
             "sft": null,
             "v_lim": [
-                0.0,
-                170.0
+                -120.0,
+                0.0
             ]
         },
         "2022_07_17_23_22_16_000000+0000": {
@@ -358,22 +308,17 @@
                     "2022_07_17_23_22_17_000000+0000": {
                         "begin": "2022_07_17_23_22_17_000000+0000",
                         "end": "2022_07_17_23_22_27_000000+0000",
-                        "path": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\data\\audio\\original\\channelA_2022_07_17_23_22_17_seg180.wav"
+                        "path": "..\\..\\data\\audio\\original\\channelA_2022_07_17_23_22_17_seg180.wav"
                     }
                 },
-                "instrument": {
-                    "end_to_end_db": 150.0,
-                    "gain_db": 0.0,
-                    "peak_voltage": 1.0,
-                    "sensitivity": 1.0
-                },
+                "instrument": null,
                 "normalization": 1,
                 "normalization_values": {
                     "mean": null,
                     "peak": null,
                     "std": null
                 },
-                "sample_rate": 24000
+                "sample_rate": 128000
             },
             "begin": "2022-07-17T23:22:16.000000+0000",
             "colormap": "viridis",
@@ -381,8 +326,8 @@
             "files": {},
             "sft": null,
             "v_lim": [
-                0.0,
-                170.0
+                -120.0,
+                0.0
             ]
         },
         "2022_07_17_23_22_26_000000+0000": {
@@ -393,22 +338,17 @@
                     "2022_07_17_23_22_17_000000+0000": {
                         "begin": "2022_07_17_23_22_17_000000+0000",
                         "end": "2022_07_17_23_22_27_000000+0000",
-                        "path": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\data\\audio\\original\\channelA_2022_07_17_23_22_17_seg180.wav"
+                        "path": "..\\..\\data\\audio\\original\\channelA_2022_07_17_23_22_17_seg180.wav"
                     }
                 },
-                "instrument": {
-                    "end_to_end_db": 150.0,
-                    "gain_db": 0.0,
-                    "peak_voltage": 1.0,
-                    "sensitivity": 1.0
-                },
+                "instrument": null,
                 "normalization": 1,
                 "normalization_values": {
                     "mean": null,
                     "peak": null,
                     "std": null
                 },
-                "sample_rate": 24000
+                "sample_rate": 128000
             },
             "begin": "2022-07-17T23:22:26.000000+0000",
             "colormap": "viridis",
@@ -416,16 +356,16 @@
             "files": {},
             "sft": null,
             "v_lim": [
-                0.0,
-                170.0
+                -120.0,
+                0.0
             ]
         }
     },
-    "folder": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\processed\\my_first_analysis",
+    "folder": ".",
     "name": "my_first_analysis",
     "scale": null,
     "sft": {
-        "<scipy.signal._short_time_fft.ShortTimeFFT object at 0x0000023AB588A540>": {
+        "<scipy.signal._short_time_fft.ShortTimeFFT object at 0x0000021E0916FFB0>": {
             "fs": 24000,
             "hop": 205,
             "mfft": 2048,

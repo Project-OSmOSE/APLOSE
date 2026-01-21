@@ -248,7 +248,6 @@ export type AnnotationCampaignNode = BaseNode & {
   labelsWithAcousticFeatures?: Maybe<Array<Maybe<AnnotationLabelNode>>>;
   name: Scalars['String']['output'];
   owner: UserNode;
-  phaseTypes: Array<Maybe<AnnotationPhaseType>>;
   phases?: Maybe<AnnotationPhaseNodeNodeConnection>;
   spectrogramsCount: Scalars['Int']['output'];
   tasksCount: Scalars['Int']['output'];

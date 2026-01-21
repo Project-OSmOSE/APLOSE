@@ -22,7 +22,7 @@ from .legacy_spectrogram_configuration import LegacySpectrogramConfiguration
 from .scales import get_frequency_scales, LinearScale, MultiLinearScale
 
 
-class SpectrogramAnalysisManager(Manager):
+class SpectrogramAnalysisManager(models.Manager):
     """Spectrogram analysis manager"""
 
     def import_for_dataset(

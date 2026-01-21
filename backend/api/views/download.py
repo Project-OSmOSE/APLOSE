@@ -32,7 +32,6 @@ from backend.api.models import (
 from backend.api.models import (
     SpectrogramAnalysis,
 )
-from backend.api.context_filters import AnnotationPhaseContextFilter
 from backend.aplose.models import ExpertiseLevel
 from backend.utils.renderers import CSVRenderer
 
@@ -395,9 +394,7 @@ class DownloadViewSet(ViewSet):
     )
     def download_phase_annotations(self, request, pk=None):
         """Download annotation results csv"""
-        phase: AnnotationPhase = AnnotationPhaseContextFilter.get_node_or_fail(
-            request, pk=pk
-        )
+        phase = AnnotationPhase.objects.get_viewable_or_fail(request.user, pk=pk)
         campaign = phase.annotation_campaign
 
         response = HttpResponse(content_type="text/csv")
@@ -463,9 +460,7 @@ class DownloadViewSet(ViewSet):
     )
     def download_phase_progression(self, request, pk=None):
         """Returns the CSV report on tasks status for the given campaign"""
-        phase: AnnotationPhase = AnnotationPhaseContextFilter.get_node_or_fail(
-            request, pk=pk
-        )
+        phase = AnnotationPhase.objects.get_viewable_or_fail(request.user, pk=pk)
         campaign = phase.annotation_campaign
 
         response = HttpResponse(content_type="text/csv")
