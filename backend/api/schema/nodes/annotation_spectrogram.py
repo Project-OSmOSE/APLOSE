@@ -8,6 +8,7 @@ from django.conf import settings
 from django.utils import timezone
 from django_extension.schema.errors import NotFoundError
 from django_extension.schema.fields import AuthenticatedPaginationConnectionField
+from django_extension.schema.types import ExtendedNode
 from graphql import GraphQLResolveInfo
 from osekit.core_api.spectro_data import SpectroData
 from osekit.core_api.spectro_dataset import SpectroDataset
@@ -22,7 +23,6 @@ from backend.api.models import (
 )
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationSpectrogramFilterSet
-from backend.utils.schema.types import BaseObjectType, BaseNode
 from .annotation_comment import AnnotationCommentNode
 from .annotation_task import AnnotationTaskNode
 
@@ -49,7 +49,7 @@ def get_task(
         )
 
 
-class AnnotationSpectrogramNode(BaseObjectType):
+class AnnotationSpectrogramNode(ExtendedNode):
 
     duration = graphene.Int(required=True)
     annotation_comments = AuthenticatedPaginationConnectionField(AnnotationCommentNode)
@@ -58,7 +58,6 @@ class AnnotationSpectrogramNode(BaseObjectType):
         model = Spectrogram
         fields = "__all__"
         filterset_class = AnnotationSpectrogramFilterSet
-        interfaces = (BaseNode,)
 
     is_assigned = graphene.Boolean(
         required=True,

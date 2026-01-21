@@ -1,10 +1,10 @@
 import graphene
+from django_extension.schema.types import ExtendedNode
 
 from backend.api.models import Confidence
-from backend.utils.schema.types import BaseObjectType, BaseNode
 
 
-class ConfidenceNode(BaseObjectType):
+class ConfidenceNode(ExtendedNode):
     """Confidence schema"""
 
     is_default = graphene.Boolean()
@@ -13,4 +13,3 @@ class ConfidenceNode(BaseObjectType):
         model = Confidence
         fields = "__all__"
         filter_fields = "__all__"
-        interfaces = (BaseNode,)
