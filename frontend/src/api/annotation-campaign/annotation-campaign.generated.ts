@@ -2,7 +2,6 @@ import * as Types from '../types.gql-generated';
 
 import { gqlAPI } from '@/api/baseGqlApi';
 export type ListCampaignsQueryVariables = Types.Exact<{
-  userID: Types.Scalars['ID']['input'];
   search?: Types.InputMaybe<Types.Scalars['String']['input']>;
   filter_isArchived?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
   filter_phase?: Types.InputMaybe<Types.AnnotationPhaseType>;
@@ -15,7 +14,6 @@ export type ListCampaignsQuery = { __typename?: 'Query', allAnnotationCampaigns?
 
 export type GetCampaignQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
-  userID: Types.Scalars['ID']['input'];
 }>;
 
 
@@ -57,7 +55,7 @@ export type UpdateCampaignFeaturedLabelsMutation = { __typename?: 'Mutation', up
 
 
 export const ListCampaignsDocument = `
-    query listCampaigns($userID: ID!, $search: String, $filter_isArchived: Boolean, $filter_phase: AnnotationPhaseType, $filter_ownerID: ID, $filter_annotatorID: ID) {
+    query listCampaigns($search: String, $filter_isArchived: Boolean, $filter_phase: AnnotationPhaseType, $filter_ownerID: ID, $filter_annotatorID: ID) {
   allAnnotationCampaigns(
     isArchived: $filter_isArchived
     phases_Phase: $filter_phase
@@ -72,7 +70,7 @@ export const ListCampaignsDocument = `
       deadline
       isArchived
       datasetName
-      phases(annotationFileRanges_AnnotatorId: $userID) {
+      phases {
         results {
           phase
         }
@@ -86,7 +84,7 @@ export const ListCampaignsDocument = `
 }
     `;
 export const GetCampaignDocument = `
-    query getCampaign($id: ID!, $userID: ID!) {
+    query getCampaign($id: ID!) {
   annotationCampaignById(id: $id) {
     id
     name
@@ -181,7 +179,7 @@ export const GetCampaignDocument = `
       }
     }
     spectrogramsCount
-    phases(annotationFileRanges_AnnotatorId: $userID) {
+    phases {
       results {
         id
         phase
@@ -230,7 +228,7 @@ export const UpdateCampaignFeaturedLabelsDocument = `
 
 const injectedRtkApi = gqlAPI.injectEndpoints({
   endpoints: (build) => ({
-    listCampaigns: build.query<ListCampaignsQuery, ListCampaignsQueryVariables>({
+    listCampaigns: build.query<ListCampaignsQuery, ListCampaignsQueryVariables | void>({
       query: (variables) => ({ document: ListCampaignsDocument, variables })
     }),
     getCampaign: build.query<GetCampaignQuery, GetCampaignQueryVariables>({

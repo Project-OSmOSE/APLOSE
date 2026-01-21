@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonSpinner } from '@ionic/react';
 import { Button, Modal, ModalHeader, WarningText } from '@/components/ui';
@@ -22,9 +22,13 @@ type LabelSet = Pick<LabelSetNode, 'id' | 'description'> & {
 
 export const AnnotationPhaseCreateAnnotationModal: React.FC<{
   onClose: () => void;
-}> = ({ onClose }) => {
+  alsoCreateVerification?: boolean
+}> = ({ onClose, alsoCreateVerification }) => {
   const { campaign, isFetching: isFetchingCampaign, refetch } = useCurrentCampaign()
-  const { isLoading: isPostingPhase, error, createAnnotationPhase, formErrors } = useCreateAnnotationPhase()
+  const { isLoading: isPostingAnnotationPhase, error: errorPostingAnnotationPhase, createAnnotationPhase, formErrors } = useCreateAnnotationPhase()
+  const { isLoading: isPostingVerificationPhase, error: errorPostingVerificationPhase, createVerificationPhase } = useCreateVerificationPhase()
+  const isPostingPhase = useMemo(() => isPostingAnnotationPhase || isPostingVerificationPhase, [isPostingAnnotationPhase, isPostingVerificationPhase])
+  const error = useMemo(() => errorPostingAnnotationPhase ?? errorPostingVerificationPhase, [errorPostingAnnotationPhase, errorPostingVerificationPhase])
   const navigate = useNavigate()
 
   const [ labelSet, setLabelSet ] = useState<LabelSet | undefined>();
@@ -58,9 +62,12 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
       labelsWithAcousticFeatures: labelsWithAcousticFeatures.map(l => l.id),
       allowPointAnnotation,
     }).unwrap()
+    if (alsoCreateVerification) {
+      await createVerificationPhase({ campaignID: campaign.id }).unwrap()
+    }
     await refetch().unwrap()
     navigate(`/annotation-campaign/${ campaign.id }/phase/Annotation`)
-  }, [ campaign, labelSet, confidenceSetID, labelsWithAcousticFeatures, allowPointAnnotation, createAnnotationPhase ])
+  }, [ campaign, labelSet,alsoCreateVerification, confidenceSetID, labelsWithAcousticFeatures, allowPointAnnotation, createAnnotationPhase ])
 
   if (campaign?.isArchived) return <Fragment/>
   return <Modal onClose={ onClose } className={ styles.modal }>

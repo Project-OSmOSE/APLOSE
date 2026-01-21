@@ -1,5 +1,6 @@
 from os import listdir
 from os.path import join, isfile, exists
+from pathlib import WindowsPath
 
 import graphene
 from django.conf import settings
@@ -54,7 +55,7 @@ def legacy_resolve_all_spectrogram_analysis_available_for_import(
     available_analyses: [ImportAnalysisNode] = []
     spectro_root = join(
         settings.DATASET_IMPORT_FOLDER,
-        dataset_path,
+        WindowsPath(dataset_path),
         "processed",
         "spectrogram",
         config_folder,

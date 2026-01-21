@@ -22,11 +22,7 @@ const {
 } = AnnotationCampaignGqlAPI.endpoints
 
 export const useAllCampaigns = (filters: AllCampaignFilters) => {
-  const { user } = useCurrentUser();
-  const info = listCampaigns.useQuery({
-    ...filters,
-    userID: user?.id ?? '',
-  }, { skip: !user })
+  const info = listCampaigns.useQuery(filters)
   return useMemo(() => ({
     ...info,
     allCampaigns: info.data?.allAnnotationCampaigns?.results.filter(r => r !== null).map(c => c!),
@@ -34,12 +30,10 @@ export const useAllCampaigns = (filters: AllCampaignFilters) => {
 }
 
 export const useCurrentCampaign = () => {
-  const { user } = useCurrentUser();
   const { campaignID: id } = useParams<AploseNavParams>();
   const info = getCampaign.useQuery({
     id: id ?? '',
-    userID: user?.id ?? '',
-  }, { skip: !id || !user })
+  }, { skip: !id })
   const phases = useMemo(() => info.data?.annotationCampaignById?.phases?.results.map(p => p!), [ info ])
   return useMemo(() => ({
     ...info,
