@@ -34,8 +34,7 @@ export const useCurrentCampaign = () => {
   const { user } = useCurrentUser()
   const info = getCampaign.useQuery({
     id: id ?? '',
-    userID: user?.id ?? '',
-  }, { skip: !id || !user })
+  }, { skip: !id })
   const phases = useMemo(() => info.data?.annotationCampaignById?.phases?.results.map(p => p!), [ info ])
   return useMemo(() => ({
     ...info,
