@@ -1,7 +1,8 @@
 from django import forms
+from django_extension.schema.mutations import ExtendedModelFormMutation
 
 from backend.api.models import AnnotationCampaign
-from backend.utils.schema.types import AuthenticatedModelFormMutation
+from backend.utils.schema import GraphQLPermissions
 
 
 class CreateAnnotationCampaignForm(forms.ModelForm):
@@ -21,10 +22,11 @@ class CreateAnnotationCampaignForm(forms.ModelForm):
         )
 
 
-class CreateAnnotationCampaignMutation(AuthenticatedModelFormMutation):
+class CreateAnnotationCampaignMutation(ExtendedModelFormMutation):
     class Meta:
         model = AnnotationCampaign
         form_class = CreateAnnotationCampaignForm
+        permission = GraphQLPermissions.AUTHENTICATED
 
     @classmethod
     def perform_mutate(cls, form, info):

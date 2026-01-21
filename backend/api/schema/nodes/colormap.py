@@ -1,14 +1,13 @@
 """Colormap model"""
+from django_extension.schema.types import ExtendedNode
 
 from backend.api.models import Colormap
-from backend.utils.schema.types import BaseObjectType, BaseNode
 
 
-class ColormapNode(BaseObjectType):
+class ColormapNode(ExtendedNode):
     """Colormap schema"""
 
     class Meta:
         model = Colormap
         fields = "__all__"
         filter_fields = "__all__"
-        interfaces = (BaseNode,)

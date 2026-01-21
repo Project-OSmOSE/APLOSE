@@ -1,19 +1,18 @@
 import graphene
 import graphene_django_optimizer
+from django_extension.schema.types import ExtendedNode
 
 from backend.api.models import Detector
-from backend.utils.schema.types import BaseObjectType, BaseNode
 from .detector_configuration import DetectorConfigurationNode
 
 
-class DetectorNode(BaseObjectType):
+class DetectorNode(ExtendedNode):
     """Detector schema"""
 
     class Meta:
         model = Detector
         fields = "__all__"
         filter_fields = {}
-        interfaces = (BaseNode,)
 
     configurations = graphene.List(DetectorConfigurationNode)
 

@@ -1,14 +1,13 @@
 """FFT schema"""
+from django_extension.schema.types import ExtendedNode
 
 from backend.api.models import FFT
-from backend.utils.schema.types import BaseObjectType, BaseNode
 
 
-class FFTNode(BaseObjectType):
+class FFTNode(ExtendedNode):
     """FFT schema"""
 
     class Meta:
         model = FFT
         fields = "__all__"
         filter_fields = {}
-        interfaces = (BaseNode,)

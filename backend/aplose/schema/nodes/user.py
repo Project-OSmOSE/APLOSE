@@ -2,6 +2,7 @@
 
 from django.db.models import QuerySet, F, Value, CharField, Case, When, Q, BooleanField
 from django.db.models.functions import Concat
+from django_extension.schema.types import ExtendedNode
 from graphene import (
     String,
     Boolean,
@@ -10,17 +11,15 @@ from graphql import GraphQLResolveInfo
 
 from backend.aplose.models import User
 from backend.aplose.schema.enums import ExpertiseLevelType
-from backend.utils.schema.types import BaseObjectType, BaseNode
 
 
-class UserNode(BaseObjectType):
+class UserNode(ExtendedNode):
     """User node"""
 
     class Meta:
         model = User
         exclude = ("password",)
         filter_fields = {}
-        interfaces = (BaseNode,)
 
     expertise = ExpertiseLevelType()
     display_name = String(required=True)

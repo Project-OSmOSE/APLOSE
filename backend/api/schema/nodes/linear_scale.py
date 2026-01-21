@@ -1,12 +1,12 @@
+from django_extension.schema.types import ExtendedNode
+
 from backend.api.models import LinearScale
-from backend.utils.schema.types import BaseObjectType, BaseNode
 
 
-class LinearScaleNode(BaseObjectType):
+class LinearScaleNode(ExtendedNode):
     """LinearScale schema"""
 
     class Meta:
         model = LinearScale
         fields = "__all__"
         filter_fields = ()
-        interfaces = (BaseNode,)

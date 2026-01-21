@@ -1,17 +1,17 @@
 import graphene
 import graphene_django_optimizer
+from django_extension.schema.types import ExtendedNode
 
 from backend.api.models import SpectrogramAnalysis
 from backend.api.schema.connections import SpectrogramConnection
 from backend.api.schema.filter_sets import SpectrogramAnalysisFilterSet
-from backend.utils.schema.types import BaseObjectType, BaseNode
 from .colormap import ColormapNode
 from .fft import FFTNode
 from .legacy_spectrogram_configuration import LegacySpectrogramConfigurationNode
 from .spectrogram import SpectrogramNode
 
 
-class SpectrogramAnalysisNode(BaseObjectType):
+class SpectrogramAnalysisNode(ExtendedNode):
     """SpectrogramAnalysis schema"""
 
     fft = graphene.NonNull(FFTNode)
@@ -22,7 +22,6 @@ class SpectrogramAnalysisNode(BaseObjectType):
         model = SpectrogramAnalysis
         fields = "__all__"
         filterset_class = SpectrogramAnalysisFilterSet
-        interfaces = (BaseNode,)
 
     spectrograms = SpectrogramConnection(SpectrogramNode)
 

@@ -3,13 +3,13 @@ from django import forms
 from django.core import validators
 from django.db import transaction
 from django.db.models import Q
+from django_extension.schema.mutations import ExtendedModelFormMutation
 from graphene_django.types import ErrorType
 from graphql import GraphQLError
 
 from backend.api.models import AnnotationFileRange, AnnotationPhase
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions
-from backend.utils.schema.types import AuthenticatedModelFormMutation
 
 
 class AnnotationFileRangeInput(graphene.InputObjectType):
@@ -53,10 +53,11 @@ class AnnotationFileRangeForm(forms.ModelForm):
         return super()._clean_fields()
 
 
-class UpdateAnnotationFileRangeMutation(AuthenticatedModelFormMutation):
+class UpdateAnnotationFileRangeMutation(ExtendedModelFormMutation):
     class Meta:
         model = AnnotationFileRange
         form_class = AnnotationFileRangeForm
+        permission = GraphQLPermissions.AUTHENTICATED
 
 
 def clean_file_ranges(ids: list[int]):
