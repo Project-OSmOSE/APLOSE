@@ -7,9 +7,9 @@ from django.db import models, transaction
 from django.db.models import signals, Q, QuerySet, Exists, OuterRef
 from django.dispatch import receiver
 from django.utils import timezone
+from django_extension.models import ExtendedQuerySet
 
 from backend.aplose.models import User
-from backend.utils.managers import CustomQuerySet
 from .annotation_phase import AnnotationPhase
 from .confidence import Confidence
 from .confidence_set import ConfidenceSet, ConfidenceIndicatorSetIndicator
@@ -19,7 +19,7 @@ from ..common import Archive
 from ..data import Dataset, SpectrogramAnalysis, Spectrogram
 
 
-class AnnotationCampaignQuerySet(CustomQuerySet):
+class AnnotationCampaignQuerySet(ExtendedQuerySet):
     """AnnotationCampaign custom manager"""
 
     def filter_viewable_by(self, user: User, **kwargs):

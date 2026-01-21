@@ -3,14 +3,13 @@ from django.conf import settings
 from django.db import models, transaction
 from django.db.models import Q, Exists, OuterRef, Case, When
 from django.utils import timezone
-from django_extension.models import ExtendedEnum
+from django_extension.models import ExtendedEnum, ExtendedQuerySet
 
 from backend.aplose.models import User
-from backend.utils.managers import CustomQuerySet
 from .annotation_file_range import AnnotationFileRange
 
 
-class AnnotationPhaseQuerySet(CustomQuerySet):
+class AnnotationPhaseQuerySet(ExtendedQuerySet):
     def filter_viewable_by(self, user: User, **kwargs):
         qs = super().filter_viewable_by(user, **kwargs)
 

@@ -3,14 +3,14 @@
 from django.conf import settings
 from django.db import models
 from django.db.models import Q, Exists, OuterRef
+from django_extension.models import ExtendedQuerySet
 
 from backend.aplose.models import User
-from backend.utils.managers import CustomQuerySet
 from .annotation import Annotation
 from ..data import Spectrogram
 
 
-class AnnotationCommentQuerySet(CustomQuerySet):
+class AnnotationCommentQuerySet(ExtendedQuerySet):
     def filter_viewable_by(self, user: User, **kwargs):
         # pylint: disable=duplicate-code
         qs = super().filter_viewable_by(user, **kwargs)
