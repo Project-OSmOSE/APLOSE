@@ -4,6 +4,7 @@ from io import StringIO
 from typing import Optional
 
 from django.db import transaction
+from django_extension.filters import get_boolean_query_param
 from rest_framework import viewsets, permissions, status, serializers
 from rest_framework.decorators import action
 from rest_framework.request import Request
@@ -20,7 +21,6 @@ from backend.api.models import (
     AnnotationTask,
 )
 from backend.api.serializers import AnnotationSerializer
-from backend.utils.filters import ModelFilter, get_boolean_query_param
 from backend.utils.schema import ForbiddenError, NotFoundError
 
 
@@ -33,7 +33,6 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Annotation.objects.all()
     serializer_class = AnnotationSerializer
-    filter_backends = (ModelFilter,)
     permission_classes = (permissions.IsAuthenticated,)
 
     @action(
