@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "metadatax.equipment",
     "metadatax.data",
     "backend.sql.apps.SqlConfig",
+    "django_extension",
 ]
 
 MIDDLEWARE = [

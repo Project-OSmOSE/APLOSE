@@ -29,6 +29,7 @@ graphene-django-optimizer = "^0.10.0"
 django-graphene-auth = "^1.1.1"
 django-seed = "^0.3.1"
 djangorestframework-stubs = "^3.16.7"
+django-extension = {path = "../django-extension", develop = true}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
