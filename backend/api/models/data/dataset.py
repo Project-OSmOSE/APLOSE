@@ -4,12 +4,12 @@ from os.path import join
 from pathlib import Path
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.db import models
 from metadatax.acquisition.models import ChannelConfiguration
 from osekit.public_api.dataset import Dataset as OSEkitDataset
 from typing_extensions import deprecated
 
+from backend.aplose.models import User
 from .__abstract_dataset import AbstractDataset
 
 
