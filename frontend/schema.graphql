@@ -1059,6 +1059,7 @@ type Query {
     id: ID
   ): WebsiteProjectNodeNodeConnection
   websiteProjetById(pk: PK!): WebsiteProjectNode
+  currentUser: UserNode
   allUserGroups(
     """Query limit"""
     limit: Int
@@ -1087,74 +1088,7 @@ type Query {
     first: Int
     last: Int
   ): UserNodeNodeConnection
-  currentUser: UserNode
   allAnalysisForImport(datasetId: ID!): [ImportAnalysisNode]
-  allAnnotationCampaigns(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    phases_AnnotationFileRanges_AnnotatorId: ID
-    ownerId: ID
-    isArchived: Boolean
-    phases_Phase: AnnotationPhaseType
-
-    """search"""
-    search: String
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationCampaignNodeNodeConnection
-  allAnnotationFileRanges(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    annotator: ID
-    annotationPhase_AnnotationCampaign: ID
-    annotationPhase_Phase: AnnotationPhaseType
-  ): AnnotationFileRangeNodeNodeConnection
-  allAnnotationPhases(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    annotationCampaignId: ID
-    annotationCampaign_OwnerId: ID
-    annotationFileRanges_AnnotatorId: ID
-    isCampaignArchived: Boolean
-    phase: AnnotationPhaseType
-
-    """search"""
-    search: String
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationPhaseNodeNodeConnection
   allAnnotationSpectrograms(
     """Query limit"""
     limit: Int
@@ -1185,72 +1119,7 @@ type Query {
     """Ordering"""
     orderBy: String
   ): AnnotationSpectrogramNodeNodeConnection
-  allConfidenceSets(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    name: String
-    desc: String
-    confidenceIndicators: ID
-  ): ConfidenceSetNodeNodeConnection
-  allDatasets(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-
-    """Ordering"""
-    orderBy: String
-  ): DatasetNodeNodeConnection
   allDatasetsForImport: [ImportDatasetNode]
-  allDetectors(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-  ): DetectorNodeNodeConnection
-  allLabelSets(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    name: String
-    description: String
-    labels: ID
-  ): LabelSetNodeNodeConnection
   annotationLabelsForDeploymentId(
     deploymentId: ID!
 
@@ -1270,6 +1139,25 @@ type Query {
     annotation_AnnotationPhase_Phase: AnnotationPhaseType
     annotation_AnnotatorId: ID
   ): AnnotationLabelNodeNodeConnection
+  annotationPhaseByCampaignPhase(campaignId: ID!, phaseType: AnnotationPhaseType!): AnnotationPhaseNode
+  allDatasets(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+
+    """Ordering"""
+    orderBy: String
+  ): DatasetNodeNodeConnection
+  datasetById(id: ID!): DatasetNode
   allSpectrogramAnalysis(
     """Query limit"""
     limit: Int
@@ -1289,10 +1177,122 @@ type Query {
     """Ordering"""
     orderBy: String
   ): SpectrogramAnalysisNodeNodeConnection
+  allLabelSets(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    name: String
+    description: String
+    labels: ID
+  ): LabelSetNodeNodeConnection
+  allConfidenceSets(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    name: String
+    desc: String
+    confidenceIndicators: ID
+  ): ConfidenceSetNodeNodeConnection
+  allDetectors(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): DetectorNodeNodeConnection
+  allAnnotationCampaigns(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    phases_AnnotationFileRanges_AnnotatorId: ID
+    ownerId: ID
+    isArchived: Boolean
+    phases_Phase: AnnotationPhaseType
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeNodeConnection
   annotationCampaignById(id: ID!): AnnotationCampaignNode
-  annotationPhaseByCampaignPhase(campaignId: ID!, phaseType: AnnotationPhaseType!): AnnotationPhaseNode
+  allAnnotationPhases(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotationCampaignId: ID
+    annotationCampaign_OwnerId: ID
+    annotationFileRanges_AnnotatorId: ID
+    isCampaignArchived: Boolean
+    phase: AnnotationPhaseType
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationPhaseNodeNodeConnection
+  allAnnotationFileRanges(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotator: ID
+    annotationPhase_AnnotationCampaign: ID
+    annotationPhase_Phase: AnnotationPhaseType
+  ): AnnotationFileRangeNodeNodeConnection
   annotationSpectrogramById(id: ID!): AnnotationSpectrogramNode
-  datasetById(id: ID!): DatasetNode
   _debug: DjangoDebug
 }
 
@@ -4261,21 +4261,20 @@ type ImportAnalysisNode {
   path: String!
 }
 
-type AnnotationCampaignNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [AnnotationCampaignNode]!
-  totalCount: Int
+"""Type for import dataset"""
+type ImportDatasetNode {
+  name: String!
+  path: String!
+  legacy: Boolean
+  analysis: [ImportAnalysisNode]
 }
 
-type ConfidenceSetNodeNodeConnection {
+type AnnotationLabelNodeNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfoExtra!
 
   """Contains the nodes in this connection."""
-  results: [ConfidenceSetNode]!
+  results: [AnnotationLabelNode]!
   totalCount: Int
 }
 
@@ -4288,12 +4287,22 @@ type DatasetNodeNodeConnection {
   totalCount: Int
 }
 
-"""Type for import dataset"""
-type ImportDatasetNode {
-  name: String!
-  path: String!
-  legacy: Boolean
-  analysis: [ImportAnalysisNode]
+type LabelSetNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [LabelSetNode]!
+  totalCount: Int
+}
+
+type ConfidenceSetNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [ConfidenceSetNode]!
+  totalCount: Int
 }
 
 type DetectorNodeNodeConnection {
@@ -4305,21 +4314,12 @@ type DetectorNodeNodeConnection {
   totalCount: Int
 }
 
-type LabelSetNodeNodeConnection {
+type AnnotationCampaignNodeNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfoExtra!
 
   """Contains the nodes in this connection."""
-  results: [LabelSetNode]!
-  totalCount: Int
-}
-
-type AnnotationLabelNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [AnnotationLabelNode]!
+  results: [AnnotationCampaignNode]!
   totalCount: Int
 }
 

@@ -1,4 +1,0 @@
-from backend.api.schema.nodes import ConfidenceSetNode
-from backend.utils.schema import AuthenticatedDjangoConnectionField
-
-AllConfidenceSetField = AuthenticatedDjangoConnectionField(ConfidenceSetNode)

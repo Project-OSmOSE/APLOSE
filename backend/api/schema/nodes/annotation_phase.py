@@ -1,11 +1,11 @@
 import graphene
 import graphene_django_optimizer
 from django.db.models import Sum
+from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 
 from backend.api.models import AnnotationPhase, AnnotationTask
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationPhaseFilterSet
-from backend.utils.schema import AuthenticatedDjangoConnectionField
 from backend.utils.schema.types import BaseObjectType, BaseNode
 from .annotation_file_range import AnnotationFileRangeNode
 from .annotation_spectrogram import AnnotationSpectrogramNode

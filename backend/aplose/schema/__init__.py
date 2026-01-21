@@ -1,17 +1,18 @@
 """APLOSE queries"""
+from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 from graphene import ObjectType
 
 from .mutations import UpdateUserPasswordMutation, UpdateUserMutation
 from .nodes import UserGroupNode, UserNode
-from .queries import AllUserGroupsField, AllUserField, CurrentUserField
+from .queries import CurrentUserField
 
 
 class AploseQuery(ObjectType):
     """APLOSE queries"""
 
-    all_user_groups = AllUserGroupsField
+    all_user_groups = AuthenticatedPaginationConnectionField(UserGroupNode)
 
-    all_users = AllUserField
+    all_users = AuthenticatedPaginationConnectionField(UserNode)
 
     current_user = CurrentUserField
 
