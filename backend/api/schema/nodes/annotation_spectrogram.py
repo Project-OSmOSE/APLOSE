@@ -22,7 +22,7 @@ from backend.api.models import (
 )
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationSpectrogramFilterSet
-from backend.utils.schema.types import BaseObjectType, BaseNode, ModelContextFilter
+from backend.utils.schema.types import BaseObjectType, BaseNode
 from .annotation_comment import AnnotationCommentNode
 from .annotation_task import AnnotationTaskNode
 
@@ -59,16 +59,6 @@ class AnnotationSpectrogramNode(BaseObjectType):
         fields = "__all__"
         filterset_class = AnnotationSpectrogramFilterSet
         interfaces = (BaseNode,)
-
-    @classmethod
-    def __init_subclass_with_meta__(
-        cls,
-        context_filter: Optional[ModelContextFilter.__class__] = None,
-        model=None,
-        _meta=None,
-        **kwargs,
-    ):
-        super().__init_subclass_with_meta__(context_filter, model, _meta, **kwargs)
 
     is_assigned = graphene.Boolean(
         required=True,

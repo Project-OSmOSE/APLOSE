@@ -27,6 +27,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 from django.views.decorators.csrf import csrf_exempt
+from django_extension.views.init import DRFAuthenticatedGraphQLView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from graphene_django.views import GraphQLView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
