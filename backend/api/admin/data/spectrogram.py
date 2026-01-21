@@ -1,8 +1,8 @@
 """API data spectrogram administration"""
 from django.contrib import admin
+from django_extension.admin import get_many_to_many
 
 from backend.api.models import Spectrogram
-from backend.utils.admin import get_many_to_many
 
 
 @admin.register(Spectrogram)

@@ -1,9 +1,9 @@
 """API data dataset administration"""
 from django.contrib import admin
+from django_extension.admin import get_edit_links_for_queryset
 from metadatax.utils import JSONExportModelAdmin
 
 from backend.api.models import Dataset
-from backend.utils.admin import get_edit_links_for_queryset
 
 
 @admin.register(Dataset)

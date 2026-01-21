@@ -1,8 +1,8 @@
 """API annotation confidence set administration"""
 from django.contrib import admin
+from django_extension.admin import get_many_to_many
 
 from backend.api.models import ConfidenceIndicatorSetIndicator, ConfidenceSet
-from backend.utils.admin import get_many_to_many
 
 
 class ConfidenceRelationInline(admin.TabularInline):
