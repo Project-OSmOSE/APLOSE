@@ -1,21 +1,7 @@
 import graphene
 import graphene_django_optimizer
-from django.db import models
-from django.db.models import (
-    Subquery,
-    Value,
-    Func,
-    F,
-    OuterRef,
-    QuerySet,
-    ExpressionWrapper,
-    Q,
-    Sum,
-)
-from django.db.models.functions import Coalesce
-from graphql import GraphQLResolveInfo
 
-from backend.api.models import AnnotationPhase, AnnotationFileRange, AnnotationTask
+from backend.api.models import AnnotationPhase, AnnotationTask
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationPhaseFilterSet
 from backend.utils.schema import AuthenticatedDjangoConnectionField

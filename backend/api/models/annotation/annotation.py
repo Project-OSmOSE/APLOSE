@@ -1,11 +1,10 @@
 """Annotation model"""
 from typing import Optional
 
-from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q, Exists, OuterRef
 
-from backend.aplose.models import AploseUser, ExpertiseLevel
+from backend.aplose.models import AploseUser, ExpertiseLevel, User
 from backend.utils.managers import CustomQuerySet
 from backend.utils.models import Enum
 from .acoustic_features import AcousticFeatures
@@ -28,12 +27,10 @@ class AnnotationQuerySet(CustomQuerySet):
         return qs.filter(
             # Campaign owner can view its annotations
             Q(annotation_phase__annotation_campaign__owner_id=user.id)
-            |
             # Phase creator can view its annotations
-            Q(annotation_phase__created_by_id=user.id)
-            |
+            | Q(annotation_phase__created_by_id=user.id)
             # Other can only view assigned annotations
-            (
+            | (
                 # Task is open
                 Q(
                     # Campaign is open

@@ -9,9 +9,9 @@ from typing import Optional
 from dateutil import parser
 from django.conf import settings
 from django.db import models
-from django.db.models import CheckConstraint, Q, Manager
-from typing_extensions import deprecated
+from django.db.models import CheckConstraint, Q
 from osekit.core_api.spectro_dataset import SpectroDataset
+from typing_extensions import deprecated
 
 from backend.aplose.models import User
 from .__abstract_analysis import AbstractAnalysis

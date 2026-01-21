@@ -1,11 +1,11 @@
 """File range model"""
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Exists, Subquery, OuterRef, signals, Func, F, Q, QuerySet
 from django.dispatch import receiver
 
+from backend.aplose.models import User
 from backend.utils.managers import CustomQuerySet
 from .annotation_task import AnnotationTask
 from ..data import Spectrogram

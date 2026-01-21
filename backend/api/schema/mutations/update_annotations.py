@@ -1,11 +1,9 @@
 import graphene
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
 
 from backend.api.models import (
     Spectrogram,
     AnnotationPhase,
-    AnnotationFileRange,
     Annotation,
 )
 from backend.api.schema.enums import AnnotationPhaseType

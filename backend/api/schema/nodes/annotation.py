@@ -1,6 +1,3 @@
-from django.db.models import QuerySet
-from graphql import GraphQLResolveInfo
-
 from backend.api.models import Annotation
 from backend.api.schema.enums import AnnotationType
 from backend.api.schema.filter_sets import AnnotationFilterSet

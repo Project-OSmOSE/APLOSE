@@ -1,10 +1,10 @@
 """Annotation comment model"""
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q, Exists, OuterRef
 
+from backend.aplose.models import User
 from backend.utils.managers import CustomQuerySet
 from .annotation import Annotation
 from ..data import Spectrogram
@@ -19,14 +19,12 @@ class AnnotationCommentQuerySet(CustomQuerySet):
             return qs
 
         return qs.filter(
-            # Campaign owner can view its annotation comments
+            # Campaign owner can view its comments
             Q(annotation_phase__annotation_campaign__owner_id=user.id)
-            |
-            # Phase creator can view its annotation comments
-            Q(annotation_phase__created_by_id=user.id)
-            |
+            # Phase creator can view its comments
+            | Q(annotation_phase__created_by_id=user.id)
             # Other can only view created comments from assigned annotations
-            Exists(
+            | Exists(
                 Annotation.objects.filter_viewable_by(
                     user=user,
                     annotation_phase_id=OuterRef("annotation_phase_id"),

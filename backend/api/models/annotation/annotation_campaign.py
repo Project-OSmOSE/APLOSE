@@ -2,13 +2,13 @@
 from typing import Optional
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import signals, Q, QuerySet, Exists, OuterRef
 from django.dispatch import receiver
 from django.utils import timezone
 
+from backend.aplose.models import User
 from backend.utils.managers import CustomQuerySet
 from .annotation_phase import AnnotationPhase
 from .confidence import Confidence
