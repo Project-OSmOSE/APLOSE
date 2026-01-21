@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
 import graphene
+from django_extension.serializers import EnumField
 from graphene_django.registry import get_global_registry
 from graphene_django.rest_framework.serializer_converter import (
     get_graphene_type_from_serializer_field,
@@ -19,7 +20,6 @@ from backend.api.schema.enums import (
     AnnotationPhaseType,
     AnnotationTaskStatus,
 )
-from backend.utils.serializers import EnumField
 
 
 def convert_serializer_field(

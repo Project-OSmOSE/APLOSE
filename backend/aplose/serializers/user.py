@@ -1,11 +1,11 @@
 """User DRF serializers file"""
 from django.template.defaultfilters import upper
+from django_extension.serializers import EnumField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from backend.aplose.models import User
 from backend.aplose.models.user import ExpertiseLevel
-from backend.utils.serializers import EnumField
 
 
 # Serializers have too many false-positives on the following warnings:
