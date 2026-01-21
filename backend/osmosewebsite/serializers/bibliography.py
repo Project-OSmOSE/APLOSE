@@ -1,4 +1,5 @@
 """Bibliography serializers"""
+from django_extension.serializers import EnumField
 from metadatax.bibliography.models import (
     Tag,
     Bibliography,
@@ -11,7 +12,6 @@ from metadatax.bibliography.models import (
 from metadatax.common.serializers import ContactSerializer as MetadataxContactSerializer
 from rest_framework import serializers
 
-from backend.utils.serializers import EnumField
 from .institution import InstitutionSerializer
 from .team_member import TeamMemberSerializer
 

@@ -1,7 +1,7 @@
+from django_extension.serializers import EnumField
 from rest_framework import serializers
 
 from backend.api.models import AcousticFeatures
-from backend.utils.serializers import EnumField
 
 
 class AnnotationAcousticFeaturesSerializer(serializers.ModelSerializer):

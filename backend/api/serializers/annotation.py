@@ -3,6 +3,7 @@ from typing import Optional
 from django.core import validators
 from django.db import transaction
 from django.db.models import Max, QuerySet
+from django_extension.serializers import EnumField, ListSerializer
 from rest_framework import serializers
 from rest_framework.fields import empty, FloatField
 
@@ -17,7 +18,6 @@ from backend.api.models import (
     AnnotationComment,
 )
 from backend.aplose.models import ExpertiseLevel
-from backend.utils.serializers import EnumField, ListSerializer
 from .acoustic_features import AnnotationAcousticFeaturesSerializer
 from .annotation_validation import AnnotationValidationSerializer
 from .comment import AnnotationCommentSerializer
