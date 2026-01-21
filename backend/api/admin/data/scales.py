@@ -1,8 +1,8 @@
 """API data scales administration"""
 from django.contrib import admin
+from django_extension.admin import get_edit_links_for_queryset
 
 from backend.api.models import LinearScale, MultiLinearScale
-from backend.utils.admin import get_edit_links_for_queryset
 
 
 @admin.register(LinearScale)

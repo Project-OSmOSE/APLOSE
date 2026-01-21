@@ -1,8 +1,8 @@
 """API annotation acoustic features administration"""
 from django.contrib import admin
+from django_extension.admin import get_edit_link
 
 from backend.api.models import AcousticFeatures
-from backend.utils.admin import get_edit_link
 
 
 @admin.register(AcousticFeatures)

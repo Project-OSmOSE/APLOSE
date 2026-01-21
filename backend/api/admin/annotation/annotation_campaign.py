@@ -2,9 +2,9 @@
 from django.contrib import admin
 from django.contrib import messages
 from django.utils.safestring import SafeString
+from django_extension.admin import get_many_to_many
 
 from backend.api.models import AnnotationCampaign
-from backend.utils.admin import get_many_to_many
 from ..common import IsArchivedFilter
 from ...models.annotation.annotation_campaign import AnnotationCampaignAnalysis
 
