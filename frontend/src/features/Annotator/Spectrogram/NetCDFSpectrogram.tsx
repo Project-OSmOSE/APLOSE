@@ -1,9 +1,14 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import Plot from 'react-plotly.js';
-import { useAnnotationTask } from '@/api';
+import { AnnotationType, useAnnotationTask } from '@/api';
 import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
 import { NetCDFControls } from './NetCDFControls';
 import styles from './NetCDFSpectrogram.module.scss';
+import { useAddAnnotation } from '@/features/Annotator/Annotation';
+import { useAppSelector } from '@/features/App';
+import { selectFocusLabel } from '@/features/Annotator/Label';
+import { selectFocusConfidence } from '@/features/Annotator/Confidence';
+import { selectIsDrawingEnabled } from '@/features/Annotator/UX';
 
 interface NetCDFData {
   spectrogram: number[][];
@@ -29,6 +34,12 @@ export const NetCDFSpectrogram: React.FC = () => {
   const [colorscale, setColorscale] = useState('Jet');
   const [zmin, setZmin] = useState<number>(0);
   const [zmax, setZmax] = useState<number>(0);
+
+  // Annotation support
+  const addAnnotation = useAddAnnotation();
+  const focusedLabel = useAppSelector(selectFocusLabel);
+  const focusedConfidence = useAppSelector(selectFocusConfidence);
+  const isDrawingEnabled = useAppSelector(selectIsDrawingEnabled);
 
   // Parse NetCDF data from GraphQL response
   useEffect(() => {
@@ -101,7 +112,7 @@ export const NetCDFSpectrogram: React.FC = () => {
     return {
       width: width,
       height: height,
-      margin: { l: 60, r: 120, t: 20, b: 50 },
+      margin: { l: 50, r: 80, t: 10, b: 40 },
       xaxis: {
         title: { text: 'Time (s)' },
         showgrid: true,
@@ -114,7 +125,7 @@ export const NetCDFSpectrogram: React.FC = () => {
         zeroline: false,
         range: [netcdfData.frequency[0], netcdfData.frequency[netcdfData.frequency.length - 1]],
       },
-      dragmode: 'pan' as const,
+      dragmode: isDrawingEnabled ? ('select' as const) : (false as const),
       hovermode: 'closest' as const,
       plot_bgcolor: '#000',
       paper_bgcolor: '#000',
@@ -122,7 +133,7 @@ export const NetCDFSpectrogram: React.FC = () => {
         color: '#fff',
       },
     };
-  }, [netcdfData, width, height]);
+  }, [netcdfData, width, height, isDrawingEnabled]);
 
   const config = useMemo(() => ({
     displayModeBar: true,
@@ -130,9 +141,35 @@ export const NetCDFSpectrogram: React.FC = () => {
     scrollZoom: true,
     doubleClick: 'reset' as const,
     responsive: true,
-    modeBarButtonsToRemove: ['lasso2d', 'select2d'] as any,
+    modeBarButtonsToRemove: ['lasso2d'] as any,
     modeBarButtonsToAdd: [],
   }), []);
+
+  // Handle box selection to create annotations
+  const onSelected = useCallback((event: any) => {
+    if (!event || !event.range || !focusedLabel || !isDrawingEnabled) return;
+
+    const { x, y } = event.range;
+
+    // x is time range, y is frequency range
+    const startTime = Math.min(x[0], x[1]);
+    const endTime = Math.max(x[0], x[1]);
+    const startFrequency = Math.min(y[0], y[1]);
+    const endFrequency = Math.max(y[0], y[1]);
+
+    // Only create annotation if box has meaningful size
+    if (endTime - startTime > 0.01 && endFrequency - startFrequency > 1) {
+      addAnnotation({
+        type: AnnotationType.Box,
+        startTime,
+        endTime,
+        startFrequency,
+        endFrequency,
+        label: focusedLabel,
+        confidence: focusedConfidence ?? undefined,
+      });
+    }
+  }, [addAnnotation, focusedLabel, focusedConfidence, isDrawingEnabled]);
 
   if (loading) {
     return <div className={styles.loading}>Loading NetCDF spectrogram...</div>;
@@ -159,6 +196,7 @@ export const NetCDFSpectrogram: React.FC = () => {
         layout={layout}
         config={config}
         style={{ width: '100%', height: '100%' }}
+        onSelected={onSelected}
       />
     </div>
   );
