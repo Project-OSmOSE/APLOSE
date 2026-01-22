@@ -17,6 +17,7 @@ class SpectrogramAnalysisNode(BaseObjectType):
     fft = graphene.Field(FFTNode)  # Changed from NonNull to Field (nullable)
     colormap = graphene.NonNull(ColormapNode)
     legacy_configuration = LegacySpectrogramConfigurationNode()
+    data_duration = graphene.Float()  # Alias for 'duration' field (backward compatibility)
 
     class Meta:
         model = SpectrogramAnalysis
@@ -30,6 +31,10 @@ class SpectrogramAnalysisNode(BaseObjectType):
     def resolve_spectrograms(self: SpectrogramAnalysis, info, **kwargs):
         return self.spectrograms.distinct()
 
+    def resolve_data_duration(self: SpectrogramAnalysis, info):
+        """Backward compatibility: old field name was data_duration, new is duration"""
+        return self.duration
+
     def resolve_fft(self: SpectrogramAnalysis, info):
         """
         Resolve FFT field for both old OSEkit datasets and new simple datasets.
@@ -38,11 +43,14 @@ class SpectrogramAnalysisNode(BaseObjectType):
         - Otherwise, create/get an FFT record from the simple dataset fields (new datasets)
         """
         # If old-style fft foreign key exists, use it
-        if self.fft_id is not None:
-            return self.fft
+        try:
+            if self.fft_id is not None and self.fft is not None:
+                return self.fft
+        except (AttributeError, ValueError):
+            pass
 
         # For simple datasets, create or get FFT from the new fields
-        if hasattr(self, 'sample_rate') and hasattr(self, 'nfft') and hasattr(self, 'hop_length'):
+        try:
             # Calculate window_size and overlap from hop_length
             # window_size is typically same as nfft for standard STFT
             window_size = self.nfft
@@ -61,5 +69,7 @@ class SpectrogramAnalysisNode(BaseObjectType):
                 legacy=False
             )
             return fft
+        except (AttributeError, ValueError, TypeError):
+            pass
 
         return None

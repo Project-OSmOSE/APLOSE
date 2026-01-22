@@ -13,6 +13,7 @@ from backend.utils.spectrogram.dataset import SpectrogramFile
 from .__abstract_analysis import AbstractAnalysis
 from .colormap import Colormap
 from .dataset import Dataset
+from .fft import FFT
 
 logger = logging.getLogger(__name__)
 
@@ -136,6 +137,16 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
     duration = models.FloatField(
         help_text="Duration in seconds",
         default=0.0
+    )
+
+    # Old OSEkit field - kept for backward compatibility (nullable)
+    fft = models.ForeignKey(
+        FFT,
+        on_delete=models.PROTECT,
+        related_name="spectrogram_analysis",
+        null=True,
+        blank=True,
+        help_text="FFT configuration (for old OSEkit datasets)"
     )
 
     colormap = models.ForeignKey(
