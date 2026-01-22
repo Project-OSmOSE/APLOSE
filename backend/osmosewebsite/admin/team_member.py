@@ -1,6 +1,6 @@
 """OSmOSE Website - Team Member"""
 from django.contrib import admin
-from django_extension.admin import get_many_to_many
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.osmosewebsite.models import TeamMember
 
@@ -12,7 +12,7 @@ def make_former(model_admin, request, queryset):
 
 
 @admin.register(TeamMember)
-class TeamMemberAdmin(admin.ModelAdmin):
+class TeamMemberAdmin(ExtendedModelAdmin):
     """TeamMember presentation in DjangoAdmin"""
 
     list_display = [
@@ -53,6 +53,6 @@ class TeamMemberAdmin(admin.ModelAdmin):
     actions = [make_former]
 
     @admin.display(description="Institutions")
-    def show_institutions(self, obj):
+    def show_institutions(self, obj: TeamMember):
         """show_spectro_configs"""
-        return get_many_to_many(obj.contact, "current_institutions", "name")
+        return self.list_queryset(obj.contact.current_institutions.all())

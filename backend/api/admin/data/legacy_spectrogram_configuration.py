@@ -1,11 +1,12 @@
 """API data LegacySpectrogramConfiguration administration"""
 from django.contrib import admin
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import LegacySpectrogramConfiguration
 
 
 @admin.register(LegacySpectrogramConfiguration)
-class LegacySpectrogramConfigurationAdmin(admin.ModelAdmin):
+class LegacySpectrogramConfigurationAdmin(ExtendedModelAdmin):
     """LegacySpectrogramConfiguration presentation in DjangoAdmin"""
 
     list_display = (

@@ -1,12 +1,13 @@
 """API annotation confidence administration"""
 from django.contrib import admin, messages
 from django.db import IntegrityError, transaction
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import Confidence
 
 
 @admin.register(Confidence)
-class ConfidenceAdmin(admin.ModelAdmin):
+class ConfidenceAdmin(ExtendedModelAdmin):
     """Confidence presentation in DjangoAdmin"""
 
     list_display = (
