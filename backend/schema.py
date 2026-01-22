@@ -2,63 +2,93 @@
 
 import graphene
 from django_extension.filters import IDFilter
-from django_filters import NumberFilter
-from graphene import relay, Field
+from django_filters import NumberFilter, FilterSet
+from graphene import Field
 from graphene_django.debug import DjangoDebug
 from graphene_django_pagination import DjangoPaginationConnectionField
-from metadatax.acquisition.models import Deployment, Project, ChannelConfiguration
-from metadatax.acquisition.schema.channel_configuration import (
+from metadatax.acquisition.models import Deployment, ChannelConfiguration, Project
+from metadatax.acquisition.schema import (
     ChannelConfigurationNode as MxChannelConfigurationNode,
-    ChannelConfigurationFilter as MxChannelConfigurationFilter,
+    DeploymentNode as MxDeploymentNode,
 )
-from metadatax.acquisition.schema.deployment import (
-    DeploymentNode as MetadataxDeploymentNode,
-    DeploymentFilter as MetadataxDeploymentFilter,
-)
-from metadatax.acquisition.schema.project import ProjectFilter
-from metadatax.acquisition.schema.project import ProjectNode as MetadataxProjectNode
-from metadatax.schema import Mutation as MetadataxMutation, Query as MetadataxQuery
+from metadatax.acquisition.schema import ProjectNode as MxProjectNode
+from metadatax.schema import Mutation as MxMutation, Query as MxQuery
 
 from .api.schema import APIQuery, APIMutation
 from .aplose.schema import AploseQuery, AploseMutation
 from .osmosewebsite.schema import OSmOSEWebsiteQuery, WebsiteProjectNode
 
 
-class DeploymentFilter(MetadataxDeploymentFilter):
+class DeploymentFilter(FilterSet):
     """Override of Metadatax deployment filter"""
 
     project__website_project__id = NumberFilter()
 
-    class Meta(MetadataxDeploymentFilter.Meta):
-        """Override of Metadatax deployment filter"""
+    class Meta:
+        model = Deployment
+        fields = {
+            "id": ["exact", "in"],
+            "project_id": ["exact", "in"],
+            "site_id": ["exact", "in"],
+            "campaign_id": ["exact", "in"],
+            "platform_id": ["exact", "in"],
+            "longitude": ["exact", "lt", "lte", "gt", "gte"],
+            "latitude": ["exact", "lt", "lte", "gt", "gte"],
+            "name": ["exact", "icontains"],
+            "bathymetric_depth": ["exact", "lt", "lte", "gt", "gte"],
+            "deployment_date": ["exact", "lt", "lte", "gt", "gte"],
+            "deployment_vessel": ["exact", "icontains"],
+            "recovery_date": ["exact", "lt", "lte", "gt", "gte"],
+            "recovery_vessel": ["exact", "icontains"],
+            "description": ["icontains"],
+        }
 
 
-class DeploymentNode(MetadataxDeploymentNode):
+class DeploymentNode(MxDeploymentNode):
     """Override of Metadatax deployment node"""
 
     class Meta:
         model = Deployment
         fields = "__all__"
         filterset_class = DeploymentFilter
-        interfaces = (relay.Node,)
 
 
-class ProjectNodeOverride(MetadataxProjectNode):
+class ProjectNodeOverride(MxProjectNode):
     website_project = Field(WebsiteProjectNode)
 
     class Meta:
         model = Project
         fields = "__all__"
-        filterset_class = ProjectFilter
-        interfaces = (relay.Node,)
+        filter_fields = {
+            "id": ["exact", "in"],
+            "name": ["exact", "icontains"],
+            "accessibility": ["exact"],
+            "doi": ["exact"],
+            "start_date": ["exact", "lte", "lt", "gte", "gt"],
+            "end_date": ["exact", "lte", "lt", "gte", "gt"],
+            "project_goal": ["exact", "icontains"],
+            "financing": ["exact"],
+        }
 
 
-class ChannelConfigurationFilterSet(MxChannelConfigurationFilter):
+class ChannelConfigurationFilterSet(FilterSet):
 
     dataset_id = IDFilter(field_name="datasets__id")
 
-    class Meta(MxChannelConfigurationFilter.Meta):
-        pass
+    class Meta:
+        model = ChannelConfiguration
+        fields = {
+            "id": ["exact", "in"],
+            "recorder_specification": ["isnull"],
+            "detector_specification": ["isnull"],
+            "continuous": ["exact"],
+            "duty_cycle_on": ["exact", "lt", "lte", "gt", "gte"],
+            "duty_cycle_off": ["exact", "lt", "lte", "gt", "gte"],
+            "instrument_depth": ["exact", "lt", "lte", "gt", "gte"],
+            "timezone": ["exact"],
+            "harvest_starting_date": ["exact", "lt", "lte", "gt", "gte"],
+            "harvest_ending_date": ["exact", "lt", "lte", "gt", "gte"],
+        }
 
 
 class ChannelConfigurationNode(MxChannelConfigurationNode):
@@ -66,14 +96,13 @@ class ChannelConfigurationNode(MxChannelConfigurationNode):
         model = ChannelConfiguration
         fields = "__all__"
         filterset_class = ChannelConfigurationFilterSet
-        interfaces = (relay.Node,)
 
 
 class Query(
     APIQuery,
     AploseQuery,
     OSmOSEWebsiteQuery,
-    MetadataxQuery,
+    MxQuery,
     graphene.ObjectType,
 ):
     """Global query"""
@@ -90,7 +119,7 @@ class Query(
 class Mutation(
     APIMutation,
     AploseMutation,
-    MetadataxMutation,
+    MxMutation,
     graphene.ObjectType,
 ):
     """Global mutation"""
