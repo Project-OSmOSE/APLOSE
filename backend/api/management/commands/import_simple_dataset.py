@@ -16,6 +16,7 @@ Examples:
 """
 
 import logging
+from datetime import datetime
 from pathlib import Path
 
 from django.conf import settings
@@ -135,60 +136,127 @@ class Command(BaseCommand):
                 f"⚠ Dataset '{dataset_name}' already exists, updating analyses"
             ))
 
+        # Create ONE SpectrogramAnalysis for the entire dataset
+        self.stdout.write(self.style.MIGRATE_LABEL("Creating analysis configuration..."))
+        self.stdout.write('')
+
+        analysis_name = f"{dataset_name} Analysis"
+        analysis = SpectrogramAnalysis.objects.filter(
+            dataset=dataset,
+            name=analysis_name
+        ).first()
+
+        if not analysis:
+            # Get metadata from first spectrogram
+            first_spec = simple_dataset.spectrograms[0]
+            metadata = first_spec.metadata
+
+            # Parse timestamps
+            from django.utils import timezone as django_timezone
+            try:
+                start = datetime.fromisoformat(metadata['begin'].replace('+0000', '').replace('Z', ''))
+                if start.tzinfo is None:
+                    start = django_timezone.make_aware(start, django_timezone.utc)
+            except (ValueError, AttributeError, KeyError):
+                start = django_timezone.make_aware(datetime(1970, 1, 1), django_timezone.utc)
+
+            try:
+                last_spec = simple_dataset.spectrograms[-1]
+                last_metadata = last_spec.metadata
+                end = datetime.fromisoformat(last_metadata['end'].replace('+0000', '').replace('Z', ''))
+                if end.tzinfo is None:
+                    end = django_timezone.make_aware(end, django_timezone.utc)
+            except (ValueError, AttributeError, KeyError):
+                end = django_timezone.make_aware(datetime(1970, 1, 1), django_timezone.utc)
+
+            from backend.api.models.data.colormap import Colormap
+            colormap, _ = Colormap.objects.get_or_create(name='viridis')
+
+            analysis = SpectrogramAnalysis.objects.create(
+                dataset=dataset,
+                name=analysis_name,
+                path=folder_path,  # Dataset folder path
+                owner=owner,
+                start=start,
+                end=end,
+                sample_rate=metadata.get('sample_rate', 48000),
+                nfft=metadata.get('nfft', 2048),
+                hop_length=metadata.get('hop_length', 512),
+                duration=sum(s.metadata.get('duration', 0.0) for s in simple_dataset.spectrograms),
+                colormap=colormap,
+                dynamic_min=0.0,
+                dynamic_max=100.0,
+                frequency_min=metadata.get('frequency_min', 0.0),
+                frequency_max=metadata.get('frequency_max', 24000.0),
+            )
+            self.stdout.write(self.style.SUCCESS(f"✓ Created analysis: {analysis_name}"))
+        else:
+            self.stdout.write(self.style.WARNING(f"⚠ Analysis already exists: {analysis_name}"))
+
         self.stdout.write('')
         self.stdout.write(self.style.MIGRATE_LABEL("Importing spectrograms..."))
         self.stdout.write('')
 
-        # Create SpectrogramAnalysis for each spectrogram file
+        # Import all spectrograms and link to the ONE analysis
+        from metadatax.data.models import FileFormat
+        img_format, _ = FileFormat.objects.get_or_create(name='nc')
+
         imported_count = 0
         skipped_count = 0
         error_count = 0
 
         for i, spec_file in enumerate(simple_dataset.spectrograms, 1):
             try:
-                # Create unique name for this analysis (using NetCDF filename)
-                analysis_name = spec_file.netcdf_path.stem
+                spec_metadata = spec_file.metadata
+                from django.utils import timezone as django_timezone
 
-                # Check if analysis already exists
-                if SpectrogramAnalysis.objects.filter(
-                    dataset=dataset,
-                    name=analysis_name
-                ).exists():
+                try:
+                    spec_start = datetime.fromisoformat(spec_metadata['begin'].replace('+0000', '').replace('Z', ''))
+                    if spec_start.tzinfo is None:
+                        spec_start = django_timezone.make_aware(spec_start, django_timezone.utc)
+                except (ValueError, AttributeError, KeyError):
+                    raise ValueError(f"Could not parse start time")
+
+                try:
+                    spec_end = datetime.fromisoformat(spec_metadata['end'].replace('+0000', '').replace('Z', ''))
+                    if spec_end.tzinfo is None:
+                        spec_end = django_timezone.make_aware(spec_end, django_timezone.utc)
+                except (ValueError, AttributeError, KeyError):
+                    raise ValueError(f"Could not parse end time")
+
+                filename = spec_file.netcdf_path.stem
+
+                # Check if exists
+                existing = Spectrogram.objects.filter(
+                    filename=filename,
+                    format=img_format,
+                    start=spec_start,
+                    end=spec_end
+                ).first()
+
+                if existing:
+                    if not existing.analysis.filter(id=analysis.id).exists():
+                        existing.analysis.add(analysis)
                     self.stdout.write(
                         f"  [{i}/{len(simple_dataset.spectrograms)}] "
-                        f"{analysis_name} - "
-                        f"{self.style.WARNING('already exists, skipping')}"
+                        f"{filename} - "
+                        f"{self.style.WARNING('already exists')}"
                     )
                     skipped_count += 1
-                    continue
-
-                # Get relative path from DATASET_IMPORT_FOLDER
-                relative_path = str(spec_file.netcdf_path.relative_to(settings.DATASET_IMPORT_FOLDER))
-
-                # Use manager method to create analysis
-                analysis = SpectrogramAnalysis.objects.import_for_dataset(
-                    dataset=dataset,
-                    name=analysis_name,
-                    path=relative_path,
-                    owner=owner
-                )
-
-                # Import spectrograms for this analysis (required for annotation campaigns)
-                spectrograms = Spectrogram.objects.import_all_for_analysis(analysis)
-
-                # Validate the import
-                validation = Spectrogram.objects.validate_analysis_links(analysis)
-
-                status_msg = f"imported ({validation['total_spectrograms']} spectrograms)"
-                if validation['missing_files']:
-                    status_msg += f" - WARNING: {len(validation['missing_files'])} missing files"
-
-                self.stdout.write(
-                    f"  [{i}/{len(simple_dataset.spectrograms)}] "
-                    f"{analysis_name} - "
-                    f"{self.style.SUCCESS(status_msg)}"
-                )
-                imported_count += 1
+                else:
+                    spectrogram = Spectrogram.objects.create(
+                        filename=filename,
+                        format=img_format,
+                        start=spec_start,
+                        end=spec_end
+                    )
+                    spectrogram.analysis.add(analysis)
+                    self.stdout.write(
+                        f"  [{i}/{len(simple_dataset.spectrograms)}] "
+                        f"{filename} - "
+                        f"{self.style.SUCCESS('imported')}"
+                    )
+                    imported_count += 1
 
             except Exception as e:
                 self.stdout.write(
@@ -197,7 +265,6 @@ class Command(BaseCommand):
                     f"{self.style.ERROR(f'error: {str(e)}')}"
                 )
                 error_count += 1
-                # Continue with next file instead of failing completely
                 continue
 
         self.stdout.write('')
@@ -206,7 +273,8 @@ class Command(BaseCommand):
         self.stdout.write(self.style.MIGRATE_HEADING('='*70))
         self.stdout.write('')
         self.stdout.write(f"Dataset: {dataset_name} (ID: {dataset.id})")
-        self.stdout.write(f"Total spectrograms found: {len(simple_dataset.spectrograms)}")
+        self.stdout.write(f"Analysis: {analysis.name} (ID: {analysis.id})")
+        self.stdout.write(f"Total spectrogram files found: {len(simple_dataset.spectrograms)}")
         self.stdout.write(self.style.SUCCESS(f"✓ Newly imported: {imported_count}"))
         if skipped_count > 0:
             self.stdout.write(self.style.WARNING(f"⚠ Already existed: {skipped_count}"))

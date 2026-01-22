@@ -346,10 +346,12 @@ class Spectrogram(AbstractFile, TimeSegment, models.Model):
             else:
                 # Check if this is a simple NetCDF dataset or OSEkit dataset
                 if not OSEKIT_AVAILABLE:
-                    # Simple NetCDF dataset: analysis.path points directly to the NetCDF file
+                    # Simple NetCDF dataset: analysis.path points to dataset folder
+                    # Construct path: dataset_folder / filename.nc
                     nc_path = join(
                         settings.DATASET_IMPORT_FOLDER,
-                        analysis.path
+                        analysis.path,
+                        f"{self.filename}.nc"
                     )
                 else:
                     # OSEkit dataset
