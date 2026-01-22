@@ -137,6 +137,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ("osmosewebsite", "0033_alter_project_metadatax_project"),
         ("bibliography", "00002_make_information_nullable_by_default"),
+        ("common", "0006_clean"),
     ]
 
     operations = [
@@ -148,7 +149,7 @@ class Migration(migrations.Migration):
                 null=True,
                 on_delete=models.deletion.RESTRICT,
                 related_name="team_member",
-                to="common.contact",
+                to="common.Person",
             ),
         ),
         migrations.AddField(
@@ -174,7 +175,7 @@ class Migration(migrations.Migration):
             field=models.OneToOneField(
                 on_delete=models.deletion.RESTRICT,
                 related_name="team_member",
-                to="common.contact",
+                to="common.Person",
             ),
         ),
         migrations.RemoveField(

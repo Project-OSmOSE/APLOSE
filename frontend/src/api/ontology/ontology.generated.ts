@@ -16,23 +16,23 @@ export type GetDetailedSoundByIdQuery = { __typename?: 'Query', soundById?: { __
 export type CreateSoundMutationVariables = Types.Exact<{
   englishName: Types.Scalars['String']['input'];
   frenchName?: Types.InputMaybe<Types.Scalars['String']['input']>;
-  parent_id?: Types.InputMaybe<Types.Scalars['String']['input']>;
+  parent_id?: Types.InputMaybe<Types.Scalars['ID']['input']>;
 }>;
 
 
-export type CreateSoundMutation = { __typename?: 'Mutation', postSound?: { __typename?: 'PostSoundMutationPayload', ok?: boolean | null, data?: { __typename?: 'SoundNode', id: string } | null, errors?: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> } | null> | null } | null };
+export type CreateSoundMutation = { __typename?: 'Mutation', postSound?: { __typename?: 'PostSoundMutationPayload', sound?: { __typename?: 'SoundNode', id: string } | null, errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }> } | null };
 
 export type UpdateSoundMutationVariables = Types.Exact<{
-  id: Types.Scalars['Int']['input'];
+  id: Types.Scalars['ID']['input'];
   englishName: Types.Scalars['String']['input'];
   frenchName?: Types.InputMaybe<Types.Scalars['String']['input']>;
   codeName?: Types.InputMaybe<Types.Scalars['String']['input']>;
   taxon?: Types.InputMaybe<Types.Scalars['String']['input']>;
-  parent_id?: Types.InputMaybe<Types.Scalars['String']['input']>;
+  parent_id?: Types.InputMaybe<Types.Scalars['ID']['input']>;
 }>;
 
 
-export type UpdateSoundMutation = { __typename?: 'Mutation', postSound?: { __typename?: 'PostSoundMutationPayload', ok?: boolean | null, data?: { __typename?: 'SoundNode', id: string } | null, errors?: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> } | null> | null } | null };
+export type UpdateSoundMutation = { __typename?: 'Mutation', postSound?: { __typename?: 'PostSoundMutationPayload', sound?: { __typename?: 'SoundNode', id: string } | null, errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }> } | null };
 
 export type DeleteSoundMutationVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
@@ -56,24 +56,24 @@ export type GetDetailedSourceByIdQuery = { __typename?: 'Query', sourceById?: { 
 export type CreateSourceMutationVariables = Types.Exact<{
   englishName: Types.Scalars['String']['input'];
   frenchName?: Types.InputMaybe<Types.Scalars['String']['input']>;
-  parent_id?: Types.InputMaybe<Types.Scalars['String']['input']>;
+  parent_id?: Types.InputMaybe<Types.Scalars['ID']['input']>;
 }>;
 
 
-export type CreateSourceMutation = { __typename?: 'Mutation', postSource?: { __typename?: 'PostSourceMutationPayload', ok?: boolean | null, data?: { __typename?: 'SourceNode', id: string } | null, errors?: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> } | null> | null } | null };
+export type CreateSourceMutation = { __typename?: 'Mutation', postSource?: { __typename?: 'PostSourceMutationPayload', source?: { __typename?: 'SourceNode', id: string } | null, errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }> } | null };
 
 export type UpdateSourceMutationVariables = Types.Exact<{
-  id: Types.Scalars['Int']['input'];
+  id: Types.Scalars['ID']['input'];
   englishName: Types.Scalars['String']['input'];
   latinName?: Types.InputMaybe<Types.Scalars['String']['input']>;
   frenchName?: Types.InputMaybe<Types.Scalars['String']['input']>;
   codeName?: Types.InputMaybe<Types.Scalars['String']['input']>;
   taxon?: Types.InputMaybe<Types.Scalars['String']['input']>;
-  parent_id?: Types.InputMaybe<Types.Scalars['String']['input']>;
+  parent_id?: Types.InputMaybe<Types.Scalars['ID']['input']>;
 }>;
 
 
-export type UpdateSourceMutation = { __typename?: 'Mutation', postSource?: { __typename?: 'PostSourceMutationPayload', ok?: boolean | null, data?: { __typename?: 'SourceNode', id: string, parent?: { __typename?: 'SourceNode', id: string } | null } | null, errors?: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> } | null> | null } | null };
+export type UpdateSourceMutation = { __typename?: 'Mutation', postSource?: { __typename?: 'PostSourceMutationPayload', source?: { __typename?: 'SourceNode', id: string, parent?: { __typename?: 'SourceNode', id: string } | null } | null, errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }> } | null };
 
 export type DeleteSourceMutationVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
@@ -108,12 +108,11 @@ export const GetDetailedSoundByIdDocument = `
 }
     `;
 export const CreateSoundDocument = `
-    mutation createSound($englishName: String!, $frenchName: String, $parent_id: String) {
+    mutation createSound($englishName: String!, $frenchName: String, $parent_id: ID) {
   postSound(
     input: {englishName: $englishName, frenchName: $frenchName, parent: $parent_id}
   ) {
-    ok
-    data {
+    sound {
       id
     }
     errors {
@@ -124,12 +123,11 @@ export const CreateSoundDocument = `
 }
     `;
 export const UpdateSoundDocument = `
-    mutation updateSound($id: Int!, $englishName: String!, $frenchName: String, $codeName: String, $taxon: String, $parent_id: String) {
+    mutation updateSound($id: ID!, $englishName: String!, $frenchName: String, $codeName: String, $taxon: String, $parent_id: ID) {
   postSound(
     input: {id: $id, englishName: $englishName, frenchName: $frenchName, codeName: $codeName, taxon: $taxon, parent: $parent_id}
   ) {
-    ok
-    data {
+    sound {
       id
     }
     errors {
@@ -172,12 +170,11 @@ export const GetDetailedSourceByIdDocument = `
 }
     `;
 export const CreateSourceDocument = `
-    mutation createSource($englishName: String!, $frenchName: String, $parent_id: String) {
+    mutation createSource($englishName: String!, $frenchName: String, $parent_id: ID) {
   postSource(
     input: {englishName: $englishName, frenchName: $frenchName, parent: $parent_id}
   ) {
-    ok
-    data {
+    source {
       id
     }
     errors {
@@ -188,12 +185,11 @@ export const CreateSourceDocument = `
 }
     `;
 export const UpdateSourceDocument = `
-    mutation updateSource($id: Int!, $englishName: String!, $latinName: String, $frenchName: String, $codeName: String, $taxon: String, $parent_id: String) {
+    mutation updateSource($id: ID!, $englishName: String!, $latinName: String, $frenchName: String, $codeName: String, $taxon: String, $parent_id: ID) {
   postSource(
     input: {id: $id, englishName: $englishName, latinName: $latinName, frenchName: $frenchName, codeName: $codeName, taxon: $taxon, parent: $parent_id}
   ) {
-    ok
-    data {
+    source {
       id
       parent {
         id

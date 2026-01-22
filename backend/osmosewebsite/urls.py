@@ -6,7 +6,6 @@ from backend.osmosewebsite.views import (
     CollaboratorViewSet,
     NewsViewSet,
     ProjectViewSet,
-    BibliographyViewSet,
 )
 from backend.osmosewebsite.views.scientific_talk import ScientificTalkViewSet
 
@@ -19,4 +18,3 @@ website_router.register(
     r"scientific-talk", ScientificTalkViewSet, basename="scientific-talk"
 )
 website_router.register(r"projects", ProjectViewSet, basename="projects")
-website_router.register(r"bibliography", BibliographyViewSet, basename="bibliography")

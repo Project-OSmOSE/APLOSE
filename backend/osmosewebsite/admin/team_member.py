@@ -22,13 +22,13 @@ class TeamMemberAdmin(ExtendedModelAdmin):
         "is_former_member",
         "level",
     ]
-    search_fields = ["contact__first_name", "contact__last_name"]
+    search_fields = ["person__first_name", "person__last_name"]
     fieldsets = [
         (
             None,
             {
                 "fields": [
-                    "contact",
+                    "person",
                     "position",
                     "picture",
                     "biography",
@@ -55,4 +55,9 @@ class TeamMemberAdmin(ExtendedModelAdmin):
     @admin.display(description="Institutions")
     def show_institutions(self, obj: TeamMember):
         """show_spectro_configs"""
-        return self.list_queryset(obj.contact.current_institutions.all())
+        return self.list_queryset(
+            obj.person.institution_relations.all(),
+            to_str=lambda rel: f"{rel.institution} ({rel.team.name})"
+            if rel.team
+            else rel.institution,
+        )
