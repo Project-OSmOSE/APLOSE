@@ -1,6 +1,6 @@
 import { AuthRestAPI } from './api';
-import { useCallback } from "react";
-import { gqlAPI, GqlTags } from "@/api/baseGqlApi.ts";
+import { useCallback } from 'react';
+import { gqlAPI, GqlTags } from '@/api/baseGqlApi.ts';
 
 const {
   login,
@@ -17,5 +17,8 @@ export const useLogout = () => {
     return _method()
   }, [_method])
 
-  return [method, info]
+  return {
+    logout: method,
+    ...info
+  }
 }

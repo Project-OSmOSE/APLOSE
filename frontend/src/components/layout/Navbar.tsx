@@ -8,7 +8,7 @@ import logo from '/images/ode_logo_192x192.png';
 
 export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
   const [ isOpen, setIsOpen ] = useState<boolean>(false);
-  const [ logout ] = useLogout()
+  const { logout } = useLogout()
   const { user } = useCurrentUser()
 
   const toggleOpening = useCallback(() => {
