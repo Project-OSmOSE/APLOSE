@@ -1,5 +1,6 @@
 import graphene
 import graphene_django_optimizer
+from decimal import Decimal
 
 from backend.api.models import SpectrogramAnalysis, FFT
 from backend.api.schema.connections import SpectrogramConnection
@@ -57,7 +58,9 @@ class SpectrogramAnalysisNode(BaseObjectType):
 
             # overlap is calculated as: overlap = (window_size - hop_length) / window_size
             # For example: nfft=2048, hop_length=512 -> overlap = (2048-512)/2048 = 0.75
-            overlap = round((window_size - self.hop_length) / window_size, 2)
+            # Use Decimal for proper database storage
+            overlap_value = (window_size - self.hop_length) / window_size
+            overlap = Decimal(str(round(overlap_value, 2)))
 
             # Get or create FFT record
             fft, _ = FFT.objects.get_or_create(
