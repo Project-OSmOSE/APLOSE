@@ -80,12 +80,16 @@ class SpectrogramManager(Manager):
             # For new simple NetCDF datasets, use SimpleDataset
             if not OSEKIT_AVAILABLE:
                 # Use simple dataset structure
-                from backend.utils.spectrogram.dataset import SimpleDataset
-                simple_dataset = analysis.dataset.get_simple_dataset()
-                for spec_file in simple_dataset.spectrograms:
-                    metadata = spec_file.metadata
-                    if metadata.get('begin') and metadata.get('end'):
-                        try:
+                # For simple datasets, each analysis corresponds to ONE NetCDF file
+                # We should only import the spectrogram for THIS analysis, not all spectrograms
+                try:
+                    netcdf_path = analysis.get_netcdf_path()
+                    if netcdf_path.exists() and netcdf_path.suffix == '.nc':
+                        from backend.utils.spectrogram.dataset import SpectrogramFile
+                        spec_file = SpectrogramFile(netcdf_path)
+                        metadata = spec_file.metadata
+
+                        if metadata.get('begin') and metadata.get('end'):
                             start = datetime.fromisoformat(metadata['begin'].replace('+0000', '').replace('Z', ''))
                             end = datetime.fromisoformat(metadata['end'].replace('+0000', '').replace('Z', ''))
                             spectrograms_data.append({
@@ -93,8 +97,8 @@ class SpectrogramManager(Manager):
                                 "start": start,
                                 "end": end,
                             })
-                        except (ValueError, AttributeError):
-                            continue
+                except (ValueError, AttributeError, FileNotFoundError) as e:
+                    logger.warning(f"Failed to load spectrogram for analysis {analysis.name}: {e}")
             else:
                 # Legacy OSEkit support
                 for data in analysis.get_osekit_spectro_dataset().data:
@@ -252,12 +256,21 @@ class Spectrogram(AbstractFile, TimeSegment, models.Model):
                     f"{self.filename}.nc",
                 )
             else:
-                spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
-                nc_path = join(
-                    str(spectro_dataset.folder),
-                    "spectrogram",
-                    f"{self.filename}.nc",
-                )
+                # Check if this is a simple NetCDF dataset or OSEkit dataset
+                if not OSEKIT_AVAILABLE:
+                    # Simple NetCDF dataset: analysis.path points directly to the NetCDF file
+                    nc_path = join(
+                        settings.DATASET_IMPORT_FOLDER,
+                        analysis.path
+                    )
+                else:
+                    # OSEkit dataset
+                    spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
+                    nc_path = join(
+                        str(spectro_dataset.folder),
+                        "spectrogram",
+                        f"{self.filename}.nc",
+                    )
 
             # Read NetCDF file
             ds = xr.open_dataset(nc_path)
