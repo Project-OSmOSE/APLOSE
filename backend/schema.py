@@ -1,6 +1,7 @@
 """GraphQL Schema"""
 
 import graphene
+from django_extension.filters import IDFilter
 from django_filters import NumberFilter
 from graphene import relay, Field
 from graphene_django.debug import DjangoDebug
@@ -21,7 +22,6 @@ from metadatax.schema import Mutation as MetadataxMutation, Query as MetadataxQu
 from .api.schema import APIQuery, APIMutation
 from .aplose.schema import AploseQuery, AploseMutation
 from .osmosewebsite.schema import OSmOSEWebsiteQuery, WebsiteProjectNode
-from .utils.schema.filters import IDFilter
 
 
 class DeploymentFilter(MetadataxDeploymentFilter):

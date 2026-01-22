@@ -1,13 +1,13 @@
 from django.db.models import Q
+from django_extension.filters import ExtendedFilterSet
 from django_filters import BooleanFilter, CharFilter, OrderingFilter
 from graphene_django.filter import TypedFilter
 
 from backend.api.models import AnnotationCampaign
 from backend.api.schema.enums import AnnotationPhaseType
-from backend.utils.schema.filters import BaseFilterSet
 
 
-class AnnotationCampaignFilterSet(BaseFilterSet):
+class AnnotationCampaignFilterSet(ExtendedFilterSet):
     """AnnotationCampaign filters"""
 
     is_archived = BooleanFilter(
@@ -27,7 +27,7 @@ class AnnotationCampaignFilterSet(BaseFilterSet):
             "owner_id": ("exact",),
         }
 
-    order_by = OrderingFilter(fields=("name",))
+    order_by = OrderingFilter(fields=(("name", "name"),))
 
     def search_filter(self, queryset, name, value):
         """Search an AnnotationCampaign"""

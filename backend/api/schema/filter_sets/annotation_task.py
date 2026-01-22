@@ -1,11 +1,11 @@
 from django.db.models import QuerySet, Exists, Subquery, OuterRef
+from django_extension.filters import ExtendedFilterSet, IDFilter
 from django_filters import BooleanFilter, CharFilter, OrderingFilter
 
 from backend.api.models import AnnotationTask, Annotation
-from backend.utils.schema.filters import BaseFilterSet, IDFilter
 
 
-class AnnotationTaskFilterSet(BaseFilterSet):
+class AnnotationTaskFilterSet(ExtendedFilterSet):
     """Annotation filters"""
 
     annotations__exists = BooleanFilter(method="fake_filter")
@@ -25,7 +25,7 @@ class AnnotationTaskFilterSet(BaseFilterSet):
             "spectrogram__end": ("gte",),
         }
 
-    order_by = OrderingFilter(fields=("start",))
+    order_by = OrderingFilter(fields=(("start", "start"),))
 
     def fake_filter(self, queryset, name, value):
         """Fake filter method - Filter is directly used in the filter_queryset method"""
