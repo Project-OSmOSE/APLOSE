@@ -16,7 +16,7 @@ from django.db.models import (
 )
 from django.db.models.functions import Lower, Concat, Extract
 from django.http import HttpResponse
-from django_extension.views.init import CSVRenderer
+from django_extension.views import CSVRenderer
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.viewsets import ViewSet
