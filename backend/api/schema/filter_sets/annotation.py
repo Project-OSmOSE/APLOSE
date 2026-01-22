@@ -1,11 +1,11 @@
 from django.db.models import QuerySet, Q, Exists, OuterRef
+from django_extension.filters import ExtendedFilterSet, IDFilter
 from django_filters import BooleanFilter
 
 from backend.api.models import Annotation, AnnotationValidation
-from backend.utils.schema.filters import BaseFilterSet, IDFilter
 
 
-class AnnotationFilterSet(BaseFilterSet):
+class AnnotationFilterSet(ExtendedFilterSet):
     """Annotation filters"""
 
     acoustic_features__exists = BooleanFilter(
