@@ -4,12 +4,12 @@ from django.core import validators
 from django.db import transaction
 from django.db.models import Q
 from django_extension.schema.mutations import ExtendedModelFormMutation
+from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from graphene_django.types import ErrorType
 from graphql import GraphQLError
 
 from backend.api.models import AnnotationFileRange, AnnotationPhase
 from backend.api.schema.enums import AnnotationPhaseType
-from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 
 
 class AnnotationFileRangeInput(graphene.InputObjectType):

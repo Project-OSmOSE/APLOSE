@@ -1,8 +1,8 @@
 from django import forms
 from django_extension.schema.mutations import ExtendedModelFormMutation
+from django_extension.schema.permissions import GraphQLPermissions
 
 from backend.api.models import AnnotationCampaign
-from backend.utils.schema import GraphQLPermissions
 
 
 class CreateAnnotationCampaignForm(forms.ModelForm):

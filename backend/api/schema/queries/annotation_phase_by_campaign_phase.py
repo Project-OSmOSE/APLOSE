@@ -1,9 +1,9 @@
 import graphene
+from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 
 from backend.api.models import AnnotationPhase
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.nodes import AnnotationPhaseNode
-from backend.utils.schema import GraphQLPermissions, GraphQLResolve
 
 
 @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)

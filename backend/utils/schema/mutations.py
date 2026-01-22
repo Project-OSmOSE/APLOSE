@@ -2,6 +2,7 @@ from typing import Optional
 
 import graphene
 from django.db.models import QuerySet
+from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from graphene import InputField, ClientIDMutation, InputObjectType
 from graphene.types.utils import yank_fields_from_attrs
 from graphene_django.rest_framework.mutation import (
@@ -10,7 +11,6 @@ from graphene_django.rest_framework.mutation import (
 from graphene_django.types import ErrorType
 from rest_framework.serializers import BaseSerializer
 
-from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 from .mutation_serializer_converter import fields_for_serializer
 
 
