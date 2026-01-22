@@ -1,11 +1,12 @@
 """API data fft administration"""
 from django.contrib import admin
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import FFT
 
 
 @admin.register(FFT)
-class FFTAdmin(admin.ModelAdmin):
+class FFTAdmin(ExtendedModelAdmin):
     """FFT presentation in DjangoAdmin"""
 
     # pylint: disable=duplicate-code

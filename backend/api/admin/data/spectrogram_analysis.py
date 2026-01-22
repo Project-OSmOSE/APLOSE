@@ -1,11 +1,12 @@
 """API data spectrogram analysis administration"""
 from django.contrib import admin
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import SpectrogramAnalysis
 
 
 @admin.register(SpectrogramAnalysis)
-class SpectrogramAnalysisAdmin(admin.ModelAdmin):
+class SpectrogramAnalysisAdmin(ExtendedModelAdmin):
     """SpectrogramAnalysis presentation in DjangoAdmin"""
 
     list_display = (

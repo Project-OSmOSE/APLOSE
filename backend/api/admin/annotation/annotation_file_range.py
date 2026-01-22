@@ -1,11 +1,12 @@
 """API annotation annotation file range administration"""
 from django.contrib import admin
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import AnnotationFileRange
 
 
 @admin.register(AnnotationFileRange)
-class AnnotationFileRangeAdmin(admin.ModelAdmin):
+class AnnotationFileRangeAdmin(ExtendedModelAdmin):
     """AnnotationFileRange presentation in DjangoAdmin"""
 
     readonly_fields = (
