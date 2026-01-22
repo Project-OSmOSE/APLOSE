@@ -121,10 +121,11 @@ class Command(BaseCommand):
         self.stdout.write('')
 
         # Create or get Dataset record
+        # Note: Dataset has a custom manager with specific signature
         dataset, created = Dataset.objects.get_or_create(
             name=dataset_name,
             path=folder_path,
-            defaults={'owner': owner}
+            owner=owner
         )
 
         if created:
