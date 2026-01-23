@@ -139,8 +139,9 @@ class AnnotationSpectrogramNode(BaseObjectType):
         else:
             if not OSEKIT_AVAILABLE:
                 # Simple NetCDF structure - look for corresponding WAV file
-                netcdf_path = analysis.get_netcdf_path()
-                wav_path = netcdf_path.with_suffix('.wav')
+                # analysis.path points to the dataset folder, self.filename is the base name
+                dataset_folder = settings.DATASET_IMPORT_FOLDER / analysis.path
+                wav_path = dataset_folder / f"{self.filename}.wav"
                 if wav_path.exists():
                     audio_path = str(wav_path.relative_to(settings.DATASET_IMPORT_FOLDER))
                     return path.join(

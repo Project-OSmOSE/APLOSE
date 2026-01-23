@@ -111,29 +111,6 @@
       background: #666;
     }
   }
-
-  .playButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    background: #0066cc;
-    border: 1px solid #0088ff;
-    border-radius: 50%;
-    color: white;
-    cursor: pointer;
-    transition: background 0.2s;
-
-    &:hover {
-      background: #0088ff;
-    }
-
-    &:active {
-      background: #0055aa;
-    }
-  }
 }
 
 .plotContainer {

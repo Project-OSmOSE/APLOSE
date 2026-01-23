@@ -1,5 +1,4 @@
 import React from 'react';
-import { IoPlay, IoPause } from 'react-icons/io5';
 import styles from './NetCDFSpectrogram.module.scss';
 
 interface NetCDFControlsProps {
@@ -13,8 +12,6 @@ interface NetCDFControlsProps {
   dataMax: number;
   yAxisScale: 'linear' | 'log';
   onYAxisScaleChange: (scale: 'linear' | 'log') => void;
-  audioState: 'play' | 'pause';
-  onPlayPause: () => void;
 }
 
 const COLORSCALES = [
@@ -45,17 +42,9 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
   dataMax,
   yAxisScale,
   onYAxisScaleChange,
-  audioState,
-  onPlayPause,
 }) => {
   return (
     <div className={styles.controlsPanel}>
-      <div className={styles.controlGroup}>
-        <button onClick={onPlayPause} className={styles.playButton} title={audioState === 'play' ? 'Pause' : 'Play'}>
-          {audioState === 'play' ? <IoPause size={20} /> : <IoPlay size={20} />}
-        </button>
-      </div>
-
       <div className={styles.controlGroup}>
         <label>Y-Axis Scale</label>
         <div className={styles.buttonGroup}>
