@@ -51,7 +51,7 @@ export const NetCDFSpectrogram: React.FC = () => {
   const isDrawingEnabled = useAppSelector(selectIsDrawingEnabled);
 
   // Audio support
-  const { seek } = useAudio();
+  const { seek, play, pause, state: audioState } = useAudio();
 
   // Parse NetCDF data from GraphQL response
   useEffect(() => {
@@ -185,6 +185,15 @@ export const NetCDFSpectrogram: React.FC = () => {
     }
   }, [isDrawingEnabled, focusedLabel, focusedConfidence]);
 
+  // Handle play/pause button
+  const handlePlayPause = useCallback(() => {
+    if (audioState === 'play') {
+      pause();
+    } else {
+      play();
+    }
+  }, [audioState, play, pause]);
+
   // Handle box selection to create annotations
   const onSelected = useCallback((event: any) => {
     if (!event || !event.range || !isDrawingEnabled) return;
@@ -264,6 +273,8 @@ export const NetCDFSpectrogram: React.FC = () => {
         dataMax={dataRange.max}
         yAxisScale={yAxisScale}
         onYAxisScaleChange={setYAxisScale}
+        audioState={audioState}
+        onPlayPause={handlePlayPause}
       />
       <div className={styles.plotContainer} onMouseDown={onPlotMouseDown}>
         <Plot
