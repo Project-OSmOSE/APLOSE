@@ -185,7 +185,7 @@ export const NetCDFSpectrogram: React.FC = () => {
   }, [addAnnotation, focusedLabel, focusedConfidence, isDrawingEnabled]);
 
   // Restore dragmode after zoom/pan operations
-  const onRelayout = useCallback((event: any) => {
+  const onRelayout = useCallback((_event: any) => {
     if (!plotRef.current || !isDrawingEnabled) return;
 
     // After any relayout event (zoom, pan, etc.), restore dragmode to 'select'
