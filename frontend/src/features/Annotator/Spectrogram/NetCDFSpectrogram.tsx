@@ -31,7 +31,7 @@ export const NetCDFSpectrogram: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Colorscale and threshold controls
-  const [colorscale, setColorscale] = useState('Jet');
+  const [colorscale, setColorscale] = useState('Viridis');
   const [zmin, setZmin] = useState<number>(0);
   const [zmax, setZmax] = useState<number>(0);
 
@@ -96,12 +96,8 @@ export const NetCDFSpectrogram: React.FC = () => {
         colorscale: colorscale,
         zmin: zmin,
         zmax: zmax,
+        showscale: false,
         hovertemplate: 'Time: %{x:.2f}s<br>Frequency: %{y:.0f}Hz<br>Power: %{z:.1f}dB<extra></extra>',
-        colorbar: {
-          title: { text: 'dB' },
-          len: 0.9,
-          x: 1.02,
-        },
       },
     ];
   }, [netcdfData, colorscale, zmin, zmax]);
@@ -112,7 +108,7 @@ export const NetCDFSpectrogram: React.FC = () => {
     return {
       width: width,
       height: height,
-      margin: { l: 50, r: 80, t: 10, b: 40 },
+      margin: { l: 60, r: 20, t: 10, b: 40 },
       xaxis: {
         title: { text: 'Time (s)' },
         showgrid: true,
@@ -121,9 +117,10 @@ export const NetCDFSpectrogram: React.FC = () => {
       },
       yaxis: {
         title: { text: 'Frequency (Hz)' },
+        type: 'log',
         showgrid: true,
         zeroline: false,
-        range: [netcdfData.frequency[0], netcdfData.frequency[netcdfData.frequency.length - 1]],
+        range: [Math.log10(netcdfData.frequency[0]), Math.log10(netcdfData.frequency[netcdfData.frequency.length - 1])],
       },
       dragmode: isDrawingEnabled ? ('select' as const) : (false as const),
       hovermode: 'closest' as const,
