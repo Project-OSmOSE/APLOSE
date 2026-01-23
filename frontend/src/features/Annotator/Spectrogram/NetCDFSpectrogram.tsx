@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import Plot from 'react-plotly.js';
 import { AnnotationType, useAnnotationTask } from '@/api';
 import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
@@ -34,6 +34,10 @@ export const NetCDFSpectrogram: React.FC = () => {
   const [colorscale, setColorscale] = useState('Viridis');
   const [zmin, setZmin] = useState<number>(0);
   const [zmax, setZmax] = useState<number>(0);
+  const [yAxisScale, setYAxisScale] = useState<'linear' | 'log'>('log');
+
+  // Plot reference for managing dragmode
+  const plotRef = useRef<any>(null);
 
   // Annotation support
   const addAnnotation = useAddAnnotation();
@@ -105,9 +109,22 @@ export const NetCDFSpectrogram: React.FC = () => {
   const layout = useMemo(() => {
     if (!netcdfData) return {};
 
+    const controlsHeight = 80;
+    const plotHeight = height - controlsHeight;
+
+    const yAxisConfig = yAxisScale === 'log'
+      ? {
+          type: 'log' as const,
+          range: [Math.log10(netcdfData.frequency[0]), Math.log10(netcdfData.frequency[netcdfData.frequency.length - 1])],
+        }
+      : {
+          type: 'linear' as const,
+          range: [netcdfData.frequency[0], netcdfData.frequency[netcdfData.frequency.length - 1]],
+        };
+
     return {
       width: width,
-      height: height,
+      height: plotHeight,
       margin: { l: 60, r: 20, t: 10, b: 40 },
       xaxis: {
         title: { text: 'Time (s)' },
@@ -117,10 +134,9 @@ export const NetCDFSpectrogram: React.FC = () => {
       },
       yaxis: {
         title: { text: 'Frequency (Hz)' },
-        type: 'log' as const,
         showgrid: true,
         zeroline: false,
-        range: [Math.log10(netcdfData.frequency[0]), Math.log10(netcdfData.frequency[netcdfData.frequency.length - 1])],
+        ...yAxisConfig,
       },
       dragmode: isDrawingEnabled ? ('select' as const) : (false as const),
       hovermode: 'closest' as const,
@@ -130,7 +146,7 @@ export const NetCDFSpectrogram: React.FC = () => {
         color: '#fff',
       },
     };
-  }, [netcdfData, width, height, isDrawingEnabled]);
+  }, [netcdfData, width, height, isDrawingEnabled, yAxisScale]);
 
   const config = useMemo(() => ({
     displayModeBar: true,
@@ -168,6 +184,25 @@ export const NetCDFSpectrogram: React.FC = () => {
     }
   }, [addAnnotation, focusedLabel, focusedConfidence, isDrawingEnabled]);
 
+  // Restore dragmode after zoom/pan operations
+  const onRelayout = useCallback((event: any) => {
+    if (!plotRef.current || !isDrawingEnabled) return;
+
+    // After any relayout event (zoom, pan, etc.), restore dragmode to 'select'
+    const plotlyDiv = plotRef.current.el;
+    if (plotlyDiv && plotlyDiv.layout && plotlyDiv.layout.dragmode !== 'select') {
+      // Use Plotly.relayout to restore select mode
+      try {
+        const Plotly = (window as any).Plotly;
+        if (Plotly) {
+          Plotly.relayout(plotlyDiv, { dragmode: 'select' });
+        }
+      } catch (e) {
+        console.error('Error restoring dragmode:', e);
+      }
+    }
+  }, [isDrawingEnabled]);
+
   if (loading) {
     return <div className={styles.loading}>Loading NetCDF spectrogram...</div>;
   }
@@ -187,14 +222,20 @@ export const NetCDFSpectrogram: React.FC = () => {
         onZmaxChange={setZmax}
         dataMin={dataRange.min}
         dataMax={dataRange.max}
+        yAxisScale={yAxisScale}
+        onYAxisScaleChange={setYAxisScale}
       />
-      <Plot
-        data={plotData}
-        layout={layout}
-        config={config}
-        style={{ width: '100%', height: '100%' }}
-        onSelected={onSelected}
-      />
+      <div className={styles.plotContainer}>
+        <Plot
+          ref={plotRef}
+          data={plotData}
+          layout={layout}
+          config={config}
+          style={{ width: '100%', height: '100%' }}
+          onSelected={onSelected}
+          onRelayout={onRelayout}
+        />
+      </div>
     </div>
   );
 };

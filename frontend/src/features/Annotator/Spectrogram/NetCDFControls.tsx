@@ -10,6 +10,8 @@ interface NetCDFControlsProps {
   onZmaxChange: (zmax: number) => void;
   dataMin: number;
   dataMax: number;
+  yAxisScale: 'linear' | 'log';
+  onYAxisScaleChange: (scale: 'linear' | 'log') => void;
 }
 
 const COLORSCALES = [
@@ -38,9 +40,29 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
   onZmaxChange,
   dataMin,
   dataMax,
+  yAxisScale,
+  onYAxisScaleChange,
 }) => {
   return (
-    <div className={styles.controls}>
+    <div className={styles.controlsPanel}>
+      <div className={styles.controlGroup}>
+        <label>Y-Axis Scale</label>
+        <div className={styles.buttonGroup}>
+          <button
+            onClick={() => onYAxisScaleChange('linear')}
+            className={yAxisScale === 'linear' ? styles.active : ''}
+          >
+            Linear
+          </button>
+          <button
+            onClick={() => onYAxisScaleChange('log')}
+            className={yAxisScale === 'log' ? styles.active : ''}
+          >
+            Log
+          </button>
+        </div>
+      </div>
+
       <div className={styles.controlGroup}>
         <label>Colorscale</label>
         <select value={colorscale} onChange={(e) => onColorscaleChange(e.target.value)}>
@@ -54,7 +76,7 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
 
       <div className={styles.controlGroup}>
         <label>
-          Min Threshold: {zmin.toFixed(1)} dB
+          Min: {zmin.toFixed(1)} dB
         </label>
         <input
           type="range"
@@ -68,7 +90,7 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
 
       <div className={styles.controlGroup}>
         <label>
-          Max Threshold: {zmax.toFixed(1)} dB
+          Max: {zmax.toFixed(1)} dB
         </label>
         <input
           type="range"
@@ -86,14 +108,7 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
             onZminChange(dataMin);
             onZmaxChange(dataMax);
           }}
-          style={{
-            padding: '5px 10px',
-            background: '#555',
-            border: '1px solid #777',
-            borderRadius: '3px',
-            color: 'white',
-            cursor: 'pointer',
-          }}
+          className={styles.resetButton}
         >
           Reset Range
         </button>
