@@ -39,6 +39,10 @@ export const NetCDFSpectrogram: React.FC = () => {
   // Plot reference for managing dragmode
   const plotRef = useRef<any>(null);
 
+  // Capture label/confidence at start of selection to prevent label jumping
+  const selectionStartLabelRef = useRef<number | null>(null);
+  const selectionStartConfidenceRef = useRef<number | null>(null);
+
   // Annotation support
   const addAnnotation = useAddAnnotation();
   const focusedLabel = useAppSelector(selectFocusLabel);
@@ -158,9 +162,27 @@ export const NetCDFSpectrogram: React.FC = () => {
     modeBarButtonsToAdd: [],
   }), []);
 
+  // Capture label/confidence when selection starts (mousedown on plot)
+  const onPlotClick = useCallback(() => {
+    if (isDrawingEnabled && focusedLabel) {
+      // Store current label and confidence when starting a selection
+      selectionStartLabelRef.current = focusedLabel;
+      selectionStartConfidenceRef.current = focusedConfidence;
+    }
+  }, [isDrawingEnabled, focusedLabel, focusedConfidence]);
+
   // Handle box selection to create annotations
   const onSelected = useCallback((event: any) => {
-    if (!event || !event.range || !focusedLabel || !isDrawingEnabled) return;
+    if (!event || !event.range || !isDrawingEnabled) return;
+
+    // Use the label captured at selection start, not the current focused label
+    const labelToUse = selectionStartLabelRef.current;
+    const confidenceToUse = selectionStartConfidenceRef.current;
+
+    if (!labelToUse) {
+      console.warn('No label was selected when starting the annotation');
+      return;
+    }
 
     const { x, y } = event.range;
 
@@ -178,11 +200,15 @@ export const NetCDFSpectrogram: React.FC = () => {
         endTime,
         startFrequency,
         endFrequency,
-        label: focusedLabel,
-        confidence: focusedConfidence ?? undefined,
+        label: labelToUse,
+        confidence: confidenceToUse ?? undefined,
       });
     }
-  }, [addAnnotation, focusedLabel, focusedConfidence, isDrawingEnabled]);
+
+    // Clear the stored values
+    selectionStartLabelRef.current = null;
+    selectionStartConfidenceRef.current = null;
+  }, [addAnnotation, isDrawingEnabled]);
 
   // Restore dragmode after zoom/pan operations
   const onRelayout = useCallback((_event: any) => {
@@ -232,6 +258,7 @@ export const NetCDFSpectrogram: React.FC = () => {
           layout={layout}
           config={config}
           style={{ width: '100%', height: '100%' }}
+          onClick={onPlotClick}
           onSelected={onSelected}
           onRelayout={onRelayout}
         />
