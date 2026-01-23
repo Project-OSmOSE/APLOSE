@@ -117,7 +117,7 @@ export const NetCDFSpectrogram: React.FC = () => {
       },
       yaxis: {
         title: { text: 'Frequency (Hz)' },
-        type: 'log',
+        type: 'log' as const,
         showgrid: true,
         zeroline: false,
         range: [Math.log10(netcdfData.frequency[0]), Math.log10(netcdfData.frequency[netcdfData.frequency.length - 1])],
