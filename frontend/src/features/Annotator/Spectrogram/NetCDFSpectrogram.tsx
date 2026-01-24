@@ -151,6 +151,7 @@ export const NetCDFSpectrogram: React.FC = () => {
 
     // Add playback position indicator line
     const shapes: any[] = [];
+    const annotations: any[] = [];
 
     // Add playback indicator
     if (audioDuration && audioTime !== undefined) {
@@ -202,6 +203,25 @@ export const NetCDFSpectrogram: React.FC = () => {
         // Store annotation ID for click handling
         name: `annotation-${annotation.id}`,
       });
+
+      // Add text label for the annotation
+      annotations.push({
+        x: annotation.startTime,
+        y: annotation.endFrequency,
+        xref: 'x' as const,
+        yref: 'y' as const,
+        text: annotation.label,
+        showarrow: false,
+        font: {
+          color: labelColor,
+          size: 12,
+          family: 'Arial, sans-serif',
+        },
+        bgcolor: 'rgba(0, 0, 0, 0.7)',
+        borderpad: 3,
+        xanchor: 'left' as const,
+        yanchor: 'bottom' as const,
+      });
     });
 
     return {
@@ -221,6 +241,7 @@ export const NetCDFSpectrogram: React.FC = () => {
         ...yAxisConfig,
       },
       shapes: shapes,
+      annotations: annotations,
       dragmode: isDrawingEnabled ? ('select' as const) : (false as const),
       hovermode: 'closest' as const,
       plot_bgcolor: '#000',
