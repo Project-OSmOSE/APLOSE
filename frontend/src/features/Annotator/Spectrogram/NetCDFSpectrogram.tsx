@@ -142,7 +142,7 @@ export const NetCDFSpectrogram: React.FC = () => {
     const yAxisConfig = yAxisScale === 'log'
       ? {
           type: 'log' as const,
-          range: [netcdfData.frequency[0], netcdfData.frequency[netcdfData.frequency.length - 1]],
+          range: [Math.log10(netcdfData.frequency[0]), Math.log10(netcdfData.frequency[netcdfData.frequency.length - 1])],
         }
       : {
           type: 'linear' as const,
