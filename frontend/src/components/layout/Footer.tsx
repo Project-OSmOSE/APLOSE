@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
 import { IonIcon, IonNote } from '@ionic/react';
-import { logoGithub, mailOutline } from 'ionicons/icons/index.js';
+import { logoGithub } from 'ionicons/icons/index.js';
 import { Link } from '@/components/ui';
-import { CONTACT_MAIL, CONTACT_URI, GITHUB_URL, OSMOSE_URL } from '@/consts/links';
-import logo from '/images/ode_logo_192x192.png';
+import { GITHUB_URL, OSMOSE_URL } from '@/consts/links';
 import style from './layout.module.scss';
 
 export const Footer: React.FC = () => {
@@ -21,13 +20,10 @@ export const Footer: React.FC = () => {
 
       <div className={ style.proposition }>
         <p>Proposed by</p>
-        <Link href={ OSMOSE_URL }>OSmOSE <img src={ logo } alt="OSmOSE"/></Link>
+        <Link href={ OSMOSE_URL }>OSmOSE</Link>
       </div>
 
-      <Link href={ CONTACT_URI } color="medium">
-        <IonIcon icon={ mailOutline } slot="end"/>
-        { CONTACT_MAIL }
-      </Link>
+      <div></div>
     </footer>
   );
 };

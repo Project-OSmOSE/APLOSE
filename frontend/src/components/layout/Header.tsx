@@ -5,7 +5,6 @@ import { closeOutline, menuOutline } from 'ionicons/icons/index.js';
 import { DocumentationButton } from '@/components/ui';
 import { useAppSelector } from '@/features/App';
 import { selectCurrentUser } from '@/api';
-import logo from '/images/ode_logo_192x192.png';
 import styles from './layout.module.scss'
 
 export const Header: React.FC<{
@@ -35,7 +34,6 @@ export const Header: React.FC<{
     <header
       className={ [ styles.header, isOpen ? styles.opened : styles.closed, size === 'small' ? styles.small : '', children ? styles.withInfo : '' ].join(' ') }>
       <div className={ styles.title } onClick={ onAPLOSEClick }>
-        <img src={ logo } alt="OSmOSE"/>
         <h1>APLOSE</h1>
       </div>
 

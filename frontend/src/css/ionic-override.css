@@ -36,36 +36,47 @@
     --ion-color-danger-shade: #be543d;
     --ion-color-danger-tint: #dc7058;
 
-    --ion-color-light: #fff;
-    --ion-color-light-rgb: 255, 255, 255;
-    --ion-color-light-contrast: #000000;
-    --ion-color-light-contrast-rgb: 0, 0, 0;
-    --ion-color-light-shade: #F2F3F5;
-    --ion-color-light-tint: #ffffff;
+    --ion-color-light: #2a2a2a;
+    --ion-color-light-rgb: 42, 42, 42;
+    --ion-color-light-contrast: #ffffff;
+    --ion-color-light-contrast-rgb: 255, 255, 255;
+    --ion-color-light-shade: #1a1a1a;
+    --ion-color-light-tint: #3a3a3a;
 
-    --ion-color-medium: #6C757D;
-    --ion-color-medium-rgb: 108, 117, 125;
+    --ion-color-medium: #8c96a0;
+    --ion-color-medium-rgb: 140, 150, 160;
     --ion-color-medium-contrast: #ffffff;
     --ion-color-medium-contrast-rgb: 255, 255, 255;
-    --ion-color-medium-shade: #5f676e;
-    --ion-color-medium-tint: #7b838a;
+    --ion-color-medium-shade: #7b848d;
+    --ion-color-medium-tint: #98a1aa;
 
-    --ion-color-dark: #061D38;
-    --ion-color-dark-rgb: 6, 29, 56;
-    --ion-color-dark-contrast: #ffffff;
-    --ion-color-dark-contrast-rgb: 255, 255, 255;
-    --ion-color-dark-shade: #051a31;
-    --ion-color-dark-tint: #1f344c;
+    --ion-color-dark: #f4f5f8;
+    --ion-color-dark-rgb: 244, 245, 248;
+    --ion-color-dark-contrast: #000000;
+    --ion-color-dark-contrast-rgb: 0, 0, 0;
+    --ion-color-dark-shade: #d7d8da;
+    --ion-color-dark-tint: #f5f6f9;
+
+    --ion-background-color: #1a1a1a;
+    --ion-background-color-rgb: 26, 26, 26;
+    --ion-text-color: #ffffff;
+    --ion-text-color-rgb: 255, 255, 255;
+    --ion-border-color: #222222;
 
     --aplose-border-color: rgba(var(--ion-color-medium-rgb), 0.5);
-    --aplose-box-shadow: rgba(var(--ion-color-dark-rgb), 0.1) 0 1rem 50px,
-    rgba(var(--ion-color-dark-rgb), 0.2) 0 0.25rem 10px;
-    --aplose-backdrop-color: rgba(var(--ion-color-dark-rgb), 0.15);
+    --aplose-box-shadow: rgba(0, 0, 0, 0.3) 0 1rem 50px,
+    rgba(0, 0, 0, 0.4) 0 0.25rem 10px;
+    --aplose-backdrop-color: rgba(0, 0, 0, 0.5);
     --aplose-backdrop: 0 0 0 200000px var(--aplose-backdrop-color);
 }
 
 html {
     overflow-y: auto;
+}
+
+body {
+    background-color: var(--ion-background-color);
+    color: var(--ion-text-color);
 }
 
 .disabled,

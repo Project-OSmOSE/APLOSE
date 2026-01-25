@@ -53,9 +53,9 @@ html {
     left: 50%;
     transform: translateX(-50%);
     content: attr(data-tooltip);
-    border: 1px solid var(--ion-color-dark);
-    background: #eee;
-    color: var(--ion-color-dark);
+    border: 1px solid var(--ion-color-medium);
+    background: #2a2a2a;
+    color: #ffffff;
     padding: .25rem 0.5rem;
     z-index: 99;
     border-radius: 0.5rem;
