@@ -142,8 +142,9 @@ export const NetCDFSpectrogram: React.FC = () => {
     const yAxisConfig = yAxisScale === 'log'
       ? {
           type: 'log' as const,
-          // Important: when type is 'log', range should be in actual values, not log10
-          range: [netcdfData.frequency[0], netcdfData.frequency[netcdfData.frequency.length - 1]],
+          // For log axis, range is [log10(min), log10(max)]
+          // But data coordinates (heatmap, shapes) remain in actual values
+          range: [Math.log10(netcdfData.frequency[0]), Math.log10(netcdfData.frequency[netcdfData.frequency.length - 1])],
         }
       : {
           type: 'linear' as const,
