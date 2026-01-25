@@ -142,7 +142,8 @@ export const NetCDFSpectrogram: React.FC = () => {
     const yAxisConfig = yAxisScale === 'log'
       ? {
           type: 'log' as const,
-          range: [Math.log10(netcdfData.frequency[0]), Math.log10(netcdfData.frequency[netcdfData.frequency.length - 1])],
+          // Important: when type is 'log', range should be in actual values, not log10
+          range: [netcdfData.frequency[0], netcdfData.frequency[netcdfData.frequency.length - 1]],
         }
       : {
           type: 'linear' as const,
@@ -194,17 +195,10 @@ export const NetCDFSpectrogram: React.FC = () => {
         ? `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, 0.15)`
         : 'rgba(255, 255, 0, 0.15)';
 
-      // Convert frequencies to log10 space if in log mode
-      let y0, y1;
-      if (yAxisScale === 'log') {
-        const clampedStart = Math.max(minFreq, Math.min(maxFreq, annotation.startFrequency));
-        const clampedEnd = Math.max(minFreq, Math.min(maxFreq, annotation.endFrequency));
-        y0 = Math.log10(clampedStart);
-        y1 = Math.log10(clampedEnd);
-      } else {
-        y0 = annotation.startFrequency;
-        y1 = annotation.endFrequency;
-      }
+      // Use actual frequency values for both linear and log modes
+      // Plotly handles the log transformation when axis type is 'log'
+      const y0 = Math.max(minFreq, Math.min(maxFreq, annotation.startFrequency));
+      const y1 = Math.max(minFreq, Math.min(maxFreq, annotation.endFrequency));
 
       shapes.push({
         type: 'rect' as const,
@@ -221,8 +215,6 @@ export const NetCDFSpectrogram: React.FC = () => {
         // Store annotation ID for click handling
         name: `annotation-${annotation.id}`,
       });
-
-      // TODO: Add text labels back after fixing coordinate system
     });
 
     return {
@@ -315,18 +307,11 @@ export const NetCDFSpectrogram: React.FC = () => {
 
     const { x, y } = event.range;
 
-    // x is time range, y is frequency range (in log10 space if log mode)
+    // Plotly returns actual values even when axis type is 'log'
     const startTime = Math.min(x[0], x[1]);
     const endTime = Math.max(x[0], x[1]);
-
-    let startFrequency = Math.min(y[0], y[1]);
-    let endFrequency = Math.max(y[0], y[1]);
-
-    // Convert from log10 space back to actual frequencies if in log mode
-    if (yAxisScale === 'log') {
-      startFrequency = Math.pow(10, startFrequency);
-      endFrequency = Math.pow(10, endFrequency);
-    }
+    const startFrequency = Math.min(y[0], y[1]);
+    const endFrequency = Math.max(y[0], y[1]);
 
     // Only create annotation if box has meaningful size
     if (endTime - startTime > 0.01 && endFrequency - startFrequency > 1) {
@@ -344,7 +329,7 @@ export const NetCDFSpectrogram: React.FC = () => {
     // Clear the stored values
     selectionStartLabelRef.current = null;
     selectionStartConfidenceRef.current = null;
-  }, [addAnnotation, isDrawingEnabled, yAxisScale]);
+  }, [addAnnotation, isDrawingEnabled]);
 
   // Restore dragmode after zoom/pan operations
   const onRelayout = useCallback((_event: any) => {
