@@ -142,7 +142,7 @@ export const NetCDFSpectrogram: React.FC = () => {
     const yAxisConfig = yAxisScale === 'log'
       ? {
           type: 'log' as const,
-          range: [Math.log10(netcdfData.frequency[0]), Math.log10(netcdfData.frequency[netcdfData.frequency.length - 1])],
+          range: [netcdfData.frequency[0], netcdfData.frequency[netcdfData.frequency.length - 1]],
         }
       : {
           type: 'linear' as const,
@@ -173,8 +173,6 @@ export const NetCDFSpectrogram: React.FC = () => {
     // Get y-axis range limits for clamping
     const minFreq = netcdfData.frequency[0];
     const maxFreq = netcdfData.frequency[netcdfData.frequency.length - 1];
-    const yMin = yAxisScale === 'log' ? Math.log10(minFreq) : minFreq;
-    const yMax = yAxisScale === 'log' ? Math.log10(maxFreq) : maxFreq;
 
     // Add annotation boxes as Plotly shapes
     allAnnotations.forEach((annotation) => {
@@ -196,18 +194,10 @@ export const NetCDFSpectrogram: React.FC = () => {
         ? `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, 0.15)`
         : 'rgba(255, 255, 0, 0.15)';
 
-      // Convert frequencies to log10 space if in log mode, with clamping
-      let y0, y1;
-      if (yAxisScale === 'log') {
-        // Clamp frequencies to valid range before taking log
-        const clampedStart = Math.max(minFreq, Math.min(maxFreq, annotation.startFrequency));
-        const clampedEnd = Math.max(minFreq, Math.min(maxFreq, annotation.endFrequency));
-        y0 = Math.log10(clampedStart);
-        y1 = Math.log10(clampedEnd);
-      } else {
-        y0 = annotation.startFrequency;
-        y1 = annotation.endFrequency;
-      }
+      // Use actual frequency values - Plotly handles log transformation when axis type is 'log'
+      // Clamp to valid range to handle edge cases
+      const y0 = Math.max(minFreq, Math.min(maxFreq, annotation.startFrequency));
+      const y1 = Math.max(minFreq, Math.min(maxFreq, annotation.endFrequency));
 
       shapes.push({
         type: 'rect' as const,
@@ -226,16 +216,8 @@ export const NetCDFSpectrogram: React.FC = () => {
       });
 
       // Add text label for the annotation
-      // In log mode, convert y position to log10 space and clamp to visible range
-      let textY;
-      if (yAxisScale === 'log') {
-        const clampedEndFreq = Math.max(minFreq, Math.min(maxFreq, annotation.endFrequency));
-        textY = Math.log10(clampedEndFreq);
-        // Ensure textY is within the y-axis range
-        textY = Math.max(yMin, Math.min(yMax, textY));
-      } else {
-        textY = annotation.endFrequency;
-      }
+      // Use actual frequency value - Plotly handles log transformation
+      const textY = Math.max(minFreq, Math.min(maxFreq, annotation.endFrequency));
 
       annotations.push({
         x: annotation.startTime,
@@ -346,18 +328,12 @@ export const NetCDFSpectrogram: React.FC = () => {
 
     const { x, y } = event.range;
 
-    // x is time range, y is frequency range (in log10 space if log mode)
+    // x is time range, y is frequency range
+    // When axis type is 'log', Plotly still returns actual frequency values (not log10)
     const startTime = Math.min(x[0], x[1]);
     const endTime = Math.max(x[0], x[1]);
-
-    let startFrequency = Math.min(y[0], y[1]);
-    let endFrequency = Math.max(y[0], y[1]);
-
-    // Convert from log10 space back to actual frequencies if in log mode
-    if (yAxisScale === 'log') {
-      startFrequency = Math.pow(10, startFrequency);
-      endFrequency = Math.pow(10, endFrequency);
-    }
+    const startFrequency = Math.min(y[0], y[1]);
+    const endFrequency = Math.max(y[0], y[1]);
 
     // Only create annotation if box has meaningful size
     if (endTime - startTime > 0.01 && endFrequency - startFrequency > 1) {
@@ -375,7 +351,7 @@ export const NetCDFSpectrogram: React.FC = () => {
     // Clear the stored values
     selectionStartLabelRef.current = null;
     selectionStartConfidenceRef.current = null;
-  }, [addAnnotation, isDrawingEnabled, yAxisScale]);
+  }, [addAnnotation, isDrawingEnabled]);
 
   // Restore dragmode after zoom/pan operations
   const onRelayout = useCallback((_event: any) => {
