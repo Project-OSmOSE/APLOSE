@@ -179,7 +179,9 @@ export const NetCDFSpectrogram: React.FC = () => {
     // Add annotation boxes as Plotly shapes
     allAnnotations.forEach((annotation) => {
       if (annotation.type !== AnnotationType.Box) return;
-      if (!annotation.startTime || !annotation.endTime || !annotation.startFrequency || !annotation.endFrequency) return;
+      // Check for null/undefined, but allow 0 as a valid value
+      if (annotation.startTime == null || annotation.endTime == null ||
+          annotation.startFrequency == null || annotation.endFrequency == null) return;
 
       const isFocused = focusedAnnotation?.id === annotation.id;
 
