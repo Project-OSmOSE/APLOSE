@@ -3,20 +3,21 @@ import styles from './styles.module.scss'
 import { IonSpinner } from '@ionic/react';
 import { Input, Label } from '@/components/form';
 import { Navigate, useParams } from 'react-router-dom';
-import { Button } from '@/components/ui';
+import { Button, WarningText } from '@/components/ui';
 import { useSound, useSoundCRUD, useSource, useSourceCRUD } from '@/api';
 import { type OntologyNavParams } from '@/features/UX';
 
 export const OntologyPanel: React.FC = () => {
   const { type, id } = useParams<OntologyNavParams>();
 
-  const { source, isFetching: isFetchingSource } = useSource({ id, skip: type !== 'source' });
-  const { sound, isFetching: isFetchingSound } = useSound({ id, skip: type !== 'sound' });
+  const { source, isFetching: isFetchingSource, error: sourceError } = useSource({ id, skip: type !== 'source' });
+  const { sound, isFetching: isFetchingSound, error: soundError } = useSound({ id, skip: type !== 'sound' });
 
   const { update: updateSource } = useSourceCRUD()
   const { update: updateSound } = useSoundCRUD()
 
   const isFetching = useMemo(() => isFetchingSound || isFetchingSource, [ isFetchingSource, isFetchingSound ])
+  const error = useMemo(() => sourceError ?? soundError, [ sourceError, soundError ])
   const data = useMemo(() => type == 'source' ? source : sound, [ type, source, sound ])
 
   const [ englishName, setEnglishName ] = useState<string | undefined>(data?.englishName);
@@ -68,27 +69,27 @@ export const OntologyPanel: React.FC = () => {
         <h5>ID: { data.id }</h5>
         <div>
             <Label required label="English name"/>
-            <Input value={ englishName }
+            <Input value={ englishName ?? '' }
                    onChange={ e => setEnglishName(e.currentTarget.value) }/>
         </div>
       { type === 'source' && <div>
           <Label required label="Latin name"/>
-          <Input value={ latinName }
+          <Input value={ latinName ?? '' }
                  onChange={ e => setLatinName(e.currentTarget.value) }/>
       </div> }
         <div>
             <Label required label="French name"/>
-            <Input value={ frenchName }
+            <Input value={ frenchName ?? '' }
                    onChange={ e => setFrenchName(e.currentTarget.value) }/>
         </div>
         <div>
             <Label required label="Code name"/>
-            <Input value={ codeName }
+            <Input value={ codeName ?? '' }
                    onChange={ e => setCodeName(e.currentTarget.value) }/>
         </div>
         <div>
             <Label required label="Taxon"/>
-            <Input value={ taxon }
+            <Input value={ taxon ?? '' }
                    onChange={ e => setTaxon(e.currentTarget.value) }/>
         </div>
 
@@ -97,6 +98,8 @@ export const OntologyPanel: React.FC = () => {
             <Button onClick={ update }>Save</Button>
         </div>
     </div> }
+
+    { !isFetching && error && <WarningText error={error}/>}
   </div>
 }
 
