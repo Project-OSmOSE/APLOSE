@@ -107,6 +107,7 @@ class AnnotationCampaignNode(BaseObjectType):
         return (
             super()
             .resolve_queryset(queryset, info)
+            .distinct()
             .select_related("dataset")
             .prefetch_related("phases")
             .annotate(

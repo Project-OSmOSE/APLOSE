@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { chevronBackOutline } from 'ionicons/icons/index.js';
 import { TooltipOverlay } from './Tooltip';
 import { Link } from './Link';
@@ -27,9 +27,23 @@ export const DocumentationButton: React.FC<{
 
 export const BackButton: React.FC = () => {
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const [ from, setFrom ] = useState<string | undefined>();
+  const [ isBackAsked, setIsBackAsked ] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (location.state?.from) setFrom(location.state?.from)
+  }, [location])
+
+  useEffect(() => {
+    if (isBackAsked && location.state?.from !== location.pathname) {
+      navigate(-1)
+    }
+  }, [location, from, isBackAsked])
 
   const onBack = useCallback(() => {
-    navigate(-1)
+    setIsBackAsked(true)
   }, [ navigate ])
 
   return <IonButton fill="clear"

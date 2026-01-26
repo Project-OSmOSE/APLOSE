@@ -1,5 +1,5 @@
 import React, { Fragment, HTMLAttributeAnchorTarget, ReactNode, useCallback } from 'react';
-import { To, useNavigate } from 'react-router-dom';
+import { To, useLocation, useNavigate } from 'react-router-dom';
 import { IonButton, IonIcon } from '@ionic/react';
 import { Color } from '@ionic/core';
 import { openOutline } from 'ionicons/icons/index.js';
@@ -31,11 +31,12 @@ export const Link: React.FC<LinkProps> = ({
                                             ...props
                                           }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const open = useCallback(() => {
-    if (appPath) navigate(appPath, { replace })
+    if (appPath) navigate(appPath, { replace, state: { from: location.pathname } })
     if (onClick) onClick()
-  }, [ appPath ])
+  }, [ appPath, location ])
 
   const openAux = useCallback(() => window.open(`/app${ appPath }`, '_blank'), [ appPath ])
 
