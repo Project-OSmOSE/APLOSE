@@ -149,7 +149,7 @@ class Migration(migrations.Migration):
                 null=True,
                 on_delete=models.deletion.RESTRICT,
                 related_name="team_member",
-                to="common.Person",
+                to="common.person",
             ),
         ),
         migrations.AddField(
@@ -175,7 +175,7 @@ class Migration(migrations.Migration):
             field=models.OneToOneField(
                 on_delete=models.deletion.RESTRICT,
                 related_name="team_member",
-                to="common.Person",
+                to="common.person",
             ),
         ),
         migrations.RemoveField(
