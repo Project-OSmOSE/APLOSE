@@ -224,7 +224,7 @@ def _get_annotations_for_report(
                 "start_datetime": """
                     SELECT 
                         CASE 
-                            WHEN api_annotation.start_time isnull THEN to_char(f.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            WHEN api_annotation.type = 'W' THEN to_char(f.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
                             ELSE to_char((f.start + api_annotation.start_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
                         END
                     FROM api_spectrogram f
@@ -233,7 +233,8 @@ def _get_annotations_for_report(
                 "end_datetime": """
                     SELECT 
                         CASE 
-                            WHEN api_annotation.end_time isnull THEN to_char(f.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            WHEN api_annotation.type = 'W' THEN to_char(f.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            WHEN api_annotation.type = 'P' THEN to_char((f.start + api_annotation.start_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
                             ELSE to_char((f.start + api_annotation.end_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
                         END
                     FROM api_spectrogram f
