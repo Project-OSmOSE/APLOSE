@@ -60,7 +60,7 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
             phase = AnnotationPhase.objects.get_editable_or_fail(
                 user=request.user,
                 annotation_campaign_id=campaign_id,
-                phase=phase_type,
+                phase=phase_type[0],
             )
         except ForbiddenError:
             return Response(
