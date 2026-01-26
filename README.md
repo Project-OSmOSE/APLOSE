@@ -32,11 +32,7 @@
 
 ### Presentation
 
-**APLOSE** is developed and maintained by the [OSmOSE team](https://osmose.ifremer.fr/) in an academic 
-research setting, without any direct commercial purpose and in accordance with 
-the institution's rules.
-
-Its first purpose is to help the marine bioacoustic research community in their studies. 
+**APLOSE** first purpose is to help the marine bioacoustic research community in their studies. 
 Its usage can be extended to all kind of acoustic studies. It can also be used to create 
 reference dataset of AI or to check detectors output.
 
@@ -45,13 +41,16 @@ your data, without the need of sending hard-drives. The annotation process can c
 of two phases : "Annotation" and "Verification". The "Annotation" phase allows to create 
 new annotations on a clear spectrogram. On the "Verification" phase, you can check other 
 user's annotations or event detectors output on the spectrogram, you can also edit the 
-annotations or add missing ones.
-
-All the annotations are stored in a database and can be exported at any time.
+annotations or add missing ones. All the annotations are stored in a database and can be
+exported at any time.
 
 **APLOSE** is composed of a React frontend, located in "frontend" folder, and
 a Django backend, located in the "backend" folder ("api" app).
-It rely on spectrograms pre-calculated with our package [OSEkit](https://github.com/Project-OSmOSE/OSEkit).
+It relies on spectrograms pre-calculated with our package [OSEkit](https://github.com/Project-OSmOSE/OSEkit).
+
+**APLOSE** is developed and maintained by the [OSmOSE team](https://osmose.ifremer.fr/) in an academic
+research setting, without any direct commercial purpose and in accordance with
+the institution's rules.
 
 The project is part of an initiative to disseminate knowledge and share
 research tools in accordance with the principles of open science.
