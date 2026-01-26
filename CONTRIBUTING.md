@@ -8,10 +8,21 @@ follow when contributing to the development of the software.
 
 ## Contributions
 
-Contributions are welcome in the form of:
-- Bug fixes, 
-- Improvements, 
-- Documentation.
+There are many ways to contribute to this project, including:
+
+- **Starring** the [APLOSE GitHub page](https://github.com/Project-OSmOSE/APLOSE) to show the world that you use it
+- **Referencing APLOSE** in your articles
+
+  (see *"Cite this repository"* in [the About section of the APLOSE GitHub page](https://github.com/Project-OSmOSE/APLOSE))
+
+- **Participating** in the [APLOSE GitHub](https://github.com/Project-OSmOSE/APLOSE) by:
+    - **Reporting** difficulties you encounter when using the platform in new [issues](https://github.com/Project-OSmOSE/APLOSE/issues)
+    - **Suggesting** functionalities that would come in handy in **APLOSE** in new [issues](https://github.com/Project-OSmOSE/APLOSE/issues)
+    - **Reviewing** existing [pull requests](https://github.com/Project-OSmOSE/APLOSE/pulls)
+    - **Authoring** new [pull requests](https://github.com/Project-OSmOSE/APLOSE/pulls) to:
+        - **Add** new cool functionalities
+        - **Fix** things that don't work exactly the way they should
+        - **Improve** the documentation
 
 Any contribution submitted to this project is deemed to be provided 
 under the project's MIT license, without additional restrictions.
@@ -24,29 +35,6 @@ By submitting a contribution, you warrant that:
 
 ## Contribution process
 
-### Before pushing a PR
-
-Be sure to not forget any migrations and check they are part of your commit
-```bash
-poetry run ./manage.py makemigrations
-```
-
-Clean the backend code
-```bash
-# You should run Pylint regularly when coding to get tips and avoid bad patterns
-poetry run pylint backend
-# Also don't forget to use black in order to unify code style
-poetry run black backend
-```
-_If you use VSCode, you can add `"python.formatting.provider": "black"` to your .vscode/settings.json_
-
-
-Make sure the frontend still build
-```bash
-cd frontend
-npm run build
-```
-
-Add test to cover your changes and make sure all tests runs clear.
-
-Update documentation to cover your changes (in `frontend/docs`).
+Please refer to the Developer > [Contributing](https://project-osmose.github.io/APLOSE/dev/contributing) 
+page in our official documentation for a straightforward guide on how to push 
+your contribution to our repo!
