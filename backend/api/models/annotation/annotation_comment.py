@@ -12,6 +12,7 @@ from ..data import Spectrogram
 
 class AnnotationCommentQuerySet(CustomQuerySet):
     def filter_viewable_by(self, user: User, **kwargs):
+        # pylint: disable=duplicate-code
         qs = super().filter_viewable_by(user, **kwargs)
 
         # Admin can view all comments
