@@ -10,9 +10,9 @@ export const CardMember: React.FC<{ member: TeamMember }> = ({ member }) => {
 
   const content = (<React.Fragment>
     <img src={ member.picture }
-         alt={ `${ member.contact.initial_names }'s Portrait` }
-         title={ `${ member.contact.initial_names }'s Portrait` }/>
-    <h5>{ member.contact.last_name } { member.contact.first_name }</h5>
+         alt={ `${ member.person.initial_names }'s Portrait` }
+         title={ `${ member.person.initial_names }'s Portrait` }/>
+    <h5>{ member.person.last_name } { member.person.first_name }</h5>
     <p><small className="text-muted">{ member.position }</small></p>
   </React.Fragment>)
 

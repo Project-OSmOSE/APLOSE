@@ -6,14 +6,12 @@ import './Projects.css';
 
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { getYear, useFetchArray, useFetchGql } from '../../utils';
+import { getYear, useFetchArray } from '../../utils';
 import { Project } from '../../models/project';
 import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/react';
 import { Pagination } from '../../components/Pagination/Pagination';
 import { DeploymentsMap } from '../../components/DeploymentsMap';
-import { gql } from 'graphql-request';
-import { Deployment } from './ProjectDetail/ProjectDetail';
-
+import { LightDeployment, useGqlSdk } from "../../api";
 
 export const Projects: React.FC = () => {
   const pageSize = 6;
@@ -24,59 +22,11 @@ export const Projects: React.FC = () => {
   const [ projectsTotal, setProjectsTotal ] = useState<number>(0);
   const [ projects, setProjects ] = useState<Array<Project>>([]);
 
-  const [ deployments, setDeployments ] = useState<Array<Deployment>>([]);
   const [ selectedDeploymentID, setSelectedDeploymentID ] = useState<string | undefined>();
 
   const fetchProjects = useFetchArray<{ count: number, results: Array<Project> }>('/api/projects');
-    const fetchDeployments = useFetchGql<{ allDeployments?: { results: Deployment[] } }>(gql`
-        query {
-            allDeployments {
-                results {
-                    id,
-                    name
-                    latitude,
-                    longitude
-                    project {
-                        id
-                        name
-                    }
-                    site {
-                        id
-                        name
-                    }
-                    campaign {
-                        id
-                        name
-                    }
-                    deploymentDate
-                    recoveryDate
-                    contacts {
-                        edges {
-                            node {
-                                id
-                                role
-                                contact {
-                                    id
-                                    firstName
-                                    lastName
-                                    website
-                                }
-                            }
-                        }
-                    }
-                    channelConfigurations {
-                        edges {
-                            node {
-                                recorderSpecification {
-                                    samplingFrequency
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    `)
+  const [ allDeployments, setAllDeployments ] = useState<LightDeployment[]>([]);
+  const sdk = useGqlSdk()
 
   useEffect(() => {
     let isMounted = true;
@@ -86,9 +36,9 @@ export const Projects: React.FC = () => {
       setProjects(data?.results ?? []);
     });
 
-    fetchDeployments().then(data => {
+    sdk.allDeployments().then(({ data }) => {
       if (!isMounted) return;
-      setDeployments((data?.allDeployments?.results ?? []).filter(d => !!d) as Deployment[])
+      setAllDeployments((data.allDeployments?.results ?? []).filter(d => d !== null) as any)
     })
 
     return () => {
@@ -104,7 +54,7 @@ export const Projects: React.FC = () => {
 
       <div className="content">
 
-        <DeploymentsMap allDeployments={ deployments }
+        <DeploymentsMap allDeployments={ allDeployments }
                         level="project"
                         selectedDeploymentID={ selectedDeploymentID }
                         setSelectedDeploymentID={ setSelectedDeploymentID }/>

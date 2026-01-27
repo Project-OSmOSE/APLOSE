@@ -1,0 +1,125 @@
+query allDeployments($projectID: Decimal) {
+    allDeployments(project_WebsiteProject_Id: $projectID) {
+        results {
+            id
+
+            # Position
+            latitude
+            longitude
+
+            name
+            project {
+                id
+                name
+            }
+            site {
+                id
+                name
+            }
+            campaign {
+                id
+                name
+            }
+            deploymentDate
+            recoveryDate
+            contacts {
+                id
+                role
+                contact {
+                    ... on PersonNode {
+                        firstName
+                        lastName
+                    }
+                    ... on TeamNode {
+                        name
+                    }
+                    ... on InstitutionNode {
+                        name
+                    }
+                }
+            }
+            channelConfigurations {
+                edges {
+                    node {
+                        recorderSpecification {
+                            samplingFrequency
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+query deploymentById($id: ID!) {
+    annotationLabelsForDeploymentId(deploymentId: $id) {
+        results {
+            id
+            name
+            uses(deploymentId: $id)
+        }
+    }
+    deploymentById(id: $id) {
+        name
+        latitude
+        longitude
+        deploymentDate
+        deploymentVessel
+        recoveryDate
+        recoveryVessel
+        bathymetricDepth
+        description
+        project {
+            name
+            accessibility
+            projectGoal
+            contacts {
+                id
+                role
+                contact {
+                    ... on PersonNode {
+                        firstName
+                        lastName
+                        website
+                    }
+                    ... on TeamNode {
+                        name
+                        website
+                    }
+                    ... on InstitutionNode {
+                        name
+                        website
+                    }
+                }
+            }
+        }
+        site {
+            name
+        }
+        campaign {
+            name
+        }
+        platform {
+            name
+        }
+        contacts {
+            id
+            role
+            contact {
+                ... on PersonNode {
+                    firstName
+                    lastName
+                    website
+                }
+                ... on TeamNode {
+                    name
+                    website
+                }
+                ... on InstitutionNode {
+                    name
+                    website
+                }
+            }
+        }
+    }
+}

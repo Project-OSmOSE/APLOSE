@@ -3,6 +3,7 @@ import 'leaflet.markercluster';
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { getMinZoom } from './utils.functions'
+import { LightDeployment } from "../../api";
 
 export function initMap(id: string): LeafletMap {
   const map = new LeafletMap(id, {
@@ -33,7 +34,7 @@ export function clearMap(map: LeafletMap): void {
 }
 
 export function setMapView(map: LeafletMap,
-                           deployments: Array<{ latitude: number; longitude: number; }>): void {
+                           deployments: LightDeployment[]): void {
   if (deployments.length === 0) {
     map.setView([ 0, 0 ], 2);
     return;

@@ -28,11 +28,11 @@ export const PeopleDetail: React.FC = () => {
       <Back path="/people" pageName="People"></Back>
 
       <div className="title">
-        <h2>{ member?.contact.last_name } { member?.contact.first_name }</h2>
+        <h2>{ member?.person.last_name } { member?.person.first_name }</h2>
         <h5 className="text-muted">{ member?.position }</h5>
       </div>
 
-      <img src={ member?.picture } alt={ `${ member?.contact.initial_names }'s Portrait` }/>
+      <img src={ member?.picture } alt={ `${ member?.person.initial_names }'s Portrait` }/>
 
       { member?.biography && <blockquote>❝&nbsp;{ member?.biography }&nbsp;❞</blockquote> }
 

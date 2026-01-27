@@ -2,8 +2,7 @@ import React, { useMemo, useRef } from 'react';
 import ReactApexChart from 'react-apexcharts'
 import { ApexOptions } from 'apexcharts';
 import { intToRGB } from '../DeploymentsMap/utils.functions';
-import { Deployment, type LightDeployment } from '../../pages/Projects/ProjectDetail/ProjectDetail';
-
+import { LightDeployment } from "../../api";
 
 export const DeploymentsTimeline: React.FC<{
   deployments: Array<LightDeployment>;
@@ -55,7 +54,7 @@ export const DeploymentsTimeline: React.FC<{
             setSelectedDeploymentID(undefined)
           } else {
             const data = opts.config.series[opts.seriesIndex].data;
-            const deployment: Deployment = data[opts.dataPointIndex].meta;
+            const deployment: LightDeployment = data[opts.dataPointIndex].meta;
             setSelectedDeploymentID(deployment.id)
           }
         },
@@ -73,7 +72,7 @@ export const DeploymentsTimeline: React.FC<{
       enabled: true,
       formatter(val: string | number | number[], opts?: any): string | number {
         const data = opts.w.config.series[opts.seriesIndex].data;
-        const deployment: Deployment = data[opts.dataPointIndex].meta;
+        const deployment: LightDeployment = data[opts.dataPointIndex].meta;
         return deployment?.name ?? 'Deployment ' + deployment.id
       },
     },
