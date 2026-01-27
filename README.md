@@ -44,9 +44,9 @@ users' annotations or event detectors outputs on the spectrogram, with the possi
 annotations. All the annotations are stored in a database and can be
 exported at any time.
 
-**APLOSE** is composed of a React frontend, located in "frontend" folder, and
+**APLOSE** is composed of a React frontend, located in the "frontend" folder, and
 a Django backend, located in the "backend" folder ("api" app).
-It relies on spectrograms pre-calculated with our package [OSEkit](https://github.com/Project-OSmOSE/OSEkit).
+It relies on spectrograms that are pre-calculated with our [OSEkit](https://github.com/Project-OSmOSE/OSEkit) package.
 
 **APLOSE** is developed and maintained by the [OSmOSE team](https://osmose.ifremer.fr/) in an academic
 research setting, without any direct commercial purpose and in accordance with
