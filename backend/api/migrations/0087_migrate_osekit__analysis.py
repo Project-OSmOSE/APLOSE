@@ -7,10 +7,13 @@ from django.db import migrations, models
 
 
 def _get_fft_params(config) -> dict:
+    overlap = config.overlap
+    if overlap > 100:  # It was the hop and not the overlap
+        overlap = (1 - (overlap / config.window_size)) * 100
     return {
         "nfft": config.nfft,
         "window_size": config.window_size,
-        "overlap": round(config.overlap) / 100,
+        "overlap": round(overlap) / 100,
         "sampling_frequency": config.dataset.audio_metadatum.dataset_sr,
         "legacy": True,
     }
