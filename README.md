@@ -34,7 +34,7 @@
 
 **APLOSE** first purpose is to help the marine bioacoustic research community in their studies. 
 Its usage can be extended to all kind of acoustic studies. It can also be used to create 
-reference dataset of AI or to check detectors output.
+reference datasets for AI or to check detector outputs.
 
 **APLOSE** allows to create participative annotation campaign where many users can annotate 
 your data, without the need of sending hard-drives. The annotation process can consist 
