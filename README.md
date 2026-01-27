@@ -74,7 +74,7 @@ This software must not be sold.
 If you use this software in scientific work, please cite it in accordance with the 
 [CITATION](./CITATION.cff) file.
 
-This software is provided for research and teaching purposes. It is provided “as is,” 
+This software is provided for research and teaching purposes. It is provided “as is”, 
 without warranty. The authors and the institution cannot be held responsible for any 
 damage resulting from its use.
 
