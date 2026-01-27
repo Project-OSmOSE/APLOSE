@@ -36,12 +36,12 @@
 Its usage can be extended to all kind of acoustic studies. It can also be used to create 
 reference datasets for AI or to check detector outputs.
 
-**APLOSE** allows to create participative annotation campaign where many users can annotate 
-your data, without the need of sending hard-drives. The annotation process can consist 
+**APLOSE** allows to create participative annotation campaigns where many users can annotate 
+your data, without the need of physically sharing data e.g. on hard-drives. The annotation process can consist 
 of two phases : "Annotation" and "Verification". The "Annotation" phase allows to create 
-new annotations on a clear spectrogram. On the "Verification" phase, you can check other 
-user's annotations or event detectors output on the spectrogram, you can also edit the 
-annotations or add missing ones. All the annotations are stored in a database and can be
+new annotations on a clear spectrogram. The "Verification" phase allows to check other 
+users' annotations or event detectors outputs on the spectrogram, with the possibility to edit or add
+annotations. All the annotations are stored in a database and can be
 exported at any time.
 
 **APLOSE** is composed of a React frontend, located in "frontend" folder, and
