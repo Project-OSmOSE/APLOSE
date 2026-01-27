@@ -61,15 +61,18 @@ class AnnotationPhaseNode(BaseObjectType):
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_tasks_count(self: AnnotationPhase, info):
-        return self.annotation_file_ranges.aggregate(sum=Sum("files_count"))["sum"]
+        return self.annotation_file_ranges.aggregate(sum=Sum("files_count"))["sum"] or 0
 
     user_tasks_count = graphene.Int(required=True)
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_user_tasks_count(self: AnnotationPhase, info):
-        return self.annotation_file_ranges.filter(
-            annotator=info.context.user
-        ).aggregate(sum=Sum("files_count"))["sum"]
+        return (
+            self.annotation_file_ranges.filter(annotator=info.context.user).aggregate(
+                sum=Sum("files_count")
+            )["sum"]
+            or 0
+        )
 
     completed_tasks_count = graphene.Int(required=True)
 

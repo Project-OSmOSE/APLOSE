@@ -2,6 +2,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import type { AppState } from '@/features/App';
 import { selectCampaign, selectTask } from '@/api';
 import { AnnotatorSlice } from './slice'
+import { UserGqlAPI } from '@/api/user/api';
 
 export const selectAnnotator = (state: AppState) => state.annotator
 
@@ -17,7 +18,10 @@ export const selectAnnotatorCampaign = createSelector(
         (state: AppState) => state,
         selectCampaignID,
     ],
-    (state, campaignID) => selectCampaign(state, campaignID ?? ''),
+    (state, campaignID) => {
+      const userState = UserGqlAPI.endpoints.getCurrentUser.select()(state)
+      return selectCampaign(state, campaignID ?? '', userState?.data?.currentUser?.id ?? '')
+    },
 )
 
 

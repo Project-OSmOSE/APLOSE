@@ -28,7 +28,7 @@ mutation (
 """
 BASE_VARIABLES = {
     "campaignID": 1,
-    "spectrogramID": 7,
+    "spectrogramID": 8,
     "phase": "Annotation",
     "comments": [],
 }
@@ -80,7 +80,7 @@ class UpdateAnnotationCommentsTestCase(GraphQLTestCase):
         new_comment: AnnotationComment = AnnotationComment.objects.order_by("id").last()
         self.assertEqual(new_comment.comment, comment["comment"])
         self.assertEqual(new_comment.author_id, 4)
-        self.assertEqual(new_comment.spectrogram_id, 7)
+        self.assertEqual(new_comment.spectrogram_id, 8)
         self.assertEqual(new_comment.annotation_phase_id, 1)
         self.assertIsNone(new_comment.annotation)
 

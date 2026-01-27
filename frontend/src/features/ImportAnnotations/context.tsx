@@ -239,8 +239,6 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
     contentRows.reverse()
     const header = contentRows.pop()!
     contentRows.reverse()
-    console.debug(header)
-    console.debug(contentRows)
     setAnnotations(contentRows.map(r => {
       const confidence__level = r[header.indexOf('confidence_indicator_level')].split('/')
       return {
@@ -290,15 +288,10 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
   }, [ setUnknownToKnownDetectors ])
 
   const assignUnknownToKnownDetector = useCallback((initialName: string, detector: Detector) => {
-    console.debug('assignUnknownToKnownDetector', initialName, detector)
     setUnknownToKnownDetectors(prev => ({ ...prev, [initialName]: detector }))
     setUnknownToConfiguration(prev => ({ ...prev, [initialName]:  { configuration: '' } }))
     setSelectedDetectorsForImport(prev => [ ...new Set([ ...prev, initialName ]) ])
   }, [ setUnknownToKnownDetectors, setSelectedDetectorsForImport ])
-
-  useEffect(() => {
-    console.debug('> unknownToKnownDetectors', unknownToKnownDetectors)
-  }, [unknownToKnownDetectors]);
 
   const assignUnknownToConfiguration = useCallback((initialName: string, configuration: DetectorConfiguration) => {
     setUnknownToConfiguration(prev => ({ ...prev, [initialName]: configuration }))
@@ -340,7 +333,6 @@ export const ImportAnnotationsContextProvider: React.FC<{ children: ReactNode }>
   }) => {
     if (!canImport) return;
     if (uploadState !== 'uploading' && !options?.bypassUploadState) return;
-    console.debug('> uploadChunk', unknownToKnownDetectors)
     importAnnotations(filteredUploadAnnotations.slice(start, start + CHUNK_SIZE).map(a => ({
         ...a,
         analysis: analysisID!,
