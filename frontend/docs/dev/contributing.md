@@ -50,8 +50,6 @@ We use [poetry](https://python-poetry.org/) and [npm](https://www.npmjs.com/)
 to manage the project, and suggest that you install the project following the 
 instructions in the [Local installation](./installation/local.md) documentation.
 
------------------------------------------
-
 ## Validation process
 
 We use a GitHub Action to validate both [backend](https://github.com/Project-OSmOSE/APLOSE/blob/master/.github/workflows/backend.yml) and [frontend](https://github.com/Project-OSmOSE/APLOSE/blob/master/.github/workflows/frontend.yml) 
