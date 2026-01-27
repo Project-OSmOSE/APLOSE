@@ -1,5 +1,6 @@
 import graphene
 import graphene_django_optimizer
+from django.db.models import Sum
 
 from backend.api.models import AnnotationPhase, AnnotationTask
 from backend.api.schema.enums import AnnotationPhaseType
@@ -60,13 +61,15 @@ class AnnotationPhaseNode(BaseObjectType):
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_tasks_count(self: AnnotationPhase, info):
-        return self.annotation_tasks.count()
+        return self.annotation_file_ranges.aggregate(sum=Sum("files_count"))["sum"]
 
     user_tasks_count = graphene.Int(required=True)
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_user_tasks_count(self: AnnotationPhase, info):
-        return self.annotation_tasks.filter(annotator=info.context.user.id).count()
+        return self.annotation_file_ranges.filter(
+            annotator=info.context.user
+        ).aggregate(sum=Sum("files_count"))["sum"]
 
     completed_tasks_count = graphene.Int(required=True)
 
