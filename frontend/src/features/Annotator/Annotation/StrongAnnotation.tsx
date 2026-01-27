@@ -57,18 +57,17 @@ export const StrongAnnotation: React.FC<{
   const [ top, setTop ] = useState<number>(0);
   const [ height, setHeight ] = useState<number>(0);
   useEffect(() => {
-    if (typeof startTime === 'number') {
-      setLeft(timeScale.valueToPosition(startTime))
-      if (typeof endTime === 'number') {
-        setWidth(timeScale.valuesToPositionRange(startTime, endTime))
-      }
-    }
-
-    if (typeof endFrequency === 'number') {
-      setTop(frequencyScale.valueToPosition(endFrequency))
-      if (typeof startFrequency === 'number') {
-        setHeight(frequencyScale.valuesToPositionRange(startFrequency, endFrequency))
-      }
+    switch (annotation.type) {
+      case AnnotationType.Box:
+        setLeft(timeScale.valueToPosition(startTime!))
+        setWidth(timeScale.valuesToPositionRange(startTime!, endTime!))
+        setTop(frequencyScale.valueToPosition(endFrequency!))
+        setHeight(frequencyScale.valuesToPositionRange(startFrequency!, endFrequency!))
+        break;
+      case AnnotationType.Point:
+        setLeft(timeScale.valueToPosition(startTime!))
+        setTop(frequencyScale.valueToPosition(startFrequency!))
+        break;
     }
   }, [ timeScale, frequencyScale, annotation ]);
 

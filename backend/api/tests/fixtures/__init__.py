@@ -13,6 +13,7 @@ COMMON_FIXTURES = ["archive", "session"]
 ANNOTATION_FIXTURES = [
     "acoustic_features",
     "annotation",
+    "annotation_comment",
     "annotation_campaign",
     "annotation_file_range",
     "annotation_phase",

@@ -1,6 +1,5 @@
 from graphene import Mutation, ID, Boolean
 
-from backend.api.context_filters import AnnotationPhaseContextFilter
 from backend.api.models import AnnotationPhase
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 
@@ -16,8 +15,9 @@ class EndAnnotationPhaseMutation(Mutation):
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     def mutate(self, info, id: int):
         """Archive annotation campaign at current date by request user"""
-        phase: AnnotationPhase = AnnotationPhaseContextFilter.get_edit_node_or_fail(
-            info.context, pk=id
+        phase = AnnotationPhase.objects.get_editable_or_fail(
+            user=info.context.user, pk=id
         )
+
         phase.end(info.context.user)
         return EndAnnotationPhaseMutation(ok=True)

@@ -162,6 +162,7 @@ query getAnnotationTask(
                         label
                     }
                     detectorConfiguration {
+                        id
                         detector {
                             id
                             name
@@ -219,6 +220,7 @@ query getAnnotationTask(
                         label
                     }
                     detectorConfiguration {
+                        id
                         detector {
                             id
                             name

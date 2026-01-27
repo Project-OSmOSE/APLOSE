@@ -10,6 +10,7 @@ import {
   type AnnotationValidationNode,
   AnnotationValidationSerializerInput,
   type ConfidenceNode,
+  type DetectorConfigurationNode,
   type DetectorNode,
   type Maybe,
   type SpectrogramAnalysisNode,
@@ -75,7 +76,7 @@ type Node =
   & {
   isUpdateOf?: Maybe<Pick<AnnotationNode, 'id'>>,
   annotator?: Maybe<Pick<UserNode, 'id'>>,
-  detectorConfiguration?: Maybe<{
+  detectorConfiguration?: Maybe<Pick<DetectorConfigurationNode, 'id'> &{
     detector: Pick<DetectorNode, 'id'>
   }>,
   confidence?: Maybe<Pick<ConfidenceNode, 'label'>>,
@@ -109,7 +110,7 @@ export function convertGqlToAnnotation(annotation: Node,
     endTime: annotation.endTime === null ? undefined : annotation.endTime,
     startTime: annotation.startTime === null ? undefined : annotation.startTime,
     confidence: annotation.confidence?.label,
-    detectorConfiguration: annotation.detectorConfiguration?.detector.id,
+    detectorConfiguration: annotation.detectorConfiguration?.id,
     analysis: annotation.analysis.id,
   } as Annotation
 }
@@ -118,7 +119,7 @@ export function convertGqlToAnnotations(annotations: Node[],
                                         phase: AnnotationPhaseType,
                                         userId?: string): Annotation[] {
   return annotations.filter(a => !a.isUpdateOf).map(a => {
-    const update = annotations.find(a => a.isUpdateOf?.id === a.id);
+    const update = annotations.find(u => u.isUpdateOf?.id === a.id);
     return {
       ...convertGqlToAnnotation(a, phase, userId),
       update: update ? convertGqlToAnnotation(update, phase, userId) : undefined,

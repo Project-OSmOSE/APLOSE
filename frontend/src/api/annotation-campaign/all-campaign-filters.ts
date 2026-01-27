@@ -5,10 +5,10 @@ import { logoutFulfilled } from '@/api';
 export type AllCampaignFilters = ListCampaignsQueryVariables
 
 function reset(state: AllCampaignFilters) {
-  state.annotatorID = undefined;
-  state.ownerID = undefined;
-  state.isArchived = undefined;
-  state.phase = undefined;
+  state.filter_annotatorID = undefined;
+  state.filter_ownerID = undefined;
+  state.filter_isArchived = undefined;
+  state.filter_phase = undefined;
   state.search = undefined;
 }
 

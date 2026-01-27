@@ -23,6 +23,7 @@ class CreateAnnotationCampaignForm(forms.ModelForm):
 
 class CreateAnnotationCampaignMutation(AuthenticatedModelFormMutation):
     class Meta:
+        model = AnnotationCampaign
         form_class = CreateAnnotationCampaignForm
 
     @classmethod

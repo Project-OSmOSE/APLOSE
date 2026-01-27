@@ -15,8 +15,7 @@ function prepareGqlHeaders(headers: Headers) {
   return headers
 }
 
-export const gqlAPI = createApi({
-  tagTypes: [
+export const GqlTags =  [
     // Annotation Campaign
     'Campaign',
 
@@ -52,7 +51,10 @@ export const gqlAPI = createApi({
 
     // User
     'CurrentUser', 'User',
-  ],
+  ]
+
+export const gqlAPI = createApi({
+  tagTypes: GqlTags,
   reducerPath: 'gql',
   baseQuery: async (args, api, extraOptions) => {
     const result: any = await graphqlRequestBaseQuery({

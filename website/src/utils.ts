@@ -55,7 +55,7 @@ export const useFetchGql = <T>(query: string) => {
   return async (): Promise<T | undefined> => {
     try {
       const body = JSON.stringify({ query })
-      const response = await fetch('http://localhost:8080/api/graphql', {
+      const response = await fetch(`/api/graphql`, {
         method: 'POST',
         body,
         headers: {

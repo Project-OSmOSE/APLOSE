@@ -1,6 +1,5 @@
 import graphene
 import graphene_django_optimizer
-from django.contrib.postgres.aggregates import ArrayAgg
 from django.db import models
 from django.db.models import (
     Exists,
@@ -16,7 +15,6 @@ from django.db.models import (
 from django.db.models.functions import Coalesce
 from graphql import GraphQLResolveInfo
 
-from backend.api.context_filters import AnnotationCampaignContextFilter
 from backend.api.models import (
     AnnotationCampaign,
     AnnotationFileRange,
@@ -24,10 +22,10 @@ from backend.api.models import (
     AnnotationTask,
     Spectrogram,
 )
-from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationCampaignFilterSet
 from backend.aplose.models import User
 from backend.aplose.schema import UserNode
+from backend.utils.schema import AuthenticatedDjangoConnectionField
 from backend.utils.schema.types import BaseObjectType, BaseNode
 from .annotation_phase import AnnotationPhaseNode
 from .archive import ArchiveNode
@@ -37,8 +35,6 @@ from .label import AnnotationLabelNode
 
 class AnnotationCampaignNode(BaseObjectType):
     """AnnotationCampaign schema"""
-
-    phase_types = graphene.List(AnnotationPhaseType, required=True)
 
     archive = ArchiveNode()
     is_archived = graphene.Boolean(required=True)
@@ -56,10 +52,9 @@ class AnnotationCampaignNode(BaseObjectType):
         model = AnnotationCampaign
         fields = "__all__"
         filterset_class = AnnotationCampaignFilterSet
-        context_filter = AnnotationCampaignContextFilter
         interfaces = (BaseNode,)
 
-    phases = graphene.List(AnnotationPhaseNode, required=True)
+    phases = AuthenticatedDjangoConnectionField(AnnotationPhaseNode)
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_phases(self: AnnotationCampaign, info, **kwargs):
@@ -112,10 +107,10 @@ class AnnotationCampaignNode(BaseObjectType):
         return (
             super()
             .resolve_queryset(queryset, info)
+            .distinct()
             .select_related("dataset")
             .prefetch_related("phases")
             .annotate(
-                phase_types=ArrayAgg("phases__phase", distinct=True),
                 dataset_name=F("dataset__name"),
                 is_archived=ExpressionWrapper(
                     Q(archive__isnull=False),

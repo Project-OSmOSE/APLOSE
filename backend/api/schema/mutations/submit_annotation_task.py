@@ -7,13 +7,18 @@ from django.shortcuts import get_object_or_404
 from graphene import Boolean
 from graphene_django.types import ErrorType
 
-from backend.api.context_filters import AnnotationFileRangeContextFilter
-from backend.api.models import Spectrogram, AnnotationTask, Session, AnnotationPhase
+from backend.api.models import (
+    Spectrogram,
+    AnnotationTask,
+    Session,
+    AnnotationPhase,
+    AnnotationFileRange,
+)
 from backend.api.models.annotation.annotation_task import AnnotationTaskSession
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.utils.schema import GraphQLResolve, GraphQLPermissions, NotFoundError
-from .update_annotations import UpdateAnnotationsMutation
 from .update_annotation_comments import UpdateAnnotationCommentsMutation
+from .update_annotations import UpdateAnnotationsMutation
 
 
 class SubmitAnnotationTaskMutation(graphene.Mutation):
@@ -98,8 +103,8 @@ class SubmitAnnotationTaskMutation(graphene.Mutation):
                 ok=False, task_comments_errors=comments_payload.errors
             )
 
-        AnnotationFileRangeContextFilter.get_node_or_fail(
-            info.context,
+        AnnotationFileRange.objects.get_viewable_or_fail(
+            user=info.context.user,
             annotation_phase=phase,
             from_datetime__lte=spectrogram.start,
             to_datetime__gte=spectrogram.end,

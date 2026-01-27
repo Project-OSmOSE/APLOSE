@@ -1,21 +1,8 @@
 import graphene
 import graphene_django_optimizer
-from django.db import models
-from django.db.models import (
-    Subquery,
-    Value,
-    Func,
-    F,
-    OuterRef,
-    QuerySet,
-    ExpressionWrapper,
-    Q,
-)
-from django.db.models.functions import Coalesce
-from graphql import GraphQLResolveInfo
+from django.db.models import Sum
 
-from backend.api.context_filters import AnnotationPhaseContextFilter
-from backend.api.models import AnnotationPhase, AnnotationFileRange, AnnotationTask
+from backend.api.models import AnnotationPhase, AnnotationTask
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationPhaseFilterSet
 from backend.utils.schema import AuthenticatedDjangoConnectionField
@@ -39,18 +26,12 @@ class AnnotationPhaseNode(BaseObjectType):
 
     is_completed = graphene.Boolean(required=True)
     is_open = graphene.Boolean(required=True)
-    can_manage = graphene.Boolean(required=True)
-
-    tasks_count = graphene.Int(required=True)
-    user_tasks_count = graphene.Int(required=True)
-    completed_tasks_count = graphene.Int(required=True)
-    user_completed_tasks_count = graphene.Int(required=True)
 
     class Meta:
         model = AnnotationPhase
         fields = "__all__"
         filterset_class = AnnotationPhaseFilterSet
-        context_filter = AnnotationPhaseContextFilter
+        # context_filter = AnnotationPhaseContextFilter
         interfaces = (BaseNode,)
 
     has_annotations = graphene.Field(graphene.Boolean, required=True)
@@ -63,66 +44,48 @@ class AnnotationPhaseNode(BaseObjectType):
             phase=AnnotationPhase.Type.ANNOTATION
         ).annotations.exists()
 
-    @classmethod
-    def resolve_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):
+    can_manage = graphene.Boolean(required=True)
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_can_manage(self: AnnotationPhase, info):
+        # Cannot manage ended/archived phase
+        if self.ended_at or self.ended_by or self.annotation_campaign.archive:
+            return False
+
+        if info.context.user.is_staff or info.context.user.is_superuser:
+            return True
+
+        return self.annotation_campaign.owner_id == info.context.user.id
+
+    tasks_count = graphene.Int(required=True)
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_tasks_count(self: AnnotationPhase, info):
+        return self.annotation_file_ranges.aggregate(sum=Sum("files_count"))["sum"] or 0
+
+    user_tasks_count = graphene.Int(required=True)
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_user_tasks_count(self: AnnotationPhase, info):
         return (
-            super()
-            .resolve_queryset(queryset, info)
-            .annotate(
-                can_manage=Coalesce(
-                    ExpressionWrapper(
-                        Q(
-                            annotation_campaign__archive__isnull=True,
-                            ended_at__isnull=True,
-                            ended_by__isnull=True,
-                        )
-                        & (
-                            Q()
-                            if info.context.user.is_staff
-                            or info.context.user.is_superuser
-                            else Q(annotation_campaign__owner_id=info.context.user.id)
-                        ),
-                        output_field=models.BooleanField(),
-                    ),
-                    Value(False),
-                ),
-                tasks_count=Coalesce(
-                    Subquery(
-                        AnnotationFileRange.objects.filter(
-                            annotation_phase_id=OuterRef("pk"),
-                        )
-                        .annotate(sum=Func(F("files_count"), function="Sum"))
-                        .values("sum")
-                    ),
-                    Value(0),
-                ),
-                user_tasks_count=Coalesce(
-                    Subquery(
-                        AnnotationFileRange.objects.filter(
-                            annotation_phase_id=OuterRef("pk"),
-                            annotator_id=info.context.user.id,
-                        )
-                        .annotate(sum=Func(F("files_count"), function="Sum"))
-                        .values("sum")
-                    ),
-                    Value(0),
-                ),
-                completed_tasks_count=Subquery(
-                    AnnotationTask.objects.filter(
-                        annotation_phase_id=OuterRef("pk"),
-                        status=AnnotationTask.Status.FINISHED,
-                    )
-                    .annotate(count=Func(F("id"), function="count"))
-                    .values("count")
-                ),
-                user_completed_tasks_count=Subquery(
-                    AnnotationTask.objects.filter(
-                        annotation_phase_id=OuterRef("pk"),
-                        status=AnnotationTask.Status.FINISHED,
-                        annotator_id=info.context.user.id,
-                    )
-                    .annotate(count=Func(F("id"), function="count"))
-                    .values("count")
-                ),
-            )
+            self.annotation_file_ranges.filter(annotator=info.context.user).aggregate(
+                sum=Sum("files_count")
+            )["sum"]
+            or 0
         )
+
+    completed_tasks_count = graphene.Int(required=True)
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_completed_tasks_count(self: AnnotationPhase, info):
+        return self.annotation_tasks.filter(
+            status=AnnotationTask.Status.FINISHED
+        ).count()
+
+    user_completed_tasks_count = graphene.Int(required=True)
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_user_completed_tasks_count(self: AnnotationPhase, info):
+        return self.annotation_tasks.filter(
+            annotator=info.context.user.id, status=AnnotationTask.Status.FINISHED
+        ).count()
