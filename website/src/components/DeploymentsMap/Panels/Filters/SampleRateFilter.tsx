@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { RangeSlider } from '../../../Inputs/RangeSlider';
 import { FilterRef } from './FilterRef';
-import { Deployment, type LightDeployment } from '../../../../pages/Projects/ProjectDetail/ProjectDetail';
+import { LightDeployment } from "../../../../api";
 
 export const SampleRateFilter = React.forwardRef<FilterRef, {
   deployments: Array<LightDeployment>,

@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 import styles from './Tooltip.module.scss';
-import { Deployment } from "../../../pages/Projects/ProjectDetail/ProjectDetail";
+import { LightDeployment } from "../../../api";
 
-export const ClusterTooltip: React.FC<{ deployments: Array<Deployment> }> = ({ deployments }) => {
+export const ClusterTooltip: React.FC<{ deployments: Array<LightDeployment> }> = ({ deployments }) => {
   const projects = useMemo(() => [ ...new Set(deployments.map(d => d.project.name)) ], [ deployments ]);
   const sites = useMemo(() => [ ...new Set(deployments.map(d => d.site?.name).filter(e => !!e)) ], [ deployments ]);
   const campaigns = useMemo(() => [ ...new Set(deployments.map(d => d.campaign?.name).filter(e => !!e)) ], [ deployments ]);

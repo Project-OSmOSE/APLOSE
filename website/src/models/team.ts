@@ -2,7 +2,7 @@ import { Contact } from "./bibliography";
 
 export interface TeamMember {
   id: string;
-  contact: Contact;
+  person: Contact;
   position: string;
   biography?: string;
   picture: string;
