@@ -31,8 +31,12 @@ export const useAllCampaigns = (filters: AllCampaignFilters) => {
 
 export const useCurrentCampaign = () => {
   const { campaignID: id } = useParams<AploseNavParams>();
-  const info = getCampaign.useQuery({ id: id ?? '' }, { skip: !id })
-  const phases = useMemo(() => info.data?.annotationCampaignById?.phases?.map(p => p!), [ info ])
+  const { user } = useCurrentUser()
+  const info = getCampaign.useQuery({
+    id: id ?? '',
+    userID: user?.id ?? '',
+  }, { skip: !id || !user })
+  const phases = useMemo(() => info.data?.annotationCampaignById?.phases?.results.map(p => p!), [ info ])
   return useMemo(() => ({
     ...info,
     campaign: info?.data?.annotationCampaignById,
@@ -114,15 +118,15 @@ export const useAllCampaignsFilters = () => {
   const init = useCallback(() => {
     if (!user) return;
     const updatedFilters: AllCampaignFilters = {
-      annotatorID: user.id,
-      isArchived: false,
+      filter_annotatorID: user.id,
+      filter_isArchived: false,
       ...params,
     }
-    if (updatedFilters.annotatorID !== user.id) {
-      updatedFilters.annotatorID = user.id
+    if (updatedFilters.filter_annotatorID !== user.id) {
+      updatedFilters.filter_annotatorID = user.id
     }
-    if (updatedFilters.ownerID && updatedFilters.ownerID !== user.id) {
-      updatedFilters.ownerID = user.id
+    if (updatedFilters.filter_ownerID && updatedFilters.filter_ownerID !== user.id) {
+      updatedFilters.filter_ownerID = user.id
     }
     updateParams(updatedFilters)
   }, [ params, user, updateParams ])

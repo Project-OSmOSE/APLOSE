@@ -1,7 +1,7 @@
 import csv
 from os import listdir
 from os.path import join, exists, isfile
-from pathlib import Path, WindowsPath
+from pathlib import Path, PureWindowsPath
 
 from django.conf import settings
 from django.db import transaction
@@ -42,7 +42,7 @@ class ImportDatasetMutation(Mutation):
             legacy=legacy or False,
         )
         if legacy:
-            datasets_csv_path: WindowsPath = (
+            datasets_csv_path: PureWindowsPath = (
                 settings.DATASET_IMPORT_FOLDER / settings.DATASET_FILE
             )
             if not exists(datasets_csv_path):

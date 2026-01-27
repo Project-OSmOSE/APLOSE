@@ -16,10 +16,6 @@ export const AuthRestAPI = restAPI.injectEndpoints({
         document.cookie = `token=${ response.access };max-age=28000;path=/`;
         return response;
       },
-      invalidatesTags: [
-        // ...API_TAGS,
-        // { type: 'User', id: 'self' }
-      ], // TODO: Invalidate on GQL API
     }),
     logout: builder.mutation<undefined, void>({
       queryFn: async () => {
@@ -28,10 +24,6 @@ export const AuthRestAPI = restAPI.injectEndpoints({
           data: undefined,
         }
       },
-      invalidatesTags: [
-        // ...API_TAGS,
-        // { type: 'User', id: 'self' }
-      ], // TODO: Invalidate on GQL API
     }),
   }),
 })

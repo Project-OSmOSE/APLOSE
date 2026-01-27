@@ -163,6 +163,7 @@ export const useUpdateAnnotation = () => {
         ...(annotation.update ?? { id: getNewID() }), // Add existing update info if exist
         ...update, // Update according provided info
         annotator: user?.id, // Current user is this update creator
+        detectorConfiguration: undefined, // Detector is no longer the creator of this update
         validation: undefined,
         annotationPhase: phase.id,
       }

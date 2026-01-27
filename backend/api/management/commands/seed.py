@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from random import randint, choice
 
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import User
 from django.core import management
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
@@ -32,7 +31,7 @@ from backend.api.models.annotation.annotation_campaign import AnnotationCampaign
 from backend.api.models.data.scales import get_frequency_scales
 from backend.api.schema.enums import AnnotationType
 from backend.aplose.models import AploseUser
-from backend.aplose.models.user import ExpertiseLevel
+from backend.aplose.models.user import ExpertiseLevel, User
 from backend.osmosewebsite.management.commands.seed import Command as WebsiteCommand
 
 

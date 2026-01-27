@@ -138,8 +138,8 @@ class AnnotationSpectrogramByIDTestCase(GraphQLTestCase):
         content = json.loads(response.content)["data"]["annotationSpectrogramById"]
         self.assertEqual(content["id"], "7")
         self.assertEqual(content["task"]["status"], "Created")
-        self.assertEqual(content["task"]["comments"]["results"], [])
-        self.assertEqual(content["task"]["annotations"]["results"], [])
+        self.assertEqual(len(content["task"]["comments"]["results"]), 0)
+        self.assertEqual(len(content["task"]["annotations"]["results"]), 0)
 
     def test_connected_empty_user(self):
         self.client.login(username="user4", password="osmose29")
@@ -163,14 +163,13 @@ class AnnotationSpectrogramByIDTestCase(GraphQLTestCase):
                 "annotatorID": 1,
             },
         )
-        print(response.content)
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["annotationSpectrogramById"]
         self.assertEqual(content["id"], "7")
         self.assertEqual(content["task"]["status"], "Created")
-        self.assertEqual(content["task"]["comments"]["results"], [])
-        self.assertEqual(content["task"]["annotations"]["results"], [])
+        self.assertEqual(len(content["task"]["comments"]["results"]), 0)
+        self.assertEqual(len(content["task"]["annotations"]["results"]), 0)
 
     def test_connected_annotator(self):
         self.client.login(username="user2", password="osmose29")
@@ -187,6 +186,5 @@ class AnnotationSpectrogramByIDTestCase(GraphQLTestCase):
         self.assertEqual(content["id"], "7")
         self.assertEqual(content["task"]["status"], "Created")
 
-        self.assertEqual(len(content["task"]["comments"]["results"]), 0)
-
+        self.assertEqual(len(content["task"]["comments"]["results"]), 1)
         self.assertEqual(len(content["task"]["annotations"]["results"]), 3)

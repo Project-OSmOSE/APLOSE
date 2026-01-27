@@ -32,7 +32,6 @@ from backend.api.models import (
 from backend.api.models import (
     SpectrogramAnalysis,
 )
-from backend.api.context_filters import AnnotationPhaseContextFilter
 from backend.aplose.models import ExpertiseLevel
 from backend.utils.renderers import CSVRenderer
 
@@ -156,9 +155,13 @@ def _get_annotations_for_report(
         output_field=models.CharField(),
     )
 
+    annotations = Annotation.objects.filter(
+        annotation_phase__annotation_campaign_id=phase.annotation_campaign_id
+    )
+    if phase.phase == AnnotationPhase.Type.ANNOTATION:
+        annotations = annotations.filter(annotation_phase=phase)
     return (
-        Annotation.objects.filter(annotation_phase=phase)
-        .distinct()
+        annotations.distinct()
         .select_related(
             "spectrogram",
             "label",
@@ -221,7 +224,7 @@ def _get_annotations_for_report(
                 "start_datetime": """
                     SELECT 
                         CASE 
-                            WHEN api_annotation.start_time isnull THEN to_char(f.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            WHEN api_annotation.type = 'W' THEN to_char(f.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
                             ELSE to_char((f.start + api_annotation.start_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
                         END
                     FROM api_spectrogram f
@@ -230,7 +233,8 @@ def _get_annotations_for_report(
                 "end_datetime": """
                     SELECT 
                         CASE 
-                            WHEN api_annotation.end_time isnull THEN to_char(f.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            WHEN api_annotation.type = 'W' THEN to_char(f.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                            WHEN api_annotation.type = 'P' THEN to_char((f.start + api_annotation.start_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
                             ELSE to_char((f.start + api_annotation.end_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
                         END
                     FROM api_spectrogram f
@@ -391,9 +395,7 @@ class DownloadViewSet(ViewSet):
     )
     def download_phase_annotations(self, request, pk=None):
         """Download annotation results csv"""
-        phase: AnnotationPhase = AnnotationPhaseContextFilter.get_node_or_fail(
-            request, pk=pk
-        )
+        phase = AnnotationPhase.objects.get_viewable_or_fail(request.user, pk=pk)
         campaign = phase.annotation_campaign
 
         response = HttpResponse(content_type="text/csv")
@@ -459,9 +461,7 @@ class DownloadViewSet(ViewSet):
     )
     def download_phase_progression(self, request, pk=None):
         """Returns the CSV report on tasks status for the given campaign"""
-        phase: AnnotationPhase = AnnotationPhaseContextFilter.get_node_or_fail(
-            request, pk=pk
-        )
+        phase = AnnotationPhase.objects.get_viewable_or_fail(request.user, pk=pk)
         campaign = phase.annotation_campaign
 
         response = HttpResponse(content_type="text/csv")

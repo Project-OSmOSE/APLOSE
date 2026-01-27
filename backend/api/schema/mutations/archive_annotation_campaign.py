@@ -1,7 +1,6 @@
 """AnnotationCampaign update mutations"""
 
 from django.db import transaction
-from django.db.models import QuerySet
 from graphene import (
     Mutation,
     Boolean,
@@ -9,12 +8,9 @@ from graphene import (
 )
 
 from backend.api.models import AnnotationCampaign
-from backend.aplose.models import User
 from backend.utils.schema import (
     GraphQLResolve,
     GraphQLPermissions,
-    NotFoundError,
-    ForbiddenError,
 )
 
 
@@ -30,17 +26,8 @@ class ArchiveAnnotationCampaignMutation(Mutation):
     @transaction.atomic
     def mutate(self, info, id: int):
         """Archive annotation campaign at current date by request user"""
-        campaign: QuerySet[
-            AnnotationCampaign
-        ] = AnnotationCampaign.objects.filter_user_access(info.context.user).filter(
-            pk=id
+        campaign = AnnotationCampaign.objects.get_editable_or_fail(
+            user=info.context.user, pk=id
         )
-        if not campaign.exists():
-            raise NotFoundError()
-        campaign: AnnotationCampaign = campaign.first()
-
-        user: User = info.context.user
-        if not (user.is_staff or user.is_superuser or campaign.owner_id == user.id):
-            raise ForbiddenError()
-        campaign.do_archive(user)
+        campaign.do_archive(info.context.user)
         return ArchiveAnnotationCampaignMutation(ok=True)
