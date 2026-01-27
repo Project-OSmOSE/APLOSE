@@ -1,14 +1,14 @@
 from os import listdir
 from os.path import join, isfile, exists
-from pathlib import WindowsPath
+from pathlib import PureWindowsPath
 
 import graphene
 from django.conf import settings
-from typing_extensions import deprecated
 from osekit.public_api.dataset import (
     Dataset as OSEkitDataset,
     SpectroDataset as OSEkitSpectroDataset,
 )
+from typing_extensions import deprecated
 
 from backend.api.models import SpectrogramAnalysis, Dataset
 from backend.api.schema.nodes import ImportAnalysisNode
@@ -55,7 +55,7 @@ def legacy_resolve_all_spectrogram_analysis_available_for_import(
     available_analyses: [ImportAnalysisNode] = []
     spectro_root = join(
         settings.DATASET_IMPORT_FOLDER,
-        WindowsPath(dataset_path),
+        PureWindowsPath(dataset_path),
         "processed",
         "spectrogram",
         config_folder,
