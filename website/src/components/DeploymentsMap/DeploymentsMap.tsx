@@ -16,7 +16,6 @@ import { clearMap, initMap, setMapView } from './map.functions';
 import './DeploymentsMap.css'
 import { getColorLuma, intToRGB } from './utils.functions';
 import { DeploymentPanel, FilterPanel } from './Panels';
-import { AllDeploymentsQuery } from "../../api/queries.generated";
 import { LightDeployment } from "../../api";
 
 interface Feature {

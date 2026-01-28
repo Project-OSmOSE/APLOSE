@@ -6,13 +6,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('osmosewebsite', '0034_migrate_bibliography_to_metadatax'),
+        ("osmosewebsite", "0034_migrate_bibliography_to_metadatax"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='teammember',
-            old_name='contact',
-            new_name='person',
+            model_name="teammember",
+            old_name="contact",
+            new_name="person",
         ),
     ]

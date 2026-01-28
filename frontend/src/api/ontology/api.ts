@@ -9,9 +9,9 @@ export const OntologyGqlAPI = api.enhanceEndpoints({
       providesTags: result => result?.soundById ? [ { type: 'Sound' as const, id: result.soundById.id } ] : []
     },
     updateSound: {
-      invalidatesTags: result => result?.postSound?.data?.id ? [ {
+      invalidatesTags: result => result?.postSound?.sound?.id ? [ {
         type: 'Sound',
-        id: result.postSound.data.id
+        id: result.postSound.sound.id
       }, 'Sound' ] : [ 'Sound' ]
     },
     createSound: {
@@ -27,9 +27,9 @@ export const OntologyGqlAPI = api.enhanceEndpoints({
       providesTags: result => result?.sourceById ? [ { type: 'Sound' as const, id: result.sourceById.id } ] : []
     },
     updateSource: {
-      invalidatesTags: result => result?.postSource?.data?.id ? [ {
+      invalidatesTags: result => result?.postSource?.source?.id ? [ {
         type: 'Source',
-        id: result.postSource.data.id
+        id: result.postSource.source.id
       }, 'Source' ] : [ 'Source' ],
     },
     createSource: {

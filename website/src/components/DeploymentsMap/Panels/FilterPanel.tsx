@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import styles from './panel.module.scss';
 import { IoClose, IoFunnel, IoFunnelOutline, IoRefresh } from 'react-icons/io5';
 import { FilterRef, SampleRateFilter } from './Filters';
@@ -16,11 +16,9 @@ export const FilterPanel: React.FC<FilterProps> = ({
 
     const sampleRate = useRef<FilterRef | null>(null);
 
-    const isFiltering = useMemo(() => sampleRate.current?.isFiltering, [ sampleRate.current ]);
-
-    const reset = () => {
+    const reset = useCallback(() => {
         sampleRate.current?.reset();
-    }
+    }, [])
 
     const updateFilter = useCallback(() => {
         const filteredList = allDeployments.filter(d => sampleRate.current?.filterDeployment(d));
@@ -30,13 +28,13 @@ export const FilterPanel: React.FC<FilterProps> = ({
     if (!isOpen) {
         return <div className={ [ styles.panel, styles.filter, styles.empty ].join(' ') }
                     onClick={ () => setIsOpen(true) }>
-            <FilterIcon isFiltering={ isFiltering === undefined ? false : isFiltering }/>
+            <FilterIcon isFiltering={ sampleRate.current?.isFiltering === undefined ? false : sampleRate.current?.isFiltering }/>
         </div>
     }
     return <div className={ [ styles.panel, styles.filter ].join(' ') }>
         <div className={ styles.head }>
-            <FilterIcon isFiltering={ isFiltering === undefined ? false : isFiltering }/>
-            { isFiltering && <button onClick={ () => reset() }><IoRefresh/></button> }
+            <FilterIcon isFiltering={ sampleRate.current?.isFiltering === undefined ? false : sampleRate.current?.isFiltering }/>
+            { sampleRate.current?.isFiltering && <button onClick={ () => reset() }><IoRefresh/></button> }
             <button onClick={ () => setIsOpen(false) }><IoClose/></button>
         </div>
         <div className={ styles.content }>

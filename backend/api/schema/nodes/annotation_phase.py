@@ -17,8 +17,10 @@ class AnnotationPhaseNode(ExtendedNode):
     annotation_campaign_id = graphene.Field(
         graphene.ID, source="annotation_campaign_id", required=True
     )
-    annotation_file_ranges = AuthenticatedDjangoConnectionField(AnnotationFileRangeNode)
-    annotation_spectrograms = AuthenticatedDjangoConnectionField(
+    annotation_file_ranges = AuthenticatedPaginationConnectionField(
+        AnnotationFileRangeNode
+    )
+    annotation_spectrograms = AuthenticatedPaginationConnectionField(
         AnnotationSpectrogramNode, source="annotations__spectrogram"
     )
 
