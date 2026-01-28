@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             model_name="dataset",
             name="related_channel_configuration",
             field=models.ManyToManyField(
-                related_name="aplose_datasets", to="metadatax.ChannelConfiguration"
+                related_name="aplose_datasets", to="acquisition.ChannelConfiguration"
             ),
         ),
     ]

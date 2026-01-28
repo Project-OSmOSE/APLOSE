@@ -1,4 +1,4 @@
-import React, { DragEvent, useEffect, useRef } from "react";
+import React, { DragEvent, useRef } from "react";
 import styles from './RangeSlider.module.scss';
 
 interface Props {
