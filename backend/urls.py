@@ -35,7 +35,6 @@ from backend.api.urls import api_router
 from backend.aplose.urls import aplose_router
 from backend.osmosewebsite.urls import website_router
 from backend.sql.urls import sql_router
-from backend.utils.schema import DRFAuthenticatedGraphQLView
 
 # Backend urls are for admin & api documentation
 backend_urlpatterns = [
