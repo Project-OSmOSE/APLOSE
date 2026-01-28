@@ -135,7 +135,7 @@ class SimpleDataset:
             # Look for corresponding WAV file
             wav_path = nc_path.with_suffix('.wav')
             if not wav_path.exists():
-                # Try case-insensitive search
+                # Try case-insensitive search, stripping FFT suffix if present
                 wav_path = self._find_wav_file(nc_path.stem)
 
             spec_file = SpectrogramFile(nc_path, wav_path if wav_path and wav_path.exists() else None)
@@ -145,13 +145,33 @@ class SimpleDataset:
         return spectrograms
 
     def _find_wav_file(self, stem: str) -> Optional[Path]:
-        """Find WAV file with given stem (case-insensitive)"""
+        """
+        Find WAV file with given stem (case-insensitive)
+
+        Handles filenames with FFT suffix (e.g., '2024_01_15_08_00_00_fft1024' -> '2024_01_15_08_00_00.wav')
+        """
+        import re
+
+        # Strip FFT suffix if present (e.g., _fft1024, _fft2048)
+        base_stem = re.sub(r'_fft\d+$', '', stem, flags=re.IGNORECASE)
+
+        # Try exact match first
         for wav_path in self.folder.glob("*.wav"):
             if wav_path.stem.lower() == stem.lower():
                 return wav_path
         for wav_path in self.folder.glob("*.WAV"):
             if wav_path.stem.lower() == stem.lower():
                 return wav_path
+
+        # Try with FFT suffix stripped
+        if base_stem != stem:
+            for wav_path in self.folder.glob("*.wav"):
+                if wav_path.stem.lower() == base_stem.lower():
+                    return wav_path
+            for wav_path in self.folder.glob("*.WAV"):
+                if wav_path.stem.lower() == base_stem.lower():
+                    return wav_path
+
         return None
 
     @property
