@@ -3650,6 +3650,57 @@ export type MutationUserUpdatePasswordArgs = {
   input: UpdateUserPasswordMutationInput;
 };
 
+/** News node */
+export type NewsNode = ExtendedInterface & {
+  __typename?: 'NewsNode';
+  body: Scalars['String']['output'];
+  date?: Maybe<Scalars['Date']['output']>;
+  /** The ID of the object */
+  id: Scalars['ID']['output'];
+  intro: Scalars['String']['output'];
+  osmoseMemberAuthors: TeamMemberNodeConnection;
+  otherAuthors?: Maybe<Array<Scalars['String']['output']>>;
+  thumbnail: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+};
+
+
+/** News node */
+export type NewsNodeOsmoseMemberAuthorsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type NewsNodeConnection = {
+  __typename?: 'NewsNodeConnection';
+  /** Contains the nodes in this connection. */
+  edges: Array<Maybe<NewsNodeEdge>>;
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+};
+
+/** A Relay edge containing a `NewsNode` and its cursor. */
+export type NewsNodeEdge = {
+  __typename?: 'NewsNodeEdge';
+  /** A cursor for use in pagination */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge */
+  node?: Maybe<NewsNode>;
+};
+
+export type NewsNodeNodeConnection = {
+  __typename?: 'NewsNodeNodeConnection';
+  /** Pagination data for this connection. */
+  pageInfo: PageInfoExtra;
+  /** Contains the nodes in this connection. */
+  results: Array<Maybe<NewsNode>>;
+  totalCount?: Maybe<Scalars['Int']['output']>;
+};
+
 /** The Relay compliant `PageInfo` type, containing data necessary to paginate this connection. */
 export type PageInfo = {
   __typename?: 'PageInfo';
@@ -4492,6 +4543,7 @@ export type Query = {
   allLabels?: Maybe<LabelNodeNodeConnection>;
   allMaintenanceTypes?: Maybe<MaintenanceTypeNodeNodeConnection>;
   allMaintenances?: Maybe<MaintenanceNodeNodeConnection>;
+  allNews?: Maybe<NewsNodeNodeConnection>;
   allPersons?: Maybe<PersonNodeNodeConnection>;
   allPlatformTypes?: Maybe<PlatformTypeNodeNodeConnection>;
   allPlatforms?: Maybe<PlatformNodeNodeConnection>;
@@ -4529,6 +4581,7 @@ export type Query = {
   institutionById?: Maybe<InstitutionNode>;
   labelById?: Maybe<LabelNode>;
   maintenanceById?: Maybe<MaintenanceNode>;
+  newsById?: Maybe<NewsNode>;
   personById?: Maybe<PersonNode>;
   platformById?: Maybe<PlatformNode>;
   posterById?: Maybe<PosterNode>;
@@ -5144,6 +5197,19 @@ export type QueryAllMaintenancesArgs = {
 
 
 /** Global query */
+export type QueryAllNewsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Global query */
 export type QueryAllPersonsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -5581,6 +5647,12 @@ export type QueryLabelByIdArgs = {
 
 /** Global query */
 export type QueryMaintenanceByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** Global query */
+export type QueryNewsByIdArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -6377,12 +6449,24 @@ export type TeamMemberNode = ExtendedInterface & {
   level?: Maybe<Scalars['Int']['output']>;
   linkedinUrl?: Maybe<Scalars['String']['output']>;
   mailAddress?: Maybe<Scalars['String']['output']>;
+  newsSet: NewsNodeConnection;
   person: PersonNode;
   personalWebsiteUrl?: Maybe<Scalars['String']['output']>;
   picture: Scalars['String']['output'];
   position: Scalars['String']['output'];
   projectSet: WebsiteProjectNodeConnection;
   researchGateUrl?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** TeamMember node */
+export type TeamMemberNodeNewsSetArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
 

@@ -349,6 +349,55 @@ export type TeamMemberByIdQuery = {
     } | null
 };
 
+export type AllNewsQueryVariables = Types.Exact<{
+    offset: Types.Scalars['Int']['input'];
+    limit: Types.Scalars['Int']['input'];
+}>;
+
+
+export type AllNewsQuery = {
+    __typename?: 'Query',
+    allNews?: {
+        __typename?: 'NewsNodeNodeConnection',
+        totalCount?: number | null,
+        results: Array<{
+            __typename?: 'NewsNode',
+            id: string,
+            title: string,
+            thumbnail: string,
+            date?: any | null,
+            intro: string
+        } | null>
+    } | null
+};
+
+export type NewsByIdQueryVariables = Types.Exact<{
+    id: Types.Scalars['ID']['input'];
+}>;
+
+
+export type NewsByIdQuery = {
+    __typename?: 'Query',
+    newsById?: {
+        __typename?: 'NewsNode',
+        title: string,
+        date?: any | null,
+        body: string,
+        otherAuthors?: Array<string> | null,
+        osmoseMemberAuthors: {
+            __typename?: 'TeamMemberNodeConnection',
+            edges: Array<{
+                __typename?: 'TeamMemberNodeEdge',
+                node?: {
+                    __typename?: 'TeamMemberNode',
+                    id: string,
+                    person: { __typename?: 'PersonNode', initialNames?: string | null }
+                } | null
+            } | null>
+        }
+    } | null
+};
+
 
 export const AllProjectsDocument = gql`
     query allProjects($offset: Int!, $limit: Int!) {
@@ -688,6 +737,40 @@ export const TeamMemberByIdDocument = gql`
         }
     }
 `;
+export const AllNewsDocument = gql`
+    query allNews($offset: Int!, $limit: Int!) {
+        allNews(limit: $limit, offset: $offset) {
+            totalCount
+            results {
+                id
+                title
+                thumbnail
+                date
+                intro
+            }
+        }
+    }
+`;
+export const NewsByIdDocument = gql`
+    query newsById($id: ID!) {
+        newsById(id: $id) {
+            title
+            date
+            body
+            osmoseMemberAuthors {
+                edges {
+                    node {
+                        id
+                        person {
+                            initialNames
+                        }
+                    }
+                }
+            }
+            otherAuthors
+        }
+    }
+`;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?: Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -701,6 +784,8 @@ const DeploymentByIdDocumentString = print(DeploymentByIdDocument);
 const AllBibliographyDocumentString = print(AllBibliographyDocument);
 const AllTeamMembersDocumentString = print(AllTeamMembersDocument);
 const TeamMemberByIdDocumentString = print(TeamMemberByIdDocument);
+const AllNewsDocumentString = print(AllNewsDocument);
+const NewsByIdDocumentString = print(NewsByIdDocument);
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
     return {
@@ -775,6 +860,24 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
             status: number;
         }> {
             return withWrapper((wrappedRequestHeaders) => client.rawRequest<TeamMemberByIdQuery>(TeamMemberByIdDocumentString, variables, { ...requestHeaders, ...wrappedRequestHeaders }), 'teamMemberById', 'query', variables);
+        },
+        allNews(variables: AllNewsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{
+            data: AllNewsQuery;
+            errors?: GraphQLError[];
+            extensions?: any;
+            headers: Headers;
+            status: number;
+        }> {
+            return withWrapper((wrappedRequestHeaders) => client.rawRequest<AllNewsQuery>(AllNewsDocumentString, variables, { ...requestHeaders, ...wrappedRequestHeaders }), 'allNews', 'query', variables);
+        },
+        newsById(variables: NewsByIdQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{
+            data: NewsByIdQuery;
+            errors?: GraphQLError[];
+            extensions?: any;
+            headers: Headers;
+            status: number;
+        }> {
+            return withWrapper((wrappedRequestHeaders) => client.rawRequest<NewsByIdQuery>(NewsByIdDocumentString, variables, { ...requestHeaders, ...wrappedRequestHeaders }), 'newsById', 'query', variables);
         }
     };
 }

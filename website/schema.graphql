@@ -802,6 +802,22 @@ type Query {
     id: ID
   ): TeamMemberNodeNodeConnection
   teamMemberById(id: ID!): TeamMemberNode
+  allNews(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    id: ID
+  ): NewsNodeNodeConnection
+  newsById(id: ID!): NewsNode
   currentUser: UserNode
   allUserGroups(
     """Query limit"""
@@ -2718,7 +2734,38 @@ type TeamMemberNode implements ExtendedInterface {
   githubUrl: String
   linkedinUrl: String
   isFormerMember: Boolean!
+  newsSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): NewsNodeConnection!
   projectSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): WebsiteProjectNodeConnection!
+}
+
+type NewsNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [NewsNodeEdge]!
+}
+
+"""A Relay edge containing a `NewsNode` and its cursor."""
+type NewsNodeEdge {
+  """The item at the end of the edge"""
+  node: NewsNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""News node"""
+type NewsNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  title: String!
+  intro: String!
+  body: String!
+  date: Date
+  thumbnail: String!
+  osmoseMemberAuthors(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): TeamMemberNodeConnection!
+  otherAuthors: [String!]
 }
 
 type ChannelConfigurationNodeConnection {
@@ -4142,6 +4189,15 @@ type TeamMemberNodeNodeConnection {
 
   """Contains the nodes in this connection."""
   results: [TeamMemberNode]!
+  totalCount: Int
+}
+
+type NewsNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [NewsNode]!
   totalCount: Int
 }
 
