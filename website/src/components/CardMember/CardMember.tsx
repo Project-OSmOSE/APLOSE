@@ -1,23 +1,21 @@
 import React from 'react';
 import { Link } from "react-router-dom";
-
-import { TeamMember } from "../../models/team";
-
+import { LightTeamMember } from "../../api";
 import './CardMember.css';
 
 
-export const CardMember: React.FC<{ member: TeamMember }> = ({ member }) => {
+export const CardMember: React.FC<{ member: LightTeamMember }> = ({ member }) => {
 
-  const content = (<React.Fragment>
-    <img src={ member.picture }
-         alt={ `${ member.person.initial_names }'s Portrait` }
-         title={ `${ member.person.initial_names }'s Portrait` }/>
-    <h5>{ member.person.last_name } { member.person.first_name }</h5>
-    <p><small className="text-muted">{ member.position }</small></p>
-  </React.Fragment>)
+    const content = (<React.Fragment>
+        <img src={ member.picture }
+             alt={ `${ member.person.initialNames }'s Portrait` }
+             title={ `${ member.person.initialNames }'s Portrait` }/>
+        <h5>{ member.person.lastName } { member.person.firstName }</h5>
+        <p><small className="text-muted">{ member.position }</small></p>
+    </React.Fragment>)
 
-  if (member.is_former_member) return (<div id="card-member">{ content }</div>)
+    if (member.isFormerMember) return (<div id="card-member">{ content }</div>)
 
-  return (<Link to={ `/people/${ member.id }` } id="card-member">{ content }</Link>
-  )
+    return (<Link to={ `/people/${ member.id }` } id="card-member">{ content }</Link>
+    )
 };
