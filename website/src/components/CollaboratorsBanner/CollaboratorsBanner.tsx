@@ -1,8 +1,6 @@
 import React from "react";
 import './CollaboratorsBanner.css';
-import { CollaboratorNode } from "../../api/types.gql-generated";
-
-type Collaborator = Pick<CollaboratorNode, 'url' | 'name' | 'thumbnail'>
+import { Collaborator } from "../../api";
 
 interface CollaboratorsBannerProps {
   collaborators?: Array<Collaborator>

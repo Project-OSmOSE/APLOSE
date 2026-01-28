@@ -41,6 +41,15 @@ query projectById($id: ID!) {
     }
 }
 
+query homeCollaborators{
+    allCollaborators(showOnHomePage: true) {
+        results {
+            name
+            thumbnail
+            url
+        }
+    }
+}
 
 query allDeployments($projectID: Decimal) {
     allDeployments(project_WebsiteProject_Id: $projectID) {

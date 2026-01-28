@@ -19,6 +19,11 @@ export type ProjectByIdQueryVariables = Types.Exact<{
 
 export type ProjectByIdQuery = { __typename?: 'Query', websiteProjectById?: { __typename?: 'WebsiteProjectNode', title: string, start?: any | null, end?: any | null, body: string, otherContacts?: Array<string> | null, osmoseMemberContacts: { __typename?: 'TeamMemberNodeConnection', edges: Array<{ __typename?: 'TeamMemberNodeEdge', node?: { __typename?: 'TeamMemberNode', id: string, person: { __typename?: 'PersonNode', initialNames?: string | null } } | null } | null> }, collaborators: { __typename?: 'CollaboratorNodeConnection', edges: Array<{ __typename?: 'CollaboratorNodeEdge', node?: { __typename?: 'CollaboratorNode', name: string, thumbnail: string, url?: string | null } | null } | null> } } | null };
 
+export type HomeCollaboratorsQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type HomeCollaboratorsQuery = { __typename?: 'Query', allCollaborators?: { __typename?: 'CollaboratorNodeNodeConnection', results: Array<{ __typename?: 'CollaboratorNode', name: string, thumbnail: string, url?: string | null } | null> } | null };
+
 export type AllDeploymentsQueryVariables = Types.Exact<{
   projectID?: Types.InputMaybe<Types.Scalars['Decimal']['input']>;
 }>;
@@ -80,6 +85,17 @@ export const ProjectByIdDocument = gql`
           url
         }
       }
+    }
+  }
+}
+    `;
+export const HomeCollaboratorsDocument = gql`
+    query homeCollaborators {
+  allCollaborators(showOnHomePage: true) {
+    results {
+      name
+      thumbnail
+      url
     }
   }
 }
@@ -337,6 +353,7 @@ export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, str
 const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType, _variables) => action();
 const AllProjectsDocumentString = print(AllProjectsDocument);
 const ProjectByIdDocumentString = print(ProjectByIdDocument);
+const HomeCollaboratorsDocumentString = print(HomeCollaboratorsDocument);
 const AllDeploymentsDocumentString = print(AllDeploymentsDocument);
 const DeploymentByIdDocumentString = print(DeploymentByIdDocument);
 const AllBibliographyDocumentString = print(AllBibliographyDocument);
@@ -347,6 +364,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     projectById(variables: ProjectByIdQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: ProjectByIdQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
         return withWrapper((wrappedRequestHeaders) => client.rawRequest<ProjectByIdQuery>(ProjectByIdDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'projectById', 'query', variables);
+    },
+    homeCollaborators(variables?: HomeCollaboratorsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: HomeCollaboratorsQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
+        return withWrapper((wrappedRequestHeaders) => client.rawRequest<HomeCollaboratorsQuery>(HomeCollaboratorsDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'homeCollaborators', 'query', variables);
     },
     allDeployments(variables?: AllDeploymentsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: AllDeploymentsQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
         return withWrapper((wrappedRequestHeaders) => client.rawRequest<AllDeploymentsQuery>(AllDeploymentsDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'allDeployments', 'query', variables);
