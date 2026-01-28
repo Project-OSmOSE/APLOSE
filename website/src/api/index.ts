@@ -2,7 +2,7 @@ import { GraphQLClient } from "graphql-request";
 import {
     AllBibliographyQuery,
     AllDeploymentsQuery, AllNewsQuery,
-    AllProjectsQuery, AllTeamMembersQuery,
+    AllProjectsQuery, AllScientificTalksQuery, AllTeamMembersQuery,
     DeploymentByIdQuery,
     getSdk, HomeCollaboratorsQuery, NewsByIdQuery, ProjectByIdQuery, TeamMemberByIdQuery
 } from "./queries.generated";
@@ -48,3 +48,6 @@ export type Article = Bibliography & { __typename: 'ArticleNode' }
 export type Software = Bibliography & { __typename: 'SoftwareNode' }
 export type Poster = Bibliography & { __typename: 'PosterNode' }
 export type Conference = Bibliography & { __typename: 'ConferenceNode' }
+
+// ScientificTalks
+export type ScientificTalk = N<N<N<AllScientificTalksQuery['allScientificTalks']>['results']>[number]>

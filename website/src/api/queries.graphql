@@ -367,3 +367,26 @@ query newsById($id: ID!) {
         otherAuthors
     }
 }
+
+query allScientificTalks ($offset: Int!, $limit: Int!){
+    allScientificTalks(limit: $limit, offset: $offset) {
+        totalCount
+        results {
+            title
+            thumbnail
+            date
+            intro
+            osmoseMemberPresenters {
+                edges {
+                    node {
+                        id
+                        person {
+                            initialNames
+                        }
+                    }
+                }
+            }
+            otherPresenters
+        }
+    }
+}

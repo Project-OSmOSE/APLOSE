@@ -3,7 +3,13 @@ import graphene
 from django_extension.schema.fields import ByIdField
 from graphene_django_pagination import DjangoPaginationConnectionField
 
-from .nodes import WebsiteProjectNode, TeamMemberNode, NewsNode, CollaboratorNode
+from .nodes import (
+    WebsiteProjectNode,
+    TeamMemberNode,
+    NewsNode,
+    CollaboratorNode,
+    ScientificTalkNode,
+)
 
 
 class OSmOSEWebsiteQuery(graphene.ObjectType):
@@ -19,3 +25,5 @@ class OSmOSEWebsiteQuery(graphene.ObjectType):
 
     all_news = DjangoPaginationConnectionField(NewsNode)
     news_by_id = ByIdField(NewsNode)
+
+    all_scientific_talks = DjangoPaginationConnectionField(ScientificTalkNode)
