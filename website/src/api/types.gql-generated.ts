@@ -4550,6 +4550,7 @@ export type Query = {
   allPoster?: Maybe<PosterNodeNodeConnection>;
   allProjectTypes?: Maybe<ProjectTypeNodeNodeConnection>;
   allProjects?: Maybe<ProjectNodeOverrideNodeConnection>;
+  allScientificTalks?: Maybe<ScientificTalkNodeNodeConnection>;
   allSites?: Maybe<SiteNodeNodeConnection>;
   allSoftware?: Maybe<SoftwareNodeNodeConnection>;
   allSounds?: Maybe<SoundNodeNodeConnection>;
@@ -5345,6 +5346,19 @@ export type QueryAllProjectsArgs = {
 
 
 /** Global query */
+export type QueryAllScientificTalksArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Global query */
 export type QueryAllSitesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -5743,6 +5757,56 @@ export enum RoleEnum {
   ProjectManager = 'ProjectManager',
   ProjectOwner = 'ProjectOwner'
 }
+
+/** ScientificTalk node */
+export type ScientificTalkNode = ExtendedInterface & {
+  __typename?: 'ScientificTalkNode';
+  date?: Maybe<Scalars['Date']['output']>;
+  /** The ID of the object */
+  id: Scalars['ID']['output'];
+  intro?: Maybe<Scalars['String']['output']>;
+  osmoseMemberPresenters: TeamMemberNodeConnection;
+  otherPresenters?: Maybe<Array<Scalars['String']['output']>>;
+  thumbnail: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+};
+
+
+/** ScientificTalk node */
+export type ScientificTalkNodeOsmoseMemberPresentersArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ScientificTalkNodeConnection = {
+  __typename?: 'ScientificTalkNodeConnection';
+  /** Contains the nodes in this connection. */
+  edges: Array<Maybe<ScientificTalkNodeEdge>>;
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+};
+
+/** A Relay edge containing a `ScientificTalkNode` and its cursor. */
+export type ScientificTalkNodeEdge = {
+  __typename?: 'ScientificTalkNodeEdge';
+  /** A cursor for use in pagination */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge */
+  node?: Maybe<ScientificTalkNode>;
+};
+
+export type ScientificTalkNodeNodeConnection = {
+  __typename?: 'ScientificTalkNodeNodeConnection';
+  /** Pagination data for this connection. */
+  pageInfo: PageInfoExtra;
+  /** Contains the nodes in this connection. */
+  results: Array<Maybe<ScientificTalkNode>>;
+  totalCount?: Maybe<Scalars['Int']['output']>;
+};
 
 export enum SignalPluralityEnum {
   One = 'One',
@@ -6456,6 +6520,7 @@ export type TeamMemberNode = ExtendedInterface & {
   position: Scalars['String']['output'];
   projectSet: WebsiteProjectNodeConnection;
   researchGateUrl?: Maybe<Scalars['String']['output']>;
+  scientifictalkSet: ScientificTalkNodeConnection;
 };
 
 
@@ -6472,6 +6537,17 @@ export type TeamMemberNodeNewsSetArgs = {
 
 /** TeamMember node */
 export type TeamMemberNodeProjectSetArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+/** TeamMember node */
+export type TeamMemberNodeScientifictalkSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;

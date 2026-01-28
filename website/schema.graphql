@@ -818,6 +818,21 @@ type Query {
     id: ID
   ): NewsNodeNodeConnection
   newsById(id: ID!): NewsNode
+  allScientificTalks(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    id: ID
+  ): ScientificTalkNodeNodeConnection
   currentUser: UserNode
   allUserGroups(
     """Query limit"""
@@ -2736,6 +2751,7 @@ type TeamMemberNode implements ExtendedInterface {
   isFormerMember: Boolean!
   newsSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): NewsNodeConnection!
   projectSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): WebsiteProjectNodeConnection!
+  scientifictalkSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): ScientificTalkNodeConnection!
 }
 
 type NewsNodeConnection {
@@ -2766,6 +2782,35 @@ type NewsNode implements ExtendedInterface {
   thumbnail: String!
   osmoseMemberAuthors(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): TeamMemberNodeConnection!
   otherAuthors: [String!]
+}
+
+type ScientificTalkNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [ScientificTalkNodeEdge]!
+}
+
+"""A Relay edge containing a `ScientificTalkNode` and its cursor."""
+type ScientificTalkNodeEdge {
+  """The item at the end of the edge"""
+  node: ScientificTalkNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""ScientificTalk node"""
+type ScientificTalkNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  title: String!
+  intro: String
+  date: Date
+  thumbnail: String!
+  osmoseMemberPresenters(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): TeamMemberNodeConnection!
+  otherPresenters: [String!]
 }
 
 type ChannelConfigurationNodeConnection {
@@ -4198,6 +4243,15 @@ type NewsNodeNodeConnection {
 
   """Contains the nodes in this connection."""
   results: [NewsNode]!
+  totalCount: Int
+}
+
+type ScientificTalkNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [ScientificTalkNode]!
   totalCount: Int
 }
 
