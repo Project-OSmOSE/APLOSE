@@ -17,5 +17,5 @@ If you're not authorized to log in with your APLOSE account, you need another ad
 ::: warning No user 
 If no user exist reach the developer document to create the superuser
 
-[Developer documentation](/dev/docker.md)
+[Developer documentation](/dev/contributing.md)
 :::

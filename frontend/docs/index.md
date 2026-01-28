@@ -11,7 +11,7 @@ hero:
       link: /user
     - theme: alt
       text: Join development
-      link: /dev/docker
+      link: /dev/contributing
 
 features:
   - title: Annotate audio files

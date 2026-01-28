@@ -11,7 +11,7 @@ hero:
       link: /fr/user
     - theme: alt
       text: Join development
-      link: /dev/docker
+      link: /dev/contributing
 
 features:
   - title: Annoter des fichiers audio

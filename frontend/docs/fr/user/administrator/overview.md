@@ -23,6 +23,6 @@ vous donner le privilège d'accéder à l'administration de APLOSE.
 
 Si aucun utilisateur n'existe, consultez le document du développeur pour créer le super-utilisateur.
 
-[Documentation du développeur](/dev/docker.md)
+[Documentation du développeur](/dev/contributing.md)
 
 :::
