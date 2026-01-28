@@ -768,7 +768,23 @@ type Query {
     last: Int
     id: ID
   ): WebsiteProjectNodeNodeConnection
-  websiteProjetById(id: ID!): WebsiteProjectNode
+  websiteProjectById(id: ID!): WebsiteProjectNode
+  allTeamMembers(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    id: ID
+  ): TeamMemberNodeNodeConnection
+  teamMemberById(id: ID!): TeamMemberNode
   currentUser: UserNode
   allUserGroups(
     """Query limit"""
@@ -2176,6 +2192,8 @@ type PersonNode implements ExtendedInterface {
   institutionRelations: [PersonInstitutionRelationNode]
   authors(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], order: Int, order_Lt: Int, order_Lte: Int, order_Gt: Int, order_Gte: Int, bibliographyId: ID, bibliographyId_In: [ID], personId: ID, personId_In: [ID]): AuthorNodeConnection!
   performedMaintenances(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], typeId: ID, typeId_In: [ID], maintainerId: ID, maintainerId_In: [ID], maintainerInstitutionId: ID, maintainerInstitutionId_In: [ID], platformId: ID, platformId_In: [ID], equipmentId: ID, equipmentId_In: [ID], date: Date, date_Lt: Date, date_Lte: Date, date_Gt: Date, date_Gte: Date): MaintenanceNodeConnection!
+  teamMember: TeamMemberNode
+  currentInstitutions: [InstitutionNode]
 }
 
 type InstitutionNodeConnection {
@@ -2217,6 +2235,8 @@ type TeamNode implements ExtendedInterface {
   id: ID!
   name: String!
   institution: InstitutionNode!
+  mail: String
+  website: String
   contactRelations(offset: Int, before: String, after: String, first: Int, last: Int): PersonInstitutionRelationNodeConnection!
   persons(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], firstName: String, firstName_Icontains: String, lastName: String, lastName_Icontains: String, mail: String, mail_Icontains: String, website: String, website_Icontains: String): PersonNodeConnection!
 }
@@ -2455,16 +2475,12 @@ type ProjectNodeOverride implements ExtendedInterface {
 }
 
 type ContactRelationNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
   role: RoleEnum
   contactType: String!
 
-  """Should have at least one 'Main Contact'"""
-  projects(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], name: String, name_Icontains: String, accessibility: AccessibilityEnum, doi: String, startDate: Date, startDate_Lte: Date, startDate_Lt: Date, startDate_Gte: Date, startDate_Gt: Date, endDate: Date, endDate_Lte: Date, endDate_Lt: Date, endDate_Gte: Date, endDate_Gt: Date, projectGoal: String, projectGoal_Icontains: String, financing: FinancingEnum): ProjectNodeOverrideConnection!
-
-  """Contacts related to the deployment."""
-  deployments(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], projectId: ID, projectId_In: [ID], siteId: ID, siteId_In: [ID], campaignId: ID, campaignId_In: [ID], platformId: ID, platformId_In: [ID], longitude: Float, longitude_Lt: Float, longitude_Lte: Float, longitude_Gt: Float, longitude_Gte: Float, latitude: Float, latitude_Lt: Float, latitude_Lte: Float, latitude_Gt: Float, latitude_Gte: Float, name: String, name_Icontains: String, bathymetricDepth: Int, bathymetricDepth_Lt: Int, bathymetricDepth_Lte: Int, bathymetricDepth_Gt: Int, bathymetricDepth_Gte: Int, deploymentDate: DateTime, deploymentDate_Lt: DateTime, deploymentDate_Lte: DateTime, deploymentDate_Gt: DateTime, deploymentDate_Gte: DateTime, deploymentVessel: String, deploymentVessel_Icontains: String, recoveryDate: DateTime, recoveryDate_Lt: DateTime, recoveryDate_Lte: DateTime, recoveryDate_Gt: DateTime, recoveryDate_Gte: DateTime, recoveryVessel: String, recoveryVessel_Icontains: String, description_Icontains: String, project_WebsiteProject_Id: Decimal): DeploymentNodeConnection!
+  """The ID of the object"""
+  id: ID!
+  contact: ContactUnion
 }
 
 enum RoleEnum {
@@ -2476,6 +2492,27 @@ enum RoleEnum {
   DatasetProducer
   ProductionDatabase
   ContactPoint
+}
+
+union ContactUnion = PersonNode | TeamNode | InstitutionNode
+
+enum AccessibilityEnum {
+  Confidential
+  UponRequest
+  OpenAccess
+}
+
+type ProjectTypeNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+
+  """Description of the type of the project"""
+  name: String!
+
+  """
+  Description of the type of the project (e.g., research, marine renewable energies, long monitoring,...).
+  """
+  projects(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], name: String, name_Icontains: String, accessibility: AccessibilityEnum, doi: String, startDate: Date, startDate_Lte: Date, startDate_Lt: Date, startDate_Gte: Date, startDate_Gt: Date, endDate: Date, endDate_Lte: Date, endDate_Lt: Date, endDate_Gte: Date, endDate_Gt: Date, projectGoal: String, projectGoal_Icontains: String, financing: FinancingEnum): ProjectNodeOverrideConnection!
 }
 
 type ProjectNodeOverrideConnection {
@@ -2495,30 +2532,11 @@ type ProjectNodeOverrideEdge {
   cursor: String!
 }
 
-enum AccessibilityEnum {
-  Confidential
-  UponRequest
-  OpenAccess
-}
-
 enum FinancingEnum {
   Public
   Private
   Mixte
   NotFinanced
-}
-
-type ProjectTypeNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-
-  """Description of the type of the project"""
-  name: String!
-
-  """
-  Description of the type of the project (e.g., research, marine renewable energies, long monitoring,...).
-  """
-  projects(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], name: String, name_Icontains: String, accessibility: AccessibilityEnum, doi: String, startDate: Date, startDate_Lte: Date, startDate_Lt: Date, startDate_Gte: Date, startDate_Gt: Date, endDate: Date, endDate_Lte: Date, endDate_Lt: Date, endDate_Gte: Date, endDate_Gt: Date, projectGoal: String, projectGoal_Icontains: String, financing: FinancingEnum): ProjectNodeOverrideConnection!
 }
 
 type CampaignNodeConnection {
@@ -2597,8 +2615,61 @@ type WebsiteProjectNode implements ExtendedInterface {
   end: Date
   body: String!
   thumbnail: String!
+  osmoseMemberContacts(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): TeamMemberNodeConnection!
   otherContacts: [String!]
   metadataxProject: ProjectNodeOverride
+}
+
+type TeamMemberNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [TeamMemberNodeEdge]!
+}
+
+"""A Relay edge containing a `TeamMemberNode` and its cursor."""
+type TeamMemberNodeEdge {
+  """The item at the end of the edge"""
+  node: TeamMemberNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""TeamMember node"""
+type TeamMemberNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  level: Int
+  person: PersonNode!
+  position: String!
+  biography: String
+  picture: String!
+  mailAddress: String
+  researchGateUrl: String
+  personalWebsiteUrl: String
+  githubUrl: String
+  linkedinUrl: String
+  isFormerMember: Boolean!
+  projectSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): WebsiteProjectNodeConnection!
+}
+
+type WebsiteProjectNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [WebsiteProjectNodeEdge]!
+}
+
+"""A Relay edge containing a `WebsiteProjectNode` and its cursor."""
+type WebsiteProjectNodeEdge {
+  """The item at the end of the edge"""
+  node: WebsiteProjectNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
 }
 
 type ChannelConfigurationNodeConnection {
@@ -2714,8 +2785,6 @@ type DeploymentMobilePositionNode implements ExtendedInterface {
   """Roll of the mobile platform"""
   roll: Float
 }
-
-union ContactUnion = PersonNode | TeamNode | InstitutionNode
 
 type EquipmentModelNodeConnection {
   """Pagination data for this connection."""
@@ -4001,6 +4070,15 @@ type WebsiteProjectNodeNodeConnection {
 
   """Contains the nodes in this connection."""
   results: [WebsiteProjectNode]!
+  totalCount: Int
+}
+
+type TeamMemberNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [TeamMemberNode]!
   totalCount: Int
 }
 

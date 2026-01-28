@@ -123,3 +123,128 @@ query deploymentById($id: ID!) {
         }
     }
 }
+
+query allBibliography {
+    allBibliography {
+        edges {
+            node {
+                ... on ArticleNode {
+                    title
+                    doi
+                    status
+                    type
+                    publicationDate
+                    tags {
+                        name
+                    }
+                    authors {
+                        edges {
+                            node {
+                                order
+                                person {
+                                    initialNames
+                                    teamMember {
+                                        id
+                                        isFormerMember
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    # Article
+                    journal
+                    volumes
+                    pagesFrom
+                    pagesTo
+                    issueNb
+                    articleNb
+                }
+                ... on ConferenceNode {
+                    title
+                    doi
+                    status
+                    type
+                    publicationDate
+                    tags {
+                        name
+                    }
+                    authors {
+                        edges {
+                            node {
+                                order
+                                person {
+                                    initialNames
+                                    teamMember {
+                                        id
+                                        isFormerMember
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    # Conference
+                    conferenceName
+                    conferenceLocation
+                    conferenceAbstractBookUrl
+                }
+                ... on PosterNode {
+                    title
+                    doi
+                    status
+                    type
+                    publicationDate
+                    tags {
+                        name
+                    }
+                    authors {
+                        edges {
+                            node {
+                                order
+                                person {
+                                    initialNames
+                                    teamMember {
+                                        id
+                                        isFormerMember
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    # Poster
+                    posterUrl
+                    # Conference
+                    conferenceName
+                    conferenceLocation
+                    conferenceAbstractBookUrl
+                }
+                ... on SoftwareNode {
+                    title
+                    doi
+                    status
+                    type
+                    publicationDate
+                    tags {
+                        name
+                    }
+                    authors {
+                        edges {
+                            node {
+                                order
+                                person {
+                                    initialNames
+                                    teamMember {
+                                        id
+                                        isFormerMember
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    # Software
+                    repositoryUrl
+                    publicationPlace
+                }
+            }
+        }
+    }
+}
