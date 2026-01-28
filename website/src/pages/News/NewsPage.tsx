@@ -56,10 +56,11 @@ export const NewsPage: React.FC = () => {
         )) }
       </div>
 
-      <Pagination totalCount={ newsTotal }
-                  currentPage={ currentPage }
-                  pageSize={ pageSize }
-                  path="/news"/>
+      {/*TODO*/}
+      {/*<Pagination totalCount={ newsTotal }*/}
+      {/*            currentPage={ currentPage }*/}
+      {/*            pageSize={ pageSize }*/}
+      {/*            path="/news"/>*/}
     </div>
   );
 };
