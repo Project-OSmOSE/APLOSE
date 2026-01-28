@@ -16,7 +16,8 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: 'User', link: '/user' },
-          { text: 'Developer', link: '/dev/docker' },
+          { text: 'Installation', link: '/dev/installation/docker' },
+          { text: 'Developer', link: '/dev/contributing' },
           { text: 'Changelog', link: 'https://github.com/Project-OSmOSE/osmose-app/releases', target: '_blank' },
           { text: 'OSmOSE', link: 'https://osmose.ifremer.fr/', target: '_blank' },
         ],
@@ -81,9 +82,18 @@ export default defineConfig({
           },
           '/dev': [
             {
-              text: 'Developer',
+              base: '/dev',
               items: [
-                { text: 'Docker installation', link: '/dev/docker' },
+                { text: 'Contributing', link: '/contributing' },
+                {
+                  text: 'Installation',
+                  base: '/dev/installation',
+                  collapsed: true,
+                  items: [
+                    { text: 'Local installation', link: '/local' },
+                    { text: 'Docker installation', link: '/docker' },
+                  ]
+                },
               ],
             },
           ],

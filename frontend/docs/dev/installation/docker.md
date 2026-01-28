@@ -1,8 +1,11 @@
 # Docker installation
 
+To run APLOSE in production, we recommend to install it in a [Docker](https://www.docker.com/) environment.
+
 ## Preparation
 
-_First be sure to have docker installed and running on your machine._
+First be sure to have docker installed and running on your machine.
+If you doesn't have docker, follow the procedure described in [Docker Documentation](https://docs.docker.com/engine/install/).
 
 Pull the project
 ```shell

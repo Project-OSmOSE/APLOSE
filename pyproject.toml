@@ -4,6 +4,7 @@ version = "0.1.0"
 description = ""
 authors = []
 package-mode = false
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.12"
