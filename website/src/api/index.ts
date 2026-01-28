@@ -4,7 +4,7 @@ import {
     AllDeploymentsQuery,
     AllProjectsQuery,
     DeploymentByIdQuery,
-    getSdk, ProjectByIdQuery
+    getSdk, HomeCollaboratorsQuery, ProjectByIdQuery
 } from "./queries.generated";
 import { useMemo } from "react";
 
@@ -22,6 +22,9 @@ export const useGqlSdk = () => {
 }
 
 type N<T> = NonNullable<T>
+
+// Home
+export type Collaborator = N<N<N<HomeCollaboratorsQuery['allCollaborators']>['results']>[number]>
 
 // Projects & Deployments
 export type LightProject = N<N<N<AllProjectsQuery['allWebsiteProjects']>['results']>[number]>
