@@ -142,6 +142,102 @@ class SpectrogramGenerator:
 
         return ds, saved_path
 
+    def wav_to_multi_fft_spectrogram(
+        self,
+        wav_path: Path,
+        fft_configs: list,
+        output_path: Optional[Path] = None
+    ) -> Tuple[xr.Dataset, Optional[Path]]:
+        """
+        Convert WAV file to NetCDF spectrogram with multiple FFT sizes
+
+        Args:
+            wav_path: Path to input WAV file
+            fft_configs: List of dicts with 'nfft' and 'hop_length' keys
+            output_path: Optional path for output NetCDF file (default: same name as WAV with .nc extension)
+
+        Returns:
+            Tuple of (xarray.Dataset containing spectrograms, path to saved NetCDF file)
+        """
+        if sf is None:
+            raise ImportError("soundfile is required. Install with: pip install soundfile")
+
+        # Read WAV file once
+        logger.info(f"Reading WAV file: {wav_path}")
+        audio, sample_rate = sf.read(str(wav_path))
+
+        # Handle stereo by taking first channel
+        if len(audio.shape) > 1:
+            logger.info(f"Stereo audio detected, using first channel")
+            audio = audio[:, 0]
+
+        # Parse datetime from filename
+        begin_time = self.parse_datetime_from_filename(wav_path.name)
+        if begin_time is None:
+            # Fallback to file modification time
+            logger.warning(f"Using file modification time as fallback")
+            begin_time = datetime.fromtimestamp(wav_path.stat().st_mtime)
+
+        duration = len(audio) / sample_rate
+        end_time = begin_time + timedelta(seconds=duration)
+
+        # Calculate spectrograms for each FFT configuration
+        data_vars = {}
+        coords = {}
+
+        for config in fft_configs:
+            nfft = config['nfft']
+            hop_length = config['hop_length']
+
+            logger.info(f"Calculating spectrogram (nfft={nfft}, hop={hop_length})")
+
+            # Temporarily set instance variables for _calculate_spectrogram
+            old_nfft = self.nfft
+            old_hop = self.hop_length
+            self.nfft = nfft
+            self.hop_length = hop_length
+
+            spectrogram, times, freqs = self._calculate_spectrogram(audio, sample_rate)
+
+            # Restore original values
+            self.nfft = old_nfft
+            self.hop_length = old_hop
+
+            # Add to dataset with FFT-specific names
+            var_name = f'spectrogram_fft{nfft}'
+            time_coord = f'time_fft{nfft}'
+            freq_coord = f'frequency_fft{nfft}'
+
+            data_vars[var_name] = ([freq_coord, time_coord], spectrogram)
+            coords[time_coord] = times
+            coords[freq_coord] = freqs
+
+        # Create xarray Dataset with multiple spectrograms
+        ds = xr.Dataset(
+            data_vars=data_vars,
+            coords=coords,
+            attrs={
+                'begin': begin_time.isoformat(),
+                'end': end_time.isoformat(),
+                'sample_rate': float(sample_rate),
+                'window': self.window,
+                'db_ref': float(self.ref_db),
+                'duration': float(duration),
+                'audio_file': wav_path.name,
+                'created_at': datetime.now().isoformat(),
+                'fft_sizes': ','.join(str(c['nfft']) for c in fft_configs),
+            }
+        )
+
+        # Save to NetCDF
+        if output_path is None:
+            output_path = wav_path.with_suffix('.nc')
+
+        logger.info(f"Saving multi-FFT NetCDF spectrogram to: {output_path}")
+        ds.to_netcdf(output_path, format='NETCDF4')
+
+        return ds, output_path
+
     def _calculate_spectrogram(
         self,
         audio: np.ndarray,

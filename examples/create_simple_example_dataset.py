@@ -154,49 +154,44 @@ def create_example_dataset(
 
     logger.info("")
 
-    # Generate spectrograms with 3 different FFT sizes
+    # Generate spectrograms with multiple FFT sizes in one NetCDF file per WAV
     logger.info("Generating NetCDF spectrograms with multiple FFT sizes...")
 
     fft_configs = [
-        {'nfft': 1024, 'hop_length': 256, 'name': 'FFT_1024'},
-        {'nfft': 2048, 'hop_length': 512, 'name': 'FFT_2048'},
-        {'nfft': 4096, 'hop_length': 1024, 'name': 'FFT_4096'},
+        {'nfft': 1024, 'hop_length': 256},
+        {'nfft': 2048, 'hop_length': 512},
+        {'nfft': 4096, 'hop_length': 1024},
     ]
 
-    all_results = []
-    for config in fft_configs:
-        logger.info(f"  Generating with nfft={config['nfft']}, hop={config['hop_length']}...")
+    generator = SpectrogramGenerator(
+        nfft=2048,  # Default, will be overridden
+        hop_length=512,
+        window='hann',
+        datetime_format='%Y_%m_%d_%H_%M_%S'
+    )
 
-        generator = SpectrogramGenerator(
-            nfft=config['nfft'],
-            hop_length=config['hop_length'],
-            window='hann',
-            datetime_format='%Y_%m_%d_%H_%M_%S'
-        )
+    results = []
+    for wav_file in sorted(output_folder.glob("*.wav")):
+        # Create output filename without FFT suffix
+        output_path = wav_file.with_suffix('.nc')
 
-        # Process each WAV file with unique output names for each FFT size
-        results = []
-        for wav_file in sorted(output_folder.glob("*.wav")):
-            # Create output filename with FFT size suffix
-            output_filename = f"{wav_file.stem}_fft{config['nfft']}.nc"
-            output_path = output_folder / output_filename
-
-            try:
-                _, saved_path = generator.wav_to_spectrogram(wav_file, output_path)
-                results.append((wav_file, saved_path))
-                logger.info(f"    ✓ {output_filename}")
-            except Exception as e:
-                logger.error(f"    ✗ Failed to process {wav_file.name}: {e}")
-
-        all_results.extend(results)
-        logger.info(f"    ✓ Created {len(results)} spectrograms with FFT {config['nfft']}")
+        try:
+            _, saved_path = generator.wav_to_multi_fft_spectrogram(
+                wav_file,
+                fft_configs,
+                output_path
+            )
+            results.append((wav_file, saved_path))
+            logger.info(f"  ✓ {output_path.name} (contains FFT 1024, 2048, 4096)")
+        except Exception as e:
+            logger.error(f"  ✗ Failed to process {wav_file.name}: {e}")
 
     logger.info("")
     logger.info("="*60)
     logger.info(f"✓ Dataset created successfully!")
     logger.info(f"  Location: {output_folder}")
     logger.info(f"  WAV files: {len(wav_files)}")
-    logger.info(f"  NetCDF files: {len(all_results)} (3 FFT sizes)")
+    logger.info(f"  NetCDF files: {len(results)} (each with 3 FFT sizes)")
     logger.info("="*60)
     logger.info("")
     logger.info("To import into APLOSE:")

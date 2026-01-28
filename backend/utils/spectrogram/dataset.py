@@ -22,16 +22,18 @@ except ImportError:
 class SpectrogramFile:
     """Represents a single spectrogram file in the dataset"""
 
-    def __init__(self, netcdf_path: Path, wav_path: Optional[Path] = None):
+    def __init__(self, netcdf_path: Path, wav_path: Optional[Path] = None, nfft: Optional[int] = None):
         """
         Initialize spectrogram file
 
         Args:
             netcdf_path: Path to NetCDF spectrogram file
             wav_path: Optional path to corresponding WAV file
+            nfft: Optional FFT size to extract (for multi-FFT files)
         """
         self.netcdf_path = netcdf_path
         self.wav_path = wav_path
+        self.nfft = nfft
         self._metadata = None
         self._ds = None
 
@@ -49,23 +51,66 @@ class SpectrogramFile:
 
         try:
             with xr.open_dataset(self.netcdf_path) as ds:
-                metadata = {
-                    'begin': ds.attrs.get('begin', ''),
-                    'end': ds.attrs.get('end', ''),
-                    'sample_rate': ds.attrs.get('sample_rate', 0),
-                    'duration': ds.attrs.get('duration', 0),
-                    'nfft': ds.attrs.get('nfft', 0),
-                    'hop_length': ds.attrs.get('hop_length', 0),
-                    'audio_file': ds.attrs.get('audio_file', ''),
-                    'time_shape': len(ds.coords['time']),
-                    'frequency_shape': len(ds.coords['frequency']),
-                    'frequency_min': float(ds.coords['frequency'].min()),
-                    'frequency_max': float(ds.coords['frequency'].max()),
-                }
+                # Check if this is a multi-FFT file
+                fft_sizes_str = ds.attrs.get('fft_sizes', '')
+                is_multi_fft = bool(fft_sizes_str)
+
+                if is_multi_fft and self.nfft:
+                    # Extract metadata for specific FFT size
+                    var_name = f'spectrogram_fft{self.nfft}'
+                    time_coord = f'time_fft{self.nfft}'
+                    freq_coord = f'frequency_fft{self.nfft}'
+
+                    if var_name in ds.data_vars:
+                        metadata = {
+                            'begin': ds.attrs.get('begin', ''),
+                            'end': ds.attrs.get('end', ''),
+                            'sample_rate': ds.attrs.get('sample_rate', 0),
+                            'duration': ds.attrs.get('duration', 0),
+                            'nfft': self.nfft,
+                            'hop_length': self._infer_hop_length(ds, time_coord, self.nfft),
+                            'audio_file': ds.attrs.get('audio_file', ''),
+                            'time_shape': len(ds.coords[time_coord]),
+                            'frequency_shape': len(ds.coords[freq_coord]),
+                            'frequency_min': float(ds.coords[freq_coord].min()),
+                            'frequency_max': float(ds.coords[freq_coord].max()),
+                        }
+                    else:
+                        logger.error(f"FFT size {self.nfft} not found in {self.netcdf_path}")
+                        return {}
+                else:
+                    # Legacy single-FFT file format
+                    metadata = {
+                        'begin': ds.attrs.get('begin', ''),
+                        'end': ds.attrs.get('end', ''),
+                        'sample_rate': ds.attrs.get('sample_rate', 0),
+                        'duration': ds.attrs.get('duration', 0),
+                        'nfft': ds.attrs.get('nfft', 0),
+                        'hop_length': ds.attrs.get('hop_length', 0),
+                        'audio_file': ds.attrs.get('audio_file', ''),
+                        'time_shape': len(ds.coords.get('time', [])),
+                        'frequency_shape': len(ds.coords.get('frequency', [])),
+                        'frequency_min': float(ds.coords.get('frequency', [0]).min()) if 'frequency' in ds.coords else 0,
+                        'frequency_max': float(ds.coords.get('frequency', [0]).max()) if 'frequency' in ds.coords else 0,
+                    }
+
             return metadata
         except Exception as e:
             logger.error(f"Failed to read metadata from {self.netcdf_path}: {e}")
             return {}
+
+    def _infer_hop_length(self, ds: xr.Dataset, time_coord: str, nfft: int) -> int:
+        """Infer hop length from time coordinate spacing"""
+        try:
+            sample_rate = ds.attrs.get('sample_rate', 48000)
+            time_vals = ds.coords[time_coord].values
+            if len(time_vals) > 1:
+                time_step = float(time_vals[1] - time_vals[0])
+                hop_length = int(time_step * sample_rate)
+                return hop_length
+            return nfft // 4  # Default guess
+        except Exception:
+            return nfft // 4  # Default guess
 
     def load_dataset(self) -> Optional[xr.Dataset]:
         """Load the full xarray dataset"""
@@ -74,7 +119,37 @@ class SpectrogramFile:
 
         if self._ds is None:
             try:
-                self._ds = xr.open_dataset(self.netcdf_path)
+                full_ds = xr.open_dataset(self.netcdf_path)
+
+                # Check if this is a multi-FFT file and we have a specific nfft
+                fft_sizes_str = full_ds.attrs.get('fft_sizes', '')
+                if fft_sizes_str and self.nfft:
+                    # Extract only the relevant spectrogram for this FFT size
+                    var_name = f'spectrogram_fft{self.nfft}'
+                    time_coord = f'time_fft{self.nfft}'
+                    freq_coord = f'frequency_fft{self.nfft}'
+
+                    if var_name in full_ds.data_vars:
+                        # Create a new dataset with standard names
+                        self._ds = xr.Dataset(
+                            {
+                                'spectrogram': full_ds[var_name].rename({
+                                    time_coord: 'time',
+                                    freq_coord: 'frequency'
+                                })
+                            },
+                            attrs=full_ds.attrs.copy()
+                        )
+                        # Update attrs to reflect this specific FFT
+                        self._ds.attrs['nfft'] = self.nfft
+                        self._ds.attrs['hop_length'] = self._infer_hop_length(full_ds, time_coord, self.nfft)
+                    else:
+                        logger.error(f"FFT size {self.nfft} not found in {self.netcdf_path}")
+                        return None
+                else:
+                    # Legacy single-FFT file
+                    self._ds = full_ds
+
             except Exception as e:
                 logger.error(f"Failed to load dataset from {self.netcdf_path}: {e}")
                 return None
@@ -138,8 +213,36 @@ class SimpleDataset:
                 # Try case-insensitive search, stripping FFT suffix if present
                 wav_path = self._find_wav_file(nc_path.stem)
 
-            spec_file = SpectrogramFile(nc_path, wav_path if wav_path and wav_path.exists() else None)
-            spectrograms.append(spec_file)
+            # Check if this is a multi-FFT file
+            try:
+                if xr is None:
+                    raise ImportError("xarray is required")
+
+                with xr.open_dataset(nc_path) as ds:
+                    fft_sizes_str = ds.attrs.get('fft_sizes', '')
+
+                    if fft_sizes_str:
+                        # Multi-FFT file: create one SpectrogramFile per FFT size
+                        fft_sizes = [int(s.strip()) for s in fft_sizes_str.split(',')]
+                        logger.info(f"Found multi-FFT file {nc_path.name} with FFT sizes: {fft_sizes}")
+
+                        for nfft in fft_sizes:
+                            spec_file = SpectrogramFile(
+                                nc_path,
+                                wav_path if wav_path and wav_path.exists() else None,
+                                nfft=nfft
+                            )
+                            spectrograms.append(spec_file)
+                    else:
+                        # Legacy single-FFT file
+                        spec_file = SpectrogramFile(nc_path, wav_path if wav_path and wav_path.exists() else None)
+                        spectrograms.append(spec_file)
+
+            except Exception as e:
+                logger.error(f"Failed to read {nc_path}: {e}")
+                # Fallback: treat as legacy file
+                spec_file = SpectrogramFile(nc_path, wav_path if wav_path and wav_path.exists() else None)
+                spectrograms.append(spec_file)
 
         logger.info(f"Found {len(spectrograms)} spectrograms in {self.folder}")
         return spectrograms
@@ -147,14 +250,7 @@ class SimpleDataset:
     def _find_wav_file(self, stem: str) -> Optional[Path]:
         """
         Find WAV file with given stem (case-insensitive)
-
-        Handles filenames with FFT suffix (e.g., '2024_01_15_08_00_00_fft1024' -> '2024_01_15_08_00_00.wav')
         """
-        import re
-
-        # Strip FFT suffix if present (e.g., _fft1024, _fft2048)
-        base_stem = re.sub(r'_fft\d+$', '', stem, flags=re.IGNORECASE)
-
         # Try exact match first
         for wav_path in self.folder.glob("*.wav"):
             if wav_path.stem.lower() == stem.lower():
@@ -162,15 +258,6 @@ class SimpleDataset:
         for wav_path in self.folder.glob("*.WAV"):
             if wav_path.stem.lower() == stem.lower():
                 return wav_path
-
-        # Try with FFT suffix stripped
-        if base_stem != stem:
-            for wav_path in self.folder.glob("*.wav"):
-                if wav_path.stem.lower() == base_stem.lower():
-                    return wav_path
-            for wav_path in self.folder.glob("*.WAV"):
-                if wav_path.stem.lower() == base_stem.lower():
-                    return wav_path
 
         return None
 

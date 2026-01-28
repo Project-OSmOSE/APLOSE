@@ -249,9 +249,11 @@ class Command(BaseCommand):
                     except (ValueError, AttributeError, KeyError):
                         raise ValueError(f"Could not parse end time")
 
+                    # Use base filename without FFT suffix for consistency
+                    # For multi-FFT files, all FFT sizes share the same base filename
                     filename = spec_file.netcdf_path.stem
 
-                    # Check if exists
+                    # Check if exists (need to check by filename, start, end to avoid duplicates)
                     existing = Spectrogram.objects.filter(
                         filename=filename,
                         format=img_format,
