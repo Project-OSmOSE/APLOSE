@@ -1639,6 +1639,57 @@ export type ChannelConfigurationRecorderSpecificationNodeEdge = {
   node?: Maybe<ChannelConfigurationRecorderSpecificationNode>;
 };
 
+/** Collaborator node */
+export type CollaboratorNode = ExtendedInterface & {
+  __typename?: 'CollaboratorNode';
+  /** The ID of the object */
+  id: Scalars['ID']['output'];
+  level?: Maybe<Scalars['Int']['output']>;
+  name: Scalars['String']['output'];
+  projectSet: WebsiteProjectNodeConnection;
+  showOnAploseHome: Scalars['Boolean']['output'];
+  showOnHomePage: Scalars['Boolean']['output'];
+  thumbnail: Scalars['String']['output'];
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Collaborator node */
+export type CollaboratorNodeProjectSetArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type CollaboratorNodeConnection = {
+  __typename?: 'CollaboratorNodeConnection';
+  /** Contains the nodes in this connection. */
+  edges: Array<Maybe<CollaboratorNodeEdge>>;
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+};
+
+/** A Relay edge containing a `CollaboratorNode` and its cursor. */
+export type CollaboratorNodeEdge = {
+  __typename?: 'CollaboratorNodeEdge';
+  /** A cursor for use in pagination */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge */
+  node?: Maybe<CollaboratorNode>;
+};
+
+export type CollaboratorNodeNodeConnection = {
+  __typename?: 'CollaboratorNodeNodeConnection';
+  /** Pagination data for this connection. */
+  pageInfo: PageInfoExtra;
+  /** Contains the nodes in this connection. */
+  results: Array<Maybe<CollaboratorNode>>;
+  totalCount?: Maybe<Scalars['Int']['output']>;
+};
+
 /** Colormap schema */
 export type ColormapNode = ExtendedInterface & {
   __typename?: 'ColormapNode';
@@ -4424,6 +4475,7 @@ export type Query = {
   allBibliography?: Maybe<BibliographyUnionConnection>;
   allCampaigns?: Maybe<CampaignNodeNodeConnection>;
   allChannelConfigurations?: Maybe<ChannelConfigurationNodeNodeConnection>;
+  allCollaborators?: Maybe<CollaboratorNodeNodeConnection>;
   allConference?: Maybe<ConferenceNodeNodeConnection>;
   allConfidenceSets?: Maybe<ConfidenceSetNodeNodeConnection>;
   allDatasets?: Maybe<DatasetNodeNodeConnection>;
@@ -4717,6 +4769,21 @@ export type QueryAllChannelConfigurationsArgs = {
   ordering?: InputMaybe<Scalars['String']['input']>;
   recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
   timezone?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Global query */
+export type QueryAllCollaboratorsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
+  showOnAploseHome?: InputMaybe<Scalars['Boolean']['input']>;
+  showOnHomePage?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -6755,6 +6822,7 @@ export type UserNodeNodeConnection = {
 export type WebsiteProjectNode = ExtendedInterface & {
   __typename?: 'WebsiteProjectNode';
   body: Scalars['String']['output'];
+  collaborators: CollaboratorNodeConnection;
   end?: Maybe<Scalars['Date']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
@@ -6765,6 +6833,19 @@ export type WebsiteProjectNode = ExtendedInterface & {
   start?: Maybe<Scalars['Date']['output']>;
   thumbnail: Scalars['String']['output'];
   title: Scalars['String']['output'];
+};
+
+
+/** Project node */
+export type WebsiteProjectNodeCollaboratorsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  showOnAploseHome?: InputMaybe<Scalars['Boolean']['input']>;
+  showOnHomePage?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 

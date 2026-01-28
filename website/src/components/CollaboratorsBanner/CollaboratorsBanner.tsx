@@ -1,6 +1,8 @@
 import React from "react";
-import { Collaborator } from "../../models/collaborator";
 import './CollaboratorsBanner.css';
+import { CollaboratorNode } from "../../api/types.gql-generated";
+
+type Collaborator = Pick<CollaboratorNode, 'url' | 'name' | 'thumbnail'>
 
 interface CollaboratorsBannerProps {
   collaborators?: Array<Collaborator>
@@ -13,14 +15,14 @@ export const CollaboratorsBanner: React.FC<CollaboratorsBannerProps> = ({ collab
       <h2>Collaborators & Funders</h2>
 
       <div className="logo-container">
-        { collaborators.map(collaborator => {
-          const img = (<img key={ collaborator.id }
+        { collaborators.map((collaborator, index) => {
+          const img = (<img key={ index }
                             src={ collaborator.thumbnail }
                             alt={ collaborator.name }
                             title={ collaborator.name }/>)
           if (!collaborator.url) return img;
           return (<a href={ collaborator.url }
-                     key={ collaborator.id }
+                     key={ index }
                      target="_blank" rel="noreferrer">{ img }</a>)
         }) }
       </div>

@@ -1,7 +1,6 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getYear, useFetchDetail } from '../../../utils';
-import { Project } from '../../../models/project';
+import { getYear } from '../../../utils';
 import { CollaboratorsBanner } from '../../../components/CollaboratorsBanner/CollaboratorsBanner';
 import { ContactList } from '../../../components/ContactList/ContactList';
 import { HTMLContent } from '../../../components/HTMLContent/HTMLContent';
@@ -9,22 +8,35 @@ import { Back } from '../../../components/Back/Back';
 import { DeploymentsMap } from '../../../components/DeploymentsMap';
 import { DeploymentsTimeline } from '../../../components/DeploymentsTimeline';
 import './ProjectDetail.css';
-import { LightDeployment, useGqlSdk } from "../../../api";
+import { LightDeployment, Project, useGqlSdk } from "../../../api";
 
 export const ProjectDetail: React.FC = () => {
     const { id: projectID } = useParams<{ id: string; }>();
 
     const [ project, setProject ] = useState<Project>();
-
+    const [ allDeployments, setAllDeployments ] = useState<LightDeployment[]>([]);
     const [ selectedDeploymentID, setSelectedDeploymentID ] = useState<string | undefined>();
 
-    const fetchDetail = useFetchDetail<Project>('/projects', '/api/projects');
-    const [ allDeployments, setAllDeployments ] = useState<LightDeployment[]>([]);
+    const contacts = useMemo(() => {
+        return [
+            ...(project?.osmoseMemberContacts.edges.map(e => e?.node).filter(n => !!n) ?? []),
+            ...(project?.otherContacts ?? [])
+        ]
+    }, [ project ])
+
+    const collaborators = useMemo(() => {
+        return project?.collaborators.edges.map(e => e?.node).filter(n => !!n)
+    }, [ project ])
+
     const sdk = useGqlSdk()
 
     useEffect(() => {
         let isMounted = true;
-        fetchDetail(projectID).then(project => isMounted && setProject(project));
+
+        sdk.projectById({ id: projectID }).then(({ data }) => {
+            if (!isMounted) return;
+            setProject(data.websiteProjectById ?? undefined)
+        })
 
         sdk.allDeployments({ projectID }).then(({ data }) => {
             if (!isMounted) return;
@@ -52,9 +64,7 @@ export const ProjectDetail: React.FC = () => {
 
                     <HTMLContent content={ project.body }></HTMLContent>
 
-                    <ContactList label="Contact"
-                                 teamMembers={ project.osmose_member_contacts }
-                                 namedMembers={ project.other_contacts }></ContactList>
+                    <ContactList label="Contact" contacts={ contacts as any }/>
 
                 </div>
             ) }
@@ -70,8 +80,7 @@ export const ProjectDetail: React.FC = () => {
                                      setSelectedDeploymentID={ setSelectedDeploymentID }/>
             </Fragment> }
 
-            { project?.collaborators &&
-                <CollaboratorsBanner collaborators={ project.collaborators }></CollaboratorsBanner> }
+            { collaborators && <CollaboratorsBanner collaborators={ collaborators as any }/> }
         </div>
     )
 }

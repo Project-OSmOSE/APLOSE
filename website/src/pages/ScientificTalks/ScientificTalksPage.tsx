@@ -59,18 +59,20 @@ export const ScientificTalksPage: React.FC = () => {
 
             <IonCardHeader className={ styles.presenterInfo }>
               <IonCardSubtitle className={ styles.presenter }>
-                <ContactList teamMembers={ data.osmose_member_presenters }
-                             namedMembers={ data.other_presenters }/>
+                {/*TODO*/}
+                {/*<ContactList teamMembers={ data.osmose_member_presenters }*/}
+                {/*             namedMembers={ data.other_presenters }/>*/}
               </IonCardSubtitle>
             </IonCardHeader>
           </IonCard>
         )) }
       </div>
 
-      <Pagination totalCount={ talksTotal }
-                  currentPage={ currentPage }
-                  pageSize={ pageSize }
-                  path="/scientific-talks"/>
+      {/*TODO*/}
+      {/*<Pagination totalCount={ talksTotal }*/}
+      {/*            currentPage={ currentPage }*/}
+      {/*            pageSize={ pageSize }*/}
+      {/*            path="/scientific-talks"/>*/}
     </div>
   );
 };

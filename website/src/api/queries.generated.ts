@@ -4,6 +4,21 @@ import { GraphQLClient, RequestOptions } from 'graphql-request';
 import { GraphQLError, print } from 'graphql'
 import gql from 'graphql-tag';
 type GraphQLClientRequestHeaders = RequestOptions['requestHeaders'];
+export type AllProjectsQueryVariables = Types.Exact<{
+  offset: Types.Scalars['Int']['input'];
+  limit: Types.Scalars['Int']['input'];
+}>;
+
+
+export type AllProjectsQuery = { __typename?: 'Query', allWebsiteProjects?: { __typename?: 'WebsiteProjectNodeNodeConnection', totalCount?: number | null, results: Array<{ __typename?: 'WebsiteProjectNode', id: string, title: string, intro: string, start?: any | null, end?: any | null, thumbnail: string } | null> } | null };
+
+export type ProjectByIdQueryVariables = Types.Exact<{
+  id: Types.Scalars['ID']['input'];
+}>;
+
+
+export type ProjectByIdQuery = { __typename?: 'Query', websiteProjectById?: { __typename?: 'WebsiteProjectNode', title: string, start?: any | null, end?: any | null, body: string, otherContacts?: Array<string> | null, osmoseMemberContacts: { __typename?: 'TeamMemberNodeConnection', edges: Array<{ __typename?: 'TeamMemberNodeEdge', node?: { __typename?: 'TeamMemberNode', id: string, person: { __typename?: 'PersonNode', initialNames?: string | null } } | null } | null> }, collaborators: { __typename?: 'CollaboratorNodeConnection', edges: Array<{ __typename?: 'CollaboratorNodeEdge', node?: { __typename?: 'CollaboratorNode', name: string, thumbnail: string, url?: string | null } | null } | null> } } | null };
+
 export type AllDeploymentsQueryVariables = Types.Exact<{
   projectID?: Types.InputMaybe<Types.Scalars['Decimal']['input']>;
 }>;
@@ -24,6 +39,51 @@ export type AllBibliographyQueryVariables = Types.Exact<{ [key: string]: never; 
 export type AllBibliographyQuery = { __typename?: 'Query', allBibliography?: { __typename?: 'BibliographyUnionConnection', edges: Array<{ __typename?: 'BibliographyUnionEdge', node?: { __typename?: 'ArticleNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, journal: string, volumes?: string | null, pagesFrom?: number | null, pagesTo?: number | null, issueNb?: number | null, articleNb?: number | null, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, isFormerMember: boolean } | null } } | null } | null> } } | { __typename?: 'ConferenceNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, conferenceName: string, conferenceLocation: string, conferenceAbstractBookUrl?: string | null, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, isFormerMember: boolean } | null } } | null } | null> } } | { __typename?: 'PosterNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, posterUrl?: string | null, conferenceName: string, conferenceLocation: string, conferenceAbstractBookUrl?: string | null, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, isFormerMember: boolean } | null } } | null } | null> } } | { __typename?: 'SoftwareNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, repositoryUrl?: string | null, publicationPlace: string, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, isFormerMember: boolean } | null } } | null } | null> } } | null } | null> } | null };
 
 
+export const AllProjectsDocument = gql`
+    query allProjects($offset: Int!, $limit: Int!) {
+  allWebsiteProjects(limit: $limit, offset: $offset) {
+    totalCount
+    results {
+      id
+      title
+      intro
+      start
+      end
+      thumbnail
+    }
+  }
+}
+    `;
+export const ProjectByIdDocument = gql`
+    query projectById($id: ID!) {
+  websiteProjectById(id: $id) {
+    title
+    start
+    end
+    body
+    osmoseMemberContacts {
+      edges {
+        node {
+          id
+          person {
+            initialNames
+          }
+        }
+      }
+    }
+    otherContacts
+    collaborators {
+      edges {
+        node {
+          name
+          thumbnail
+          url
+        }
+      }
+    }
+  }
+}
+    `;
 export const AllDeploymentsDocument = gql`
     query allDeployments($projectID: Decimal) {
   allDeployments(project_WebsiteProject_Id: $projectID) {
@@ -275,11 +335,19 @@ export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, str
 
 
 const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType, _variables) => action();
+const AllProjectsDocumentString = print(AllProjectsDocument);
+const ProjectByIdDocumentString = print(ProjectByIdDocument);
 const AllDeploymentsDocumentString = print(AllDeploymentsDocument);
 const DeploymentByIdDocumentString = print(DeploymentByIdDocument);
 const AllBibliographyDocumentString = print(AllBibliographyDocument);
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
+    allProjects(variables: AllProjectsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: AllProjectsQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
+        return withWrapper((wrappedRequestHeaders) => client.rawRequest<AllProjectsQuery>(AllProjectsDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'allProjects', 'query', variables);
+    },
+    projectById(variables: ProjectByIdQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: ProjectByIdQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
+        return withWrapper((wrappedRequestHeaders) => client.rawRequest<ProjectByIdQuery>(ProjectByIdDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'projectById', 'query', variables);
+    },
     allDeployments(variables?: AllDeploymentsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: AllDeploymentsQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
         return withWrapper((wrappedRequestHeaders) => client.rawRequest<AllDeploymentsQuery>(AllDeploymentsDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'allDeployments', 'query', variables);
     },

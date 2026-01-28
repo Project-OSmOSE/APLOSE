@@ -1,5 +1,11 @@
 import { GraphQLClient } from "graphql-request";
-import { AllBibliographyQuery, AllDeploymentsQuery, DeploymentByIdQuery, getSdk } from "./queries.generated";
+import {
+    AllBibliographyQuery,
+    AllDeploymentsQuery,
+    AllProjectsQuery,
+    DeploymentByIdQuery,
+    getSdk, ProjectByIdQuery
+} from "./queries.generated";
 import { useMemo } from "react";
 
 
@@ -17,7 +23,9 @@ export const useGqlSdk = () => {
 
 type N<T> = NonNullable<T>
 
-// Deployments
+// Projects & Deployments
+export type LightProject = N<N<N<AllProjectsQuery['allWebsiteProjects']>['results']>[number]>
+export type Project = N<ProjectByIdQuery['websiteProjectById']>
 export type LightDeployment = N<N<N<AllDeploymentsQuery['allDeployments']>['results']>[number]>
 export type Deployment = N<DeploymentByIdQuery['deploymentById']>
 export type DeploymentLabel = N<N<N<DeploymentByIdQuery['annotationLabelsForDeploymentId']>['results']>[number]>
