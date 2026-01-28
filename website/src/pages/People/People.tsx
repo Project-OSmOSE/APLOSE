@@ -2,50 +2,53 @@ import React, { useEffect, useState } from "react";
 import { PageTitle } from '../../components/PageTitle';
 import { CardMember } from '../../components/CardMember/CardMember';
 import imgTitle from '../../img/illust/pexels-daniel-torobekov-5901263_1280_thin.jpg';
-import { TeamMember } from "../../models/team";
-import { useFetchArray } from "../../utils";
-
+import { LightTeamMember, useGqlSdk } from "../../api";
 import './People.css';
 
 
 export const People: React.FC = () => {
 
-  const [members, setMembers] = useState<Array<TeamMember> | undefined>()
+    const [ members, setMembers ] = useState<Array<LightTeamMember>>([])
+    const [ formerMembers, setFormerMembers ] = useState<Array<LightTeamMember>>([])
 
-  const fetchMembers = useFetchArray<Array<TeamMember>>('/api/members');
+    const sdk = useGqlSdk()
 
-  useEffect(() => {
-    let isMounted = true;
-    fetchMembers().then(members => isMounted && setMembers(members));
+    useEffect(() => {
+        let isMounted = true;
+        sdk.allTeamMembers().then(({ data }) => {
+            if (!isMounted) return;
 
-    return () => {
-      isMounted = false;
-    }
-  }, []);
+            const allMembers = data.allTeamMembers?.results.filter(t => t !== null) ?? []
+            setMembers(allMembers.filter(tm => !tm!.isFormerMember) as any)
+            setFormerMembers(allMembers.filter(tm => tm!.isFormerMember) as any)
+        })
 
-  return (
-    <div id="people-page">
+        return () => {
+            isMounted = false;
+        }
+    }, []);
 
-      <PageTitle img={ imgTitle } imgAlt="People Banner">
-          OUR TEAM
-      </PageTitle>
+    return (
+        <div id="people-page">
 
-      <section>
-        <div className="members-grid">
-          {
-            members?.filter(member => !member.is_former_member)
-              .map(member => (<CardMember key={ member.id } member={ member }></CardMember>))
-          }
+            <PageTitle img={ imgTitle } imgAlt="People Banner">
+                OUR TEAM
+            </PageTitle>
+
+            <section>
+                <div className="members-grid">
+                    {
+                        members.map(member => (<CardMember key={ member.id } member={ member }></CardMember>))
+                    }
+                </div>
+                <h2>Former members</h2>
+                <div className="members-grid">
+                    {
+                        formerMembers.map(member => (<CardMember key={ member.id } member={ member }></CardMember>))
+                    }
+                </div>
+            </section>
+
         </div>
-        <h2>Former members</h2>
-        <div className="members-grid">
-          {
-            members?.filter(member => member.is_former_member)
-              .map(member => (<CardMember key={ member.id } member={ member }></CardMember>))
-          }
-        </div>
-      </section>
-
-    </div>
-  );
+    );
 }
