@@ -6,7 +6,7 @@ export type ListChannelConfigurationsQueryVariables = Types.Exact<{
 }>;
 
 
-export type ListChannelConfigurationsQuery = { __typename?: 'Query', allChannelConfigurations?: { __typename?: 'ChannelConfigurationNodeNodeConnection', results: Array<{ __typename?: 'ChannelConfigurationNode', deployment: { __typename?: 'DeploymentNode', name?: string | null, campaign?: { __typename?: 'CampaignNode', name: string } | null, site?: { __typename?: 'SiteNode', name: string } | null, project: { __typename?: 'ProjectNodeOverride', name: string } }, recorderSpecification?: { __typename?: 'ChannelConfigurationRecorderSpecificationNode', recorder: { __typename?: 'EquipmentNode', serialNumber: string, model: string }, hydrophone: { __typename?: 'EquipmentNode', serialNumber: string, model: string } } | null, detectorSpecification?: { __typename?: 'ChannelConfigurationDetectorSpecificationNode', detector: { __typename?: 'EquipmentNode', serialNumber: string, model: string } } | null } | null> } | null };
+export type ListChannelConfigurationsQuery = { __typename?: 'Query', allChannelConfigurations?: { __typename?: 'ChannelConfigurationNodeNodeConnection', results: Array<{ __typename?: 'ChannelConfigurationNode', deployment: { __typename?: 'DeploymentNode', name?: string | null, campaign?: { __typename?: 'CampaignNode', name: string } | null, site?: { __typename?: 'SiteNode', name: string } | null, project: { __typename?: 'ProjectNodeOverride', name: string } }, recorderSpecification?: { __typename?: 'ChannelConfigurationRecorderSpecificationNode', recorder: { __typename?: 'EquipmentNode', serialNumber: string, model: { __typename?: 'EquipmentModelNode', name: string } }, hydrophone: { __typename?: 'EquipmentNode', serialNumber: string, model: { __typename?: 'EquipmentModelNode', name: string } } } | null, detectorSpecification?: { __typename?: 'ChannelConfigurationDetectorSpecificationNode', detector: { __typename?: 'EquipmentNode', serialNumber: string, model: { __typename?: 'EquipmentModelNode', name: string } } } | null } | null> } | null };
 
 
 export const ListChannelConfigurationsDocument = `
@@ -28,17 +28,23 @@ export const ListChannelConfigurationsDocument = `
       recorderSpecification {
         recorder {
           serialNumber
-          model
+          model {
+            name
+          }
         }
         hydrophone {
           serialNumber
-          model
+          model {
+            name
+          }
         }
       }
       detectorSpecification {
         detector {
           serialNumber
-          model
+          model {
+            name
+          }
         }
       }
     }

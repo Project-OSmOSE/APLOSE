@@ -38,16 +38,16 @@ export const ChannelConfigurationTable: React.FC<{ datasetID: string }> = ({ dat
       <TableContent>{ c.deployment?.site?.name }</TableContent>
       <TableContent>{ c.deployment?.campaign?.name }</TableContent>
       { c.recorderSpecification ? <Fragment>
-        <TableContent>{ c.recorderSpecification?.recorder.model }
+        <TableContent>{ c.recorderSpecification?.recorder.model.name }
           <FadedText>#{ c.recorderSpecification?.recorder.serialNumber }</FadedText></TableContent>
-        <TableContent>{ c.recorderSpecification?.hydrophone.model }
+        <TableContent>{ c.recorderSpecification?.hydrophone.model.name }
           <FadedText>#{ c.recorderSpecification?.hydrophone.serialNumber }</FadedText></TableContent>
       </Fragment> : <Fragment>
         <TableContent>-</TableContent>
         <TableContent>-</TableContent>
       </Fragment> }
       { c.detectorSpecification ? <TableContent>
-        { c.detectorSpecification?.detector.model }
+        { c.detectorSpecification?.detector.model.name }
         <FadedText>#{ c.detectorSpecification?.detector.serialNumber }</FadedText>
       </TableContent> : <TableContent>-</TableContent> }
       <TableDivider/>

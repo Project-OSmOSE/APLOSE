@@ -16,17 +16,23 @@ query listChannelConfigurations($datasetID: ID) {
             recorderSpecification {
                 recorder {
                     serialNumber
-                    model
+                    model {
+                        name
+                    }
                 }
                 hydrophone {
                     serialNumber
-                    model
+                    model {
+                        name
+                    }
                 }
             }
             detectorSpecification {
                 detector {
                     serialNumber
-                    model
+                    model {
+                        name
+                    }
                 }
             }
         }

@@ -49,7 +49,6 @@ export type AcousticDetectorSpecificationNode = Node & {
   algorithmName?: Maybe<Scalars['String']['output']>;
   detectedLabels: LabelNodeConnection;
   detectorSet: DetectorNodeConnection;
-  equipmentSet: EquipmentNodeConnection;
   id: Scalars['ID']['output'];
   maxFrequency?: Maybe<Scalars['Int']['output']>;
   minFrequency?: Maybe<Scalars['Int']['output']>;
@@ -105,55 +104,6 @@ export type AcousticDetectorSpecificationNodeDetectorSetArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type AcousticDetectorSpecificationNodeEquipmentSetArgs = {
-  acousticDetectorSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
-  after?: InputMaybe<Scalars['String']['input']>;
-  batterySlotsCount?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gte?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lte?: InputMaybe<Scalars['Int']['input']>;
-  batteryType?: InputMaybe<Scalars['String']['input']>;
-  batteryType_Icontains?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  cables?: InputMaybe<Scalars['String']['input']>;
-  cables_Icontains?: InputMaybe<Scalars['String']['input']>;
-  channelConfigurationDetectorSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationDetectorSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurationHydrophoneSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationHydrophoneSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurationRecorderSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationRecorderSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurations_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurations_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  hydrophoneSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  maintenances_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  maintenances_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  model?: InputMaybe<Scalars['String']['input']>;
-  model_Icontains?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  name_Icontains?: InputMaybe<Scalars['String']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  ownerId?: InputMaybe<Scalars['ID']['input']>;
-  ownerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  providerId?: InputMaybe<Scalars['ID']['input']>;
-  providerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  purchaseDate?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Gt?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Gte?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Lt?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Lte?: InputMaybe<Scalars['Date']['input']>;
-  recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
-  serialNumber?: InputMaybe<Scalars['String']['input']>;
-  serialNumber_Icontains?: InputMaybe<Scalars['String']['input']>;
-  storageSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type AcousticDetectorSpecificationNodeConnection = {
@@ -1832,18 +1782,8 @@ export type ChannelConfigurationNodeFilesArgs = {
 
 
 export type ChannelConfigurationNodeStoragesArgs = {
-  acousticDetectorSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
-  batterySlotsCount?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gte?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lte?: InputMaybe<Scalars['Int']['input']>;
-  batteryType?: InputMaybe<Scalars['String']['input']>;
-  batteryType_Icontains?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  cables?: InputMaybe<Scalars['String']['input']>;
-  cables_Icontains?: InputMaybe<Scalars['String']['input']>;
   channelConfigurationDetectorSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
   channelConfigurationDetectorSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   channelConfigurationHydrophoneSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
@@ -1853,30 +1793,30 @@ export type ChannelConfigurationNodeStoragesArgs = {
   channelConfigurations_Id?: InputMaybe<Scalars['Decimal']['input']>;
   channelConfigurations_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  hydrophoneSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   last?: InputMaybe<Scalars['Int']['input']>;
   maintenances_Id?: InputMaybe<Scalars['Decimal']['input']>;
   maintenances_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  model?: InputMaybe<Scalars['String']['input']>;
-  model_Icontains?: InputMaybe<Scalars['String']['input']>;
+  modelId?: InputMaybe<Scalars['ID']['input']>;
+  modelId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   name?: InputMaybe<Scalars['String']['input']>;
   name_Icontains?: InputMaybe<Scalars['String']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   ownerId?: InputMaybe<Scalars['ID']['input']>;
   ownerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  providerId?: InputMaybe<Scalars['ID']['input']>;
-  providerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   purchaseDate?: InputMaybe<Scalars['Date']['input']>;
   purchaseDate_Gt?: InputMaybe<Scalars['Date']['input']>;
   purchaseDate_Gte?: InputMaybe<Scalars['Date']['input']>;
   purchaseDate_Lt?: InputMaybe<Scalars['Date']['input']>;
   purchaseDate_Lte?: InputMaybe<Scalars['Date']['input']>;
-  recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
+  sensitivity?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Gt?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Gte?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Lt?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Lte?: InputMaybe<Scalars['Float']['input']>;
   serialNumber?: InputMaybe<Scalars['String']['input']>;
   serialNumber_Icontains?: InputMaybe<Scalars['String']['input']>;
-  storageSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type ChannelConfigurationNodeConnection = {
@@ -2899,27 +2839,97 @@ export type EndAnnotationPhaseMutation = {
   ok: Scalars['Boolean']['output'];
 };
 
-export type EquipmentNode = Node & {
-  __typename?: 'EquipmentNode';
-  acousticDetectorSpecification?: Maybe<AcousticDetectorSpecificationNode>;
+export type EquipmentModelNode = Node & {
+  __typename?: 'EquipmentModelNode';
   batterySlotsCount?: Maybe<Scalars['Int']['output']>;
   batteryType?: Maybe<Scalars['String']['output']>;
   cables?: Maybe<Scalars['String']['output']>;
+  equipments: EquipmentNodeConnection;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  provider: InstitutionNode;
+};
+
+
+export type EquipmentModelNodeEquipmentsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  channelConfigurationDetectorSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
+  channelConfigurationDetectorSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  channelConfigurationHydrophoneSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
+  channelConfigurationHydrophoneSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  channelConfigurationRecorderSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
+  channelConfigurationRecorderSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  channelConfigurations_Id?: InputMaybe<Scalars['Decimal']['input']>;
+  channelConfigurations_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  maintenances_Id?: InputMaybe<Scalars['Decimal']['input']>;
+  maintenances_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  modelId?: InputMaybe<Scalars['ID']['input']>;
+  modelId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  name_Icontains?: InputMaybe<Scalars['String']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  ownerId?: InputMaybe<Scalars['ID']['input']>;
+  ownerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  purchaseDate?: InputMaybe<Scalars['Date']['input']>;
+  purchaseDate_Gt?: InputMaybe<Scalars['Date']['input']>;
+  purchaseDate_Gte?: InputMaybe<Scalars['Date']['input']>;
+  purchaseDate_Lt?: InputMaybe<Scalars['Date']['input']>;
+  purchaseDate_Lte?: InputMaybe<Scalars['Date']['input']>;
+  sensitivity?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Gt?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Gte?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Lt?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Lte?: InputMaybe<Scalars['Float']['input']>;
+  serialNumber?: InputMaybe<Scalars['String']['input']>;
+  serialNumber_Icontains?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type EquipmentModelNodeConnection = {
+  __typename?: 'EquipmentModelNodeConnection';
+  /** Contains the nodes in this connection. */
+  edges: Array<Maybe<EquipmentModelNodeEdge>>;
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+};
+
+/** A Relay edge containing a `EquipmentModelNode` and its cursor. */
+export type EquipmentModelNodeEdge = {
+  __typename?: 'EquipmentModelNodeEdge';
+  /** A cursor for use in pagination */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge */
+  node?: Maybe<EquipmentModelNode>;
+};
+
+export type EquipmentModelNodeNodeConnection = {
+  __typename?: 'EquipmentModelNodeNodeConnection';
+  /** Pagination data for this connection. */
+  pageInfo: PageInfoExtra;
+  /** Contains the nodes in this connection. */
+  results: Array<Maybe<EquipmentModelNode>>;
+  totalCount?: Maybe<Scalars['Int']['output']>;
+};
+
+export type EquipmentNode = Node & {
+  __typename?: 'EquipmentNode';
   channelConfigurationDetectorSpecifications: ChannelConfigurationDetectorSpecificationNodeConnection;
   channelConfigurationHydrophoneSpecifications: ChannelConfigurationRecorderSpecificationNodeConnection;
   channelConfigurationRecorderSpecifications: ChannelConfigurationRecorderSpecificationNodeConnection;
   channelConfigurations: ChannelConfigurationNodeConnection;
-  hydrophoneSpecification?: Maybe<HydrophoneSpecificationNode>;
   id: Scalars['ID']['output'];
   maintenances: MaintenanceNodeConnection;
-  model: Scalars['String']['output'];
+  model: EquipmentModelNode;
   name?: Maybe<Scalars['String']['output']>;
   owner: InstitutionNode;
-  provider: InstitutionNode;
   purchaseDate?: Maybe<Scalars['Date']['output']>;
-  recorderSpecification?: Maybe<RecorderSpecificationNode>;
+  /** Required only for hydrophones */
+  sensitivity?: Maybe<Scalars['Float']['output']>;
   serialNumber: Scalars['String']['output'];
-  storageSpecification?: Maybe<StorageSpecificationNode>;
 };
 
 
@@ -3335,7 +3345,6 @@ export type FileNodeNodeConnection = {
 export type HydrophoneSpecificationNode = Node & {
   __typename?: 'HydrophoneSpecificationNode';
   directivity?: Maybe<Scalars['HydrophoneDirectivityEnum']['output']>;
-  equipmentSet: EquipmentNodeConnection;
   id: Scalars['ID']['output'];
   /** Upper limiting frequency within a more or less flat response of the hydrophone, pre-amplification included if applicable. */
   maxBandwidth?: Maybe<Scalars['Float']['output']>;
@@ -3355,56 +3364,6 @@ export type HydrophoneSpecificationNode = Node & {
   operatingMaxTemperature?: Maybe<Scalars['Float']['output']>;
   /** Minimal temperature where the hydrophone operates (in degree Celsius) */
   operatingMinTemperature?: Maybe<Scalars['Float']['output']>;
-  sensitivity: Scalars['Float']['output'];
-};
-
-
-export type HydrophoneSpecificationNodeEquipmentSetArgs = {
-  acousticDetectorSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
-  after?: InputMaybe<Scalars['String']['input']>;
-  batterySlotsCount?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gte?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lte?: InputMaybe<Scalars['Int']['input']>;
-  batteryType?: InputMaybe<Scalars['String']['input']>;
-  batteryType_Icontains?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  cables?: InputMaybe<Scalars['String']['input']>;
-  cables_Icontains?: InputMaybe<Scalars['String']['input']>;
-  channelConfigurationDetectorSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationDetectorSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurationHydrophoneSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationHydrophoneSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurationRecorderSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationRecorderSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurations_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurations_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  hydrophoneSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  maintenances_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  maintenances_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  model?: InputMaybe<Scalars['String']['input']>;
-  model_Icontains?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  name_Icontains?: InputMaybe<Scalars['String']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  ownerId?: InputMaybe<Scalars['ID']['input']>;
-  ownerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  providerId?: InputMaybe<Scalars['ID']['input']>;
-  providerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  purchaseDate?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Gt?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Gte?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Lt?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Lte?: InputMaybe<Scalars['Date']['input']>;
-  recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
-  serialNumber?: InputMaybe<Scalars['String']['input']>;
-  serialNumber_Icontains?: InputMaybe<Scalars['String']['input']>;
-  storageSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type HydrophoneSpecificationNodeNodeConnection = {
@@ -3447,16 +3406,16 @@ export type ImportDatasetNode = {
 export type InstitutionNode = Node & {
   __typename?: 'InstitutionNode';
   bibliographyAuthors: AuthorNodeConnection;
-  city: Scalars['String']['output'];
+  city?: Maybe<Scalars['String']['output']>;
   contacts: ContactNodeConnection;
-  country: Scalars['String']['output'];
+  country?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   mail?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   ownedEquipments: EquipmentNodeConnection;
   ownedPlatforms: PlatformNodeConnection;
   performedMaintenances: MaintenanceNodeConnection;
-  providedEquipments: EquipmentNodeConnection;
+  providedEquipments: EquipmentModelNodeConnection;
   providedPlatforms: PlatformNodeConnection;
   roles: ContactRoleNodeConnection;
   website?: Maybe<Scalars['String']['output']>;
@@ -3501,18 +3460,8 @@ export type InstitutionNodeContactsArgs = {
 
 
 export type InstitutionNodeOwnedEquipmentsArgs = {
-  acousticDetectorSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
-  batterySlotsCount?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gte?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lte?: InputMaybe<Scalars['Int']['input']>;
-  batteryType?: InputMaybe<Scalars['String']['input']>;
-  batteryType_Icontains?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  cables?: InputMaybe<Scalars['String']['input']>;
-  cables_Icontains?: InputMaybe<Scalars['String']['input']>;
   channelConfigurationDetectorSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
   channelConfigurationDetectorSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   channelConfigurationHydrophoneSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
@@ -3522,30 +3471,30 @@ export type InstitutionNodeOwnedEquipmentsArgs = {
   channelConfigurations_Id?: InputMaybe<Scalars['Decimal']['input']>;
   channelConfigurations_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  hydrophoneSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   last?: InputMaybe<Scalars['Int']['input']>;
   maintenances_Id?: InputMaybe<Scalars['Decimal']['input']>;
   maintenances_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  model?: InputMaybe<Scalars['String']['input']>;
-  model_Icontains?: InputMaybe<Scalars['String']['input']>;
+  modelId?: InputMaybe<Scalars['ID']['input']>;
+  modelId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   name?: InputMaybe<Scalars['String']['input']>;
   name_Icontains?: InputMaybe<Scalars['String']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   ownerId?: InputMaybe<Scalars['ID']['input']>;
   ownerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  providerId?: InputMaybe<Scalars['ID']['input']>;
-  providerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   purchaseDate?: InputMaybe<Scalars['Date']['input']>;
   purchaseDate_Gt?: InputMaybe<Scalars['Date']['input']>;
   purchaseDate_Gte?: InputMaybe<Scalars['Date']['input']>;
   purchaseDate_Lt?: InputMaybe<Scalars['Date']['input']>;
   purchaseDate_Lte?: InputMaybe<Scalars['Date']['input']>;
-  recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
+  sensitivity?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Gt?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Gte?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Lt?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Lte?: InputMaybe<Scalars['Float']['input']>;
   serialNumber?: InputMaybe<Scalars['String']['input']>;
   serialNumber_Icontains?: InputMaybe<Scalars['String']['input']>;
-  storageSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -3599,51 +3548,11 @@ export type InstitutionNodePerformedMaintenancesArgs = {
 
 
 export type InstitutionNodeProvidedEquipmentsArgs = {
-  acousticDetectorSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
-  batterySlotsCount?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gte?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lte?: InputMaybe<Scalars['Int']['input']>;
-  batteryType?: InputMaybe<Scalars['String']['input']>;
-  batteryType_Icontains?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  cables?: InputMaybe<Scalars['String']['input']>;
-  cables_Icontains?: InputMaybe<Scalars['String']['input']>;
-  channelConfigurationDetectorSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationDetectorSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurationHydrophoneSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationHydrophoneSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurationRecorderSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationRecorderSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurations_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurations_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  hydrophoneSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  maintenances_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  maintenances_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  model?: InputMaybe<Scalars['String']['input']>;
-  model_Icontains?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  name_Icontains?: InputMaybe<Scalars['String']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  ownerId?: InputMaybe<Scalars['ID']['input']>;
-  ownerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  providerId?: InputMaybe<Scalars['ID']['input']>;
-  providerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  purchaseDate?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Gt?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Gte?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Lt?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Lte?: InputMaybe<Scalars['Date']['input']>;
-  recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
-  serialNumber?: InputMaybe<Scalars['String']['input']>;
-  serialNumber_Icontains?: InputMaybe<Scalars['String']['input']>;
-  storageSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -3759,8 +3668,6 @@ export type LabelNodeAcousticDetectorsArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   detectedLabels_Id?: InputMaybe<Scalars['Decimal']['input']>;
   detectedLabels_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  equipment_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  equipment_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   first?: InputMaybe<Scalars['Int']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
@@ -5003,6 +4910,7 @@ export type Query = {
   allDeployments?: Maybe<DeploymentNodeNodeConnection>;
   allDetectionProperties?: Maybe<DetectionPropertiesNodeNodeConnection>;
   allDetectors?: Maybe<DetectorNodeNodeConnection>;
+  allEquipmentModels?: Maybe<EquipmentModelNodeNodeConnection>;
   allEquipments?: Maybe<EquipmentNodeNodeConnection>;
   allFile?: Maybe<FileNodeNodeConnection>;
   allFileFormats?: Maybe<FileFormatNodeNodeConnection>;
@@ -5084,8 +4992,6 @@ export type QueryAllAcousticDetectorSpecificationsArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   detectedLabels_Id?: InputMaybe<Scalars['Decimal']['input']>;
   detectedLabels_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  equipment_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  equipment_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   first?: InputMaybe<Scalars['Int']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
@@ -5623,19 +5529,21 @@ export type QueryAllDetectorsArgs = {
 
 
 /** Global query */
-export type QueryAllEquipmentsArgs = {
-  acousticDetectorSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
+export type QueryAllEquipmentModelsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
-  batterySlotsCount?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gte?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lte?: InputMaybe<Scalars['Int']['input']>;
-  batteryType?: InputMaybe<Scalars['String']['input']>;
-  batteryType_Icontains?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  cables?: InputMaybe<Scalars['String']['input']>;
-  cables_Icontains?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Global query */
+export type QueryAllEquipmentsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
   channelConfigurationDetectorSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
   channelConfigurationDetectorSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   channelConfigurationHydrophoneSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
@@ -5645,32 +5553,32 @@ export type QueryAllEquipmentsArgs = {
   channelConfigurations_Id?: InputMaybe<Scalars['Decimal']['input']>;
   channelConfigurations_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  hydrophoneSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   last?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   maintenances_Id?: InputMaybe<Scalars['Decimal']['input']>;
   maintenances_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  model?: InputMaybe<Scalars['String']['input']>;
-  model_Icontains?: InputMaybe<Scalars['String']['input']>;
+  modelId?: InputMaybe<Scalars['ID']['input']>;
+  modelId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   name?: InputMaybe<Scalars['String']['input']>;
   name_Icontains?: InputMaybe<Scalars['String']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   ordering?: InputMaybe<Scalars['String']['input']>;
   ownerId?: InputMaybe<Scalars['ID']['input']>;
   ownerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  providerId?: InputMaybe<Scalars['ID']['input']>;
-  providerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   purchaseDate?: InputMaybe<Scalars['Date']['input']>;
   purchaseDate_Gt?: InputMaybe<Scalars['Date']['input']>;
   purchaseDate_Gte?: InputMaybe<Scalars['Date']['input']>;
   purchaseDate_Lt?: InputMaybe<Scalars['Date']['input']>;
   purchaseDate_Lte?: InputMaybe<Scalars['Date']['input']>;
-  recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
+  sensitivity?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Gt?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Gte?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Lt?: InputMaybe<Scalars['Float']['input']>;
+  sensitivity_Lte?: InputMaybe<Scalars['Float']['input']>;
   serialNumber?: InputMaybe<Scalars['String']['input']>;
   serialNumber_Icontains?: InputMaybe<Scalars['String']['input']>;
-  storageSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -5732,8 +5640,6 @@ export type QueryAllHydrophoneSpecificationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   directivity?: InputMaybe<Scalars['HydrophoneDirectivityEnum']['input']>;
-  equipment_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  equipment_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   first?: InputMaybe<Scalars['Int']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
@@ -5786,11 +5692,6 @@ export type QueryAllHydrophoneSpecificationsArgs = {
   operatingMinTemperature_Lt?: InputMaybe<Scalars['Float']['input']>;
   operatingMinTemperature_Lte?: InputMaybe<Scalars['Float']['input']>;
   ordering?: InputMaybe<Scalars['String']['input']>;
-  sensitivity?: InputMaybe<Scalars['Float']['input']>;
-  sensitivity_Gt?: InputMaybe<Scalars['Float']['input']>;
-  sensitivity_Gte?: InputMaybe<Scalars['Float']['input']>;
-  sensitivity_Lt?: InputMaybe<Scalars['Float']['input']>;
-  sensitivity_Lte?: InputMaybe<Scalars['Float']['input']>;
 };
 
 
@@ -6041,8 +5942,6 @@ export type QueryAllRecorderSpecificationsArgs = {
   channelsCount_Gte?: InputMaybe<Scalars['Int']['input']>;
   channelsCount_Lt?: InputMaybe<Scalars['Int']['input']>;
   channelsCount_Lte?: InputMaybe<Scalars['Int']['input']>;
-  equipment_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  equipment_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   first?: InputMaybe<Scalars['Int']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
@@ -6157,8 +6056,6 @@ export type QueryAllSpectrogramAnalysisArgs = {
 export type QueryAllStorageSpecificationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  equipment_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  equipment_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   first?: InputMaybe<Scalars['Int']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
@@ -6476,60 +6373,10 @@ export type RecorderSpecificationNode = Node & {
   __typename?: 'RecorderSpecificationNode';
   /** Number of all the channels on the recorder, even if unused. */
   channelsCount?: Maybe<Scalars['Int']['output']>;
-  equipmentSet: EquipmentNodeConnection;
   id: Scalars['ID']['output'];
   storageMaximumCapacity?: Maybe<Array<Scalars['String']['output']>>;
   storageSlotsCount?: Maybe<Scalars['Int']['output']>;
   storageType?: Maybe<Scalars['String']['output']>;
-};
-
-
-export type RecorderSpecificationNodeEquipmentSetArgs = {
-  acousticDetectorSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
-  after?: InputMaybe<Scalars['String']['input']>;
-  batterySlotsCount?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gte?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lte?: InputMaybe<Scalars['Int']['input']>;
-  batteryType?: InputMaybe<Scalars['String']['input']>;
-  batteryType_Icontains?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  cables?: InputMaybe<Scalars['String']['input']>;
-  cables_Icontains?: InputMaybe<Scalars['String']['input']>;
-  channelConfigurationDetectorSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationDetectorSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurationHydrophoneSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationHydrophoneSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurationRecorderSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationRecorderSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurations_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurations_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  hydrophoneSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  maintenances_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  maintenances_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  model?: InputMaybe<Scalars['String']['input']>;
-  model_Icontains?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  name_Icontains?: InputMaybe<Scalars['String']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  ownerId?: InputMaybe<Scalars['ID']['input']>;
-  ownerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  providerId?: InputMaybe<Scalars['ID']['input']>;
-  providerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  purchaseDate?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Gt?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Gte?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Lt?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Lte?: InputMaybe<Scalars['Date']['input']>;
-  recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
-  serialNumber?: InputMaybe<Scalars['String']['input']>;
-  serialNumber_Icontains?: InputMaybe<Scalars['String']['input']>;
-  storageSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type RecorderSpecificationNodeNodeConnection = {
@@ -7120,58 +6967,8 @@ export type SpectrogramNodeNodeConnection = {
 export type StorageSpecificationNode = Node & {
   __typename?: 'StorageSpecificationNode';
   capacity: Array<Scalars['String']['output']>;
-  equipmentSet: EquipmentNodeConnection;
   id: Scalars['ID']['output'];
   type?: Maybe<Scalars['String']['output']>;
-};
-
-
-export type StorageSpecificationNodeEquipmentSetArgs = {
-  acousticDetectorSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
-  after?: InputMaybe<Scalars['String']['input']>;
-  batterySlotsCount?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Gte?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lt?: InputMaybe<Scalars['Int']['input']>;
-  batterySlotsCount_Lte?: InputMaybe<Scalars['Int']['input']>;
-  batteryType?: InputMaybe<Scalars['String']['input']>;
-  batteryType_Icontains?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  cables?: InputMaybe<Scalars['String']['input']>;
-  cables_Icontains?: InputMaybe<Scalars['String']['input']>;
-  channelConfigurationDetectorSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationDetectorSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurationHydrophoneSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationHydrophoneSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurationRecorderSpecifications_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurationRecorderSpecifications_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  channelConfigurations_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  channelConfigurations_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  hydrophoneSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  maintenances_Id?: InputMaybe<Scalars['Decimal']['input']>;
-  maintenances_Id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  model?: InputMaybe<Scalars['String']['input']>;
-  model_Icontains?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  name_Icontains?: InputMaybe<Scalars['String']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  ownerId?: InputMaybe<Scalars['ID']['input']>;
-  ownerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  providerId?: InputMaybe<Scalars['ID']['input']>;
-  providerId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
-  purchaseDate?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Gt?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Gte?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Lt?: InputMaybe<Scalars['Date']['input']>;
-  purchaseDate_Lte?: InputMaybe<Scalars['Date']['input']>;
-  recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
-  serialNumber?: InputMaybe<Scalars['String']['input']>;
-  serialNumber_Icontains?: InputMaybe<Scalars['String']['input']>;
-  storageSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type StorageSpecificationNodeNodeConnection = {
