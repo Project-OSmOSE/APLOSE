@@ -154,24 +154,36 @@ def create_example_dataset(
 
     logger.info("")
 
-    # Generate spectrograms
-    logger.info("Generating NetCDF spectrograms...")
+    # Generate spectrograms with 3 different FFT sizes
+    logger.info("Generating NetCDF spectrograms with multiple FFT sizes...")
 
-    generator = SpectrogramGenerator(
-        nfft=2048,
-        hop_length=512,
-        window='hann',
-        datetime_format='%Y_%m_%d_%H_%M_%S'
-    )
+    fft_configs = [
+        {'nfft': 1024, 'hop_length': 256, 'name': 'FFT_1024'},
+        {'nfft': 2048, 'hop_length': 512, 'name': 'FFT_2048'},
+        {'nfft': 4096, 'hop_length': 1024, 'name': 'FFT_4096'},
+    ]
 
-    results = generator.process_folder(output_folder, output_folder, "*.wav")
+    all_results = []
+    for config in fft_configs:
+        logger.info(f"  Generating with nfft={config['nfft']}, hop={config['hop_length']}...")
+
+        generator = SpectrogramGenerator(
+            nfft=config['nfft'],
+            hop_length=config['hop_length'],
+            window='hann',
+            datetime_format='%Y_%m_%d_%H_%M_%S'
+        )
+
+        results = generator.process_folder(output_folder, output_folder, "*.wav")
+        all_results.extend(results)
+        logger.info(f"    ✓ Created {len(results)} spectrograms")
 
     logger.info("")
     logger.info("="*60)
     logger.info(f"✓ Dataset created successfully!")
     logger.info(f"  Location: {output_folder}")
     logger.info(f"  WAV files: {len(wav_files)}")
-    logger.info(f"  NetCDF files: {len(results)}")
+    logger.info(f"  NetCDF files: {len(all_results)} (3 FFT sizes)")
     logger.info("="*60)
     logger.info("")
     logger.info("To import into APLOSE:")
