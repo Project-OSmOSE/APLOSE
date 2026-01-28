@@ -1,4 +1,4 @@
-import { Contact } from "./bibliography";
+import { Contact } from "./bibliographyT";
 
 export interface TeamMember {
   id: string;

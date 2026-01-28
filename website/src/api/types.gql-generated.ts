@@ -3655,11 +3655,13 @@ export type PersonNode = ExtendedInterface & {
   firstName: Scalars['String']['output'];
   /** The ID of the object */
   id: Scalars['ID']['output'];
+  initialNames?: Maybe<Scalars['String']['output']>;
   institutionRelations?: Maybe<Array<Maybe<PersonInstitutionRelationNode>>>;
   institutions: InstitutionNodeConnection;
   lastName: Scalars['String']['output'];
   mail?: Maybe<Scalars['String']['output']>;
   performedMaintenances: MaintenanceNodeConnection;
+  teamMember?: Maybe<TeamMemberNode>;
   teams: TeamNodeConnection;
   website?: Maybe<Scalars['String']['output']>;
 };
@@ -3961,6 +3963,7 @@ export type PostSourceMutationPayload = {
 
 export type PosterNode = ExtendedInterface & {
   __typename?: 'PosterNode';
+  authors: AuthorNodeConnection;
   conferenceAbstractBookUrl?: Maybe<Scalars['String']['output']>;
   conferenceLocation: Scalars['String']['output'];
   conferenceName: Scalars['String']['output'];
@@ -3970,10 +3973,142 @@ export type PosterNode = ExtendedInterface & {
   posterUrl?: Maybe<Scalars['String']['output']>;
   /** Required for any published bibliography */
   publicationDate?: Maybe<Scalars['Date']['output']>;
+  relatedLabels: LabelNodeConnection;
+  relatedProjects: ProjectNodeOverrideConnection;
+  relatedSounds: SoundNodeConnection;
+  relatedSources: SourceNodeConnection;
   status: BibliographyStatusEnum;
   tags?: Maybe<Array<Maybe<TagNode>>>;
   title: Scalars['String']['output'];
   type: BibliographyTypeEnum;
+};
+
+
+export type PosterNodeAuthorsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  bibliographyId?: InputMaybe<Scalars['ID']['input']>;
+  bibliographyId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<Scalars['Int']['input']>;
+  order_Gt?: InputMaybe<Scalars['Int']['input']>;
+  order_Gte?: InputMaybe<Scalars['Int']['input']>;
+  order_Lt?: InputMaybe<Scalars['Int']['input']>;
+  order_Lte?: InputMaybe<Scalars['Int']['input']>;
+  personId?: InputMaybe<Scalars['ID']['input']>;
+  personId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+};
+
+
+export type PosterNodeRelatedLabelsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  maxFrequency?: InputMaybe<Scalars['Int']['input']>;
+  maxFrequency_Gt?: InputMaybe<Scalars['Int']['input']>;
+  maxFrequency_Gte?: InputMaybe<Scalars['Int']['input']>;
+  maxFrequency_Lt?: InputMaybe<Scalars['Int']['input']>;
+  maxFrequency_Lte?: InputMaybe<Scalars['Int']['input']>;
+  meanDuration?: InputMaybe<Scalars['Float']['input']>;
+  meanDuration_Gt?: InputMaybe<Scalars['Float']['input']>;
+  meanDuration_Gte?: InputMaybe<Scalars['Float']['input']>;
+  meanDuration_Lt?: InputMaybe<Scalars['Float']['input']>;
+  meanDuration_Lte?: InputMaybe<Scalars['Float']['input']>;
+  minFrequency?: InputMaybe<Scalars['Int']['input']>;
+  minFrequency_Gt?: InputMaybe<Scalars['Int']['input']>;
+  minFrequency_Gte?: InputMaybe<Scalars['Int']['input']>;
+  minFrequency_Lt?: InputMaybe<Scalars['Int']['input']>;
+  minFrequency_Lte?: InputMaybe<Scalars['Int']['input']>;
+  nickname?: InputMaybe<Scalars['String']['input']>;
+  nickname_Icontains?: InputMaybe<Scalars['String']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  parentId?: InputMaybe<Scalars['ID']['input']>;
+  parentId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  plurality?: InputMaybe<SignalPluralityEnum>;
+  shape?: InputMaybe<SignalShapeEnum>;
+  soundId?: InputMaybe<Scalars['ID']['input']>;
+  soundId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  sourceId?: InputMaybe<Scalars['ID']['input']>;
+  sourceId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+};
+
+
+export type PosterNodeRelatedProjectsArgs = {
+  accessibility?: InputMaybe<AccessibilityEnum>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  doi?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['Date']['input']>;
+  endDate_Gt?: InputMaybe<Scalars['Date']['input']>;
+  endDate_Gte?: InputMaybe<Scalars['Date']['input']>;
+  endDate_Lt?: InputMaybe<Scalars['Date']['input']>;
+  endDate_Lte?: InputMaybe<Scalars['Date']['input']>;
+  financing?: InputMaybe<FinancingEnum>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  name_Icontains?: InputMaybe<Scalars['String']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  projectGoal?: InputMaybe<Scalars['String']['input']>;
+  projectGoal_Icontains?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['Date']['input']>;
+  startDate_Gt?: InputMaybe<Scalars['Date']['input']>;
+  startDate_Gte?: InputMaybe<Scalars['Date']['input']>;
+  startDate_Lt?: InputMaybe<Scalars['Date']['input']>;
+  startDate_Lte?: InputMaybe<Scalars['Date']['input']>;
+};
+
+
+export type PosterNodeRelatedSoundsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  codeName?: InputMaybe<Scalars['String']['input']>;
+  codeName_Icontains?: InputMaybe<Scalars['String']['input']>;
+  englishName?: InputMaybe<Scalars['String']['input']>;
+  englishName_Icontains?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  frenchName?: InputMaybe<Scalars['String']['input']>;
+  frenchName_Icontains?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  parentId?: InputMaybe<Scalars['ID']['input']>;
+  parentId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  taxon?: InputMaybe<Scalars['String']['input']>;
+  taxon_Icontains?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type PosterNodeRelatedSourcesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  codeName?: InputMaybe<Scalars['String']['input']>;
+  codeName_Icontains?: InputMaybe<Scalars['String']['input']>;
+  englishName?: InputMaybe<Scalars['String']['input']>;
+  englishName_Icontains?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  frenchName?: InputMaybe<Scalars['String']['input']>;
+  frenchName_Icontains?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  latinName?: InputMaybe<Scalars['String']['input']>;
+  latinName_Icontains?: InputMaybe<Scalars['String']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  parentId?: InputMaybe<Scalars['ID']['input']>;
+  parentId_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  taxon?: InputMaybe<Scalars['String']['input']>;
+  taxon_Icontains?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PosterNodeNodeConnection = {
@@ -4316,6 +4451,7 @@ export type Query = {
   allSounds?: Maybe<SoundNodeNodeConnection>;
   allSources?: Maybe<SourceNodeNodeConnection>;
   allSpectrogramAnalysis?: Maybe<SpectrogramAnalysisNodeNodeConnection>;
+  allTeamMembers?: Maybe<TeamMemberNodeNodeConnection>;
   allTeams?: Maybe<TeamNodeNodeConnection>;
   allUserGroups?: Maybe<UserGroupNodeNodeConnection>;
   allUsers?: Maybe<UserNodeNodeConnection>;
@@ -4350,7 +4486,8 @@ export type Query = {
   soundById?: Maybe<SoundNode>;
   sourceById?: Maybe<SourceNode>;
   teamById?: Maybe<TeamNode>;
-  websiteProjetById?: Maybe<WebsiteProjectNode>;
+  teamMemberById?: Maybe<TeamMemberNode>;
+  websiteProjectById?: Maybe<WebsiteProjectNode>;
 };
 
 
@@ -5185,6 +5322,19 @@ export type QueryAllSpectrogramAnalysisArgs = {
 
 
 /** Global query */
+export type QueryAllTeamMembersArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Global query */
 export type QueryAllTeamsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -5423,7 +5573,13 @@ export type QueryTeamByIdArgs = {
 
 
 /** Global query */
-export type QueryWebsiteProjetByIdArgs = {
+export type QueryTeamMemberByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** Global query */
+export type QueryWebsiteProjectByIdArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -6143,6 +6299,62 @@ export type TagNode = ExtendedInterface & {
   name: Scalars['String']['output'];
 };
 
+/** TeamMember node */
+export type TeamMemberNode = ExtendedInterface & {
+  __typename?: 'TeamMemberNode';
+  biography?: Maybe<Scalars['String']['output']>;
+  githubUrl?: Maybe<Scalars['String']['output']>;
+  /** The ID of the object */
+  id: Scalars['ID']['output'];
+  isFormerMember: Scalars['Boolean']['output'];
+  level?: Maybe<Scalars['Int']['output']>;
+  linkedinUrl?: Maybe<Scalars['String']['output']>;
+  mailAddress?: Maybe<Scalars['String']['output']>;
+  person: PersonNode;
+  personalWebsiteUrl?: Maybe<Scalars['String']['output']>;
+  picture: Scalars['String']['output'];
+  position: Scalars['String']['output'];
+  projectSet: WebsiteProjectNodeConnection;
+  researchGateUrl?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** TeamMember node */
+export type TeamMemberNodeProjectSetArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type TeamMemberNodeConnection = {
+  __typename?: 'TeamMemberNodeConnection';
+  /** Contains the nodes in this connection. */
+  edges: Array<Maybe<TeamMemberNodeEdge>>;
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+};
+
+/** A Relay edge containing a `TeamMemberNode` and its cursor. */
+export type TeamMemberNodeEdge = {
+  __typename?: 'TeamMemberNodeEdge';
+  /** A cursor for use in pagination */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge */
+  node?: Maybe<TeamMemberNode>;
+};
+
+export type TeamMemberNodeNodeConnection = {
+  __typename?: 'TeamMemberNodeNodeConnection';
+  /** Pagination data for this connection. */
+  pageInfo: PageInfoExtra;
+  /** Contains the nodes in this connection. */
+  results: Array<Maybe<TeamMemberNode>>;
+  totalCount?: Maybe<Scalars['Int']['output']>;
+};
+
 export type TeamNode = ExtendedInterface & {
   __typename?: 'TeamNode';
   contactRelations: PersonInstitutionRelationNodeConnection;
@@ -6548,10 +6760,39 @@ export type WebsiteProjectNode = ExtendedInterface & {
   id: Scalars['ID']['output'];
   intro: Scalars['String']['output'];
   metadataxProject?: Maybe<ProjectNodeOverride>;
+  osmoseMemberContacts: TeamMemberNodeConnection;
   otherContacts?: Maybe<Array<Scalars['String']['output']>>;
   start?: Maybe<Scalars['Date']['output']>;
   thumbnail: Scalars['String']['output'];
   title: Scalars['String']['output'];
+};
+
+
+/** Project node */
+export type WebsiteProjectNodeOsmoseMemberContactsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type WebsiteProjectNodeConnection = {
+  __typename?: 'WebsiteProjectNodeConnection';
+  /** Contains the nodes in this connection. */
+  edges: Array<Maybe<WebsiteProjectNodeEdge>>;
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+};
+
+/** A Relay edge containing a `WebsiteProjectNode` and its cursor. */
+export type WebsiteProjectNodeEdge = {
+  __typename?: 'WebsiteProjectNodeEdge';
+  /** A cursor for use in pagination */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge */
+  node?: Maybe<WebsiteProjectNode>;
 };
 
 export type WebsiteProjectNodeNodeConnection = {
