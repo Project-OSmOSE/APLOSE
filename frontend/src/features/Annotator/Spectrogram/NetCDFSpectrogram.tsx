@@ -190,12 +190,6 @@ export const NetCDFSpectrogram: React.FC = () => {
       const colorIndex = labelIndex >= 0 ? labelIndex % 10 : 0;
       const labelColor = LABEL_COLORS[colorIndex];
 
-      // Parse RGB from label color for fillcolor
-      const rgbMatch = labelColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-      const fillColor = rgbMatch
-        ? `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, 0.15)`
-        : 'rgba(255, 255, 0, 0.15)';
-
       // Use actual frequency values for both linear and log modes
       // Plotly handles the log transformation when axis type is 'log'
       const y0 = Math.max(minFreq, Math.min(maxFreq, annotation.startFrequency));
@@ -211,7 +205,7 @@ export const NetCDFSpectrogram: React.FC = () => {
           color: labelColor,
           width: isFocused ? 3 : 2,
         },
-        fillcolor: fillColor,
+        fillcolor: 'rgba(0, 0, 0, 0)', // Transparent fill - only show border
         layer: 'above' as const,
         // Store annotation ID for click handling
         name: `annotation-${annotation.id}`,

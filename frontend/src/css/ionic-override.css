@@ -244,6 +244,11 @@ ion-chip {
     margin: 0;
     transition: 300ms;
     user-select: none;
+    color: #ffffff;
+}
+
+ion-chip p {
+    color: #ffffff;
 }
 
 ion-chip ion-icon {
