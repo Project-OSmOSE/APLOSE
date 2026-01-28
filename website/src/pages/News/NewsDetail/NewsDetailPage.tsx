@@ -1,23 +1,34 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useParams } from "react-router-dom";
 
-import { getFormattedDate, useFetchDetail } from "../../../utils";
-import { News } from "../../../models/news";
+import { getFormattedDate } from "../../../utils";
 import { Back } from "../../../components/Back/Back";
 import { DetailPage } from "../../../components/DetailPage/DetailPage";
 import { HTMLContent } from '../../../components/HTMLContent/HTMLContent';
+import { News, useGqlSdk } from "../../../api";
+import { ContactList } from "../../../components/ContactList/ContactList";
 
 
 export const NewsDetailPage: React.FC = () => {
     const { id: articleID } = useParams<{ id: string; }>();
 
     let [ article, setArticle ] = React.useState<News>();
+    const authors = useMemo(() => {
+        return [
+            ...(article?.osmoseMemberAuthors.edges.map(e => e?.node).filter(n => !!n) ?? []),
+            ...(article?.otherAuthors ?? [])
+        ]
+    }, [ article ])
 
-    const fetchDetail = useFetchDetail<News>('/news', '/api/news');
+    const sdk = useGqlSdk()
 
     useEffect(() => {
         let isMounted = true;
-        fetchDetail(articleID).then(article => isMounted && setArticle(article));
+
+        sdk.newsById({ id: articleID }).then(({ data }) => {
+            if (!isMounted) return;
+            setArticle(data.newsById ?? undefined)
+        })
 
         return () => {
             isMounted = false;
@@ -33,9 +44,7 @@ export const NewsDetailPage: React.FC = () => {
                 <p className="text-muted">{ getFormattedDate(article?.date) }</p>
             </div>
 
-            {/*  TODO*/ }
-            {/*<ContactList teamMembers={ article?.osmose_member_authors ?? [] }*/ }
-            {/*             namedMembers={ article?.other_authors ?? [] }></ContactList>*/ }
+            <ContactList contacts={ authors as any }/>
 
             { article?.body && <HTMLContent content={ article.body }></HTMLContent> }
         </DetailPage>

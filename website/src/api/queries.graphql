@@ -335,3 +335,35 @@ query teamMemberById($id: ID!) {
         researchGateUrl
     }
 }
+
+query allNews ($offset: Int!, $limit: Int!){
+    allNews(limit: $limit, offset: $offset) {
+        totalCount
+        results {
+            id
+            title
+            thumbnail
+            date
+            intro
+        }
+    }
+}
+
+query newsById($id: ID!) {
+    newsById(id: $id) {
+        title
+        date
+        body
+        osmoseMemberAuthors {
+            edges {
+                node {
+                    id
+                    person {
+                        initialNames
+                    }
+                }
+            }
+        }
+        otherAuthors
+    }
+}
