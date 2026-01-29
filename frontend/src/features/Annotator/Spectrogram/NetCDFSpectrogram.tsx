@@ -145,10 +145,14 @@ export const NetCDFSpectrogram: React.FC = () => {
           // For log axis, range is [log10(min), log10(max)]
           // But data coordinates (heatmap, shapes) remain in actual values
           range: [Math.log10(netcdfData.frequency[0]), Math.log10(netcdfData.frequency[netcdfData.frequency.length - 1])],
+          autorange: false,
+          fixedrange: false, // Allow zooming but constrain in onRelayout
         }
       : {
           type: 'linear' as const,
           range: [netcdfData.frequency[0], netcdfData.frequency[netcdfData.frequency.length - 1]],
+          autorange: false,
+          fixedrange: false, // Allow zooming but constrain in onRelayout
         };
 
     // Get y-axis range limits for clamping
@@ -348,24 +352,71 @@ export const NetCDFSpectrogram: React.FC = () => {
     selectionStartConfidenceRef.current = null;
   }, [addAnnotation, isDrawingEnabled]);
 
-  // Restore dragmode after zoom/pan operations
-  const onRelayout = useCallback((_event: any) => {
-    if (!plotRef.current || !isDrawingEnabled) return;
+  // Restore dragmode after zoom/pan operations and enforce y-axis range limits
+  const onRelayout = useCallback((event: any) => {
+    if (!plotRef.current || !netcdfData) return;
 
-    // After any relayout event (zoom, pan, etc.), restore dragmode to 'select'
     const plotlyDiv = plotRef.current.el;
-    if (plotlyDiv && plotlyDiv.layout && plotlyDiv.layout.dragmode !== 'select') {
-      // Use Plotly.relayout to restore select mode
-      try {
-        const Plotly = (window as any).Plotly;
-        if (Plotly) {
-          Plotly.relayout(plotlyDiv, { dragmode: 'select' });
+    if (!plotlyDiv) return;
+
+    const Plotly = (window as any).Plotly;
+    if (!Plotly) return;
+
+    const updates: any = {};
+    let needsUpdate = false;
+
+    // Get the frequency bounds
+    const minFreq = netcdfData.frequency[0];
+    const maxFreq = netcdfData.frequency[netcdfData.frequency.length - 1];
+
+    // Check if y-axis range was modified (zoom/pan)
+    if (event && (event['yaxis.range[0]'] !== undefined || event['yaxis.range'] !== undefined)) {
+      const currentYAxis = plotlyDiv.layout?.yaxis;
+      if (currentYAxis?.type === 'log') {
+        // In log mode, range is in log10 values
+        const minLogFreq = Math.log10(minFreq);
+        const maxLogFreq = Math.log10(maxFreq);
+
+        const currentRange = currentYAxis.range || [minLogFreq, maxLogFreq];
+        const newRange = [
+          Math.max(minLogFreq, Math.min(maxLogFreq, currentRange[0])),
+          Math.max(minLogFreq, Math.min(maxLogFreq, currentRange[1]))
+        ];
+
+        if (newRange[0] !== currentRange[0] || newRange[1] !== currentRange[1]) {
+          updates['yaxis.range'] = newRange;
+          needsUpdate = true;
         }
-      } catch (e) {
-        console.error('Error restoring dragmode:', e);
+      } else {
+        // Linear mode
+        const currentRange = currentYAxis.range || [minFreq, maxFreq];
+        const newRange = [
+          Math.max(minFreq, Math.min(maxFreq, currentRange[0])),
+          Math.max(minFreq, Math.min(maxFreq, currentRange[1]))
+        ];
+
+        if (newRange[0] !== currentRange[0] || newRange[1] !== currentRange[1]) {
+          updates['yaxis.range'] = newRange;
+          needsUpdate = true;
+        }
       }
     }
-  }, [isDrawingEnabled]);
+
+    // Restore dragmode to 'select' if drawing is enabled
+    if (isDrawingEnabled && plotlyDiv.layout?.dragmode !== 'select') {
+      updates.dragmode = 'select';
+      needsUpdate = true;
+    }
+
+    // Apply updates if needed
+    if (needsUpdate) {
+      try {
+        Plotly.relayout(plotlyDiv, updates);
+      } catch (e) {
+        console.error('Error updating plot layout:', e);
+      }
+    }
+  }, [isDrawingEnabled, netcdfData]);
 
   if (loading) {
     return <div className={styles.loading}>Loading NetCDF spectrogram...</div>;
