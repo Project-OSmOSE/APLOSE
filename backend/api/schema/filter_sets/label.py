@@ -1,8 +1,9 @@
+from django_extension.filters import ExtendedFilterSet
+
 from backend.api.models import Label
-from backend.utils.schema.filters import BaseFilterSet
 
 
-class LabelFilterSet(BaseFilterSet):
+class LabelFilterSet(ExtendedFilterSet):
     """Label filter set"""
 
     class Meta:

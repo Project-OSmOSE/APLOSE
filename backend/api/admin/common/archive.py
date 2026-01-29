@@ -1,11 +1,12 @@
 """API common archive administration"""
 from django.contrib import admin
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import Archive
 
 
 @admin.register(Archive)
-class ArchiveAdmin(admin.ModelAdmin):
+class ArchiveAdmin(ExtendedModelAdmin):
     """Archive presentation in DjangoAdmin"""
 
     list_display = ("id", "date", "by_user")

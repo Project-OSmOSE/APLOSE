@@ -2,9 +2,9 @@
 from django.contrib import admin
 from django.contrib import messages
 from django.utils.safestring import SafeString
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import AnnotationCampaign
-from backend.utils.admin import get_many_to_many
 from ..common import IsArchivedFilter
 from ...models.annotation.annotation_campaign import AnnotationCampaignAnalysis
 
@@ -16,7 +16,7 @@ class AnnotationCampaignAnalysisRelationInline(admin.TabularInline):
 
 
 @admin.register(AnnotationCampaign)
-class AnnotationCampaignAdmin(admin.ModelAdmin):
+class AnnotationCampaignAdmin(ExtendedModelAdmin):
     """AnnotationCampaign presentation in DjangoAdmin"""
 
     readonly_fields = ("archive",)
@@ -100,12 +100,15 @@ class AnnotationCampaignAdmin(admin.ModelAdmin):
     @admin.display(description="Labels for acoustic features")
     def get_labels_with_acoustic_features(self, obj: AnnotationCampaign):
         """show_labels_with_acoustic_features"""
-        return get_many_to_many(obj, "labels_with_acoustic_features", "name")
+        return self.list_queryset(obj.labels_with_acoustic_features.all())
 
     @admin.display(description="Spectrogram analysis")
     def show_spectrogram_analysis(self, obj: AnnotationCampaign):
         """show_spectro_configs"""
-        return get_many_to_many(obj, "analysis", "name")
+        return self.list_queryset(
+            obj.analysis.all(),
+            to_str=lambda analysis: str(analysis.name),
+        )
 
     @admin.display(description="Image tuning")
     def image_tuning(self, obj: AnnotationCampaign):

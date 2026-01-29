@@ -1,11 +1,12 @@
 """API annotation annotation administration"""
 from django.contrib import admin
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import Annotation
 
 
 @admin.register(Annotation)
-class AnnotationAdmin(admin.ModelAdmin):
+class AnnotationAdmin(ExtendedModelAdmin):
     """Annotation presentation in DjangoAdmin"""
 
     list_display = (

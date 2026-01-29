@@ -1,5 +1,6 @@
 import json
 
+from django_extension.tests import ExtendedTestCase
 from graphene_django.utils import GraphQLTestCase
 
 from backend.api.models import AnnotationFileRange
@@ -7,6 +8,7 @@ from backend.api.tests.fixtures import ALL_FIXTURES
 from backend.api.tests.schema.spectrogram_analysis.all_spectrogram_analysis_for_import import (
     VARIABLES,
 )
+from backend.aplose.models import User
 
 MUTATION = """
 mutation (
@@ -50,7 +52,7 @@ basic_create_range = {
 }
 
 
-class UpdateAnnotationPhaseFileRangesTestCase(GraphQLTestCase):
+class UpdateAnnotationPhaseFileRangesTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ALL_FIXTURES
@@ -75,35 +77,42 @@ class UpdateAnnotationPhaseFileRangesTestCase(GraphQLTestCase):
         self.assertGreater(len(errors), 0, content)
 
     def test_not_connected(self):
-        response = self.query(MUTATION, variables=VARIABLES)
+        response = self.gql_query(MUTATION, variables=VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_unknown(self):
-        self.client.login(username="admin", password="osmose29")
-        response = self.query(MUTATION, variables={**VARIABLES, "campaignID": 99})
+        response = self.gql_query(
+            MUTATION,
+            user=User.objects.get(username="admin"),
+            variables={**VARIABLES, "campaignID": 99},
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Not found")
 
     def test_connected_no_access(self):
-        self.client.login(username="user4", password="osmose29")
-        response = self.query(MUTATION, variables=VARIABLES)
+        response = self.gql_query(
+            MUTATION, user=User.objects.get(username="user4"), variables=VARIABLES
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Not found")
 
     def test_connected_not_allowed(self):
-        self.client.login(username="user2", password="osmose29")
-        response = self.query(MUTATION, variables=VARIABLES)
+        response = self.gql_query(
+            MUTATION, user=User.objects.get(username="user2"), variables=VARIABLES
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Forbidden")
 
-    def _post_empty(self):
+    def _post_empty(self, username="admin"):
         old_count = AnnotationFileRange.objects.count()
-        response = self.query(MUTATION, variables=VARIABLES)
+        response = self.gql_query(
+            MUTATION, user=User.objects.get(username=username), variables=VARIABLES
+        )
         self.assertResponseHasErrors(response)
         errors = json.loads(response.content)["errors"]
         self.assertEqual(AnnotationFileRange.objects.count(), old_count)
@@ -112,18 +121,16 @@ class UpdateAnnotationPhaseFileRangesTestCase(GraphQLTestCase):
         )
 
     def test_post_admin_empty(self):
-        self.client.login(username="admin", password="osmose29")
         self._post_empty()
 
     def test_post_owner_empty(self):
-        self.client.login(username="admin", password="osmose29")
         self._post_empty()
 
     def test_post_owner_add(self):
-        self.client.login(username="admin", password="osmose29")
         old_count = AnnotationFileRange.objects.count()
-        response = self.query(
+        response = self.gql_query(
             MUTATION,
+            user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
                 "fileRanges": existing_ranges + [basic_create_range],
@@ -133,10 +140,10 @@ class UpdateAnnotationPhaseFileRangesTestCase(GraphQLTestCase):
         self.assertEqual(AnnotationFileRange.objects.count(), old_count + 1)
 
     def test_post_owner_duplicate(self):
-        self.client.login(username="admin", password="osmose29")
         old_count = AnnotationFileRange.objects.count()
-        response = self.query(
+        response = self.gql_query(
             MUTATION,
+            user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
                 "fileRanges": existing_ranges
@@ -153,10 +160,10 @@ class UpdateAnnotationPhaseFileRangesTestCase(GraphQLTestCase):
         self.assertEqual(AnnotationFileRange.objects.count(), old_count)
 
     def test_post_owner_bellow_range(self):
-        self.client.login(username="admin", password="osmose29")
         old_count = AnnotationFileRange.objects.count()
-        response = self.query(
+        response = self.gql_query(
             MUTATION,
+            user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
                 "fileRanges": existing_ranges
@@ -190,10 +197,10 @@ class UpdateAnnotationPhaseFileRangesTestCase(GraphQLTestCase):
         self.assertEqual(AnnotationFileRange.objects.count(), old_count)
 
     def test_post_owner_over_range(self):
-        self.client.login(username="admin", password="osmose29")
         old_count = AnnotationFileRange.objects.count()
-        response = self.query(
+        response = self.gql_query(
             MUTATION,
+            user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
                 "fileRanges": existing_ranges
@@ -227,10 +234,10 @@ class UpdateAnnotationPhaseFileRangesTestCase(GraphQLTestCase):
         self.assertEqual(AnnotationFileRange.objects.count(), old_count)
 
     def test_post_owner_wrong_limit_sort(self):
-        self.client.login(username="admin", password="osmose29")
         old_count = AnnotationFileRange.objects.count()
-        response = self.query(
+        response = self.gql_query(
             MUTATION,
+            user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
                 "fileRanges": existing_ranges
@@ -257,10 +264,10 @@ class UpdateAnnotationPhaseFileRangesTestCase(GraphQLTestCase):
         self.assertEqual(AnnotationFileRange.objects.count(), old_count)
 
     def test_post_owner_initial_overlapping(self):
-        self.client.login(username="admin", password="osmose29")
         old_count = AnnotationFileRange.objects.count()
-        response = self.query(
+        response = self.gql_query(
             MUTATION,
+            user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
                 "fileRanges": existing_ranges
@@ -280,10 +287,10 @@ class UpdateAnnotationPhaseFileRangesTestCase(GraphQLTestCase):
         self.assertEqual(item.last_file_index, 9)
 
     def test_post_owner_new_overlapping(self):
-        self.client.login(username="admin", password="osmose29")
         old_count = AnnotationFileRange.objects.count()
-        response = self.query(
+        response = self.gql_query(
             MUTATION,
+            user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
                 "fileRanges": existing_ranges
@@ -303,10 +310,10 @@ class UpdateAnnotationPhaseFileRangesTestCase(GraphQLTestCase):
         self.assertEqual(item.last_file_index, 10)
 
     def test_post_owner_sibling(self):
-        self.client.login(username="admin", password="osmose29")
         old_count = AnnotationFileRange.objects.count()
-        response = self.query(
+        response = self.gql_query(
             MUTATION,
+            user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
                 "fileRanges": existing_ranges
@@ -326,10 +333,10 @@ class UpdateAnnotationPhaseFileRangesTestCase(GraphQLTestCase):
         self.assertEqual(item.last_file_index, 9)
 
     def test_post_owner_update(self):
-        self.client.login(username="admin", password="osmose29")
         old_count = AnnotationFileRange.objects.count()
-        response = self.query(
+        response = self.gql_query(
             MUTATION,
+            user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
                 "fileRanges": existing_ranges
@@ -350,17 +357,20 @@ class UpdateAnnotationPhaseFileRangesTestCase(GraphQLTestCase):
         self.assertEqual(item.last_file_index, 5)
 
     def test_post_owner_delete_all(self):
-        self.client.login(username="admin", password="osmose29")
         old_count = AnnotationFileRange.objects.count()
-        response = self.query(MUTATION, variables={**VARIABLES, "campaignID": 2})
+        response = self.gql_query(
+            MUTATION,
+            user=User.objects.get(username="admin"),
+            variables={**VARIABLES, "campaignID": 2},
+        )
         self.assertResponseNoErrors(response)
         self.assertEqual(AnnotationFileRange.objects.count(), old_count - 2)
 
     def test_post_owner_delete_one(self):
-        self.client.login(username="admin", password="osmose29")
         old_count = AnnotationFileRange.objects.count()
-        response = self.query(
+        response = self.gql_query(
             MUTATION,
+            user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
                 "fileRanges": [existing_ranges[0]],

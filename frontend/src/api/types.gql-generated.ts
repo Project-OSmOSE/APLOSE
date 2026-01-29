@@ -35,8 +35,6 @@ export type Scalars = {
   Decimal: { input: any; output: any; }
   FinancingEnum: { input: any; output: any; }
   HydrophoneDirectivityEnum: { input: any; output: any; }
-  /** Django Primary key */
-  PK: { input: any; output: any; }
   RoleEnum: { input: any; output: any; }
   SignalPluralityEnum: { input: any; output: any; }
   SignalShapeEnum: { input: any; output: any; }
@@ -133,7 +131,7 @@ export type AcousticDetectorSpecificationNodeNodeConnection = {
 };
 
 /** Annotation schema */
-export type AcousticFeaturesNode = BaseNode & {
+export type AcousticFeaturesNode = ExtendedInterface & {
   __typename?: 'AcousticFeaturesNode';
   annotation?: Maybe<AnnotationNode>;
   /** [Hz] Frequency at the end of the signal */
@@ -171,7 +169,7 @@ export type AnnotationAcousticFeaturesSerializerInput = {
 };
 
 /** AnnotationCampaign schema */
-export type AnnotationCampaignNode = BaseNode & {
+export type AnnotationCampaignNode = ExtendedInterface & {
   __typename?: 'AnnotationCampaignNode';
   allowColormapTuning: Scalars['Boolean']['output'];
   allowImageTuning: Scalars['Boolean']['output'];
@@ -269,7 +267,7 @@ export type AnnotationCommentInput = {
 };
 
 /** AnnotationComment schema */
-export type AnnotationCommentNode = BaseNode & {
+export type AnnotationCommentNode = ExtendedInterface & {
   __typename?: 'AnnotationCommentNode';
   annotation?: Maybe<AnnotationNode>;
   annotationPhase: AnnotationPhaseNode;
@@ -325,7 +323,7 @@ export type AnnotationFileRangeInput = {
 };
 
 /** AnnotationFileRange schema */
-export type AnnotationFileRangeNode = BaseNode & {
+export type AnnotationFileRangeNode = ExtendedInterface & {
   __typename?: 'AnnotationFileRangeNode';
   annotationPhase: AnnotationPhaseNode;
   annotationTasks?: Maybe<AnnotationTaskNodeNodeConnection>;
@@ -442,7 +440,7 @@ export type AnnotationInput = {
 };
 
 /** Label schema */
-export type AnnotationLabelNode = BaseNode & {
+export type AnnotationLabelNode = ExtendedInterface & {
   __typename?: 'AnnotationLabelNode';
   annotationSet: AnnotationNodeConnection;
   annotationcampaignSet: AnnotationCampaignNodeConnection;
@@ -533,7 +531,7 @@ export type AnnotationLabelNodeNodeConnection = {
 };
 
 /** Annotation schema */
-export type AnnotationNode = BaseNode & {
+export type AnnotationNode = ExtendedInterface & {
   __typename?: 'AnnotationNode';
   /** Acoustic features add a better description to the signal */
   acousticFeatures?: Maybe<AcousticFeaturesNode>;
@@ -647,7 +645,7 @@ export type AnnotationNodeNodeConnection = {
 };
 
 /** AnnotationPhase schema */
-export type AnnotationPhaseNode = BaseNode & {
+export type AnnotationPhaseNode = ExtendedInterface & {
   __typename?: 'AnnotationPhaseNode';
   annotationCampaign: AnnotationCampaignNode;
   annotationCampaignId: Scalars['ID']['output'];
@@ -798,7 +796,7 @@ export enum AnnotationPhaseType {
   Verification = 'Verification'
 }
 
-export type AnnotationSpectrogramNode = BaseNode & {
+export type AnnotationSpectrogramNode = ExtendedInterface & {
   __typename?: 'AnnotationSpectrogramNode';
   analysis: SpectrogramAnalysisNodeConnection;
   annotationComments?: Maybe<AnnotationCommentNodeNodeConnection>;
@@ -959,7 +957,7 @@ export type AnnotationSpectrogramNodeNodeConnectionResumeSpectrogramIdArgs = {
 };
 
 /** AnnotationTask schema */
-export type AnnotationTaskNode = BaseNode & {
+export type AnnotationTaskNode = ExtendedInterface & {
   __typename?: 'AnnotationTaskNode';
   annotationPhase: AnnotationPhaseNode;
   annotationsToCheck?: Maybe<AnnotationNodeNodeConnection>;
@@ -1065,7 +1063,7 @@ export enum AnnotationType {
 }
 
 /** AnnotationValidation schema */
-export type AnnotationValidationNode = BaseNode & {
+export type AnnotationValidationNode = ExtendedInterface & {
   __typename?: 'AnnotationValidationNode';
   annotation: AnnotationNode;
   annotator: UserNode;
@@ -1128,7 +1126,7 @@ export type ArchiveAnnotationCampaignMutation = {
 };
 
 /** Archive schema */
-export type ArchiveNode = BaseNode & {
+export type ArchiveNode = ExtendedInterface & {
   __typename?: 'ArchiveNode';
   annotationCampaign?: Maybe<AnnotationCampaignNode>;
   byUser?: Maybe<UserNode>;
@@ -1227,12 +1225,6 @@ export type AuthorNodeNodeConnection = {
   /** Contains the nodes in this connection. */
   results: Array<Maybe<AuthorNode>>;
   totalCount?: Maybe<Scalars['Int']['output']>;
-};
-
-/** For fetching object id instead of Node id */
-export type BaseNode = {
-  /** The ID of the object */
-  id: Scalars['ID']['output'];
 };
 
 export type BibliographyArticleNode = Node & {
@@ -1908,7 +1900,7 @@ export type ChannelConfigurationRecorderSpecificationNodeNodeConnection = {
 };
 
 /** Colormap schema */
-export type ColormapNode = BaseNode & {
+export type ColormapNode = ExtendedInterface & {
   __typename?: 'ColormapNode';
   /** The ID of the object */
   id: Scalars['ID']['output'];
@@ -1930,7 +1922,7 @@ export type ColormapNodeSpectrogramAnalysisArgs = {
 };
 
 /** Confidence schema */
-export type ConfidenceNode = BaseNode & {
+export type ConfidenceNode = ExtendedInterface & {
   __typename?: 'ConfidenceNode';
   annotationSet: AnnotationNodeConnection;
   confidenceIndicatorSets: ConfidenceSetNodeConnection;
@@ -1972,7 +1964,7 @@ export type ConfidenceNodeConfidenceIndicatorSetsArgs = {
 };
 
 /** ConfidenceSet schema */
-export type ConfidenceSetNode = BaseNode & {
+export type ConfidenceSetNode = ExtendedInterface & {
   __typename?: 'ConfidenceSetNode';
   annotationcampaignSet: AnnotationCampaignNodeConnection;
   confidenceIndicators?: Maybe<Array<Maybe<ConfidenceNode>>>;
@@ -2326,7 +2318,7 @@ export type CreateAnnotationPhase = {
 };
 
 /** Dataset schema */
-export type DatasetNode = BaseNode & {
+export type DatasetNode = ExtendedInterface & {
   __typename?: 'DatasetNode';
   analysisCount: Scalars['Int']['output'];
   annotationCampaigns: AnnotationCampaignNodeConnection;
@@ -2718,7 +2710,7 @@ export type DetectionPropertiesNodeNodeConnection = {
 };
 
 /** DetectorConfiguration schema */
-export type DetectorConfigurationNode = BaseNode & {
+export type DetectorConfigurationNode = ExtendedInterface & {
   __typename?: 'DetectorConfigurationNode';
   annotations: AnnotationNodeConnection;
   configuration: Scalars['String']['output'];
@@ -2745,7 +2737,7 @@ export type DetectorConfigurationNodeAnnotationsArgs = {
 };
 
 /** Detector schema */
-export type DetectorNode = BaseNode & {
+export type DetectorNode = ExtendedInterface & {
   __typename?: 'DetectorNode';
   configurations?: Maybe<Array<Maybe<DetectorConfigurationNode>>>;
   /** The ID of the object */
@@ -3098,8 +3090,14 @@ export enum ExpertiseLevelType {
   Novice = 'Novice'
 }
 
+/** For fetching object id instead of Node id */
+export type ExtendedInterface = {
+  /** The ID of the object */
+  id: Scalars['ID']['output'];
+};
+
 /** FFT schema */
-export type FftNode = BaseNode & {
+export type FftNode = ExtendedInterface & {
   __typename?: 'FFTNode';
   /** The ID of the object */
   id: Scalars['ID']['output'];
@@ -3808,7 +3806,7 @@ export type LabelNodeNodeConnection = {
 };
 
 /** LabelSet schema */
-export type LabelSetNode = BaseNode & {
+export type LabelSetNode = ExtendedInterface & {
   __typename?: 'LabelSetNode';
   annotationcampaignSet: AnnotationCampaignNodeConnection;
   description?: Maybe<Scalars['String']['output']>;
@@ -3861,7 +3859,7 @@ export type LabelSetNodeNodeConnection = {
 };
 
 /** LegacySpectrogramConfiguration schema */
-export type LegacySpectrogramConfigurationNode = BaseNode & {
+export type LegacySpectrogramConfigurationNode = ExtendedInterface & {
   __typename?: 'LegacySpectrogramConfigurationNode';
   audioFilesSubtypes?: Maybe<Array<Scalars['String']['output']>>;
   channelCount?: Maybe<Scalars['Int']['output']>;
@@ -3904,7 +3902,7 @@ export type LegacySpectrogramConfigurationNodeEdge = {
 };
 
 /** LinearScale schema */
-export type LinearScaleNode = BaseNode & {
+export type LinearScaleNode = ExtendedInterface & {
   __typename?: 'LinearScaleNode';
   /** The ID of the object */
   id: Scalars['ID']['output'];
@@ -4019,7 +4017,7 @@ export type MaintenanceTypeNodeNodeConnection = {
 };
 
 /** MultiLinearScale schema */
-export type MultiLinearScaleNode = BaseNode & {
+export type MultiLinearScaleNode = ExtendedInterface & {
   __typename?: 'MultiLinearScaleNode';
   /** The ID of the object */
   id: Scalars['ID']['output'];
@@ -6366,7 +6364,7 @@ export type QueryTagByIdArgs = {
 
 /** Global query */
 export type QueryWebsiteProjetByIdArgs = {
-  pk: Scalars['PK']['input'];
+  id: Scalars['ID']['input'];
 };
 
 export type RecorderSpecificationNode = Node & {
@@ -6755,7 +6753,7 @@ export type SourceNodeNodeConnection = {
 };
 
 /** SpectrogramAnalysis schema */
-export type SpectrogramAnalysisNode = BaseNode & {
+export type SpectrogramAnalysisNode = ExtendedInterface & {
   __typename?: 'SpectrogramAnalysisNode';
   annotationCampaigns: AnnotationCampaignNodeConnection;
   annotations: AnnotationNodeConnection;
@@ -6873,7 +6871,7 @@ export type SpectrogramAnalysisNodeNodeConnection = {
 };
 
 /** Spectrogram schema */
-export type SpectrogramNode = BaseNode & {
+export type SpectrogramNode = ExtendedInterface & {
   __typename?: 'SpectrogramNode';
   analysis: SpectrogramAnalysisNodeConnection;
   annotationComments: AnnotationCommentNodeConnection;
@@ -7123,7 +7121,7 @@ export type UpdateUserPasswordMutationPayload = {
 };
 
 /** User group node */
-export type UserGroupNode = Node & {
+export type UserGroupNode = ExtendedInterface & {
   __typename?: 'UserGroupNode';
   /** The ID of the object */
   id: Scalars['ID']['output'];
@@ -7158,7 +7156,7 @@ export type UserGroupNodeNodeConnection = {
 };
 
 /** User node */
-export type UserNode = BaseNode & {
+export type UserNode = ExtendedInterface & {
   __typename?: 'UserNode';
   annotationComments: AnnotationCommentNodeConnection;
   annotationFileRanges: AnnotationFileRangeNodeConnection;
@@ -7374,7 +7372,7 @@ export type UserNodeNodeConnection = {
 };
 
 /** Project node */
-export type WebsiteProjectNode = Node & {
+export type WebsiteProjectNode = ExtendedInterface & {
   __typename?: 'WebsiteProjectNode';
   body: Scalars['String']['output'];
   end?: Maybe<Scalars['Date']['output']>;
@@ -7383,7 +7381,6 @@ export type WebsiteProjectNode = Node & {
   intro: Scalars['String']['output'];
   metadataxProject?: Maybe<ProjectNodeOverride>;
   otherContacts?: Maybe<Array<Scalars['String']['output']>>;
-  pk: Scalars['PK']['output'];
   start?: Maybe<Scalars['Date']['output']>;
   thumbnail: Scalars['String']['output'];
   title: Scalars['String']['output'];

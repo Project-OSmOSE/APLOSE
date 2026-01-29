@@ -1,24 +1,26 @@
 import graphene
 import graphene_django_optimizer
 from django.db.models import Sum
+from django_extension.schema.fields import AuthenticatedPaginationConnectionField
+from django_extension.schema.types import ExtendedNode
 
 from backend.api.models import AnnotationPhase, AnnotationTask
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationPhaseFilterSet
-from backend.utils.schema import AuthenticatedDjangoConnectionField
-from backend.utils.schema.types import BaseObjectType, BaseNode
 from .annotation_file_range import AnnotationFileRangeNode
 from .annotation_spectrogram import AnnotationSpectrogramNode
 
 
-class AnnotationPhaseNode(BaseObjectType):
+class AnnotationPhaseNode(ExtendedNode):
     """AnnotationPhase schema"""
 
     annotation_campaign_id = graphene.Field(
         graphene.ID, source="annotation_campaign_id", required=True
     )
-    annotation_file_ranges = AuthenticatedDjangoConnectionField(AnnotationFileRangeNode)
-    annotation_spectrograms = AuthenticatedDjangoConnectionField(
+    annotation_file_ranges = AuthenticatedPaginationConnectionField(
+        AnnotationFileRangeNode
+    )
+    annotation_spectrograms = AuthenticatedPaginationConnectionField(
         AnnotationSpectrogramNode, source="annotations__spectrogram"
     )
 
@@ -31,8 +33,6 @@ class AnnotationPhaseNode(BaseObjectType):
         model = AnnotationPhase
         fields = "__all__"
         filterset_class = AnnotationPhaseFilterSet
-        # context_filter = AnnotationPhaseContextFilter
-        interfaces = (BaseNode,)
 
     has_annotations = graphene.Field(graphene.Boolean, required=True)
 

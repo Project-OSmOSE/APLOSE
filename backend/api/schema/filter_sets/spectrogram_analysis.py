@@ -1,10 +1,10 @@
+from django_extension.filters import ExtendedFilterSet
 from django_filters import OrderingFilter
 
 from backend.api.models import SpectrogramAnalysis
-from backend.utils.schema.filters import BaseFilterSet
 
 
-class SpectrogramAnalysisFilterSet(BaseFilterSet):
+class SpectrogramAnalysisFilterSet(ExtendedFilterSet):
     """SpectrogramAnalysis filters"""
 
     class Meta:
@@ -14,4 +14,9 @@ class SpectrogramAnalysisFilterSet(BaseFilterSet):
             "annotation_campaigns__id": ("exact",),
         }
 
-    order_by = OrderingFilter(fields=("created_at", "name"))
+    order_by = OrderingFilter(
+        fields=(
+            ("created_at", "created_at"),
+            ("name", "name"),
+        )
+    )

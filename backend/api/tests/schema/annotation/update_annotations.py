@@ -1,9 +1,10 @@
 import json
 
-from graphene_django.utils import GraphQLTestCase
+from django_extension.tests import ExtendedTestCase
 
 from backend.api.models import Annotation
 from backend.api.tests.fixtures import ALL_FIXTURES
+from backend.aplose.models import User
 
 QUERY = """
 mutation (
@@ -64,7 +65,7 @@ box_annotation = {
 }
 
 
-class UpdateAnnotationsTestCase(GraphQLTestCase):
+class UpdateAnnotationsTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ["users", *ALL_FIXTURES]
@@ -74,32 +75,35 @@ class UpdateAnnotationsTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(QUERY, variables=BASE_VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_base_user(self):
-        self.client.login(username="user4", password="osmose29")
-        response = self.query(QUERY, variables={**BASE_VARIABLES, "campaignID": 99})
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="user4"),
+            variables={**BASE_VARIABLES, "campaignID": 99},
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Not found")
 
     def test_connected_annotator_update_empty(self):
-        self.client.login(username="user2", password="osmose29")
-
         previous_count = Annotation.objects.count()
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user2"), variables=BASE_VARIABLES
+        )
         self.assertResponseNoErrors(response)
         self.assertEqual(Annotation.objects.count(), previous_count)
 
     def test_connected_annotator_add_presence(self):
-        self.client.login(username="user2", password="osmose29")
-
         previous_count = Annotation.objects.count()
-        response = self.query(
-            QUERY, variables={**BASE_VARIABLES, "annotations": [presence_annotation]}
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="user2"),
+            variables={**BASE_VARIABLES, "annotations": [presence_annotation]},
         )
         self.assertResponseNoErrors(response)
         self.assertEqual(Annotation.objects.count(), previous_count + 1)
@@ -114,11 +118,11 @@ class UpdateAnnotationsTestCase(GraphQLTestCase):
         self.assertIsNone(new_annotation.acoustic_features)
 
     def test_connected_annotator_add_box(self):
-        self.client.login(username="user2", password="osmose29")
-
         previous_count = Annotation.objects.count()
-        response = self.query(
-            QUERY, variables={**BASE_VARIABLES, "annotations": [box_annotation]}
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="user2"),
+            variables={**BASE_VARIABLES, "annotations": [box_annotation]},
         )
         self.assertResponseNoErrors(response)
         self.assertEqual(Annotation.objects.count(), previous_count + 1)
@@ -134,13 +138,13 @@ class UpdateAnnotationsTestCase(GraphQLTestCase):
         self.assertEqual(new_annotation.acoustic_features.start_frequency, 10.0)
 
     def test_connected_annotator_update_presence_to_box(self):
-        self.client.login(username="user2", password="osmose29")
         self.test_connected_annotator_add_presence()
 
         previous_count = Annotation.objects.count()
         new_annotation: Annotation = Annotation.objects.order_by("id").last()
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user2"),
             variables={
                 **BASE_VARIABLES,
                 "annotations": [
@@ -165,12 +169,12 @@ class UpdateAnnotationsTestCase(GraphQLTestCase):
         self.assertEqual(new_annotation.acoustic_features.start_frequency, 10.0)
 
     def test_connected_annotator_remove(self):
-        self.client.login(username="user2", password="osmose29")
         self.test_connected_annotator_add_presence()
 
         previous_count = Annotation.objects.count()
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user2"),
             variables={
                 **BASE_VARIABLES,
                 "annotations": [],
@@ -180,13 +184,13 @@ class UpdateAnnotationsTestCase(GraphQLTestCase):
         self.assertEqual(Annotation.objects.count(), previous_count - 1)
 
     def test_connected_annotator_add_update_of(self):
-        self.client.login(username="user2", password="osmose29")
         self.test_connected_annotator_add_box()
 
         previous_count = Annotation.objects.count()
         box: Annotation = Annotation.objects.order_by("id").last()
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user2"),
             variables={
                 **BASE_VARIABLES,
                 "annotations": [
@@ -210,11 +214,10 @@ class UpdateAnnotationsTestCase(GraphQLTestCase):
         self.assertEqual(update.label.name, "Mysticetes")
 
     def test_connected_annotator_add_presence_with_comment(self):
-        self.client.login(username="user2", password="osmose29")
-
         previous_count = Annotation.objects.count()
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user2"),
             variables={
                 **BASE_VARIABLES,
                 "annotations": [
@@ -231,11 +234,10 @@ class UpdateAnnotationsTestCase(GraphQLTestCase):
     # Corrected
 
     def test_connected_annotator_add_wrong_order(self):
-        self.client.login(username="user2", password="osmose29")
-
         previous_count = Annotation.objects.count()
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user2"),
             variables={
                 **BASE_VARIABLES,
                 "annotations": [
@@ -261,11 +263,10 @@ class UpdateAnnotationsTestCase(GraphQLTestCase):
     # Errors
 
     def test_connected_annotator_does_not_exists(self):
-        self.client.login(username="user2", password="osmose29")
-
         previous_count = Annotation.objects.count()
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user2"),
             variables={
                 **BASE_VARIABLES,
                 "campaignID": 2,  # Campaign without confidence set
@@ -287,11 +288,10 @@ class UpdateAnnotationsTestCase(GraphQLTestCase):
         self.assertEqual(errors[0][2]["field"], "analysis")
 
     def test_connected_annotator_min_value(self):
-        self.client.login(username="user2", password="osmose29")
-
         previous_count = Annotation.objects.count()
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user2"),
             variables={
                 **BASE_VARIABLES,
                 "annotations": [
@@ -314,11 +314,10 @@ class UpdateAnnotationsTestCase(GraphQLTestCase):
         self.assertEqual(errors[0][3]["field"], "endFrequency")
 
     def test_connected_annotator_max_value(self):
-        self.client.login(username="user2", password="osmose29")
-
         previous_count = Annotation.objects.count()
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user2"),
             variables={
                 **BASE_VARIABLES,
                 "annotations": [

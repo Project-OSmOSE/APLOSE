@@ -2,7 +2,7 @@ import json
 
 from graphene_django.utils import GraphQLTestCase
 
-from backend.aplose.models import AnnotatorGroup
+from backend.aplose.models import AnnotatorGroup, User
 
 QUERY = """
 query {
@@ -35,8 +35,10 @@ class AllUserGroupsTestCase(GraphQLTestCase):
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected(self):
-        self.client.login(username="user1", password="osmose29")
-        response = self.query(QUERY)
+        response = self.query(
+            QUERY,
+            user=User.objects.get(username="user1"),
+        )
         self.assertResponseNoErrors(response)
 
         results = json.loads(response.content)["data"]["allUserGroups"]["results"]

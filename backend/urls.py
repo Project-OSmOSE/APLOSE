@@ -26,6 +26,7 @@ https://www.django-rest-framework.org/api-guide/routers/
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
+from django_extension.views import DRFAuthenticatedGraphQLView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -33,7 +34,6 @@ from backend.api.urls import api_router
 from backend.aplose.urls import aplose_router
 from backend.osmosewebsite.urls import website_router
 from backend.sql.urls import sql_router
-from backend.utils.schema import DRFAuthenticatedGraphQLView
 
 # Backend urls are for admin & api documentation
 backend_urlpatterns = [

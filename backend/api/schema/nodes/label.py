@@ -2,20 +2,19 @@ from typing import Optional
 
 import graphene
 import graphene_django_optimizer
+from django_extension.schema.types import ExtendedNode
 
 from backend.api.models import Label, Annotation
 from backend.api.schema.filter_sets import LabelFilterSet
-from backend.utils.schema.types import BaseObjectType, BaseNode
 
 
-class AnnotationLabelNode(BaseObjectType):
+class AnnotationLabelNode(ExtendedNode):
     """Label schema"""
 
     class Meta:
         model = Label
         fields = "__all__"
         filterset_class = LabelFilterSet
-        interfaces = (BaseNode,)
 
     uses = graphene.Int(required=True, deployment_id=graphene.ID())
 

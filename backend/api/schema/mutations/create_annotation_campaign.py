@@ -1,7 +1,9 @@
 from django import forms
+from django.db import transaction
+from django_extension.schema.mutations import ExtendedModelFormMutation
+from django_extension.schema.permissions import GraphQLPermissions
 
 from backend.api.models import AnnotationCampaign
-from backend.utils.schema.types import AuthenticatedModelFormMutation
 
 
 class CreateAnnotationCampaignForm(forms.ModelForm):
@@ -21,12 +23,14 @@ class CreateAnnotationCampaignForm(forms.ModelForm):
         )
 
 
-class CreateAnnotationCampaignMutation(AuthenticatedModelFormMutation):
+class CreateAnnotationCampaignMutation(ExtendedModelFormMutation):
     class Meta:
         model = AnnotationCampaign
         form_class = CreateAnnotationCampaignForm
+        permission = GraphQLPermissions.AUTHENTICATED
 
     @classmethod
+    @transaction.atomic
     def perform_mutate(cls, form, info):
         # Create the instance without saving it to the database
         instance = form.save(commit=False)

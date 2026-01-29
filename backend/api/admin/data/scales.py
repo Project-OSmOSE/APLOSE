@@ -1,12 +1,12 @@
 """API data scales administration"""
 from django.contrib import admin
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import LinearScale, MultiLinearScale
-from backend.utils.admin import get_edit_links_for_queryset
 
 
 @admin.register(LinearScale)
-class LinearScaleAdmin(admin.ModelAdmin):
+class LinearScaleAdmin(ExtendedModelAdmin):
     """LinearScale presentation in DjangoAdmin"""
 
     list_display = (
@@ -18,7 +18,7 @@ class LinearScaleAdmin(admin.ModelAdmin):
 
 
 @admin.register(MultiLinearScale)
-class MultiLinearScaleAdmin(admin.ModelAdmin):
+class MultiLinearScaleAdmin(ExtendedModelAdmin):
     """MultiLinearScale presentation in DjangoAdmin"""
 
     list_display = (
@@ -29,7 +29,7 @@ class MultiLinearScaleAdmin(admin.ModelAdmin):
     @admin.display(description="Inner scales")
     def inner_scales_links(self, obj: MultiLinearScale) -> str:
         """Get direct link to inner scales"""
-        return get_edit_links_for_queryset(
+        return self.list_queryset(
             obj.inner_scales.all(),
-            "admin:api_linearscale_change",
+            allow_edit=True,
         )

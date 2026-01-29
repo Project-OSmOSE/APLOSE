@@ -1,6 +1,7 @@
 """AnnotationCampaign update mutations"""
 
 from django.db import transaction
+from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from graphene import (
     Mutation,
     Boolean,
@@ -8,10 +9,6 @@ from graphene import (
 )
 
 from backend.api.models import AnnotationCampaign
-from backend.utils.schema import (
-    GraphQLResolve,
-    GraphQLPermissions,
-)
 
 
 class ArchiveAnnotationCampaignMutation(Mutation):

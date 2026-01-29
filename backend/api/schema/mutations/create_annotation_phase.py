@@ -1,8 +1,9 @@
+from django_extension.schema.errors import ForbiddenError
+from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from graphene import Mutation, ID
 
 from backend.api.models import AnnotationPhase, AnnotationCampaign
 from backend.api.schema.enums import AnnotationPhaseType
-from backend.utils.schema import GraphQLPermissions, GraphQLResolve, ForbiddenError
 
 
 class CreateAnnotationPhase(Mutation):

@@ -3,9 +3,9 @@ from typing import Optional
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.aplose.models import AploseUser, User, ExpertiseLevel, AnnotatorGroup
-from backend.utils.admin import get_many_to_many
 
 
 class AploseUserInline(admin.StackedInline):
@@ -50,7 +50,7 @@ admin.site.register(User, UserAdmin)
 
 
 @admin.register(AnnotatorGroup)
-class AnnotatorGroupAdmin(admin.ModelAdmin):
+class AnnotatorGroupAdmin(ExtendedModelAdmin):
     """Administration of AnnotatorGroup"""
 
     list_display = (
@@ -68,4 +68,4 @@ class AnnotatorGroupAdmin(admin.ModelAdmin):
     @admin.display(description="Annotators")
     def show_annotators(self, obj):
         """show_spectro_configs"""
-        return get_many_to_many(obj, "annotators", "username")
+        return self.list_queryset(obj.annotators.all())

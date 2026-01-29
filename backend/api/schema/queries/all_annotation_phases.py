@@ -1,4 +1,0 @@
-from backend.api.schema.nodes import AnnotationPhaseNode
-from backend.utils.schema import AuthenticatedDjangoConnectionField
-
-AllAnnotationPhaseField = AuthenticatedDjangoConnectionField(AnnotationPhaseNode)

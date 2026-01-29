@@ -1,11 +1,11 @@
+from django_extension.filters import ExtendedFilterSet
 from graphene_django.filter import TypedFilter
 
 from backend.api.models import AnnotationFileRange
 from backend.api.schema.enums import AnnotationPhaseType
-from backend.utils.schema.filters import BaseFilterSet
 
 
-class AnnotationFileRangeFilterSet(BaseFilterSet):
+class AnnotationFileRangeFilterSet(ExtendedFilterSet):
     """AnnotationFileRange filters"""
 
     # pylint: disable=duplicate-code

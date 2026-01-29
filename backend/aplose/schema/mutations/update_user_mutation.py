@@ -1,16 +1,13 @@
 """User GraphQL definitions"""
 import graphene
 from django import forms
+from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from graphene_django.forms.mutation import (
     DjangoModelFormMutation,
 )
 
 from backend.aplose.models import User
 from backend.aplose.schema.nodes import UserNode
-from backend.utils.schema import (
-    GraphQLResolve,
-    GraphQLPermissions,
-)
 
 
 class UserForm(forms.ModelForm):

@@ -1,8 +1,8 @@
 """API annotation confidence set administration"""
 from django.contrib import admin
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import ConfidenceIndicatorSetIndicator, ConfidenceSet
-from backend.utils.admin import get_many_to_many
 
 
 class ConfidenceRelationInline(admin.TabularInline):
@@ -12,7 +12,7 @@ class ConfidenceRelationInline(admin.TabularInline):
 
 
 @admin.register(ConfidenceSet)
-class ConfidenceSetAdmin(admin.ModelAdmin):
+class ConfidenceSetAdmin(ExtendedModelAdmin):
     """ConfidenceSet presentation in DjangoAdmin"""
 
     list_display = (
@@ -26,4 +26,4 @@ class ConfidenceSetAdmin(admin.ModelAdmin):
     @admin.display(description="Indicators")
     def get_indicators(self, confidence_set: ConfidenceSet):
         """Get indicators"""
-        return get_many_to_many(confidence_set, "confidence_indicators", "label")
+        return self.list_queryset(confidence_set.confidence_indicators.all())

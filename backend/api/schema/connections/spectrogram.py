@@ -1,11 +1,10 @@
 import graphene
 from django.db.models import Min, Max
+from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 from graphene_django_pagination import PaginationConnection
 
-from backend.utils.schema import AuthenticatedDjangoConnectionField
 
-
-class SpectrogramConnection(AuthenticatedDjangoConnectionField):
+class SpectrogramConnection(AuthenticatedPaginationConnectionField):
     @property
     def type(self):
         class NodeConnection(PaginationConnection):

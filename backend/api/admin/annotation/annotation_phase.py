@@ -1,11 +1,12 @@
-"""API annotation annotation phase administration"""
+"""API annotation - annotation phase administration"""
 from django.contrib import admin
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import AnnotationPhase
 
 
 @admin.register(AnnotationPhase)
-class AnnotationPhaseAdmin(admin.ModelAdmin):
+class AnnotationPhaseAdmin(ExtendedModelAdmin):
     """AnnotationPhase presentation in DjangoAdmin"""
 
     list_display = (

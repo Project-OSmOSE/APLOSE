@@ -1,9 +1,10 @@
 import json
 
-from graphene_django.utils import GraphQLTestCase
+from django_extension.tests import ExtendedTestCase
 
 from backend.api.models import Dataset
 from backend.api.tests.fixtures import ALL_FIXTURES
+from backend.aplose.models import User
 
 QUERY = """
 query ($datasetID: ID, $annotationCampaignID: ID) {
@@ -38,7 +39,7 @@ FOR_CAMPAIGN_VARIABLE = {
 }
 
 
-class AllSpectrogramAnalysisTestCase(GraphQLTestCase):
+class AllSpectrogramAnalysisTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ALL_FIXTURES
@@ -48,14 +49,17 @@ class AllSpectrogramAnalysisTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY, variables=FOR_DATASET_VARIABLE)
+        response = self.gql_query(QUERY, variables=FOR_DATASET_VARIABLE)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_dataset_filter(self):
-        self.client.login(username="user1", password="osmose29")
-        response = self.query(QUERY, variables=FOR_DATASET_VARIABLE)
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="user1"),
+            variables=FOR_DATASET_VARIABLE,
+        )
         self.assertResponseNoErrors(response)
 
         dataset = Dataset.objects.get(pk=1)
@@ -71,8 +75,11 @@ class AllSpectrogramAnalysisTestCase(GraphQLTestCase):
         self.assertEqual(content[0]["spectrograms"]["end"], "2012-10-03T20:15:00+00:00")
 
     def test_connected_campaign_filter(self):
-        self.client.login(username="user1", password="osmose29")
-        response = self.query(QUERY, variables=FOR_CAMPAIGN_VARIABLE)
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="user1"),
+            variables=FOR_CAMPAIGN_VARIABLE,
+        )
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["allSpectrogramAnalysis"][

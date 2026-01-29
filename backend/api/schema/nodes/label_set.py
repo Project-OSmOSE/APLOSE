@@ -1,19 +1,18 @@
 import graphene
 import graphene_django_optimizer
+from django_extension.schema.types import ExtendedNode
 
 from backend.api.models import LabelSet
-from backend.utils.schema.types import BaseObjectType, BaseNode
 from .label import AnnotationLabelNode
 
 
-class LabelSetNode(BaseObjectType):
+class LabelSetNode(ExtendedNode):
     """LabelSet schema"""
 
     class Meta:
         model = LabelSet
         fields = "__all__"
         filter_fields = "__all__"
-        interfaces = (BaseNode,)
 
     labels = graphene.List(AnnotationLabelNode, required=True)
 

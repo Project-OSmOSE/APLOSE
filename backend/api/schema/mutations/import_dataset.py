@@ -5,6 +5,7 @@ from pathlib import Path, PureWindowsPath
 
 from django.conf import settings
 from django.db import transaction
+from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from graphene import (
     String,
     Boolean,
@@ -17,7 +18,6 @@ from osekit.public_api.dataset import (
 )
 
 from backend.api.models import Dataset
-from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 from .import_analysis import ImportAnalysisMutation
 
 

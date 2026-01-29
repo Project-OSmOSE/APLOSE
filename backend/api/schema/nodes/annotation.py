@@ -1,21 +1,22 @@
+from django_extension.schema.fields import AuthenticatedPaginationConnectionField
+from django_extension.schema.types import ExtendedNode
+
 from backend.api.models import Annotation
 from backend.api.schema.enums import AnnotationType
 from backend.api.schema.filter_sets import AnnotationFilterSet
-from backend.utils.schema import AuthenticatedDjangoConnectionField
-from backend.utils.schema.types import BaseObjectType, BaseNode
 from .acoustic_features import AcousticFeaturesNode
 from .annotation_comment import AnnotationCommentNode
 from .annotation_validation import AnnotationValidationNode
 
 
-class AnnotationNode(BaseObjectType):
+class AnnotationNode(ExtendedNode):
     """Annotation schema"""
 
     type = AnnotationType(required=True)
     acoustic_features = AcousticFeaturesNode()
 
-    validations = AuthenticatedDjangoConnectionField(AnnotationValidationNode)
-    comments = AuthenticatedDjangoConnectionField(
+    validations = AuthenticatedPaginationConnectionField(AnnotationValidationNode)
+    comments = AuthenticatedPaginationConnectionField(
         AnnotationCommentNode, source="annotation_comments"
     )
 
@@ -23,4 +24,3 @@ class AnnotationNode(BaseObjectType):
         model = Annotation
         fields = "__all__"
         filterset_class = AnnotationFilterSet
-        interfaces = (BaseNode,)

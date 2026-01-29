@@ -4,7 +4,10 @@ from os.path import join
 
 from django.conf import settings
 from django.test import override_settings
+from django_extension.tests import ExtendedTestCase
 from graphene_django.utils.testing import GraphQLTestCase
+
+from backend.aplose.models import User
 
 IMPORT_FIXTURES = settings.FIXTURE_DIRS[1] / "data" / "dataset" / "list_to_import"
 
@@ -24,7 +27,7 @@ VARIABLES = {
 }
 
 
-class AllSpectrogramAnalysisForImportTestCase(GraphQLTestCase):
+class AllSpectrogramAnalysisForImportTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = [
@@ -37,22 +40,24 @@ class AllSpectrogramAnalysisForImportTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY, variables=VARIABLES)
+        response = self.gql_query(QUERY, variables=VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_not_staff(self):
-        self.client.login(username="user1", password="osmose29")
-        response = self.query(QUERY, variables=VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user1"), variables=VARIABLES
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Forbidden")
 
     @override_settings(DATASET_IMPORT_FOLDER=IMPORT_FIXTURES / "legacy" / "good")
     def test_list_legacy(self):
-        self.client.login(username="staff", password="osmose29")
-        response = self.query(QUERY, variables=VARIABLES_LEGACY)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="staff"), variables=VARIABLES_LEGACY
+        )
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["allAnalysisForImport"]
@@ -65,8 +70,9 @@ class AllSpectrogramAnalysisForImportTestCase(GraphQLTestCase):
 
     @override_settings(DATASET_IMPORT_FOLDER=IMPORT_FIXTURES / "good")
     def test_list(self):
-        self.client.login(username="staff", password="osmose29")
-        response = self.query(QUERY, variables=VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="staff"), variables=VARIABLES
+        )
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["allAnalysisForImport"]

@@ -1,5 +1,6 @@
 import json
 
+from django_extension.tests import ExtendedTestCase
 from graphene_django.utils import GraphQLTestCase
 
 from backend.api.models import AnnotationCampaign
@@ -7,6 +8,7 @@ from backend.api.tests.fixtures import ALL_FIXTURES
 from backend.api.tests.schema.spectrogram_analysis.all_spectrogram_analysis_for_import import (
     VARIABLES,
 )
+from backend.aplose.models import User
 
 QUERY = """
 query (
@@ -44,7 +46,7 @@ VARIABLES = {
 }
 
 
-class AllAnnotationCampaignsTestCase(GraphQLTestCase):
+class AllAnnotationCampaignsTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ALL_FIXTURES
@@ -54,7 +56,7 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(
+        response = self.gql_query(
             QUERY,
             variables={
                 **VARIABLES,
@@ -65,9 +67,9 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_admin(self):
-        self.client.login(username="admin", password="osmose29")
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
             },
@@ -82,9 +84,9 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.assertEqual(content[1]["name"], "Test RTF campaign")
 
     def test_connected_owner(self):
-        self.client.login(username="user1", password="osmose29")
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user1"),
             variables={
                 **VARIABLES,
             },
@@ -99,9 +101,9 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.assertEqual(content[1]["name"], "Test RTF campaign")
 
     def test_connected_empty_user(self):
-        self.client.login(username="user4", password="osmose29")
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user4"),
             variables={
                 **VARIABLES,
             },
@@ -114,9 +116,9 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.assertEqual(len(content), 0)
 
     def test_connected_admin_filter_owner(self):
-        self.client.login(username="admin", password="osmose29")
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
                 "ownerID": 3,
@@ -132,9 +134,9 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.assertEqual(content[1]["name"], "Test RTF campaign")
 
     def test_connected_admin_filter_annotator(self):
-        self.client.login(username="admin", password="osmose29")
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
                 "annotatorID": 1,
@@ -150,9 +152,9 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.assertEqual(content[1]["name"], "Test SPM campaign")
 
     def test_connected_admin_filter_archive(self):
-        self.client.login(username="admin", password="osmose29")
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="admin"),
             variables={**VARIABLES, "isArchived": True},
         )
         self.assertResponseNoErrors(response)
@@ -164,9 +166,9 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.assertEqual(content[0]["name"], "Test RTF campaign")
 
     def test_connected_admin_filter_phase(self):
-        self.client.login(username="admin", password="osmose29")
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="admin"),
             variables={**VARIABLES, "phase": "Verification"},
         )
         self.assertResponseNoErrors(response)
@@ -178,9 +180,9 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.assertEqual(content[0]["name"], "Test Z check campaign")
 
     def test_connected_admin_search_name(self):
-        self.client.login(username="admin", password="osmose29")
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="admin"),
             variables={**VARIABLES, "search": "RTF"},
         )
         self.assertResponseNoErrors(response)
@@ -192,9 +194,9 @@ class AllAnnotationCampaignsTestCase(GraphQLTestCase):
         self.assertEqual(content[0]["name"], "Test RTF campaign")
 
     def test_connected_admin_search_dataset_name(self):
-        self.client.login(username="admin", password="osmose29")
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="admin"),
             variables={**VARIABLES, "search": "glider"},
         )
         self.assertResponseNoErrors(response)

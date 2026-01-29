@@ -1,10 +1,12 @@
 import json
 
+from django_extension.tests import ExtendedTestCase
 from freezegun import freeze_time
 from graphene_django.utils import GraphQLTestCase
 
 from backend.api.models import AnnotationCampaign
 from backend.api.tests.fixtures import ALL_FIXTURES
+from backend.aplose.models import User
 
 QUERY = """
 mutation (
@@ -38,7 +40,7 @@ BASE_VARIABLES = {
 
 
 @freeze_time("2012-01-14 00:00:00")
-class UpdateAnnotationCampaignTestCase(GraphQLTestCase):
+class UpdateAnnotationCampaignTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ["users", *ALL_FIXTURES]
@@ -48,14 +50,17 @@ class UpdateAnnotationCampaignTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(QUERY, variables=BASE_VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_unknown(self):
-        self.client.login(username="admin", password="osmose29")
-        response = self.query(QUERY, variables={**BASE_VARIABLES, "campaignID": 99})
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="admin"),
+            variables={**BASE_VARIABLES, "campaignID": 99},
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(
@@ -64,24 +69,25 @@ class UpdateAnnotationCampaignTestCase(GraphQLTestCase):
         )
 
     def test_connected_no_access(self):
-        self.client.login(username="user4", password="osmose29")
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user4"), variables=BASE_VARIABLES
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Not found")
 
     def test_connected_not_allowed(self):
-        self.client.login(username="user2", password="osmose29")
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user2"), variables=BASE_VARIABLES
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Forbidden")
 
     def _test_update(self, username: str):
-        self.client.login(username=username, password="osmose29")
-
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username=username),
             variables={
                 **BASE_VARIABLES,
                 "labelsWithAcousticFeatures": [6],

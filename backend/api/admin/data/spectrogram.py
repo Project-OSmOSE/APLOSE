@@ -1,17 +1,17 @@
 """API data spectrogram administration"""
 from django.contrib import admin
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import Spectrogram
-from backend.utils.admin import get_many_to_many
 
 
 @admin.register(Spectrogram)
-class SpectrogramAdmin(admin.ModelAdmin):
+class SpectrogramAdmin(ExtendedModelAdmin):
     """Spectrogram administration"""
 
     list_display = [
         "filename",
-        "analysis",
+        "display_analysis",
         "start",
         "end",
     ]
@@ -21,6 +21,6 @@ class SpectrogramAdmin(admin.ModelAdmin):
     ]
 
     @admin.display(description="Analysis")
-    def analysis(self, obj: Spectrogram):
+    def display_analysis(self, obj: Spectrogram):
         """Display analysis"""
-        return get_many_to_many(obj, "analysis")
+        return self.list_queryset(obj.analysis.all())
