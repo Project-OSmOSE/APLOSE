@@ -151,19 +151,23 @@ export const NetCDFSpectrogram: React.FC = () => {
           range: [netcdfData.frequency[0], netcdfData.frequency[netcdfData.frequency.length - 1]],
         };
 
+    // Get y-axis range limits for clamping
+    const minFreq = netcdfData.frequency[0];
+    const maxFreq = netcdfData.frequency[netcdfData.frequency.length - 1];
+
     // Add playback position indicator line
     const shapes: any[] = [];
     const annotations: any[] = [];
 
-    // Add playback indicator
+    // Add playback indicator - only extend from fmin to fmax
     if (audioDuration && audioTime !== undefined) {
       shapes.push({
         type: 'line' as const,
         x0: audioTime,
         x1: audioTime,
-        y0: 0,
-        y1: 1,
-        yref: 'paper' as const,
+        y0: minFreq,
+        y1: maxFreq,
+        yref: 'y' as const,
         line: {
           color: '#ff0000',
           width: 2,
@@ -171,10 +175,6 @@ export const NetCDFSpectrogram: React.FC = () => {
         layer: 'above' as const,
       });
     }
-
-    // Get y-axis range limits for clamping
-    const minFreq = netcdfData.frequency[0];
-    const maxFreq = netcdfData.frequency[netcdfData.frequency.length - 1];
 
     // Add annotation boxes as Plotly shapes
     allAnnotations.forEach((annotation) => {
