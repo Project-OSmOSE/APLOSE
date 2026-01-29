@@ -51,6 +51,9 @@ export const GqlTags =  [
 
     // User
     'CurrentUser', 'User',
+
+    // Collaborator
+    'Collaborator',
   ]
 
 export const gqlAPI = createApi({

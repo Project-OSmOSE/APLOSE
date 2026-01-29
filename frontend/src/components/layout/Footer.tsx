@@ -5,9 +5,10 @@ import { Link } from '@/components/ui';
 import { CONTACT_MAIL, CONTACT_URI, GITHUB_URL, OSMOSE_URL } from '@/consts/links';
 import logo from '/images/ode_logo_192x192.png';
 import style from './layout.module.scss';
+import json from '../../../global-package.json'
 
 export const Footer: React.FC = () => {
-  const version = useMemo(() => import.meta.env.VITE_GIT_TAG, [])
+  const version = useMemo(() => json.version, [])
 
   return (
     <footer className={ style.footer }>

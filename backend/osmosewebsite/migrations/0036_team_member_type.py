@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("osmosewebsite", "0001_squashed_0035_rename_contact_teammember_person"),
+        ("osmosewebsite", "0035_rename_contact_teammember_person"),
     ]
 
     operations = [

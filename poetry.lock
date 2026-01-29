@@ -2227,32 +2227,33 @@ files = [
 
 [[package]]
 name = "metadatax"
-version = "0.5.0a0"
+version = "0.5.0a1"
 description = "PAM acquisition metadata"
 optional = false
 python-versions = ">=3.9,<4.0"
 groups = ["main"]
-files = []
-develop = true
+files = [
+    {file = "metadatax-0.5.0a1.tar.gz", hash = "sha256:d95ad9032c05042ef548f0ae1e6d6d251217c23404d6acd6fc35d02243bd344a"},
+]
 
 [package.dependencies]
-Django = "^3.2"
-django-admin-multiple-choice-list-filter = "^0.1.1"
-django-better-admin-arrayfield = "^1.4.2"
-django-durationwidget = "^1.0.5"
+Django = ">=3.2,<4.0"
+django-admin-multiple-choice-list-filter = ">=0.1.1,<0.2.0"
+django-better-admin-arrayfield = ">=1.4.2,<2.0.0"
+django-durationwidget = ">=1.0.5,<2.0.0"
 django-extension = {url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.0/django_extension-0.1.0.tar.gz"}
 django-filter = ">=2"
-django-model-prefix = "^1.1.0"
-djangorestframework = "^3.15.1"
-graphene-django = "^3.2.3"
-graphene-django-optimizer = "^0.10.0"
+django-model-prefix = ">=1.1.0,<2.0.0"
+djangorestframework = ">=3.15.1,<4.0.0"
+graphene-django = ">=3.2.3,<4.0.0"
+graphene-django-optimizer = ">=0.10.0,<0.11.0"
 graphene-django-pagination = {url = "https://github.com/instruct-br/graphene-django-pagination/archive/master.zip"}
-psycopg2-binary = "^2.8.6"
-python-dotenv = "^1.0.1"
+psycopg2-binary = ">=2.8.6,<3.0.0"
+python-dotenv = ">=1.0.1,<2.0.0"
 
 [package.source]
-type = "directory"
-url = "../metadatax"
+type = "url"
+url = "https://raw.githubusercontent.com/PAM-Standardization/metadatax/refs/heads/refacto/dist/metadatax-0.5.0a1.tar.gz"
 
 [[package]]
 name = "mistune"
@@ -4122,4 +4123,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "04756eb5504fb235d6104b5793da57350dd010f3534c5bbdffa7d82b0402cd13"
+content-hash = "d70446b960205d03fe7e3f8b0499d80d13d67402a4afcd163a242845b78de24e"
