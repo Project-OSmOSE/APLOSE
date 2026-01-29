@@ -27,8 +27,8 @@ graphene-django-optimizer = "^0.10.0"
 django-graphene-auth = "^1.1.1"
 django-seed = "^0.3.1"
 djangorestframework-stubs = "^3.16.7"
-#django-extension = {url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.0/django_extension-0.1.0.tar.gz"}
-django-extension = {path = "../django-extension", develop = true}
+django-extension = {url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.0/django_extension-0.1.0.tar.gz"}
+#django-extension = {path = "../django-extension", develop = true}
 metadatax = {url = "https://raw.githubusercontent.com/PAM-Standardization/metadatax/refs/heads/refacto/dist/metadatax-0.5.0a0.tar.gz"}
 #metadatax = {path = "../metadatax", develop=true}
 
