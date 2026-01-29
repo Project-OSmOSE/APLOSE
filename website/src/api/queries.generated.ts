@@ -41,12 +41,12 @@ export type DeploymentByIdQuery = { __typename?: 'Query', annotationLabelsForDep
 export type AllBibliographyQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type AllBibliographyQuery = { __typename?: 'Query', allBibliography?: { __typename?: 'BibliographyUnionConnection', edges: Array<{ __typename?: 'BibliographyUnionEdge', node?: { __typename?: 'ArticleNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, journal: string, volumes?: string | null, pagesFrom?: number | null, pagesTo?: number | null, issueNb?: number | null, articleNb?: number | null, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, isFormerMember: boolean } | null } } | null } | null> } } | { __typename?: 'ConferenceNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, conferenceName: string, conferenceLocation: string, conferenceAbstractBookUrl?: string | null, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, isFormerMember: boolean } | null } } | null } | null> } } | { __typename?: 'PosterNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, posterUrl?: string | null, conferenceName: string, conferenceLocation: string, conferenceAbstractBookUrl?: string | null, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, isFormerMember: boolean } | null } } | null } | null> } } | { __typename?: 'SoftwareNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, repositoryUrl?: string | null, publicationPlace: string, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, isFormerMember: boolean } | null } } | null } | null> } } | null } | null> } | null };
+export type AllBibliographyQuery = { __typename?: 'Query', allBibliography?: { __typename?: 'BibliographyUnionConnection', edges: Array<{ __typename?: 'BibliographyUnionEdge', node?: { __typename?: 'ArticleNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, journal: string, volumes?: string | null, pagesFrom?: number | null, pagesTo?: number | null, issueNb?: number | null, articleNb?: number | null, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, type?: Types.TeamMemberTypeEnum | null } | null } } | null } | null> } } | { __typename?: 'ConferenceNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, conferenceName: string, conferenceLocation: string, conferenceAbstractBookUrl?: string | null, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, type?: Types.TeamMemberTypeEnum | null } | null } } | null } | null> } } | { __typename?: 'PosterNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, posterUrl?: string | null, conferenceName: string, conferenceLocation: string, conferenceAbstractBookUrl?: string | null, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, type?: Types.TeamMemberTypeEnum | null } | null } } | null } | null> } } | { __typename?: 'SoftwareNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, repositoryUrl?: string | null, publicationPlace: string, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, type?: Types.TeamMemberTypeEnum | null } | null } } | null } | null> } } | null } | null> } | null };
 
 export type AllTeamMembersQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type AllTeamMembersQuery = { __typename?: 'Query', allTeamMembers?: { __typename?: 'TeamMemberNodeNodeConnection', results: Array<{ __typename?: 'TeamMemberNode', id: string, picture: string, position: string, isFormerMember: boolean, person: { __typename?: 'PersonNode', initialNames?: string | null, firstName: string, lastName: string } } | null> } | null };
+export type AllTeamMembersQuery = { __typename?: 'Query', allTeamMembers?: { __typename?: 'TeamMemberNodeNodeConnection', results: Array<{ __typename?: 'TeamMemberNode', id: string, picture: string, position: string, type?: Types.TeamMemberTypeEnum | null, person: { __typename?: 'PersonNode', initialNames?: string | null, firstName: string, lastName: string, currentInstitutions?: Array<{ __typename?: 'InstitutionNode', name: string } | null> | null } } | null> } | null };
 
 export type TeamMemberByIdQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
@@ -282,7 +282,7 @@ export const AllBibliographyDocument = gql`
                   initialNames
                   teamMember {
                     id
-                    isFormerMember
+                    type
                   }
                 }
               }
@@ -312,7 +312,7 @@ export const AllBibliographyDocument = gql`
                   initialNames
                   teamMember {
                     id
-                    isFormerMember
+                    type
                   }
                 }
               }
@@ -339,7 +339,7 @@ export const AllBibliographyDocument = gql`
                   initialNames
                   teamMember {
                     id
-                    isFormerMember
+                    type
                   }
                 }
               }
@@ -367,7 +367,7 @@ export const AllBibliographyDocument = gql`
                   initialNames
                   teamMember {
                     id
-                    isFormerMember
+                    type
                   }
                 }
               }
@@ -391,9 +391,12 @@ export const AllTeamMembersDocument = gql`
         initialNames
         firstName
         lastName
+        currentInstitutions {
+          name
+        }
       }
       position
-      isFormerMember
+      type
     }
   }
 }

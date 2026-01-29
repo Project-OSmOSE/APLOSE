@@ -26,7 +26,7 @@
     personal_website_url: http://www.user1.com/
     github_url: http://www.user1.com/
     linkedin_url: http://www.user1.com/
-    is_former_member: false
+    type: A
 - model: osmosewebsite.teammember
   pk: 2
   fields:
@@ -40,7 +40,7 @@
     personal_website_url: http://www.user2.com/
     github_url: http://www.user2.com/
     linkedin_url: http://www.user2.com/
-    is_former_member: false
+    type: A
 - model: osmosewebsite.teammember
   pk: 3
   fields:
@@ -54,4 +54,4 @@
     personal_website_url: http://www.user3.com/
     github_url: http://www.user3.com/
     linkedin_url: http://www.user3.com/
-    is_former_member: true
+    type: F

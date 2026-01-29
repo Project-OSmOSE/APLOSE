@@ -2739,6 +2739,7 @@ type TeamMemberNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
   level: Int
+  type: TeamMemberTypeEnum
   person: PersonNode!
   position: String!
   biography: String
@@ -2748,10 +2749,15 @@ type TeamMemberNode implements ExtendedInterface {
   personalWebsiteUrl: String
   githubUrl: String
   linkedinUrl: String
-  isFormerMember: Boolean!
   newsSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): NewsNodeConnection!
   projectSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): WebsiteProjectNodeConnection!
   scientifictalkSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): ScientificTalkNodeConnection!
+}
+
+enum TeamMemberTypeEnum {
+  Active
+  Former
+  Collaborator
 }
 
 type NewsNodeConnection {
@@ -2834,6 +2840,7 @@ type ChannelConfigurationNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
   deployment: DeploymentNode!
+  status: ChannelConfigurationStatusEnum
 
   """Each specification is dedicated to one file."""
   recorderSpecification: ChannelConfigurationRecorderSpecificationNode
@@ -2862,13 +2869,23 @@ type ChannelConfigurationNode implements ExtendedInterface {
   timezone: String
   extraInformation: String
 
-  """Date at which the channel configuration started to record (in UTC)."""
+  """
+  Harvest start date at which the channel configuration was idle to record (in UTC).
+  """
   harvestStartingDate: DateTime
+
+  """
+  Harvest stop date at which the channel configuration was stopped (in UTC).
+  """
+  harvestEndingDate: DateTime
+
+  """Date at which the channel configuration started to record (in UTC)."""
+  recordStartDate: DateTime
 
   """
   Date at which the channel configuration finished to record in (in UTC).
   """
-  harvestEndingDate: DateTime
+  recordEndDate: DateTime
   datasets(
     offset: Int
     before: String
@@ -2879,6 +2896,12 @@ type ChannelConfigurationNode implements ExtendedInterface {
     """Ordering"""
     orderBy: String
   ): DatasetNodeConnection!
+}
+
+enum ChannelConfigurationStatusEnum {
+  Active
+  Failed
+  Lost
 }
 
 type ChannelConfigurationDetectorSpecificationNode implements ExtendedInterface {

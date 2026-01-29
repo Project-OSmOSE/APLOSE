@@ -198,7 +198,7 @@ query allBibliography {
                                     initialNames
                                     teamMember {
                                         id
-                                        isFormerMember
+                                        type
                                     }
                                 }
                             }
@@ -229,7 +229,7 @@ query allBibliography {
                                     initialNames
                                     teamMember {
                                         id
-                                        isFormerMember
+                                        type
                                     }
                                 }
                             }
@@ -257,7 +257,7 @@ query allBibliography {
                                     initialNames
                                     teamMember {
                                         id
-                                        isFormerMember
+                                        type
                                     }
                                 }
                             }
@@ -287,7 +287,7 @@ query allBibliography {
                                     initialNames
                                     teamMember {
                                         id
-                                        isFormerMember
+                                        type
                                     }
                                 }
                             }
@@ -311,9 +311,12 @@ query allTeamMembers {
                 initialNames
                 firstName
                 lastName
+                currentInstitutions {
+                    name
+                }
             }
             position
-            isFormerMember
+            type
         }
     }
 }

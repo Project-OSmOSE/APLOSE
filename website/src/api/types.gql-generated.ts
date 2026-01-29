@@ -1554,16 +1554,21 @@ export type ChannelConfigurationNode = ExtendedInterface & {
   /** If it's not Continuous, time length (in second) during which the recorder is on. */
   dutyCycleOn?: Maybe<Scalars['Int']['output']>;
   extraInformation?: Maybe<Scalars['String']['output']>;
-  /** Date at which the channel configuration finished to record in (in UTC). */
+  /** Harvest stop date at which the channel configuration was stopped (in UTC). */
   harvestEndingDate?: Maybe<Scalars['DateTime']['output']>;
-  /** Date at which the channel configuration started to record (in UTC). */
+  /** Harvest start date at which the channel configuration was idle to record (in UTC). */
   harvestStartingDate?: Maybe<Scalars['DateTime']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
   /** Immersion depth of instrument (in positive meters). */
   instrumentDepth?: Maybe<Scalars['Int']['output']>;
+  /** Date at which the channel configuration finished to record in (in UTC). */
+  recordEndDate?: Maybe<Scalars['DateTime']['output']>;
+  /** Date at which the channel configuration started to record (in UTC). */
+  recordStartDate?: Maybe<Scalars['DateTime']['output']>;
   /** Each specification is dedicated to one file. */
   recorderSpecification?: Maybe<ChannelConfigurationRecorderSpecificationNode>;
+  status?: Maybe<ChannelConfigurationStatusEnum>;
   storages?: Maybe<Array<Maybe<EquipmentNode>>>;
   timezone?: Maybe<Scalars['String']['output']>;
 };
@@ -1638,6 +1643,12 @@ export type ChannelConfigurationRecorderSpecificationNodeEdge = {
   /** The item at the end of the edge */
   node?: Maybe<ChannelConfigurationRecorderSpecificationNode>;
 };
+
+export enum ChannelConfigurationStatusEnum {
+  Active = 'Active',
+  Failed = 'Failed',
+  Lost = 'Lost'
+}
 
 /** Collaborator node */
 export type CollaboratorNode = ExtendedInterface & {
@@ -6509,7 +6520,6 @@ export type TeamMemberNode = ExtendedInterface & {
   githubUrl?: Maybe<Scalars['String']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
-  isFormerMember: Scalars['Boolean']['output'];
   level?: Maybe<Scalars['Int']['output']>;
   linkedinUrl?: Maybe<Scalars['String']['output']>;
   mailAddress?: Maybe<Scalars['String']['output']>;
@@ -6521,6 +6531,7 @@ export type TeamMemberNode = ExtendedInterface & {
   projectSet: WebsiteProjectNodeConnection;
   researchGateUrl?: Maybe<Scalars['String']['output']>;
   scientifictalkSet: ScientificTalkNodeConnection;
+  type?: Maybe<TeamMemberTypeEnum>;
 };
 
 
@@ -6581,6 +6592,12 @@ export type TeamMemberNodeNodeConnection = {
   results: Array<Maybe<TeamMemberNode>>;
   totalCount?: Maybe<Scalars['Int']['output']>;
 };
+
+export enum TeamMemberTypeEnum {
+  Active = 'Active',
+  Collaborator = 'Collaborator',
+  Former = 'Former'
+}
 
 export type TeamNode = ExtendedInterface & {
   __typename?: 'TeamNode';

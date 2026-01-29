@@ -22,7 +22,7 @@ class TeamMemberViewSetTestCase(APITestCase):
         "personal_website_url": "string",
         "github_url": "string",
         "linkedin_url": "string",
-        "is_former_member": False,
+        "type": "A",
     }
 
     def test_list(self):
@@ -33,7 +33,7 @@ class TeamMemberViewSetTestCase(APITestCase):
         self.assertEqual(len(response.data), 3)
         self.assertEqual(response.data[0]["person"]["first_name"], "user2")
         self.assertEqual(response.data[0]["position"], "job2")
-        self.assertEqual(response.data[0]["is_former_member"], False)
+        self.assertEqual(response.data[0]["type"], "A")
 
     def test_retrieve(self):
         """TeamMemberViewSet 'retrieve' returns team members details"""
@@ -42,4 +42,4 @@ class TeamMemberViewSetTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["person"]["first_name"], "user3")
         self.assertEqual(response.data["position"], "job3")
-        self.assertEqual(response.data["is_former_member"], True)
+        self.assertEqual(response.data["type"], "A")

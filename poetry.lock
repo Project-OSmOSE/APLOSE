@@ -2232,27 +2232,27 @@ description = "PAM acquisition metadata"
 optional = false
 python-versions = ">=3.9,<4.0"
 groups = ["main"]
-files = [
-    {file = "metadatax-0.5.0a0.tar.gz", hash = "sha256:88f16184c8d064546cbf53eede8c7b11e5e50d7fade804b3b389195b1caf10b2"},
-]
+files = []
+develop = true
 
 [package.dependencies]
-Django = ">=3.2,<4.0"
-django-admin-multiple-choice-list-filter = ">=0.1.1,<0.2.0"
-django-better-admin-arrayfield = ">=1.4.2,<2.0.0"
-django-durationwidget = ">=1.0.5,<2.0.0"
+Django = "^3.2"
+django-admin-multiple-choice-list-filter = "^0.1.1"
+django-better-admin-arrayfield = "^1.4.2"
+django-durationwidget = "^1.0.5"
+django-extension = {url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.0/django_extension-0.1.0.tar.gz"}
 django-filter = ">=2"
-django-model-prefix = ">=1.1.0,<2.0.0"
-djangorestframework = ">=3.15.1,<4.0.0"
-graphene-django = ">=3.2.3,<4.0.0"
-graphene-django-optimizer = ">=0.10.0,<0.11.0"
+django-model-prefix = "^1.1.0"
+djangorestframework = "^3.15.1"
+graphene-django = "^3.2.3"
+graphene-django-optimizer = "^0.10.0"
 graphene-django-pagination = {url = "https://github.com/instruct-br/graphene-django-pagination/archive/master.zip"}
-psycopg2-binary = ">=2.8.6,<3.0.0"
-python-dotenv = ">=1.0.1,<2.0.0"
+psycopg2-binary = "^2.8.6"
+python-dotenv = "^1.0.1"
 
 [package.source]
-type = "url"
-url = "https://raw.githubusercontent.com/PAM-Standardization/metadatax/refs/heads/refacto/dist/metadatax-0.5.0a0.tar.gz"
+type = "directory"
+url = "../metadatax"
 
 [[package]]
 name = "mistune"
@@ -3152,14 +3152,14 @@ six = ">=1.5"
 
 [[package]]
 name = "python-dotenv"
-version = "1.0.1"
+version = "1.2.1"
 description = "Read key-value pairs from a .env file and set them as environment variables"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "python-dotenv-1.0.1.tar.gz", hash = "sha256:e324ee90a023d808f1959c46bcbc04446a10ced277783dc6ee09987c37ec10ca"},
-    {file = "python_dotenv-1.0.1-py3-none-any.whl", hash = "sha256:f7b63ef50f1b690dddf550d03497b66d609393b40b564ed0d674909a68ebf16a"},
+    {file = "python_dotenv-1.2.1-py3-none-any.whl", hash = "sha256:b81ee9561e9ca4004139c6cbba3a238c32b03e4894671e181b671e8cb8425d61"},
+    {file = "python_dotenv-1.2.1.tar.gz", hash = "sha256:42667e897e16ab0d66954af0e60a9caa94f0fd4ecf3aaf6d2d260eec1aa36ad6"},
 ]
 
 [package.extras]
@@ -4122,4 +4122,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "c78fa0312ee50fcedb6b24d62ed4c16faa5a97454dc4cb3e5a4f92a4e846f21c"
+content-hash = "04756eb5504fb235d6104b5793da57350dd010f3534c5bbdffa7d82b0402cd13"
