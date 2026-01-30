@@ -73,7 +73,8 @@ class AploseAudioProcessor:
         input_folder: str,
         output_folder: str,
         audio_extensions: List[str] = None,
-        preserve_timestamps: bool = True
+        preserve_timestamps: bool = True,
+        datetime_format: Optional[str] = None
     ) -> Dict[str, List[str]]:
         """
         Process all audio files in a folder.
@@ -83,6 +84,8 @@ class AploseAudioProcessor:
             output_folder: Path to output folder for WAV and NetCDF files.
             audio_extensions: List of audio file extensions to process (default: ['.wav', '.WAV']).
             preserve_timestamps: Preserve timestamps in snippet filenames.
+            datetime_format: Optional datetime format override for parsing filenames.
+                           If not provided, uses the instance's datetime_format.
 
         Returns:
             Dictionary with 'wav_files' and 'netcdf_files' lists.
@@ -106,6 +109,11 @@ class AploseAudioProcessor:
             return {'wav_files': [], 'netcdf_files': []}
 
         print(f"Found {len(audio_files)} audio file(s) to process")
+
+        # Temporarily override datetime_format if provided
+        original_datetime_format = self.datetime_format
+        if datetime_format is not None:
+            self.datetime_format = datetime_format
 
         all_wav_files = []
         all_netcdf_files = []
@@ -136,6 +144,9 @@ class AploseAudioProcessor:
                 all_wav_files.append(wav_path)
                 all_netcdf_files.append(netcdf_path)
 
+        # Restore original datetime_format
+        self.datetime_format = original_datetime_format
+
         print(f"\nProcessing complete!")
         print(f"Generated {len(all_wav_files)} WAV files")
         print(f"Generated {len(all_netcdf_files)} NetCDF files")
@@ -149,7 +160,8 @@ class AploseAudioProcessor:
         self,
         input_file: str,
         output_folder: str,
-        preserve_timestamps: bool = True
+        preserve_timestamps: bool = True,
+        datetime_format: Optional[str] = None
     ) -> Dict[str, List[str]]:
         """
         Process a single audio file.
@@ -158,6 +170,8 @@ class AploseAudioProcessor:
             input_file: Path to audio file.
             output_folder: Path to output folder.
             preserve_timestamps: Preserve timestamps in snippet filenames.
+            datetime_format: Optional datetime format override for parsing filenames.
+                           If not provided, uses the instance's datetime_format.
 
         Returns:
             Dictionary with 'wav_files' and 'netcdf_files' lists.
@@ -166,6 +180,11 @@ class AploseAudioProcessor:
         output_path.mkdir(parents=True, exist_ok=True)
 
         print(f"Processing: {input_file}")
+
+        # Temporarily override datetime_format if provided
+        original_datetime_format = self.datetime_format
+        if datetime_format is not None:
+            self.datetime_format = datetime_format
 
         # Process audio
         wav_results = self.audio_processor.process_audio_file(
@@ -190,6 +209,9 @@ class AploseAudioProcessor:
 
             all_wav_files.append(wav_path)
             all_netcdf_files.append(netcdf_path)
+
+        # Restore original datetime_format
+        self.datetime_format = original_datetime_format
 
         print(f"\nProcessing complete!")
         print(f"Generated {len(all_wav_files)} WAV files")
