@@ -34,6 +34,7 @@ class AploseAudioProcessor:
         db_ref: float = 1.0,
         db_fullscale: Optional[float] = None,
         normalize_audio: bool = False,
+        compression_level: int = 4,
         datetime_format: str = "%Y_%m_%d_%H_%M_%S",
         target_sample_rate: Optional[int] = None,
         snippet_duration: Optional[float] = None,
@@ -50,6 +51,7 @@ class AploseAudioProcessor:
             db_fullscale: dB re 1 µPa value corresponding to digital full scale (max WAV value).
                          When set, output is calibrated to dB re 1 µPa. Takes precedence over db_ref.
             normalize_audio: If True, normalize audio to [-1, 1] before computing spectrogram.
+            compression_level: zlib compression level 0-9 (0=none, 9=max). Default 4.
             datetime_format: strptime format to parse datetime from filenames.
             target_sample_rate: Target sample rate for resampling. None = keep original.
             snippet_duration: Duration in seconds for audio snippets. None = no splitting.
@@ -66,6 +68,7 @@ class AploseAudioProcessor:
         self.db_ref = db_ref
         self.db_fullscale = db_fullscale
         self.normalize_audio = normalize_audio
+        self.compression_level = compression_level
         self.datetime_format = datetime_format
 
         # Initialize audio processor
@@ -277,9 +280,13 @@ class AploseAudioProcessor:
             )
         )
 
-        # Save NetCDF with float32 encoding
+        # Save NetCDF with float32 encoding and compression
         netcdf_path = str(Path(wav_path).with_suffix('.nc'))
-        encoding = {'spectrogram': {'dtype': 'float32'}}
+        encoding = {'spectrogram': {
+            'dtype': 'float32',
+            'zlib': self.compression_level > 0,
+            'complevel': self.compression_level
+        }}
         ds.to_netcdf(netcdf_path, encoding=encoding)
 
         return netcdf_path
@@ -341,9 +348,13 @@ class AploseAudioProcessor:
             )
         )
 
-        # Save NetCDF with float32 encoding for all spectrogram variables
+        # Save NetCDF with float32 encoding and compression for all spectrogram variables
         netcdf_path = str(Path(wav_path).with_suffix('.nc'))
-        encoding = {var_name: {'dtype': 'float32'} for var_name in data_vars.keys()}
+        encoding = {var_name: {
+            'dtype': 'float32',
+            'zlib': self.compression_level > 0,
+            'complevel': self.compression_level
+        } for var_name in data_vars.keys()}
         ds.to_netcdf(netcdf_path, encoding=encoding)
 
         return netcdf_path

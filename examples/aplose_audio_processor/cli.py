@@ -112,6 +112,14 @@ Examples:
         action='store_true',
         help='Normalize audio to [-1, 1] before computing spectrogram'
     )
+    parser.add_argument(
+        '--compression-level',
+        type=int,
+        default=4,
+        choices=range(0, 10),
+        metavar='0-9',
+        help='NetCDF zlib compression level 0-9 (0=none, 9=max). Default: 4'
+    )
 
     # Other options
     parser.add_argument(
@@ -157,6 +165,7 @@ Examples:
         print(f"  dB full scale: {args.db_fullscale} dB re 1 µPa")
     else:
         print(f"  dB reference: {args.db_ref}")
+    print(f"  Compression level: {args.compression_level}")
 
     processor = AploseAudioProcessor(
         fft_sizes=args.fft_sizes,
@@ -165,6 +174,7 @@ Examples:
         db_ref=args.db_ref,
         db_fullscale=args.db_fullscale,
         normalize_audio=args.normalize_audio,
+        compression_level=args.compression_level,
         datetime_format=args.datetime_format,
         target_sample_rate=args.sample_rate,
         snippet_duration=args.snippet_duration,
