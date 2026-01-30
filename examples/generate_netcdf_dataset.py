@@ -131,8 +131,9 @@ def create_netcdf_file(
         }
     )
 
-    # Save to NetCDF
-    ds.to_netcdf(output_path, format='NETCDF4')
+    # Save to NetCDF with float16 encoding
+    encoding = {'spectrogram': {'dtype': 'float16'}}
+    ds.to_netcdf(output_path, format='NETCDF4', encoding=encoding)
     print(f"Created: {output_path}")
 
     return ds

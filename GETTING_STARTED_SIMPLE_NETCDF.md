@@ -501,7 +501,8 @@ import xarray as xr
 # Load and downsample
 ds = xr.open_dataset('large_spectrogram.nc')
 ds_downsampled = ds.isel(time=slice(None, None, 2))  # Keep every 2nd time point
-ds_downsampled.to_netcdf('smaller_spectrogram.nc')
+encoding = {'spectrogram': {'dtype': 'float16'}}
+ds_downsampled.to_netcdf('smaller_spectrogram.nc', encoding=encoding)
 ```
 
 ---

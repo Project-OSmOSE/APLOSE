@@ -224,8 +224,9 @@ ds = xr.Dataset(
     }
 )
 
-# Save to NetCDF file
-ds.to_netcdf('spectrogram.nc', format='NETCDF4')
+# Save to NetCDF file with float16 encoding
+encoding = {'spectrogram': {'dtype': 'float16'}}
+ds.to_netcdf('spectrogram.nc', format='NETCDF4', encoding=encoding)
 ```
 
 ## Support

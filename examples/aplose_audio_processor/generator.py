@@ -255,9 +255,10 @@ class AploseAudioProcessor:
             }
         )
 
-        # Save NetCDF
+        # Save NetCDF with float16 encoding
         netcdf_path = str(Path(wav_path).with_suffix('.nc'))
-        ds.to_netcdf(netcdf_path)
+        encoding = {'spectrogram': {'dtype': 'float16'}}
+        ds.to_netcdf(netcdf_path, encoding=encoding)
 
         return netcdf_path
 
@@ -323,9 +324,10 @@ class AploseAudioProcessor:
             }
         )
 
-        # Save NetCDF
+        # Save NetCDF with float16 encoding for all spectrogram variables
         netcdf_path = str(Path(wav_path).with_suffix('.nc'))
-        ds.to_netcdf(netcdf_path)
+        encoding = {var_name: {'dtype': 'float16'} for var_name in data_vars.keys()}
+        ds.to_netcdf(netcdf_path, encoding=encoding)
 
         return netcdf_path
 

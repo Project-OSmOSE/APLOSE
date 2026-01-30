@@ -137,7 +137,8 @@ class SpectrogramGenerator:
             output_path = wav_path.with_suffix('.nc')
 
         logger.info(f"Saving NetCDF spectrogram to: {output_path}")
-        ds.to_netcdf(output_path, format='NETCDF4')
+        encoding = {'spectrogram': {'dtype': 'float16'}}
+        ds.to_netcdf(output_path, format='NETCDF4', encoding=encoding)
         saved_path = output_path
 
         return ds, saved_path
@@ -234,7 +235,9 @@ class SpectrogramGenerator:
             output_path = wav_path.with_suffix('.nc')
 
         logger.info(f"Saving multi-FFT NetCDF spectrogram to: {output_path}")
-        ds.to_netcdf(output_path, format='NETCDF4')
+        # Encode all spectrogram variables as float16
+        encoding = {var_name: {'dtype': 'float16'} for var_name in data_vars.keys()}
+        ds.to_netcdf(output_path, format='NETCDF4', encoding=encoding)
 
         return ds, output_path
 

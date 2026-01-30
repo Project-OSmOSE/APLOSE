@@ -84,9 +84,10 @@ if __name__ == '__main__':
     # Generate spectrogram
     ds = generate_example_spectrogram()
 
-    # Save to file
+    # Save to file with float16 encoding
     output_path = Path(__file__).parent / 'example_spectrogram.nc'
-    ds.to_netcdf(output_path)
+    encoding = {'spectrogram': {'dtype': 'float16'}}
+    ds.to_netcdf(output_path, encoding=encoding)
 
     print(f"✓ Created example spectrogram: {output_path}")
     print(f"  Time range: {ds.time.min().values:.2f}s - {ds.time.max().values:.2f}s")
