@@ -74,6 +74,12 @@ Examples:
         default=0.0,
         help='Overlap between snippets in seconds (default: 0)'
     )
+    parser.add_argument(
+        '--filename-prefix',
+        type=str,
+        default=None,
+        help='Prefix to add to all output filenames (e.g., "site1" produces "site1_2024_01_01_00_00_00.wav")'
+    )
 
     # Spectrogram options
     parser.add_argument(
@@ -159,6 +165,8 @@ Examples:
     print(f"  Snippet duration: {args.snippet_duration if args.snippet_duration else 'full file'}")
     if args.snippet_duration:
         print(f"  Snippet overlap: {args.overlap}s")
+    if args.filename_prefix:
+        print(f"  Filename prefix: {args.filename_prefix}")
     if args.normalize_audio:
         print("  Audio normalization: enabled")
     if args.db_fullscale is not None:
@@ -178,7 +186,8 @@ Examples:
         datetime_format=args.datetime_format,
         target_sample_rate=args.sample_rate,
         snippet_duration=args.snippet_duration,
-        snippet_overlap=args.overlap
+        snippet_overlap=args.overlap,
+        filename_prefix=args.filename_prefix
     )
 
     # Process files

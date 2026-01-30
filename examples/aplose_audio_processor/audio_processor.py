@@ -17,7 +17,8 @@ class AudioProcessor:
         self,
         target_sample_rate: Optional[int] = None,
         snippet_duration: Optional[float] = None,
-        overlap: float = 0.0
+        overlap: float = 0.0,
+        filename_prefix: Optional[str] = None
     ):
         """
         Initialize AudioProcessor.
@@ -26,10 +27,12 @@ class AudioProcessor:
             target_sample_rate: Target sample rate in Hz. If None, keeps original sample rate.
             snippet_duration: Duration of each snippet in seconds. If None, processes entire file.
             overlap: Overlap between consecutive snippets in seconds (default: 0.0).
+            filename_prefix: Optional prefix to add to all output filenames.
         """
         self.target_sample_rate = target_sample_rate
         self.snippet_duration = snippet_duration
         self.overlap = overlap
+        self.filename_prefix = filename_prefix
 
     def process_audio_file(
         self,
@@ -72,7 +75,8 @@ class AudioProcessor:
             )
         else:
             # Process entire file
-            output_path = os.path.join(output_dir, f"{base_name}.wav")
+            output_name = f"{self.filename_prefix}_{base_name}" if self.filename_prefix else base_name
+            output_path = os.path.join(output_dir, f"{output_name}.wav")
             sf.write(output_path, audio, sample_rate)
 
             metadata = {
@@ -231,7 +235,11 @@ class AudioProcessor:
             # Add time offset
             new_dt = parsed_dt + timedelta(seconds=time_offset)
             timestamp_str = new_dt.strftime("%Y_%m_%d_%H_%M_%S")
+            if self.filename_prefix:
+                return f"{self.filename_prefix}_{timestamp_str}.wav"
             return f"{timestamp_str}.wav"
         else:
             # Fallback to simple numbering
+            if self.filename_prefix:
+                return f"{self.filename_prefix}_{base_name}_snippet_{snippet_idx:04d}.wav"
             return f"{base_name}_snippet_{snippet_idx:04d}.wav"

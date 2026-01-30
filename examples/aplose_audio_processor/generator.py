@@ -38,7 +38,8 @@ class AploseAudioProcessor:
         datetime_format: str = "%Y_%m_%d_%H_%M_%S",
         target_sample_rate: Optional[int] = None,
         snippet_duration: Optional[float] = None,
-        snippet_overlap: float = 0.0
+        snippet_overlap: float = 0.0,
+        filename_prefix: Optional[str] = None
     ):
         """
         Initialize the APLOSE audio processor.
@@ -56,6 +57,7 @@ class AploseAudioProcessor:
             target_sample_rate: Target sample rate for resampling. None = keep original.
             snippet_duration: Duration in seconds for audio snippets. None = no splitting.
             snippet_overlap: Overlap between snippets in seconds (default: 0.0).
+            filename_prefix: Optional prefix to add to all output filenames.
         """
         # Handle single or multiple FFT sizes
         if isinstance(fft_sizes, int):
@@ -75,7 +77,8 @@ class AploseAudioProcessor:
         self.audio_processor = AudioProcessor(
             target_sample_rate=target_sample_rate,
             snippet_duration=snippet_duration,
-            overlap=snippet_overlap
+            overlap=snippet_overlap,
+            filename_prefix=filename_prefix
         )
 
     def process_folder(
