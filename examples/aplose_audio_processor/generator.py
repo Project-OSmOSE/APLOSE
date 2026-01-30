@@ -32,6 +32,8 @@ class AploseAudioProcessor:
         window: str = 'hann',
         hop_length_factor: float = 0.25,
         db_ref: float = 1.0,
+        db_fullscale: Optional[float] = None,
+        normalize_audio: bool = False,
         datetime_format: str = "%Y_%m_%d_%H_%M_%S",
         target_sample_rate: Optional[int] = None,
         snippet_duration: Optional[float] = None,
@@ -44,7 +46,10 @@ class AploseAudioProcessor:
             fft_sizes: FFT size(s). Can be a single int or list of ints for multi-FFT.
             window: Window function ('hann', 'hamming', 'blackman').
             hop_length_factor: Hop length as fraction of FFT size (default: 0.25).
-            db_ref: Reference value for dB conversion (default: 1.0).
+            db_ref: Reference value for dB conversion (default: 1.0). Ignored if db_fullscale is set.
+            db_fullscale: dB re 1 µPa value corresponding to digital full scale (max WAV value).
+                         When set, output is calibrated to dB re 1 µPa. Takes precedence over db_ref.
+            normalize_audio: If True, normalize audio to [-1, 1] before computing spectrogram.
             datetime_format: strptime format to parse datetime from filenames.
             target_sample_rate: Target sample rate for resampling. None = keep original.
             snippet_duration: Duration in seconds for audio snippets. None = no splitting.
@@ -59,6 +64,8 @@ class AploseAudioProcessor:
         self.window = window
         self.hop_length_factor = hop_length_factor
         self.db_ref = db_ref
+        self.db_fullscale = db_fullscale
+        self.normalize_audio = normalize_audio
         self.datetime_format = datetime_format
 
         # Initialize audio processor
@@ -264,17 +271,10 @@ class AploseAudioProcessor:
                 'frequency': freqs,
                 'time': times
             },
-            attrs={
-                'begin': begin_dt.isoformat(),
-                'end': end_dt.isoformat(),
-                'sample_rate': float(sample_rate),
-                'nfft': int(nfft),
-                'hop_length': int(hop_length),
-                'window': self.window,
-                'duration': float(metadata['duration']),
-                'audio_file': Path(wav_path).name,
-                'db_ref': float(self.db_ref)
-            }
+            attrs=self._build_netcdf_attrs(
+                begin_dt, end_dt, sample_rate, nfft, hop_length,
+                metadata['duration'], Path(wav_path).name
+            )
         )
 
         # Save NetCDF with float32 encoding
@@ -334,16 +334,11 @@ class AploseAudioProcessor:
         ds = xr.Dataset(
             data_vars=data_vars,
             coords=coords,
-            attrs={
-                'fft_sizes': ','.join(map(str, self.fft_sizes)),
-                'begin': begin_dt.isoformat(),
-                'end': end_dt.isoformat(),
-                'sample_rate': float(sample_rate),
-                'window': self.window,
-                'duration': float(metadata['duration']),
-                'audio_file': Path(wav_path).name,
-                'db_ref': float(self.db_ref)
-            }
+            attrs=self._build_netcdf_attrs(
+                begin_dt, end_dt, sample_rate, None, None,
+                metadata['duration'], Path(wav_path).name,
+                fft_sizes_str=','.join(map(str, self.fft_sizes))
+            )
         )
 
         # Save NetCDF with float32 encoding for all spectrogram variables
@@ -352,6 +347,61 @@ class AploseAudioProcessor:
         ds.to_netcdf(netcdf_path, encoding=encoding)
 
         return netcdf_path
+
+    def _build_netcdf_attrs(
+        self,
+        begin_dt: datetime,
+        end_dt: datetime,
+        sample_rate: int,
+        nfft: Optional[int],
+        hop_length: Optional[int],
+        duration: float,
+        audio_file: str,
+        fft_sizes_str: Optional[str] = None
+    ) -> dict:
+        """
+        Build attributes dictionary for NetCDF file.
+
+        Args:
+            begin_dt: Begin datetime.
+            end_dt: End datetime.
+            sample_rate: Sample rate.
+            nfft: FFT size (single-FFT mode) or None (multi-FFT mode).
+            hop_length: Hop length (single-FFT mode) or None (multi-FFT mode).
+            duration: Audio duration in seconds.
+            audio_file: Audio filename.
+            fft_sizes_str: Comma-separated FFT sizes string (multi-FFT mode).
+
+        Returns:
+            Attributes dictionary.
+        """
+        attrs = {
+            'begin': begin_dt.isoformat(),
+            'end': end_dt.isoformat(),
+            'sample_rate': float(sample_rate),
+            'window': self.window,
+            'duration': float(duration),
+            'audio_file': audio_file,
+            'normalize_audio': self.normalize_audio,
+        }
+
+        # Single-FFT mode
+        if nfft is not None:
+            attrs['nfft'] = int(nfft)
+        if hop_length is not None:
+            attrs['hop_length'] = int(hop_length)
+
+        # Multi-FFT mode
+        if fft_sizes_str is not None:
+            attrs['fft_sizes'] = fft_sizes_str
+
+        # dB reference: prefer db_fullscale over db_ref
+        if self.db_fullscale is not None:
+            attrs['db_fullscale'] = float(self.db_fullscale)
+        else:
+            attrs['db_ref'] = float(self.db_ref)
+
+        return attrs
 
     def _calculate_spectrogram(
         self,
@@ -372,6 +422,12 @@ class AploseAudioProcessor:
         Returns:
             Tuple of (spectrogram_db, frequencies, times).
         """
+        # Normalize audio if requested
+        if self.normalize_audio:
+            max_val = np.max(np.abs(audio))
+            if max_val > 0:
+                audio = audio / max_val
+
         # Get window function
         if self.window == 'hann':
             window_func = signal.windows.hann(nfft)
@@ -396,7 +452,13 @@ class AploseAudioProcessor:
         spec_power = np.abs(stft) ** 2
 
         # Convert to dB scale
-        spec_db = 10 * np.log10(spec_power / self.db_ref + 1e-10)
+        if self.db_fullscale is not None:
+            # db_fullscale: dB re 1 µPa value of digital full scale (1.0)
+            # Output will be in dB re 1 µPa
+            spec_db = 10 * np.log10(spec_power + 1e-10) + self.db_fullscale
+        else:
+            # Legacy mode: use db_ref as reference value
+            spec_db = 10 * np.log10(spec_power / self.db_ref + 1e-10)
 
         return spec_db, freqs, times
 

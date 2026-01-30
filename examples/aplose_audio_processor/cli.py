@@ -98,7 +98,19 @@ Examples:
         '--db-ref',
         type=float,
         default=1.0,
-        help='Reference value for dB conversion (default: 1.0)'
+        help='Reference value for dB conversion (default: 1.0). Ignored if --db-fullscale is set.'
+    )
+    parser.add_argument(
+        '--db-fullscale',
+        type=float,
+        default=None,
+        help='dB re 1 µPa value corresponding to digital full scale (max WAV value). '
+             'When set, output is calibrated to dB re 1 µPa. Takes precedence over --db-ref.'
+    )
+    parser.add_argument(
+        '--normalize-audio',
+        action='store_true',
+        help='Normalize audio to [-1, 1] before computing spectrogram'
     )
 
     # Other options
@@ -139,12 +151,20 @@ Examples:
     print(f"  Snippet duration: {args.snippet_duration if args.snippet_duration else 'full file'}")
     if args.snippet_duration:
         print(f"  Snippet overlap: {args.overlap}s")
+    if args.normalize_audio:
+        print("  Audio normalization: enabled")
+    if args.db_fullscale is not None:
+        print(f"  dB full scale: {args.db_fullscale} dB re 1 µPa")
+    else:
+        print(f"  dB reference: {args.db_ref}")
 
     processor = AploseAudioProcessor(
         fft_sizes=args.fft_sizes,
         window=args.window,
         hop_length_factor=args.hop_length_factor,
         db_ref=args.db_ref,
+        db_fullscale=args.db_fullscale,
+        normalize_audio=args.normalize_audio,
         datetime_format=args.datetime_format,
         target_sample_rate=args.sample_rate,
         snippet_duration=args.snippet_duration,
