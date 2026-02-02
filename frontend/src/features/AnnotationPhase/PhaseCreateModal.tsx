@@ -67,7 +67,8 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
     }
     await refetch().unwrap()
     navigate(`/annotation-campaign/${ campaign.id }/phase/Annotation`)
-  }, [ campaign, labelSet,alsoCreateVerification, confidenceSetID, labelsWithAcousticFeatures, allowPointAnnotation, createAnnotationPhase ])
+    onClose()
+  }, [ campaign, onClose, labelSet,alsoCreateVerification, confidenceSetID, labelsWithAcousticFeatures, allowPointAnnotation, createAnnotationPhase ])
 
   if (campaign?.isArchived) return <Fragment/>
   return <Modal onClose={ onClose } className={ styles.modal }>
@@ -130,12 +131,14 @@ export const AnnotationPhaseCreateVerificationModal: React.FC<{
     await createVerificationPhase({ campaignID: campaign.id }).unwrap()
     await refetch().unwrap()
     navigate(`/annotation-campaign/${ campaign.id }/phase/Verification`)
+    onClose()
   }, [ campaign, createVerificationPhase ])
 
   const createAndImport = useCallback(async () => {
     if (!campaign) return;
     await createVerificationPhase({ campaignID: campaign.id }).unwrap()
     navigate(`/annotation-campaign/${ campaign.id }/phase/Annotation/import-annotations`)
+    onClose()
   }, [ campaign, createVerificationPhase ])
 
   if (campaign?.isArchived || !phases) return <Fragment/>
