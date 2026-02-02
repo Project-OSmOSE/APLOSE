@@ -1,14 +1,11 @@
 import graphene
 import graphene_django_optimizer
 from django.db.models import Sum
-from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 from django_extension.schema.types import ExtendedNode
 
 from backend.api.models import AnnotationPhase, AnnotationTask
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationPhaseFilterSet
-from .annotation_file_range import AnnotationFileRangeNode
-from .annotation_spectrogram import AnnotationSpectrogramNode
 
 
 class AnnotationPhaseNode(ExtendedNode):
@@ -16,12 +13,6 @@ class AnnotationPhaseNode(ExtendedNode):
 
     annotation_campaign_id = graphene.Field(
         graphene.ID, source="annotation_campaign_id", required=True
-    )
-    annotation_file_ranges = AuthenticatedPaginationConnectionField(
-        AnnotationFileRangeNode
-    )
-    annotation_spectrograms = AuthenticatedPaginationConnectionField(
-        AnnotationSpectrogramNode, source="annotations__spectrogram"
     )
 
     phase = graphene.NonNull(AnnotationPhaseType)

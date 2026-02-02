@@ -1,3 +1,5 @@
+import graphene
+import graphene_django_optimizer
 from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 from django_extension.schema.types import ExtendedNode
 
@@ -7,6 +9,7 @@ from backend.api.schema.filter_sets import AnnotationFilterSet
 from .acoustic_features import AcousticFeaturesNode
 from .annotation_comment import AnnotationCommentNode
 from .annotation_validation import AnnotationValidationNode
+from .annotation_phase import AnnotationPhaseNode
 
 
 class AnnotationNode(ExtendedNode):
@@ -24,3 +27,9 @@ class AnnotationNode(ExtendedNode):
         model = Annotation
         fields = "__all__"
         filterset_class = AnnotationFilterSet
+
+    annotation_phase = graphene.Field(AnnotationPhaseNode, required=True)
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_annotation_phase(self: Annotation, info):
+        return self.annotation_phase

@@ -97,7 +97,7 @@ export const EditAnnotators: React.FC = () => {
     const newUsers: any[] = []
     switch (type!) {
       case 'user':
-        newUsers.push(users.find(a => a.id === id)!);
+        newUsers.push(users.find(a => a!.id === id)!);
         break;
       case 'group':
         newUsers.push(...groups.find(g => g!.id === id)!.users!.filter(u => availableUsers.find(a => a.value.split('-')[0] === 'user' && a.value.split('-')[1] === u?.id)));
@@ -161,12 +161,12 @@ export const EditAnnotators: React.FC = () => {
       { errorLoadingFileRanges &&
           <WarningText message="Fail loading file ranges" error={ errorLoadingFileRanges }/> }
 
-      { !(isFetchingCampaign || isFetchingUsers || isFetchingFileRanges) && fileRanges && campaign?.spectrogramsCount && users && groups &&
+      { !(isFetchingCampaign || isFetchingUsers || isFetchingFileRanges) &&
           <Table columns={ 3 } className={ styles.table }>
               <TableHead isFirstColumn={ true } topSticky>Annotator</TableHead>
               <TableHead className={ styles.fileRangeHead } topSticky>
                   File range
-                  <small>(between 1 and { campaign.spectrogramsCount })</small>
+                  <small>(between 1 and { campaign?.spectrogramsCount })</small>
                   <small className="disabled"><i>Start and end limits are included</i></small>
               </TableHead>
               <TableHead topSticky/>

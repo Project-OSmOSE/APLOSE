@@ -650,8 +650,7 @@ export type AnnotationPhaseNode = ExtendedInterface & {
   annotationCampaign: AnnotationCampaignNode;
   annotationCampaignId: Scalars['ID']['output'];
   annotationComments: AnnotationCommentNodeConnection;
-  annotationFileRanges?: Maybe<AnnotationFileRangeNodeNodeConnection>;
-  annotationSpectrograms?: Maybe<AnnotationSpectrogramNodeNodeConnection>;
+  annotationFileRanges: AnnotationFileRangeNodeConnection;
   annotationTasks: AnnotationTaskNodeConnection;
   annotations: AnnotationNodeConnection;
   canManage: Scalars['Boolean']['output'];
@@ -694,35 +693,7 @@ export type AnnotationPhaseNodeAnnotationFileRangesArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  ordering?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** AnnotationPhase schema */
-export type AnnotationPhaseNodeAnnotationSpectrogramsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  annotationCampaign?: InputMaybe<Scalars['ID']['input']>;
-  annotationTasks_Status?: InputMaybe<AnnotationTaskStatus>;
-  annotations_AcousticFeatures_Exists?: InputMaybe<Scalars['Boolean']['input']>;
-  annotations_Annotator?: InputMaybe<Scalars['ID']['input']>;
-  annotations_Confidence_Label?: InputMaybe<Scalars['String']['input']>;
-  annotations_Detector?: InputMaybe<Scalars['ID']['input']>;
-  annotations_Exists?: InputMaybe<Scalars['Boolean']['input']>;
-  annotations_LabelName?: InputMaybe<Scalars['String']['input']>;
-  annotator?: InputMaybe<Scalars['ID']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  end_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  filename_Icontains?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Scalars['String']['input']>;
-  ordering?: InputMaybe<Scalars['String']['input']>;
-  phase?: InputMaybe<AnnotationPhaseType>;
-  start_Lte?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 

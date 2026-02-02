@@ -1,12 +1,11 @@
 """Phase model"""
 from django.conf import settings
 from django.db import models, transaction
-from django.db.models import Q, Exists, OuterRef, Case, When
+from django.db.models import Q
 from django.utils import timezone
 from django_extension.models import ExtendedEnum, ExtendedQuerySet
 
 from backend.aplose.models import User
-from .annotation_file_range import AnnotationFileRange
 
 
 class AnnotationPhaseQuerySet(ExtendedQuerySet):
@@ -23,30 +22,10 @@ class AnnotationPhaseQuerySet(ExtendedQuerySet):
             |
             # Phase creator can view them
             Q(created_by_id=user.id)
-            | Case(
-                # Verification phase can be viewed only by assigned users
-                When(
-                    phase=AnnotationPhase.Type.VERIFICATION,
-                    then=Exists(
-                        AnnotationFileRange.objects.filter_viewable_by(
-                            user, annotation_phase_id=OuterRef("pk")
-                        )
-                    ),
-                ),
-                # Annotation phase can be viewed by users assigned to one of the phase of the campaign
-                When(
-                    phase=AnnotationPhase.Type.ANNOTATION,
-                    then=Exists(
-                        AnnotationFileRange.objects.filter_viewable_by(
-                            user,
-                            annotation_phase__annotation_campaign_id=OuterRef(
-                                "annotation_campaign_id"
-                            ),
-                        )
-                    ),
-                ),
-            ),
-        )
+            |
+            # Annotators can view assigned phases
+            Q(annotation_file_ranges__annotator_id=user.id)
+        ).distinct()
 
     def filter_editable_by(self, user: User, **kwargs):
         qs = super().filter_viewable_by(user, **kwargs)

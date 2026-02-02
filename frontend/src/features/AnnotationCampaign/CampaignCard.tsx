@@ -23,7 +23,7 @@ export const Cards: React.FC = () => {
     const getLink = useCallback((campaign: Campaign) => {
         const phases = campaign.phases?.results.filter(p => p !== null) ?? []
         if (phases.length > 0)
-            return `/annotation-campaign/${ campaign.id }/phase/${ phases.filter(p => p !== null)[0].phase }`;
+            return `/annotation-campaign/${ campaign.id }/phase/${ phases.filter(p => p !== null)[0]?.phase }`;
         return `/annotation-campaign/${ campaign.id }`
     }, [])
     const accessDetail = useCallback((campaign: Campaign) => navigate(getLink(campaign), {state: {from: '/annotation-campaign'}}), [ getLink ]);

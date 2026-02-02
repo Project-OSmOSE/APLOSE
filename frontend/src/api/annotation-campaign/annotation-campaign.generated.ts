@@ -14,7 +14,6 @@ export type ListCampaignsQuery = { __typename?: 'Query', allAnnotationCampaigns?
 
 export type GetCampaignQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
-  userID: Types.Scalars['ID']['input'];
 }>;
 
 
@@ -71,7 +70,7 @@ export const ListCampaignsDocument = `
       deadline
       isArchived
       datasetName
-      phases(annotationFileRanges_AnnotatorId: $filter_annotatorID) {
+      phases {
         results {
           phase
         }
@@ -85,7 +84,7 @@ export const ListCampaignsDocument = `
 }
     `;
 export const GetCampaignDocument = `
-    query getCampaign($id: ID!, $userID: ID!) {
+    query getCampaign($id: ID!) {
   annotationCampaignById(id: $id) {
     id
     name
@@ -180,7 +179,7 @@ export const GetCampaignDocument = `
       }
     }
     spectrogramsCount
-    phases(annotationFileRanges_AnnotatorId: $userID) {
+    phases {
       results {
         id
         phase

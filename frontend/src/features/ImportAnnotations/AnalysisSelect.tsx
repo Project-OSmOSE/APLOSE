@@ -18,8 +18,8 @@ export const AnalysisSelect: React.FC = () => {
                  label="Spectrogram analysis"
                  data-testid="select-analysis"
                  options={ allAnalysis?.map(a => ({
-                   value: a.id,
-                   label: a.name,
+                   value: a!.id,
+                   label: a!.name,
                  } as Item)) ?? [] }
                  onValueSelected={ v => setAnalysisID(v as string) }
                  optionsContainer="popover"
