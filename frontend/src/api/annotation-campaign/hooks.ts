@@ -31,11 +31,9 @@ export const useAllCampaigns = (filters: AllCampaignFilters) => {
 
 export const useCurrentCampaign = () => {
   const { campaignID: id } = useParams<AploseNavParams>();
-  const { user } = useCurrentUser()
   const info = getCampaign.useQuery({
     id: id ?? '',
-    userID: user?.id ?? '',
-  }, { skip: !id || !user })
+  }, { skip: !id })
   const phases = useMemo(() => info.data?.annotationCampaignById?.phases?.results.map(p => p!), [ info ])
   return useMemo(() => ({
     ...info,
