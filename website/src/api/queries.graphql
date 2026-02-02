@@ -1,0 +1,36 @@
+query allTeamMembers {
+    allTeamMembers {
+        results {
+            id
+            picture
+            person {
+                initialNames
+                firstName
+                lastName
+                currentInstitutions {
+                    name
+                }
+            }
+            position
+            type
+        }
+    }
+}
+
+query teamMemberById($id: ID!) {
+    teamMemberById(id: $id) {
+        position
+        picture
+        biography
+        person {
+            firstName
+            lastName
+            initialNames
+        }
+        personalWebsiteUrl
+        githubUrl
+        mailAddress
+        linkedinUrl
+        researchGateUrl
+    }
+}

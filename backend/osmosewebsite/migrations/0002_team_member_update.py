@@ -15,10 +15,6 @@ class Migration(migrations.Migration):
             old_name="contact",
             new_name="person",
         ),
-        migrations.RemoveField(
-            model_name="teammember",
-            name="is_former_member",
-        ),
         migrations.AddField(
             model_name="teammember",
             name="type",
@@ -27,5 +23,21 @@ class Migration(migrations.Migration):
                 default="A",
                 max_length=1,
             ),
+        ),
+        migrations.RunSQL(
+            sql="""
+              UPDATE osmosewebsite_teammember m
+              SET type='F'
+              WHERE is_former_member;
+          """,
+            reverse_sql="""
+                        UPDATE osmosewebsite_teammember m
+                        SET is_former_member= true
+                        WHERE type = 'F';
+                        """,
+        ),
+        migrations.RemoveField(
+            model_name="teammember",
+            name="is_former_member",
         ),
     ]
