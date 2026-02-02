@@ -1,9 +1,9 @@
 import graphene
+from django_extension.schema.mutations import ListSerializerMutation
 
 from backend.api.models import Spectrogram, AnnotationPhase, AnnotationComment
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.serializers import AnnotationCommentSerializer
-from backend.utils.schema.mutations import ListSerializerMutation
 
 
 class UpdateAnnotationCommentsMutation(ListSerializerMutation):

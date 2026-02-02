@@ -1,7 +1,7 @@
 import graphene
+from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 
 from backend.aplose.schema.nodes import UserNode
-from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 
 
 @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)

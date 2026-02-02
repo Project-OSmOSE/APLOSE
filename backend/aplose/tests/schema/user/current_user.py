@@ -1,6 +1,8 @@
 import json
 
-from graphene_django.utils import GraphQLTestCase
+from django_extension.tests import ExtendedTestCase
+
+from backend.aplose.models import User
 
 QUERY = """
 query {
@@ -13,7 +15,7 @@ query {
 """
 
 
-class CurrentUserTestCase(GraphQLTestCase):
+class CurrentUserTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ["users"]
@@ -23,14 +25,16 @@ class CurrentUserTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY)
+        response = self.gql_query(QUERY)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_user(self):
-        self.client.login(username="user1", password="osmose29")
-        response = self.query(QUERY)
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="user1"),
+        )
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["currentUser"]
@@ -39,8 +43,10 @@ class CurrentUserTestCase(GraphQLTestCase):
         self.assertFalse(content["isAdmin"])
 
     def test_connected_staff(self):
-        self.client.login(username="staff", password="osmose29")
-        response = self.query(QUERY)
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="staff"),
+        )
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["currentUser"]
@@ -49,8 +55,10 @@ class CurrentUserTestCase(GraphQLTestCase):
         self.assertTrue(content["isAdmin"])
 
     def test_connected_admin(self):
-        self.client.login(username="admin", password="osmose29")
-        response = self.query(QUERY)
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="admin"),
+        )
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["currentUser"]

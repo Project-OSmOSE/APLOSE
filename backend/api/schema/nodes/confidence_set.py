@@ -1,20 +1,19 @@
 import graphene
 import graphene_django_optimizer
 from django.db.models import F
+from django_extension.schema.types import ExtendedNode
 
 from backend.api.models import ConfidenceSet
-from backend.utils.schema.types import BaseObjectType, BaseNode
 from .confidence import ConfidenceNode
 
 
-class ConfidenceSetNode(BaseObjectType):
+class ConfidenceSetNode(ExtendedNode):
     """ConfidenceSet schema"""
 
     class Meta:
         model = ConfidenceSet
         fields = "__all__"
         filter_fields = "__all__"
-        interfaces = (BaseNode,)
 
     confidence_indicators = graphene.List(ConfidenceNode)
 

@@ -1,11 +1,11 @@
 """Annotation comment serializer"""
 
 from django.db.models import QuerySet
+from django_extension.serializers import ListSerializer
 from rest_framework import serializers
 from rest_framework.fields import empty
 
 from backend.api.models import AnnotationValidation
-from backend.utils.serializers import ListSerializer
 
 
 class AnnotationValidationSerializer(serializers.ModelSerializer):

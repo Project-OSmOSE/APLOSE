@@ -3,9 +3,11 @@ from os.path import join
 
 from django.conf import settings
 from django.test import override_settings
+from django_extension.tests import ExtendedTestCase
 from graphene_django.utils import GraphQLTestCase
 
 from backend.api.models import SpectrogramAnalysis, Spectrogram
+from backend.aplose.models import User
 
 QUERY = """
 mutation ($datasetName: String!, $datasetPath: String!, $legacy: Boolean, $name: String!, $path: String!) {
@@ -27,7 +29,7 @@ LEGACY_IMPORT_FIXTURES = (
 )
 
 
-class ImportSpectrogramAnalysisTestCase(GraphQLTestCase):
+class ImportSpectrogramAnalysisTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ["users", "dataset"]
@@ -37,14 +39,15 @@ class ImportSpectrogramAnalysisTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(QUERY, variables=BASE_VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_not_staff(self):
-        self.client.login(username="user1", password="osmose29")
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user1"), variables=BASE_VARIABLES
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Forbidden")
@@ -53,8 +56,9 @@ class ImportSpectrogramAnalysisTestCase(GraphQLTestCase):
     def test_connected_legacy(self):
         previous_analysis_count = SpectrogramAnalysis.objects.count()
         previous_spectrogram_count = Spectrogram.analysis.through.objects.count()
-        self.client.login(username="staff", password="osmose29")
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="staff"), variables=BASE_VARIABLES
+        )
         self.assertResponseNoErrors(response)
         content = json.loads(response.content)["data"]["importSpectrogramAnalysis"]
         self.assertTrue(content["ok"])
@@ -84,9 +88,9 @@ class ImportSpectrogramAnalysisTestCase(GraphQLTestCase):
     def test_connected_legacy_with_scale(self):
         previous_analysis_count = SpectrogramAnalysis.objects.count()
         previous_spectrogram_count = Spectrogram.analysis.through.objects.count()
-        self.client.login(username="staff", password="osmose29")
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="staff"),
             variables={
                 **BASE_VARIABLES,
                 "path": join(

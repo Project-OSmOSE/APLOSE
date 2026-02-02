@@ -1,18 +1,20 @@
 import graphene
 from django.db.models import QuerySet, Count, Min, Max
+from django_extension.schema.fields import AuthenticatedPaginationConnectionField
+from django_extension.schema.types import ExtendedNode
 from graphql import GraphQLResolveInfo
 
 from backend.api.models import Dataset
 from backend.api.schema.filter_sets import DatasetFilterSet
-from backend.utils.schema import AuthenticatedDjangoConnectionField
-from backend.utils.schema.types import BaseObjectType, BaseNode
 from .spectrogram_analysis import SpectrogramAnalysisNode
 
 
-class DatasetNode(BaseObjectType):
+class DatasetNode(ExtendedNode):
     """Dataset schema"""
 
-    spectrogram_analysis = AuthenticatedDjangoConnectionField(SpectrogramAnalysisNode)
+    spectrogram_analysis = AuthenticatedPaginationConnectionField(
+        SpectrogramAnalysisNode
+    )
 
     analysis_count = graphene.Int(required=True)
     spectrogram_count = graphene.Int(required=True)
@@ -23,7 +25,6 @@ class DatasetNode(BaseObjectType):
         model = Dataset
         fields = "__all__"
         filterset_class = DatasetFilterSet
-        interfaces = (BaseNode,)
 
     @classmethod
     def resolve_queryset(cls, queryset: QuerySet, info: GraphQLResolveInfo):

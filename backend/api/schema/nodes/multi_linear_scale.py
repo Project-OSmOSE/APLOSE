@@ -1,19 +1,18 @@
 import graphene
 import graphene_django_optimizer
+from django_extension.schema.types import ExtendedNode
 
 from backend.api.models import MultiLinearScale
-from backend.utils.schema.types import BaseObjectType, BaseNode
 from .linear_scale import LinearScaleNode
 
 
-class MultiLinearScaleNode(BaseObjectType):
+class MultiLinearScaleNode(ExtendedNode):
     """MultiLinearScale schema"""
 
     class Meta:
         model = MultiLinearScale
         fields = "__all__"
         filter_fields = ()
-        interfaces = (BaseNode,)
 
     inner_scales = graphene.List(LinearScaleNode())
 

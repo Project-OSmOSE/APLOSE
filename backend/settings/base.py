@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     "metadatax.equipment",
     "metadatax.data",
     "backend.sql.apps.SqlConfig",
+    "django_extension",
+    "rest_framework.authtoken",
 ]
 
 MIDDLEWARE = [
@@ -139,13 +141,13 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
+        "django_extension.views.authentication.BearerTokenAuthentication",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "backend.osmosewebsite.pagination.OsmosePagination",
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
-        "backend.utils.filters.ModelFilter",
+        "django_extension.filters.ModelFilter",
     ],
 }
 

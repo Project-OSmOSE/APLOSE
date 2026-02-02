@@ -1,9 +1,11 @@
 import json
 
+from django_extension.tests import ExtendedTestCase
 from graphene_django.utils import GraphQLTestCase
 
 from backend.api.models import AnnotationComment
 from backend.api.tests.fixtures import ALL_FIXTURES
+from backend.aplose.models import User
 
 QUERY = """
 mutation (
@@ -38,7 +40,7 @@ comment = {
 }
 
 
-class UpdateAnnotationCommentsTestCase(GraphQLTestCase):
+class UpdateAnnotationCommentsTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ["users", *ALL_FIXTURES]
@@ -48,32 +50,35 @@ class UpdateAnnotationCommentsTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(QUERY, variables=BASE_VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_base_user(self):
-        self.client.login(username="user4", password="osmose29")
-        response = self.query(QUERY, variables={**BASE_VARIABLES, "campaignID": 99})
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="user4"),
+            variables={**BASE_VARIABLES, "campaignID": 99},
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Not found")
 
     def test_connected_annotator_update_empty(self):
-        self.client.login(username="user2", password="osmose29")
-
         previous_count = AnnotationComment.objects.count()
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user2"), variables=BASE_VARIABLES
+        )
         self.assertResponseNoErrors(response)
         self.assertEqual(AnnotationComment.objects.count(), previous_count)
 
     def test_connected_annotator_add(self):
-        self.client.login(username="user2", password="osmose29")
-
         previous_count = AnnotationComment.objects.count()
-        response = self.query(
-            QUERY, variables={**BASE_VARIABLES, "comments": [comment]}
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="user2"),
+            variables={**BASE_VARIABLES, "comments": [comment]},
         )
         self.assertResponseNoErrors(response)
         self.assertEqual(AnnotationComment.objects.count(), previous_count + 1)
@@ -85,13 +90,13 @@ class UpdateAnnotationCommentsTestCase(GraphQLTestCase):
         self.assertIsNone(new_comment.annotation)
 
     def test_connected_annotator_update(self):
-        self.client.login(username="user2", password="osmose29")
         self.test_connected_annotator_add()
         new_comment: AnnotationComment = AnnotationComment.objects.order_by("id").last()
 
         previous_count = AnnotationComment.objects.count()
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user2"),
             variables={
                 **BASE_VARIABLES,
                 "comments": [{"id": new_comment.id, "comment": "ZZZ"}],
@@ -103,12 +108,12 @@ class UpdateAnnotationCommentsTestCase(GraphQLTestCase):
         self.assertEqual(new_comment.comment, "ZZZ")
 
     def test_connected_annotator_remove(self):
-        self.client.login(username="user2", password="osmose29")
         self.test_connected_annotator_add()
 
         previous_count = AnnotationComment.objects.count()
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user2"),
             variables={**BASE_VARIABLES, "comments": []},
         )
         self.assertResponseNoErrors(response)

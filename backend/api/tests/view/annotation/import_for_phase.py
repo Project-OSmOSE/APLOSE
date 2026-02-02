@@ -4,8 +4,8 @@ from typing import Optional
 
 from django.db.models import QuerySet
 from django.urls import reverse
+from django_extension.tests import ExtendedTestCase
 from rest_framework import status
-from rest_framework.test import APITestCase
 
 from backend.api.models import (
     LabelSet,
@@ -19,7 +19,7 @@ from backend.api.models import (
 )
 from backend.api.models.annotation.annotation_campaign import AnnotationCampaignAnalysis
 from backend.api.tests.fixtures import DATA_FIXTURES
-from backend.utils.tests import upload_csv_file_as_string
+from backend.aplose.models import User
 
 URL = reverse(
     "annotation-phase-import", kwargs={"campaign_id": 1, "phase_type": "Annotation"}
@@ -32,7 +32,7 @@ DATASET_NAME = "SPM Aural A 2010"
 detectors_map = {"detector1": {"detector": "nnini", "configuration": "test"}}
 
 
-class ImportAnnotationsForPhaseTestCase(APITestCase):
+class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
     """Test Import Annotations"""
 
     fixtures = [
@@ -184,18 +184,16 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
     def test_not_connected(self):
         """ViewSet returns 401 if no user is authenticated"""
         url, _, _ = self._get_url()
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/box_one_file_annotation.csv",
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_base_user(self):
-        self.client.login(username="user2", password="osmose29")
+        self.log_client(User.objects.get(username="user2"))
         url, _, _ = self._get_url()
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/box_one_file_annotation.csv",
         )
@@ -204,13 +202,12 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
     # Weak
 
     def test_campaign_owner_weak_one_file(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         url, phase_id, task_id = self._get_url()
         old_count = Annotation.objects.count()
         phase = AnnotationPhase.objects.get(id=phase_id)
         self.assertEqual(phase.annotation_campaign.label_set.labels.count(), 0)
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/weak_one_file_annotation.csv",
         )
@@ -227,18 +224,16 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
         self.assertEqual(phase.annotation_campaign.label_set.labels.count(), 1)
 
     def test_campaign_owner_weak_one_file_twice(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         url, _, task_id = self._get_url()
         old_count = Annotation.objects.count()
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/weak_one_file_annotation.csv",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Annotation.objects.count(), old_count + 1)
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/weak_one_file_annotation.csv",
         )
@@ -250,13 +245,12 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
         self.assertEqual(Annotation.objects.count(), old_count + 1)
 
     def test_campaign_owner_weak_two_file(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         url, phase_id, task_id = self._get_url()
         olds_annotations = Annotation.objects.all()
         old_count = olds_annotations.count()
         old_ids = list(olds_annotations.values_list("id", flat=True))
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/weak_two_files_annotation.csv",
         )
@@ -271,7 +265,7 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
         self.__check_weak_two_files_annotation(results, phase_id)
 
     def test_campaign_owner_weak_duplicate_used_label_set(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         old_label_set = LabelSet.objects.create(name="Filled")
         old_label_set.labels.create(name="Whale")
         old_label_set.labels.create(name="Dolphins")
@@ -286,8 +280,7 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
         old_set_count = LabelSet.objects.count()
         phase = AnnotationPhase.objects.get(id=phase_id)
         old_labels_count = phase.annotation_campaign.label_set.labels.count()
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/weak_one_file_annotation.csv",
         )
@@ -307,7 +300,7 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
         self.assertEqual(old_label_set.labels.count(), old_labels_count)
 
     def test_campaign_owner_weak_duplicate_used_confidence_set(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         old_confidence_set = ConfidenceSet.objects.create(name="Filled")
         ConfidenceIndicatorSetIndicator.objects.get_or_create(
             confidence=Confidence.objects.create(label="Not confident", level=0),
@@ -335,8 +328,7 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
         old_indicators_count = (
             phase.annotation_campaign.confidence_set.confidence_indicators.count()
         )
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/weak_one_file_annotation.csv",
         )
@@ -363,11 +355,10 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
     # Point
 
     def test_campaign_owner_point(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         url, phase_id, task_id = self._get_url()
         old_count = Annotation.objects.count()
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/point_annotation.csv",
         )
@@ -381,11 +372,10 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
         self.__check_point_annotation(Annotation.objects.latest("id"), phase_id)
 
     def test_campaign_owner_point_no_end_frequency(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         url, phase_id, _ = self._get_url()
         old_count = Annotation.objects.count()
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/point_annotation_no_end_frequency.csv",
         )
@@ -398,11 +388,10 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
     # Box
 
     def test_campaign_owner_box_one_file(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         url, phase_id, task_id = self._get_url()
         old_count = Annotation.objects.count()
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/box_one_file_annotation.csv",
         )
@@ -417,13 +406,12 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
         self.__check_box_one_file_annotation(result, phase_id)
 
     def test_campaign_owner_box_two_file(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         url, phase_id, task_id = self._get_url()
         old_results = Annotation.objects.all()
         old_count = old_results.count()
         old_ids = list(old_results.values_list("id", flat=True))
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/box_two_files_annotation.csv",
         )
@@ -440,11 +428,10 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
     # Errors
 
     def test_campaign_owner_incorrect_time(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         url, _, _ = self._get_url()
         old_count = Annotation.objects.count()
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/incorrect_time.csv",
         )
@@ -457,11 +444,10 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
         )
 
     def test_campaign_owner_incorrect_time_forced(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         url, _, _ = self._get_url()
         old_count = Annotation.objects.count()
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url + "?force_datetime=true",
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/incorrect_time.csv",
         )
@@ -469,11 +455,10 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
         self.assertEqual(Annotation.objects.count(), old_count)
 
     def test_campaign_owner_bellow_frequency(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         url, _, _ = self._get_url()
         old_count = Annotation.objects.count()
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/bellow_frequency.csv",
         )
@@ -484,11 +469,10 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
         self.assertEqual(response.data[0].get("end_frequency")[0].code, "min_value")
 
     def test_campaign_owner_over_frequency(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         url, _, _ = self._get_url()
         old_count = Annotation.objects.count()
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/over_frequency.csv",
         )
@@ -499,11 +483,10 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
         self.assertEqual(response.data[0].get("end_frequency")[0].code, "max_value")
 
     def test_campaign_owner_over_frequency_forced(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         url, _, _ = self._get_url()
         old_count = Annotation.objects.count()
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url + "?force_max_frequency=true",
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/over_frequency.csv",
         )
@@ -511,11 +494,10 @@ class ImportAnnotationsForPhaseTestCase(APITestCase):
         self.assertEqual(Annotation.objects.count(), old_count + 1)
 
     def test_campaign_owner_on_verification_phase(self):
-        self.client.login(username="user1", password="osmose29")
+        self.log_client(User.objects.get(username="user1"))
         url, _, _ = self._get_url(phase_type=AnnotationPhase.Type.VERIFICATION)
         old_count = Annotation.objects.count()
-        response = upload_csv_file_as_string(
-            self,
+        response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/box_one_file_annotation.csv",
         )

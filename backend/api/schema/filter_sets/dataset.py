@@ -10,4 +10,9 @@ class DatasetFilterSet(FilterSet):
         model = Dataset
         fields = {}
 
-    order_by = OrderingFilter(fields=("created_at", "name"))
+    order_by = OrderingFilter(
+        fields=(
+            ("created_at", "created_at"),
+            ("name", "name"),
+        )
+    )

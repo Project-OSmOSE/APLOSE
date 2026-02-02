@@ -7,15 +7,12 @@ from django.contrib.auth.password_validation import (
     validate_password,
 )
 from django.core.exceptions import ValidationError
+from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from graphene_django.forms.mutation import (
     DjangoFormMutation,
 )
 
 from backend.aplose.models import User
-from backend.utils.schema import (
-    GraphQLResolve,
-    GraphQLPermissions,
-)
 
 
 class UpdateUserPasswordForm(forms.Form):

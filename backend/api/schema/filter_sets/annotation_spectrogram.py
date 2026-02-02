@@ -1,4 +1,5 @@
 from django.db.models import QuerySet, Exists, OuterRef, Subquery
+from django_extension.filters import ExtendedFilterSet, IDFilter
 from django_filters import OrderingFilter, filters
 from graphene_django import filter
 
@@ -10,10 +11,9 @@ from backend.api.models import (
     AnnotationPhase,
 )
 from backend.api.schema.enums import AnnotationPhaseType, AnnotationTaskStatus
-from backend.utils.schema.filters import BaseFilterSet, IDFilter
 
 
-class AnnotationSpectrogramFilterSet(BaseFilterSet):
+class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
 
     phase = filter.TypedFilter(AnnotationPhaseType, method="fake")
     annotation_campaign = IDFilter(method="fake")
@@ -36,7 +36,7 @@ class AnnotationSpectrogramFilterSet(BaseFilterSet):
             "filename": ["icontains"],
         }
 
-    order_by = OrderingFilter(fields=("start",))
+    order_by = OrderingFilter(fields=(("start", "start"),))
 
     def fake(self, queryset, _1, _2):
         return queryset

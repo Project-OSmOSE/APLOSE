@@ -4,7 +4,9 @@ from os.path import join
 
 from django.conf import settings
 from django.test import override_settings
-from graphene_django.utils.testing import GraphQLTestCase
+from django_extension.tests import ExtendedTestCase
+
+from backend.aplose.models import User
 
 IMPORT_FIXTURES = settings.FIXTURE_DIRS[1] / "data" / "dataset" / "list_to_import"
 
@@ -23,7 +25,7 @@ query {
 """
 
 
-class AllDatasetsAvailableForImportTestCase(GraphQLTestCase):
+class AllDatasetsAvailableForImportTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ["users"]
@@ -33,22 +35,26 @@ class AllDatasetsAvailableForImportTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY)
+        response = self.gql_query(QUERY)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_not_staff(self):
-        self.client.login(username="user1", password="osmose29")
-        response = self.query(QUERY)
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="user1"),
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Forbidden")
 
     @override_settings(DATASET_IMPORT_FOLDER=IMPORT_FIXTURES / "legacy" / "good")
     def test_list_legacy(self):
-        self.client.login(username="staff", password="osmose29")
-        response = self.query(QUERY)
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="staff"),
+        )
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["allDatasetsForImport"]
@@ -64,8 +70,10 @@ class AllDatasetsAvailableForImportTestCase(GraphQLTestCase):
 
     @override_settings(DATASET_IMPORT_FOLDER=IMPORT_FIXTURES / "good")
     def test_list(self):
-        self.client.login(username="staff", password="osmose29")
-        response = self.query(QUERY)
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="staff"),
+        )
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["allDatasetsForImport"]

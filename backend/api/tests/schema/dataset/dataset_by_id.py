@@ -1,8 +1,9 @@
 import json
 
-from graphene_django.utils import GraphQLTestCase
+from django_extension.tests import ExtendedTestCase
 
 from backend.api.tests.fixtures import DATA_FIXTURES
+from backend.aplose.models import User
 
 QUERY = """
 query ($id: ID!) {
@@ -22,7 +23,7 @@ query ($id: ID!) {
 """
 
 
-class DatasetByPkTestCase(GraphQLTestCase):
+class DatasetByPkTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ["users", *DATA_FIXTURES]
@@ -32,14 +33,15 @@ class DatasetByPkTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY, variables={"id": 1})
+        response = self.gql_query(QUERY, variables={"id": 1})
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected(self):
-        self.client.login(username="user1", password="osmose29")
-        response = self.query(QUERY, variables={"id": 1})
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user1"), variables={"id": 1}
+        )
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["datasetById"]

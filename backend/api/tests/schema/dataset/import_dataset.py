@@ -2,9 +2,10 @@ import json
 
 from django.conf import settings
 from django.test import override_settings
-from graphene_django.utils import GraphQLTestCase
+from django_extension.tests import ExtendedTestCase
 
 from backend.api.models import Dataset, SpectrogramAnalysis, Spectrogram
+from backend.aplose.models import User
 
 QUERY = """
 mutation ($name: String!, $path: String!, $legacy: Boolean) {
@@ -20,7 +21,7 @@ LEGACY_IMPORT_FIXTURES = (
 )
 
 
-class ImportDatasetTestCase(GraphQLTestCase):
+class ImportDatasetTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ["users"]
@@ -30,14 +31,15 @@ class ImportDatasetTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(QUERY, variables=BASE_VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_not_staff(self):
-        self.client.login(username="user1", password="osmose29")
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user1"), variables=BASE_VARIABLES
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Forbidden")
@@ -47,8 +49,9 @@ class ImportDatasetTestCase(GraphQLTestCase):
         previous_dataset_count = Dataset.objects.count()
         previous_analysis_count = SpectrogramAnalysis.objects.count()
         previous_spectrogram_count = Spectrogram.analysis.through.objects.count()
-        self.client.login(username="staff", password="osmose29")
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="staff"), variables=BASE_VARIABLES
+        )
         self.assertResponseNoErrors(response)
         content = json.loads(response.content)["data"]["importDataset"]
         self.assertTrue(content["ok"])
@@ -75,8 +78,9 @@ class ImportDatasetTestCase(GraphQLTestCase):
         previous_dataset_count = Dataset.objects.count()
         previous_analysis_count = SpectrogramAnalysis.objects.count()
         previous_spectrogram_count = Spectrogram.analysis.through.objects.count()
-        self.client.login(username="staff", password="osmose29")
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="staff"), variables=BASE_VARIABLES
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Missing datasets.csv file")
@@ -95,8 +99,9 @@ class ImportDatasetTestCase(GraphQLTestCase):
         previous_dataset_count = Dataset.objects.count()
         previous_analysis_count = SpectrogramAnalysis.objects.count()
         previous_spectrogram_count = Spectrogram.analysis.through.objects.count()
-        self.client.login(username="staff", password="osmose29")
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="staff"), variables=BASE_VARIABLES
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Dataset not found")
@@ -115,8 +120,9 @@ class ImportDatasetTestCase(GraphQLTestCase):
         previous_dataset_count = Dataset.objects.count()
         previous_analysis_count = SpectrogramAnalysis.objects.count()
         previous_spectrogram_count = Spectrogram.analysis.through.objects.count()
-        self.client.login(username="staff", password="osmose29")
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="staff"), variables=BASE_VARIABLES
+        )
         self.assertResponseNoErrors(response)
         content = json.loads(response.content)["data"]["importDataset"]
         self.assertTrue(content["ok"])

@@ -1,15 +1,15 @@
 from django.db.models import (
     Q,
 )
+from django_extension.filters import ExtendedFilterSet
 from django_filters import BooleanFilter, CharFilter, OrderingFilter
 from graphene_django.filter import TypedFilter
 
 from backend.api.models import AnnotationPhase
 from backend.api.schema.enums import AnnotationPhaseType
-from backend.utils.schema.filters import BaseFilterSet
 
 
-class AnnotationPhaseFilterSet(BaseFilterSet):
+class AnnotationPhaseFilterSet(ExtendedFilterSet):
     """AnnotationPhase filters"""
 
     is_campaign_archived = BooleanFilter(
@@ -31,7 +31,7 @@ class AnnotationPhaseFilterSet(BaseFilterSet):
             "annotation_file_ranges__annotator_id": ("exact",),
         }
 
-    order_by = OrderingFilter(fields=("phase",))
+    order_by = OrderingFilter(fields=(("phase", "phase"),))
 
     def search_filter(self, queryset, name, value):
         """Search an AnnotationPhase"""

@@ -1,10 +1,12 @@
 import json
 
+from django_extension.tests import ExtendedTestCase
 from freezegun import freeze_time
 from graphene_django.utils import GraphQLTestCase
 
 from backend.api.models import AnnotationCampaign
 from backend.api.tests.fixtures import ALL_FIXTURES
+from backend.aplose.models import User
 
 MUTATION = """
 mutation (
@@ -51,7 +53,7 @@ BASE_VARIABLES = {
 
 
 @freeze_time("2012-01-14 00:00:00")
-class CreateAnnotationCampaignTestCase(GraphQLTestCase):
+class CreateAnnotationCampaignTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ["users", *ALL_FIXTURES]
@@ -61,15 +63,16 @@ class CreateAnnotationCampaignTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(MUTATION, variables=BASE_VARIABLES)
+        response = self.gql_query(MUTATION, variables=BASE_VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected(self):
-        self.client.login(username="user1", password="osmose29")
         old_count = AnnotationCampaign.objects.count()
-        response = self.query(MUTATION, variables=BASE_VARIABLES)
+        response = self.gql_query(
+            MUTATION, user=User.objects.get(username="user1"), variables=BASE_VARIABLES
+        )
         self.assertResponseNoErrors(response)
 
         self.assertEqual(AnnotationCampaign.objects.count(), old_count + 1)
@@ -86,10 +89,10 @@ class CreateAnnotationCampaignTestCase(GraphQLTestCase):
         self.assertEqual(campaign.created_at.isoformat(), "2012-01-14T00:00:00+00:00")
 
     def test_connected_post_only_required(self):
-        self.client.login(username="user1", password="osmose29")
         old_count = AnnotationCampaign.objects.count()
-        response = self.query(
+        response = self.gql_query(
             MUTATION,
+            user=User.objects.get(username="user1"),
             variables={
                 "name": "Test create campaign",
                 "datasetID": 1,
@@ -112,12 +115,15 @@ class CreateAnnotationCampaignTestCase(GraphQLTestCase):
         self.assertEqual(campaign.created_at.isoformat(), "2012-01-14T00:00:00+00:00")
 
     def test_connected_double_post(self):
-        self.client.login(username="user1", password="osmose29")
         old_count = AnnotationCampaign.objects.count()
-        response_1 = self.query(MUTATION, variables=BASE_VARIABLES)
+        response_1 = self.gql_query(
+            MUTATION, user=User.objects.get(username="user1"), variables=BASE_VARIABLES
+        )
         self.assertResponseNoErrors(response_1)
 
-        response_2 = self.query(MUTATION, variables=BASE_VARIABLES)
+        response_2 = self.gql_query(
+            MUTATION, user=User.objects.get(username="user1"), variables=BASE_VARIABLES
+        )
         content = json.loads(response_2.content)["data"]["createAnnotationCampaign"]
         self.assertEqual(
             content["errors"][0]["messages"][0],

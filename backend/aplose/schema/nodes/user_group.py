@@ -1,21 +1,19 @@
 """User GraphQL definitions"""
 import graphene
 import graphene_django_optimizer
-from graphene import relay
+from django_extension.schema.types import ExtendedNode
 
 from backend.aplose.models import AnnotatorGroup
-from backend.utils.schema.types import BaseObjectType
 from .user import UserNode
 
 
-class UserGroupNode(BaseObjectType):
+class UserGroupNode(ExtendedNode):
     """User group node"""
 
     class Meta:
         model = AnnotatorGroup
         exclude = ("annotators",)
         filter_fields = {}
-        interfaces = (relay.Node,)
 
     users = graphene.List(UserNode)
 

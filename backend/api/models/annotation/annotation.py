@@ -3,10 +3,9 @@ from typing import Optional
 
 from django.db import models
 from django.db.models import Q, Exists, OuterRef
+from django_extension.models import ExtendedEnum, ExtendedQuerySet
 
 from backend.aplose.models import AploseUser, ExpertiseLevel, User
-from backend.utils.managers import CustomQuerySet
-from backend.utils.models import Enum
 from .acoustic_features import AcousticFeatures
 from .annotation_file_range import AnnotationFileRange
 from .annotation_phase import AnnotationPhase
@@ -16,7 +15,7 @@ from .label import Label
 from ..data import Spectrogram, SpectrogramAnalysis
 
 
-class AnnotationQuerySet(CustomQuerySet):
+class AnnotationQuerySet(ExtendedQuerySet):
     def filter_viewable_by(self, user: User, **kwargs):
         # pylint: disable=duplicate-code
 
@@ -92,7 +91,7 @@ class Annotation(models.Model):
 
     objects = models.Manager.from_queryset(AnnotationQuerySet)()
 
-    class Type(Enum):
+    class Type(ExtendedEnum):
         """Type of annotation result"""
 
         WEAK = ("W", "Weak")

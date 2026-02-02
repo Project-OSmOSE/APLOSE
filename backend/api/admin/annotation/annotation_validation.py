@@ -1,11 +1,12 @@
-"""API annotation annotation validation administration"""
+"""API annotation - annotation validation administration"""
 from django.contrib import admin
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import AnnotationValidation
 
 
 @admin.register(AnnotationValidation)
-class AnnotationValidationAdmin(admin.ModelAdmin):
+class AnnotationValidationAdmin(ExtendedModelAdmin):
     """AnnotationValidation presentation in DjangoAdmin"""
 
     list_display = (
@@ -36,5 +37,5 @@ class AnnotationValidationAdmin(admin.ModelAdmin):
         """Get detector for given result validation"""
         conf = obj.annotation.detector_configuration
         if conf is None:
-            return None
+            return self.get_empty_value_display()
         return conf.detector

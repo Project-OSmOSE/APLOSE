@@ -1,5 +1,6 @@
 import json
 
+from django_extension.tests import ExtendedTestCase
 from graphene_django.utils import GraphQLTestCase
 
 from backend.aplose.models import User
@@ -23,7 +24,7 @@ VARIABLES = {
 }
 
 
-class UserUpdatePasswordTestCase(GraphQLTestCase):
+class UserUpdatePasswordTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ["users"]
@@ -33,32 +34,35 @@ class UserUpdatePasswordTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY, variables=VARIABLES)
+        response = self.gql_query(QUERY, variables=VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected(self):
-        self.client.login(username="user1", password="osmose29")
-        response = self.query(QUERY, variables=VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user1"), variables=VARIABLES
+        )
         self.assertResponseNoErrors(response)
 
         user: User = User.objects.get(username="user1")
         self.assertTrue(user.check_password("osmose99"))
 
     def test_connected_incorrect_old_password(self):
-        self.client.login(username="user1", password="osmose29")
-        response = self.query(
-            QUERY, variables={**VARIABLES, "oldPassword": "<PASSWORD>"}
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="user1"),
+            variables={**VARIABLES, "oldPassword": "<PASSWORD>"},
         )
         errors = json.loads(response.content)["data"]["userUpdatePassword"]["errors"]
         self.assertEqual(errors[0]["field"], "oldPassword")
         self.assertIn("Incorrect old password.", errors[0]["messages"])
 
     def test_connected_password_too_common(self):
-        self.client.login(username="user1", password="osmose29")
-        response = self.query(
-            QUERY, variables={**VARIABLES, "newPassword": "<PASSWORD>"}
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="user1"),
+            variables={**VARIABLES, "newPassword": "<PASSWORD>"},
         )
         errors = json.loads(response.content)["data"]["userUpdatePassword"]["errors"]
         self.assertEqual(errors[0]["field"], "newPassword")

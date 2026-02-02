@@ -1,11 +1,13 @@
 import json
 
+from django_extension.tests import ExtendedTestCase
 from graphene_django.utils import GraphQLTestCase
 
 from backend.api.tests.fixtures import ALL_FIXTURES
 from backend.api.tests.schema.spectrogram_analysis.all_spectrogram_analysis_for_import import (
     VARIABLES,
 )
+from backend.aplose.models import User
 
 QUERY = """
 query ($id: ID!) {
@@ -109,7 +111,7 @@ ARCHIVED_VARIABLES = {
 }
 
 
-class AnnotationCampaignsByIDTestCase(GraphQLTestCase):
+class AnnotationCampaignsByIDTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ALL_FIXTURES
@@ -119,8 +121,9 @@ class AnnotationCampaignsByIDTestCase(GraphQLTestCase):
         self.client.logout()
 
     def _test_get_by_id(self, username: str):
-        self.client.login(username=username, password="osmose29")
-        response = self.query(QUERY, variables=VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username=username), variables=VARIABLES
+        )
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["annotationCampaignById"]
@@ -136,8 +139,11 @@ class AnnotationCampaignsByIDTestCase(GraphQLTestCase):
         self.assertEqual(len(content["analysis"]["edges"]), 1)
 
     def _test_get_by_id_archived(self, username: str):
-        self.client.login(username=username, password="osmose29")
-        response = self.query(QUERY, variables=ARCHIVED_VARIABLES)
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username=username),
+            variables=ARCHIVED_VARIABLES,
+        )
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["annotationCampaignById"]
@@ -146,14 +152,15 @@ class AnnotationCampaignsByIDTestCase(GraphQLTestCase):
         self.assertIsNotNone(content["archive"])
 
     def test_not_connected(self):
-        response = self.query(QUERY, variables=VARIABLES)
+        response = self.gql_query(QUERY, variables=VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_empty_user(self):
-        self.client.login(username="user4", password="osmose29")
-        response = self.query(QUERY, variables=VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user4"), variables=VARIABLES
+        )
         self.assertResponseNoErrors(response)
         content = json.loads(response.content)["data"]["annotationCampaignById"]
         self.assertIsNone(content)
@@ -162,8 +169,9 @@ class AnnotationCampaignsByIDTestCase(GraphQLTestCase):
         self._test_get_by_id("user2")
 
     def test_connected_annotator_archived(self):
-        self.client.login(username="user2", password="osmose29")
-        response = self.query(QUERY, variables=ARCHIVED_VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user2"), variables=ARCHIVED_VARIABLES
+        )
         self.assertResponseNoErrors(response)
         content = json.loads(response.content)["data"]["annotationCampaignById"]
         self.assertIsNone(content)

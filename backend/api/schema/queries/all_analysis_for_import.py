@@ -4,6 +4,7 @@ from pathlib import PureWindowsPath
 
 import graphene
 from django.conf import settings
+from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from osekit.public_api.dataset import (
     Dataset as OSEkitDataset,
     SpectroDataset as OSEkitSpectroDataset,
@@ -12,7 +13,6 @@ from typing_extensions import deprecated
 
 from backend.api.models import SpectrogramAnalysis, Dataset
 from backend.api.schema.nodes import ImportAnalysisNode
-from backend.utils.schema import GraphQLPermissions, GraphQLResolve
 
 
 def resolve_all_spectrogram_analysis_available_for_import(

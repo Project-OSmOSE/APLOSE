@@ -1,12 +1,12 @@
 """API annotation acoustic features administration"""
 from django.contrib import admin
+from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import AcousticFeatures
-from backend.utils.admin import get_edit_link
 
 
 @admin.register(AcousticFeatures)
-class AcousticFeaturesAdmin(admin.ModelAdmin):
+class AcousticFeaturesAdmin(ExtendedModelAdmin):
     """AcousticFeatures presentation in DjangoAdmin"""
 
     list_display = (
@@ -27,4 +27,4 @@ class AcousticFeaturesAdmin(admin.ModelAdmin):
     @admin.display(description="Annotation")
     def get_annotation(self, obj: AcousticFeatures):
         """Get annotation edit link"""
-        return get_edit_link("admin:api_annotation_change", obj.annotation)
+        return self.display_foreign_key(obj.annotation, allow_edit=True)

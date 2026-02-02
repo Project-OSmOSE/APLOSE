@@ -1,21 +1,26 @@
 """API GraphQL schemas"""
 import graphene
+from django_extension.schema.fields import (
+    ByIdField,
+    AuthenticatedPaginationConnectionField,
+)
+from django_extension.schema.permissions import GraphQLPermissions
 
+from .nodes import (
+    AnnotationCampaignNode,
+    AnnotationSpectrogramNode,
+    DatasetNode,
+    ConfidenceSetNode,
+    LabelSetNode,
+    AnnotationFileRangeNode,
+    AnnotationPhaseNode,
+    DetectorNode,
+    SpectrogramAnalysisNode,
+)
 from .queries import (
-    AllSpectrogramAnalysisField,
     AllAnalysisForImportField,
     AllDatasetForImportField,
-    AllDatasetField,
-    DatasetByIdField,
-    AllLabelSetField,
-    AllDetectorsField,
-    AllConfidenceSetField,
-    AllAnnotationFileRangesField,
     AllAnnotationSpectrogramsField,
-    AnnotationSpectrogramByIdField,
-    AllAnnotationCampaignsField,
-    AnnotationCampaignByIdField,
-    AllAnnotationPhaseField,
     AnnotationPhaseByCampaignPhase,
     AnnotationLabelsForDeploymentIdField,
 )
@@ -66,30 +71,45 @@ class APIQuery(graphene.ObjectType):
 
     # Dataset
     all_datasets_for_import = AllDatasetForImportField
-    all_datasets = AllDatasetField
-    dataset_by_id = DatasetByIdField
+    all_datasets = AuthenticatedPaginationConnectionField(DatasetNode)
+    dataset_by_id = ByIdField(
+        DatasetNode,
+        permission=GraphQLPermissions.AUTHENTICATED,
+    )
 
     # Spectrogram analysis
-    all_spectrogram_analysis = AllSpectrogramAnalysisField
+    all_spectrogram_analysis = AuthenticatedPaginationConnectionField(
+        SpectrogramAnalysisNode
+    )
     all_analysis_for_import = AllAnalysisForImportField
 
     # Label
-    all_label_sets = AllLabelSetField
+    all_label_sets = AuthenticatedPaginationConnectionField(LabelSetNode)
     annotation_labels_for_deployment_id = AnnotationLabelsForDeploymentIdField
 
     # Confidence
-    all_confidence_sets = AllConfidenceSetField
+    all_confidence_sets = AuthenticatedPaginationConnectionField(ConfidenceSetNode)
 
     # Detector
-    all_detectors = AllDetectorsField
+    all_detectors = AuthenticatedPaginationConnectionField(DetectorNode)
 
     # Annotation campaign
-    all_annotation_campaigns = AllAnnotationCampaignsField
-    annotation_campaign_by_id = AnnotationCampaignByIdField
-    all_annotation_phases = AllAnnotationPhaseField
+    all_annotation_campaigns = AuthenticatedPaginationConnectionField(
+        AnnotationCampaignNode
+    )
+    annotation_campaign_by_id = ByIdField(
+        AnnotationCampaignNode,
+        permission=GraphQLPermissions.AUTHENTICATED,
+    )
+    all_annotation_phases = AuthenticatedPaginationConnectionField(AnnotationPhaseNode)
     annotation_phase_by_campaign_phase = AnnotationPhaseByCampaignPhase
 
     # Annotation related items
-    all_annotation_file_ranges = AllAnnotationFileRangesField
+    all_annotation_file_ranges = AuthenticatedPaginationConnectionField(
+        AnnotationFileRangeNode
+    )
     all_annotation_spectrograms = AllAnnotationSpectrogramsField
-    annotation_spectrogram_by_id = AnnotationSpectrogramByIdField
+    annotation_spectrogram_by_id = ByIdField(
+        AnnotationSpectrogramNode,
+        permission=GraphQLPermissions.AUTHENTICATED,
+    )

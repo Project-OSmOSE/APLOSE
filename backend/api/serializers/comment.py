@@ -1,6 +1,7 @@
 """Annotation comment serializer"""
 from typing import Optional
 
+from django_extension.serializers import ListSerializer
 from rest_framework import serializers
 from rest_framework.fields import empty
 
@@ -10,7 +11,6 @@ from backend.api.models import (
     Spectrogram,
 )
 from backend.aplose.models import User
-from backend.utils.serializers import ListSerializer
 
 
 class AnnotationCommentSerializer(serializers.ModelSerializer):

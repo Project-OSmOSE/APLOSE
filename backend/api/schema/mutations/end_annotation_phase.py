@@ -1,7 +1,7 @@
+from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from graphene import Mutation, ID, Boolean
 
 from backend.api.models import AnnotationPhase
-from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 
 
 class EndAnnotationPhaseMutation(Mutation):

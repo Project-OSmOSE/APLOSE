@@ -1,9 +1,10 @@
 import json
 
-from graphene_django.utils import GraphQLTestCase
+from django_extension.tests import ExtendedTestCase
 
 from backend.api.models import AnnotationTask
 from backend.api.tests.fixtures import ALL_FIXTURES
+from backend.aplose.models import User
 
 QUERY = """
 mutation (
@@ -49,7 +50,7 @@ BASE_VARIABLES = {
 }
 
 
-class SubmitAnnotationTaskTestCase(GraphQLTestCase):
+class SubmitAnnotationTaskTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ["users", *ALL_FIXTURES]
@@ -59,23 +60,25 @@ class SubmitAnnotationTaskTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(QUERY, variables=BASE_VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_unknown(self):
-        self.client.login(username="user4", password="osmose29")
-        response = self.query(QUERY, variables={**BASE_VARIABLES})
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user4"), variables={**BASE_VARIABLES}
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Not found")
 
     def test_connected_annotator(self):
-        self.client.login(username="user2", password="osmose29")
         task = AnnotationTask.objects.get(pk=9)
         old_count = task.sessions.count()
-        response = self.query(QUERY, variables=BASE_VARIABLES)
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user2"), variables=BASE_VARIABLES
+        )
         self.assertResponseNoErrors(response)
 
         task = AnnotationTask.objects.get(pk=9)

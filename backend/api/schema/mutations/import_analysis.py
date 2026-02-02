@@ -1,5 +1,6 @@
 from django.db import transaction
 from django.db.models import Min, Max
+from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from graphene import (
     String,
     Mutation,
@@ -11,7 +12,6 @@ from backend.api.models import (
     SpectrogramAnalysis,
     Spectrogram,
 )
-from backend.utils.schema import GraphQLResolve, GraphQLPermissions
 
 
 class ImportAnalysisMutation(Mutation):

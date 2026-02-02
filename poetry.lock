@@ -884,6 +884,28 @@ files = [
 Django = ">=1.11"
 
 [[package]]
+name = "django-extension"
+version = "0.1.1"
+description = "Extended class for Django usage"
+optional = false
+python-versions = ">=3.9,<4.0"
+groups = ["main"]
+files = [
+    {file = "django_extension-0.1.1.tar.gz", hash = "sha256:f35100d656c7a95b455e9fe8a46b7f1ba34903dc53c4a0044bfd4e33cd08f8d3"},
+]
+
+[package.dependencies]
+Django = ">=3.2,<4.0"
+djangorestframework = ">=3.12.4,<4.0.0"
+graphene-django = ">=3.2.3,<4.0.0"
+graphene-django-optimizer = ">=0.10.0,<0.11.0"
+graphene-django-pagination = {url = "https://github.com/instruct-br/graphene-django-pagination/archive/master.zip"}
+
+[package.source]
+type = "url"
+url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.1/django_extension-0.1.1.tar.gz"
+
+[[package]]
 name = "django-filter"
 version = "23.5"
 description = "Django-filter is a reusable Django application for allowing users to filter querysets dynamically."
@@ -4100,4 +4122,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "a1c465b4666ed5edae8483b40e3fae6a230a0c579dbf26f86a52a9eb4d11cba6"
+content-hash = "68be6b3d887d7fc571285322fb202f702cf09f22166c099dc8ab35a8bb0cc90b"

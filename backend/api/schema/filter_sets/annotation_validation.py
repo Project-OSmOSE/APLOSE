@@ -1,8 +1,9 @@
+from django_extension.filters import ExtendedFilterSet
+
 from backend.api.models import AnnotationValidation
-from backend.utils.schema.filters import BaseFilterSet
 
 
-class AnnotationValidationFilterSet(BaseFilterSet):
+class AnnotationValidationFilterSet(ExtendedFilterSet):
     class Meta:
         model = AnnotationValidation
         fields = {

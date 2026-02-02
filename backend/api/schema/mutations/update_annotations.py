@@ -1,5 +1,6 @@
 import graphene
 from django.db.models import Q
+from django_extension.schema.mutations import ListSerializerMutation
 
 from backend.api.models import (
     Spectrogram,
@@ -8,7 +9,6 @@ from backend.api.models import (
 )
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.serializers import AnnotationSerializer
-from backend.utils.schema.mutations import ListSerializerMutation
 
 
 class UpdateAnnotationsMutation(ListSerializerMutation):

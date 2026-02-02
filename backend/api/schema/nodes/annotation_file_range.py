@@ -1,22 +1,22 @@
+from django_extension.schema.fields import AuthenticatedPaginationConnectionField
+from django_extension.schema.types import ExtendedNode
+
 from backend.api.models import AnnotationFileRange
 from backend.api.schema.filter_sets import AnnotationFileRangeFilterSet
-from backend.utils.schema import AuthenticatedDjangoConnectionField
-from backend.utils.schema.types import BaseObjectType, BaseNode
 from .annotation_task import AnnotationTaskNode
 from .spectrogram import SpectrogramNode
 
 
-class AnnotationFileRangeNode(BaseObjectType):
+class AnnotationFileRangeNode(ExtendedNode):
     """AnnotationFileRange schema"""
 
-    annotation_tasks = AuthenticatedDjangoConnectionField(
+    annotation_tasks = AuthenticatedPaginationConnectionField(
         AnnotationTaskNode, source="tasks"
     )
 
-    spectrograms = AuthenticatedDjangoConnectionField(SpectrogramNode)
+    spectrograms = AuthenticatedPaginationConnectionField(SpectrogramNode)
 
     class Meta:
         model = AnnotationFileRange
         fields = "__all__"
         filterset_class = AnnotationFileRangeFilterSet
-        interfaces = (BaseNode,)

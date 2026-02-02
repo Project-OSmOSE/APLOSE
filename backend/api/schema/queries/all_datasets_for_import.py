@@ -6,13 +6,13 @@ from typing import Optional
 
 import graphene
 from django.conf import settings
-from typing_extensions import deprecated
+from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from osekit.public_api.dataset import (
     Dataset as OSEkitDataset,
 )
+from typing_extensions import deprecated
 
 from backend.api.schema.nodes import ImportDatasetNode
-from backend.utils.schema import GraphQLPermissions, GraphQLResolve
 from .all_analysis_for_import import (
     resolve_all_spectrogram_analysis_available_for_import,
     legacy_resolve_all_spectrogram_analysis_available_for_import,

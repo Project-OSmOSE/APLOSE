@@ -1,4 +1,5 @@
 from django.db.models import Exists, Subquery, OuterRef, Q
+from django_extension.filters import ExtendedFilterSet, IDFilter
 from django_filters import OrderingFilter, BooleanFilter, CharFilter
 from graphene_django.filter import TypedFilter
 
@@ -10,10 +11,9 @@ from backend.api.models import (
     AnnotationPhase,
 )
 from backend.api.schema.enums import AnnotationPhaseType
-from backend.utils.schema.filters import BaseFilterSet, IDFilter
 
 
-class SpectrogramFilterSet(BaseFilterSet):
+class SpectrogramFilterSet(ExtendedFilterSet):
     """Spectrogram filters"""
 
     campaign_id = IDFilter(field_name="analysis__annotation_campaigns__id")
@@ -35,7 +35,7 @@ class SpectrogramFilterSet(BaseFilterSet):
             "end": ["exact", "lt", "lte", "gt", "gte"],
         }
 
-    order_by = OrderingFilter(fields=("start",))
+    order_by = OrderingFilter(fields=(("start", "start"),))
 
     def fake_filter(self, queryset, name, value):
         """Fake filter method - Filter is directly used in the filter_queryset method"""

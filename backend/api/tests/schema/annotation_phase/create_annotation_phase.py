@@ -1,10 +1,12 @@
 import json
 
+from django_extension.tests import ExtendedTestCase
 from freezegun import freeze_time
 from graphene_django.utils import GraphQLTestCase
 
 from backend.api.models import AnnotationPhase
 from backend.api.tests.fixtures import DATA_FIXTURES, COMMON_FIXTURES
+from backend.aplose.models import User
 
 QUERY = """
 mutation ($campaignID: ID!, $type: AnnotationPhaseType!) {
@@ -18,7 +20,7 @@ VERIFICATION_VARIABLES = {"campaignID": 1, "type": "Verification"}
 
 
 @freeze_time("2012-01-14 00:00:00")
-class CreateAnnotationPhaseTestCase(GraphQLTestCase):
+class CreateAnnotationPhaseTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = [
@@ -37,30 +39,37 @@ class CreateAnnotationPhaseTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY, variables=VERIFICATION_VARIABLES)
+        response = self.gql_query(QUERY, variables=VERIFICATION_VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_unknown(self):
-        self.client.login(username="admin", password="osmose29")
-        response = self.query(
-            QUERY, variables={"campaignID": 99, "type": "Verification"}
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="admin"),
+            variables={"campaignID": 99, "type": "Verification"},
         )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Not found")
 
     def test_connected_no_access(self):
-        self.client.login(username="user4", password="osmose29")
-        response = self.query(QUERY, variables=VERIFICATION_VARIABLES)
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="user4"),
+            variables=VERIFICATION_VARIABLES,
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Not found")
 
     def test_connected_not_allowed(self):
-        self.client.login(username="user2", password="osmose29")
-        response = self.query(QUERY, variables=VERIFICATION_VARIABLES)
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username="user2"),
+            variables=VERIFICATION_VARIABLES,
+        )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Not found")
@@ -68,8 +77,11 @@ class CreateAnnotationPhaseTestCase(GraphQLTestCase):
     def _test_create(self, username: str):
         old_count = AnnotationPhase.objects.count()
 
-        self.client.login(username=username, password="osmose29")
-        response = self.query(QUERY, variables=ANNOTATION_VARIABLES)
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username=username),
+            variables=ANNOTATION_VARIABLES,
+        )
         self.assertResponseNoErrors(response)
         pk = json.loads(response.content)["data"]["createAnnotationPhase"]["id"]
         phase = AnnotationPhase.objects.get(pk=pk)
@@ -78,7 +90,11 @@ class CreateAnnotationPhaseTestCase(GraphQLTestCase):
         self.assertEqual(phase.created_at.isoformat(), "2012-01-14T00:00:00+00:00")
         self.assertEqual(phase.created_by.username, username)
 
-        response = self.query(QUERY, variables=VERIFICATION_VARIABLES)
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username=username),
+            variables=VERIFICATION_VARIABLES,
+        )
         self.assertResponseNoErrors(response)
         pk = json.loads(response.content)["data"]["createAnnotationPhase"]["id"]
         phase = AnnotationPhase.objects.get(pk=pk)

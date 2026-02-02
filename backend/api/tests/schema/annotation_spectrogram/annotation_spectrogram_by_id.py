@@ -1,11 +1,13 @@
 import json
 
+from django_extension.tests import ExtendedTestCase
 from graphene_django.utils import GraphQLTestCase
 
 from backend.api.tests.fixtures import ALL_FIXTURES
 from backend.api.tests.schema.spectrogram_analysis.all_spectrogram_analysis_for_import import (
     VARIABLES,
 )
+from backend.aplose.models import User
 
 QUERY = """
 query (
@@ -109,7 +111,7 @@ VARIABLES = {
 }
 
 
-class AnnotationSpectrogramByIDTestCase(GraphQLTestCase):
+class AnnotationSpectrogramByIDTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ALL_FIXTURES
@@ -119,15 +121,15 @@ class AnnotationSpectrogramByIDTestCase(GraphQLTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.query(QUERY, variables=VARIABLES)
+        response = self.gql_query(QUERY, variables=VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected_owner(self):
-        self.client.login(username="user1", password="osmose29")
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user1"),
             variables={
                 **VARIABLES,
                 "annotatorID": 3,
@@ -142,9 +144,9 @@ class AnnotationSpectrogramByIDTestCase(GraphQLTestCase):
         self.assertEqual(len(content["task"]["annotations"]["results"]), 0)
 
     def test_connected_empty_user(self):
-        self.client.login(username="user4", password="osmose29")
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user4"),
             variables={
                 **VARIABLES,
                 "annotatorID": 6,
@@ -155,9 +157,9 @@ class AnnotationSpectrogramByIDTestCase(GraphQLTestCase):
         self.assertEqual(content["errors"][0]["message"], "Not found")
 
     def test_connected_admin(self):
-        self.client.login(username="admin", password="osmose29")
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
                 "annotatorID": 1,
@@ -172,9 +174,9 @@ class AnnotationSpectrogramByIDTestCase(GraphQLTestCase):
         self.assertEqual(len(content["task"]["annotations"]["results"]), 0)
 
     def test_connected_annotator(self):
-        self.client.login(username="user2", password="osmose29")
-        response = self.query(
+        response = self.gql_query(
             QUERY,
+            user=User.objects.get(username="user2"),
             variables={
                 **VARIABLES,
                 "annotatorID": 4,
