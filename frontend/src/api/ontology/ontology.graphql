@@ -20,10 +20,9 @@ query getDetailedSoundByID($id: ID!){
     }
 }
 
-mutation createSound($englishName: String!, $frenchName: String, $parent_id: String) {
+mutation createSound($englishName: String!, $frenchName: String, $parent_id: ID) {
     postSound(input: {englishName: $englishName, frenchName: $frenchName, parent: $parent_id}) {
-        ok
-        data {
+        sound {
             id
         }
         errors {
@@ -33,10 +32,9 @@ mutation createSound($englishName: String!, $frenchName: String, $parent_id: Str
     }
 }
 
-mutation updateSound($id: Int!, $englishName: String!, $frenchName: String, $codeName: String, $taxon: String, $parent_id: String) {
+mutation updateSound($id: ID!, $englishName: String!, $frenchName: String, $codeName: String, $taxon: String, $parent_id: ID) {
     postSound(input: {id: $id, englishName: $englishName, frenchName: $frenchName,codeName: $codeName, taxon: $taxon, parent: $parent_id}) {
-        ok
-        data {
+        sound {
             id
         }
         errors {
@@ -75,10 +73,9 @@ query getDetailedSourceByID($id: ID!){
     }
 }
 
-mutation createSource($englishName: String!, $frenchName: String, $parent_id: String) {
+mutation createSource($englishName: String!, $frenchName: String, $parent_id: ID) {
     postSource(input: {englishName: $englishName, frenchName: $frenchName, parent: $parent_id}) {
-        ok
-        data {
+        source {
             id
         }
         errors {
@@ -88,10 +85,9 @@ mutation createSource($englishName: String!, $frenchName: String, $parent_id: St
     }
 }
 
-mutation updateSource($id: Int!, $englishName: String!, $latinName: String, $frenchName: String, $codeName: String, $taxon: String, $parent_id: String) {
+mutation updateSource($id: ID!, $englishName: String!, $latinName: String, $frenchName: String, $codeName: String, $taxon: String, $parent_id: ID) {
     postSource(input: {id: $id, englishName: $englishName,latinName: $latinName,frenchName: $frenchName,codeName: $codeName, taxon: $taxon, parent: $parent_id}) {
-        ok
-        data {
+        source {
             id
             parent {
                 id

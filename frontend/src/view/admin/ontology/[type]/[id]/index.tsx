@@ -30,7 +30,7 @@ export const OntologyPanel: React.FC = () => {
     switch (type) {
       case 'source':
         return updateSource({
-          id: +data.id,
+          id: data.id,
           englishName,
           latinName,
           frenchName,
@@ -39,7 +39,7 @@ export const OntologyPanel: React.FC = () => {
         }).unwrap()
       case 'sound':
         return updateSound({
-          id: +data.id,
+          id: data.id,
           englishName,
           frenchName,
           codeName,

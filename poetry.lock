@@ -2227,13 +2227,13 @@ files = [
 
 [[package]]
 name = "metadatax"
-version = "0.4.16"
+version = "0.5.0a2"
 description = "PAM acquisition metadata"
 optional = false
 python-versions = ">=3.9,<4.0"
 groups = ["main"]
 files = [
-    {file = "v0.4.16.tar.gz", hash = "sha256:0f39a47d6f75c3733e5e66268a02a1e555c0d012230ac4c2c1459189c160adc0"},
+    {file = "metadatax-0.5.0a2.tar.gz", hash = "sha256:251620e9c98a98ae6e5ba688f9f699d8e03c32ff0daf0a541a43ce3b08c868f6"},
 ]
 
 [package.dependencies]
@@ -2241,6 +2241,7 @@ Django = ">=3.2,<4.0"
 django-admin-multiple-choice-list-filter = ">=0.1.1,<0.2.0"
 django-better-admin-arrayfield = ">=1.4.2,<2.0.0"
 django-durationwidget = ">=1.0.5,<2.0.0"
+django-extension = {url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.1/django_extension-0.1.1.tar.gz"}
 django-filter = ">=2"
 django-model-prefix = ">=1.1.0,<2.0.0"
 djangorestframework = ">=3.15.1,<4.0.0"
@@ -2252,7 +2253,7 @@ python-dotenv = ">=1.0.1,<2.0.0"
 
 [package.source]
 type = "url"
-url = "https://github.com/PAM-Standardization/metadatax/archive/refs/tags/v0.4.16.tar.gz"
+url = "https://raw.githubusercontent.com/PAM-Standardization/metadatax/refs/heads/refacto/dist/metadatax-0.5.0a2.tar.gz"
 
 [[package]]
 name = "mistune"
@@ -4122,4 +4123,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "68be6b3d887d7fc571285322fb202f702cf09f22166c099dc8ab35a8bb0cc90b"
+content-hash = "4aa5743f29c7ea715ac2644057df8f0e5565e22ee3d97938bd385a0eda61d8ee"

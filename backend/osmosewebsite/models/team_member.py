@@ -1,6 +1,6 @@
 """OSmOSE Website API Models - TeamMembers"""
 from django.db import models
-from metadatax.common.models import Contact
+from metadatax.common.models import Person
 
 
 class TeamMember(models.Model):
@@ -9,7 +9,7 @@ class TeamMember(models.Model):
     level = models.IntegerField("Sorting level", blank=True, null=True)
 
     contact = models.OneToOneField(
-        to=Contact,
+        to=Person,
         on_delete=models.RESTRICT,
         related_name="team_member",
     )
