@@ -16,6 +16,10 @@ import soundfile as sf
 from .audio_processor import AudioProcessor
 
 
+# Available colormaps for PNG export
+PNG_COLORMAPS = ['viridis', 'plasma', 'inferno', 'magma', 'hot', 'jet', 'gray']
+
+
 class AploseAudioProcessor:
     """
     Generate APLOSE-compatible NetCDF spectrogram files from audio files.
@@ -24,6 +28,7 @@ class AploseAudioProcessor:
     - Audio resampling
     - Audio snippet generation
     - Single-FFT and multi-FFT spectrograms
+    - PNG spectrogram image export
     - Batch processing of folders
     """
 
@@ -40,7 +45,10 @@ class AploseAudioProcessor:
         target_sample_rate: Optional[int] = None,
         snippet_duration: Optional[float] = None,
         snippet_overlap: float = 0.0,
-        filename_prefix: Optional[str] = None
+        filename_prefix: Optional[str] = None,
+        generate_png: bool = False,
+        png_colormap: str = 'viridis',
+        png_dpi: int = 100
     ):
         """
         Initialize the APLOSE audio processor.
@@ -59,6 +67,9 @@ class AploseAudioProcessor:
             snippet_duration: Duration in seconds for audio snippets. None = no splitting.
             snippet_overlap: Overlap between snippets in seconds (default: 0.0).
             filename_prefix: Optional prefix to add to all output filenames.
+            generate_png: If True, also generate PNG spectrogram images.
+            png_colormap: Colormap for PNG images ('viridis', 'plasma', 'hot', 'jet', etc.).
+            png_dpi: DPI for PNG images (default: 100).
         """
         # Handle single or multiple FFT sizes
         if isinstance(fft_sizes, int):
@@ -73,6 +84,9 @@ class AploseAudioProcessor:
         self.normalize_audio = normalize_audio
         self.compression_level = compression_level
         self.datetime_format = datetime_format
+        self.generate_png = generate_png
+        self.png_colormap = png_colormap
+        self.png_dpi = png_dpi
 
         # Initialize audio processor
         self.audio_processor = AudioProcessor(
@@ -120,7 +134,7 @@ class AploseAudioProcessor:
 
         if not audio_files:
             print(f"No audio files found in {input_folder}")
-            return {'wav_files': [], 'netcdf_files': []}
+            return {'wav_files': [], 'netcdf_files': [], 'png_files': []}
 
         print(f"Found {len(audio_files)} audio file(s) to process")
 
@@ -131,6 +145,7 @@ class AploseAudioProcessor:
 
         all_wav_files = []
         all_netcdf_files = []
+        all_png_files = []
 
         for audio_file in sorted(audio_files):
             print(f"\nProcessing: {audio_file.name}")
@@ -150,13 +165,23 @@ class AploseAudioProcessor:
 
                 if len(self.fft_sizes) == 1:
                     # Single FFT
-                    netcdf_path = self._create_single_fft_netcdf(wav_path, metadata)
+                    netcdf_path, spec_data, freqs, times = self._create_single_fft_netcdf(
+                        wav_path, metadata, return_data=True
+                    )
                 else:
                     # Multi-FFT
-                    netcdf_path = self._create_multi_fft_netcdf(wav_path, metadata)
+                    netcdf_path, spec_data, freqs, times = self._create_multi_fft_netcdf(
+                        wav_path, metadata, return_data=True
+                    )
 
                 all_wav_files.append(wav_path)
                 all_netcdf_files.append(netcdf_path)
+
+                # Generate PNG if enabled
+                if self.generate_png:
+                    png_path = self._create_png(wav_path, spec_data, freqs, times)
+                    all_png_files.append(png_path)
+                    print(f"    Created PNG: {Path(png_path).name}")
 
         # Restore original datetime_format
         self.datetime_format = original_datetime_format
@@ -164,10 +189,13 @@ class AploseAudioProcessor:
         print(f"\nProcessing complete!")
         print(f"Generated {len(all_wav_files)} WAV files")
         print(f"Generated {len(all_netcdf_files)} NetCDF files")
+        if self.generate_png:
+            print(f"Generated {len(all_png_files)} PNG files")
 
         return {
             'wav_files': all_wav_files,
-            'netcdf_files': all_netcdf_files
+            'netcdf_files': all_netcdf_files,
+            'png_files': all_png_files
         }
 
     def process_single_file(
@@ -211,18 +239,29 @@ class AploseAudioProcessor:
 
         all_wav_files = []
         all_netcdf_files = []
+        all_png_files = []
 
         # Generate NetCDF for each processed audio file
         for wav_path, metadata in wav_results:
             print(f"Creating spectrogram for: {Path(wav_path).name}")
 
             if len(self.fft_sizes) == 1:
-                netcdf_path = self._create_single_fft_netcdf(wav_path, metadata)
+                netcdf_path, spec_data, freqs, times = self._create_single_fft_netcdf(
+                    wav_path, metadata, return_data=True
+                )
             else:
-                netcdf_path = self._create_multi_fft_netcdf(wav_path, metadata)
+                netcdf_path, spec_data, freqs, times = self._create_multi_fft_netcdf(
+                    wav_path, metadata, return_data=True
+                )
 
             all_wav_files.append(wav_path)
             all_netcdf_files.append(netcdf_path)
+
+            # Generate PNG if enabled
+            if self.generate_png:
+                png_path = self._create_png(wav_path, spec_data, freqs, times)
+                all_png_files.append(png_path)
+                print(f"  Created PNG: {Path(png_path).name}")
 
         # Restore original datetime_format
         self.datetime_format = original_datetime_format
@@ -230,26 +269,31 @@ class AploseAudioProcessor:
         print(f"\nProcessing complete!")
         print(f"Generated {len(all_wav_files)} WAV files")
         print(f"Generated {len(all_netcdf_files)} NetCDF files")
+        if self.generate_png:
+            print(f"Generated {len(all_png_files)} PNG files")
 
         return {
             'wav_files': all_wav_files,
-            'netcdf_files': all_netcdf_files
+            'netcdf_files': all_netcdf_files,
+            'png_files': all_png_files
         }
 
     def _create_single_fft_netcdf(
         self,
         wav_path: str,
-        metadata: dict
-    ) -> str:
+        metadata: dict,
+        return_data: bool = False
+    ) -> Union[str, tuple]:
         """
         Create a single-FFT NetCDF file.
 
         Args:
             wav_path: Path to WAV file.
             metadata: Metadata dictionary from audio processing.
+            return_data: If True, also return spectrogram data for PNG generation.
 
         Returns:
-            Path to created NetCDF file.
+            Path to created NetCDF file, or tuple of (path, spec_data, freqs, times).
         """
         nfft = self.fft_sizes[0]
         hop_length = int(nfft * self.hop_length_factor)
@@ -293,22 +337,26 @@ class AploseAudioProcessor:
         }}
         ds.to_netcdf(netcdf_path, encoding=encoding)
 
+        if return_data:
+            return netcdf_path, spec_data, freqs, times
         return netcdf_path
 
     def _create_multi_fft_netcdf(
         self,
         wav_path: str,
-        metadata: dict
-    ) -> str:
+        metadata: dict,
+        return_data: bool = False
+    ) -> Union[str, tuple]:
         """
         Create a multi-FFT NetCDF file.
 
         Args:
             wav_path: Path to WAV file.
             metadata: Metadata dictionary from audio processing.
+            return_data: If True, also return spectrogram data for PNG generation.
 
         Returns:
-            Path to created NetCDF file.
+            Path to created NetCDF file, or tuple of (path, spec_data, freqs, times).
         """
         # Read audio once
         audio, sample_rate = sf.read(wav_path)
@@ -323,14 +371,23 @@ class AploseAudioProcessor:
         # Calculate spectrograms for each FFT size
         data_vars = {}
         coords = {}
+        first_spec_data = None
+        first_freqs = None
+        first_times = None
 
-        for nfft in self.fft_sizes:
+        for i, nfft in enumerate(self.fft_sizes):
             hop_length = int(nfft * self.hop_length_factor)
 
             # Calculate spectrogram
             spec_data, freqs, times = self._calculate_spectrogram(
                 audio, sample_rate, nfft, hop_length
             )
+
+            # Store first spectrogram for PNG (use smallest FFT for best time resolution)
+            if i == 0:
+                first_spec_data = spec_data
+                first_freqs = freqs
+                first_times = times
 
             # Add to dataset with FFT-specific naming
             var_name = f'spectrogram_fft{nfft}'
@@ -361,6 +418,8 @@ class AploseAudioProcessor:
         } for var_name in data_vars.keys()}
         ds.to_netcdf(netcdf_path, encoding=encoding)
 
+        if return_data:
+            return netcdf_path, first_spec_data, first_freqs, first_times
         return netcdf_path
 
     def _build_netcdf_attrs(
@@ -417,6 +476,71 @@ class AploseAudioProcessor:
             attrs['db_ref'] = float(self.db_ref)
 
         return attrs
+
+    def _create_png(
+        self,
+        wav_path: str,
+        spec_data: np.ndarray,
+        freqs: np.ndarray,
+        times: np.ndarray
+    ) -> str:
+        """
+        Create a PNG spectrogram image.
+
+        Args:
+            wav_path: Path to WAV file (used to derive PNG filename).
+            spec_data: Spectrogram data array (frequency x time).
+            freqs: Frequency array.
+            times: Time array.
+
+        Returns:
+            Path to created PNG file.
+        """
+        try:
+            import matplotlib
+            matplotlib.use('Agg')  # Non-interactive backend
+            import matplotlib.pyplot as plt
+        except ImportError:
+            raise ImportError(
+                "matplotlib is required for PNG export. "
+                "Install it with: pip install matplotlib"
+            )
+
+        # Create figure without axes for clean image
+        fig, ax = plt.subplots(figsize=(12, 4), dpi=self.png_dpi)
+
+        # Calculate vmin/vmax for color scaling (use percentiles for robustness)
+        vmin = np.percentile(spec_data, 5)
+        vmax = np.percentile(spec_data, 95)
+
+        # Plot spectrogram
+        img = ax.pcolormesh(
+            times, freqs, spec_data,
+            shading='auto',
+            cmap=self.png_colormap,
+            vmin=vmin,
+            vmax=vmax
+        )
+
+        # Add labels and colorbar
+        ax.set_xlabel('Time (s)')
+        ax.set_ylabel('Frequency (Hz)')
+        ax.set_ylim(freqs[0], freqs[-1])
+
+        # Add colorbar
+        cbar = plt.colorbar(img, ax=ax, pad=0.01)
+        cbar.set_label('dB')
+
+        # Tight layout
+        plt.tight_layout()
+
+        # Save PNG
+        png_path = str(Path(wav_path).with_suffix('.png'))
+        plt.savefig(png_path, dpi=self.png_dpi, bbox_inches='tight',
+                    facecolor='black', edgecolor='none')
+        plt.close(fig)
+
+        return png_path
 
     def _calculate_spectrogram(
         self,

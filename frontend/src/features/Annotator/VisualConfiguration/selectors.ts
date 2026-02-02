@@ -20,6 +20,10 @@ export const selectIsColormapReversed = createSelector(
   selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectIsColormapReversed,
 )
 
+export const selectViewMode = createSelector(
+  selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectViewMode,
+)
+
 
 export const selectCanChangeColormap = createSelector(
   [

@@ -127,6 +127,26 @@ Examples:
         help='NetCDF zlib compression level 0-9 (0=none, 9=max). Default: 4'
     )
 
+    # PNG export options
+    parser.add_argument(
+        '--generate-png',
+        action='store_true',
+        help='Also generate PNG spectrogram images for fast preview'
+    )
+    parser.add_argument(
+        '--png-colormap',
+        type=str,
+        default='viridis',
+        choices=['viridis', 'plasma', 'inferno', 'magma', 'hot', 'jet', 'gray'],
+        help='Colormap for PNG images (default: viridis)'
+    )
+    parser.add_argument(
+        '--png-dpi',
+        type=int,
+        default=100,
+        help='DPI for PNG images (default: 100)'
+    )
+
     # Other options
     parser.add_argument(
         '--datetime-format',
@@ -174,6 +194,8 @@ Examples:
     else:
         print(f"  dB reference: {args.db_ref}")
     print(f"  Compression level: {args.compression_level}")
+    if args.generate_png:
+        print(f"  PNG export: enabled (colormap: {args.png_colormap}, dpi: {args.png_dpi})")
 
     processor = AploseAudioProcessor(
         fft_sizes=args.fft_sizes,
@@ -187,7 +209,10 @@ Examples:
         target_sample_rate=args.sample_rate,
         snippet_duration=args.snippet_duration,
         snippet_overlap=args.overlap,
-        filename_prefix=args.filename_prefix
+        filename_prefix=args.filename_prefix,
+        generate_png=args.generate_png,
+        png_colormap=args.png_colormap,
+        png_dpi=args.png_dpi
     )
 
     # Process files
@@ -211,6 +236,8 @@ Examples:
         print(f"\nSuccess! Output written to: {args.output}")
         print(f"  WAV files: {len(results['wav_files'])}")
         print(f"  NetCDF files: {len(results['netcdf_files'])}")
+        if args.generate_png:
+            print(f"  PNG files: {len(results['png_files'])}")
 
         return 0
 

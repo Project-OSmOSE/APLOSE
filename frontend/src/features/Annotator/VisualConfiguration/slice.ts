@@ -5,11 +5,14 @@ import { Analysis, setAnalysis } from '@/features/Annotator/Analysis/slice';
 import type { GetAnnotationTaskQueryVariables } from '@/api/annotation-task/annotation-task.generated';
 
 
+export type ViewMode = 'png' | 'netcdf';
+
 type VisualConfigurationState = {
   brightness: number; // 0-100
   contrast: number; // 0-100
   colormap?: Colormap;
   isColormapReversed: boolean;
+  viewMode: ViewMode; // 'png' for fast canvas, 'netcdf' for Plotly interactive
 
   _campaignDefaultColormap?: Colormap
   _campaignDefaultReversedColormap?: boolean
@@ -21,6 +24,7 @@ const initialState: VisualConfigurationState = {
   contrast: 50,
   colormap: undefined,
   isColormapReversed: false,
+  viewMode: 'png', // Default to PNG for faster loading
 
   _campaignDefaultColormap: undefined,
   _campaignDefaultReversedColormap: undefined,
@@ -49,6 +53,12 @@ export const AnnotatorVisualConfigurationSlice = createSlice({
     },
     revertColormap: (state) => {
       state.isColormapReversed = !state.isColormapReversed;
+    },
+    setViewMode: (state, action: { payload: ViewMode }) => {
+      state.viewMode = action.payload;
+    },
+    toggleViewMode: (state) => {
+      state.viewMode = state.viewMode === 'png' ? 'netcdf' : 'png';
     },
   },
   extraReducers: builder => {
@@ -83,6 +93,7 @@ export const AnnotatorVisualConfigurationSlice = createSlice({
     selectContrast: state => state.contrast,
     selectColormap: state => state.colormap,
     selectIsColormapReversed: state => state.isColormapReversed,
+    selectViewMode: state => state.viewMode,
   },
 })
 
@@ -91,4 +102,7 @@ export const {
   setContrast, resetContrast,
   setColormap,
   revertColormap,
+  setViewMode,
+  toggleViewMode,
 } = AnnotatorVisualConfigurationSlice.actions
+

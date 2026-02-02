@@ -25,6 +25,7 @@ import {
   selectColormap,
   selectContrast,
   selectIsColormapReversed,
+  selectViewMode,
 } from '@/features/Annotator/VisualConfiguration';
 import { selectAnalysis } from '@/features/Annotator/Analysis';
 import { NetCDFSpectrogram } from '@/features/Annotator/Spectrogram';
@@ -80,6 +81,10 @@ export const AnnotatorCanvasWindow: React.FC = () => {
   const contrast = useAppSelector(selectContrast);
   const colormap = useAppSelector(selectColormap);
   const isColormapReversed = useAppSelector(selectIsColormapReversed);
+  const viewMode = useAppSelector(selectViewMode);
+
+  // Show NetCDF view only if viewMode is 'netcdf' AND NetCDF data is available
+  const showNetcdfView = viewMode === 'netcdf' && spectrogram?.isNetcdf;
   useEffect(() => {
     draw()
   }, [
@@ -153,9 +158,9 @@ export const AnnotatorCanvasWindow: React.FC = () => {
   return <div className={ styles.spectrogramWindow }
               ref={ windowCanvasRef }
               onScroll={ onFileScrolled }
-              style={ { width: spectrogram?.isNetcdf ? '100%' : `${ Y_AXIS_WIDTH + containerWidth }px` } }>
+              style={ { width: showNetcdfView ? '100%' : `${ Y_AXIS_WIDTH + containerWidth }px` } }>
 
-    {!spectrogram?.isNetcdf && (
+    {!showNetcdfView && (
       <>
         <TimeAxis/>
         <FrequencyAxis/>
@@ -167,7 +172,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
          onPointerLeave={ clearPointer }
          onMouseDown={ e => e.stopPropagation() }>
 
-      {spectrogram?.isNetcdf ? (
+      {showNetcdfView ? (
         <NetCDFSpectrogram />
       ) : (
         <canvas className={ canDraw ? styles.drawable : '' }
@@ -179,9 +184,9 @@ export const AnnotatorCanvasWindow: React.FC = () => {
                 onClick={ seekAudio }/>
       )}
 
-      {!spectrogram?.isNetcdf && <TimeBar/>}
+      {!showNetcdfView && <TimeBar/>}
 
-      {!spectrogram?.isNetcdf && allAnnotations.map(annotation => <StrongAnnotation key={ annotation.id } annotation={ annotation }/>) }
+      {!showNetcdfView && allAnnotations.map(annotation => <StrongAnnotation key={ annotation.id } annotation={ annotation }/>) }
     </div>
 
     <AcousticFeatures/>
