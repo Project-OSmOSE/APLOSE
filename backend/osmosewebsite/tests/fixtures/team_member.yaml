@@ -1,14 +1,14 @@
-- model: common.contact
+- model: common.person
   pk: 1
   fields:
     first_name: user1
     last_name: user1
-- model: common.contact
+- model: common.person
   pk: 2
   fields:
     first_name: user2
     last_name: user2
-- model: common.contact
+- model: common.person
   pk: 3
   fields:
     first_name: user3
