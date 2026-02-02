@@ -7,7 +7,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("api", "0030_spectroconfig_name_dataset_unicity_constraint"),
-        ("osmosewebsite", "0007_news"),
     ]
 
     operations = [
