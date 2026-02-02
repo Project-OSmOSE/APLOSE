@@ -6,6 +6,7 @@ import type { GetAnnotationTaskQueryVariables } from '@/api/annotation-task/anno
 
 
 export type ViewMode = 'png' | 'netcdf';
+export type FrequencyScaleType = 'linear' | 'log';
 
 type VisualConfigurationState = {
   brightness: number; // 0-100
@@ -13,6 +14,7 @@ type VisualConfigurationState = {
   colormap?: Colormap;
   isColormapReversed: boolean;
   viewMode: ViewMode; // 'png' for fast canvas, 'netcdf' for Plotly interactive
+  frequencyScaleType: FrequencyScaleType; // 'linear' or 'log' for y-axis
 
   _campaignDefaultColormap?: Colormap
   _campaignDefaultReversedColormap?: boolean
@@ -25,6 +27,7 @@ const initialState: VisualConfigurationState = {
   colormap: undefined,
   isColormapReversed: false,
   viewMode: 'png', // Default to PNG for faster loading
+  frequencyScaleType: 'linear', // Default to linear y-axis
 
   _campaignDefaultColormap: undefined,
   _campaignDefaultReversedColormap: undefined,
@@ -60,6 +63,12 @@ export const AnnotatorVisualConfigurationSlice = createSlice({
     toggleViewMode: (state) => {
       state.viewMode = state.viewMode === 'png' ? 'netcdf' : 'png';
     },
+    setFrequencyScaleType: (state, action: { payload: FrequencyScaleType }) => {
+      state.frequencyScaleType = action.payload;
+    },
+    toggleFrequencyScaleType: (state) => {
+      state.frequencyScaleType = state.frequencyScaleType === 'linear' ? 'log' : 'linear';
+    },
   },
   extraReducers: builder => {
     builder.addCase(setAnalysis, (state: VisualConfigurationState, action: { payload: Analysis }) => {
@@ -94,6 +103,7 @@ export const AnnotatorVisualConfigurationSlice = createSlice({
     selectColormap: state => state.colormap,
     selectIsColormapReversed: state => state.isColormapReversed,
     selectViewMode: state => state.viewMode,
+    selectFrequencyScaleType: state => state.frequencyScaleType,
   },
 })
 
@@ -104,5 +114,7 @@ export const {
   revertColormap,
   setViewMode,
   toggleViewMode,
+  setFrequencyScaleType,
+  toggleFrequencyScaleType,
 } = AnnotatorVisualConfigurationSlice.actions
 

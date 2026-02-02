@@ -1,5 +1,7 @@
 import React from 'react';
 import styles from './NetCDFSpectrogram.module.scss';
+import { useAppDispatch, useAppSelector } from '@/features/App';
+import { setFrequencyScaleType, selectFrequencyScaleType, FrequencyScaleType } from '@/features/Annotator/VisualConfiguration';
 
 interface NetCDFControlsProps {
   colorscale: string;
@@ -10,8 +12,6 @@ interface NetCDFControlsProps {
   onZmaxChange: (zmax: number) => void;
   dataMin: number;
   dataMax: number;
-  yAxisScale: 'linear' | 'log';
-  onYAxisScaleChange: (scale: 'linear' | 'log') => void;
 }
 
 const COLORSCALES = [
@@ -40,22 +40,27 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
   onZmaxChange,
   dataMin,
   dataMax,
-  yAxisScale,
-  onYAxisScaleChange,
 }) => {
+  const dispatch = useAppDispatch();
+  const yAxisScale = useAppSelector(selectFrequencyScaleType);
+
+  const handleScaleChange = (scale: FrequencyScaleType) => {
+    dispatch(setFrequencyScaleType(scale));
+  };
+
   return (
     <div className={styles.controlsPanel}>
       <div className={styles.controlGroup}>
         <label>Y-Axis Scale</label>
         <div className={styles.buttonGroup}>
           <button
-            onClick={() => onYAxisScaleChange('linear')}
+            onClick={() => handleScaleChange('linear')}
             className={yAxisScale === 'linear' ? styles.active : ''}
           >
             Linear
           </button>
           <button
-            onClick={() => onYAxisScaleChange('log')}
+            onClick={() => handleScaleChange('log')}
             className={yAxisScale === 'log' ? styles.active : ''}
           >
             Log

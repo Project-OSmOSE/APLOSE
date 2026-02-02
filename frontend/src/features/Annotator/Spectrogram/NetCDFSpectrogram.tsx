@@ -11,6 +11,7 @@ import { selectFocusConfidence } from '@/features/Annotator/Confidence';
 import { selectIsDrawingEnabled } from '@/features/Annotator/UX';
 import { useAudio } from '@/features/Audio';
 import { focusAnnotation } from '@/features/Annotator/Annotation/slice';
+import { selectFrequencyScaleType } from '@/features/Annotator/VisualConfiguration';
 
 interface NetCDFData {
   spectrogram: number[][];
@@ -50,7 +51,10 @@ export const NetCDFSpectrogram: React.FC = () => {
   const [colorscale, setColorscale] = useState('Viridis');
   const [zmin, setZmin] = useState<number>(0);
   const [zmax, setZmax] = useState<number>(0);
-  const [yAxisScale, setYAxisScale] = useState<'linear' | 'log'>('log');
+
+  // Get frequency scale type from Redux (shared with PNG view toggle)
+  const frequencyScaleType = useAppSelector(selectFrequencyScaleType);
+  const yAxisScale = frequencyScaleType; // Use Redux state instead of local state
 
   // Plot reference for managing dragmode
   const plotRef = useRef<any>(null);
@@ -437,8 +441,6 @@ export const NetCDFSpectrogram: React.FC = () => {
         onZmaxChange={setZmax}
         dataMin={dataRange.min}
         dataMax={dataRange.max}
-        yAxisScale={yAxisScale}
-        onYAxisScaleChange={setYAxisScale}
       />
       <div className={styles.plotContainer} onMouseDown={onPlotMouseDown}>
         <Plot
