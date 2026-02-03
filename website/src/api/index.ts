@@ -1,9 +1,11 @@
 import { GraphQLClient } from 'graphql-request';
 import {
+    type AllDeploymentsQuery,
     type AllNewsQuery,
     type AllProjectsQuery,
     type AllScientificTalksQuery,
     AllTeamMembersQuery,
+    type DeploymentByIdQuery,
     getSdk,
     HomeCollaboratorsQuery,
     type NewsByIdQuery,
@@ -41,6 +43,9 @@ export type News = N<NewsByIdQuery['newsById']>
 // Projects & Deployments
 export type LightProject = N<N<N<AllProjectsQuery['allWebsiteProjects']>['results']>[number]>
 export type Project = N<ProjectByIdQuery['websiteProjectById']>
+export type LightDeployment = N<N<N<AllDeploymentsQuery['allDeployments']>['results']>[number]>
+export type Deployment = N<DeploymentByIdQuery['deploymentById']>
+export type DeploymentLabel = N<N<N<DeploymentByIdQuery['annotationLabelsForDeploymentId']>['results']>[number]>
 
 // ScientificTalks
 export type ScientificTalk = N<N<N<AllScientificTalksQuery['allScientificTalks']>['results']>[number]>

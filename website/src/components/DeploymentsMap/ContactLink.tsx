@@ -1,15 +1,23 @@
-import React, { Fragment } from "react";
-import { Contact, Institution } from "../../pages/Projects/ProjectDetail/ProjectDetail";
+import React, { Fragment, useMemo } from "react";
+import { ContactUnion, InstitutionNode, PersonNode, TeamNode } from "../../api/types.gql-generated";
 
 
-export const ContactLink: React.FC<{ contact: Contact }> = ({ contact }) => {
-  if (contact.website) return <a href={ contact.website } target="_blank"
-                                 rel="noopener noreferrer">{ contact.firstName } { contact.lastName }</a>;
-  else return <Fragment>{ contact.firstName } { contact.lastName }</Fragment>;
-}
+export const ContactLink: React.FC<{
+    contact: Pick<ContactUnion, 'website'> & (
+        Pick<PersonNode, '__typename' | 'firstName' | 'lastName'> | Pick<TeamNode, '__typename' | 'name'> | Pick<InstitutionNode, '__typename' | 'name'>
+        )
+}> = ({ contact }) => {
+    const name = useMemo(() => {
+        switch (contact?.__typename) {
+            case 'PersonNode':
+                return `${ contact.firstName } ${ contact.lastName }`
+            case 'TeamNode':
+            case 'InstitutionNode':
+                return contact.name
+        }
+    }, [ contact ])
 
-export const InstitutionLink: React.FC<{ institution: Institution }> = ({ institution }) => {
-  if (institution.website) return <a href={ institution.website } target="_blank"
-                                     rel="noopener noreferrer">{ institution.name }</a>;
-  else return <Fragment>{ institution.name }</Fragment>;
+    if (contact.website) return <a href={ contact.website } target="_blank"
+                                   rel="noopener noreferrer">{ name }</a>;
+    else return <Fragment>{ name }</Fragment>;
 }
