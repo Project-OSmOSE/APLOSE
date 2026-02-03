@@ -1,65 +1,62 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from "react-router-dom";
-
 import { PageTitle } from "../../components/PageTitle";
-import { Pagination } from "../../components/Pagination/Pagination";
-
 import imgTitle from '../../img/illust/pexels-berend-de-kort-1452701_1920_thin.webp';
-import { getFormattedDate, useFetchArray } from "../../utils";
+import { getFormattedDate } from "../../utils";
 import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from "@ionic/react";
-import { News } from "../../models/news";
-
+import { LightNews, useGqlSdk } from "../../api";
+import { Pagination } from "../../components/Pagination/Pagination";
 import './NewsPage.css';
 
 
 export const NewsPage: React.FC = () => {
-  const pageSize = 6;
-  const location = useLocation();
-  const currentPage: number = +(new URLSearchParams(location.search).get('page') ?? 1);
+    const pageSize = 6;
 
-  const [newsTotal, setNewsTotal] = useState<number>(0);
-  const [news, setNews] = useState<Array<News>>([]);
+    const [ currentPage, setCurrentPage ] = useState<number>(1)
 
-  const fetchNews = useFetchArray<{count: number, results: Array<News>}>('/api/news');
+    const [ newsTotal, setNewsTotal ] = useState<number>(0);
+    const [ news, setNews ] = useState<Array<LightNews>>([]);
 
-  useEffect(() => {
-    let isMounted = true;
-    fetchNews({ page: currentPage, page_size: pageSize }).then(data => {
-      if (!isMounted) return;
-      setNewsTotal(data?.count ?? 0);
-      setNews(data?.results ?? []);
-    });
+    const sdk = useGqlSdk()
 
-    return () => {
-      isMounted = false;
-    }
-  }, [currentPage]);
+    useEffect(() => {
+        let isMounted = true;
 
-  return (
-    <div id="news-page">
-      <PageTitle img={ imgTitle } imgAlt="News Banner">
-        NEWS
-      </PageTitle>
+        sdk.allNews({ limit: pageSize, offset: pageSize * (currentPage - 1) }).then(({ data }) => {
+            if (!isMounted) return;
+            setNewsTotal(data.allNews?.totalCount ?? 0)
+            setNews((data.allNews?.results ?? []).filter(d => d !== null) as any ?? [])
+        })
 
-      <div className="content">
-        { news.map(data => (
-          <IonCard key={ data.id } href={ `/news/${ data.id }` }>
-            { data.thumbnail && <img src={ data.thumbnail } alt={ data.title }/> }
+        return () => {
+            isMounted = false;
+        }
+    }, [ currentPage ]);
 
-            <IonCardHeader>
-              <IonCardTitle>{ data.title }</IonCardTitle>
-              <IonCardSubtitle>{ getFormattedDate(data.date) }</IonCardSubtitle>
-            </IonCardHeader>
+    return (
+        <div id="news-page">
+            <PageTitle img={ imgTitle } imgAlt="News Banner">
+                NEWS
+            </PageTitle>
 
-            <IonCardContent>{ data.intro }</IonCardContent>
-          </IonCard>
-        )) }
-      </div>
+            <div className="content">
+                { news.map(data => (
+                    <IonCard key={ data.id } href={ `/news/${ data.id }` }>
+                        { data.thumbnail && <img src={ data.thumbnail } alt={ data.title }/> }
 
-      <Pagination totalCount={ newsTotal }
-                  currentPage={ currentPage }
-                  pageSize={ pageSize }
-                  path="/news"/>
-    </div>
-  );
+                        <IonCardHeader>
+                            <IonCardTitle>{ data.title }</IonCardTitle>
+                            <IonCardSubtitle>{ getFormattedDate(data.date) }</IonCardSubtitle>
+                        </IonCardHeader>
+
+                        <IonCardContent>{ data.intro }</IonCardContent>
+                    </IonCard>
+                )) }
+            </div>
+
+            <Pagination totalCount={ newsTotal }
+                        currentPage={ currentPage }
+                        pageSize={ pageSize }
+                        setPage={ setCurrentPage }/>
+        </div>
+    );
 };

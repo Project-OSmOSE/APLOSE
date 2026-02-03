@@ -5,6 +5,7 @@ from graphene_django_pagination import DjangoPaginationConnectionField
 
 from .nodes import (
     TeamMemberNode,
+    NewsNode,
     CollaboratorNode,
 )
 from .project import WebsiteProjectNode
@@ -20,3 +21,6 @@ class OSmOSEWebsiteQuery(graphene.ObjectType):
 
     all_team_members = DjangoPaginationConnectionField(TeamMemberNode)
     team_member_by_id = ByIdField(TeamMemberNode)
+
+    all_news = DjangoPaginationConnectionField(NewsNode)
+    news_by_id = ByIdField(NewsNode)

@@ -1,3 +1,13 @@
+query homeCollaborators {
+    allCollaborators(showOnHomePage: true) {
+        results {
+            name
+            thumbnail
+            url
+        }
+    }
+}
+
 query allTeamMembers {
     allTeamMembers {
         results {
@@ -35,12 +45,34 @@ query teamMemberById($id: ID!) {
     }
 }
 
-query homeCollaborators {
-    allCollaborators(showOnHomePage: true) {
+query allNews ($offset: Int!, $limit: Int!) {
+    allNews(limit: $limit, offset: $offset) {
+        totalCount
         results {
-            name
+            id
+            title
             thumbnail
-            url
+            date
+            intro
         }
+    }
+}
+
+query newsById($id: ID!) {
+    newsById(id: $id) {
+        title
+        date
+        body
+        osmoseMemberAuthors {
+            edges {
+                node {
+                    id
+                    person {
+                        initialNames
+                    }
+                }
+            }
+        }
+        otherAuthors
     }
 }

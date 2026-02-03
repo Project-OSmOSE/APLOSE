@@ -1,37 +1,77 @@
 """News DRF-Viewset test file"""
+import json
 
-from django.urls import reverse
+from django_extension.tests import ExtendedTestCase
 
-from rest_framework import status
-from rest_framework.test import APITestCase
-
-from backend.osmosewebsite.serializers.news import NewsFields
-
-
-class NewsViewSetTestCase(APITestCase):
-    """Test NewsViewSetTestCase when list or detail news are request"""
-
-    fixtures = ["users", "news"]
-    creation_data = {
-        "title": "string",
-        "intro": "string",
-        "body": "string",
-        "date": "2022-01-25T10:42:15Z",
-        "thumbnail": "string",
+ALL_QUERY = """
+query {
+    allNews {
+        totalCount
+        results {
+            id
+            title
+            thumbnail
+            date
+            intro
+        }
     }
+}
+"""
+BY_ID_QUERY = """
+query ($id: ID!) {
+    newsById(id: $id) {
+        title
+        date
+        body
+        osmoseMemberAuthors {
+            edges {
+                node {
+                    id
+                    person {
+                        initialNames
+                    }
+                }
+            }
+        }
+        otherAuthors
+    }
+}
+"""
+
+
+class NewsGqlTestCase(ExtendedTestCase):
+
+    GRAPHQL_URL = "/api/graphql"
+    fixtures = ["users", "news"]
 
     def test_list(self):
         """NewsViewSet 'list' returns list of news"""
-        url = reverse("news-list")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(list(response.data[0].keys()), NewsFields)
+        response = self.gql_query(ALL_QUERY)
+        print(response.content)
+        self.assertResponseNoErrors(response)
+        content = json.loads(response.content)["data"]["allNews"]["results"]
+        self.assertEqual(len(content), 2)
         self.assertEqual(
-            response.data[1]["title"], "Themselves determine story far film one."
+            content[1]["title"], "Themselves determine story far film one."
         )
         self.assertEqual(
-            response.data[1]["body"],
+            content[1]["intro"],
+            "Remember plant such. Above phone create food ability. Number inside add past. When family enjoy "
+            "vote situation offer size. Summer their organization weight for expert.",
+        )
+
+    def test_retrieve(self):
+        """NewsViewSet 'retrieve' returns news details"""
+        response = self.gql_query(BY_ID_QUERY, variables={"id": 2})
+        print(response.content)
+        self.assertResponseNoErrors(response)
+        content = json.loads(response.content)["data"]["newsById"]
+        self.assertEqual(
+            content["title"],
+            "Themselves determine story far film one.",
+        )
+        self.assertEqual(
+            content["body"],
             "<h2>Pretty summer term something page officer field century process allow.</h2><p>Remain firm heart within"
             " national purpose candidate represent. Against activity early college people. Situation north free travel "
             "happy.</p><p>Somebody quickly sister style. Relationship dark role.</p><img "
@@ -57,21 +97,4 @@ class NewsViewSetTestCase(APITestCase):
             "src='https://api.dicebear.com/7.x/identicon/svg?seed=size' width='100px'><p>Fact soldier these billion. "
             "Mother within manage work mission financial.</p><img "
             "src='https://api.dicebear.com/7.x/identicon/svg?seed=student' width='100px'>",
-        )
-
-    def test_retrieve(self):
-        """NewsViewSet 'retrieve' returns news details"""
-        url = reverse("news-detail", kwargs={"pk": 1})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(list(response.data), NewsFields)
-
-        self.assertEqual(
-            response.data["title"],
-            "Open between political past despite management bill hand live capital service.",
-        )
-        self.assertEqual(
-            response.data["intro"],
-            "Her order another who company step office. Garden space various suddenly. Character large standard "
-            "attention. Pass time special according role carry base.",
         )
