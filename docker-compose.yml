@@ -18,7 +18,6 @@ services:
       OSMOSE_DB_USER: "${OSMOSE_DB_USER}"
       OSMOSE_DB_PWD: "${OSMOSE_DB_PWD}"
       OSMOSE_DB_BASE: "${OSMOSE_DB_USER}"
-      OSMOSE_SENTRY_URL: "${OSMOSE_SENTRY_URL}"
       OSMOSE_PROXY_URL: "${OSMOSE_PROXY_URL}"
 #    read_only: true
     volumes:

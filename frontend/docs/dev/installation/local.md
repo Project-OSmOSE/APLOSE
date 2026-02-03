@@ -49,7 +49,6 @@ OSMOSE_HOST=        # "osmose.ifremer.fr" for production, use what you want for 
 OSMOSE_DB_USER=     # database username
 OSMOSE_DB_PWD=      # database password
 HTTPS_PORTAL_STAGE= # see https://github.com/SteveLTN/https-portal, use "local" to test on your machine
-OSMOSE_SENTRY_URL=  # if you use https://sentry.io (more for staging and production)
 ```
 
 <br/>
