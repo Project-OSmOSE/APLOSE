@@ -4,12 +4,12 @@ from django_extension.schema.fields import ByIdField
 from graphene_django_pagination import DjangoPaginationConnectionField
 
 from .nodes import (
+    WebsiteProjectNode,
     TeamMemberNode,
     NewsNode,
     CollaboratorNode,
     ScientificTalkNode,
 )
-from .project import WebsiteProjectNode
 
 
 class OSmOSEWebsiteQuery(graphene.ObjectType):
@@ -18,7 +18,7 @@ class OSmOSEWebsiteQuery(graphene.ObjectType):
     all_collaborators = DjangoPaginationConnectionField(CollaboratorNode)
 
     all_website_projects = DjangoPaginationConnectionField(WebsiteProjectNode)
-    website_projet_by_id = ByIdField(WebsiteProjectNode)
+    website_project_by_id = ByIdField(WebsiteProjectNode)
 
     all_team_members = DjangoPaginationConnectionField(TeamMemberNode)
     team_member_by_id = ByIdField(TeamMemberNode)

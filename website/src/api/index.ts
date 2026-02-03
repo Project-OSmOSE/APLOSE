@@ -1,12 +1,13 @@
 import { GraphQLClient } from 'graphql-request';
-import { AllTeamMembersQuery, getSdk, HomeCollaboratorsQuery, TeamMemberByIdQuery } from './queries.generated';
 import {
     type AllNewsQuery,
+    type AllProjectsQuery,
     type AllScientificTalksQuery,
     AllTeamMembersQuery,
     getSdk,
     HomeCollaboratorsQuery,
     type NewsByIdQuery,
+    type ProjectByIdQuery,
     TeamMemberByIdQuery,
 } from './queries.generated';
 import { useMemo } from 'react';
@@ -36,6 +37,10 @@ export type TeamMember = N<TeamMemberByIdQuery['teamMemberById']>
 // News
 export type LightNews = N<N<N<AllNewsQuery['allNews']>['results']>[number]>
 export type News = N<NewsByIdQuery['newsById']>
+
+// Projects & Deployments
+export type LightProject = N<N<N<AllProjectsQuery['allWebsiteProjects']>['results']>[number]>
+export type Project = N<ProjectByIdQuery['websiteProjectById']>
 
 // ScientificTalks
 export type ScientificTalk = N<N<N<AllScientificTalksQuery['allScientificTalks']>['results']>[number]>

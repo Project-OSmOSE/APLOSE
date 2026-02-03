@@ -1,3 +1,46 @@
+query allProjects($offset: Int!, $limit: Int!) {
+    allWebsiteProjects(limit: $limit, offset: $offset) {
+        totalCount
+        results {
+            id
+            title
+            intro
+            start
+            end
+            thumbnail
+        }
+    }
+}
+
+query projectById($id: ID!) {
+    websiteProjectById(id: $id) {
+        title
+        start
+        end
+        body
+        osmoseMemberContacts {
+            edges {
+                node {
+                    id
+                    person {
+                        initialNames
+                    }
+                }
+            }
+        }
+        otherContacts
+        collaborators {
+            edges {
+                node {
+                    name
+                    thumbnail
+                    url
+                }
+            }
+        }
+    }
+}
+
 query homeCollaborators {
     allCollaborators(showOnHomePage: true) {
         results {

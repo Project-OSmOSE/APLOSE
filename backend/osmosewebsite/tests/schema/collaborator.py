@@ -3,8 +3,6 @@ import json
 
 from django_extension.tests import ExtendedTestCase
 
-from backend.osmosewebsite.serializers.collaborator import CollaboratorFields
-
 QUERY = """
 query (
     $showOnHomePage: Boolean
