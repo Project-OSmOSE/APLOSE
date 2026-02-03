@@ -8,7 +8,7 @@ export const DetectorConfigurationsFormBloc: React.FC = () => {
 
   if (state.fileState !== 'loaded') return <Fragment/>
   if (selectedDetectorsForImport.length === 0) return <Fragment/>
-  return <FormBloc label="Detectors configurations">
+  return <FormBloc label="Detector configurations">
     { selectedDetectorsForImport.map(initialName => <DetectorConfigurationEntry key={ initialName }
                                                                                 initialName={ initialName }/>) }
   </FormBloc>

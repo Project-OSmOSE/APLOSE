@@ -30,7 +30,8 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
                     return alert.showAlert({
                         type: 'Warning',
                         message: 'A "Verification" phase is made to check results from the "Annotation" phase. ' +
-                            'You must first create an "Annotation" phase, where you can either manually annotate your dataset or directly import detectors or model estimations.',
+                            'You must first create an "Annotation" phase, where you can either manually annotate your ' +
+                            'dataset or directly import automatic detections.',
                         actions: [ {
                             label: 'Create an "Annotation" phase',
                             callback: annotationModal.toggle,
