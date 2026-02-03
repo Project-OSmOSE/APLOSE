@@ -34,3 +34,13 @@ query teamMemberById($id: ID!) {
         researchGateUrl
     }
 }
+
+query homeCollaborators {
+    allCollaborators(showOnHomePage: true) {
+        results {
+            name
+            thumbnail
+            url
+        }
+    }
+}

@@ -1,5 +1,6 @@
 export * from './archive'
 export * from './campaign'
+export * from './collaborator'
 export * from './colormap'
 export * from './confidenceSet'
 export * from './deployment'

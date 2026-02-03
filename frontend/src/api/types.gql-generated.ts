@@ -1621,6 +1621,57 @@ export enum ChannelConfigurationStatusEnum {
   Lost = 'Lost'
 }
 
+/** Collaborator node */
+export type CollaboratorNode = ExtendedInterface & {
+  __typename?: 'CollaboratorNode';
+  /** The ID of the object */
+  id: Scalars['ID']['output'];
+  level?: Maybe<Scalars['Int']['output']>;
+  name: Scalars['String']['output'];
+  projectSet: WebsiteProjectNodeConnection;
+  showOnAploseHome: Scalars['Boolean']['output'];
+  showOnHomePage: Scalars['Boolean']['output'];
+  thumbnail: Scalars['String']['output'];
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Collaborator node */
+export type CollaboratorNodeProjectSetArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type CollaboratorNodeConnection = {
+  __typename?: 'CollaboratorNodeConnection';
+  /** Contains the nodes in this connection. */
+  edges: Array<Maybe<CollaboratorNodeEdge>>;
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+};
+
+/** A Relay edge containing a `CollaboratorNode` and its cursor. */
+export type CollaboratorNodeEdge = {
+  __typename?: 'CollaboratorNodeEdge';
+  /** A cursor for use in pagination */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge */
+  node?: Maybe<CollaboratorNode>;
+};
+
+export type CollaboratorNodeNodeConnection = {
+  __typename?: 'CollaboratorNodeNodeConnection';
+  /** Pagination data for this connection. */
+  pageInfo: PageInfoExtra;
+  /** Contains the nodes in this connection. */
+  results: Array<Maybe<CollaboratorNode>>;
+  totalCount?: Maybe<Scalars['Int']['output']>;
+};
+
 /** Colormap schema */
 export type ColormapNode = ExtendedInterface & {
   __typename?: 'ColormapNode';
@@ -3643,6 +3694,7 @@ export type PersonNode = ExtendedInterface & {
   lastName: Scalars['String']['output'];
   mail?: Maybe<Scalars['String']['output']>;
   performedMaintenances: MaintenanceNodeConnection;
+  teamMember?: Maybe<TeamMemberNode>;
   teams: TeamNodeConnection;
   website?: Maybe<Scalars['String']['output']>;
 };
@@ -4405,6 +4457,7 @@ export type Query = {
   allBibliography?: Maybe<BibliographyUnionConnection>;
   allCampaigns?: Maybe<CampaignNodeNodeConnection>;
   allChannelConfigurations?: Maybe<ChannelConfigurationNodeNodeConnection>;
+  allCollaborators?: Maybe<CollaboratorNodeNodeConnection>;
   allConference?: Maybe<ConferenceNodeNodeConnection>;
   allConfidenceSets?: Maybe<ConfidenceSetNodeNodeConnection>;
   allDatasets?: Maybe<DatasetNodeNodeConnection>;
@@ -4432,6 +4485,7 @@ export type Query = {
   allSounds?: Maybe<SoundNodeNodeConnection>;
   allSources?: Maybe<SourceNodeNodeConnection>;
   allSpectrogramAnalysis?: Maybe<SpectrogramAnalysisNodeNodeConnection>;
+  allTeamMembers?: Maybe<TeamMemberNodeNodeConnection>;
   allTeams?: Maybe<TeamNodeNodeConnection>;
   allUserGroups?: Maybe<UserGroupNodeNodeConnection>;
   allUsers?: Maybe<UserNodeNodeConnection>;
@@ -4466,6 +4520,7 @@ export type Query = {
   soundById?: Maybe<SoundNode>;
   sourceById?: Maybe<SourceNode>;
   teamById?: Maybe<TeamNode>;
+  teamMemberById?: Maybe<TeamMemberNode>;
   websiteProjetById?: Maybe<WebsiteProjectNode>;
 };
 
@@ -4696,6 +4751,21 @@ export type QueryAllChannelConfigurationsArgs = {
   ordering?: InputMaybe<Scalars['String']['input']>;
   recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
   timezone?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Global query */
+export type QueryAllCollaboratorsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
+  showOnAploseHome?: InputMaybe<Scalars['Boolean']['input']>;
+  showOnHomePage?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -5301,6 +5371,19 @@ export type QueryAllSpectrogramAnalysisArgs = {
 
 
 /** Global query */
+export type QueryAllTeamMembersArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  ordering?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Global query */
 export type QueryAllTeamsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -5534,6 +5617,12 @@ export type QuerySourceByIdArgs = {
 
 /** Global query */
 export type QueryTeamByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** Global query */
+export type QueryTeamMemberByIdArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -6259,6 +6348,68 @@ export type TagNode = ExtendedInterface & {
   name: Scalars['String']['output'];
 };
 
+/** TeamMember node */
+export type TeamMemberNode = ExtendedInterface & {
+  __typename?: 'TeamMemberNode';
+  biography?: Maybe<Scalars['String']['output']>;
+  githubUrl?: Maybe<Scalars['String']['output']>;
+  /** The ID of the object */
+  id: Scalars['ID']['output'];
+  level?: Maybe<Scalars['Int']['output']>;
+  linkedinUrl?: Maybe<Scalars['String']['output']>;
+  mailAddress?: Maybe<Scalars['String']['output']>;
+  person: PersonNode;
+  personalWebsiteUrl?: Maybe<Scalars['String']['output']>;
+  picture: Scalars['String']['output'];
+  position: Scalars['String']['output'];
+  projectSet: WebsiteProjectNodeConnection;
+  researchGateUrl?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<TeamMemberTypeEnum>;
+};
+
+
+/** TeamMember node */
+export type TeamMemberNodeProjectSetArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type TeamMemberNodeConnection = {
+  __typename?: 'TeamMemberNodeConnection';
+  /** Contains the nodes in this connection. */
+  edges: Array<Maybe<TeamMemberNodeEdge>>;
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+};
+
+/** A Relay edge containing a `TeamMemberNode` and its cursor. */
+export type TeamMemberNodeEdge = {
+  __typename?: 'TeamMemberNodeEdge';
+  /** A cursor for use in pagination */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge */
+  node?: Maybe<TeamMemberNode>;
+};
+
+export type TeamMemberNodeNodeConnection = {
+  __typename?: 'TeamMemberNodeNodeConnection';
+  /** Pagination data for this connection. */
+  pageInfo: PageInfoExtra;
+  /** Contains the nodes in this connection. */
+  results: Array<Maybe<TeamMemberNode>>;
+  totalCount?: Maybe<Scalars['Int']['output']>;
+};
+
+export enum TeamMemberTypeEnum {
+  Active = 'Active',
+  Collaborator = 'Collaborator',
+  Former = 'Former'
+}
+
 export type TeamNode = ExtendedInterface & {
   __typename?: 'TeamNode';
   contactRelations: PersonInstitutionRelationNodeConnection;
@@ -6659,15 +6810,58 @@ export type UserNodeNodeConnection = {
 export type WebsiteProjectNode = ExtendedInterface & {
   __typename?: 'WebsiteProjectNode';
   body: Scalars['String']['output'];
+  collaborators: CollaboratorNodeConnection;
   end?: Maybe<Scalars['Date']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
   intro: Scalars['String']['output'];
   metadataxProject?: Maybe<ProjectNodeOverride>;
+  osmoseMemberContacts: TeamMemberNodeConnection;
   otherContacts?: Maybe<Array<Scalars['String']['output']>>;
   start?: Maybe<Scalars['Date']['output']>;
   thumbnail: Scalars['String']['output'];
   title: Scalars['String']['output'];
+};
+
+
+/** Project node */
+export type WebsiteProjectNodeCollaboratorsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  showOnAploseHome?: InputMaybe<Scalars['Boolean']['input']>;
+  showOnHomePage?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Project node */
+export type WebsiteProjectNodeOsmoseMemberContactsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type WebsiteProjectNodeConnection = {
+  __typename?: 'WebsiteProjectNodeConnection';
+  /** Contains the nodes in this connection. */
+  edges: Array<Maybe<WebsiteProjectNodeEdge>>;
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+};
+
+/** A Relay edge containing a `WebsiteProjectNode` and its cursor. */
+export type WebsiteProjectNodeEdge = {
+  __typename?: 'WebsiteProjectNodeEdge';
+  /** A cursor for use in pagination */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge */
+  node?: Maybe<WebsiteProjectNode>;
 };
 
 export type WebsiteProjectNodeNodeConnection = {

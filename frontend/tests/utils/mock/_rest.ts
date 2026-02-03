@@ -1,17 +1,14 @@
-import { COLLABORATOR_QUERIES } from './collaborators';
 import { AUTH_QUERIES } from './auth';
 import { PHASE_DOWNLOADS } from './phase';
 import { ANNOTATION_MUTATIONS } from './annotations';
 
 type RestQueries =
-  typeof COLLABORATOR_QUERIES
-  & typeof PHASE_DOWNLOADS
+  typeof PHASE_DOWNLOADS
   & typeof AUTH_QUERIES
 type RestQuery = keyof RestQueries
 
 const REST_MOCK_QUERIES: RestQueries = {
   // TODO: add queries
-  ...COLLABORATOR_QUERIES,
   ...PHASE_DOWNLOADS,
   ...AUTH_QUERIES,
 }

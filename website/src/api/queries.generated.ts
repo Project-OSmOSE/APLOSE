@@ -16,6 +16,11 @@ export type TeamMemberByIdQueryVariables = Types.Exact<{
 
 export type TeamMemberByIdQuery = { __typename?: 'Query', teamMemberById?: { __typename?: 'TeamMemberNode', position: string, picture: string, biography?: string | null, personalWebsiteUrl?: string | null, githubUrl?: string | null, mailAddress?: string | null, linkedinUrl?: string | null, researchGateUrl?: string | null, person: { __typename?: 'PersonNode', firstName: string, lastName: string, initialNames?: string | null } } | null };
 
+export type HomeCollaboratorsQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type HomeCollaboratorsQuery = { __typename?: 'Query', allCollaborators?: { __typename?: 'CollaboratorNodeNodeConnection', results: Array<{ __typename?: 'CollaboratorNode', name: string, thumbnail: string, url?: string | null } | null> } | null };
+
 
 export const AllTeamMembersDocument = gql`
     query allTeamMembers {
@@ -56,6 +61,17 @@ export const TeamMemberByIdDocument = gql`
   }
 }
     `;
+export const HomeCollaboratorsDocument = gql`
+    query homeCollaborators {
+  allCollaborators(showOnHomePage: true) {
+    results {
+      name
+      thumbnail
+      url
+    }
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -63,6 +79,7 @@ export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, str
 const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType, _variables) => action();
 const AllTeamMembersDocumentString = print(AllTeamMembersDocument);
 const TeamMemberByIdDocumentString = print(TeamMemberByIdDocument);
+const HomeCollaboratorsDocumentString = print(HomeCollaboratorsDocument);
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
     allTeamMembers(variables?: AllTeamMembersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: AllTeamMembersQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
@@ -70,6 +87,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     teamMemberById(variables: TeamMemberByIdQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: TeamMemberByIdQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
         return withWrapper((wrappedRequestHeaders) => client.rawRequest<TeamMemberByIdQuery>(TeamMemberByIdDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'teamMemberById', 'query', variables);
+    },
+    homeCollaborators(variables?: HomeCollaboratorsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: HomeCollaboratorsQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
+        return withWrapper((wrappedRequestHeaders) => client.rawRequest<HomeCollaboratorsQuery>(HomeCollaboratorsDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'homeCollaborators', 'query', variables);
     }
   };
 }

@@ -753,6 +753,23 @@ type Query {
   ): InstitutionNodeNodeConnection
   institutionById(id: ID!): InstitutionNode
   _debug: DjangoDebug
+  allCollaborators(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    id: ID
+    showOnHomePage: Boolean
+    showOnAploseHome: Boolean
+  ): CollaboratorNodeNodeConnection
   allWebsiteProjects(
     """Query limit"""
     limit: Int
@@ -2616,9 +2633,57 @@ type WebsiteProjectNode implements ExtendedInterface {
   end: Date
   body: String!
   thumbnail: String!
+  collaborators(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, showOnHomePage: Boolean, showOnAploseHome: Boolean): CollaboratorNodeConnection!
   osmoseMemberContacts(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): TeamMemberNodeConnection!
   otherContacts: [String!]
   metadataxProject: ProjectNodeOverride
+}
+
+type CollaboratorNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [CollaboratorNodeEdge]!
+}
+
+"""A Relay edge containing a `CollaboratorNode` and its cursor."""
+type CollaboratorNodeEdge {
+  """The item at the end of the edge"""
+  node: CollaboratorNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""Collaborator node"""
+type CollaboratorNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  level: Int
+  name: String!
+  thumbnail: String!
+  url: String
+  showOnHomePage: Boolean!
+  showOnAploseHome: Boolean!
+  projectSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): WebsiteProjectNodeConnection!
+}
+
+type WebsiteProjectNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [WebsiteProjectNodeEdge]!
+}
+
+"""A Relay edge containing a `WebsiteProjectNode` and its cursor."""
+type WebsiteProjectNodeEdge {
+  """The item at the end of the edge"""
+  node: WebsiteProjectNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
 }
 
 type TeamMemberNodeConnection {
@@ -2660,23 +2725,6 @@ enum TeamMemberTypeEnum {
   Active
   Former
   Collaborator
-}
-
-type WebsiteProjectNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [WebsiteProjectNodeEdge]!
-}
-
-"""A Relay edge containing a `WebsiteProjectNode` and its cursor."""
-type WebsiteProjectNodeEdge {
-  """The item at the end of the edge"""
-  node: WebsiteProjectNode
-
-  """A cursor for use in pagination"""
-  cursor: String!
 }
 
 type ChannelConfigurationNodeConnection {
@@ -4022,6 +4070,15 @@ type DjangoDebugException {
 
   """The stack trace"""
   stack: String!
+}
+
+type CollaboratorNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [CollaboratorNode]!
+  totalCount: Int
 }
 
 type WebsiteProjectNodeNodeConnection {

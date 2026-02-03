@@ -1,5 +1,5 @@
 import { GraphQLClient } from 'graphql-request';
-import { AllTeamMembersQuery, getSdk, TeamMemberByIdQuery } from './queries.generated';
+import { AllTeamMembersQuery, getSdk, HomeCollaboratorsQuery, TeamMemberByIdQuery } from './queries.generated';
 import { useMemo } from 'react';
 
 
@@ -16,6 +16,9 @@ export const useGqlSdk = () => {
 }
 
 type N<T> = NonNullable<T>
+
+// Home
+export type Collaborator = N<N<N<HomeCollaboratorsQuery['allCollaborators']>['results']>[number]>
 
 // TeamMember
 export type LightTeamMember = N<N<N<AllTeamMembersQuery['allTeamMembers']>['results']>[number]>

@@ -1,6 +1,5 @@
 import { essentialTag, expect, test, URL } from './utils';
-import { interceptRequests } from './utils/mock';
-import { COLLABORATOR_QUERIES } from './utils/mock/collaborators';
+import { gqlURL, interceptRequests } from './utils/mock';
 import type { Params } from './utils/types';
 
 // Utils
@@ -9,11 +8,11 @@ const TEST = {
         test(`Can navigate`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: 'empty',
-                listCollaborators: 'success',
+                homeCollaborators: 'filled',
             })
 
             await test.step(`Navigate`, () => page.home.go())
-            await page.waitForRequest(COLLABORATOR_QUERIES.listCollaborators.url)
+            await page.waitForRequest(gqlURL) // Wait for homeCollaborators
 
             await test.step('Has OSmOSE website link', async () => {
                 const url = await page.home.osmoseLink.getAttribute('href')
