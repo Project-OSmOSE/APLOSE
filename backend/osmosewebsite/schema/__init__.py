@@ -7,6 +7,7 @@ from .nodes import (
     TeamMemberNode,
     NewsNode,
     CollaboratorNode,
+    ScientificTalkNode,
 )
 from .project import WebsiteProjectNode
 
@@ -24,3 +25,5 @@ class OSmOSEWebsiteQuery(graphene.ObjectType):
 
     all_news = DjangoPaginationConnectionField(NewsNode)
     news_by_id = ByIdField(NewsNode)
+
+    all_scientific_talks = DjangoPaginationConnectionField(ScientificTalkNode)

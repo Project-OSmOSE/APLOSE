@@ -2,6 +2,7 @@ import { GraphQLClient } from 'graphql-request';
 import { AllTeamMembersQuery, getSdk, HomeCollaboratorsQuery, TeamMemberByIdQuery } from './queries.generated';
 import {
     type AllNewsQuery,
+    type AllScientificTalksQuery,
     AllTeamMembersQuery,
     getSdk,
     HomeCollaboratorsQuery,
@@ -35,3 +36,6 @@ export type TeamMember = N<TeamMemberByIdQuery['teamMemberById']>
 // News
 export type LightNews = N<N<N<AllNewsQuery['allNews']>['results']>[number]>
 export type News = N<NewsByIdQuery['newsById']>
+
+// ScientificTalks
+export type ScientificTalk = N<N<N<AllScientificTalksQuery['allScientificTalks']>['results']>[number]>
