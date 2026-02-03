@@ -141,7 +141,7 @@ const TEST = {
         await expect(page.getByText('detector1Already in database').first()).toBeVisible()
       })
 
-      await test.step('Select Detectors configurations', async () => {
+      await test.step('Select Detector configurations', async () => {
         await page.phaseImport.getConfigurationSelect('detector1').click()
         await expect(page.phaseImport.getConfigurationSelectOptions('detector1').getByText(detectorConfiguration.configuration)).toBeVisible()
       })
