@@ -885,13 +885,13 @@ Django = ">=1.11"
 
 [[package]]
 name = "django-extension"
-version = "0.1.1"
+version = "0.1.2"
 description = "Extended class for Django usage"
 optional = false
 python-versions = ">=3.9,<4.0"
 groups = ["main"]
 files = [
-    {file = "django_extension-0.1.1.tar.gz", hash = "sha256:f35100d656c7a95b455e9fe8a46b7f1ba34903dc53c4a0044bfd4e33cd08f8d3"},
+    {file = "django_extension-0.1.2.tar.gz", hash = "sha256:6715e28e0f475986acf2cd230f39cb439e8fb0cf77590248345c99f0ede23b9f"},
 ]
 
 [package.dependencies]
@@ -903,7 +903,7 @@ graphene-django-pagination = {url = "https://github.com/instruct-br/graphene-dja
 
 [package.source]
 type = "url"
-url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.1/django_extension-0.1.1.tar.gz"
+url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.2/django_extension-0.1.2.tar.gz"
 
 [[package]]
 name = "django-filter"
@@ -2227,13 +2227,13 @@ files = [
 
 [[package]]
 name = "metadatax"
-version = "0.5.0a2"
+version = "0.5.0a3"
 description = "PAM acquisition metadata"
 optional = false
 python-versions = ">=3.9,<4.0"
 groups = ["main"]
 files = [
-    {file = "metadatax-0.5.0a2.tar.gz", hash = "sha256:251620e9c98a98ae6e5ba688f9f699d8e03c32ff0daf0a541a43ce3b08c868f6"},
+    {file = "metadatax-0.5.0a3.tar.gz", hash = "sha256:fc33a81ded06aa51f0bc289e9adcfd66ac42597236f9a7d40b7b8a969563cd56"},
 ]
 
 [package.dependencies]
@@ -2241,7 +2241,7 @@ Django = ">=3.2,<4.0"
 django-admin-multiple-choice-list-filter = ">=0.1.1,<0.2.0"
 django-better-admin-arrayfield = ">=1.4.2,<2.0.0"
 django-durationwidget = ">=1.0.5,<2.0.0"
-django-extension = {url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.1/django_extension-0.1.1.tar.gz"}
+django-extension = {url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.2/django_extension-0.1.2.tar.gz"}
 django-filter = ">=2"
 django-model-prefix = ">=1.1.0,<2.0.0"
 djangorestframework = ">=3.15.1,<4.0.0"
@@ -2253,7 +2253,7 @@ python-dotenv = ">=1.0.1,<2.0.0"
 
 [package.source]
 type = "url"
-url = "https://raw.githubusercontent.com/PAM-Standardization/metadatax/refs/heads/refacto/dist/metadatax-0.5.0a2.tar.gz"
+url = "https://raw.githubusercontent.com/PAM-Standardization/metadatax/refs/heads/refacto/dist/metadatax-0.5.0a3.tar.gz"
 
 [[package]]
 name = "mistune"
@@ -4123,4 +4123,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "4aa5743f29c7ea715ac2644057df8f0e5565e22ee3d97938bd385a0eda61d8ee"
+content-hash = "280ae068b7cfc1ea5c90e81b24d97bef8e36292edb15df3caa2fed0aa1f1a5ad"

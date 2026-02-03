@@ -177,6 +177,131 @@ query deploymentById($id: ID!) {
     }
 }
 
+query allBibliography {
+    allBibliography {
+        edges {
+            node {
+                ... on ArticleNode {
+                    title
+                    doi
+                    status
+                    type
+                    publicationDate
+                    tags {
+                        name
+                    }
+                    authors {
+                        edges {
+                            node {
+                                order
+                                person {
+                                    initialNames
+                                    teamMember {
+                                        id
+                                        type
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    # Article
+                    journal
+                    volumes
+                    pagesFrom
+                    pagesTo
+                    issueNb
+                    articleNb
+                }
+                ... on ConferenceNode {
+                    title
+                    doi
+                    status
+                    type
+                    publicationDate
+                    tags {
+                        name
+                    }
+                    authors {
+                        edges {
+                            node {
+                                order
+                                person {
+                                    initialNames
+                                    teamMember {
+                                        id
+                                        type
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    # Conference
+                    conferenceName
+                    conferenceLocation
+                    conferenceAbstractBookUrl
+                }
+                ... on PosterNode {
+                    title
+                    doi
+                    status
+                    type
+                    publicationDate
+                    tags {
+                        name
+                    }
+                    authors {
+                        edges {
+                            node {
+                                order
+                                person {
+                                    initialNames
+                                    teamMember {
+                                        id
+                                        type
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    # Poster
+                    posterUrl
+                    # Conference
+                    conferenceName
+                    conferenceLocation
+                    conferenceAbstractBookUrl
+                }
+                ... on SoftwareNode {
+                    title
+                    doi
+                    status
+                    type
+                    publicationDate
+                    tags {
+                        name
+                    }
+                    authors {
+                        edges {
+                            node {
+                                order
+                                person {
+                                    initialNames
+                                    teamMember {
+                                        id
+                                        type
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    # Software
+                    repositoryUrl
+                    publicationPlace
+                }
+            }
+        }
+    }
+}
+
 query allTeamMembers {
     allTeamMembers {
         results {

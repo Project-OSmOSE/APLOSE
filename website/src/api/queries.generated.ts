@@ -38,6 +38,11 @@ export type DeploymentByIdQueryVariables = Types.Exact<{
 
 export type DeploymentByIdQuery = { __typename?: 'Query', annotationLabelsForDeploymentId?: { __typename?: 'AnnotationLabelNodeNodeConnection', results: Array<{ __typename?: 'AnnotationLabelNode', id: string, name: string, uses: number } | null> } | null, deploymentById?: { __typename?: 'DeploymentNode', name?: string | null, latitude: number, longitude: number, deploymentDate?: any | null, deploymentVessel?: string | null, recoveryDate?: any | null, recoveryVessel?: string | null, bathymetricDepth?: number | null, description?: string | null, project: { __typename?: 'ProjectNodeOverride', name: string, accessibility?: Types.AccessibilityEnum | null, projectGoal?: string | null, contacts?: Array<{ __typename?: 'ContactRelationNode', id: string, role?: Types.RoleEnum | null, contact?: { __typename?: 'InstitutionNode', name: string, website?: string | null } | { __typename?: 'PersonNode', firstName: string, lastName: string, website?: string | null } | { __typename?: 'TeamNode', name: string, website?: string | null } | null } | null> | null }, site?: { __typename?: 'SiteNode', name: string } | null, campaign?: { __typename?: 'CampaignNode', name: string } | null, platform?: { __typename?: 'PlatformNode', name?: string | null } | null, contacts?: Array<{ __typename?: 'ContactRelationNode', id: string, role?: Types.RoleEnum | null, contact?: { __typename?: 'InstitutionNode', name: string, website?: string | null } | { __typename?: 'PersonNode', firstName: string, lastName: string, website?: string | null } | { __typename?: 'TeamNode', name: string, website?: string | null } | null } | null> | null } | null };
 
+export type AllBibliographyQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type AllBibliographyQuery = { __typename?: 'Query', allBibliography?: { __typename?: 'BibliographyUnionConnection', edges: Array<{ __typename?: 'BibliographyUnionEdge', node?: { __typename?: 'ArticleNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, journal: string, volumes?: string | null, pagesFrom?: number | null, pagesTo?: number | null, issueNb?: number | null, articleNb?: number | null, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, type?: Types.TeamMemberTypeEnum | null } | null } } | null } | null> } } | { __typename?: 'ConferenceNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, conferenceName: string, conferenceLocation: string, conferenceAbstractBookUrl?: string | null, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, type?: Types.TeamMemberTypeEnum | null } | null } } | null } | null> } } | { __typename?: 'PosterNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, posterUrl?: string | null, conferenceName: string, conferenceLocation: string, conferenceAbstractBookUrl?: string | null, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, type?: Types.TeamMemberTypeEnum | null } | null } } | null } | null> } } | { __typename?: 'SoftwareNode', title: string, doi?: string | null, status: Types.BibliographyStatusEnum, type: Types.BibliographyTypeEnum, publicationDate?: any | null, repositoryUrl?: string | null, publicationPlace: string, tags?: Array<{ __typename?: 'TagNode', name: string } | null> | null, authors: { __typename?: 'AuthorNodeConnection', edges: Array<{ __typename?: 'AuthorNodeEdge', node?: { __typename?: 'AuthorNode', order?: number | null, person: { __typename?: 'PersonNode', initialNames?: string | null, teamMember?: { __typename?: 'TeamMemberNode', id: string, type?: Types.TeamMemberTypeEnum | null } | null } } | null } | null> } } | null } | null> } | null };
+
 export type AllTeamMembersQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
@@ -255,6 +260,127 @@ export const DeploymentByIdDocument = gql`
   }
 }
     `;
+export const AllBibliographyDocument = gql`
+    query allBibliography {
+  allBibliography {
+    edges {
+      node {
+        ... on ArticleNode {
+          title
+          doi
+          status
+          type
+          publicationDate
+          tags {
+            name
+          }
+          authors {
+            edges {
+              node {
+                order
+                person {
+                  initialNames
+                  teamMember {
+                    id
+                    type
+                  }
+                }
+              }
+            }
+          }
+          journal
+          volumes
+          pagesFrom
+          pagesTo
+          issueNb
+          articleNb
+        }
+        ... on ConferenceNode {
+          title
+          doi
+          status
+          type
+          publicationDate
+          tags {
+            name
+          }
+          authors {
+            edges {
+              node {
+                order
+                person {
+                  initialNames
+                  teamMember {
+                    id
+                    type
+                  }
+                }
+              }
+            }
+          }
+          conferenceName
+          conferenceLocation
+          conferenceAbstractBookUrl
+        }
+        ... on PosterNode {
+          title
+          doi
+          status
+          type
+          publicationDate
+          tags {
+            name
+          }
+          authors {
+            edges {
+              node {
+                order
+                person {
+                  initialNames
+                  teamMember {
+                    id
+                    type
+                  }
+                }
+              }
+            }
+          }
+          posterUrl
+          conferenceName
+          conferenceLocation
+          conferenceAbstractBookUrl
+        }
+        ... on SoftwareNode {
+          title
+          doi
+          status
+          type
+          publicationDate
+          tags {
+            name
+          }
+          authors {
+            edges {
+              node {
+                order
+                person {
+                  initialNames
+                  teamMember {
+                    id
+                    type
+                  }
+                }
+              }
+            }
+          }
+          repositoryUrl
+          publicationPlace
+        }
+      }
+    }
+  }
+}
+    `;
 export const AllTeamMembersDocument = gql`
     query allTeamMembers {
   allTeamMembers {
@@ -362,6 +488,7 @@ const ProjectByIdDocumentString = print(ProjectByIdDocument);
 const HomeCollaboratorsDocumentString = print(HomeCollaboratorsDocument);
 const AllDeploymentsDocumentString = print(AllDeploymentsDocument);
 const DeploymentByIdDocumentString = print(DeploymentByIdDocument);
+const AllBibliographyDocumentString = print(AllBibliographyDocument);
 const AllTeamMembersDocumentString = print(AllTeamMembersDocument);
 const TeamMemberByIdDocumentString = print(TeamMemberByIdDocument);
 const AllNewsDocumentString = print(AllNewsDocument);
@@ -383,6 +510,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     deploymentById(variables: DeploymentByIdQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: DeploymentByIdQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
         return withWrapper((wrappedRequestHeaders) => client.rawRequest<DeploymentByIdQuery>(DeploymentByIdDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'deploymentById', 'query', variables);
+    },
+    allBibliography(variables?: AllBibliographyQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: AllBibliographyQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
+        return withWrapper((wrappedRequestHeaders) => client.rawRequest<AllBibliographyQuery>(AllBibliographyDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'allBibliography', 'query', variables);
     },
     allTeamMembers(variables?: AllTeamMembersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: AllTeamMembersQuery; errors?: GraphQLError[]; extensions?: any; headers: Headers; status: number; }> {
         return withWrapper((wrappedRequestHeaders) => client.rawRequest<AllTeamMembersQuery>(AllTeamMembersDocumentString, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'allTeamMembers', 'query', variables);
