@@ -13,8 +13,10 @@ RUN npm install
 COPY frontend .
 
 # Used to get git version in React view
+COPY package.json global-package.json
+
+# Used by viteprss
 RUN apk add --no-cache git
-#COPY .git .
 
 RUN PUBLIC_URL=/app npm run build
 
