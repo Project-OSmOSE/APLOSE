@@ -64,15 +64,21 @@ A table containing all annotations and comments left by the campaign annotators.
 | confidence_indicator_label            |                  string                   | The name of the level of confidence (if exists)                                                        |
 | confidence_indicator_level            |          string<br/>[int]/[int]           | The level of confidence on the maximum level available (if exists)                                     |
 | comments                              |                  string                   | Comment left by the annotator.                                                                         |
-| signal_quality                        |                GOOD / BAD                 | If the signal is sufficiently qualitative to specify its features                                      |
+| created_at_phase                      |         ANNOTATION / VERIFICATION         | Phase on which the annotation was created                                                              |
+| signal_quantity                       |             SINGLE / MULTIPLE             | The amount of signals in the box. If multiple, none of the following are filled                        |
+| signal_is_intensity_too_low           |                  boolean                  | If the signal intensity is too low to correctly fill the features                                      |
+| signal_does_overlap_other_signals     |                  boolean                  | If the signal overlaps other signals                                                                   |
 | signal_start_frequency                |                    int                    | Frequency at start of signal (in Hz)                                                                   |
 | signal_end_frequency                  |                    int                    | Frequency at the end of the signal (in Hz))                                                            |
-| signal_relative_max_frequency_count   |                    int                    | Number of relative maxima                                                                              |
 | signal_relative_min_frequency_count   |                    int                    | Number of relative minimums                                                                            |
+| signal_relative_max_frequency_count   |                    int                    | Number of relative maxima                                                                              |
 | signal_steps_count                    |                    int                    | Number of steps in the signal                                                                          |
 | signal_has_harmonics                  |                  boolean                  | If the signal contains harmonics                                                                       |
 | signal_trend                          | FLAT / ASCENDING / DESCENDING / MODULATED | General trend of the signal                                                                            |
-| created_at_phase                      |         ANNOTATION / VERIFICATION         | Phase on which the annotation was created                                                              |
+| signal_sidebands                      |                  boolean                  | If the signal has sidebands                                                                            |
+| signal_subharmonics                   |                  boolean                  | If the signal has subharmonics                                                                         |
+| signal_frequency_jumps                |               boolean / int               | If the signal has frequency jumps, if it does it can contain the jump counts                           |
+| signal_deterministic_chaos            |                  boolean                  | If the signal has deterministic chaos                                                                  |
 
 ### Status
 

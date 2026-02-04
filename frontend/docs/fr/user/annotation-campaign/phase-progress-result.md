@@ -64,7 +64,10 @@ Tableau contenant toutes les annotations et tous les commentaires laissés par l
 | confidence_indicator_label            |                  string                   | Nom du niveau de confiance (le cas échéant)                                                               |
 | confidence_indicator_level            |          string<br/>[int]/[int]           | Niveau de confiance par rapport au niveau maximal disponible (le cas échéant)                             |
 | comments                              |                  string                   | Commentaire laissé par l'annotateur.                                                                      |
-| signal_quality                        |                GOOD / BAD                 | Si le signal est suffisamment qualitatif pour préciser ses caractéristiques                               |
+| created_at_phase                      |         ANNOTATION / VERIFICATION         | Phase sur laquelle l'annotation a été créée                                                               |
+| signal_quantity                       |             SINGLE / MULTIPLE             | La quantité de signaux contenus dans la boîte. Si "MULTIPLE", aucun des paramètres suivant ne sera rempli |
+| signal_is_intensity_too_low           |                  boolean                  | Si l'intensité du signal est trop faible pour correctement remplir les paramètres acoustiques             |
+| signal_does_overlap_other_signals     |                  boolean                  | Si le signal se supperpose à d'autres signaux                                                             |
 | signal_start_frequency                |                    int                    | Fréquence au début du signal (en Hz)                                                                      |
 | signal_end_frequency                  |                    int                    | Fréquence à la fin du signal (en Hz)                                                                      |
 | signal_relative_max_frequency_count   |                    int                    | Nombre de maxima relatifs                                                                                 |
@@ -72,7 +75,10 @@ Tableau contenant toutes les annotations et tous les commentaires laissés par l
 | signal_steps_count                    |                    int                    | Nombre d'étapes dans le signal                                                                            |
 | signal_has_harmonics                  |                  boolean                  | Si le signal contient des harmoniques                                                                     |
 | signal_trend                          | FLAT / ASCENDING / DESCENDING / MODULATED | Tendance générale du signal                                                                               |
-| created_at_phase                      |         ANNOTATION / VERIFICATION         | Phase sur laquelle l'annotation a été créée                                                               |
+| signal_sidebands                      |                  boolean                  | Si le signal présente des bandes latérales                                                                |
+| signal_subharmonics                   |                  boolean                  | Si le signal présente des sous-harmoniques                                                                |
+| signal_frequency_jumps                |               boolean / int               | Si le signal présente des sauts de fréquences, si oui il peut contenir le nombre de sauts                 |
+| signal_deterministic_chaos            |                  boolean                  | Si le signal présente un chaos déterministe                                                               |
 
 ### Status
 
