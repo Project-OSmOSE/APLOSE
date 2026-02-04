@@ -41,7 +41,7 @@ export type GetAnnotationTaskQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetAnnotationTaskQuery = { __typename?: 'Query', annotationSpectrogramById?: { __typename?: 'AnnotationSpectrogramNode', id: string, filename: string, audioPath?: string | null, path: string, start: any, duration: number, isAssigned: boolean, task?: { __typename?: 'AnnotationTaskNode', status: Types.AnnotationTaskStatus, userComments?: { __typename?: 'AnnotationCommentNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCommentNode', id: string, comment: string } | null> } | null, userAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', id: string, type: Types.AnnotationType, startTime?: number | null, endTime?: number | null, startFrequency?: number | null, endFrequency?: number | null, annotationPhase: { __typename?: 'AnnotationPhaseNode', id: string }, label: { __typename?: 'AnnotationLabelNode', name: string }, confidence?: { __typename?: 'ConfidenceNode', label: string } | null, detectorConfiguration?: { __typename?: 'DetectorConfigurationNode', id: string, detector: { __typename?: 'DetectorNode', id: string, name: string } } | null, annotator?: { __typename?: 'UserNode', id: string, displayName: string } | null, comments?: { __typename?: 'AnnotationCommentNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCommentNode', id: string, comment: string } | null> } | null, validations?: { __typename?: 'AnnotationValidationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationValidationNode', id: string, isValid: boolean } | null> } | null, isUpdateOf?: { __typename?: 'AnnotationNode', id: string } | null, acousticFeatures?: { __typename?: 'AcousticFeaturesNode', id: string, startFrequency?: number | null, endFrequency?: number | null, trend?: Types.SignalTrendType | null, stepsCount?: number | null, relativeMinFrequencyCount?: number | null, relativeMaxFrequencyCount?: number | null, hasHarmonics?: boolean | null } | null, analysis: { __typename?: 'SpectrogramAnalysisNode', id: string } } | null> } | null, annotationsToCheck?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', id: string, type: Types.AnnotationType, startTime?: number | null, endTime?: number | null, startFrequency?: number | null, endFrequency?: number | null, annotationPhase: { __typename?: 'AnnotationPhaseNode', id: string }, label: { __typename?: 'AnnotationLabelNode', name: string }, confidence?: { __typename?: 'ConfidenceNode', label: string } | null, detectorConfiguration?: { __typename?: 'DetectorConfigurationNode', id: string, detector: { __typename?: 'DetectorNode', id: string, name: string } } | null, annotator?: { __typename?: 'UserNode', id: string, displayName: string } | null, comments?: { __typename?: 'AnnotationCommentNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCommentNode', id: string, comment: string } | null> } | null, validations?: { __typename?: 'AnnotationValidationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationValidationNode', id: string, isValid: boolean } | null> } | null, isUpdateOf?: { __typename?: 'AnnotationNode', id: string } | null, acousticFeatures?: { __typename?: 'AcousticFeaturesNode', id: string, startFrequency?: number | null, endFrequency?: number | null, trend?: Types.SignalTrendType | null, stepsCount?: number | null, relativeMinFrequencyCount?: number | null, relativeMaxFrequencyCount?: number | null, hasHarmonics?: boolean | null } | null, analysis: { __typename?: 'SpectrogramAnalysisNode', id: string } } | null> } | null } | null } | null, allAnnotationSpectrograms?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', currentIndex?: number | null, totalCount: number, previousSpectrogramId?: string | null, nextSpectrogramId?: string | null } | null };
+export type GetAnnotationTaskQuery = { __typename?: 'Query', annotationSpectrogramById?: { __typename?: 'AnnotationSpectrogramNode', id: string, filename: string, audioPath?: string | null, path: string, start: any, duration: number, isAssigned: boolean, task?: { __typename?: 'AnnotationTaskNode', status: Types.AnnotationTaskStatus, userComments?: { __typename?: 'AnnotationCommentNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCommentNode', id: string, comment: string } | null> } | null, userAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', id: string, type: Types.AnnotationType, startTime?: number | null, endTime?: number | null, startFrequency?: number | null, endFrequency?: number | null, annotationPhase: { __typename?: 'AnnotationPhaseNode', id: string }, label: { __typename?: 'AnnotationLabelNode', name: string }, confidence?: { __typename?: 'ConfidenceNode', label: string } | null, detectorConfiguration?: { __typename?: 'DetectorConfigurationNode', id: string, detector: { __typename?: 'DetectorNode', id: string, name: string } } | null, annotator?: { __typename?: 'UserNode', id: string, displayName: string } | null, comments?: { __typename?: 'AnnotationCommentNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCommentNode', id: string, comment: string } | null> } | null, validations?: { __typename?: 'AnnotationValidationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationValidationNode', id: string, isValid: boolean } | null> } | null, isUpdateOf?: { __typename?: 'AnnotationNode', id: string } | null, acousticFeatures?: { __typename?: 'AcousticFeaturesNode', id: string, isIntensityTooLow?: boolean | null, doesOverlapOtherSignals?: boolean | null, startFrequency?: number | null, endFrequency?: number | null, relativeMinFrequencyCount?: number | null, relativeMaxFrequencyCount?: number | null, stepsCount?: number | null, hasHarmonics?: boolean | null, trend?: Types.SignalTrendType | null, hasSidebands?: boolean | null, hasSubharmonics?: boolean | null, hasFrequencyJumps?: boolean | null, frequencyJumpsCount?: number | null, hasDeterministicChaos?: boolean | null } | null, analysis: { __typename?: 'SpectrogramAnalysisNode', id: string } } | null> } | null, annotationsToCheck?: { __typename?: 'AnnotationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationNode', id: string, type: Types.AnnotationType, startTime?: number | null, endTime?: number | null, startFrequency?: number | null, endFrequency?: number | null, annotationPhase: { __typename?: 'AnnotationPhaseNode', id: string }, label: { __typename?: 'AnnotationLabelNode', name: string }, confidence?: { __typename?: 'ConfidenceNode', label: string } | null, detectorConfiguration?: { __typename?: 'DetectorConfigurationNode', id: string, detector: { __typename?: 'DetectorNode', id: string, name: string } } | null, annotator?: { __typename?: 'UserNode', id: string, displayName: string } | null, comments?: { __typename?: 'AnnotationCommentNodeNodeConnection', results: Array<{ __typename?: 'AnnotationCommentNode', id: string, comment: string } | null> } | null, validations?: { __typename?: 'AnnotationValidationNodeNodeConnection', results: Array<{ __typename?: 'AnnotationValidationNode', id: string, isValid: boolean } | null> } | null, isUpdateOf?: { __typename?: 'AnnotationNode', id: string } | null, acousticFeatures?: { __typename?: 'AcousticFeaturesNode', id: string, isIntensityTooLow?: boolean | null, doesOverlapOtherSignals?: boolean | null, startFrequency?: number | null, endFrequency?: number | null, relativeMinFrequencyCount?: number | null, relativeMaxFrequencyCount?: number | null, stepsCount?: number | null, hasHarmonics?: boolean | null, trend?: Types.SignalTrendType | null, hasSidebands?: boolean | null, hasSubharmonics?: boolean | null, hasFrequencyJumps?: boolean | null, frequencyJumpsCount?: number | null, hasDeterministicChaos?: boolean | null } | null, analysis: { __typename?: 'SpectrogramAnalysisNode', id: string } } | null> } | null } | null } | null, allAnnotationSpectrograms?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', currentIndex?: number | null, totalCount: number, previousSpectrogramId?: string | null, nextSpectrogramId?: string | null } | null };
 
 export type SubmitTaskMutationVariables = Types.Exact<{
   campaignID: Types.Scalars['ID']['input'];
@@ -183,13 +183,20 @@ export const GetAnnotationTaskDocument = `
           }
           acousticFeatures {
             id
+            isIntensityTooLow
+            doesOverlapOtherSignals
             startFrequency
             endFrequency
-            trend
-            stepsCount
             relativeMinFrequencyCount
             relativeMaxFrequencyCount
+            stepsCount
             hasHarmonics
+            trend
+            hasSidebands
+            hasSubharmonics
+            hasFrequencyJumps
+            frequencyJumpsCount
+            hasDeterministicChaos
           }
           analysis {
             id
@@ -241,13 +248,20 @@ export const GetAnnotationTaskDocument = `
           }
           acousticFeatures {
             id
+            isIntensityTooLow
+            doesOverlapOtherSignals
             startFrequency
             endFrequency
-            trend
-            stepsCount
             relativeMinFrequencyCount
             relativeMaxFrequencyCount
+            stepsCount
             hasHarmonics
+            trend
+            hasSidebands
+            hasSubharmonics
+            hasFrequencyJumps
+            frequencyJumpsCount
+            hasDeterministicChaos
           }
           analysis {
             id

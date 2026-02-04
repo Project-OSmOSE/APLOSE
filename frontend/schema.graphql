@@ -785,7 +785,7 @@ type Query {
     last: Int
     id: ID
   ): WebsiteProjectNodeNodeConnection
-  websiteProjetById(id: ID!): WebsiteProjectNode
+  websiteProjectById(id: ID!): WebsiteProjectNode
   allTeamMembers(
     """Query limit"""
     limit: Int
@@ -802,6 +802,37 @@ type Query {
     id: ID
   ): TeamMemberNodeNodeConnection
   teamMemberById(id: ID!): TeamMemberNode
+  allNews(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    id: ID
+  ): NewsNodeNodeConnection
+  newsById(id: ID!): NewsNode
+  allScientificTalks(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    id: ID
+  ): ScientificTalkNodeNodeConnection
   currentUser: UserNode
   allUserGroups(
     """Query limit"""
@@ -2718,13 +2749,74 @@ type TeamMemberNode implements ExtendedInterface {
   personalWebsiteUrl: String
   githubUrl: String
   linkedinUrl: String
+  newsSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): NewsNodeConnection!
   projectSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): WebsiteProjectNodeConnection!
+  scientifictalkSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): ScientificTalkNodeConnection!
 }
 
 enum TeamMemberTypeEnum {
   Active
   Former
   Collaborator
+}
+
+type NewsNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [NewsNodeEdge]!
+}
+
+"""A Relay edge containing a `NewsNode` and its cursor."""
+type NewsNodeEdge {
+  """The item at the end of the edge"""
+  node: NewsNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""News node"""
+type NewsNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  title: String!
+  intro: String!
+  body: String!
+  date: Date
+  thumbnail: String!
+  osmoseMemberAuthors(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): TeamMemberNodeConnection!
+  otherAuthors: [String!]
+}
+
+type ScientificTalkNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [ScientificTalkNodeEdge]!
+}
+
+"""A Relay edge containing a `ScientificTalkNode` and its cursor."""
+type ScientificTalkNodeEdge {
+  """The item at the end of the edge"""
+  node: ScientificTalkNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""ScientificTalk node"""
+type ScientificTalkNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  title: String!
+  intro: String
+  date: Date
+  thumbnail: String!
+  osmoseMemberPresenters(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): TeamMemberNodeConnection!
+  otherPresenters: [String!]
 }
 
 type ChannelConfigurationNodeConnection {
@@ -3498,6 +3590,8 @@ enum ApiAnnotationAnnotatorExpertiseLevelChoices {
 type AcousticFeaturesNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
+  isIntensityTooLow: Boolean
+  doesOverlapOtherSignals: Boolean
 
   """[Hz] Frequency at the beginning of the signal"""
   startFrequency: Float
@@ -3505,22 +3599,27 @@ type AcousticFeaturesNode implements ExtendedInterface {
   """[Hz] Frequency at the end of the signal"""
   endFrequency: Float
 
+  """Number of relative minimum frequency in the signal"""
+  relativeMinFrequencyCount: Int
+
   """Number of relative maximum frequency in the signal"""
   relativeMaxFrequencyCount: Int
 
-  """Number of relative minimum frequency in the signal"""
-  relativeMinFrequencyCount: Int
+  """Number of steps (flat segment) in the signal"""
+  stepsCount: Int
 
   """If the signal has harmonics"""
   hasHarmonics: Boolean
   trend: SignalTrendType
-
-  """Number of steps (flat segment) in the signal"""
-  stepsCount: Int
+  hasSidebands: Boolean
+  hasSubharmonics: Boolean
+  hasFrequencyJumps: Boolean
+  frequencyJumpsCount: Int
+  hasDeterministicChaos: Boolean
   annotation: AnnotationNode
 }
 
-"""From SignalTrend"""
+"""From AcousticFeatures.SignalTrend"""
 enum SignalTrendType {
   Flat
   Ascending
@@ -4099,6 +4198,24 @@ type TeamMemberNodeNodeConnection {
   totalCount: Int
 }
 
+type NewsNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [NewsNode]!
+  totalCount: Int
+}
+
+type ScientificTalkNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [ScientificTalkNode]!
+  totalCount: Int
+}
+
 type UserGroupNodeNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfoExtra!
@@ -4442,6 +4559,8 @@ input AnnotationValidationSerializerInput {
 input AnnotationAcousticFeaturesSerializerInput {
   id: Int
   trend: SignalTrendType
+  isIntensityTooLow: Boolean
+  doesOverlapOtherSignals: Boolean
 
   """[Hz] Frequency at the beginning of the signal"""
   startFrequency: Float
@@ -4449,17 +4568,22 @@ input AnnotationAcousticFeaturesSerializerInput {
   """[Hz] Frequency at the end of the signal"""
   endFrequency: Float
 
-  """Number of relative maximum frequency in the signal"""
-  relativeMaxFrequencyCount: Int
-
   """Number of relative minimum frequency in the signal"""
   relativeMinFrequencyCount: Int
 
-  """If the signal has harmonics"""
-  hasHarmonics: Boolean
+  """Number of relative maximum frequency in the signal"""
+  relativeMaxFrequencyCount: Int
 
   """Number of steps (flat segment) in the signal"""
   stepsCount: Int
+
+  """If the signal has harmonics"""
+  hasHarmonics: Boolean
+  hasSidebands: Boolean
+  hasSubharmonics: Boolean
+  hasFrequencyJumps: Boolean
+  frequencyJumpsCount: Int
+  hasDeterministicChaos: Boolean
 }
 
 type UpdateAnnotationCommentsMutationPayload {

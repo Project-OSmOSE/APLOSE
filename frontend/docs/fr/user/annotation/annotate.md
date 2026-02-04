@@ -102,14 +102,17 @@ signal.
 | Champs                 | Unité | Description                                                                                                     |
 |------------------------|:-----:|-----------------------------------------------------------------------------------------------------------------|
 | Frequency min/max      |  Hz   | Directement lié aux limites de fréquence de la boîte                                                            |
-| Frequency range        |  Hz   | [Auto] Différence entre les fréquences maximale et minimale                                                     |
 | Frequency start/end    |  Hz   | Fréquence du début/fin du signal. Peut être prélevée directement sur le spectrogramme grâce au bouton "crayon". |
-| Duration               |   s   | Durée de la boîte, directement liée aux limites de temps de la boîte                                            |
-| Trend                  |       | Tendance générale du signal(Flat, Ascending, Descending or Modulated)                                           |
 | Relative min/max count |       | Nombre de fréquences min/max relatives                                                                          | 
 | Inflection count       |       | [Auto] Nombre de points d'inflexion : somme des nombres de fréquences minimales et maximales relatives          |
 | Steps count            |       | Nombre de portions à fréquence fixe                                                                             |
 | Has harmonics          |       | Le signal présente-t-il des harmoniques                                                                         |
+| Trend                  |       | Tendance générale du signal(Flat, Ascending, Descending or Modulated)                                           |
+| Duration               |   s   | Durée de la boîte, directement liée aux limites de temps de la boîte                                            |
+| Sidebands              |       | Le signal présente des bandes latérales                                                                         |
+| Subharmonics           |       | Le signal présente des sous-harmoniques                                                                         |
+| Frequency jumps        |       | Le signal présente des sauts de fréquences. Si oui, le nombre de saut peut être renseigné                       |
+| Deterministic chaos    |       | Le signal présente un chaos déterministe                                                                        |
 
 Toutes les caractéristiques sont optionnelles.
 

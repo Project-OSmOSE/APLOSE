@@ -11,14 +11,23 @@ class AcousticFeaturesAdmin(ExtendedModelAdmin):
 
     list_display = (
         "id",
+        "is_intensity_too_low",
+        "does_overlap_other_signals",
+        # Frequency
         "start_frequency",
         "end_frequency",
-        "relative_max_frequency_count",
         "relative_min_frequency_count",
+        "relative_max_frequency_count",
         "inflexion_point_count",
         "steps_count",
         "has_harmonics",
         "trend",
+        # Non-linear phenomena
+        "has_sidebands",
+        "has_subharmonics",
+        "has_frequency_jumps",
+        "frequency_jumps_count",
+        "has_deterministic_chaos",
         "get_annotation",
     )
 

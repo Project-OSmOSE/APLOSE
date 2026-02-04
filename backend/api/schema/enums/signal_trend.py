@@ -4,7 +4,7 @@ from backend.api.models import AcousticFeatures
 
 
 class SignalTrendType(ExtendedEnumType):
-    """From SignalTrend"""
+    """From AcousticFeatures.SignalTrend"""
 
     class Meta:
         enum = AcousticFeatures.SignalTrend
