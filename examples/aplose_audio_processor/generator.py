@@ -2,6 +2,7 @@
 Main generator class for creating APLOSE-compatible NetCDF files from audio.
 """
 
+import json
 import math
 import os
 import sys
@@ -49,7 +50,8 @@ class AploseAudioProcessor:
         generate_png: bool = False,
         png_colormap: str = 'viridis',
         png_dpi: int = 100,
-        png_log_frequency: bool = True
+        png_log_frequency: bool = True,
+        generate_data_png: bool = False
     ):
         """
         Initialize the APLOSE audio processor.
@@ -68,10 +70,12 @@ class AploseAudioProcessor:
             snippet_duration: Duration in seconds for audio snippets. None = no splitting.
             snippet_overlap: Overlap between snippets in seconds (default: 0.0).
             filename_prefix: Optional prefix to add to all output filenames.
-            generate_png: If True, also generate PNG spectrogram images.
-            png_colormap: Colormap for PNG images ('viridis', 'plasma', 'hot', 'jet', etc.).
-            png_dpi: DPI for PNG images (default: 100).
-            png_log_frequency: If True (default), render PNG with log frequency axis.
+            generate_png: If True, also generate visual PNG spectrogram images.
+            png_colormap: Colormap for visual PNG images ('viridis', 'plasma', 'hot', 'jet', etc.).
+            png_dpi: DPI for visual PNG images (default: 100).
+            png_log_frequency: If True (default), render visual PNG with log frequency axis.
+            generate_data_png: If True, generate data PNG + JSON for Plotly display.
+                              This is a compact format that allows interactive visualization.
         """
         # Handle single or multiple FFT sizes
         if isinstance(fft_sizes, int):
@@ -90,6 +94,7 @@ class AploseAudioProcessor:
         self.png_colormap = png_colormap
         self.png_dpi = png_dpi
         self.png_log_frequency = png_log_frequency
+        self.generate_data_png = generate_data_png
 
         # Initialize audio processor
         self.audio_processor = AudioProcessor(
@@ -180,12 +185,20 @@ class AploseAudioProcessor:
                 all_wav_files.append(wav_path)
                 all_netcdf_files.append(netcdf_path)
 
-                # Generate PNGs for all FFT sizes if enabled
+                # Generate visual PNGs for all FFT sizes if enabled
                 if self.generate_png:
                     png_paths = self._create_pngs_for_all_fft_sizes(wav_path)
                     all_png_files.extend(png_paths)
                     for png_path in png_paths:
                         print(f"    Created PNG: {Path(png_path).name}")
+
+                # Generate data PNGs + JSON for Plotly display if enabled
+                if self.generate_data_png:
+                    data_png_results = self._create_data_pngs_for_all_fft_sizes(wav_path, metadata)
+                    for png_path, json_path in data_png_results:
+                        all_png_files.append(png_path)
+                        print(f"    Created data PNG: {Path(png_path).name}")
+                        print(f"    Created metadata: {Path(json_path).name}")
 
         # Restore original datetime_format
         self.datetime_format = original_datetime_format
@@ -193,7 +206,7 @@ class AploseAudioProcessor:
         print(f"\nProcessing complete!")
         print(f"Generated {len(all_wav_files)} WAV files")
         print(f"Generated {len(all_netcdf_files)} NetCDF files")
-        if self.generate_png:
+        if self.generate_png or self.generate_data_png:
             print(f"Generated {len(all_png_files)} PNG files")
 
         return {
@@ -261,12 +274,20 @@ class AploseAudioProcessor:
             all_wav_files.append(wav_path)
             all_netcdf_files.append(netcdf_path)
 
-            # Generate PNGs for all FFT sizes if enabled
+            # Generate visual PNGs for all FFT sizes if enabled
             if self.generate_png:
                 png_paths = self._create_pngs_for_all_fft_sizes(wav_path)
                 all_png_files.extend(png_paths)
                 for png_path in png_paths:
                     print(f"  Created PNG: {Path(png_path).name}")
+
+            # Generate data PNGs + JSON for Plotly display if enabled
+            if self.generate_data_png:
+                data_png_results = self._create_data_pngs_for_all_fft_sizes(wav_path, metadata)
+                for png_path, json_path in data_png_results:
+                    all_png_files.append(png_path)
+                    print(f"  Created data PNG: {Path(png_path).name}")
+                    print(f"  Created metadata: {Path(json_path).name}")
 
         # Restore original datetime_format
         self.datetime_format = original_datetime_format
@@ -274,7 +295,7 @@ class AploseAudioProcessor:
         print(f"\nProcessing complete!")
         print(f"Generated {len(all_wav_files)} WAV files")
         print(f"Generated {len(all_netcdf_files)} NetCDF files")
-        if self.generate_png:
+        if self.generate_png or self.generate_data_png:
             print(f"Generated {len(all_png_files)} PNG files")
 
         return {
@@ -583,6 +604,151 @@ class AploseAudioProcessor:
         plt.close(fig)
 
         return png_path
+
+    def _create_data_png_with_metadata(
+        self,
+        wav_path: str,
+        spec_data: np.ndarray,
+        freqs: np.ndarray,
+        times: np.ndarray,
+        sample_rate: int,
+        nfft: int,
+        hop_length: int,
+        metadata: dict
+    ) -> tuple:
+        """
+        Create a data PNG (grayscale, no axes) with JSON metadata for Plotly display.
+
+        The PNG stores normalized spectrogram values as 16-bit grayscale pixels.
+        The JSON contains metadata needed to reconstruct actual dB values.
+
+        Args:
+            wav_path: Path to WAV file (used to derive filenames).
+            spec_data: Spectrogram data array (frequency x time) in dB.
+            freqs: Frequency array in Hz.
+            times: Time array in seconds.
+            sample_rate: Audio sample rate.
+            nfft: FFT size used.
+            hop_length: Hop length used.
+            metadata: Additional metadata from audio processing.
+
+        Returns:
+            Tuple of (png_path, json_path).
+        """
+        from PIL import Image
+
+        # Get data range for normalization
+        db_min = float(np.min(spec_data))
+        db_max = float(np.max(spec_data))
+        db_range = db_max - db_min
+
+        # Normalize to 0-65535 for 16-bit PNG
+        if db_range > 0:
+            normalized = ((spec_data - db_min) / db_range * 65535).astype(np.uint16)
+        else:
+            normalized = np.zeros_like(spec_data, dtype=np.uint16)
+
+        # Create 16-bit grayscale image
+        # Note: spec_data is (frequency, time), image should be (height, width)
+        # Flip vertically so low frequencies are at bottom
+        img_data = np.flipud(normalized)
+        img = Image.fromarray(img_data, mode='I;16')
+
+        # Generate filenames
+        wav_stem = Path(wav_path).stem
+        png_filename = f"{wav_stem}_fft{nfft}_data.png"
+        json_filename = f"{wav_stem}_fft{nfft}_data.json"
+        png_path = str(Path(wav_path).parent / png_filename)
+        json_path = str(Path(wav_path).parent / json_filename)
+
+        # Save PNG
+        img.save(png_path)
+
+        # Parse datetime
+        begin_dt, end_dt = self._parse_datetime(wav_stem, metadata['duration'])
+
+        # Build JSON metadata
+        json_data = {
+            'format_version': 1,
+            'png_file': png_filename,
+            'encoding': {
+                'bit_depth': 16,
+                'db_min': db_min,
+                'db_max': db_max,
+                'description': 'Pixel value 0 = db_min, 65535 = db_max'
+            },
+            'spectrogram': {
+                'shape': list(spec_data.shape),  # [n_frequencies, n_times]
+                'frequency_min': float(freqs[0]),
+                'frequency_max': float(freqs[-1]),
+                'time_min': float(times[0]),
+                'time_max': float(times[-1]),
+                'n_frequencies': len(freqs),
+                'n_times': len(times)
+            },
+            'audio': {
+                'sample_rate': sample_rate,
+                'duration': float(metadata['duration']),
+                'filename': Path(wav_path).name
+            },
+            'analysis': {
+                'nfft': nfft,
+                'hop_length': hop_length,
+                'window': self.window,
+                'normalize_audio': self.normalize_audio
+            },
+            'calibration': {
+                'db_fullscale': self.db_fullscale,
+                'db_ref': self.db_ref if self.db_fullscale is None else None
+            },
+            'temporal': {
+                'begin': begin_dt.isoformat(),
+                'end': end_dt.isoformat()
+            }
+        }
+
+        # Save JSON
+        with open(json_path, 'w') as f:
+            json.dump(json_data, f, indent=2)
+
+        return png_path, json_path
+
+    def _create_data_pngs_for_all_fft_sizes(
+        self,
+        wav_path: str,
+        metadata: dict
+    ) -> List[tuple]:
+        """
+        Create data PNG + JSON files for all FFT sizes.
+
+        Args:
+            wav_path: Path to WAV file.
+            metadata: Metadata from audio processing.
+
+        Returns:
+            List of (png_path, json_path) tuples.
+        """
+        # Read audio once
+        audio, sample_rate = sf.read(wav_path)
+
+        results = []
+
+        for nfft in self.fft_sizes:
+            hop_length = int(nfft * self.hop_length_factor)
+
+            # Calculate spectrogram
+            spec_data, freqs, times = self._calculate_spectrogram(
+                audio, sample_rate, nfft, hop_length
+            )
+
+            # Create data PNG with metadata
+            png_path, json_path = self._create_data_png_with_metadata(
+                wav_path, spec_data, freqs, times,
+                sample_rate, nfft, hop_length, metadata
+            )
+            results.append((png_path, json_path))
+
+        return results
 
     def _create_pngs_for_all_fft_sizes(
         self,

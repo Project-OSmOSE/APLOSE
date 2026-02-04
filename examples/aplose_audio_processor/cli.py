@@ -152,6 +152,14 @@ Examples:
         help='Use linear frequency scale for PNG images (default: log scale)'
     )
 
+    # Data PNG export options (for Plotly interactive display)
+    parser.add_argument(
+        '--generate-data-png',
+        action='store_true',
+        help='Generate data PNG + JSON files for Plotly interactive display. '
+             'Creates 16-bit grayscale PNG with JSON metadata for each FFT size.'
+    )
+
     # Other options
     parser.add_argument(
         '--datetime-format',
@@ -203,6 +211,9 @@ Examples:
         freq_scale = 'linear' if args.png_linear_frequency else 'log'
         print(f"  PNG export: enabled (colormap: {args.png_colormap}, dpi: {args.png_dpi}, freq scale: {freq_scale})")
         print(f"  PNG files will be generated for all {len(args.fft_sizes)} FFT size(s)")
+    if args.generate_data_png:
+        print(f"  Data PNG export: enabled (16-bit grayscale + JSON metadata)")
+        print(f"  Data PNG files will be generated for all {len(args.fft_sizes)} FFT size(s)")
 
     processor = AploseAudioProcessor(
         fft_sizes=args.fft_sizes,
@@ -220,7 +231,8 @@ Examples:
         generate_png=args.generate_png,
         png_colormap=args.png_colormap,
         png_dpi=args.png_dpi,
-        png_log_frequency=not args.png_linear_frequency
+        png_log_frequency=not args.png_linear_frequency,
+        generate_data_png=args.generate_data_png
     )
 
     # Process files
