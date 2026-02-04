@@ -47,6 +47,7 @@ class AploseAudioProcessor:
         snippet_duration: Optional[float] = None,
         snippet_overlap: float = 0.0,
         filename_prefix: Optional[str] = None,
+        generate_netcdf: bool = False,
         generate_png: bool = False,
         png_colormap: str = 'viridis',
         png_dpi: int = 100,
@@ -70,6 +71,7 @@ class AploseAudioProcessor:
             snippet_duration: Duration in seconds for audio snippets. None = no splitting.
             snippet_overlap: Overlap between snippets in seconds (default: 0.0).
             filename_prefix: Optional prefix to add to all output filenames.
+            generate_netcdf: If True, generate NetCDF spectrogram files (default: False).
             generate_png: If True, also generate visual PNG spectrogram images.
             png_colormap: Colormap for visual PNG images ('viridis', 'plasma', 'hot', 'jet', etc.).
             png_dpi: DPI for visual PNG images (default: 100).
@@ -90,6 +92,7 @@ class AploseAudioProcessor:
         self.normalize_audio = normalize_audio
         self.compression_level = compression_level
         self.datetime_format = datetime_format
+        self.generate_netcdf = generate_netcdf
         self.generate_png = generate_png
         self.png_colormap = png_colormap
         self.png_dpi = png_dpi
@@ -167,23 +170,22 @@ class AploseAudioProcessor:
 
             print(f"  Generated {len(wav_results)} audio file(s)")
 
-            # Generate NetCDF for each processed audio file
+            # Process each audio file
             for wav_path, metadata in wav_results:
-                print(f"  Creating spectrogram for: {Path(wav_path).name}")
-
-                if len(self.fft_sizes) == 1:
-                    # Single FFT
-                    netcdf_path = self._create_single_fft_netcdf(
-                        wav_path, metadata, return_data=False
-                    )
-                else:
-                    # Multi-FFT
-                    netcdf_path = self._create_multi_fft_netcdf(
-                        wav_path, metadata, return_data=False
-                    )
-
                 all_wav_files.append(wav_path)
-                all_netcdf_files.append(netcdf_path)
+
+                # Generate NetCDF if enabled
+                if self.generate_netcdf:
+                    print(f"  Creating NetCDF spectrogram for: {Path(wav_path).name}")
+                    if len(self.fft_sizes) == 1:
+                        netcdf_path = self._create_single_fft_netcdf(
+                            wav_path, metadata, return_data=False
+                        )
+                    else:
+                        netcdf_path = self._create_multi_fft_netcdf(
+                            wav_path, metadata, return_data=False
+                        )
+                    all_netcdf_files.append(netcdf_path)
 
                 # Generate visual PNGs for all FFT sizes if enabled
                 if self.generate_png:
@@ -205,7 +207,8 @@ class AploseAudioProcessor:
 
         print(f"\nProcessing complete!")
         print(f"Generated {len(all_wav_files)} WAV files")
-        print(f"Generated {len(all_netcdf_files)} NetCDF files")
+        if self.generate_netcdf:
+            print(f"Generated {len(all_netcdf_files)} NetCDF files")
         if self.generate_png or self.generate_data_png:
             print(f"Generated {len(all_png_files)} PNG files")
 
@@ -258,21 +261,22 @@ class AploseAudioProcessor:
         all_netcdf_files = []
         all_png_files = []
 
-        # Generate NetCDF for each processed audio file
+        # Process each audio file
         for wav_path, metadata in wav_results:
-            print(f"Creating spectrogram for: {Path(wav_path).name}")
-
-            if len(self.fft_sizes) == 1:
-                netcdf_path = self._create_single_fft_netcdf(
-                    wav_path, metadata, return_data=False
-                )
-            else:
-                netcdf_path = self._create_multi_fft_netcdf(
-                    wav_path, metadata, return_data=False
-                )
-
             all_wav_files.append(wav_path)
-            all_netcdf_files.append(netcdf_path)
+
+            # Generate NetCDF if enabled
+            if self.generate_netcdf:
+                print(f"Creating NetCDF spectrogram for: {Path(wav_path).name}")
+                if len(self.fft_sizes) == 1:
+                    netcdf_path = self._create_single_fft_netcdf(
+                        wav_path, metadata, return_data=False
+                    )
+                else:
+                    netcdf_path = self._create_multi_fft_netcdf(
+                        wav_path, metadata, return_data=False
+                    )
+                all_netcdf_files.append(netcdf_path)
 
             # Generate visual PNGs for all FFT sizes if enabled
             if self.generate_png:
@@ -294,7 +298,8 @@ class AploseAudioProcessor:
 
         print(f"\nProcessing complete!")
         print(f"Generated {len(all_wav_files)} WAV files")
-        print(f"Generated {len(all_netcdf_files)} NetCDF files")
+        if self.generate_netcdf:
+            print(f"Generated {len(all_netcdf_files)} NetCDF files")
         if self.generate_png or self.generate_data_png:
             print(f"Generated {len(all_png_files)} PNG files")
 

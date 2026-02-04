@@ -127,6 +127,13 @@ Examples:
         help='NetCDF zlib compression level 0-9 (0=none, 9=max). Default: 4'
     )
 
+    # NetCDF export options
+    parser.add_argument(
+        '--generate-netcdf',
+        action='store_true',
+        help='Generate NetCDF spectrogram files (disabled by default)'
+    )
+
     # PNG export options
     parser.add_argument(
         '--generate-png',
@@ -207,6 +214,8 @@ Examples:
     else:
         print(f"  dB reference: {args.db_ref}")
     print(f"  Compression level: {args.compression_level}")
+    if args.generate_netcdf:
+        print("  NetCDF export: enabled")
     if args.generate_png:
         freq_scale = 'linear' if args.png_linear_frequency else 'log'
         print(f"  PNG export: enabled (colormap: {args.png_colormap}, dpi: {args.png_dpi}, freq scale: {freq_scale})")
@@ -228,6 +237,7 @@ Examples:
         snippet_duration=args.snippet_duration,
         snippet_overlap=args.overlap,
         filename_prefix=args.filename_prefix,
+        generate_netcdf=args.generate_netcdf,
         generate_png=args.generate_png,
         png_colormap=args.png_colormap,
         png_dpi=args.png_dpi,
