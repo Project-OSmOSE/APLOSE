@@ -25,6 +25,7 @@ import {
     selectIsColormapReversed,
 } from '@/features/Annotator/VisualConfiguration';
 import { selectAnalysis } from '@/features/Annotator/Analysis';
+import { SpectrogramDisplay } from '@/features/Spectrogram/Display';
 import { AcousticFeatures } from '@/features/Annotator/AcousticFeatures';
 
 export const AnnotatorCanvasWindow: React.FC = () => {
@@ -67,7 +68,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         else if (event.deltaY > 0) zoomOut(origin)
     }, [ zoomIn, zoomOut, getCoords ])
 
-    const seekAudio = useCallback((event: MouseEvent<HTMLCanvasElement>) => {
+    const seekAudio = useCallback((event: MouseEvent<HTMLElement>) => {
         seek(getFreqTime(event)?.time ?? 0)
     }, [ seek, getFreqTime ])
 
@@ -160,9 +161,15 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         <div className={ styles.spectrogram }
              onWheel={ onWheel }
              onPointerLeave={ clearPointer }
+             onClick={ seekAudio }
              onMouseDown={ e => e.stopPropagation() }>
 
-            <canvas className={ canDraw ? styles.drawable : '' }
+            { spectrogram && analysis &&
+                <SpectrogramDisplay spectrogram={ spectrogram }
+                                    analysis={ analysis }
+                                    zoomLevel={ zoom }/> }
+
+            <canvas className={ [ styles.interfaction, canDraw ? styles.drawable : '' ].join(' ') }
                     data-testid="drawable-canvas"
                     ref={ mainCanvasRef }
                     height={ height }
