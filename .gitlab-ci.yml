@@ -8,7 +8,6 @@
 #         * OSMOSE_DB_USER : DB user (ex: osmose)
 #         * OSMOSE_DB_PWD : DB password
 #         * OSMOSE_DB_BASE : DB Aplose dedicated database name (ex: osmose)
-#         * OSMOSE_PROXY_URL : Proxy host:port if needed (ex: proxy-wiz.osmose.fr:3128)
 #     * Exposed port: 8000
 #     * Folder dedicated to "datawork" mount: /opt/datawork
 #     * Folder dedicated to server static files mount: /opt/staticfiles
