@@ -19,3 +19,4 @@ export * from './Tooltip'
 
 export * from './popover.hook'
 export * from './toast.hook'
+export * from './window.hook'

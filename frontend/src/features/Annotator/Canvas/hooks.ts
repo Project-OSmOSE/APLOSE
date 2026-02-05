@@ -1,7 +1,6 @@
 import { useAnnotatorCanvasContext } from './context';
 import { useCallback } from 'react';
 import { selectZoom } from '@/features/Annotator/Zoom';
-import { useDrawSpectrogram } from '@/features/Annotator/Spectrogram';
 import { useApplyColormap, useApplyFilter } from '@/features/Annotator/VisualConfiguration';
 import { useDrawTempAnnotation } from '@/features/Annotator/Annotation';
 import {
@@ -31,7 +30,6 @@ export const useDrawCanvas = () => {
   const width = useWindowWidth()
   const height = useWindowHeight()
 
-  const drawSpectrogram = useDrawSpectrogram()
   const drawTempAnnotation = useDrawTempAnnotation()
   const applyFilter = useApplyFilter()
   const applyColormap = useApplyColormap()
@@ -39,17 +37,16 @@ export const useDrawCanvas = () => {
   const { mainCanvasRef } = useAnnotatorCanvasContext()
 
   return useCallback(async () => {
-    const context = mainCanvasRef?.current?.getContext('2d', { alpha: false });
+    const context = mainCanvasRef?.current?.getContext('2d');
     if (!context) return;
 
     // Reset
     context.clearRect(0, 0, width, height);
 
-    applyFilter(context)
-    await drawSpectrogram(context)
-    applyColormap(context)
+    // applyFilter(context)
+    // applyColormap(context)
     drawTempAnnotation(context)
-  }, [ width, height, drawSpectrogram, applyFilter, applyColormap, drawTempAnnotation ]);
+  }, [ width, height, applyFilter, applyColormap, drawTempAnnotation ]);
 }
 
 export const useDownloadCanvas = () => {
@@ -58,7 +55,7 @@ export const useDownloadCanvas = () => {
 
   const draw = useDrawCanvas()
 
-  const { mainCanvasRef, xAxisCanvasRef, yAxisCanvasRef } = useAnnotatorCanvasContext()
+  const { xAxisCanvasRef, yAxisCanvasRef } = useAnnotatorCanvasContext()
 
   return useCallback(async (filename: string) => {
     const link = document.createElement('a');
@@ -68,7 +65,7 @@ export const useDownloadCanvas = () => {
 
     // Get spectro images
     await draw()
-    const spectroDataURL = mainCanvasRef?.current?.toDataURL('image/png');
+    const spectroDataURL = (document.getElementById('spectrogram') as HTMLCanvasElement)?.toDataURL('image/png');
     if (!spectroDataURL) throw new Error('Cannot recover spectro dataURL');
     draw()
     const spectroImg = new Image();
