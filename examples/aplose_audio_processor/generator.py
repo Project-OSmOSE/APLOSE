@@ -54,7 +54,8 @@ class AploseAudioProcessor:
         png_log_frequency: bool = True,
         generate_data_png: bool = False,
         data_png_max_freq_bins: int = 1000,
-        data_png_max_time_bins: int = 1000
+        data_png_max_time_bins: int = 1000,
+        data_png_freq_scale: str = 'log'
     ):
         """
         Initialize the APLOSE audio processor.
@@ -82,6 +83,8 @@ class AploseAudioProcessor:
                               This is a compact format that allows interactive visualization.
             data_png_max_freq_bins: Maximum frequency bins for data PNG resampling (default: 1000).
             data_png_max_time_bins: Maximum time bins for data PNG resampling (default: 1000).
+            data_png_freq_scale: Frequency scale for resampling ('log' or 'linear', default: 'log').
+                                Log scale provides finer resolution at lower frequencies.
         """
         # Handle single or multiple FFT sizes
         if isinstance(fft_sizes, int):
@@ -104,6 +107,7 @@ class AploseAudioProcessor:
         self.generate_data_png = generate_data_png
         self.data_png_max_freq_bins = data_png_max_freq_bins
         self.data_png_max_time_bins = data_png_max_time_bins
+        self.data_png_freq_scale = data_png_freq_scale
 
         # Initialize audio processor
         self.audio_processor = AudioProcessor(
@@ -627,7 +631,8 @@ class AploseAudioProcessor:
         hop_length: int,
         metadata: dict,
         max_freq_bins: int = 1000,
-        max_time_bins: int = 1000
+        max_time_bins: int = 1000,
+        freq_scale: str = 'log'
     ) -> tuple:
         """
         Create a data PNG (grayscale, no axes) with JSON metadata for Plotly display.
@@ -647,30 +652,54 @@ class AploseAudioProcessor:
             metadata: Additional metadata from audio processing.
             max_freq_bins: Maximum frequency bins (default 1000).
             max_time_bins: Maximum time bins (default 1000).
+            freq_scale: Frequency scale for resampling ('log' or 'linear', default: 'log').
 
         Returns:
             Tuple of (png_path, json_path).
         """
         from PIL import Image
         from scipy import ndimage
+        from scipy.interpolate import interp1d
 
         # Store original dimensions
         orig_n_freqs, orig_n_times = spec_data.shape
 
-        # Resample if needed to reduce file size and loading time
-        freq_step = max(1, orig_n_freqs // max_freq_bins)
-        time_step = max(1, orig_n_times // max_time_bins)
+        # Determine target dimensions
+        target_n_freqs = min(orig_n_freqs, max_freq_bins)
+        target_n_times = min(orig_n_times, max_time_bins)
 
-        if freq_step > 1 or time_step > 1:
-            # Use scipy zoom for smoother resampling
-            zoom_freq = max_freq_bins / orig_n_freqs if orig_n_freqs > max_freq_bins else 1.0
-            zoom_time = max_time_bins / orig_n_times if orig_n_times > max_time_bins else 1.0
-            spec_data_resampled = ndimage.zoom(spec_data, (zoom_freq, zoom_time), order=1)
+        needs_freq_resample = orig_n_freqs > max_freq_bins
+        needs_time_resample = orig_n_times > max_time_bins
 
-            # Resample coordinate arrays
+        if needs_freq_resample or needs_time_resample:
+            # Resample frequency axis
+            if needs_freq_resample:
+                if freq_scale == 'log':
+                    # Create log-spaced target frequencies
+                    # Use geomspace for logarithmic spacing (requires positive values)
+                    freqs_resampled = np.geomspace(freqs[0], freqs[-1], target_n_freqs)
+                else:
+                    # Create linearly-spaced target frequencies
+                    freqs_resampled = np.linspace(freqs[0], freqs[-1], target_n_freqs)
+
+                # Interpolate spectrogram to target frequencies
+                # Interpolate along frequency axis (axis 0)
+                interp_func = interp1d(freqs, spec_data, axis=0, kind='linear',
+                                       bounds_error=False, fill_value='extrapolate')
+                spec_data_resampled = interp_func(freqs_resampled)
+            else:
+                spec_data_resampled = spec_data
+                freqs_resampled = freqs
+
+            # Resample time axis with linear spacing (time is already linear)
+            if needs_time_resample:
+                zoom_time = target_n_times / spec_data_resampled.shape[1]
+                spec_data_resampled = ndimage.zoom(spec_data_resampled, (1.0, zoom_time), order=1)
+                times_resampled = np.linspace(times[0], times[-1], spec_data_resampled.shape[1])
+            else:
+                times_resampled = times
+
             new_n_freqs, new_n_times = spec_data_resampled.shape
-            freqs_resampled = np.linspace(freqs[0], freqs[-1], new_n_freqs)
-            times_resampled = np.linspace(times[0], times[-1], new_n_times)
         else:
             spec_data_resampled = spec_data
             freqs_resampled = freqs
@@ -709,7 +738,7 @@ class AploseAudioProcessor:
 
         # Build JSON metadata (using resampled dimensions)
         json_data = {
-            'format_version': 1,
+            'format_version': 2,  # Version 2: supports log/linear frequency scale
             'png_file': png_filename,
             'encoding': {
                 'bit_depth': 16,
@@ -722,13 +751,15 @@ class AploseAudioProcessor:
                 'original_shape': [orig_n_freqs, orig_n_times],  # Original dimensions
                 'frequency_min': float(freqs[0]),
                 'frequency_max': float(freqs[-1]),
+                'frequency_scale': freq_scale,  # 'log' or 'linear'
                 'time_min': float(times[0]),
                 'time_max': float(times[-1]),
+                'time_scale': 'linear',  # Time bins are linearly spaced
                 'n_frequencies': new_n_freqs,
                 'n_times': new_n_times,
                 'original_n_frequencies': orig_n_freqs,
                 'original_n_times': orig_n_times,
-                'resampled': freq_step > 1 or time_step > 1
+                'resampled': needs_freq_resample or needs_time_resample
             },
             'audio': {
                 'sample_rate': sample_rate,
@@ -790,7 +821,8 @@ class AploseAudioProcessor:
                 wav_path, spec_data, freqs, times,
                 sample_rate, nfft, hop_length, metadata,
                 max_freq_bins=self.data_png_max_freq_bins,
-                max_time_bins=self.data_png_max_time_bins
+                max_time_bins=self.data_png_max_time_bins,
+                freq_scale=self.data_png_freq_scale
             )
             results.append((png_path, json_path))
 

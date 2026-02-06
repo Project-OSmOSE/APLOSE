@@ -501,9 +501,15 @@ class Spectrogram(AbstractFile, TimeSegment, models.Model):
             time_max = spec_info.get('time_max', 1)
             freq_min = spec_info.get('frequency_min', 0)
             freq_max = spec_info.get('frequency_max', 1)
+            freq_scale = spec_info.get('frequency_scale', 'linear')
 
             time_coords = np.linspace(time_min, time_max, n_times)
-            freq_coords = np.linspace(freq_min, freq_max, n_freqs)
+
+            # Use log or linear spacing based on frequency_scale
+            if freq_scale == 'log' and freq_min > 0:
+                freq_coords = np.geomspace(freq_min, freq_max, n_freqs)
+            else:
+                freq_coords = np.linspace(freq_min, freq_max, n_freqs)
 
             # Build attributes from JSON metadata
             attrs = {

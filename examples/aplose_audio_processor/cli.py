@@ -178,6 +178,14 @@ Examples:
         default=1000,
         help='Maximum time bins for data PNG (default: 1000). Larger values give more detail but slower loading.'
     )
+    parser.add_argument(
+        '--data-png-freq-scale',
+        type=str,
+        choices=['log', 'linear'],
+        default='log',
+        help='Frequency scale for data PNG resampling (default: log). '
+             'Log scale provides finer resolution at lower frequencies.'
+    )
 
     # Other options
     parser.add_argument(
@@ -235,6 +243,7 @@ Examples:
     if args.generate_data_png:
         print(f"  Data PNG export: enabled (16-bit grayscale + JSON metadata)")
         print(f"  Data PNG max dimensions: {args.data_png_max_freq} freq x {args.data_png_max_time} time bins")
+        print(f"  Data PNG frequency scale: {args.data_png_freq_scale}")
         print(f"  Data PNG files will be generated for all {len(args.fft_sizes)} FFT size(s)")
 
     processor = AploseAudioProcessor(
@@ -257,7 +266,8 @@ Examples:
         png_log_frequency=not args.png_linear_frequency,
         generate_data_png=args.generate_data_png,
         data_png_max_freq_bins=args.data_png_max_freq,
-        data_png_max_time_bins=args.data_png_max_time
+        data_png_max_time_bins=args.data_png_max_time,
+        data_png_freq_scale=args.data_png_freq_scale
     )
 
     # Process files
