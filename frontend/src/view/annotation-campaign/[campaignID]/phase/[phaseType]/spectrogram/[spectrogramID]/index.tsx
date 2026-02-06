@@ -11,8 +11,6 @@ import {
   ColormapReverseButton,
   ColormapSelect,
   ContrastSelect,
-  FrequencyScaleToggle,
-  ViewModeToggle,
 } from '@/features/Annotator/VisualConfiguration';
 import { ZoomButtons } from '@/features/Annotator/Zoom';
 import { PointerInfo } from '@/features/Annotator/Pointer';
@@ -81,8 +79,6 @@ export const AnnotatorPage: React.FC = () => {
 
           <div className={ styles.spectrogramConfiguration }>
             <AnalysisSelect/>
-            <ViewModeToggle/>
-            <FrequencyScaleToggle/>
             <div>
               <ColormapSelect/>
               <ColormapReverseButton/>

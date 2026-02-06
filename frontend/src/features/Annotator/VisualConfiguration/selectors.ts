@@ -20,15 +20,6 @@ export const selectIsColormapReversed = createSelector(
   selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectIsColormapReversed,
 )
 
-export const selectViewMode = createSelector(
-  selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectViewMode,
-)
-
-export const selectFrequencyScaleType = createSelector(
-  selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectFrequencyScaleType,
-)
-
-
 export const selectCanChangeColormap = createSelector(
   [
     selectAnnotatorCampaign,

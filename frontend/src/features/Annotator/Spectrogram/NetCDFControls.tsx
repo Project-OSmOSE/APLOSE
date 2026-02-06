@@ -1,7 +1,5 @@
 import React from 'react';
 import styles from './NetCDFSpectrogram.module.scss';
-import { useAppDispatch, useAppSelector } from '@/features/App';
-import { setFrequencyScaleType, selectFrequencyScaleType, FrequencyScaleType } from '@/features/Annotator/VisualConfiguration';
 
 interface NetCDFControlsProps {
   colorscale: string;
@@ -41,33 +39,8 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
   dataMin,
   dataMax,
 }) => {
-  const dispatch = useAppDispatch();
-  const yAxisScale = useAppSelector(selectFrequencyScaleType);
-
-  const handleScaleChange = (scale: FrequencyScaleType) => {
-    dispatch(setFrequencyScaleType(scale));
-  };
-
   return (
     <div className={styles.controlsPanel}>
-      <div className={styles.controlGroup}>
-        <label>Y-Axis Scale</label>
-        <div className={styles.buttonGroup}>
-          <button
-            onClick={() => handleScaleChange('linear')}
-            className={yAxisScale === 'linear' ? styles.active : ''}
-          >
-            Linear
-          </button>
-          <button
-            onClick={() => handleScaleChange('log')}
-            className={yAxisScale === 'log' ? styles.active : ''}
-          >
-            Log
-          </button>
-        </div>
-      </div>
-
       <div className={styles.controlGroup}>
         <label>Colorscale</label>
         <select value={colorscale} onChange={(e) => onColorscaleChange(e.target.value)}>

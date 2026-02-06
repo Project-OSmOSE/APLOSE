@@ -25,8 +25,6 @@ import {
   selectColormap,
   selectContrast,
   selectIsColormapReversed,
-  selectViewMode,
-  setViewMode,
 } from '@/features/Annotator/VisualConfiguration';
 import { selectAnalysis } from '@/features/Annotator/Analysis';
 import { NetCDFSpectrogram } from '@/features/Annotator/Spectrogram';
@@ -82,17 +80,9 @@ export const AnnotatorCanvasWindow: React.FC = () => {
   const contrast = useAppSelector(selectContrast);
   const colormap = useAppSelector(selectColormap);
   const isColormapReversed = useAppSelector(selectIsColormapReversed);
-  const viewMode = useAppSelector(selectViewMode);
 
-  // Auto-switch to Plotly view when interactive data is available (PNG or NetCDF)
-  useEffect(() => {
-    if (spectrogram?.isNetcdf && viewMode === 'png') {
-      dispatch(setViewMode('netcdf'));
-    }
-  }, [spectrogram?.isNetcdf]);
-
-  // Show NetCDF view only if viewMode is 'netcdf' AND NetCDF data is available
-  const showNetcdfView = viewMode === 'netcdf' && spectrogram?.isNetcdf;
+  // Show interactive Plotly view when NetCDF/data PNG is available
+  const showInteractiveView = spectrogram?.isNetcdf;
   useEffect(() => {
     draw()
   }, [
@@ -166,9 +156,9 @@ export const AnnotatorCanvasWindow: React.FC = () => {
   return <div className={ styles.spectrogramWindow }
               ref={ windowCanvasRef }
               onScroll={ onFileScrolled }
-              style={ { width: showNetcdfView ? '100%' : `${ Y_AXIS_WIDTH + containerWidth }px` } }>
+              style={ { width: showInteractiveView ? '100%' : `${ Y_AXIS_WIDTH + containerWidth }px` } }>
 
-    {!showNetcdfView && (
+    {!showInteractiveView && (
       <>
         <TimeAxis/>
         <FrequencyAxis/>
@@ -180,7 +170,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
          onPointerLeave={ clearPointer }
          onMouseDown={ e => e.stopPropagation() }>
 
-      {showNetcdfView ? (
+      {showInteractiveView ? (
         <NetCDFSpectrogram />
       ) : (
         <canvas className={ canDraw ? styles.drawable : '' }
@@ -192,9 +182,9 @@ export const AnnotatorCanvasWindow: React.FC = () => {
                 onClick={ seekAudio }/>
       )}
 
-      {!showNetcdfView && <TimeBar/>}
+      {!showInteractiveView && <TimeBar/>}
 
-      {!showNetcdfView && allAnnotations.map(annotation => <StrongAnnotation key={ annotation.id } annotation={ annotation }/>) }
+      {!showInteractiveView && allAnnotations.map(annotation => <StrongAnnotation key={ annotation.id } annotation={ annotation }/>) }
     </div>
 
     <AcousticFeatures/>
