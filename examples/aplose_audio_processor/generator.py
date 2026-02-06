@@ -924,13 +924,63 @@ class AploseAudioProcessor:
 
         return spec_db, freqs, times
 
+    def _datetime_format_to_regex(self, datetime_format: str) -> str:
+        """
+        Convert a strptime format string to a regex pattern.
+
+        Args:
+            datetime_format: strptime format string (e.g., '%Y%m%d%H%M%S').
+
+        Returns:
+            Regex pattern string that matches the datetime format.
+        """
+        import re
+
+        # Mapping of strptime directives to regex patterns
+        format_to_regex = {
+            '%Y': r'(\d{4})',      # 4-digit year
+            '%y': r'(\d{2})',      # 2-digit year
+            '%m': r'(\d{2})',      # 2-digit month
+            '%d': r'(\d{2})',      # 2-digit day
+            '%H': r'(\d{2})',      # 2-digit hour (24h)
+            '%I': r'(\d{2})',      # 2-digit hour (12h)
+            '%M': r'(\d{2})',      # 2-digit minute
+            '%S': r'(\d{2})',      # 2-digit second
+            '%f': r'(\d{6})',      # 6-digit microsecond
+            '%j': r'(\d{3})',      # 3-digit day of year
+            '%U': r'(\d{2})',      # Week number (Sunday start)
+            '%W': r'(\d{2})',      # Week number (Monday start)
+            '%p': r'(AM|PM)',      # AM/PM
+            '%z': r'([+-]\d{4})',  # UTC offset
+            '%Z': r'([A-Z]+)',     # Timezone name
+        }
+
+        # Build regex pattern from format string
+        pattern = datetime_format
+        for fmt, regex in format_to_regex.items():
+            pattern = pattern.replace(fmt, regex)
+
+        # Escape any remaining special regex characters (except our groups)
+        # But we need to be careful not to escape the parentheses we added
+        special_chars = '.^$*+?{}[]|'
+        for char in special_chars:
+            if char in pattern and char not in '()':
+                pattern = pattern.replace(char, '\\' + char)
+
+        return pattern
+
     def _parse_datetime(
         self,
         filename: str,
         duration: float
     ) -> tuple:
         """
-        Parse datetime from filename.
+        Parse datetime from filename using regex pattern matching.
+
+        Supports various datetime formats with or without separators:
+        - '%Y%m%d%H%M%S' -> matches '20240115143000'
+        - '%Y_%m_%d_%H_%M_%S' -> matches '2024_01_15_14_30_00'
+        - '%y%m%d%H%M%S' -> matches '240115143000'
 
         Args:
             filename: Filename without extension.
@@ -939,22 +989,65 @@ class AploseAudioProcessor:
         Returns:
             Tuple of (begin_datetime, end_datetime).
         """
-        # Try to parse datetime from filename
-        try:
-            # Try different positions in the filename
-            parts = filename.split('_')
-            parsed_dt = None
+        import re
+        from datetime import timedelta
 
-            # Try to parse the entire filename first
+        parsed_dt = None
+
+        # Convert datetime format to regex pattern
+        regex_pattern = self._datetime_format_to_regex(self.datetime_format)
+
+        try:
+            # First try: parse the entire filename
             try:
                 parsed_dt = datetime.strptime(filename, self.datetime_format)
             except ValueError:
-                # Try to find datetime pattern in parts
+                pass
+
+            # Second try: search for pattern anywhere in filename using regex
+            if not parsed_dt:
+                match = re.search(regex_pattern, filename)
+                if match:
+                    matched_str = match.group(0)
+                    try:
+                        parsed_dt = datetime.strptime(matched_str, self.datetime_format)
+                    except ValueError:
+                        pass
+
+            # Third try: for formats with separators, try splitting and recombining
+            if not parsed_dt and '_' in self.datetime_format:
+                parts = filename.split('_')
                 for i in range(len(parts)):
                     for j in range(i+1, min(i+7, len(parts)+1)):
                         candidate = '_'.join(parts[i:j])
                         try:
                             parsed_dt = datetime.strptime(candidate, self.datetime_format)
+                            break
+                        except ValueError:
+                            continue
+                    if parsed_dt:
+                        break
+
+            # Fourth try: extract all digit sequences and try common patterns
+            if not parsed_dt:
+                # Find all sequences of digits in the filename
+                digit_sequences = re.findall(r'\d+', filename)
+
+                # Try concatenating adjacent sequences to form datetime
+                for i in range(len(digit_sequences)):
+                    # Try single sequence
+                    seq = digit_sequences[i]
+                    try:
+                        parsed_dt = datetime.strptime(seq, self.datetime_format)
+                        break
+                    except ValueError:
+                        pass
+
+                    # Try concatenating with next sequences
+                    for j in range(i+1, min(i+6, len(digit_sequences)+1)):
+                        combined = ''.join(digit_sequences[i:j])
+                        try:
+                            parsed_dt = datetime.strptime(combined, self.datetime_format)
                             break
                         except ValueError:
                             continue
@@ -968,11 +1061,10 @@ class AploseAudioProcessor:
 
         except (ValueError, IndexError):
             # Fallback to current time if parsing fails
-            print(f"  Warning: Could not parse datetime from '{filename}', using current time")
+            print(f"  Warning: Could not parse datetime from '{filename}' using format '{self.datetime_format}', using current time")
             begin_dt = datetime.now()
 
         # Calculate end datetime
-        from datetime import timedelta
         end_dt = begin_dt + timedelta(seconds=duration)
 
         return begin_dt, end_dt
