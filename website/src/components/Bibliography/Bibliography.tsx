@@ -86,6 +86,7 @@ export const ConferenceDetail: React.FC<{ info: Conference | Poster }> = ({ info
 
 export const SoftwareDetail: React.FC<{ software: Software }> = ({ software }) => (
     <a href={ software.repositoryUrl ?? undefined }
+       onClick={e => e.stopPropagation()}
        target="_blank" rel="noopener noreferrer">
         { software.publicationPlace }
     </a>

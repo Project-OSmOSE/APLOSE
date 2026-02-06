@@ -668,16 +668,16 @@ type Query {
     instrumentDepth_Gt: Int
     instrumentDepth_Gte: Int
     timezone: String
-    harvestStartingDate: DateTime
-    harvestStartingDate_Lt: DateTime
-    harvestStartingDate_Lte: DateTime
-    harvestStartingDate_Gt: DateTime
-    harvestStartingDate_Gte: DateTime
-    harvestEndingDate: DateTime
-    harvestEndingDate_Lt: DateTime
-    harvestEndingDate_Lte: DateTime
-    harvestEndingDate_Gt: DateTime
-    harvestEndingDate_Gte: DateTime
+    recordStartDate: DateTime
+    recordStartDate_Lt: DateTime
+    recordStartDate_Lte: DateTime
+    recordStartDate_Gt: DateTime
+    recordStartDate_Gte: DateTime
+    recordEndDate: DateTime
+    recordEndDate_Lt: DateTime
+    recordEndDate_Lte: DateTime
+    recordEndDate_Gt: DateTime
+    recordEndDate_Gte: DateTime
     datasetId: ID
   ): ChannelConfigurationNodeNodeConnection
   channelConfigurationById(id: ID!): ChannelConfigurationNode
@@ -1549,7 +1549,7 @@ type DatasetNode implements ExtendedInterface {
   path: String!
   owner: UserNode!
   legacy: Boolean!
-  relatedChannelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
+  relatedChannelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, recordStartDate: DateTime, recordStartDate_Lt: DateTime, recordStartDate_Lte: DateTime, recordStartDate_Gt: DateTime, recordStartDate_Gte: DateTime, recordEndDate: DateTime, recordEndDate_Lt: DateTime, recordEndDate_Lte: DateTime, recordEndDate_Gt: DateTime, recordEndDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
   spectrogramAnalysis(
     """Query limit"""
     limit: Int
@@ -2166,7 +2166,7 @@ type EquipmentNode implements ExtendedInterface {
   channelConfigurationRecorderSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], samplingFrequency: Int, samplingFrequency_Lt: Int, samplingFrequency_Lte: Int, samplingFrequency_Gt: Int, samplingFrequency_Gte: Int, sampleDepth: Int, sampleDepth_Lt: Int, sampleDepth_Lte: Int, sampleDepth_Gt: Int, sampleDepth_Gte: Int, gain: Float, gain_Lt: Float, gain_Lte: Float, gain_Gt: Float, gain_Gte: Float, channelName: String, channelName_Icontains: String): ChannelConfigurationRecorderSpecificationNodeConnection!
   channelConfigurationHydrophoneSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], samplingFrequency: Int, samplingFrequency_Lt: Int, samplingFrequency_Lte: Int, samplingFrequency_Gt: Int, samplingFrequency_Gte: Int, sampleDepth: Int, sampleDepth_Lt: Int, sampleDepth_Lte: Int, sampleDepth_Gt: Int, sampleDepth_Gte: Int, gain: Float, gain_Lt: Float, gain_Lte: Float, gain_Gt: Float, gain_Gte: Float, channelName: String, channelName_Icontains: String): ChannelConfigurationRecorderSpecificationNodeConnection!
   channelConfigurationDetectorSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], minFrequency: Int, minFrequency_Lt: Int, minFrequency_Lte: Int, minFrequency_Gt: Int, minFrequency_Gte: Int, maxFrequency: Int, maxFrequency_Lt: Int, maxFrequency_Lte: Int, maxFrequency_Gt: Int, maxFrequency_Gte: Int, filter: String, filter_Icontains: String, configuration: String, configuration_Icontains: String): ChannelConfigurationDetectorSpecificationNodeConnection!
-  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
+  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, recordStartDate: DateTime, recordStartDate_Lt: DateTime, recordStartDate_Lte: DateTime, recordStartDate_Gt: DateTime, recordStartDate_Gte: DateTime, recordEndDate: DateTime, recordEndDate_Lt: DateTime, recordEndDate_Lte: DateTime, recordEndDate_Gt: DateTime, recordEndDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
   owner: ContactUnion
 }
 
@@ -2485,7 +2485,7 @@ type DeploymentNode implements ExtendedInterface {
   Optional description of deployment and recovery conditions (weather, technical issues,...).
   """
   description: String
-  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
+  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, recordStartDate: DateTime, recordStartDate_Lt: DateTime, recordStartDate_Lte: DateTime, recordStartDate_Gt: DateTime, recordStartDate_Gte: DateTime, recordEndDate: DateTime, recordEndDate_Lt: DateTime, recordEndDate_Lte: DateTime, recordEndDate_Gt: DateTime, recordEndDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
   mobilePositions: [DeploymentMobilePositionNode]
 }
 
@@ -2868,16 +2868,6 @@ type ChannelConfigurationNode implements ExtendedInterface {
   instrumentDepth: Int
   timezone: String
   extraInformation: String
-
-  """
-  Harvest start date at which the channel configuration was idle to record (in UTC).
-  """
-  harvestStartingDate: DateTime
-
-  """
-  Harvest stop date at which the channel configuration was stopped (in UTC).
-  """
-  harvestEndingDate: DateTime
 
   """Date at which the channel configuration started to record (in UTC)."""
   recordStartDate: DateTime
@@ -3924,7 +3914,7 @@ type AudioFileNode implements ExtendedInterface {
 
   """"""
   propertyId: BigInt!
-  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
+  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, recordStartDate: DateTime, recordStartDate_Lt: DateTime, recordStartDate_Lte: DateTime, recordStartDate_Gt: DateTime, recordStartDate_Gte: DateTime, recordEndDate: DateTime, recordEndDate_Lt: DateTime, recordEndDate_Lte: DateTime, recordEndDate_Gt: DateTime, recordEndDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
   samplingFrequency: Int!
   initialTimestamp: Int!
   duration: Int!
@@ -3959,7 +3949,7 @@ type DetectionFileNode implements ExtendedInterface {
 
   """"""
   propertyId: BigInt!
-  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
+  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, recordStartDate: DateTime, recordStartDate_Lt: DateTime, recordStartDate_Lte: DateTime, recordStartDate_Gt: DateTime, recordStartDate_Gte: DateTime, recordEndDate: DateTime, recordEndDate_Lt: DateTime, recordEndDate_Lte: DateTime, recordEndDate_Gt: DateTime, recordEndDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
   start: Int!
   end: Int!
 }

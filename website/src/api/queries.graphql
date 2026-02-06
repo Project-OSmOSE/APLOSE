@@ -182,6 +182,7 @@ query allBibliography {
         edges {
             node {
                 ... on ArticleNode {
+                    __typename
                     title
                     doi
                     status
@@ -213,6 +214,7 @@ query allBibliography {
                     articleNb
                 }
                 ... on ConferenceNode {
+                    __typename
                     title
                     doi
                     status
@@ -241,6 +243,7 @@ query allBibliography {
                     conferenceAbstractBookUrl
                 }
                 ... on PosterNode {
+                    __typename
                     title
                     doi
                     status
@@ -271,6 +274,7 @@ query allBibliography {
                     conferenceAbstractBookUrl
                 }
                 ... on SoftwareNode {
+                    __typename
                     title
                     doi
                     status
