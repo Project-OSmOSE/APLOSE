@@ -7,10 +7,10 @@ import styles from './styles.module.scss';
 import { AnnotatorCanvasWindow } from '@/features/Annotator/Canvas';
 import { AnalysisSelect } from '@/features/Annotator/Analysis';
 import {
-  BrightnessSelect,
-  ColormapReverseButton,
-  ColormapSelect,
-  ContrastSelect,
+    BrightnessSelect,
+    ColormapReverseButton,
+    ColormapSelect,
+    ContrastSelect,
 } from '@/features/Annotator/VisualConfiguration';
 import { ZoomButtons } from '@/features/Annotator/Zoom';
 import { PointerInfo } from '@/features/Annotator/Pointer';
@@ -29,97 +29,98 @@ import { selectPosition } from '@/features/Annotator/Pointer';
 import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 
 export const AnnotatorPage: React.FC = () => {
-  // const { usedColormap: colormapClass } = useAnnotatorInput(); // TODO: check use: colormapClass was in div classes
-  const { campaignID } = useParams<AploseNavParams>();
+    const { campaignID } = useParams<AploseNavParams>();
 
-  const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
-  const {
-    spectrogram,
-    isFetching,
-    error,
-  } = useAnnotationTask({ refetchOnMountOrArgChange: true });
-  const audio = useAudio()
+    const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
+    const {
+        spectrogram,
+        isFetching,
+        error,
+    } = useAnnotationTask({ refetchOnMountOrArgChange: true });
+    const audio = useAudio()
 
-  useEffect(() => {
-    if (spectrogram?.audioPath) audio.setSource(spectrogram.audioPath)
-    else audio.clearSource()
+    useEffect(() => {
+        if (spectrogram?.audioPath) audio.setSource(spectrogram.audioPath)
+        else audio.clearSource()
 
-    return () => {
-      audio.clearSource() // TODO: check behavior when navigating between files
-    }
-  }, [ spectrogram ]);
+        return () => {
+            audio.clearSource() // TODO: check behavior when navigating between files
+        }
+    }, [ spectrogram ]);
 
-  const [ _previousCampaignID, _setPreviousCampaignID ] = useState<string>();
-  useEffect(() => {
-    if (_previousCampaignID !== campaignID) {
-      _setPreviousCampaignID(campaignID)
-      audio.setPlaybackRate(1)
-    }
-  }, [ campaignID ]);
+    const [ _previousCampaignID, _setPreviousCampaignID ] = useState<string>();
+    useEffect(() => {
+        if (_previousCampaignID !== campaignID) {
+            _setPreviousCampaignID(campaignID)
+            audio.setPlaybackRate(1)
+        }
+    }, [ campaignID ]);
 
-  const position = useAppSelector(selectPosition)
-  useEffect(() => {
-    if (position) { // Disable scroll
-      document.getElementsByTagName('html')[0].style.overflowY = 'hidden';
-    } else { // Enable scroll
-      document.getElementsByTagName('html')[0].style.overflowY = 'unset';
-    }
-  }, [ position ]);
+    const position = useAppSelector(selectPosition)
+    useEffect(() => {
+        if (position) { // Disable scroll
+            document.getElementsByTagName('html')[0].style.overflowY = 'hidden';
+        } else { // Enable scroll
+            document.getElementsByTagName('html')[0].style.overflowY = 'unset';
+        }
+    }, [ position ]);
 
-  if (isFetching) return <AnnotatorSkeleton children={ <IonSpinner/> }/>
-  if (error) return <AnnotatorSkeleton children={ <WarningText error={ error }/> }/>
-  if (!spectrogram) return <AnnotatorSkeleton><div></div></AnnotatorSkeleton>
+    if (isFetching) return <AnnotatorSkeleton children={ <IonSpinner/> }/>
+    if (error) return <AnnotatorSkeleton children={ <WarningText error={ error }/> }/>
+    if (!spectrogram) return <AnnotatorSkeleton>
+        <div></div>
+    </AnnotatorSkeleton>
 
-  return <AnnotatorSkeleton>
-    <div className={ styles.annotator }>
+    return <AnnotatorSkeleton>
+        <div className={ styles.annotator }>
 
-      <div className={ styles.spectrogramContainer }>
+            <div className={ styles.spectrogramContainer }>
 
-        <div className={ styles.spectrogramData }>
+                <div className={ styles.spectrogramData }>
 
-          <div className={ styles.spectrogramConfiguration }>
-            <AnalysisSelect/>
-            <div>
-              <ColormapSelect/>
-              <ColormapReverseButton/>
+                    <div className={ styles.spectrogramConfiguration }>
+                        <AnalysisSelect/>
+                        <div>
+                            <ColormapSelect/>
+                            <ColormapReverseButton/>
+                        </div>
+                        <BrightnessSelect/>
+                        <ContrastSelect/>
+                        <ZoomButtons/>
+                    </div>
+
+                    <PointerInfo/>
+                    <SpectrogramInfo/>
+                </div>
+
+                <AnnotatorCanvasWindow/>
+
+                <div className={ styles.spectrogramNavigation }>
+                    <div className={ styles.audioNavigation }>
+                        <PlayPauseButton/>
+                        <PlaybackRateSelect/>
+                    </div>
+                    <NavigationButtons/>
+                    <CurrentTime/>
+                </div>
             </div>
-            <BrightnessSelect/>
-            <ContrastSelect/>
-            <ZoomButtons/>
-          </div>
 
-          <PointerInfo/>
-          <SpectrogramInfo/>
+            <div className={ styles.blocContainer }>
+                { isEditionAuthorized && <Fragment>
+                    <FocusedAnnotationBloc/>
+                    <LabelsBloc/>
+                    <ConfidenceBloc/>
+                    <CommentBloc/>
+                    <AnnotationsBloc/>
+                </Fragment> }
+            </div>
+
+            <div className={ styles.downloadButtons }>
+                <AudioDownloadButton/>
+                <SpectrogramDownloadButton/>
+            </div>
         </div>
-
-        <AnnotatorCanvasWindow/>
-
-        <div className={ styles.spectrogramNavigation }>
-          <div className={ styles.audioNavigation }>
-            <PlayPauseButton/>
-            <PlaybackRateSelect/>
-          </div>
-          <NavigationButtons/>
-          <CurrentTime/>
-        </div>
-      </div>
-
-      <div className={ styles.blocContainer }>
-        { isEditionAuthorized && <Fragment>
-            <FocusedAnnotationBloc/>
-            <LabelsBloc/>
-            <ConfidenceBloc/>
-            <CommentBloc/>
-            <AnnotationsBloc/>
-        </Fragment> }
-      </div>
-
-      <div className={ styles.downloadButtons }>
-        <AudioDownloadButton/>
-        <SpectrogramDownloadButton/>
-      </div>
-    </div>
-  </AnnotatorSkeleton>
+    </AnnotatorSkeleton>
 }
 
 export default AnnotatorPage

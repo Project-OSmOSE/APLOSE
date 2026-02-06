@@ -167,7 +167,8 @@ export const AnnotatorCanvasWindow: React.FC = () => {
             { spectrogram && analysis &&
                 <SpectrogramDisplay spectrogram={ spectrogram }
                                     analysis={ analysis }
-                                    zoomLevel={ zoom }/> }
+                                    zoomLevel={ zoom }
+                                    origin='wav'/> }
 
             <canvas className={ [ styles.interfaction, canDraw ? styles.drawable : '' ].join(' ') }
                     data-testid="drawable-canvas"
