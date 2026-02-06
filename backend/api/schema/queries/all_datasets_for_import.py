@@ -3,6 +3,7 @@ from os import listdir
 from os.path import join, isfile, exists
 from pathlib import Path
 from typing import Optional
+import traceback
 
 import graphene
 from django.conf import settings
@@ -31,15 +32,23 @@ def resolve_all_datasets_available_for_import() -> [ImportDatasetNode]:
         json_path = join(settings.DATASET_IMPORT_FOLDER, folder, "dataset.json")
         if not exists(json_path):
             continue
-        dataset = OSEkitDataset.from_json(Path(json_path))
-        d = ImportDatasetNode()
-        d.name = folder
-        d.path = folder
-        d.analysis = resolve_all_spectrogram_analysis_available_for_import(
-            dataset,
-            folder=folder,
-        )
-        if len(d.analysis) > 0:
+        try:
+            dataset = OSEkitDataset.from_json(Path(json_path))
+            d = ImportDatasetNode()
+            d.name = folder
+            d.path = folder
+            d.analysis = resolve_all_spectrogram_analysis_available_for_import(
+                dataset,
+                folder=folder,
+            )
+            if len(d.analysis) > 0:
+                available_datasets.append(d)
+        except Exception as e:
+            d = ImportDatasetNode()
+            d.name = folder
+            d.path = folder
+            d.failed = True
+            d.stack = traceback.format_exc()
             available_datasets.append(d)
     return available_datasets
 

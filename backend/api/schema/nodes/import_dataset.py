@@ -10,3 +10,6 @@ class ImportDatasetNode(ObjectType):
     path = NonNull(String)
     legacy = Boolean()
     analysis = List(ImportAnalysisNode)
+
+    failed = Boolean()
+    stack = String()
