@@ -620,7 +620,7 @@ class AploseAudioProcessor:
         nfft: int,
         hop_length: int,
         metadata: dict,
-        max_freq_bins: int = 500,
+        max_freq_bins: int = 1000,
         max_time_bins: int = 1000
     ) -> tuple:
         """
@@ -639,7 +639,7 @@ class AploseAudioProcessor:
             nfft: FFT size used.
             hop_length: Hop length used.
             metadata: Additional metadata from audio processing.
-            max_freq_bins: Maximum frequency bins (default 500).
+            max_freq_bins: Maximum frequency bins (default 1000).
             max_time_bins: Maximum time bins (default 1000).
 
         Returns:
