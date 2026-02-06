@@ -44,6 +44,10 @@ Examples:
   # Custom datetime format (no underscores)
   python -m aplose_audio_processor.cli -i audio_files/ -o output/ \\
     --datetime-format '%Y%m%d%H%M%S'
+
+  # Datetime with 2-digit year (e.g., 8712.250128055936.wav -> 2025-01-28 05:59:36)
+  python -m aplose_audio_processor.cli -i audio_files/ -o output/ \\
+    --datetime-format '%y%m%d%H%M%S'
         """
     )
 

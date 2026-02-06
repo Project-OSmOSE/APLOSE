@@ -572,7 +572,10 @@ class AploseAudioProcessor:
         Supports various datetime formats with or without separators:
         - '%Y%m%d%H%M%S' -> matches '20240115143000'
         - '%Y_%m_%d_%H_%M_%S' -> matches '2024_01_15_14_30_00'
-        - '%y%m%d%H%M%S' -> matches '240115143000'
+        - '%y%m%d%H%M%S' -> matches '240115143000' or '8712.250128055936'
+
+        The regex-based search finds the datetime pattern anywhere in the filename,
+        so prefixes, suffixes, and non-underscore separators (like dots) are handled.
 
         Args:
             filename: Filename without extension.
