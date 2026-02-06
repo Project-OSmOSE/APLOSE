@@ -102,43 +102,10 @@ class AnnotationSpectrogramNode(ExtendedNode):
     @graphene_django_optimizer.resolver_hints()
     def resolve_audio_path(self: Spectrogram, info, analysis_id: int):
         analysis: SpectrogramAnalysis = self.analysis.get(id=analysis_id)
-
-        audio_path: str
-        if analysis.dataset.legacy:
-            folders = PureWindowsPath(analysis.path).as_posix().split("/")
-            folders.pop()
-            audio_path = path.join(
-                analysis.dataset.path.split(
-                    settings.DATASET_EXPORT_PATH.stem + "/"
-                ).pop(),
-                PureWindowsPath(settings.DATASET_FILES_FOLDER),
-                PureWindowsPath(folders.pop()),
-                PureWindowsPath(f"{self.filename}.wav"),
-            )
-        else:
-            spectro_data: SpectroData = self.get_spectro_data_for(analysis)
-            audio_files = list(spectro_data.audio_data.files)
-            if len(audio_files) != 1:
-                return None
-
-            audio_file = audio_files[0]
-            if audio_file.begin != (
-                self.start if audio_file.begin.tz else timezone.make_naive(self.start)
-            ):
-                return None
-            if audio_file.end < (
-                self.end if audio_file.end.tz else timezone.make_naive(self.end)
-            ):
-                return None
-
-            audio_path = str(audio_file.path)
-            audio_path = (
-                audio_path.split(str(settings.DATASET_EXPORT_PATH)).pop().lstrip("\\")
-            )
         return path.join(
             PureWindowsPath(settings.STATIC_URL),
             PureWindowsPath(settings.DATASET_EXPORT_PATH),
-            PureWindowsPath(audio_path),
+            PureWindowsPath(self.get_audio_path(analysis)),
         )
 
     path = graphene.String(analysis_id=graphene.ID(required=True), required=True)
