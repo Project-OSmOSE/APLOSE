@@ -22,6 +22,7 @@ from .all_analysis_for_import import (
 
 def resolve_all_datasets_available_for_import() -> [ImportDatasetNode]:
     """List dataset available for import"""
+    # pylint: disable=broad-exception-caught
     folders = [
         f
         for f in listdir(settings.DATASET_IMPORT_FOLDER)
@@ -43,7 +44,7 @@ def resolve_all_datasets_available_for_import() -> [ImportDatasetNode]:
             )
             if len(d.analysis) > 0:
                 available_datasets.append(d)
-        except Exception as e:
+        except Exception:
             d = ImportDatasetNode()
             d.name = folder
             d.path = folder
