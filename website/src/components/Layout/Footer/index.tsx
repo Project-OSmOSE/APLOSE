@@ -10,9 +10,9 @@ export const Footer: React.FC = () => (
           <SiGithub className={styles.icon}/>
           Github
         </a>
-        <a className={styles.link} href="mailto:osmose@ensta-bretagne.fr" title="Contact OSmOSE">
+        <a className={styles.link} href="mailto:osmose@ensta.fr" title="Contact OSmOSE">
           <IoMailOutline className={styles.icon}/>
-          osmose@ensta-bretagne.fr
+          osmose@ensta.fr
         </a>
       </div>
 
