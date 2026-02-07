@@ -11,7 +11,6 @@ import { IonApp, setupIonicReact } from '@ionic/react';
 
 import { StoreProvider, useAppSelector } from '@/features/App';
 
-const Home = lazy(() => import('./view/home/Home'));
 const Login = lazy(() => import('./view/auth/Login'));
 const Account = lazy(() => import('./view/account'));
 const SqlQuery = lazy(() => import('./view/admin/sql'));
@@ -72,7 +71,7 @@ const AppContent: React.FC = () => {
   return (
     <Routes>
 
-      <Route index element={ <Suspense><Home/></Suspense> }/>
+      <Route index element={ <Navigate to="/login" replace/> }/>
 
       <Route path="login" element={ <Suspense><Login/></Suspense> }/>
 
