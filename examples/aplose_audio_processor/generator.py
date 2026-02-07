@@ -8,6 +8,8 @@ import re
 from pathlib import Path
 from typing import Optional, Union, List, Dict
 from datetime import datetime, timedelta
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from functools import partial
 import numpy as np
 from scipy import signal
 import soundfile as sf
@@ -43,7 +45,9 @@ class AploseAudioProcessor:
         generate_data_png: bool = True,
         data_png_max_freq_bins: int = 1000,
         data_png_max_time_bins: int = 1000,
-        data_png_freq_scale: str = 'log'
+        data_png_freq_scale: str = 'log',
+        max_duration: Optional[float] = None,
+        num_workers: int = 1
     ):
         """
         Initialize the APLOSE audio processor.
@@ -66,6 +70,8 @@ class AploseAudioProcessor:
             data_png_max_time_bins: Maximum time bins for data PNG resampling (default: 1000).
             data_png_freq_scale: Frequency scale for resampling ('log' or 'linear', default: 'log').
                                 Log scale provides finer resolution at lower frequencies.
+            max_duration: Maximum duration in seconds to use from each audio file. None = use entire file.
+            num_workers: Number of parallel workers for processing (default: 1 = sequential).
         """
         # Handle single or multiple FFT sizes
         if isinstance(fft_sizes, int):
@@ -83,14 +89,62 @@ class AploseAudioProcessor:
         self.data_png_max_freq_bins = data_png_max_freq_bins
         self.data_png_max_time_bins = data_png_max_time_bins
         self.data_png_freq_scale = data_png_freq_scale
+        self.max_duration = max_duration
+        self.num_workers = num_workers
 
         # Initialize audio processor
         self.audio_processor = AudioProcessor(
             target_sample_rate=target_sample_rate,
             snippet_duration=snippet_duration,
             overlap=snippet_overlap,
-            filename_prefix=filename_prefix
+            filename_prefix=filename_prefix,
+            max_duration=max_duration
         )
+
+    def _process_single_audio_file(
+        self,
+        audio_file: Path,
+        output_path: Path,
+        preserve_timestamps: bool
+    ) -> Dict[str, List[str]]:
+        """
+        Process a single audio file (helper for multiprocessing).
+
+        Args:
+            audio_file: Path to audio file.
+            output_path: Output directory path.
+            preserve_timestamps: Preserve timestamps in snippet filenames.
+
+        Returns:
+            Dictionary with 'wav_files' and 'png_files' lists.
+        """
+        wav_files = []
+        png_files = []
+
+        print(f"\nProcessing: {audio_file.name}")
+
+        # Process audio (resample and/or create snippets)
+        wav_results = self.audio_processor.process_audio_file(
+            str(audio_file),
+            str(output_path),
+            preserve_timestamps=preserve_timestamps
+        )
+
+        print(f"  Generated {len(wav_results)} audio file(s)")
+
+        # Process each audio file
+        for wav_path, metadata in wav_results:
+            wav_files.append(wav_path)
+
+            # Generate data PNGs + JSON for Plotly display
+            if self.generate_data_png:
+                data_png_results = self._create_data_pngs_for_all_fft_sizes(wav_path, metadata)
+                for png_path, json_path in data_png_results:
+                    png_files.append(png_path)
+                    print(f"    Created data PNG: {Path(png_path).name}")
+                    print(f"    Created metadata: {Path(json_path).name}")
+
+        return {'wav_files': wav_files, 'png_files': png_files}
 
     def process_folder(
         self,
@@ -142,29 +196,38 @@ class AploseAudioProcessor:
         all_wav_files = []
         all_png_files = []
 
-        for audio_file in sorted(audio_files):
-            print(f"\nProcessing: {audio_file.name}")
+        audio_files_sorted = sorted(audio_files)
 
-            # Process audio (resample and/or create snippets)
-            wav_results = self.audio_processor.process_audio_file(
-                str(audio_file),
-                str(output_path),
-                preserve_timestamps=preserve_timestamps
-            )
+        if self.num_workers > 1 and len(audio_files_sorted) > 1:
+            # Use multiprocessing for parallel processing
+            print(f"Using {self.num_workers} parallel workers")
+            with ProcessPoolExecutor(max_workers=self.num_workers) as executor:
+                futures = {
+                    executor.submit(
+                        self._process_single_audio_file,
+                        audio_file,
+                        output_path,
+                        preserve_timestamps
+                    ): audio_file
+                    for audio_file in audio_files_sorted
+                }
 
-            print(f"  Generated {len(wav_results)} audio file(s)")
-
-            # Process each audio file
-            for wav_path, metadata in wav_results:
-                all_wav_files.append(wav_path)
-
-                # Generate data PNGs + JSON for Plotly display
-                if self.generate_data_png:
-                    data_png_results = self._create_data_pngs_for_all_fft_sizes(wav_path, metadata)
-                    for png_path, json_path in data_png_results:
-                        all_png_files.append(png_path)
-                        print(f"    Created data PNG: {Path(png_path).name}")
-                        print(f"    Created metadata: {Path(json_path).name}")
+                for future in as_completed(futures):
+                    audio_file = futures[future]
+                    try:
+                        result = future.result()
+                        all_wav_files.extend(result['wav_files'])
+                        all_png_files.extend(result['png_files'])
+                    except Exception as e:
+                        print(f"Error processing {audio_file.name}: {e}")
+        else:
+            # Sequential processing
+            for audio_file in audio_files_sorted:
+                result = self._process_single_audio_file(
+                    audio_file, output_path, preserve_timestamps
+                )
+                all_wav_files.extend(result['wav_files'])
+                all_png_files.extend(result['png_files'])
 
         # Restore original datetime_format
         self.datetime_format = original_datetime_format

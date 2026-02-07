@@ -18,7 +18,8 @@ class AudioProcessor:
         target_sample_rate: Optional[int] = None,
         snippet_duration: Optional[float] = None,
         overlap: float = 0.0,
-        filename_prefix: Optional[str] = None
+        filename_prefix: Optional[str] = None,
+        max_duration: Optional[float] = None
     ):
         """
         Initialize AudioProcessor.
@@ -28,11 +29,13 @@ class AudioProcessor:
             snippet_duration: Duration of each snippet in seconds. If None, processes entire file.
             overlap: Overlap between consecutive snippets in seconds (default: 0.0).
             filename_prefix: Optional prefix to add to all output filenames.
+            max_duration: Maximum duration in seconds to use from the audio file. If None, uses entire file.
         """
         self.target_sample_rate = target_sample_rate
         self.snippet_duration = snippet_duration
         self.overlap = overlap
         self.filename_prefix = filename_prefix
+        self.max_duration = max_duration
 
     def process_audio_file(
         self,
@@ -53,6 +56,12 @@ class AudioProcessor:
         """
         # Read audio file
         audio, original_sr = sf.read(input_path)
+
+        # Truncate to max_duration if specified
+        if self.max_duration is not None:
+            max_samples = int(self.max_duration * original_sr)
+            if len(audio) > max_samples:
+                audio = audio[:max_samples]
 
         # Resample if needed
         if self.target_sample_rate and self.target_sample_rate != original_sr:

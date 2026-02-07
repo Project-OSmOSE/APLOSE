@@ -33,6 +33,14 @@ Examples:
   python -m aplose_audio_processor.cli -i audio_files/ -o output/ \\
     --sample-rate 48000 --snippet-duration 60
 
+  # Use only first 5 minutes of each audio file
+  python -m aplose_audio_processor.cli -i audio_files/ -o output/ \\
+    --max-duration 300
+
+  # Process files in parallel with 4 workers
+  python -m aplose_audio_processor.cli -i audio_files/ -o output/ \\
+    --workers 4
+
   # Multi-FFT with 3 different FFT sizes
   python -m aplose_audio_processor.cli -i audio_files/ -o output/ \\
     --fft-sizes 1024,2048,4096
@@ -69,6 +77,13 @@ Examples:
         type=int,
         default=None,
         help='Target sample rate in Hz (default: keep original)'
+    )
+    parser.add_argument(
+        '--max-duration',
+        type=float,
+        default=None,
+        help='Maximum duration in seconds to use from each audio file (default: use entire file). '
+             'E.g., --max-duration 300 to use only the first 5 minutes.'
     )
     parser.add_argument(
         '--snippet-duration',
@@ -173,6 +188,13 @@ Examples:
         default='.wav,.WAV',
         help='Comma-separated list of audio file extensions to process (default: .wav,.WAV)'
     )
+    parser.add_argument(
+        '--workers',
+        type=int,
+        default=1,
+        help='Number of parallel workers for processing (default: 1 = sequential). '
+             'Use higher values to process multiple files in parallel.'
+    )
 
     args = parser.parse_args()
 
@@ -193,9 +215,13 @@ Examples:
     print(f"  FFT sizes: {args.fft_sizes}")
     print(f"  Window: {args.window}")
     print(f"  Sample rate: {args.sample_rate if args.sample_rate else 'original'}")
+    if args.max_duration:
+        print(f"  Max duration: {args.max_duration}s ({args.max_duration / 60:.1f} minutes)")
     print(f"  Snippet duration: {args.snippet_duration if args.snippet_duration else 'full file'}")
     if args.snippet_duration:
         print(f"  Snippet overlap: {args.overlap}s")
+    if args.workers > 1:
+        print(f"  Parallel workers: {args.workers}")
     if args.filename_prefix:
         print(f"  Filename prefix: {args.filename_prefix}")
     if args.normalize_audio:
@@ -228,7 +254,9 @@ Examples:
         generate_data_png=generate_data_png,
         data_png_max_freq_bins=args.data_png_max_freq,
         data_png_max_time_bins=args.data_png_max_time,
-        data_png_freq_scale=args.data_png_freq_scale
+        data_png_freq_scale=args.data_png_freq_scale,
+        max_duration=args.max_duration,
+        num_workers=args.workers
     )
 
     # Process files
