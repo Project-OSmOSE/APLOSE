@@ -2,3 +2,7 @@
   pk: 1
   fields:
     name: Greys
+- model: api.colormap
+  pk: 2
+  fields:
+    name: Greys_r
