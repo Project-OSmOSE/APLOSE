@@ -120,13 +120,18 @@ export const NetCDFSpectrogram: React.FC = () => {
   const plotData = useMemo(() => {
     if (!netcdfData) return [];
 
+    // Handle reversed colorscales (e.g., Greys_r -> Greys with reversescale: true)
+    const isReversed = colorscale.endsWith('_r');
+    const actualColorscale = isReversed ? colorscale.slice(0, -2) : colorscale;
+
     return [
       {
         type: 'heatmap' as const,
         z: netcdfData.spectrogram,
         x: netcdfData.time,
         y: netcdfData.frequency,
-        colorscale: colorscale,
+        colorscale: actualColorscale,
+        reversescale: isReversed,
         zmin: zmin,
         zmax: zmax,
         showscale: false,
