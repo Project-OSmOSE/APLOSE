@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { LinearScaleService, LogScaleService, MultiScaleService } from '@/components/ui';
+import { LinearScaleService, LogScaleService } from '@/components/ui';
 import { useAnnotationTask } from '@/api';
 import { selectAnalysis } from '@/features/Annotator/Analysis';
 import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
