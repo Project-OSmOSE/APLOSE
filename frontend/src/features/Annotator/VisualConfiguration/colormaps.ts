@@ -2,10 +2,11 @@ type ColorStep = {
   index: number;
   rgb: number[];
 }
-export type Colormap = 'Greys' | 'jet' | 'hsv' | 'YlGnBu' | 'YlOrRd' | 'viridis' | 'inferno' | 'magma' | 'plasma';
+export type Colormap = 'Greys' | 'Greys_r' | 'jet' | 'hsv' | 'YlGnBu' | 'YlOrRd' | 'viridis' | 'inferno' | 'magma' | 'plasma';
 
 export const COLORMAPS: Record<Colormap, ColorStep[]> = {
   'Greys': [ { 'index': 0, 'rgb': [ 0, 0, 0 ] }, { 'index': 1, 'rgb': [ 255, 255, 255 ] } ],
+  'Greys_r': [ { 'index': 0, 'rgb': [ 255, 255, 255 ] }, { 'index': 1, 'rgb': [ 0, 0, 0 ] } ],
   'jet': [ { 'index': 0, 'rgb': [ 0, 0, 131 ] }, { 'index': 0.125, 'rgb': [ 0, 60, 170 ] }, {
     'index': 0.375,
     'rgb': [ 5, 255, 255 ],
