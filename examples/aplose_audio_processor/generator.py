@@ -47,7 +47,8 @@ class AploseAudioProcessor:
         data_png_max_time_bins: int = 1000,
         data_png_freq_scale: str = 'log',
         max_duration: Optional[float] = None,
-        num_workers: int = 1
+        num_workers: int = 1,
+        min_frequency: Optional[float] = None
     ):
         """
         Initialize the APLOSE audio processor.
@@ -72,6 +73,7 @@ class AploseAudioProcessor:
                                 Log scale provides finer resolution at lower frequencies.
             max_duration: Maximum duration in seconds to use from each audio file. None = use entire file.
             num_workers: Number of parallel workers for processing (default: 1 = sequential).
+            min_frequency: Minimum frequency in Hz to include in spectrogram. None = include all frequencies.
         """
         # Handle single or multiple FFT sizes
         if isinstance(fft_sizes, int):
@@ -91,6 +93,7 @@ class AploseAudioProcessor:
         self.data_png_freq_scale = data_png_freq_scale
         self.max_duration = max_duration
         self.num_workers = num_workers
+        self.min_frequency = min_frequency
 
         # Initialize audio processor
         self.audio_processor = AudioProcessor(
@@ -578,6 +581,12 @@ class AploseAudioProcessor:
         # This makes freqs[0] = fs/nfft instead of 0
         spec_db = spec_db[1:, :]
         freqs = freqs[1:]
+
+        # Apply minimum frequency filter if specified
+        if self.min_frequency is not None and self.min_frequency > 0:
+            freq_mask = freqs >= self.min_frequency
+            spec_db = spec_db[freq_mask, :]
+            freqs = freqs[freq_mask]
 
         return spec_db, freqs, times
 

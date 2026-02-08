@@ -141,6 +141,13 @@ Examples:
         action='store_true',
         help='Normalize audio to [-1, 1] before computing spectrogram'
     )
+    parser.add_argument(
+        '--min-frequency',
+        type=float,
+        default=None,
+        help='Minimum frequency in Hz to include in spectrogram (default: include all frequencies). '
+             'E.g., --min-frequency 10 to exclude frequencies below 10 Hz.'
+    )
 
     # Data PNG export options (enabled by default)
     parser.add_argument(
@@ -226,6 +233,8 @@ Examples:
         print(f"  Filename prefix: {args.filename_prefix}")
     if args.normalize_audio:
         print("  Audio normalization: enabled")
+    if args.min_frequency is not None:
+        print(f"  Min frequency: {args.min_frequency} Hz")
     if args.db_fullscale is not None:
         print(f"  dB full scale: {args.db_fullscale} dB re 1 µPa")
     else:
@@ -256,7 +265,8 @@ Examples:
         data_png_max_time_bins=args.data_png_max_time,
         data_png_freq_scale=args.data_png_freq_scale,
         max_duration=args.max_duration,
-        num_workers=args.workers
+        num_workers=args.workers,
+        min_frequency=args.min_frequency
     )
 
     # Process files
