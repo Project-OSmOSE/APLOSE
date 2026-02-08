@@ -13,6 +13,9 @@ type VisualConfigurationState = {
   colormap?: Colormap;
   isColormapReversed: boolean;
   frequencyScaleType: FrequencyScaleType; // 'linear' or 'log' for y-axis
+  plotlyColorscale: string; // Colorscale for Plotly spectrogram
+  plotlyZmin: number | null; // Min dB value for Plotly colorscale (null = use data min)
+  plotlyZmax: number | null; // Max dB value for Plotly colorscale (null = use data max)
 
   _campaignDefaultColormap?: Colormap
   _campaignDefaultReversedColormap?: boolean
@@ -25,6 +28,9 @@ const initialState: VisualConfigurationState = {
   colormap: undefined,
   isColormapReversed: false,
   frequencyScaleType: 'log', // Default to log scale
+  plotlyColorscale: 'Viridis', // Default Plotly colorscale
+  plotlyZmin: null,
+  plotlyZmax: null,
 
   _campaignDefaultColormap: undefined,
   _campaignDefaultReversedColormap: undefined,
@@ -56,6 +62,19 @@ export const AnnotatorVisualConfigurationSlice = createSlice({
     },
     setFrequencyScaleType: (state, action: { payload: FrequencyScaleType }) => {
       state.frequencyScaleType = action.payload;
+    },
+    setPlotlyColorscale: (state, action: { payload: string }) => {
+      state.plotlyColorscale = action.payload;
+    },
+    setPlotlyZmin: (state, action: { payload: number | null }) => {
+      state.plotlyZmin = action.payload;
+    },
+    setPlotlyZmax: (state, action: { payload: number | null }) => {
+      state.plotlyZmax = action.payload;
+    },
+    resetPlotlyZRange: (state) => {
+      state.plotlyZmin = null;
+      state.plotlyZmax = null;
     },
   },
   extraReducers: builder => {
@@ -91,6 +110,9 @@ export const AnnotatorVisualConfigurationSlice = createSlice({
     selectColormap: state => state.colormap,
     selectIsColormapReversed: state => state.isColormapReversed,
     selectFrequencyScaleType: state => state.frequencyScaleType,
+    selectPlotlyColorscale: state => state.plotlyColorscale,
+    selectPlotlyZmin: state => state.plotlyZmin,
+    selectPlotlyZmax: state => state.plotlyZmax,
   },
 })
 
@@ -100,5 +122,9 @@ export const {
   setColormap,
   revertColormap,
   setFrequencyScaleType,
+  setPlotlyColorscale,
+  setPlotlyZmin,
+  setPlotlyZmax,
+  resetPlotlyZRange,
 } = AnnotatorVisualConfigurationSlice.actions
 

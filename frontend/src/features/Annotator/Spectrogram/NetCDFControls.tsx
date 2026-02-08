@@ -1,15 +1,20 @@
 import React from 'react';
 import styles from './NetCDFSpectrogram.module.scss';
 import { useAppDispatch, useAppSelector } from '@/features/App';
-import { setFrequencyScaleType, selectFrequencyScaleType, FrequencyScaleType } from '@/features/Annotator/VisualConfiguration';
+import {
+  setFrequencyScaleType,
+  selectFrequencyScaleType,
+  FrequencyScaleType,
+  setPlotlyColorscale,
+  selectPlotlyColorscale,
+  setPlotlyZmin,
+  setPlotlyZmax,
+  selectPlotlyZmin,
+  selectPlotlyZmax,
+  resetPlotlyZRange,
+} from '@/features/Annotator/VisualConfiguration';
 
 interface NetCDFControlsProps {
-  colorscale: string;
-  onColorscaleChange: (colorscale: string) => void;
-  zmin: number;
-  zmax: number;
-  onZminChange: (zmin: number) => void;
-  onZmaxChange: (zmax: number) => void;
   dataMin: number;
   dataMax: number;
 }
@@ -33,20 +38,37 @@ const COLORSCALES = [
 ];
 
 export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
-  colorscale,
-  onColorscaleChange,
-  zmin,
-  zmax,
-  onZminChange,
-  onZmaxChange,
   dataMin,
   dataMax,
 }) => {
   const dispatch = useAppDispatch();
   const frequencyScale = useAppSelector(selectFrequencyScaleType);
+  const colorscale = useAppSelector(selectPlotlyColorscale);
+  const storedZmin = useAppSelector(selectPlotlyZmin);
+  const storedZmax = useAppSelector(selectPlotlyZmax);
+
+  // Use stored values if available, otherwise use data range
+  const zmin = storedZmin ?? dataMin;
+  const zmax = storedZmax ?? dataMax;
 
   const handleScaleChange = (scale: FrequencyScaleType) => {
     dispatch(setFrequencyScaleType(scale));
+  };
+
+  const handleColorscaleChange = (scale: string) => {
+    dispatch(setPlotlyColorscale(scale));
+  };
+
+  const handleZminChange = (value: number) => {
+    dispatch(setPlotlyZmin(value));
+  };
+
+  const handleZmaxChange = (value: number) => {
+    dispatch(setPlotlyZmax(value));
+  };
+
+  const handleResetRange = () => {
+    dispatch(resetPlotlyZRange());
   };
 
   return (
@@ -71,7 +93,7 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
 
       <div className={styles.controlGroup}>
         <label>Colorscale</label>
-        <select value={colorscale} onChange={(e) => onColorscaleChange(e.target.value)}>
+        <select value={colorscale} onChange={(e) => handleColorscaleChange(e.target.value)}>
           {COLORSCALES.map((scale) => (
             <option key={scale} value={scale}>
               {scale}
@@ -90,7 +112,7 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
           max={dataMax}
           step={(dataMax - dataMin) / 100}
           value={zmin}
-          onChange={(e) => onZminChange(parseFloat(e.target.value))}
+          onChange={(e) => handleZminChange(parseFloat(e.target.value))}
         />
       </div>
 
@@ -104,16 +126,13 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
           max={dataMax}
           step={(dataMax - dataMin) / 100}
           value={zmax}
-          onChange={(e) => onZmaxChange(parseFloat(e.target.value))}
+          onChange={(e) => handleZmaxChange(parseFloat(e.target.value))}
         />
       </div>
 
       <div className={styles.controlGroup}>
         <button
-          onClick={() => {
-            onZminChange(dataMin);
-            onZmaxChange(dataMax);
-          }}
+          onClick={handleResetRange}
           className={styles.resetButton}
         >
           Reset Range

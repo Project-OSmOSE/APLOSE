@@ -11,7 +11,7 @@ import { selectFocusConfidence } from '@/features/Annotator/Confidence';
 import { selectIsDrawingEnabled } from '@/features/Annotator/UX';
 import { useAudio } from '@/features/Audio';
 import { focusAnnotation } from '@/features/Annotator/Annotation/slice';
-import { selectFrequencyScaleType } from '@/features/Annotator/VisualConfiguration';
+import { selectFrequencyScaleType, selectPlotlyColorscale, selectPlotlyZmin, selectPlotlyZmax } from '@/features/Annotator/VisualConfiguration';
 
 interface NetCDFData {
   spectrogram: number[][];
@@ -47,13 +47,11 @@ export const NetCDFSpectrogram: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Colorscale and threshold controls
-  const [colorscale, setColorscale] = useState('Viridis');
-  const [zmin, setZmin] = useState<number>(0);
-  const [zmax, setZmax] = useState<number>(0);
-
-  // Y-axis scale from Redux state
+  // Y-axis scale, colorscale, and z-range from Redux state (persists across files)
   const yAxisScale = useAppSelector(selectFrequencyScaleType);
+  const colorscale = useAppSelector(selectPlotlyColorscale);
+  const storedZmin = useAppSelector(selectPlotlyZmin);
+  const storedZmax = useAppSelector(selectPlotlyZmax);
 
   // Plot reference for managing dragmode
   const plotRef = useRef<any>(null);
@@ -110,13 +108,9 @@ export const NetCDFSpectrogram: React.FC = () => {
     return { min, max };
   }, [netcdfData]);
 
-  // Initialize threshold values when data loads
-  useEffect(() => {
-    if (dataRange.min !== Infinity && dataRange.max !== -Infinity) {
-      setZmin(dataRange.min);
-      setZmax(dataRange.max);
-    }
-  }, [dataRange]);
+  // Use stored z-range if available, otherwise use data range
+  const zmin = storedZmin ?? dataRange.min;
+  const zmax = storedZmax ?? dataRange.max;
 
   const plotData = useMemo(() => {
     if (!netcdfData) return [];
@@ -437,12 +431,6 @@ export const NetCDFSpectrogram: React.FC = () => {
   return (
     <div className={styles.netcdfContainer}>
       <NetCDFControls
-        colorscale={colorscale}
-        onColorscaleChange={setColorscale}
-        zmin={zmin}
-        zmax={zmax}
-        onZminChange={setZmin}
-        onZmaxChange={setZmax}
         dataMin={dataRange.min}
         dataMax={dataRange.max}
       />

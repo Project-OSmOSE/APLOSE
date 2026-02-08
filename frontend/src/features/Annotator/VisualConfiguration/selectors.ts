@@ -24,6 +24,18 @@ export const selectFrequencyScaleType = createSelector(
   selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectFrequencyScaleType,
 )
 
+export const selectPlotlyColorscale = createSelector(
+  selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectPlotlyColorscale,
+)
+
+export const selectPlotlyZmin = createSelector(
+  selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectPlotlyZmin,
+)
+
+export const selectPlotlyZmax = createSelector(
+  selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectPlotlyZmax,
+)
+
 export const selectCanChangeColormap = createSelector(
   [
     selectAnnotatorCampaign,
