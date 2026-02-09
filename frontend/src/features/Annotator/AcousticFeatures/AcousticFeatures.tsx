@@ -32,7 +32,11 @@ export const AcousticFeatures: React.FC = () => {
     useEffect(() => {
         if (prevAnnotationID === focusedAnnotation?.id) return;
         if (!focusedAnnotation?.endTime) return;
-        const newLeft = timeScale.valueToPosition(focusedAnnotation.endTime) + 80;
+        let newLeft = timeScale.valueToPosition(focusedAnnotation.endTime) + 80;
+        if (newLeft > initialLeft) {
+            const otherSideLeft = timeScale.valueToPosition(focusedAnnotation.endTime) - 80 - 500;
+            if (otherSideLeft > 0) newLeft = otherSideLeft
+        }
         setPrevAnnotationID(focusedAnnotation.id);
         setLeft(newLeft);
     }, [ focusedAnnotation ]);
