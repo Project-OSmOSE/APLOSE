@@ -63,19 +63,33 @@ class AnnotationSpectrogramConnectionField(AuthenticatedPaginationConnectionFiel
                 # pylint: disable=no-member
                 current_spectrogram = Spectrogram.objects.get(pk=spectrogram_id)
 
-                previous: Spectrogram = self.iterable.filter(
-                    Q(start__lt=current_spectrogram.start)
-                    | Q(start=current_spectrogram.start, id__lt=current_spectrogram.id)
-                ).last()
+                previous: Spectrogram = (
+                    self.iterable.filter(
+                        Q(start__lt=current_spectrogram.start)
+                        | Q(
+                            start=current_spectrogram.start,
+                            id__lt=current_spectrogram.id,
+                        )
+                    )
+                    .order_by("start", "id")
+                    .last()
+                )
                 return previous.id if previous else None
 
             def resolve_next_spectrogram_id(self, info, spectrogram_id: int, **kwargs):
                 current_spectrogram = Spectrogram.objects.get(pk=spectrogram_id)
 
-                next: Spectrogram = self.iterable.filter(
-                    Q(start__gt=current_spectrogram.start)
-                    | Q(start=current_spectrogram.start, id__gt=current_spectrogram.id)
-                ).first()
+                next: Spectrogram = (
+                    self.iterable.filter(
+                        Q(start__gt=current_spectrogram.start)
+                        | Q(
+                            start=current_spectrogram.start,
+                            id__gt=current_spectrogram.id,
+                        )
+                    )
+                    .order_by("start", "id")
+                    .first()
+                )
                 return next.id if next else None
 
             def resolve_current_index(self, info, spectrogram_id: int):
