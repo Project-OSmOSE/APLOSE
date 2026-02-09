@@ -1242,8 +1242,14 @@ type AcousticDetectorSpecificationNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
   detectedLabels: [LabelNode]
+
+  """Minimum frequency of the detections (in Hertz)."""
   minFrequency: Int
+
+  """Maximum frequency of the detections (in Hertz)."""
   maxFrequency: Int
+
+  """Name of the algorithm used by the detector."""
   algorithmName: String
   detectorSet(offset: Int, before: String, after: String, first: Int, last: Int): DetectorNodeConnection!
 }
@@ -2153,11 +2159,17 @@ type EquipmentNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
   model: EquipmentModelNode!
+
+  """Serial number of the equipment."""
   serialNumber: String!
 
   """"""
   ownerId: BigInt!
+
+  """Date of purchase."""
   purchaseDate: Date
+
+  """Name of the equipment."""
   name: String
 
   """Required only for hydrophones"""
@@ -2173,10 +2185,18 @@ type EquipmentNode implements ExtendedInterface {
 type EquipmentModelNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
+
+  """Name of the model"""
   name: String!
   provider: InstitutionNode!
+
+  """Number of battery slots"""
   batterySlotsCount: Int
+
+  """Type of battery supported by the model"""
   batteryType: String
+
+  """List of cables required to use the model"""
   cables: String
   equipments(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], serialNumber: String, serialNumber_Icontains: String, purchaseDate: Date, purchaseDate_Lt: Date, purchaseDate_Lte: Date, purchaseDate_Gt: Date, purchaseDate_Gte: Date, name: String, name_Icontains: String, sensitivity: Float, sensitivity_Lt: Float, sensitivity_Lte: Float, sensitivity_Gt: Float, sensitivity_Gte: Float, sensitivity_Isnull: Boolean): EquipmentNodeConnection!
   specifications: [EquipmentSpecificationUnion]
@@ -2353,7 +2373,11 @@ type MaintenanceNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
   type: MaintenanceTypeNode!
+
+  """Date of the maintenance operation"""
   date: Date!
+
+  """Description of the maintenance"""
   description: String
   maintainer: PersonNode!
   maintainerInstitution: InstitutionNode!
@@ -2364,8 +2388,14 @@ type MaintenanceNode implements ExtendedInterface {
 type MaintenanceTypeNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
-  name: String!
+
+  """Name of the maintenance type"""
+  name: String
+
+  """Description of this type of maintenance"""
   description: String
+
+  """Recommended interval of execution for this type of maintenance"""
   interval: Float
   maintenances(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], typeId: ID, typeId_In: [ID], maintainerId: ID, maintainerId_In: [ID], maintainerInstitutionId: ID, maintainerInstitutionId_In: [ID], platformId: ID, platformId_In: [ID], equipmentId: ID, equipmentId_In: [ID], date: Date, date_Lt: Date, date_Lte: Date, date_Gt: Date, date_Gte: Date): MaintenanceNodeConnection!
 }
@@ -2378,7 +2408,11 @@ type PlatformNode implements ExtendedInterface {
   ownerId: BigInt
   provider: InstitutionNode!
   type: PlatformTypeNode!
+
+  """Name of the platform"""
   name: String
+
+  """Description of the platform"""
   description: String
   maintenances(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], typeId: ID, typeId_In: [ID], maintainerId: ID, maintainerId_In: [ID], maintainerInstitutionId: ID, maintainerInstitutionId_In: [ID], platformId: ID, platformId_In: [ID], equipmentId: ID, equipmentId_In: [ID], date: Date, date_Lt: Date, date_Lte: Date, date_Gt: Date, date_Gte: Date): MaintenanceNodeConnection!
 
@@ -2397,7 +2431,11 @@ scalar BigInt
 type PlatformTypeNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
+
+  """Name of the platform"""
   name: String!
+
+  """Is this platform mobile"""
   isMobile: Boolean!
   platforms(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], ownerId: BigInt, ownerId_In: [BigInt], providerId: ID, providerId_In: [ID], name: String, name_Icontains: String): PlatformNodeConnection!
 }
@@ -2505,7 +2543,11 @@ type ProjectNodeOverride implements ExtendedInterface {
   Description of the type of the project (e.g., research, marine renewable energies, long monitoring,...).
   """
   projectType: ProjectTypeNode
+
+  """Start date of the project"""
   startDate: Date
+
+  """End date of the project"""
   endDate: Date
 
   """Description of the goal of the project."""
@@ -2866,6 +2908,8 @@ type ChannelConfigurationNode implements ExtendedInterface {
 
   """Immersion depth of instrument (in positive meters)."""
   instrumentDepth: Int
+
+  """Timezone of the recording."""
   timezone: String
   extraInformation: String
 
@@ -2906,7 +2950,11 @@ type ChannelConfigurationDetectorSpecificationNode implements ExtendedInterface 
 
   """Maximum frequency (in Hertz)."""
   maxFrequency: Int
+
+  """Filter applied to the configuration"""
   filter: String
+
+  """Description of the configuration"""
   configuration: String
   channelConfiguration: ChannelConfigurationNode
 }
@@ -3030,7 +3078,11 @@ enum HydrophoneDirectivityEnum {
 type StorageSpecificationNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
+
+  """Capacity of the storage."""
   capacity: [String!]!
+
+  """Type of storage."""
   type: String
 }
 
@@ -3040,8 +3092,14 @@ type RecorderSpecificationNode implements ExtendedInterface {
 
   """Number of all the channels on the recorder, even if unused."""
   channelsCount: Int
+
+  """Number of all the storage slots on the recorder."""
   storageSlotsCount: Int
+
+  """Maximum storage capacity supported by the recorder."""
   storageMaximumCapacity: [String!]
+
+  """Type of storage supported by the recorder."""
   storageType: String
 }
 
@@ -3998,7 +4056,11 @@ type ProjectNode implements ExtendedInterface {
   Description of the type of the project (e.g., research, marine renewable energies, long monitoring,...).
   """
   projectType: ProjectTypeNode
+
+  """Start date of the project"""
   startDate: Date
+
+  """End date of the project"""
   endDate: Date
 
   """Description of the goal of the project."""

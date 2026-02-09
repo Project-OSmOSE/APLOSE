@@ -94,6 +94,7 @@ query allDeployments($projectID: Decimal) {
             channelConfigurations {
                 edges {
                     node {
+                        status
                         recorderSpecification {
                             samplingFrequency
                         }
