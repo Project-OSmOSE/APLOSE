@@ -29,7 +29,7 @@ djangorestframework-stubs = "^3.16.7"
 #django-extension = {path = "../django-extended", develop = true}
 django-extension = {url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.1/django_extension-0.1.1.tar.gz"}
 #metadatax = {path = "../metadatax", develop=true}
-metadatax = {url = "https://github.com/PAM-Standardization/metadatax/archive/refs/tags/v0.4.18.tar.gz"}
+metadatax = {url = "https://github.com/PAM-Standardization/metadatax/archive/refs/tags/v0.4.19.tar.gz"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
