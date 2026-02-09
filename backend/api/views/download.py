@@ -103,7 +103,7 @@ def _get_annotations_for_report(
         output_field=models.CharField(),
     )
     is_box_query = Case(
-        When(annotator_expertise_level=Annotation.Type.WEAK, then=Value(0)),
+        When(type=Annotation.Type.WEAK, then=Value(0)),
         default=Value(1),
         output_field=models.IntegerField(),
     )
