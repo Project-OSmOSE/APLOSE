@@ -7,7 +7,7 @@ export default defineConfig({
   title: 'APLOSE',
   description: 'A web-based annotation plateform developed by and for Marine Passive Acoustic Monitoring researchers',
   cleanUrls: true,
-  lastUpdated: true,
+  lastUpdated: false,
 
   locales: {
     root: {
