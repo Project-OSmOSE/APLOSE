@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useRef } from 'react';
 import { useAnnotationTask } from '@/api';
 import { IonSpinner } from '@ionic/react';
 import { WarningText } from '@/components/ui';
@@ -13,7 +13,7 @@ import {
     ContrastSelect,
 } from '@/features/Annotator/VisualConfiguration';
 import { ZoomButtons } from '@/features/Annotator/Zoom';
-import { PointerInfo } from '@/features/Annotator/Pointer';
+import { PointerInfo, selectPosition } from '@/features/Annotator/Pointer';
 import { SpectrogramDownloadButton, SpectrogramInfo } from '@/features/Annotator/Spectrogram';
 import { NavigationButtons } from '@/features/Annotator/Navigation';
 import { FocusedAnnotationBloc } from '@/features/Annotator/Annotation';
@@ -25,8 +25,8 @@ import { AnnotatorSkeleton } from '@/features/Annotator/Skeleton';
 import { AploseNavParams } from '@/features/UX';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '@/features/App';
-import { selectPosition } from '@/features/Annotator/Pointer';
 import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
+import { SpectrogramModeSelect } from '@/features/Annotator/VisualConfiguration/SpectrogramModeSelect';
 
 export const AnnotatorPage: React.FC = () => {
     const { campaignID } = useParams<AploseNavParams>();
@@ -48,10 +48,10 @@ export const AnnotatorPage: React.FC = () => {
         }
     }, [ spectrogram ]);
 
-    const [ _previousCampaignID, _setPreviousCampaignID ] = useState<string>();
+    const previousCampaignID = useRef<string>();
     useEffect(() => {
-        if (_previousCampaignID !== campaignID) {
-            _setPreviousCampaignID(campaignID)
+        if (previousCampaignID.current !== campaignID) {
+            previousCampaignID.current = campaignID
             audio.setPlaybackRate(1)
         }
     }, [ campaignID ]);
@@ -79,6 +79,7 @@ export const AnnotatorPage: React.FC = () => {
                 <div className={ styles.spectrogramData }>
 
                     <div className={ styles.spectrogramConfiguration }>
+                        <SpectrogramModeSelect/>
                         <AnalysisSelect/>
                         <div>
                             <ColormapSelect/>

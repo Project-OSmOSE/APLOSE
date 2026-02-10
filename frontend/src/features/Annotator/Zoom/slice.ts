@@ -10,7 +10,7 @@ type ZoomState = {
   _campaignID?: string;
 }
 const initialState: ZoomState = {
-  zoom: 1,
+  zoom: 0,
   zoomOrigin: undefined,
 
   _campaignID: undefined,

@@ -1,4 +1,4 @@
-import React, { MouseEvent, UIEvent, useCallback, useEffect, useState, WheelEvent } from 'react';
+import React, { MouseEvent, UIEvent, useCallback, useEffect, useRef, useState, WheelEvent } from 'react';
 import styles from './styles.module.scss';
 import { FrequencyAxis, TimeAxis } from '@/features/Annotator/Axis';
 import { TimeBar } from './TimeBar';
@@ -23,7 +23,7 @@ import {
     selectBrightness,
     selectColormap,
     selectContrast,
-    selectIsColormapReversed,
+    selectIsColormapReversed, selectSpectrogramMode,
 } from '@/features/Annotator/VisualConfiguration';
 import { selectAnalysis } from '@/features/Annotator/Analysis';
 import { SpectrogramDisplay } from '@/features/Spectrogram/Display';
@@ -44,17 +44,20 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     const allAnnotations = useAppSelector(selectAllAnnotations)
     const draw = useDrawCanvas()
     const dispatch = useAppDispatch()
+    const mode = useAppSelector(selectSpectrogramMode);
+    const [ left, setLeft ] = useState<number>(0);
 
     const clearPointer = useCallback(() => {
         dispatch(clearPosition())
-    }, []);
+    }, [dispatch, clearPosition]);
 
     const onFileScrolled = useCallback((event: UIEvent<HTMLDivElement>) => {
         if (event.type !== 'scroll') return;
         const div = event.currentTarget;
         const left = div.scrollWidth - div.scrollLeft - div.clientWidth;
         if (left <= 0) dispatch(setAllFileAsSeen())
-    }, [])
+        setLeft(div.scrollLeft)
+    }, [dispatch, setAllFileAsSeen, setLeft])
 
     const onWheel = useCallback((event: WheelEvent) => {
         // Disable zoom if the user wants horizontal scroll
@@ -94,17 +97,17 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
     // Time update
     const { time } = useAudio()
-    const [ oldTime, setOldTime ] = useState<number>(0)
+    const oldTime = useRef<number>(0);
     useEffect(() => {
         // Scroll if progress bar reach the right edge of the screen
         if (!windowCanvasRef?.current || !spectrogram) return;
-        const oldX: number = Math.floor(width * oldTime / spectrogram.duration);
+        const oldX: number = Math.floor(width * oldTime.current / spectrogram.duration);
         const newX: number = Math.floor(width * time / spectrogram.duration);
 
         if ((oldX - windowCanvasRef.current.scrollLeft) < containerWidth && (newX - windowCanvasRef.current.scrollLeft) >= containerWidth) {
             windowCanvasRef.current.scrollLeft += containerWidth;
         }
-        setOldTime(time);
+        oldTime.current = time;
     }, [
         // On time changed
         time, spectrogram?.duration,
@@ -114,14 +117,14 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     // Zoom update
     const zoom = useAppSelector(selectZoom)
     const zoomOrigin = useAppSelector(selectZoomOrigin)
-    const [ _zoom, _setZoom ] = useState<number>(1);
+    const previousZoom = useRef<number>(0);
     const isHoverCanvas = useIsHoverCanvas()
     useEffect(() => {
         const mainBounds = mainCanvasRef?.current?.getBoundingClientRect()
         if (!window || !spectrogram || !mainBounds) return;
 
         // If zoom factor has changed
-        if (zoom === _zoom) return;
+        if (zoom === previousZoom.current) return;
         // New timePxRatio
         const newTimePxRatio: number = containerWidth * zoom / spectrogram.duration;
 
@@ -129,7 +132,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         let newCenter: number;
         if (zoomOrigin) {
             // x-coordinate has been given, center on it
-            newCenter = (zoomOrigin.x - mainBounds.left) * zoom / _zoom;
+            newCenter = (zoomOrigin.x - mainBounds.left) * zoom / previousZoom.current;
             const coords = {
                 clientX: zoomOrigin.x,
                 clientY: zoomOrigin.y,
@@ -140,10 +143,10 @@ export const AnnotatorCanvasWindow: React.FC = () => {
             }
         } else {
             // If no x-coordinate: center on currentTime
-            newCenter = oldTime * newTimePxRatio;
+            newCenter = oldTime.current * newTimePxRatio;
         }
         window.scrollTo({ left: Math.floor(newCenter - containerWidth / 2) })
-        _setZoom(zoom);
+        previousZoom.current = zoom;
         draw()
     }, [
         // On zoom updated
@@ -167,8 +170,9 @@ export const AnnotatorCanvasWindow: React.FC = () => {
             { spectrogram && analysis &&
                 <SpectrogramDisplay spectrogram={ spectrogram }
                                     analysis={ analysis }
+                                    left={left}
                                     zoomLevel={ zoom }
-                                    origin='wav'/> }
+                                    mode={ mode }/> }
 
             <canvas className={ [ styles.interfaction, canDraw ? styles.drawable : '' ].join(' ') }
                     data-testid="drawable-canvas"
