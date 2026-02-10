@@ -18,6 +18,6 @@ export const ZoomButtons: React.FC = () => {
                onClick={ () => zoomOut() }/>
     <MdZoomIn className={ [ styles.zoom, zoomInLevel ? '' : styles.disabled ].join(' ') }
               onClick={ () => zoomIn() }/>
-    <p>{ zoom }x</p>
+    <p>{ Math.pow(2, zoom) }x</p>
   </Fragment>
 }

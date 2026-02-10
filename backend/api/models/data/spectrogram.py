@@ -195,6 +195,29 @@ class Spectrogram(AbstractFile, TimeSegment, models.Model):
                 audio_path.split(str(settings.DATASET_EXPORT_PATH)).pop().lstrip("\\")
             )
 
+    def get_base_spectro_path(self, analysis: SpectrogramAnalysis) -> str:
+        if analysis.dataset.legacy:
+            return path.join(
+                PureWindowsPath(
+                    analysis.dataset.path.split(
+                        settings.DATASET_EXPORT_PATH.stem + "/"
+                    ).pop()
+                ),
+                PureWindowsPath(analysis.path),
+                PureWindowsPath("image"),
+                PureWindowsPath(f"{self.filename}.{self.format.name}"),
+            )
+        else:
+            spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
+            spectro_dataset_path = str(spectro_dataset.folder).split(
+                str(settings.DATASET_EXPORT_PATH)
+            )[1]
+            return path.join(
+                PureWindowsPath(spectro_dataset_path),
+                PureWindowsPath("spectrogram"),  # TODO: avoid static path parts!!!
+                PureWindowsPath(f"{self.filename}.{self.format.name}"),
+            ).lstrip("\\")
+
     def get_spectro_data_for(self, analysis: SpectrogramAnalysis) -> SpectroData:
         if analysis.legacy:
             audio_path = Path(

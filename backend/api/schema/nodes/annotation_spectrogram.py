@@ -5,15 +5,10 @@ from typing import Optional
 import graphene
 import graphene_django_optimizer
 from django.conf import settings
-from django.utils import timezone
 from django_extension.schema.errors import NotFoundError
 from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 from django_extension.schema.types import ExtendedNode
 from graphql import GraphQLResolveInfo
-
-# from osekit.core_api.spectro_data import SpectroData
-# from osekit.core_api.spectro_dataset import SpectroDataset
-from backend.utils.osekit_replace import SpectroDataset, SpectroData
 
 from backend.api.models import (
     Spectrogram,
@@ -113,33 +108,10 @@ class AnnotationSpectrogramNode(ExtendedNode):
     @graphene_django_optimizer.resolver_hints()
     def resolve_path(self: Spectrogram, info, analysis_id: int):
         analysis: SpectrogramAnalysis = self.analysis.get(id=analysis_id)
-
-        spectrogram_path: str
-        if analysis.dataset.legacy:
-            spectrogram_path = path.join(
-                PureWindowsPath(
-                    analysis.dataset.path.split(
-                        settings.DATASET_EXPORT_PATH.stem + "/"
-                    ).pop()
-                ),
-                PureWindowsPath(analysis.path),
-                PureWindowsPath("image"),
-                PureWindowsPath(f"{self.filename}.{self.format.name}"),
-            )
-        else:
-            spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
-            spectro_dataset_path = str(spectro_dataset.folder).split(
-                str(settings.DATASET_EXPORT_PATH)
-            )[1]
-            spectrogram_path = path.join(
-                PureWindowsPath(spectro_dataset_path),
-                PureWindowsPath("spectrogram"),  # TODO: avoid static path parts!!!
-                PureWindowsPath(f"{self.filename}.{self.format.name}"),
-            ).lstrip("\\")
         return path.join(
             PureWindowsPath(settings.STATIC_URL),
             PureWindowsPath(settings.DATASET_EXPORT_PATH),
-            PureWindowsPath(spectrogram_path),
+            PureWindowsPath(self.get_base_spectro_path(analysis)),
         )
 
     task = graphene.Field(

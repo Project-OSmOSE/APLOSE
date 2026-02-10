@@ -1,35 +1,51 @@
-import React, { useCallback, useRef } from 'react';
-import { useSpectrogramDimensions } from '@/features/Spectrogram/Display/dimension.hook.ts';
-import { useSpectrogramTiles } from '@/features/Spectrogram/Display/draw.hook.ts';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { AnnotationSpectrogramNode, SpectrogramAnalysisNode } from '@/api';
+import { useSpectrogramDimensions } from './dimension.hook.ts';
+import type { FFT, SpectrogramMode } from './types';
+import { TileManager, type TileManagerOptions } from '@/features/Spectrogram/Display/TileManager';
 
 export const SpectrogramDisplay: React.FC<{
     zoomLevel: number,
+    left: number,
     spectrogram: Pick<AnnotationSpectrogramNode, 'id' | 'filename' | 'path'>,
-    analysis: Pick<SpectrogramAnalysisNode, 'id' | 'legacy'>,
-    origin: 'spectrogram' | 'wav'
-}> = ({ zoomLevel, spectrogram, analysis, origin }) => {
+    analysis: Pick<SpectrogramAnalysisNode, 'id' | 'legacy'> & { fft: FFT },
+    mode: SpectrogramMode,
+    fft?: FFT,
+}> = ({ zoomLevel, spectrogram, analysis, mode, fft, left }) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const { width, height } = useSpectrogramDimensions(0)
+    const { width, height } = useSpectrogramDimensions(zoomLevel)
 
-    const getUrl = useCallback((_: number, index: number) => {
-        switch (origin) {
-            case "wav":
-                return `/api/data/analysis/${ analysis.id }/spectrogram/${ spectrogram.id }/zoom/${ zoomLevel }/tile/${ index }/${ origin }`
-            default:
-                if (analysis.legacy) {
-                    const p = spectrogram.path
-                    const f = spectrogram.filename
-                    return `${ p.split(f)[0] }${ f }_${ zoomLevel }_${ index }${ p.split(f)[1] }`
-                } else return spectrogram.path
-        }
-    }, [ spectrogram, zoomLevel, analysis, origin ])
+    const tileManager = useRef<TileManager>();
+    const options = useMemo<TileManagerOptions>(() => ({
+        spectrogram, analysis, mode, fft: { ...analysis.fft, ...(fft ?? {}) },
+    }), [ analysis, spectrogram, mode, fft ])
 
-    useSpectrogramTiles({ canvasRef, zoomLevel: zoomLevel.toString(2).length - 1, getUrl })
+    const setNewTileManager = useCallback(() => {
+        if (!canvasRef.current) return;
+        tileManager.current = TileManager.getManager(
+            canvasRef.current,
+            options,
+            zoomLevel,
+            left
+        )
+    }, [ options, zoomLevel, left ])
+
+    useEffect(() => { // On page load
+        setNewTileManager()
+    }, [])
+    useEffect(() => { // On options changed
+        setNewTileManager()
+    }, [ options ])
+    useEffect(() => { // On zoomLevel changed
+        if (tileManager.current) tileManager.current.zoom = zoomLevel;
+    }, [ zoomLevel ])
+    useEffect(() => { // On left changed
+        if (tileManager.current) tileManager.current.left = left;
+    }, [ left ])
 
     return <canvas id="spectrogram" // id used by SpectrogramDownloadButton
                    ref={ canvasRef }
                    height={ height }
-                   width={ width * (zoomLevel) }
+                   width={ width }
                    style={ { display: 'block' } }/>
 }

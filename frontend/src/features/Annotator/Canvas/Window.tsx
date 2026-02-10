@@ -1,4 +1,4 @@
-import React, { MouseEvent, UIEvent, useCallback, useEffect, useRef, WheelEvent } from 'react';
+import React, { MouseEvent, UIEvent, useCallback, useEffect, useRef, useState, WheelEvent } from 'react';
 import styles from './styles.module.scss';
 import { FrequencyAxis, TimeAxis } from '@/features/Annotator/Axis';
 import { TimeBar } from './TimeBar';
@@ -23,6 +23,7 @@ import {
     selectColormap,
     selectContrast,
     selectIsColormapReversed,
+    selectSpectrogramMode,
 } from '@/features/Annotator/VisualConfiguration';
 import { selectAnalysis } from '@/features/Annotator/Analysis';
 import { SpectrogramDisplay } from '@/features/Spectrogram/Display';
@@ -44,6 +45,8 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     const draw = useDrawCanvas()
     const dispatch = useAppDispatch()
     const pointer = usePointer()
+    const mode = useAppSelector(selectSpectrogramMode);
+    const [ left, setLeft ] = useState<number>(0);
 
     const clearPointer = useCallback(() => {
         pointer.clearPosition()
@@ -54,7 +57,8 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         const div = event.currentTarget;
         const left = div.scrollWidth - div.scrollLeft - div.clientWidth;
         if (left <= 0) dispatch(setAllFileAsSeen())
-    }, [dispatch])
+        setLeft(div.scrollLeft)
+    }, [dispatch, setAllFileAsSeen, setLeft])
 
     const onWheel = useCallback((event: WheelEvent) => {
         // Disable zoom if the user wants horizontal scroll
@@ -167,8 +171,9 @@ export const AnnotatorCanvasWindow: React.FC = () => {
             { spectrogram && analysis &&
                 <SpectrogramDisplay spectrogram={ spectrogram }
                                     analysis={ analysis }
+                                    left={left}
                                     zoomLevel={ zoom }
-                                    origin='wav'/> }
+                                    mode={ mode }/> }
 
             <canvas className={ [ styles.interfaction, canDraw ? styles.drawable : '' ].join(' ') }
                     data-testid="drawable-canvas"
