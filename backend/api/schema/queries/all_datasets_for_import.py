@@ -59,6 +59,7 @@ def resolve_all_datasets_available_for_import() -> [ImportDatasetNode]:
 )
 def legacy_resolve_all_datasets_available_for_import() -> [ImportDatasetNode]:
     """Get all datasets for import - using legacy OSEkit"""
+    # pylint: disable=broad-exception-caught
     datasets_csv_path = settings.DATASET_IMPORT_FOLDER / settings.DATASET_FILE
     available_datasets: [ImportDatasetNode] = []
     if not exists(datasets_csv_path):
