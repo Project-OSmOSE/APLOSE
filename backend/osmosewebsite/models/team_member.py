@@ -1,15 +1,24 @@
 """OSmOSE Website API Models - TeamMembers"""
 from django.db import models
-from metadatax.common.models import Contact
+from django_extension.models import ExtendedEnum
+from metadatax.common.models import Person
 
 
 class TeamMember(models.Model):
     """TeamMember model"""
 
-    level = models.IntegerField("Sorting level", blank=True, null=True)
+    class Type(ExtendedEnum):
+        """Bibliography publication status"""
 
-    contact = models.OneToOneField(
-        to=Contact,
+        ACTIVE = ("A", "Active")
+        FORMER = ("F", "Former")
+        COLLABORATOR = ("C", "Collaborator")
+
+    level = models.IntegerField("Sorting level", blank=True, null=True)
+    type = models.CharField(choices=Type.choices, max_length=1, default=Type.ACTIVE)
+
+    person = models.OneToOneField(
+        to=Person,
         on_delete=models.RESTRICT,
         related_name="team_member",
     )
@@ -25,10 +34,9 @@ class TeamMember(models.Model):
     )
     github_url = models.URLField("Github URL", blank=True, null=True)
     linkedin_url = models.URLField("LinkedIn URL", blank=True, null=True)
-    is_former_member = models.BooleanField("Is former member", default=False)
 
     class Meta:
         ordering = ["level"]
 
     def __str__(self):
-        return self.contact.__str__()
+        return self.person.__str__()

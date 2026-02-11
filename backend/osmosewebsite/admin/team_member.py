@@ -8,7 +8,7 @@ from backend.osmosewebsite.models import TeamMember
 @admin.action(description="Mark selected members as former members")
 def make_former(model_admin, request, queryset):
     """TeamMember admin action to make it a former member"""
-    queryset.update(is_former_member=True)
+    queryset.update(type=TeamMember.Type.FORMER)
 
 
 @admin.register(TeamMember)
@@ -19,20 +19,21 @@ class TeamMemberAdmin(ExtendedModelAdmin):
         "__str__",
         "show_institutions",
         "position",
-        "is_former_member",
+        "type",
         "level",
     ]
-    search_fields = ["contact__first_name", "contact__last_name"]
+    list_filter = ["type"]
+    search_fields = ["person__first_name", "person__last_name"]
     fieldsets = [
         (
             None,
             {
                 "fields": [
-                    "contact",
+                    "person",
+                    "type",
                     "position",
                     "picture",
                     "biography",
-                    "is_former_member",
                     "level",
                 ]
             },
@@ -56,5 +57,8 @@ class TeamMemberAdmin(ExtendedModelAdmin):
     def show_institutions(self, obj: TeamMember):
         """show_spectro_configs"""
         return self.list_queryset(
-            obj.contact.current_institutions.all(), to_str=lambda i: i.name
+            obj.person.institution_relations.all(),
+            to_str=lambda rel: f"{rel.institution} ({rel.team.name})"
+            if rel.team
+            else str(rel.institution),
         )

@@ -1,13 +1,21 @@
-import type { RestQuery } from './_types';
+import type { GqlQuery } from './_types';
+import type { HomeCollaboratorsQuery } from '../../../src/api/collaborator/collaborator.generated';
+import { collaborator } from './types';
 
 export const COLLABORATOR_QUERIES: {
-  listCollaborators: RestQuery<[]>
+    homeCollaborators: GqlQuery<HomeCollaboratorsQuery>
 } = {
-  listCollaborators: {
-    url: '/api/collaborators/on_aplose_home',
-    success: {
-      status: 200,
-      json: [],
+    homeCollaborators: {
+        defaultType: 'filled',
+        empty: {
+            allCollaborators: null,
+        },
+        filled: {
+            allCollaborators: {
+                results: [
+                    collaborator,
+                ],
+            },
+        },
     },
-  },
 }

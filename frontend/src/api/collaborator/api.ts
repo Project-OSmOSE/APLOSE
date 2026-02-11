@@ -1,11 +1,9 @@
-import { restAPI } from '@/api/baseRestApi';
-import { Collaborator } from './types'
+import { api } from './collaborator.generated'
 
-export const CollaboratorRestAPI = restAPI.injectEndpoints({
-  endpoints: (builder) => ({
-    listCollaborator: builder.query<Array<Collaborator>, void>({
-      query: () => 'collaborators/on_aplose_home',
+export const CollaboratorGqlAPI = api.enhanceEndpoints({
+  endpoints: {
+    homeCollaborators: {
       providesTags: [ 'Collaborator' ],
-    }),
-  }),
+    },
+  },
 })

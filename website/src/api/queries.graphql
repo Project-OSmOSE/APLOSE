@@ -1,0 +1,400 @@
+query allProjects($offset: Int!, $limit: Int!) {
+    allWebsiteProjects(limit: $limit, offset: $offset) {
+        totalCount
+        results {
+            id
+            title
+            intro
+            start
+            end
+            thumbnail
+        }
+    }
+}
+
+query projectById($id: ID!) {
+    websiteProjectById(id: $id) {
+        title
+        start
+        end
+        body
+        osmoseMemberContacts {
+            edges {
+                node {
+                    id
+                    person {
+                        initialNames
+                    }
+                }
+            }
+        }
+        otherContacts
+        collaborators {
+            edges {
+                node {
+                    name
+                    thumbnail
+                    url
+                }
+            }
+        }
+    }
+}
+
+query homeCollaborators {
+    allCollaborators(showOnHomePage: true) {
+        results {
+            name
+            thumbnail
+            url
+        }
+    }
+}
+
+query allDeployments($projectID: Decimal) {
+    allDeployments(project_WebsiteProject_Id: $projectID) {
+        results {
+            id
+
+            # Position
+            latitude
+            longitude
+
+            name
+            project {
+                id
+                name
+            }
+            site {
+                id
+                name
+            }
+            campaign {
+                id
+                name
+            }
+            deploymentDate
+            recoveryDate
+            contacts {
+                id
+                role
+                contact {
+                    ... on PersonNode {
+                        firstName
+                        lastName
+                    }
+                    ... on TeamNode {
+                        name
+                    }
+                    ... on InstitutionNode {
+                        name
+                    }
+                }
+            }
+            channelConfigurations {
+                edges {
+                    node {
+                        status
+                        recorderSpecification {
+                            samplingFrequency
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+query deploymentById($id: ID!) {
+    annotationLabelsForDeploymentId(deploymentId: $id) {
+        results {
+            id
+            name
+            uses(deploymentId: $id)
+        }
+    }
+    deploymentById(id: $id) {
+        name
+        latitude
+        longitude
+        deploymentDate
+        deploymentVessel
+        recoveryDate
+        recoveryVessel
+        bathymetricDepth
+        description
+        project {
+            name
+            accessibility
+            projectGoal
+            contacts {
+                id
+                role
+                contact {
+                    ... on PersonNode {
+                        firstName
+                        lastName
+                        website
+                    }
+                    ... on TeamNode {
+                        name
+                        website
+                    }
+                    ... on InstitutionNode {
+                        name
+                        website
+                    }
+                }
+            }
+        }
+        site {
+            name
+        }
+        campaign {
+            name
+        }
+        platform {
+            name
+        }
+        contacts {
+            id
+            role
+            contact {
+                ... on PersonNode {
+                    firstName
+                    lastName
+                    website
+                }
+                ... on TeamNode {
+                    name
+                    website
+                }
+                ... on InstitutionNode {
+                    name
+                    website
+                }
+            }
+        }
+    }
+}
+
+query allBibliography {
+    allBibliography {
+        edges {
+            node {
+                ... on ArticleNode {
+                    __typename
+                    title
+                    doi
+                    status
+                    type
+                    publicationDate
+                    tags {
+                        name
+                    }
+                    authors {
+                        edges {
+                            node {
+                                order
+                                person {
+                                    initialNames
+                                    teamMember {
+                                        id
+                                        type
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    # Article
+                    journal
+                    volumes
+                    pagesFrom
+                    pagesTo
+                    issueNb
+                    articleNb
+                }
+                ... on ConferenceNode {
+                    __typename
+                    title
+                    doi
+                    status
+                    type
+                    publicationDate
+                    tags {
+                        name
+                    }
+                    authors {
+                        edges {
+                            node {
+                                order
+                                person {
+                                    initialNames
+                                    teamMember {
+                                        id
+                                        type
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    # Conference
+                    conferenceName
+                    conferenceLocation
+                    conferenceAbstractBookUrl
+                }
+                ... on PosterNode {
+                    __typename
+                    title
+                    doi
+                    status
+                    type
+                    publicationDate
+                    tags {
+                        name
+                    }
+                    authors {
+                        edges {
+                            node {
+                                order
+                                person {
+                                    initialNames
+                                    teamMember {
+                                        id
+                                        type
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    # Poster
+                    posterUrl
+                    # Conference
+                    conferenceName
+                    conferenceLocation
+                    conferenceAbstractBookUrl
+                }
+                ... on SoftwareNode {
+                    __typename
+                    title
+                    doi
+                    status
+                    type
+                    publicationDate
+                    tags {
+                        name
+                    }
+                    authors {
+                        edges {
+                            node {
+                                order
+                                person {
+                                    initialNames
+                                    teamMember {
+                                        id
+                                        type
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    # Software
+                    repositoryUrl
+                    publicationPlace
+                }
+            }
+        }
+    }
+}
+
+query allTeamMembers {
+    allTeamMembers {
+        results {
+            id
+            picture
+            person {
+                initialNames
+                firstName
+                lastName
+                currentInstitutions {
+                    name
+                }
+            }
+            position
+            type
+        }
+    }
+}
+
+query teamMemberById($id: ID!) {
+    teamMemberById(id: $id) {
+        position
+        picture
+        biography
+        person {
+            firstName
+            lastName
+            initialNames
+        }
+        personalWebsiteUrl
+        githubUrl
+        mailAddress
+        linkedinUrl
+        researchGateUrl
+    }
+}
+
+query allNews ($offset: Int!, $limit: Int!) {
+    allNews(limit: $limit, offset: $offset) {
+        totalCount
+        results {
+            id
+            title
+            thumbnail
+            date
+            intro
+        }
+    }
+}
+
+query newsById($id: ID!) {
+    newsById(id: $id) {
+        title
+        date
+        body
+        osmoseMemberAuthors {
+            edges {
+                node {
+                    id
+                    person {
+                        initialNames
+                    }
+                }
+            }
+        }
+        otherAuthors
+    }
+}
+
+query allScientificTalks ($offset: Int!, $limit: Int!){
+    allScientificTalks(limit: $limit, offset: $offset) {
+        totalCount
+        results {
+            title
+            thumbnail
+            date
+            intro
+            osmoseMemberPresenters {
+                edges {
+                    node {
+                        id
+                        person {
+                            initialNames
+                        }
+                    }
+                }
+            }
+            otherPresenters
+        }
+    }
+}

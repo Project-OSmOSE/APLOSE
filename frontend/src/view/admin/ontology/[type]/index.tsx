@@ -39,7 +39,7 @@ export const OntologyTab: React.FC = () => {
         englishName,
         parent_id: info.parentNode.data.id !== '-1' ? info.parentNode.data.id.toString() : undefined,
       }).unwrap()
-      const id = data.postSource?.data?.id
+      const id = data.postSource?.source?.id
       if (id) navigate(`/admin/ontology/source/${ id }`)
     }
     if (type === 'sound') {
@@ -47,7 +47,7 @@ export const OntologyTab: React.FC = () => {
         englishName,
         parent_id: info.parentNode.data.id !== '-1' ? info.parentNode.data.id.toString() : undefined,
       }).unwrap()
-      const id = data.postSound?.data?.id
+      const id = data.postSound?.sound?.id
       if (id) navigate(`/admin/ontology/sound/${ id }`)
     }
   }, [ createSource, createSound, type ])
@@ -59,8 +59,8 @@ export const OntologyTab: React.FC = () => {
   useOnSelectionChange({ onChange: onSelectionChange })
 
   const update = useCallback((data: DataType) => {
-    if (type === 'source') updateSource({ ...data, id: +data.id, parent_id: data.parent?.id ?? null })
-    if (type === 'sound') updateSound({ ...data, id: +data.id, parent_id: data.parent?.id ?? null })
+    if (type === 'source') updateSource({ ...data, id: data.id, parent_id: data.parent?.id ?? null })
+    if (type === 'sound') updateSound({ ...data, id: data.id, parent_id: data.parent?.id ?? null })
   }, [ updateSource, updateSound, type ])
 
   const deleteNode = useCallback((data: DataType) => {

@@ -1,4 +1,4 @@
-import { type LightDeployment } from '../../../../pages/Projects/ProjectDetail/ProjectDetail';
+import { LightDeployment } from "../../../../api";
 
 export interface FilterRef {
   /**

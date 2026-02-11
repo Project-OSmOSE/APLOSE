@@ -1,52 +1,50 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import styles from './panel.module.scss';
 import { IoClose, IoFunnel, IoFunnelOutline, IoRefresh } from 'react-icons/io5';
 import { FilterRef, SampleRateFilter } from './Filters';
-import { type LightDeployment } from '../../../pages/Projects/ProjectDetail/ProjectDetail';
+import { LightDeployment } from "../../../api";
 
 type FilterProps = {
-  allDeployments: Array<LightDeployment>,
-  onFilter: (filteredDeployments: Array<LightDeployment>) => void
+    allDeployments: LightDeployment[],
+    onFilter: (filteredDeployments: LightDeployment[]) => void
 }
 export const FilterPanel: React.FC<FilterProps> = ({
-                                                     allDeployments,
-                                                     onFilter,
+                                                       allDeployments,
+                                                       onFilter,
                                                    }) => {
-  const [ isOpen, setIsOpen ] = useState<boolean>(false);
+    const [ isOpen, setIsOpen ] = useState<boolean>(false);
 
-  const sampleRate = useRef<FilterRef | null>(null);
+    const sampleRate = useRef<FilterRef | null>(null);
 
-  const isFiltering = useMemo(() => sampleRate.current?.isFiltering, [ sampleRate.current ]);
+    const reset = useCallback(() => {
+        sampleRate.current?.reset();
+    }, [])
 
-  const reset = () => {
-    sampleRate.current?.reset();
-  }
+    const updateFilter = useCallback(() => {
+        const filteredList = allDeployments.filter(d => sampleRate.current?.filterDeployment(d));
+        onFilter(filteredList);
+    }, [ allDeployments, onFilter ])
 
-  const updateFilter = useCallback(() => {
-    const filteredList = allDeployments.filter(d => sampleRate.current?.filterDeployment(d));
-    onFilter(filteredList);
-  }, [ allDeployments, onFilter ])
-
-  if (!isOpen) {
-    return <div className={ [ styles.panel, styles.filter, styles.empty ].join(' ') }
-                onClick={ () => setIsOpen(true) }>
-      <FilterIcon isFiltering={ isFiltering === undefined ? false : isFiltering }/>
+    if (!isOpen) {
+        return <div className={ [ styles.panel, styles.filter, styles.empty ].join(' ') }
+                    onClick={ () => setIsOpen(true) }>
+            <FilterIcon isFiltering={ sampleRate.current?.isFiltering === undefined ? false : sampleRate.current?.isFiltering }/>
+        </div>
+    }
+    return <div className={ [ styles.panel, styles.filter ].join(' ') }>
+        <div className={ styles.head }>
+            <FilterIcon isFiltering={ sampleRate.current?.isFiltering === undefined ? false : sampleRate.current?.isFiltering }/>
+            { sampleRate.current?.isFiltering && <button onClick={ () => reset() }><IoRefresh/></button> }
+            <button onClick={ () => setIsOpen(false) }><IoClose/></button>
+        </div>
+        <div className={ styles.content }>
+            {/*<DateFilter ref={ ref => filters.current.set('date', ref) } deployments={ allDeployments }/>*/ }
+            <SampleRateFilter ref={ sampleRate } deployments={ allDeployments } onUpdates={ updateFilter }/>
+        </div>
     </div>
-  }
-  return <div className={ [ styles.panel, styles.filter ].join(' ') }>
-    <div className={ styles.head }>
-      <FilterIcon isFiltering={ isFiltering === undefined ? false : isFiltering }/>
-      { isFiltering && <button onClick={ () => reset() }><IoRefresh/></button> }
-      <button onClick={ () => setIsOpen(false) }><IoClose/></button>
-    </div>
-    <div className={ styles.content }>
-      {/*<DateFilter ref={ ref => filters.current.set('date', ref) } deployments={ allDeployments }/>*/ }
-      <SampleRateFilter ref={ sampleRate } deployments={ allDeployments } onUpdates={ updateFilter }/>
-    </div>
-  </div>
 }
 
 const FilterIcon: React.FC<{ isFiltering: boolean }> = ({ isFiltering }) => {
-  if (isFiltering) return <IoFunnel/>
-  else return <IoFunnelOutline/>
+    if (isFiltering) return <IoFunnel/>
+    else return <IoFunnelOutline/>
 }

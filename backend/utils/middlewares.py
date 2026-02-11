@@ -24,8 +24,8 @@ class StaticFilesMiddleware(WhiteNoiseMiddleware):
         return JWTAuthentication().get_user(validated_token)
 
     def __call__(self, request: WSGIRequest):
-        user = self._get_user(request)
         if "/datawork/" in request.path:
+            user = self._get_user(request)
             if not user or not user.is_active:
                 raise Http404
         return super().__call__(request)

@@ -8,7 +8,7 @@ import { Button, DocumentationButton, Link } from '@/components/ui';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '@/features/App';
 import { selectIsConnected } from '@/features/Auth';
-import { CollaboratorRestAPI } from '@/api/collaborator';
+import { useHomeCollaborators } from '@/api/collaborator';
 
 
 export const Home: React.FC = () => {
@@ -218,20 +218,20 @@ const Join: React.FC = React.memo(() => (
 ))
 
 const Collaborators: React.FC = () => {
-  const { data: collaborators } = CollaboratorRestAPI.endpoints.listCollaborator.useQuery()
+  const { collaborators } = useHomeCollaborators()
   return (
     <div className={ styles.bloc }>
       <h2>Collaborators & Funders</h2>
 
       <div className={ [ styles.links, styles.collaborators ].join(' ') }>
-        { collaborators?.map(collaborator => {
-          const img = (<img key={ collaborator.id }
+        { collaborators?.map((collaborator, index) => {
+          const img = (<img key={ index }
                             src={ collaborator.thumbnail }
                             alt={ collaborator.name }
                             title={ collaborator.name }/>)
           if (!collaborator.url) return img;
           return (<a href={ collaborator.url }
-                     key={ collaborator.id }
+                     key={ index }
                      target="_blank" rel="noreferrer">{ img }</a>)
         }) }
       </div>

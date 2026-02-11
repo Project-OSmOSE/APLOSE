@@ -7,7 +7,7 @@ from random import Random
 
 from django.core.management.base import BaseCommand
 from faker import Faker
-from metadatax.common.models import Contact
+from metadatax.common.models import Person
 
 from backend.osmosewebsite.models import (
     TeamMember,
@@ -63,12 +63,12 @@ class Command(BaseCommand):
         for _ in range(0, random.randrange(start=5, stop=25)):
             profile = fake.profile()
             websites = profile["website"]
-            contact = Contact.objects.create(
+            person = Person.objects.create(
                 first_name=fake.first_name(),
                 last_name=fake.last_name(),
             )
             TeamMember.objects.create(
-                contact=contact,
+                person=person,
                 position=profile["job"],
                 biography="\n".join(fake.paragraphs(5)),
                 picture=f"https://api.dicebear.com/7.x/identicon/svg?seed={profile['name']}",
@@ -81,12 +81,12 @@ class Command(BaseCommand):
         for _ in range(0, random.randrange(start=1, stop=15)):
             profile = fake.profile()
             websites = profile["website"]
-            contact = Contact.objects.create(
+            person = Person.objects.create(
                 first_name=fake.first_name(),
                 last_name=fake.last_name(),
             )
             TeamMember.objects.create(
-                contact=contact,
+                person=person,
                 position=profile["job"],
                 biography="\n".join(fake.paragraphs(5)),
                 picture=f"https://api.dicebear.com/7.x/identicon/svg?seed={profile['name']}",
@@ -95,7 +95,7 @@ class Command(BaseCommand):
                 personal_website_url=websites[1] if len(websites) > 1 else None,
                 github_url=websites[2] if len(websites) > 2 else None,
                 linkedin_url=websites[3] if len(websites) > 3 else None,
-                is_former_member=True,
+                type=TeamMember.Type.FORMER,
             )
 
     def _generate_html_body(self):

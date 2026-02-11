@@ -1,0 +1,9 @@
+query homeCollaborators{
+    allCollaborators(showOnAploseHome: true) {
+        results {
+            name
+            thumbnail
+            url
+        }
+    }
+}

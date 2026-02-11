@@ -1,76 +1,79 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from "react-router-dom";
 import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from "@ionic/react";
-import { getFormattedDate, useFetchArray } from "../../utils";
+import { getFormattedDate } from "../../utils";
 import { PageTitle } from "../../components/PageTitle";
-import { Pagination } from "../../components/Pagination/Pagination";
-import { ScientificTalk } from "../../models/scientificTalk";
 import imgTitle from '../../img/illust/pexels-berend-de-kort-1452701_1920_thin.webp';
 import styles from './ScientificTalksPage.module.scss';
+import { ScientificTalk, useGqlSdk } from "../../api";
+import { Pagination } from "../../components/Pagination/Pagination";
 import { ContactList } from "../../components/ContactList/ContactList";
 
 export const ScientificTalksPage: React.FC = () => {
-  const pageSize = 6;// Define page size for pagination
-  const location = useLocation(); // Get the current URL location
-  const currentPage: number = +(new URLSearchParams(location.search).get('page') ?? 1);// Get the current page number from URL parameters
-  const [ talksTotal, setTalksTotal ] = useState<number>(0); // State to hold the total number of talks
-  const [ talks, setTalks ] = useState<Array<ScientificTalk>>([]); // State to hold the list of talks
-  const fetchTalks = useFetchArray<{ count: number, results: Array<ScientificTalk> }>('/api/scientific-talk'); // Function to fetch talks data
+    const pageSize = 6;// Define page size for pagination
+    const [ currentPage, setCurrentPage ] = useState<number>(1)
+    const [ talksTotal, setTalksTotal ] = useState<number>(0); // State to hold the total number of talks
+    const [ talks, setTalks ] = useState<Array<ScientificTalk>>([]); // State to hold the list of talks
+    const sdk = useGqlSdk()
 
-  useEffect(() => {
-    let isMounted = true;
-    fetchTalks({ page: currentPage, page_size: pageSize }).then(data => {
-      if (isMounted) {
-        setTalksTotal(data?.count ?? 0);
-        setTalks(data?.results ?? []);
-      }
-    });
+    useEffect(() => {
+        let isMounted = true;
 
-    return () => {
-      isMounted = false;
-    };
-  }, [ currentPage, pageSize ]); // Effect dependencies: currentPage and pagesize
+        setTalks([])
+        sdk.allScientificTalks({ limit: pageSize, offset: pageSize * (currentPage - 1) }).then(({ data }) => {
+            if (!isMounted) return;
+            setTalksTotal(data.allScientificTalks?.totalCount ?? 0)
+            setTalks((data.allScientificTalks?.results ?? []).filter(d => d !== null) as any ?? [])
+        })
 
-  return (
-    <div>
-      <PageTitle img={ imgTitle } imgAlt="Scientific talks Banner">
-        Scientific talks
-      </PageTitle>
+        return () => {
+            isMounted = false;
+        };
+    }, [ currentPage, pageSize ]); // Effect dependencies: currentPage and pagesize
 
-      <div className={ styles.content }>
+    return (
+        <div>
+            <PageTitle img={ imgTitle } imgAlt="Scientific talks Banner">
+                Scientific talks
+            </PageTitle>
 
-        <p className={ styles.presentation }>
-          Our team organises scientific talks on a three-week cycle, providing a platform for sharing and
-          disseminating knowledge. Team members present their latest project results and research developments.
-          These sessions occasionally feature guest speakers, who bring fresh perspectives and expertise from their
-          respective fields.
-        </p>
+            <div className={ styles.content }>
 
-        { talks.map(data => (
-          <IonCard key={ data.id } className={ styles.card }>
-            { data.thumbnail && <img src={ data.thumbnail } alt={ data.title }/> }
+                <p className={ styles.presentation }>
+                    Our team organises scientific talks on a three-week cycle, providing a platform for sharing and
+                    disseminating knowledge. Team members present their latest project results and research
+                    developments.
+                    These sessions occasionally feature guest speakers, who bring fresh perspectives and expertise from
+                    their
+                    respective fields.
+                </p>
 
-            <IonCardHeader>
-              <IonCardTitle>{ data.title }</IonCardTitle>
-              <IonCardSubtitle>{ getFormattedDate(data.date) }</IonCardSubtitle>
-            </IonCardHeader>
+                { talks.map((talk, index) => (
+                    <IonCard key={ index } className={ styles.card }>
+                        { talk.thumbnail && <img src={ talk.thumbnail } alt={ talk.title }/> }
 
-            <IonCardContent>{ data.intro }</IonCardContent>
+                        <IonCardHeader>
+                            <IonCardTitle>{ talk.title }</IonCardTitle>
+                            <IonCardSubtitle>{ getFormattedDate(talk.date) }</IonCardSubtitle>
+                        </IonCardHeader>
 
-            <IonCardHeader className={ styles.presenterInfo }>
-              <IonCardSubtitle className={ styles.presenter }>
-                <ContactList teamMembers={ data.osmose_member_presenters }
-                             namedMembers={ data.other_presenters }/>
-              </IonCardSubtitle>
-            </IonCardHeader>
-          </IonCard>
-        )) }
-      </div>
+                        <IonCardContent>{ talk.intro }</IonCardContent>
 
-      <Pagination totalCount={ talksTotal }
-                  currentPage={ currentPage }
-                  pageSize={ pageSize }
-                  path="/scientific-talks"/>
-    </div>
-  );
+                        <IonCardHeader className={ styles.presenterInfo }>
+                            <IonCardSubtitle className={ styles.presenter }>
+                                <ContactList contacts={ [
+                                    ...(talk?.osmoseMemberPresenters.edges.map(e => e?.node).filter(n => !!n) ?? []),
+                                    ...(talk?.otherPresenters ?? [])
+                                ] as any }/>
+                            </IonCardSubtitle>
+                        </IonCardHeader>
+                    </IonCard>
+                )) }
+            </div>
+
+            <Pagination totalCount={ talksTotal }
+                        currentPage={ currentPage }
+                        pageSize={ pageSize }
+                        setPage={ setCurrentPage }/>
+        </div>
+    );
 };

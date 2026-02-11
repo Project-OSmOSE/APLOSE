@@ -16,7 +16,7 @@ import { clearMap, initMap, setMapView } from './map.functions';
 import './DeploymentsMap.css'
 import { getColorLuma, intToRGB } from './utils.functions';
 import { DeploymentPanel, FilterPanel } from './Panels';
-import { Deployment, type LightDeployment } from '../../pages/Projects/ProjectDetail/ProjectDetail';
+import { LightDeployment } from "../../api";
 
 interface Feature {
   properties: {
@@ -36,7 +36,7 @@ export const DeploymentsMap: React.FC<{
   const mapID: string = useMemo(() => 'map' + projectID ? '-' + projectID : '', [ projectID ]);
   const deploymentsMarkers = useRef<Map<string, CircleMarker>>(new Map());
 
-  const [ filteredDeployments, setFilteredDeployments ] = useState<Array<LightDeployment>>([]);
+  const [ filteredDeployments, setFilteredDeployments ] = useState<LightDeployment[]>([]);
 
   useEffect(() => {
     if (map.current) clearMap(map.current);
@@ -64,13 +64,13 @@ export const DeploymentsMap: React.FC<{
   }, [ allDeployments, filteredDeployments ]);
 
   const setDeploymentsToMap = (map: LeafletMap,
-                               deployments: Array<LightDeployment>): void => {
+                               deployments: LightDeployment[]): void => {
 
     clusterGroup.current = new MarkerClusterGroup({
       maxClusterRadius: 40,
       iconCreateFunction: (cluster: MarkerCluster) => {
         const icon: Icon | DivIcon = (clusterGroup.current as any)._defaultIconCreateFunction(cluster);
-        const allDeployments: Array<Deployment> = cluster.getAllChildMarkers().map(child => {
+        const allDeployments: Array<LightDeployment> = cluster.getAllChildMarkers().map(child => {
           return child.feature?.properties.deployment;
         }).filter(element => !!element);
         const projects = [ ...new Set(allDeployments.map(d => d.project.id)) ]
