@@ -1,7 +1,7 @@
 # Front dockerfile
 
 # Build app stage
-FROM node:16-alpine3.13 as build-app
+FROM node:24 as build-app
 
 WORKDIR /opt
 
@@ -16,14 +16,14 @@ COPY frontend .
 COPY package.json global-package.json
 
 # Used by viteprss
-RUN apk add --no-cache git
+#RUN #apk add --no-cache git
 
 RUN PUBLIC_URL=/app npm run build
 
 RUN npm run docs:build
 
 # Build website stage
-FROM node:16-alpine3.13 as build-website
+FROM node:24 as build-website
 
 WORKDIR /opt
 

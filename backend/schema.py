@@ -87,8 +87,8 @@ class ChannelConfigurationFilterSet(FilterSet):
             "duty_cycle_off": ["exact", "lt", "lte", "gt", "gte"],
             "instrument_depth": ["exact", "lt", "lte", "gt", "gte"],
             "timezone": ["exact"],
-            "harvest_starting_date": ["exact", "lt", "lte", "gt", "gte"],
-            "harvest_ending_date": ["exact", "lt", "lte", "gt", "gte"],
+            "record_start_date": ["exact", "lt", "lte", "gt", "gte"],
+            "record_end_date": ["exact", "lt", "lte", "gt", "gte"],
         }
 
 

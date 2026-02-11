@@ -42,12 +42,15 @@ export enum AccessibilityEnum {
 
 export type AcousticDetectorSpecificationNode = ExtendedInterface & {
   __typename?: 'AcousticDetectorSpecificationNode';
+  /** Name of the algorithm used by the detector. */
   algorithmName?: Maybe<Scalars['String']['output']>;
   detectedLabels?: Maybe<Array<Maybe<LabelNode>>>;
   detectorSet: DetectorNodeConnection;
   /** The ID of the object */
   id: Scalars['ID']['output'];
+  /** Maximum frequency of the detections (in Hertz). */
   maxFrequency?: Maybe<Scalars['Int']['output']>;
+  /** Minimum frequency of the detections (in Hertz). */
   minFrequency?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -1270,16 +1273,6 @@ export type AudioFileNodeChannelConfigurationsArgs = {
   dutyCycleOn_Lt?: InputMaybe<Scalars['Int']['input']>;
   dutyCycleOn_Lte?: InputMaybe<Scalars['Int']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  harvestEndingDate?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   instrumentDepth?: InputMaybe<Scalars['Int']['input']>;
@@ -1289,6 +1282,16 @@ export type AudioFileNodeChannelConfigurationsArgs = {
   instrumentDepth_Lte?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  recordEndDate?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
   recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
   timezone?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1482,8 +1485,10 @@ export type CampaignNodeNodeConnection = {
 export type ChannelConfigurationDetectorSpecificationNode = ExtendedInterface & {
   __typename?: 'ChannelConfigurationDetectorSpecificationNode';
   channelConfiguration?: Maybe<ChannelConfigurationNode>;
+  /** Description of the configuration */
   configuration?: Maybe<Scalars['String']['output']>;
   detector: EquipmentNode;
+  /** Filter applied to the configuration */
   filter?: Maybe<Scalars['String']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
@@ -1525,10 +1530,6 @@ export type ChannelConfigurationNode = ExtendedInterface & {
   /** If it's not Continuous, time length (in second) during which the recorder is on. */
   dutyCycleOn?: Maybe<Scalars['Int']['output']>;
   extraInformation?: Maybe<Scalars['String']['output']>;
-  /** Harvest stop date at which the channel configuration was stopped (in UTC). */
-  harvestEndingDate?: Maybe<Scalars['DateTime']['output']>;
-  /** Harvest start date at which the channel configuration was idle to record (in UTC). */
-  harvestStartingDate?: Maybe<Scalars['DateTime']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
   /** Immersion depth of instrument (in positive meters). */
@@ -1541,6 +1542,7 @@ export type ChannelConfigurationNode = ExtendedInterface & {
   recorderSpecification?: Maybe<ChannelConfigurationRecorderSpecificationNode>;
   status?: Maybe<ChannelConfigurationStatusEnum>;
   storages?: Maybe<Array<Maybe<EquipmentNode>>>;
+  /** Timezone of the recording. */
   timezone?: Maybe<Scalars['String']['output']>;
 };
 
@@ -2041,16 +2043,6 @@ export type DatasetNodeRelatedChannelConfigurationsArgs = {
   dutyCycleOn_Lt?: InputMaybe<Scalars['Int']['input']>;
   dutyCycleOn_Lte?: InputMaybe<Scalars['Int']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  harvestEndingDate?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   instrumentDepth?: InputMaybe<Scalars['Int']['input']>;
@@ -2060,6 +2052,16 @@ export type DatasetNodeRelatedChannelConfigurationsArgs = {
   instrumentDepth_Lte?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  recordEndDate?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
   recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
   timezone?: InputMaybe<Scalars['String']['input']>;
 };
@@ -2190,16 +2192,6 @@ export type DeploymentNodeChannelConfigurationsArgs = {
   dutyCycleOn_Lt?: InputMaybe<Scalars['Int']['input']>;
   dutyCycleOn_Lte?: InputMaybe<Scalars['Int']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  harvestEndingDate?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   instrumentDepth?: InputMaybe<Scalars['Int']['input']>;
@@ -2209,6 +2201,16 @@ export type DeploymentNodeChannelConfigurationsArgs = {
   instrumentDepth_Lte?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  recordEndDate?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
   recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
   timezone?: InputMaybe<Scalars['String']['input']>;
 };
@@ -2276,16 +2278,6 @@ export type DetectionFileNodeChannelConfigurationsArgs = {
   dutyCycleOn_Lt?: InputMaybe<Scalars['Int']['input']>;
   dutyCycleOn_Lte?: InputMaybe<Scalars['Int']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  harvestEndingDate?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   instrumentDepth?: InputMaybe<Scalars['Int']['input']>;
@@ -2295,6 +2287,16 @@ export type DetectionFileNodeChannelConfigurationsArgs = {
   instrumentDepth_Lte?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  recordEndDate?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
   recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
   timezone?: InputMaybe<Scalars['String']['input']>;
 };
@@ -2432,12 +2434,16 @@ export type EndAnnotationPhaseMutation = {
 
 export type EquipmentModelNode = ExtendedInterface & {
   __typename?: 'EquipmentModelNode';
+  /** Number of battery slots */
   batterySlotsCount?: Maybe<Scalars['Int']['output']>;
+  /** Type of battery supported by the model */
   batteryType?: Maybe<Scalars['String']['output']>;
+  /** List of cables required to use the model */
   cables?: Maybe<Scalars['String']['output']>;
   equipments: EquipmentNodeConnection;
   /** The ID of the object */
   id: Scalars['ID']['output'];
+  /** Name of the model */
   name: Scalars['String']['output'];
   provider: InstitutionNode;
   specifications?: Maybe<Array<Maybe<EquipmentSpecificationUnion>>>;
@@ -2505,12 +2511,15 @@ export type EquipmentNode = ExtendedInterface & {
   id: Scalars['ID']['output'];
   maintenances: MaintenanceNodeConnection;
   model: EquipmentModelNode;
+  /** Name of the equipment. */
   name?: Maybe<Scalars['String']['output']>;
   owner?: Maybe<ContactUnion>;
   ownerId: Scalars['BigInt']['output'];
+  /** Date of purchase. */
   purchaseDate?: Maybe<Scalars['Date']['output']>;
   /** Required only for hydrophones */
   sensitivity?: Maybe<Scalars['Float']['output']>;
+  /** Serial number of the equipment. */
   serialNumber: Scalars['String']['output'];
 };
 
@@ -2613,16 +2622,6 @@ export type EquipmentNodeChannelConfigurationsArgs = {
   dutyCycleOn_Lt?: InputMaybe<Scalars['Int']['input']>;
   dutyCycleOn_Lte?: InputMaybe<Scalars['Int']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  harvestEndingDate?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   instrumentDepth?: InputMaybe<Scalars['Int']['input']>;
@@ -2632,6 +2631,16 @@ export type EquipmentNodeChannelConfigurationsArgs = {
   instrumentDepth_Lte?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  recordEndDate?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
   recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
   timezone?: InputMaybe<Scalars['String']['input']>;
 };
@@ -3365,7 +3374,9 @@ export type LinearScaleNodeOuterScalesArgs = {
 
 export type MaintenanceNode = ExtendedInterface & {
   __typename?: 'MaintenanceNode';
+  /** Date of the maintenance operation */
   date: Scalars['Date']['output'];
+  /** Description of the maintenance */
   description?: Maybe<Scalars['String']['output']>;
   equipment?: Maybe<EquipmentNode>;
   /** The ID of the object */
@@ -3404,12 +3415,15 @@ export type MaintenanceNodeNodeConnection = {
 
 export type MaintenanceTypeNode = ExtendedInterface & {
   __typename?: 'MaintenanceTypeNode';
+  /** Description of this type of maintenance */
   description?: Maybe<Scalars['String']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
+  /** Recommended interval of execution for this type of maintenance */
   interval?: Maybe<Scalars['Float']['output']>;
   maintenances: MaintenanceNodeConnection;
-  name: Scalars['String']['output'];
+  /** Name of the maintenance type */
+  name?: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -3860,10 +3874,12 @@ export type PlatformNode = ExtendedInterface & {
   __typename?: 'PlatformNode';
   /** Support of the deployed instruments */
   deployments: DeploymentNodeConnection;
+  /** Description of the platform */
   description?: Maybe<Scalars['String']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
   maintenances: MaintenanceNodeConnection;
+  /** Name of the platform */
   name?: Maybe<Scalars['String']['output']>;
   owner?: Maybe<ContactUnion>;
   ownerId?: Maybe<Scalars['BigInt']['output']>;
@@ -3979,7 +3995,9 @@ export type PlatformTypeNode = ExtendedInterface & {
   __typename?: 'PlatformTypeNode';
   /** The ID of the object */
   id: Scalars['ID']['output'];
+  /** Is this platform mobile */
   isMobile: Scalars['Boolean']['output'];
+  /** Name of the platform */
   name: Scalars['String']['output'];
   platforms: PlatformNodeConnection;
 };
@@ -4214,6 +4232,7 @@ export type ProjectNode = ExtendedInterface & {
   deployments: DeploymentNodeConnection;
   /** Digital Object Identifier of the data, if existing. */
   doi?: Maybe<Scalars['String']['output']>;
+  /** End date of the project */
   endDate?: Maybe<Scalars['Date']['output']>;
   financing?: Maybe<FinancingEnum>;
   /** The ID of the object */
@@ -4226,6 +4245,7 @@ export type ProjectNode = ExtendedInterface & {
   projectType?: Maybe<ProjectTypeNode>;
   /** Project associated to this site */
   sites: SiteNodeConnection;
+  /** Start date of the project */
   startDate?: Maybe<Scalars['Date']['output']>;
   websiteProject?: Maybe<WebsiteProjectNode>;
 };
@@ -4322,6 +4342,7 @@ export type ProjectNodeOverride = ExtendedInterface & {
   deployments: DeploymentNodeConnection;
   /** Digital Object Identifier of the data, if existing. */
   doi?: Maybe<Scalars['String']['output']>;
+  /** End date of the project */
   endDate?: Maybe<Scalars['Date']['output']>;
   financing?: Maybe<FinancingEnum>;
   /** The ID of the object */
@@ -4334,6 +4355,7 @@ export type ProjectNodeOverride = ExtendedInterface & {
   projectType?: Maybe<ProjectTypeNode>;
   /** Project associated to this site */
   sites: SiteNodeConnection;
+  /** Start date of the project */
   startDate?: Maybe<Scalars['Date']['output']>;
   websiteProject?: Maybe<WebsiteProjectNode>;
 };
@@ -4782,16 +4804,6 @@ export type QueryAllChannelConfigurationsArgs = {
   dutyCycleOn_Lt?: InputMaybe<Scalars['Int']['input']>;
   dutyCycleOn_Lte?: InputMaybe<Scalars['Int']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  harvestEndingDate?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestEndingDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
-  harvestStartingDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_In?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
   instrumentDepth?: InputMaybe<Scalars['Int']['input']>;
@@ -4803,6 +4815,16 @@ export type QueryAllChannelConfigurationsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   ordering?: InputMaybe<Scalars['String']['input']>;
+  recordEndDate?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordEndDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Gt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Gte?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Lt?: InputMaybe<Scalars['DateTime']['input']>;
+  recordStartDate_Lte?: InputMaybe<Scalars['DateTime']['input']>;
   recorderSpecification_Isnull?: InputMaybe<Scalars['Boolean']['input']>;
   timezone?: InputMaybe<Scalars['String']['input']>;
 };
@@ -5724,8 +5746,11 @@ export type RecorderSpecificationNode = ExtendedInterface & {
   channelsCount?: Maybe<Scalars['Int']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
+  /** Maximum storage capacity supported by the recorder. */
   storageMaximumCapacity?: Maybe<Array<Scalars['String']['output']>>;
+  /** Number of all the storage slots on the recorder. */
   storageSlotsCount?: Maybe<Scalars['Int']['output']>;
+  /** Type of storage supported by the recorder. */
   storageType?: Maybe<Scalars['String']['output']>;
 };
 
@@ -6464,9 +6489,11 @@ export type SpectrogramNodeNodeConnection = {
 
 export type StorageSpecificationNode = ExtendedInterface & {
   __typename?: 'StorageSpecificationNode';
+  /** Capacity of the storage. */
   capacity: Array<Scalars['String']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
+  /** Type of storage. */
   type?: Maybe<Scalars['String']['output']>;
 };
 

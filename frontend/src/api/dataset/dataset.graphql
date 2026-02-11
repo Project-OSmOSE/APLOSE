@@ -39,6 +39,8 @@ query listAvailableDatasetsForImport {
             name
             path
         }
+        failed
+        stack
     }
 }
 
