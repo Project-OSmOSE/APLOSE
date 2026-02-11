@@ -4143,6 +4143,8 @@ type ImportDatasetNode {
   path: String!
   legacy: Boolean
   analysis: [ImportAnalysisNode]
+  failed: Boolean
+  stack: String
 }
 
 type AnnotationLabelNodeNodeConnection {

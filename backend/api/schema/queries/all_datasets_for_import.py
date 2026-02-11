@@ -3,6 +3,7 @@ from os import listdir
 from os.path import join, isfile, exists
 from pathlib import Path
 from typing import Optional
+import traceback
 
 import graphene
 from django.conf import settings
@@ -21,6 +22,7 @@ from .all_analysis_for_import import (
 
 def resolve_all_datasets_available_for_import() -> [ImportDatasetNode]:
     """List dataset available for import"""
+    # pylint: disable=broad-exception-caught
     folders = [
         f
         for f in listdir(settings.DATASET_IMPORT_FOLDER)
@@ -31,15 +33,23 @@ def resolve_all_datasets_available_for_import() -> [ImportDatasetNode]:
         json_path = join(settings.DATASET_IMPORT_FOLDER, folder, "dataset.json")
         if not exists(json_path):
             continue
-        dataset = OSEkitDataset.from_json(Path(json_path))
-        d = ImportDatasetNode()
-        d.name = folder
-        d.path = folder
-        d.analysis = resolve_all_spectrogram_analysis_available_for_import(
-            dataset,
-            folder=folder,
-        )
-        if len(d.analysis) > 0:
+        try:
+            dataset = OSEkitDataset.from_json(Path(json_path))
+            d = ImportDatasetNode()
+            d.name = folder
+            d.path = folder
+            d.analysis = resolve_all_spectrogram_analysis_available_for_import(
+                dataset,
+                folder=folder,
+            )
+            if len(d.analysis) > 0:
+                available_datasets.append(d)
+        except Exception:
+            d = ImportDatasetNode()
+            d.name = folder
+            d.path = folder
+            d.failed = True
+            d.stack = traceback.format_exc()
             available_datasets.append(d)
     return available_datasets
 
@@ -71,17 +81,25 @@ def legacy_resolve_all_datasets_available_for_import() -> [ImportDatasetNode]:
                 available_dataset.legacy = True
 
             # Get its analysis
-            analysis = legacy_resolve_all_spectrogram_analysis_available_for_import(
-                dataset_name=available_dataset.name,
-                dataset_path=available_dataset.path,
-                config_folder=(
-                    f"{dataset['spectro_duration']}_{dataset['dataset_sr']}"
-                ),
-            )
-            for a in analysis:
-                available_dataset.analysis.append(a)
-            if len(available_dataset.analysis) > 0:
-                available_datasets.append(available_dataset)
+            try:
+                analysis = legacy_resolve_all_spectrogram_analysis_available_for_import(
+                    dataset_name=available_dataset.name,
+                    dataset_path=available_dataset.path,
+                    config_folder=(
+                        f"{dataset['spectro_duration']}_{dataset['dataset_sr']}"
+                    ),
+                )
+                for a in analysis:
+                    available_dataset.analysis.append(a)
+                if len(available_dataset.analysis) > 0:
+                    available_datasets.append(available_dataset)
+            except Exception:
+                d = ImportDatasetNode()
+                d.name = dataset["dataset"]
+                d.path = dataset["path"]
+                d.failed = True
+                d.stack = traceback.format_exc()
+                available_datasets.append(d)
     return available_datasets
 
 

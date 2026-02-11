@@ -16,7 +16,7 @@ export type GetDatasetByIdQuery = { __typename?: 'Query', datasetById?: { __type
 export type ListAvailableDatasetsForImportQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListAvailableDatasetsForImportQuery = { __typename?: 'Query', allDatasetsForImport?: Array<{ __typename?: 'ImportDatasetNode', name: string, path: string, legacy?: boolean | null, analysis?: Array<{ __typename?: 'ImportAnalysisNode', name: string, path: string } | null> | null } | null> | null };
+export type ListAvailableDatasetsForImportQuery = { __typename?: 'Query', allDatasetsForImport?: Array<{ __typename?: 'ImportDatasetNode', name: string, path: string, legacy?: boolean | null, failed?: boolean | null, stack?: string | null, analysis?: Array<{ __typename?: 'ImportAnalysisNode', name: string, path: string } | null> | null } | null> | null };
 
 export type ImportDatasetMutationVariables = Types.Exact<{
   name: Types.Scalars['String']['input'];
@@ -77,6 +77,8 @@ export const ListAvailableDatasetsForImportDocument = `
       name
       path
     }
+    failed
+    stack
   }
 }
     `;

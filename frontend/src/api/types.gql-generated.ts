@@ -2914,9 +2914,11 @@ export type ImportDatasetMutation = {
 export type ImportDatasetNode = {
   __typename?: 'ImportDatasetNode';
   analysis?: Maybe<Array<Maybe<ImportAnalysisNode>>>;
+  failed?: Maybe<Scalars['Boolean']['output']>;
   legacy?: Maybe<Scalars['Boolean']['output']>;
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
+  stack?: Maybe<Scalars['String']['output']>;
 };
 
 export type InstitutionNode = ExtendedInterface & {

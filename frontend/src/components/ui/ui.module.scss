@@ -205,7 +205,6 @@
   align-items: center;
   border-radius: 0.5rem;
   padding: 0.25rem 0.5rem;
-  cursor: pointer;
   background-color: transparent;
 
   >:first-child {
@@ -223,6 +222,9 @@
 
   &:hover:not(:has(.importRow:hover)) {
     background-color: rgba(var(--ion-color-primary-rgb), 0.06);
+  }
+  &.error:hover:not(:has(.importRow:hover)) {
+    background-color: rgba(var(--ion-color-danger-rgb), 0.06);
   }
 }
 
