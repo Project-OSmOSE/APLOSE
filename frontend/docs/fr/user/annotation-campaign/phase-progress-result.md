@@ -77,8 +77,8 @@ Tableau contenant toutes les annotations et tous les commentaires laissés par l
 | signal_trend                          | FLAT / ASCENDING / DESCENDING / MODULATED | Tendance générale du signal                                                                               |
 | signal_sidebands                      |                  boolean                  | Si le signal présente des bandes latérales                                                                |
 | signal_subharmonics                   |                  boolean                  | Si le signal présente des sous-harmoniques                                                                |
-| signal_frequency_jumps                |               boolean / int               | Si le signal présente des sauts de fréquences, si oui il peut contenir le nombre de sauts                 |
-| signal_deterministic_chaos            |                  boolean                  | Si le signal présente un chaos déterministe                                                               |
+| signal_frequency_jumps                |               boolean / int               | Si le signal présente des sauts en fréquences, si oui il peut contenir le nombre de sauts                 |
+| signal_deterministic_chaos            |                  boolean                  | Si le signal présente un chaos déterministique                                                            |
 
 ### Status
 

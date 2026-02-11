@@ -111,8 +111,8 @@ signal.
 | Duration               |   s   | Durée de la boîte, directement liée aux limites de temps de la boîte                                            |
 | Sidebands              |       | Le signal présente des bandes latérales                                                                         |
 | Subharmonics           |       | Le signal présente des sous-harmoniques                                                                         |
-| Frequency jumps        |       | Le signal présente des sauts de fréquences. Si oui, le nombre de saut peut être renseigné                       |
-| Deterministic chaos    |       | Le signal présente un chaos déterministe                                                                        |
+| Frequency jumps        |       | Le signal présente des sauts en fréquences. Si oui, le nombre de saut peut être renseigné                       |
+| Deterministic chaos    |       | Le signal présente un chaos déterministique                                                                     |
 
 Toutes les caractéristiques sont optionnelles.
 
