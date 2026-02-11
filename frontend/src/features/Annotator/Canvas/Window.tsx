@@ -3,7 +3,6 @@ import styles from './styles.module.scss';
 import { FrequencyAxis, TimeAxis } from '@/features/Annotator/Axis';
 import { TimeBar } from './TimeBar';
 import {
-  AcousticFeatures,
   selectAllAnnotations,
   selectTempAnnotation,
   StrongAnnotation,
@@ -27,6 +26,7 @@ import {
   selectIsColormapReversed,
 } from '@/features/Annotator/VisualConfiguration';
 import { selectAnalysis } from '@/features/Annotator/Analysis';
+import { AcousticFeatures } from '@/features/Annotator/AcousticFeatures';
 
 export const AnnotatorCanvasWindow: React.FC = () => {
   const width = useWindowWidth()

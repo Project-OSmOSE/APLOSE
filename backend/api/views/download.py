@@ -57,14 +57,20 @@ REPORT_HEADERS = [  # headers
     "confidence_indicator_label",
     "confidence_indicator_level",
     "comments",
-    "signal_quality",
+    "signal_quantity",
+    "signal_is_intensity_too_low",
+    "signal_does_overlap_other_signals",
     "signal_start_frequency",
     "signal_end_frequency",
-    "signal_relative_max_frequency_count",
     "signal_relative_min_frequency_count",
+    "signal_relative_max_frequency_count",
+    "signal_steps_count",
     "signal_has_harmonics",
     "signal_trend",
-    "signal_steps_count",
+    "signal_sidebands",
+    "signal_subharmonics",
+    "signal_frequency_jumps",
+    "signal_deterministic_chaos",
     "created_at_phase",
 ]
 
@@ -97,7 +103,7 @@ def _get_annotations_for_report(
         output_field=models.CharField(),
     )
     is_box_query = Case(
-        When(annotator_expertise_level=Annotation.Type.WEAK, then=Value(0)),
+        When(type=Annotation.Type.WEAK, then=Value(0)),
         default=Value(1),
         output_field=models.IntegerField(),
     )
@@ -133,11 +139,31 @@ def _get_annotations_for_report(
             "id", flat=True
         )
     )
-    signal_quality_query = Case(
-        When(acoustic_features__isnull=False, then=Value("GOOD")),
+    signal_quantity_query = Case(
+        When(acoustic_features__isnull=False, then=Value("SINGLE")),
         When(
             label__id__in=featured_label_ids,
-            then=Value("BAD"),
+            then=Value("MULTIPLE"),
+        ),
+        default=None,
+        output_field=models.CharField(),
+    )
+    signal_frequency_jumps_query = Case(
+        When(
+            acoustic_features__frequency_jumps_count__isnull=False,
+            then=Concat(
+                F("acoustic_features__frequency_jumps_count"),
+                Value(""),
+                output_field=models.CharField(),
+            ),
+        ),
+        When(
+            acoustic_features__has_frequency_jumps=True,
+            then=Value("True"),
+        ),
+        When(
+            acoustic_features__has_frequency_jumps=False,
+            then=Value("False"),
         ),
         default=None,
         output_field=models.CharField(),
@@ -187,18 +213,26 @@ def _get_annotations_for_report(
             confidence_indicator_label=F("confidence__label"),
             confidence_indicator_level=confidence_level_query,
             comments_data=comments_query,
-            signal_quality=signal_quality_query,
+            signal_quantity=signal_quantity_query,
+            signal_is_intensity_too_low=F("acoustic_features__is_intensity_too_low"),
+            signal_does_overlap_other_signals=F(
+                "acoustic_features__does_overlap_other_signals"
+            ),
             signal_start_frequency=F("acoustic_features__start_frequency"),
             signal_end_frequency=F("acoustic_features__end_frequency"),
-            signal_relative_max_frequency_count=F(
-                "acoustic_features__relative_max_frequency_count"
-            ),
             signal_relative_min_frequency_count=F(
                 "acoustic_features__relative_min_frequency_count"
             ),
+            signal_relative_max_frequency_count=F(
+                "acoustic_features__relative_max_frequency_count"
+            ),
+            signal_steps_count=F("acoustic_features__steps_count"),
             signal_has_harmonics=F("acoustic_features__has_harmonics"),
             signal_trend=F("acoustic_features__trend"),
-            signal_steps_count=F("acoustic_features__steps_count"),
+            signal_sidebands=F("acoustic_features__has_sidebands"),
+            signal_subharmonics=F("acoustic_features__has_subharmonics"),
+            signal_frequency_jumps=signal_frequency_jumps_query,
+            signal_deterministic_chaos=F("acoustic_features__has_deterministic_chaos"),
             _start_time=F("start_time"),
             _end_time=F("end_time"),
             min_frequency=Case(

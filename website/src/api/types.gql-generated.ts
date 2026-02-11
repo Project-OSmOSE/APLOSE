@@ -84,12 +84,19 @@ export type AcousticDetectorSpecificationNodeEdge = {
 export type AcousticFeaturesNode = ExtendedInterface & {
   __typename?: 'AcousticFeaturesNode';
   annotation?: Maybe<AnnotationNode>;
+  doesOverlapOtherSignals?: Maybe<Scalars['Boolean']['output']>;
   /** [Hz] Frequency at the end of the signal */
   endFrequency?: Maybe<Scalars['Float']['output']>;
+  frequencyJumpsCount?: Maybe<Scalars['Int']['output']>;
+  hasDeterministicChaos?: Maybe<Scalars['Boolean']['output']>;
+  hasFrequencyJumps?: Maybe<Scalars['Boolean']['output']>;
   /** If the signal has harmonics */
   hasHarmonics?: Maybe<Scalars['Boolean']['output']>;
+  hasSidebands?: Maybe<Scalars['Boolean']['output']>;
+  hasSubharmonics?: Maybe<Scalars['Boolean']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
+  isIntensityTooLow?: Maybe<Scalars['Boolean']['output']>;
   /** Number of relative maximum frequency in the signal */
   relativeMaxFrequencyCount?: Maybe<Scalars['Int']['output']>;
   /** Number of relative minimum frequency in the signal */
@@ -102,11 +109,18 @@ export type AcousticFeaturesNode = ExtendedInterface & {
 };
 
 export type AnnotationAcousticFeaturesSerializerInput = {
+  doesOverlapOtherSignals?: InputMaybe<Scalars['Boolean']['input']>;
   /** [Hz] Frequency at the end of the signal */
   endFrequency?: InputMaybe<Scalars['Float']['input']>;
+  frequencyJumpsCount?: InputMaybe<Scalars['Int']['input']>;
+  hasDeterministicChaos?: InputMaybe<Scalars['Boolean']['input']>;
+  hasFrequencyJumps?: InputMaybe<Scalars['Boolean']['input']>;
   /** If the signal has harmonics */
   hasHarmonics?: InputMaybe<Scalars['Boolean']['input']>;
+  hasSidebands?: InputMaybe<Scalars['Boolean']['input']>;
+  hasSubharmonics?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['Int']['input']>;
+  isIntensityTooLow?: InputMaybe<Scalars['Boolean']['input']>;
   /** Number of relative maximum frequency in the signal */
   relativeMaxFrequencyCount?: InputMaybe<Scalars['Int']['input']>;
   /** Number of relative minimum frequency in the signal */
@@ -1542,7 +1556,7 @@ export type ChannelConfigurationNode = ExtendedInterface & {
   recorderSpecification?: Maybe<ChannelConfigurationRecorderSpecificationNode>;
   status?: Maybe<ChannelConfigurationStatusEnum>;
   storages?: Maybe<Array<Maybe<EquipmentNode>>>;
-  /** Timezone of the recording. */
+  /** Timezone of the recording (ISO format, eg: +00:00). */
   timezone?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1589,6 +1603,7 @@ export type ChannelConfigurationRecorderSpecificationNode = ExtendedInterface & 
   channelName?: Maybe<Scalars['String']['output']>;
   /** Gain of the channel (recorder), with correction factors if applicable, without hydrophone sensibility (in dB). If end-to-end calibration with hydrophone sensibility, set it in Sensitivity and set Gain to 0 dB.<br>Gain G of the channel such that : data(uPa) = data(volt)*10^((-Sh-G)/20). See Sensitivity for Sh definition. */
   gain: Scalars['Float']['output'];
+  /** If the hydrophone is integrated into the recorder, select it as hydrophone as well. */
   hydrophone: EquipmentNode;
   /** The ID of the object */
   id: Scalars['ID']['output'];
@@ -2504,6 +2519,7 @@ export type EquipmentModelNodeNodeConnection = {
 export type EquipmentNode = ExtendedInterface & {
   __typename?: 'EquipmentNode';
   channelConfigurationDetectorSpecifications: ChannelConfigurationDetectorSpecificationNodeConnection;
+  /** If the hydrophone is integrated into the recorder, select it as hydrophone as well. */
   channelConfigurationHydrophoneSpecifications: ChannelConfigurationRecorderSpecificationNodeConnection;
   channelConfigurationRecorderSpecifications: ChannelConfigurationRecorderSpecificationNodeConnection;
   channelConfigurations: ChannelConfigurationNodeConnection;
@@ -2923,9 +2939,11 @@ export type ImportDatasetMutation = {
 export type ImportDatasetNode = {
   __typename?: 'ImportDatasetNode';
   analysis?: Maybe<Array<Maybe<ImportAnalysisNode>>>;
+  failed?: Maybe<Scalars['Boolean']['output']>;
   legacy?: Maybe<Scalars['Boolean']['output']>;
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
+  stack?: Maybe<Scalars['String']['output']>;
 };
 
 export type InstitutionNode = ExtendedInterface & {
@@ -5827,7 +5845,7 @@ export enum SignalShapeEnum {
   Stationary = 'Stationary'
 }
 
-/** From SignalTrend */
+/** From AcousticFeatures.SignalTrend */
 export enum SignalTrendType {
   Ascending = 'Ascending',
   Descending = 'Descending',

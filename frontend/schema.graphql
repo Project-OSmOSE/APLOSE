@@ -668,16 +668,16 @@ type Query {
     instrumentDepth_Gt: Int
     instrumentDepth_Gte: Int
     timezone: String
-    harvestStartingDate: DateTime
-    harvestStartingDate_Lt: DateTime
-    harvestStartingDate_Lte: DateTime
-    harvestStartingDate_Gt: DateTime
-    harvestStartingDate_Gte: DateTime
-    harvestEndingDate: DateTime
-    harvestEndingDate_Lt: DateTime
-    harvestEndingDate_Lte: DateTime
-    harvestEndingDate_Gt: DateTime
-    harvestEndingDate_Gte: DateTime
+    recordStartDate: DateTime
+    recordStartDate_Lt: DateTime
+    recordStartDate_Lte: DateTime
+    recordStartDate_Gt: DateTime
+    recordStartDate_Gte: DateTime
+    recordEndDate: DateTime
+    recordEndDate_Lt: DateTime
+    recordEndDate_Lte: DateTime
+    recordEndDate_Gt: DateTime
+    recordEndDate_Gte: DateTime
     datasetId: ID
   ): ChannelConfigurationNodeNodeConnection
   channelConfigurationById(id: ID!): ChannelConfigurationNode
@@ -785,7 +785,7 @@ type Query {
     last: Int
     id: ID
   ): WebsiteProjectNodeNodeConnection
-  websiteProjetById(id: ID!): WebsiteProjectNode
+  websiteProjectById(id: ID!): WebsiteProjectNode
   allTeamMembers(
     """Query limit"""
     limit: Int
@@ -802,6 +802,37 @@ type Query {
     id: ID
   ): TeamMemberNodeNodeConnection
   teamMemberById(id: ID!): TeamMemberNode
+  allNews(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    id: ID
+  ): NewsNodeNodeConnection
+  newsById(id: ID!): NewsNode
+  allScientificTalks(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    id: ID
+  ): ScientificTalkNodeNodeConnection
   currentUser: UserNode
   allUserGroups(
     """Query limit"""
@@ -1211,8 +1242,14 @@ type AcousticDetectorSpecificationNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
   detectedLabels: [LabelNode]
+
+  """Minimum frequency of the detections (in Hertz)."""
   minFrequency: Int
+
+  """Maximum frequency of the detections (in Hertz)."""
   maxFrequency: Int
+
+  """Name of the algorithm used by the detector."""
   algorithmName: String
   detectorSet(offset: Int, before: String, after: String, first: Int, last: Int): DetectorNodeConnection!
 }
@@ -1518,7 +1555,7 @@ type DatasetNode implements ExtendedInterface {
   path: String!
   owner: UserNode!
   legacy: Boolean!
-  relatedChannelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
+  relatedChannelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, recordStartDate: DateTime, recordStartDate_Lt: DateTime, recordStartDate_Lte: DateTime, recordStartDate_Gt: DateTime, recordStartDate_Gte: DateTime, recordEndDate: DateTime, recordEndDate_Lt: DateTime, recordEndDate_Lte: DateTime, recordEndDate_Gt: DateTime, recordEndDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
   spectrogramAnalysis(
     """Query limit"""
     limit: Int
@@ -2097,6 +2134,10 @@ type ChannelConfigurationRecorderSpecificationNode implements ExtendedInterface 
   """The ID of the object"""
   id: ID!
   recorder: EquipmentNode!
+
+  """
+  If the hydrophone is integrated into the recorder, select it as hydrophone as well.
+  """
   hydrophone: EquipmentNode!
   recordingFormats: [FileFormatNode]
 
@@ -2122,30 +2163,48 @@ type EquipmentNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
   model: EquipmentModelNode!
+
+  """Serial number of the equipment."""
   serialNumber: String!
 
   """"""
   ownerId: BigInt!
+
+  """Date of purchase."""
   purchaseDate: Date
+
+  """Name of the equipment."""
   name: String
 
   """Required only for hydrophones"""
   sensitivity: Float
   maintenances(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], typeId: ID, typeId_In: [ID], maintainerId: ID, maintainerId_In: [ID], maintainerInstitutionId: ID, maintainerInstitutionId_In: [ID], platformId: ID, platformId_In: [ID], equipmentId: ID, equipmentId_In: [ID], date: Date, date_Lt: Date, date_Lte: Date, date_Gt: Date, date_Gte: Date): MaintenanceNodeConnection!
   channelConfigurationRecorderSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], samplingFrequency: Int, samplingFrequency_Lt: Int, samplingFrequency_Lte: Int, samplingFrequency_Gt: Int, samplingFrequency_Gte: Int, sampleDepth: Int, sampleDepth_Lt: Int, sampleDepth_Lte: Int, sampleDepth_Gt: Int, sampleDepth_Gte: Int, gain: Float, gain_Lt: Float, gain_Lte: Float, gain_Gt: Float, gain_Gte: Float, channelName: String, channelName_Icontains: String): ChannelConfigurationRecorderSpecificationNodeConnection!
+
+  """
+  If the hydrophone is integrated into the recorder, select it as hydrophone as well.
+  """
   channelConfigurationHydrophoneSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], samplingFrequency: Int, samplingFrequency_Lt: Int, samplingFrequency_Lte: Int, samplingFrequency_Gt: Int, samplingFrequency_Gte: Int, sampleDepth: Int, sampleDepth_Lt: Int, sampleDepth_Lte: Int, sampleDepth_Gt: Int, sampleDepth_Gte: Int, gain: Float, gain_Lt: Float, gain_Lte: Float, gain_Gt: Float, gain_Gte: Float, channelName: String, channelName_Icontains: String): ChannelConfigurationRecorderSpecificationNodeConnection!
   channelConfigurationDetectorSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], minFrequency: Int, minFrequency_Lt: Int, minFrequency_Lte: Int, minFrequency_Gt: Int, minFrequency_Gte: Int, maxFrequency: Int, maxFrequency_Lt: Int, maxFrequency_Lte: Int, maxFrequency_Gt: Int, maxFrequency_Gte: Int, filter: String, filter_Icontains: String, configuration: String, configuration_Icontains: String): ChannelConfigurationDetectorSpecificationNodeConnection!
-  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
+  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, recordStartDate: DateTime, recordStartDate_Lt: DateTime, recordStartDate_Lte: DateTime, recordStartDate_Gt: DateTime, recordStartDate_Gte: DateTime, recordEndDate: DateTime, recordEndDate_Lt: DateTime, recordEndDate_Lte: DateTime, recordEndDate_Gt: DateTime, recordEndDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
   owner: ContactUnion
 }
 
 type EquipmentModelNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
+
+  """Name of the model"""
   name: String!
   provider: InstitutionNode!
+
+  """Number of battery slots"""
   batterySlotsCount: Int
+
+  """Type of battery supported by the model"""
   batteryType: String
+
+  """List of cables required to use the model"""
   cables: String
   equipments(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], serialNumber: String, serialNumber_Icontains: String, purchaseDate: Date, purchaseDate_Lt: Date, purchaseDate_Lte: Date, purchaseDate_Gt: Date, purchaseDate_Gte: Date, name: String, name_Icontains: String, sensitivity: Float, sensitivity_Lt: Float, sensitivity_Lte: Float, sensitivity_Gt: Float, sensitivity_Gte: Float, sensitivity_Isnull: Boolean): EquipmentNodeConnection!
   specifications: [EquipmentSpecificationUnion]
@@ -2322,7 +2381,11 @@ type MaintenanceNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
   type: MaintenanceTypeNode!
+
+  """Date of the maintenance operation"""
   date: Date!
+
+  """Description of the maintenance"""
   description: String
   maintainer: PersonNode!
   maintainerInstitution: InstitutionNode!
@@ -2333,8 +2396,14 @@ type MaintenanceNode implements ExtendedInterface {
 type MaintenanceTypeNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
-  name: String!
+
+  """Name of the maintenance type"""
+  name: String
+
+  """Description of this type of maintenance"""
   description: String
+
+  """Recommended interval of execution for this type of maintenance"""
   interval: Float
   maintenances(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], typeId: ID, typeId_In: [ID], maintainerId: ID, maintainerId_In: [ID], maintainerInstitutionId: ID, maintainerInstitutionId_In: [ID], platformId: ID, platformId_In: [ID], equipmentId: ID, equipmentId_In: [ID], date: Date, date_Lt: Date, date_Lte: Date, date_Gt: Date, date_Gte: Date): MaintenanceNodeConnection!
 }
@@ -2347,7 +2416,11 @@ type PlatformNode implements ExtendedInterface {
   ownerId: BigInt
   provider: InstitutionNode!
   type: PlatformTypeNode!
+
+  """Name of the platform"""
   name: String
+
+  """Description of the platform"""
   description: String
   maintenances(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], typeId: ID, typeId_In: [ID], maintainerId: ID, maintainerId_In: [ID], maintainerInstitutionId: ID, maintainerInstitutionId_In: [ID], platformId: ID, platformId_In: [ID], equipmentId: ID, equipmentId_In: [ID], date: Date, date_Lt: Date, date_Lte: Date, date_Gt: Date, date_Gte: Date): MaintenanceNodeConnection!
 
@@ -2366,7 +2439,11 @@ scalar BigInt
 type PlatformTypeNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
+
+  """Name of the platform"""
   name: String!
+
+  """Is this platform mobile"""
   isMobile: Boolean!
   platforms(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], ownerId: BigInt, ownerId_In: [BigInt], providerId: ID, providerId_In: [ID], name: String, name_Icontains: String): PlatformNodeConnection!
 }
@@ -2454,7 +2531,7 @@ type DeploymentNode implements ExtendedInterface {
   Optional description of deployment and recovery conditions (weather, technical issues,...).
   """
   description: String
-  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
+  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, recordStartDate: DateTime, recordStartDate_Lt: DateTime, recordStartDate_Lte: DateTime, recordStartDate_Gt: DateTime, recordStartDate_Gte: DateTime, recordEndDate: DateTime, recordEndDate_Lt: DateTime, recordEndDate_Lte: DateTime, recordEndDate_Gt: DateTime, recordEndDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
   mobilePositions: [DeploymentMobilePositionNode]
 }
 
@@ -2474,7 +2551,11 @@ type ProjectNodeOverride implements ExtendedInterface {
   Description of the type of the project (e.g., research, marine renewable energies, long monitoring,...).
   """
   projectType: ProjectTypeNode
+
+  """Start date of the project"""
   startDate: Date
+
+  """End date of the project"""
   endDate: Date
 
   """Description of the goal of the project."""
@@ -2718,13 +2799,74 @@ type TeamMemberNode implements ExtendedInterface {
   personalWebsiteUrl: String
   githubUrl: String
   linkedinUrl: String
+  newsSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): NewsNodeConnection!
   projectSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): WebsiteProjectNodeConnection!
+  scientifictalkSet(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): ScientificTalkNodeConnection!
 }
 
 enum TeamMemberTypeEnum {
   Active
   Former
   Collaborator
+}
+
+type NewsNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [NewsNodeEdge]!
+}
+
+"""A Relay edge containing a `NewsNode` and its cursor."""
+type NewsNodeEdge {
+  """The item at the end of the edge"""
+  node: NewsNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""News node"""
+type NewsNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  title: String!
+  intro: String!
+  body: String!
+  date: Date
+  thumbnail: String!
+  osmoseMemberAuthors(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): TeamMemberNodeConnection!
+  otherAuthors: [String!]
+}
+
+type ScientificTalkNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [ScientificTalkNodeEdge]!
+}
+
+"""A Relay edge containing a `ScientificTalkNode` and its cursor."""
+type ScientificTalkNodeEdge {
+  """The item at the end of the edge"""
+  node: ScientificTalkNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""ScientificTalk node"""
+type ScientificTalkNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  title: String!
+  intro: String
+  date: Date
+  thumbnail: String!
+  osmoseMemberPresenters(offset: Int, before: String, after: String, first: Int, last: Int, id: ID): TeamMemberNodeConnection!
+  otherPresenters: [String!]
 }
 
 type ChannelConfigurationNodeConnection {
@@ -2774,18 +2916,10 @@ type ChannelConfigurationNode implements ExtendedInterface {
 
   """Immersion depth of instrument (in positive meters)."""
   instrumentDepth: Int
+
+  """Timezone of the recording (ISO format, eg: +00:00)."""
   timezone: String
   extraInformation: String
-
-  """
-  Harvest start date at which the channel configuration was idle to record (in UTC).
-  """
-  harvestStartingDate: DateTime
-
-  """
-  Harvest stop date at which the channel configuration was stopped (in UTC).
-  """
-  harvestEndingDate: DateTime
 
   """Date at which the channel configuration started to record (in UTC)."""
   recordStartDate: DateTime
@@ -2824,7 +2958,11 @@ type ChannelConfigurationDetectorSpecificationNode implements ExtendedInterface 
 
   """Maximum frequency (in Hertz)."""
   maxFrequency: Int
+
+  """Filter applied to the configuration"""
   filter: String
+
+  """Description of the configuration"""
   configuration: String
   channelConfiguration: ChannelConfigurationNode
 }
@@ -2948,7 +3086,11 @@ enum HydrophoneDirectivityEnum {
 type StorageSpecificationNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
+
+  """Capacity of the storage."""
   capacity: [String!]!
+
+  """Type of storage."""
   type: String
 }
 
@@ -2958,8 +3100,14 @@ type RecorderSpecificationNode implements ExtendedInterface {
 
   """Number of all the channels on the recorder, even if unused."""
   channelsCount: Int
+
+  """Number of all the storage slots on the recorder."""
   storageSlotsCount: Int
+
+  """Maximum storage capacity supported by the recorder."""
   storageMaximumCapacity: [String!]
+
+  """Type of storage supported by the recorder."""
   storageType: String
 }
 
@@ -3498,6 +3646,8 @@ enum ApiAnnotationAnnotatorExpertiseLevelChoices {
 type AcousticFeaturesNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
+  isIntensityTooLow: Boolean
+  doesOverlapOtherSignals: Boolean
 
   """[Hz] Frequency at the beginning of the signal"""
   startFrequency: Float
@@ -3505,22 +3655,27 @@ type AcousticFeaturesNode implements ExtendedInterface {
   """[Hz] Frequency at the end of the signal"""
   endFrequency: Float
 
+  """Number of relative minimum frequency in the signal"""
+  relativeMinFrequencyCount: Int
+
   """Number of relative maximum frequency in the signal"""
   relativeMaxFrequencyCount: Int
 
-  """Number of relative minimum frequency in the signal"""
-  relativeMinFrequencyCount: Int
+  """Number of steps (flat segment) in the signal"""
+  stepsCount: Int
 
   """If the signal has harmonics"""
   hasHarmonics: Boolean
   trend: SignalTrendType
-
-  """Number of steps (flat segment) in the signal"""
-  stepsCount: Int
+  hasSidebands: Boolean
+  hasSubharmonics: Boolean
+  hasFrequencyJumps: Boolean
+  frequencyJumpsCount: Int
+  hasDeterministicChaos: Boolean
   annotation: AnnotationNode
 }
 
-"""From SignalTrend"""
+"""From AcousticFeatures.SignalTrend"""
 enum SignalTrendType {
   Flat
   Ascending
@@ -3832,7 +3987,7 @@ type AudioFileNode implements ExtendedInterface {
 
   """"""
   propertyId: BigInt!
-  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
+  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, recordStartDate: DateTime, recordStartDate_Lt: DateTime, recordStartDate_Lte: DateTime, recordStartDate_Gt: DateTime, recordStartDate_Gte: DateTime, recordEndDate: DateTime, recordEndDate_Lt: DateTime, recordEndDate_Lte: DateTime, recordEndDate_Gt: DateTime, recordEndDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
   samplingFrequency: Int!
   initialTimestamp: Int!
   duration: Int!
@@ -3867,7 +4022,7 @@ type DetectionFileNode implements ExtendedInterface {
 
   """"""
   propertyId: BigInt!
-  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, harvestStartingDate: DateTime, harvestStartingDate_Lt: DateTime, harvestStartingDate_Lte: DateTime, harvestStartingDate_Gt: DateTime, harvestStartingDate_Gte: DateTime, harvestEndingDate: DateTime, harvestEndingDate_Lt: DateTime, harvestEndingDate_Lte: DateTime, harvestEndingDate_Gt: DateTime, harvestEndingDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
+  channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, recordStartDate: DateTime, recordStartDate_Lt: DateTime, recordStartDate_Lte: DateTime, recordStartDate_Gt: DateTime, recordStartDate_Gte: DateTime, recordEndDate: DateTime, recordEndDate_Lt: DateTime, recordEndDate_Lte: DateTime, recordEndDate_Gt: DateTime, recordEndDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
   start: Int!
   end: Int!
 }
@@ -3916,7 +4071,11 @@ type ProjectNode implements ExtendedInterface {
   Description of the type of the project (e.g., research, marine renewable energies, long monitoring,...).
   """
   projectType: ProjectTypeNode
+
+  """Start date of the project"""
   startDate: Date
+
+  """End date of the project"""
   endDate: Date
 
   """Description of the goal of the project."""
@@ -4096,6 +4255,24 @@ type TeamMemberNodeNodeConnection {
 
   """Contains the nodes in this connection."""
   results: [TeamMemberNode]!
+  totalCount: Int
+}
+
+type NewsNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [NewsNode]!
+  totalCount: Int
+}
+
+type ScientificTalkNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [ScientificTalkNode]!
   totalCount: Int
 }
 
@@ -4444,6 +4621,8 @@ input AnnotationValidationSerializerInput {
 input AnnotationAcousticFeaturesSerializerInput {
   id: Int
   trend: SignalTrendType
+  isIntensityTooLow: Boolean
+  doesOverlapOtherSignals: Boolean
 
   """[Hz] Frequency at the beginning of the signal"""
   startFrequency: Float
@@ -4451,17 +4630,22 @@ input AnnotationAcousticFeaturesSerializerInput {
   """[Hz] Frequency at the end of the signal"""
   endFrequency: Float
 
-  """Number of relative maximum frequency in the signal"""
-  relativeMaxFrequencyCount: Int
-
   """Number of relative minimum frequency in the signal"""
   relativeMinFrequencyCount: Int
 
-  """If the signal has harmonics"""
-  hasHarmonics: Boolean
+  """Number of relative maximum frequency in the signal"""
+  relativeMaxFrequencyCount: Int
 
   """Number of steps (flat segment) in the signal"""
   stepsCount: Int
+
+  """If the signal has harmonics"""
+  hasHarmonics: Boolean
+  hasSidebands: Boolean
+  hasSubharmonics: Boolean
+  hasFrequencyJumps: Boolean
+  frequencyJumpsCount: Int
+  hasDeterministicChaos: Boolean
 }
 
 type UpdateAnnotationCommentsMutationPayload {

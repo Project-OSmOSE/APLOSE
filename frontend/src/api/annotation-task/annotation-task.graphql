@@ -189,13 +189,20 @@ query getAnnotationTask(
                     }
                     acousticFeatures {
                         id
+                        isIntensityTooLow
+                        doesOverlapOtherSignals
                         startFrequency
                         endFrequency
-                        trend
-                        stepsCount
                         relativeMinFrequencyCount
                         relativeMaxFrequencyCount
+                        stepsCount
                         hasHarmonics
+                        trend
+                        hasSidebands
+                        hasSubharmonics
+                        hasFrequencyJumps
+                        frequencyJumpsCount
+                        hasDeterministicChaos
                     }
                     analysis {
                         id
@@ -247,13 +254,20 @@ query getAnnotationTask(
                     }
                     acousticFeatures {
                         id
+                        isIntensityTooLow
+                        doesOverlapOtherSignals
                         startFrequency
                         endFrequency
-                        trend
-                        stepsCount
                         relativeMinFrequencyCount
                         relativeMaxFrequencyCount
+                        stepsCount
                         hasHarmonics
+                        trend
+                        hasSidebands
+                        hasSubharmonics
+                        hasFrequencyJumps
+                        frequencyJumpsCount
+                        hasDeterministicChaos
                     }
                     analysis {
                         id

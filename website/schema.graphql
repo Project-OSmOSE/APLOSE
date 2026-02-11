@@ -2134,6 +2134,10 @@ type ChannelConfigurationRecorderSpecificationNode implements ExtendedInterface 
   """The ID of the object"""
   id: ID!
   recorder: EquipmentNode!
+
+  """
+  If the hydrophone is integrated into the recorder, select it as hydrophone as well.
+  """
   hydrophone: EquipmentNode!
   recordingFormats: [FileFormatNode]
 
@@ -2176,6 +2180,10 @@ type EquipmentNode implements ExtendedInterface {
   sensitivity: Float
   maintenances(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], typeId: ID, typeId_In: [ID], maintainerId: ID, maintainerId_In: [ID], maintainerInstitutionId: ID, maintainerInstitutionId_In: [ID], platformId: ID, platformId_In: [ID], equipmentId: ID, equipmentId_In: [ID], date: Date, date_Lt: Date, date_Lte: Date, date_Gt: Date, date_Gte: Date): MaintenanceNodeConnection!
   channelConfigurationRecorderSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], samplingFrequency: Int, samplingFrequency_Lt: Int, samplingFrequency_Lte: Int, samplingFrequency_Gt: Int, samplingFrequency_Gte: Int, sampleDepth: Int, sampleDepth_Lt: Int, sampleDepth_Lte: Int, sampleDepth_Gt: Int, sampleDepth_Gte: Int, gain: Float, gain_Lt: Float, gain_Lte: Float, gain_Gt: Float, gain_Gte: Float, channelName: String, channelName_Icontains: String): ChannelConfigurationRecorderSpecificationNodeConnection!
+
+  """
+  If the hydrophone is integrated into the recorder, select it as hydrophone as well.
+  """
   channelConfigurationHydrophoneSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], samplingFrequency: Int, samplingFrequency_Lt: Int, samplingFrequency_Lte: Int, samplingFrequency_Gt: Int, samplingFrequency_Gte: Int, sampleDepth: Int, sampleDepth_Lt: Int, sampleDepth_Lte: Int, sampleDepth_Gt: Int, sampleDepth_Gte: Int, gain: Float, gain_Lt: Float, gain_Lte: Float, gain_Gt: Float, gain_Gte: Float, channelName: String, channelName_Icontains: String): ChannelConfigurationRecorderSpecificationNodeConnection!
   channelConfigurationDetectorSpecifications(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], minFrequency: Int, minFrequency_Lt: Int, minFrequency_Lte: Int, minFrequency_Gt: Int, minFrequency_Gte: Int, maxFrequency: Int, maxFrequency_Lt: Int, maxFrequency_Lte: Int, maxFrequency_Gt: Int, maxFrequency_Gte: Int, filter: String, filter_Icontains: String, configuration: String, configuration_Icontains: String): ChannelConfigurationDetectorSpecificationNodeConnection!
   channelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, recordStartDate: DateTime, recordStartDate_Lt: DateTime, recordStartDate_Lte: DateTime, recordStartDate_Gt: DateTime, recordStartDate_Gte: DateTime, recordEndDate: DateTime, recordEndDate_Lt: DateTime, recordEndDate_Lte: DateTime, recordEndDate_Gt: DateTime, recordEndDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
@@ -2909,7 +2917,7 @@ type ChannelConfigurationNode implements ExtendedInterface {
   """Immersion depth of instrument (in positive meters)."""
   instrumentDepth: Int
 
-  """Timezone of the recording."""
+  """Timezone of the recording (ISO format, eg: +00:00)."""
   timezone: String
   extraInformation: String
 
@@ -3638,6 +3646,8 @@ enum ApiAnnotationAnnotatorExpertiseLevelChoices {
 type AcousticFeaturesNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
+  isIntensityTooLow: Boolean
+  doesOverlapOtherSignals: Boolean
 
   """[Hz] Frequency at the beginning of the signal"""
   startFrequency: Float
@@ -3645,22 +3655,27 @@ type AcousticFeaturesNode implements ExtendedInterface {
   """[Hz] Frequency at the end of the signal"""
   endFrequency: Float
 
+  """Number of relative minimum frequency in the signal"""
+  relativeMinFrequencyCount: Int
+
   """Number of relative maximum frequency in the signal"""
   relativeMaxFrequencyCount: Int
 
-  """Number of relative minimum frequency in the signal"""
-  relativeMinFrequencyCount: Int
+  """Number of steps (flat segment) in the signal"""
+  stepsCount: Int
 
   """If the signal has harmonics"""
   hasHarmonics: Boolean
   trend: SignalTrendType
-
-  """Number of steps (flat segment) in the signal"""
-  stepsCount: Int
+  hasSidebands: Boolean
+  hasSubharmonics: Boolean
+  hasFrequencyJumps: Boolean
+  frequencyJumpsCount: Int
+  hasDeterministicChaos: Boolean
   annotation: AnnotationNode
 }
 
-"""From SignalTrend"""
+"""From AcousticFeatures.SignalTrend"""
 enum SignalTrendType {
   Flat
   Ascending
@@ -4305,6 +4320,8 @@ type ImportDatasetNode {
   path: String!
   legacy: Boolean
   analysis: [ImportAnalysisNode]
+  failed: Boolean
+  stack: String
 }
 
 type AnnotationLabelNodeNodeConnection {
@@ -4604,6 +4621,8 @@ input AnnotationValidationSerializerInput {
 input AnnotationAcousticFeaturesSerializerInput {
   id: Int
   trend: SignalTrendType
+  isIntensityTooLow: Boolean
+  doesOverlapOtherSignals: Boolean
 
   """[Hz] Frequency at the beginning of the signal"""
   startFrequency: Float
@@ -4611,17 +4630,22 @@ input AnnotationAcousticFeaturesSerializerInput {
   """[Hz] Frequency at the end of the signal"""
   endFrequency: Float
 
-  """Number of relative maximum frequency in the signal"""
-  relativeMaxFrequencyCount: Int
-
   """Number of relative minimum frequency in the signal"""
   relativeMinFrequencyCount: Int
 
-  """If the signal has harmonics"""
-  hasHarmonics: Boolean
+  """Number of relative maximum frequency in the signal"""
+  relativeMaxFrequencyCount: Int
 
   """Number of steps (flat segment) in the signal"""
   stepsCount: Int
+
+  """If the signal has harmonics"""
+  hasHarmonics: Boolean
+  hasSidebands: Boolean
+  hasSubharmonics: Boolean
+  hasFrequencyJumps: Boolean
+  frequencyJumpsCount: Int
+  hasDeterministicChaos: Boolean
 }
 
 type UpdateAnnotationCommentsMutationPayload {

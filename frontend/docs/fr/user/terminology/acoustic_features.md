@@ -1,1 +1,1 @@
-If the campaign allow it, you can specify your annotation features.
+Si la campagne le permet, vous pouvez spécifier les paramètres acoustiques du signal observé.
