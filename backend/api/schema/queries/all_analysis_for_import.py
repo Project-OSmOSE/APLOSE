@@ -4,6 +4,7 @@ from pathlib import PureWindowsPath
 
 import graphene
 from django.conf import settings
+from django.db.models import Q
 from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from osekit.public_api.dataset import (
     Dataset as OSEkitDataset,
@@ -47,14 +48,22 @@ def legacy_resolve_all_spectrogram_analysis_available_for_import(
     config_folder: str,
 ) -> [ImportAnalysisNode]:
     """[Legacy] List spectrogram analysis available for import"""
-    known_analysis_names = SpectrogramAnalysis.objects.filter(
-        dataset__name=dataset_name,
-        dataset__path=dataset_path,
-    ).values_list("name", flat=True)
+    known_analysis_names = (
+        SpectrogramAnalysis.objects.filter(
+            dataset__name=dataset_name,
+        )
+        .filter(
+            Q(dataset__path=dataset_path)
+            # Following is to also handle Windows servers
+            | Q(dataset__path=str(join(PureWindowsPath(dataset_path))))
+            | Q(dataset__path="/".join(PureWindowsPath(dataset_path).parts))
+        )
+        .values_list("name", flat=True)
+    )
 
     available_analyses: [ImportAnalysisNode] = []
     spectro_root = join(
-        settings.DATASET_IMPORT_FOLDER,
+        settings.VOLUMES_ROOT,
         PureWindowsPath(dataset_path),
         "processed",
         "spectrogram",

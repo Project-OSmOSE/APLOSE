@@ -1,7 +1,7 @@
 import csv
 from os import listdir
 from os.path import join, isfile, exists
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Optional
 import traceback
 
@@ -70,14 +70,18 @@ def legacy_resolve_all_datasets_available_for_import() -> [ImportDatasetNode]:
 
             # Get dataset
             available_dataset: Optional[ImportDatasetNode] = None
+            path = join(
+                settings.DATASET_EXPORT_PATH,
+                PureWindowsPath(dataset["path"]),
+            )
             for d in available_datasets:
-                if d.path == dataset["path"]:
+                if PureWindowsPath(d.path) == PureWindowsPath(path):
                     available_dataset = d
             if not available_dataset:
                 # noinspection PyTypeChecker
                 available_dataset = ImportDatasetNode()
                 available_dataset.name = dataset["dataset"]
-                available_dataset.path = dataset["path"]
+                available_dataset.path = path
                 available_dataset.analysis = []
                 available_dataset.legacy = True
 
@@ -95,12 +99,9 @@ def legacy_resolve_all_datasets_available_for_import() -> [ImportDatasetNode]:
                 if len(available_dataset.analysis) > 0:
                     available_datasets.append(available_dataset)
             except Exception:
-                d = ImportDatasetNode()
-                d.name = dataset["dataset"]
-                d.path = dataset["path"]
-                d.failed = True
-                d.stack = traceback.format_exc()
-                available_datasets.append(d)
+                available_dataset.failed = True
+                available_dataset.stack = traceback.format_exc()
+                available_datasets.append(available_dataset)
     return available_datasets
 
 

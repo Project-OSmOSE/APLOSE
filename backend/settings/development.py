@@ -36,6 +36,7 @@ DATABASES = {
 SIMPLE_JWT = {"ACCESS_TOKEN_LIFETIME": timedelta(hours=8)}
 
 # Override datawork import path, we use the same folder as for docker-compose
+VOLUMES_ROOT = BASE_DIR / "volumes/"
 DATASET_IMPORT_FOLDER = BASE_DIR / "volumes/datawork/dataset"
 # Adding volumes folder to staticfiles dirs
 STATICFILES_DIRS = [BASE_DIR / "backend/api/static", BASE_DIR / "volumes"]
