@@ -32,6 +32,7 @@ def get_dataset_path_str(path: PureWindowsPath) -> PureWindowsPath:
 
 
 def get_import_dataset_node(path: PureWindowsPath) -> Optional[ImportDatasetNode]:
+    # pylint: disable=broad-exception-caught
     json_path = join(path, "dataset.json")
     node = ImportDatasetNode()
     node.name = path.stem
@@ -44,6 +45,7 @@ def get_import_dataset_node(path: PureWindowsPath) -> Optional[ImportDatasetNode
         )
         if len(node.analysis) > 0:
             return node
+        return None
     except Exception:
         node.failed = True
         node.stack = traceback.format_exc()
@@ -76,7 +78,6 @@ def browse_folder(
 
 def resolve_all_datasets_available_for_import() -> list[ImportDatasetNode]:
     """List dataset available for import"""
-    # pylint: disable=broad-exception-caught
     return browse_folder(
         root=PureWindowsPath(settings.DATASET_IMPORT_FOLDER),
         legacy_path=[
