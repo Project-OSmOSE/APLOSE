@@ -172,7 +172,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
                 <SpectrogramDisplay spectrogram={ spectrogram }
                                     analysis={ analysis }
                                     left={left}
-                                    zoomLevel={ zoom }
+                                    zoom={ zoom }
                                     mode={ mode }/> }
 
             <canvas className={ [ styles.interfaction, canDraw ? styles.drawable : '' ].join(' ') }

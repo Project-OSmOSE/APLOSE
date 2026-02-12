@@ -124,5 +124,5 @@ export const useDownloadCanvas = () => {
     link.target = '_blank';
     link.download = filename;
     link.click();
-  }, [ height, zoom, draw ])
+  }, [ height, zoom, draw, xAxisCanvasRef, yAxisCanvasRef  ])
 }

@@ -25,7 +25,7 @@ export const AnnotationRestAPI = restAPI.injectEndpoints({
     }>({
       query: ({ campaignID, annotations, ...params }) => {
         return {
-          url: `annotation/campaign/${ campaignID }/phase/${ AnnotationPhaseType.Annotation }/`,
+          url: `/api/annotation/campaign/${ campaignID }/phase/${ AnnotationPhaseType.Annotation }/`,
           method: 'POST',
           params,
           body: {

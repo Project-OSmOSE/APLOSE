@@ -1,5 +1,5 @@
 import { useAppSelector } from '@/features/App';
-import { selectZoom } from '@/features/Annotator/Zoom';
+import { selectDisplayZoom } from '@/features/Annotator/Zoom';
 import { useMemo } from 'react';
 import { useWindowRatio } from '@/components/ui';
 
@@ -15,7 +15,7 @@ export const useWindowContainerWidth = () => {
 }
 
 export const useWindowWidth = () => {
-  const zoom = useAppSelector(selectZoom)
+  const zoom = useAppSelector(selectDisplayZoom)
   const containerWidth = useWindowContainerWidth()
 
   return useMemo(() => containerWidth * zoom, [ containerWidth, zoom ])

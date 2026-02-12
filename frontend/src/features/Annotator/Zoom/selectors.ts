@@ -9,6 +9,10 @@ export const selectZoom = createSelector(
     selectAnnotator, AnnotatorZoomSlice.selectors.selectZoom,
 )
 
+export const selectDisplayZoom = createSelector(
+    selectAnnotator, AnnotatorZoomSlice.selectors.selectDisplayZoom,
+)
+
 export const selectZoomOrigin = createSelector(
     selectAnnotator, AnnotatorZoomSlice.selectors.selectZoomOrigin,
 )
