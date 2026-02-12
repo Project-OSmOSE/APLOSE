@@ -25,7 +25,7 @@ import {
     selectIsColormapReversed,
     selectSpectrogramMode,
 } from '@/features/Annotator/VisualConfiguration';
-import { selectAnalysis } from '@/features/Annotator/Analysis';
+import { selectAnalysis, selectFFT } from '@/features/Annotator/Analysis';
 import { SpectrogramDisplay } from '@/features/Spectrogram/Display';
 import { AcousticFeatures } from '@/features/Annotator/AcousticFeatures';
 
@@ -46,6 +46,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     const dispatch = useAppDispatch()
     const pointer = usePointer()
     const mode = useAppSelector(selectSpectrogramMode);
+    const fft = useAppSelector(selectFFT);
     const [ left, setLeft ] = useState<number>(0);
 
     const clearPointer = useCallback(() => {
@@ -58,7 +59,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         const left = div.scrollWidth - div.scrollLeft - div.clientWidth;
         if (left <= 0) dispatch(setAllFileAsSeen())
         setLeft(div.scrollLeft)
-    }, [dispatch, setAllFileAsSeen, setLeft])
+    }, [ dispatch, setAllFileAsSeen, setLeft ])
 
     const onWheel = useCallback((event: WheelEvent) => {
         // Disable zoom if the user wants horizontal scroll
@@ -171,7 +172,8 @@ export const AnnotatorCanvasWindow: React.FC = () => {
             { spectrogram && analysis &&
                 <SpectrogramDisplay spectrogram={ spectrogram }
                                     analysis={ analysis }
-                                    left={left}
+                                    left={ left }
+                                    fft={ fft }
                                     zoom={ zoom }
                                     mode={ mode }/> }
 

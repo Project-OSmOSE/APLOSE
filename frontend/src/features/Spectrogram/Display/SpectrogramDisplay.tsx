@@ -10,7 +10,7 @@ export const SpectrogramDisplay: React.FC<{
     spectrogram: Pick<AnnotationSpectrogramNode, 'id' | 'filename' | 'path'>,
     analysis: Pick<SpectrogramAnalysisNode, 'id' | 'legacy'> & { fft: FFT },
     mode: SpectrogramMode,
-    fft?: FFT,
+    fft?: Partial<FFT>,
 }> = ({ zoom, spectrogram, analysis, mode, fft, left }) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const { width, height } = useSpectrogramDimensions(zoom)

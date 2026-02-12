@@ -2,83 +2,85 @@ import { useCallback, useEffect, useRef } from 'react';
 import { Signal } from 'signal-ts';
 import { useAppSelector } from '@/features/App';
 import {
-  AUX_CLICK_EVENT,
-  CLICK_EVENT,
-  KEY_DOWN_EVENT,
-  MOUSE_DOWN_EVENT,
-  MOUSE_MOVE_EVENT,
-  MOUSE_UP_EVENT,
-  NON_FILTERED_KEY_DOWN_EVENT,
+    AUX_CLICK_EVENT,
+    CLICK_EVENT,
+    KEY_DOWN_EVENT,
+    MOUSE_DOWN_EVENT,
+    MOUSE_MOVE_EVENT,
+    MOUSE_UP_EVENT,
+    NON_FILTERED_KEY_DOWN_EVENT,
 } from './event';
 import { selectAreKbdShortcutsEnabled } from '@/features/UX';
 
 export const useLoadEventService = () => {
-  const areKbdShortcutsEnabled = useAppSelector(selectAreKbdShortcutsEnabled);
-  const areKbdShortcutsEnabledRef = useRef<boolean>(areKbdShortcutsEnabled);
+    const areKbdShortcutsEnabled = useAppSelector(selectAreKbdShortcutsEnabled);
+    const areKbdShortcutsEnabledRef = useRef<boolean>(areKbdShortcutsEnabled);
 
-  useEffect(() => {
-    document.addEventListener('keydown', onKeyDown.bind(this));
-    document.addEventListener('mousedown', onMouseDown.bind(this));
-    document.addEventListener('mousemove', onMouseMove.bind(this));
-    document.addEventListener('mouseup', onMouseUp.bind(this));
-    document.addEventListener('click', onClick.bind(this));
-    document.addEventListener('auxclick', onAuxClick.bind(this));
+    useEffect(() => {
+        document.addEventListener('keydown', onKeyDown.bind(this));
+        document.addEventListener('mousedown', onMouseDown.bind(this));
+        document.addEventListener('mousemove', onMouseMove.bind(this));
+        document.addEventListener('mouseup', onMouseUp.bind(this));
+        document.addEventListener('click', onClick.bind(this));
+        document.addEventListener('auxclick', onAuxClick.bind(this));
 
-    return () => {
-      document.removeEventListener('keydown', onKeyDown.bind(this));
-      document.removeEventListener('mousedown', onMouseDown.bind(this));
-      document.removeEventListener('mousemove', onMouseMove.bind(this));
-      document.removeEventListener('mouseup', onMouseUp.bind(this));
-      document.removeEventListener('click', onClick.bind(this));
-      document.removeEventListener('auxclick', onAuxClick.bind(this));
+        return () => {
+            document.removeEventListener('keydown', onKeyDown.bind(this));
+            document.removeEventListener('mousedown', onMouseDown.bind(this));
+            document.removeEventListener('mousemove', onMouseMove.bind(this));
+            document.removeEventListener('mouseup', onMouseUp.bind(this));
+            document.removeEventListener('click', onClick.bind(this));
+            document.removeEventListener('auxclick', onAuxClick.bind(this));
+        }
+    }, []);
+
+    useEffect(() => {
+        areKbdShortcutsEnabledRef.current = areKbdShortcutsEnabled;
+    }, [ areKbdShortcutsEnabled ]);
+
+    const onKeyDown = useCallback((event: KeyboardEvent) => {
+        NON_FILTERED_KEY_DOWN_EVENT.emit(event);
+        if (!areKbdShortcutsEnabledRef.current) return;
+        KEY_DOWN_EVENT.emit(event);
+    }, [ areKbdShortcutsEnabledRef ])
+
+    function onMouseDown(event: MouseEvent) {
+        MOUSE_DOWN_EVENT.emit(event);
     }
-  }, []);
 
-  useEffect(() => {
-    areKbdShortcutsEnabledRef.current = areKbdShortcutsEnabled;
-  }, [ areKbdShortcutsEnabled ]);
+    function onMouseMove(event: MouseEvent) {
+        MOUSE_MOVE_EVENT.emit(event);
+    }
 
-  function onKeyDown(event: KeyboardEvent) {
-    NON_FILTERED_KEY_DOWN_EVENT.emit(event);
-    if (!areKbdShortcutsEnabledRef.current) return;
-    KEY_DOWN_EVENT.emit(event);
-  }
+    function onMouseUp(event: MouseEvent) {
+        MOUSE_UP_EVENT.emit(event);
+    }
 
-  function onMouseDown(event: MouseEvent) {
-    MOUSE_DOWN_EVENT.emit(event);
-  }
+    function onClick(event: MouseEvent) {
+        CLICK_EVENT.emit(event);
+    }
 
-  function onMouseMove(event: MouseEvent) {
-    MOUSE_MOVE_EVENT.emit(event);
-  }
-
-  function onMouseUp(event: MouseEvent) {
-    MOUSE_UP_EVENT.emit(event);
-  }
-
-  function onClick(event: MouseEvent) {
-    CLICK_EVENT.emit(event);
-  }
-
-  function onAuxClick(event: MouseEvent) {
-    AUX_CLICK_EVENT.emit(event);
-  }
+    function onAuxClick(event: MouseEvent) {
+        AUX_CLICK_EVENT.emit(event);
+    }
 }
 
 export const useEvent = <T>(signal: Signal<T>, callback: (event: T) => void) => {
-  useEffect(() => {
-    signal.add(callback);
-    return () => {
-      signal.remove(callback);
-    }
-  }, [ callback ]);
+    useEffect(() => {
+        signal.add(callback);
+        return () => {
+            signal.remove(callback);
+        }
+    }, [ callback ]);
 }
 
 export const useKeyDownEvent = (keys: string[], callback: (event: KeyboardEvent) => void) => {
-  const onKbdEvent = useCallback((event: KeyboardEvent) => {
-    if (!keys.includes(event.key)) return
-    event.preventDefault();
-    callback(event);
-  }, [ keys, callback ])
-  useEvent(KEY_DOWN_EVENT, onKbdEvent)
+    const areKbdShortcutsEnabled = useAppSelector(selectAreKbdShortcutsEnabled);
+    const onKbdEvent = useCallback((event: KeyboardEvent) => {
+        if (!areKbdShortcutsEnabled) return;
+        if (!keys.includes(event.key)) return
+        event.preventDefault();
+        callback(event);
+    }, [ keys, callback, areKbdShortcutsEnabled ])
+    useEvent(KEY_DOWN_EVENT, onKbdEvent)
 }
