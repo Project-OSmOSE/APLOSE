@@ -11,106 +11,106 @@ import { useFilter, useSort } from '@/features/UX';
 
 
 export const ImportDatasetModalButton: React.FC = () => {
-  const modal = useModal();
+    const modal = useModal();
 
-  return <Fragment>
-    <IonButton color="primary" fill="clear"
-               style={ { zIndex: 2, justifySelf: 'center' } }
-               onClick={ modal.toggle }>
-      <IonIcon icon={ downloadOutline } slot="start"/>
-      Import dataset
-    </IonButton>
+    return <Fragment>
+        <IonButton color="primary" fill="clear"
+                   style={ { zIndex: 2, justifySelf: 'center' } }
+                   onClick={ modal.toggle }>
+            <IonIcon icon={ downloadOutline } slot="start"/>
+            Import dataset
+        </IonButton>
 
-    { modal.isOpen && createPortal(<ImportDatasetModal onClose={ modal.close }/>, document.body) }
-  </Fragment>
+        { modal.isOpen && createPortal(<ImportDatasetModal onClose={ modal.close }/>, document.body) }
+    </Fragment>
 }
 
 export const ImportDatasetModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
-  const {
-    availableDatasets,
-    isLoading,
-    error,
-  } = useAvailableDatasetsForImport()
+    const {
+        availableDatasets,
+        isLoading,
+        error,
+    } = useAvailableDatasetsForImport()
 
-  const [ imports, setImports ] = useState<Map<string, string[]>>(new Map());
+    const [ imports, setImports ] = useState<Map<string, string[]>>(new Map());
 
 
-  const [ search, setSearch ] = useState<string | undefined>();
+    const [ search, setSearch ] = useState<string | undefined>();
 
-  const filteredDatasets = useFilter({
-    items: availableDatasets ?? [],
-    search,
-    itemToStringArray: (dataset: ImportDatasetNode) => [ dataset.name, dataset.path, ...(dataset.analysis ?? []).flatMap(a => a ? [ a.name, a.path ] : []) ],
-  })
-  const searchDatasets = useSort({
-    items: filteredDatasets,
-    itemToSortString: (dataset: ImportDatasetNode) => dataset.name,
-  })
+    const filteredDatasets = useFilter({
+        items: availableDatasets ?? [],
+        search,
+        itemToStringArray: (dataset: ImportDatasetNode) => [ dataset.name, dataset.path, ...(dataset.analysis ?? []).flatMap(a => a ? [ a.name, a.path ] : []) ],
+    })
+    const searchDatasets = useSort({
+        items: filteredDatasets,
+        itemToSortString: (dataset: ImportDatasetNode) => dataset.name,
+    })
 
-  const searchbar = useRef<HTMLIonSearchbarElement | null>(null)
+    const searchbar = useRef<HTMLIonSearchbarElement | null>(null)
 
-  useEffect(() => {
-    searchbar.current?.getInputElement().then(input => input.focus())
-  }, [ searchbar.current ]);
+    useEffect(() => {
+        searchbar.current?.getInputElement().then(input => input.focus())
+    }, [ searchbar.current ]);
 
-  const onSearchUpdated = useCallback((event: CustomEvent<SearchbarInputEventDetail>) => {
-    setSearch(event.detail.value ?? undefined);
-  }, [])
+    const onSearchUpdated = useCallback((event: CustomEvent<SearchbarInputEventDetail>) => {
+        setSearch(event.detail.value ?? undefined);
+    }, [])
 
-  const onSearchCleared = useCallback(() => {
-    setSearch(undefined);
-  }, [])
+    const onSearchCleared = useCallback(() => {
+        setSearch(undefined);
+    }, [])
 
-  const onDatasetImported = useCallback((dataset: ImportDatasetNode) => {
-    setImports(prevState => {
-      const datasetAnalysis = dataset.analysis?.filter(a => a !== null) ?? []
-      if (prevState.get(dataset.name)) {
-        return new Map<string, string[]>(
-          [ ...prevState.entries() ]
-            .map(([ datasetName, analysis ]) => {
-              if (datasetName !== dataset.name) return [ datasetName, analysis ];
-              return [
-                datasetName,
-                [ ...new Set([ ...analysis, ...datasetAnalysis.filter(a => !!a).map(a => a!.name) ]) ],
-              ]
-            }),
-        )
-      } else {
-        return new Map<string, string[]>([ ...prevState.entries(), [ dataset.name, datasetAnalysis.filter(a => !!a).map(a => a!.name) ] ])
-      }
-    });
-  }, [ isLoading, availableDatasets, setImports ])
+    const onDatasetImported = useCallback((dataset: ImportDatasetNode) => {
+        setImports(prevState => {
+            const datasetAnalysis = dataset.analysis?.filter(a => a !== null) ?? []
+            if (prevState.get(dataset.name)) {
+                return new Map<string, string[]>(
+                    [ ...prevState.entries() ]
+                        .map(([ datasetName, analysis ]) => {
+                            if (datasetName !== dataset.name) return [ datasetName, analysis ];
+                            return [
+                                datasetName,
+                                [ ...new Set([ ...analysis, ...datasetAnalysis.filter(a => !!a).map(a => a!.name) ]) ],
+                            ]
+                        }),
+                )
+            } else {
+                return new Map<string, string[]>([ ...prevState.entries(), [ dataset.name, datasetAnalysis.filter(a => !!a).map(a => a!.name) ] ])
+            }
+        });
+    }, [ isLoading, availableDatasets, setImports ])
 
-  return (
-    <Modal onClose={ onClose }
-           className={ [ styles.importModal, (!isLoading && !!availableDatasets && availableDatasets.length > 0) ? styles.filled : 'empty' ].join(' ') }>
-      <ModalHeader title="Import a dataset"
-                   onClose={ onClose }/>
+    return (
+        <Modal onClose={ onClose }
+               className={ [ styles.importModal, (!isLoading && !!availableDatasets && availableDatasets.length > 0) ? styles.filled : 'empty' ].join(' ') }>
+            <ModalHeader title="Import a dataset"
+                         onClose={ onClose }/>
 
-      { isLoading && <IonSpinner/> }
-      { error && <WarningText error={ error }/> }
+            { isLoading && <IonSpinner/> }
+            { error && <WarningText error={ error }/> }
 
-      { !isLoading && !!availableDatasets && availableDatasets.length == 0 &&
-          <IonNote>There is no new dataset or analysis</IonNote> }
+            { !isLoading && !!availableDatasets && availableDatasets.length == 0 &&
+                <IonNote>There is no new dataset or analysis</IonNote> }
 
-      { !isLoading && !!availableDatasets && availableDatasets.length > 0 && <Fragment>
+            { !isLoading && !!availableDatasets && availableDatasets.length > 0 && <Fragment>
 
-          <IonSearchbar ref={ searchbar } onIonInput={ onSearchUpdated } onIonClear={ onSearchCleared }/>
+                <IonSearchbar ref={ searchbar } onIonInput={ onSearchUpdated } onIonClear={ onSearchCleared }/>
 
-          <div className={ styles.content }>
-            { searchDatasets.map(d => <ImportDatasetRow key={ [ d.name, d.path ].join(' ') }
-                                                        dataset={ d }
-                                                        importedAnalysis={ imports.get(d.name) }
-                                                        search={ search }
-                                                        onImported={ onDatasetImported }/>) }
-          </div>
+                <div className={ styles.content }>
+                    { searchDatasets.map((d, i) => <ImportDatasetRow key={ i }
+                                                                     dataset={ d }
+                                                                     importedAnalysis={ imports.get(d.name) }
+                                                                     search={ search }
+                                                                     onImported={ onDatasetImported }/>) }
+                </div>
 
-          <ModalFooter>
-              <GenerateDatasetHelpButton/>
-          </ModalFooter>
+                <ModalFooter>
+                    <GenerateDatasetHelpButton/>
+                </ModalFooter>
 
-      </Fragment> }
-    </Modal>
-  )
+            </Fragment> }
+        </Modal>
+    )
 }
