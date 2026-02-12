@@ -41,6 +41,7 @@ export const AnnotatorZoomSlice = createSlice({
   },
   selectors: {
     selectZoom: state => state.zoom,
+    selectDisplayZoom: state => Math.pow(2, state.zoom),
     selectZoomOrigin: state => state.zoomOrigin,
   },
 })
