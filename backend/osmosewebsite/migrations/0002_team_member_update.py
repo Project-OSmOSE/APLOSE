@@ -36,8 +36,4 @@ class Migration(migrations.Migration):
                         WHERE type = 'F';
                         """,
         ),
-        migrations.RemoveField(
-            model_name="teammember",
-            name="is_former_member",
-        ),
     ]
