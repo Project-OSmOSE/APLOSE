@@ -19,14 +19,14 @@ from backend.api.schema.nodes import ImportAnalysisNode
 def resolve_all_spectrogram_analysis_available_for_import(
     dataset: OSEkitDataset,
     folder: str,
-) -> [ImportAnalysisNode]:
+) -> list[ImportAnalysisNode]:
     """List spectrogram analysis available for import"""
     known_spectrogram_analysis = SpectrogramAnalysis.objects.filter(
         dataset__name=folder,
         dataset__path=folder,
     ).values_list("name", flat=True)
 
-    available_analyses: [ImportAnalysisNode] = []
+    available_analyses: list[ImportAnalysisNode] = []
     for [name, d] in dataset.datasets.items():
         if d["class"] != OSEkitSpectroDataset.__name__:
             continue
@@ -46,7 +46,7 @@ def legacy_resolve_all_spectrogram_analysis_available_for_import(
     dataset_name: str,
     dataset_path: str,
     config_folder: str,
-) -> [ImportAnalysisNode]:
+) -> list[ImportAnalysisNode]:
     """[Legacy] List spectrogram analysis available for import"""
     known_analysis_names = (
         SpectrogramAnalysis.objects.filter(
@@ -61,7 +61,7 @@ def legacy_resolve_all_spectrogram_analysis_available_for_import(
         .values_list("name", flat=True)
     )
 
-    available_analyses: [ImportAnalysisNode] = []
+    available_analyses: list[ImportAnalysisNode] = []
     spectro_root = join(
         settings.VOLUMES_ROOT,
         PureWindowsPath(dataset_path),
