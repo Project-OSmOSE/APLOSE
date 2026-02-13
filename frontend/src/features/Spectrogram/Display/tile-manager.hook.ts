@@ -38,6 +38,12 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
 
     const [ getTile ] = SpectrogramRestAPI.endpoints.getTile.useLazyQuery()
 
+    const clearCanvas = useCallback((): void => {
+        const context = canvasRef.current?.getContext('2d', { alpha: false });
+        if (!context || !canvasRef.current) return;
+        context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+    }, [ canvasRef ])
+
     const displayTile = useCallback(async (objectURL: string, index: number): Promise<void> => {
         const context = canvasRef.current?.getContext('2d', { alpha: false });
         if (!context) return;
@@ -134,10 +140,10 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
         loadingTileIndexesRef.current = [];
         loadedTileIndexesRef.current = [];
         queriesRef.current = [];
+        clearCanvas()
         update()
-    }, [ queriesRef, loadingTileIndexesRef, loadedTileIndexesRef, update ])
+    }, [ queriesRef, loadingTileIndexesRef, loadedTileIndexesRef, update, clearCanvas ])
     useEffect(() => {
-        console.log('options', options)
         let needInit = false;
         if (options.mode !== modeRef.current) {
             needInit = true
@@ -169,6 +175,7 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
         loadedTileIndexesRef.current = []
         zoomRef.current = Math.max(0, _zoom)
         queriesRef.current = [];
+        clearCanvas()
         update()
     }, [ _zoom ]);
 
