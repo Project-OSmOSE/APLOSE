@@ -8,8 +8,8 @@ import {
     StrongAnnotation,
     useTempAnnotationsEvents,
 } from '@/features/Annotator/Annotation';
-import { useWindowContainerWidth, useWindowHeight, useWindowWidth, Y_AXIS_WIDTH } from './window.hooks';
-import { useGetCoords, useGetFreqTime, useIsHoverCanvas, usePointer } from '@/features/Annotator/Pointer';
+import { Y_AXIS_WIDTH } from './axis-size.const';
+import { usePointer, useGetCoords, useGetFreqTime, useIsHoverCanvas } from '@/features/Annotator/Pointer';
 import { selectZoom, selectZoomOrigin, useZoomIn, useZoomOut } from '@/features/Annotator/Zoom';
 import { selectCanDraw } from '@/features/Annotator/UX';
 import { useAudio } from '@/features/Audio';
@@ -28,11 +28,12 @@ import {
 import { selectAnalysis, selectFFT } from '@/features/Annotator/Analysis';
 import { SpectrogramDisplay } from '@/features/Spectrogram/Display';
 import { AcousticFeatures } from '@/features/Annotator/AcousticFeatures';
+import { useSpectrogramDimensions } from '@/features/Spectrogram/Display/dimension.hook';
 
 export const AnnotatorCanvasWindow: React.FC = () => {
-    const width = useWindowWidth()
-    const height = useWindowHeight()
-    const containerWidth = useWindowContainerWidth()
+    const zoom = useAppSelector(selectZoom)
+    const { width, height } = useSpectrogramDimensions(zoom)
+    const { width: containerWidth } = useSpectrogramDimensions(0)
     const { mainCanvasRef, windowCanvasRef } = useAnnotatorCanvasContext()
     const { onStartTempAnnotation } = useTempAnnotationsEvents()
     const getFreqTime = useGetFreqTime()
@@ -117,7 +118,6 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
 
     // Zoom update
-    const zoom = useAppSelector(selectZoom)
     const zoomOrigin = useAppSelector(selectZoomOrigin)
     const oldZoom = useRef<number>(1)
     const isHoverCanvas = useIsHoverCanvas()

@@ -9,7 +9,7 @@ export const SpectrogramDimensions = {
 export const useSpectrogramDimensions = (zoomLevel: number = 0) => {
   const ratio = useWindowRatio()
   const width = useMemo(() => {
-    return (SpectrogramDimensions.width / ratio) * (zoomLevel + 1)
+    return (SpectrogramDimensions.width / ratio) * Math.pow(2, zoomLevel)
   }, [ ratio, zoomLevel ])
   const height = useMemo(() => {
     return SpectrogramDimensions.height / ratio

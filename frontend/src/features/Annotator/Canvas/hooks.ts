@@ -3,19 +3,15 @@ import { useCallback } from 'react';
 import { selectZoom } from '@/features/Annotator/Zoom';
 import { useApplyColormap, useApplyFilter } from '@/features/Annotator/VisualConfiguration';
 import { useDrawTempAnnotation } from '@/features/Annotator/Annotation';
-import {
-  useWindowContainerWidth,
-  useWindowHeight,
-  useWindowWidth,
-  Y_AXIS_WIDTH,
-} from '@/features/Annotator/Canvas/window.hooks';
+import { Y_AXIS_WIDTH } from '@/features/Annotator/Canvas/axis-size.const';
 import { useTimeScale } from '@/features/Annotator/Axis';
 import { useAppSelector } from '@/features/App';
+import { useSpectrogramDimensions } from '@/features/Spectrogram/Display/dimension.hook';
 
 
 export const useFocusCanvasOnTime = () => {
   const timeScale = useTimeScale()
-  const containerWidth = useWindowContainerWidth()
+  const { width: containerWidth } = useSpectrogramDimensions(0)
   const {
     mainCanvasRef,
   } = useAnnotatorCanvasContext()
@@ -23,12 +19,12 @@ export const useFocusCanvasOnTime = () => {
   return useCallback((time: number) => {
     const left = timeScale.valueToPosition(time) - containerWidth / 2;
     mainCanvasRef?.current?.parentElement?.scrollTo({ left })
-  }, [ timeScale, containerWidth ])
+  }, [ timeScale, containerWidth, mainCanvasRef ])
 }
 
 export const useDrawCanvas = () => {
-  const width = useWindowWidth()
-  const height = useWindowHeight()
+  const zoom = useAppSelector(selectZoom)
+  const { width, height } = useSpectrogramDimensions(zoom)
 
   const drawTempAnnotation = useDrawTempAnnotation()
   const applyFilter = useApplyFilter()
@@ -46,12 +42,12 @@ export const useDrawCanvas = () => {
     // applyFilter(context)
     // applyColormap(context)
     drawTempAnnotation(context)
-  }, [ width, height, applyFilter, applyColormap, drawTempAnnotation ]);
+  }, [ width, height, applyFilter, applyColormap, drawTempAnnotation, mainCanvasRef ]);
 }
 
 export const useDownloadCanvas = () => {
-  const height = useWindowHeight()
   const zoom = useAppSelector(selectZoom)
+  const { height } = useSpectrogramDimensions(zoom)
 
   const draw = useDrawCanvas()
 
