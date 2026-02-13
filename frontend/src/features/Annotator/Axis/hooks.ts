@@ -2,12 +2,14 @@ import { useMemo } from 'react';
 import { LinearScaleService, MultiScaleService } from '@/components/ui';
 import { useAnnotationTask } from '@/api';
 import { selectAnalysis } from '@/features/Annotator/Analysis';
-import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
 import { useAppSelector } from '@/features/App';
+import { selectZoom } from '@/features/Annotator/Zoom';
+import { useSpectrogramDimensions } from '@/features/Spectrogram/Display/dimension.hook';
 
 export const useTimeScale = () => {
   const { spectrogram } = useAnnotationTask()
-  const width = useWindowWidth()
+  const zoom = useAppSelector(selectZoom)
+  const { width } = useSpectrogramDimensions(zoom)
 
   return useMemo(() => new LinearScaleService(
     width,
@@ -21,7 +23,8 @@ export const useTimeScale = () => {
 
 export const useFrequencyScale = () => {
   const analysis = useAppSelector(selectAnalysis)
-  const height = useWindowHeight()
+  const zoom = useAppSelector(selectZoom)
+  const { height } = useSpectrogramDimensions(zoom)
 
   return useMemo(() => {
     const options = {

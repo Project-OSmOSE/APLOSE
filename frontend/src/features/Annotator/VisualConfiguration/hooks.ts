@@ -2,7 +2,8 @@ import { useCallback } from 'react';
 import { useAppSelector } from '@/features/App';
 import { selectBrightness, selectColormap, selectContrast, selectIsColormapReversed } from './selectors'
 import { COLORMAPS, createColormap } from './colormaps'
-import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
+import { selectZoom } from '@/features/Annotator/Zoom';
+import { useSpectrogramDimensions } from '@/features/Spectrogram/Display/dimension.hook';
 
 
 function interpolate(value: number, minSource: number, maxSource: number, minTarget: number, maxTarget: number): number {
@@ -25,8 +26,8 @@ export const useApplyFilter = () => {
 export const useApplyColormap = () => {
   const colormap = useAppSelector(selectColormap);
   const isColormapReversed = useAppSelector(selectIsColormapReversed);
-  const width = useWindowWidth()
-  const height = useWindowHeight()
+  const zoom = useAppSelector(selectZoom)
+  const { width, height } = useSpectrogramDimensions(zoom)
 
   return useCallback((context: CanvasRenderingContext2D) => {
     if (!colormap) return;

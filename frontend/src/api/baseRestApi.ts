@@ -3,7 +3,6 @@ import { FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { prepareHeaders } from './utils';
 
 const baseQueryWithHeaders = fetchBaseQuery({
-  baseUrl: '/api/',
   prepareHeaders: prepareHeaders,
 })
 
@@ -24,6 +23,7 @@ export const restAPI = createApi({
   tagTypes: [
     'SQL',
     'Collaborator',
+    'Tile',
   ],
   baseQuery: baseQueryWithReAuth,
   endpoints: () => ({}),

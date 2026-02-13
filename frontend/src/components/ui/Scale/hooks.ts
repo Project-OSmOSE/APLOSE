@@ -1,8 +1,8 @@
 import { Step } from './types';
-import { useCallback, useEffect } from 'react';
+import { type MutableRefObject, useCallback, useEffect } from 'react';
 
-export const useAxis = ({ canvas, steps, orientation, pixelSize, valueToString, displaySmallStepValue }: {
-  canvas?: HTMLCanvasElement | null,
+export const useAxis = ({ canvasRef, steps, orientation, pixelSize, valueToString, displaySmallStepValue }: {
+  canvasRef?: MutableRefObject<HTMLCanvasElement | null>,
   steps: Step[],
   orientation: 'horizontal' | 'vertical',
   pixelSize: number,
@@ -10,15 +10,11 @@ export const useAxis = ({ canvas, steps, orientation, pixelSize, valueToString, 
   displaySmallStepValue: boolean;
 }) => {
 
-  useEffect(() => {
-    draw()
-  }, [ canvas, pixelSize, valueToString, orientation, steps ]);
-
   const draw = useCallback(() => {
-    const context = canvas?.getContext('2d');
-    if (!canvas || !context || !pixelSize) return;
+    const context = canvasRef?.current?.getContext('2d');
+    if (!canvasRef?.current || !context || !pixelSize) return;
 
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     context.fillStyle = 'rgba(0, 0, 0)';
     context.font = '500 10px \'Exo 2\'';
 
@@ -46,10 +42,10 @@ export const useAxis = ({ canvas, steps, orientation, pixelSize, valueToString, 
       let position = step.position;
       switch (orientation) {
         case 'horizontal':
-          position = canvas.width - position;
+          position = canvasRef.current.width - position;
           break;
         case 'vertical':
-          position = canvas.height - position
+          position = canvasRef.current.height - position
           break;
       }
 
@@ -72,10 +68,10 @@ export const useAxis = ({ canvas, steps, orientation, pixelSize, valueToString, 
 
       switch (orientation) {
         case 'vertical':
-          context.fillRect(canvas.width - tickLength, tickPosition, tickLength, tickWidth);
+          context.fillRect(canvasRef.current.width - tickLength, tickPosition, tickLength, tickWidth);
           break;
         case 'horizontal':
-          context.fillRect(tickPosition <= canvas.width - 2 ? tickPosition : canvas.width - 2, 0, tickWidth, tickLength);
+          context.fillRect(tickPosition <= canvasRef.current.width - 2 ? tickPosition : canvasRef.current.width - 2, 0, tickWidth, tickLength);
           break;
       }
 
@@ -129,6 +125,10 @@ export const useAxis = ({ canvas, steps, orientation, pixelSize, valueToString, 
         }
       }
     }
-  }, [ canvas, steps, orientation, pixelSize, valueToString, displaySmallStepValue ])
+  }, [ canvasRef, steps, orientation, pixelSize, valueToString, displaySmallStepValue ])
+
+  useEffect(() => {
+    draw()
+  }, [ canvasRef, pixelSize, valueToString, orientation, steps ]);
 
 }
