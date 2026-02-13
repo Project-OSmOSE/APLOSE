@@ -28,7 +28,7 @@ export const TimeAxis: React.FC = () => {
     return timeScale.getSteps(timeStep.regularStep, timeStep.smallStep)
   }, [ timeScale, timeStep ])
   useAxis({
-    canvas: xAxisCanvasRef?.current,
+    canvasRef: xAxisCanvasRef,
     pixelSize: width,
     orientation: 'horizontal',
     valueToString: formatTime,
@@ -49,7 +49,7 @@ export const FrequencyAxis: React.FC = () => {
   const { yAxisCanvasRef } = useAnnotatorCanvasContext()
   const steps = useMemo(() => frequencyScale.getSteps(), [ frequencyScale ])
   useAxis({
-    canvas: yAxisCanvasRef?.current,
+    canvasRef: yAxisCanvasRef,
     pixelSize: height,
     orientation: 'vertical',
     valueToString: frequencyToString,
