@@ -1,21 +1,19 @@
 import React, { useMemo } from 'react';
 import styles from './styles.module.scss';
-import {
-  useAnnotatorCanvasContext,
-  useWindowHeight,
-  useWindowWidth,
-  X_AXIS_HEIGHT,
-  Y_AXIS_WIDTH,
-} from '@/features/Annotator/Canvas';
+import { useAnnotatorCanvasContext, X_AXIS_HEIGHT, Y_AXIS_WIDTH } from '@/features/Annotator/Canvas';
 import { useAxis } from '@/components/ui';
 import { formatTime, frequencyToString } from '@/service/function';
 import { useFrequencyScale, useTimeScale } from './hooks'
 import { useAnnotationTask } from '@/api';
+import { useSpectrogramDimensions } from '@/features/Spectrogram/Display/dimension.hook';
+import { useAppSelector } from '@/features/App';
+import { selectZoom } from '@/features/Annotator/Zoom';
 
 export const TimeAxis: React.FC = () => {
   const { spectrogram } = useAnnotationTask()
   const timeScale = useTimeScale()
-  const width = useWindowWidth()
+  const zoom = useAppSelector(selectZoom)
+  const { width } = useSpectrogramDimensions(zoom)
   const { xAxisCanvasRef } = useAnnotatorCanvasContext()
 
   const timeStep = useMemo(() => {
@@ -46,7 +44,8 @@ export const TimeAxis: React.FC = () => {
 
 export const FrequencyAxis: React.FC = () => {
   const frequencyScale = useFrequencyScale()
-  const height = useWindowHeight()
+  const zoom = useAppSelector(selectZoom)
+  const { height } = useSpectrogramDimensions(zoom)
   const { yAxisCanvasRef } = useAnnotatorCanvasContext()
   const steps = useMemo(() => frequencyScale.getSteps(), [ frequencyScale ])
   useAxis({
