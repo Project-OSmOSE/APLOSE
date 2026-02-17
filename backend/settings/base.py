@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework",
     "drf_spectacular",
+    "backend.storage.apps.AploseStorageConfig",
     "backend.api.apps.ApiConfig",
     "backend.osmosewebsite.apps.OsmoseWebsiteConfig",
     "backend.aplose.apps.AploseConfig",
