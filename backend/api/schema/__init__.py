@@ -18,7 +18,6 @@ from .nodes import (
     SpectrogramAnalysisNode,
 )
 from .queries import (
-    AllAnalysisForImportField,
     AllAnnotationSpectrogramsField,
     AnnotationPhaseByCampaignPhase,
     AnnotationLabelsForDeploymentIdField,
@@ -71,7 +70,6 @@ class APIQuery(graphene.ObjectType):
     all_spectrogram_analysis = AuthenticatedPaginationConnectionField(
         SpectrogramAnalysisNode
     )
-    all_analysis_for_import = AllAnalysisForImportField
 
     # Label
     all_label_sets = AuthenticatedPaginationConnectionField(LabelSetNode)
