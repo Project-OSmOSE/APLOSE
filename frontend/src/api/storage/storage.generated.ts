@@ -8,6 +8,13 @@ export type BrowseStorageQueryVariables = Types.Exact<{
 
 export type BrowseStorageQuery = { __typename?: 'Query', browse?: Array<{ __typename: 'AnalysisStorageNode', name: string, path: string, importStatus: Types.Status } | { __typename: 'DatasetStorageNode', name: string, path: string, importStatus: Types.Status, model?: { __typename?: 'DatasetNode', id: string } | null } | { __typename: 'FolderNode', name: string, path: string } | null> | null };
 
+export type SearchStorageQueryVariables = Types.Exact<{
+  path: Types.Scalars['String']['input'];
+}>;
+
+
+export type SearchStorageQuery = { __typename?: 'Query', search?: { __typename: 'AnalysisStorageNode', name: string, path: string, importStatus: Types.Status } | { __typename: 'DatasetStorageNode', name: string, path: string, importStatus: Types.Status, model?: { __typename?: 'DatasetNode', id: string } | null } | { __typename: 'FolderNode', name: string, path: string } | null };
+
 export type ImportDatasetFromStorageMutationVariables = Types.Exact<{
   path: Types.Scalars['String']['input'];
 }>;
@@ -50,6 +57,32 @@ export const BrowseStorageDocument = `
   }
 }
     `;
+export const SearchStorageDocument = `
+    query searchStorage($path: String!) {
+  search(path: $path) {
+    ... on FolderNode {
+      __typename
+      name
+      path
+    }
+    ... on DatasetStorageNode {
+      __typename
+      name
+      path
+      importStatus
+      model {
+        id
+      }
+    }
+    ... on AnalysisStorageNode {
+      __typename
+      name
+      path
+      importStatus
+    }
+  }
+}
+    `;
 export const ImportDatasetFromStorageDocument = `
     mutation importDatasetFromStorage($path: String!) {
   importDataset(path: $path) {
@@ -69,6 +102,9 @@ const injectedRtkApi = gqlAPI.injectEndpoints({
   endpoints: (build) => ({
     browseStorage: build.query<BrowseStorageQuery, BrowseStorageQueryVariables | void>({
       query: (variables) => ({ document: BrowseStorageDocument, variables })
+    }),
+    searchStorage: build.query<SearchStorageQuery, SearchStorageQueryVariables>({
+      query: (variables) => ({ document: SearchStorageDocument, variables })
     }),
     importDatasetFromStorage: build.mutation<ImportDatasetFromStorageMutation, ImportDatasetFromStorageMutationVariables>({
       query: (variables) => ({ document: ImportDatasetFromStorageDocument, variables })

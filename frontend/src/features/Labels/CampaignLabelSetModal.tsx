@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { Modal, ModalFooter, ModalHeader, useModal, useToast, WarningText } from '@/components/ui';
+import { Modal, ModalFooter, ModalHeader, useModalOpenState, useToast, WarningText } from '@/components/ui';
 import { IonButton, IonSpinner } from '@ionic/react';
 import { createPortal } from 'react-dom';
 import { AnnotationLabelNode, ErrorType, useCurrentCampaign, useUpdateCampaignFeaturedLabels } from '@/api';
@@ -9,7 +9,7 @@ import styles from './styles.module.scss';
 
 export const LabelSetModalButton: React.FC = () => {
   const { campaign } = useCurrentCampaign()
-  const modal = useModal()
+  const modal = useModalOpenState()
   return <Fragment>
     <IonButton fill="outline" color="medium" className="ion-text-wrap"
                disabled={ !campaign?.labelSet?.name }

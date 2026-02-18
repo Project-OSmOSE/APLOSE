@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { IonIcon, IonSkeletonText } from '@ionic/react';
 import { addOutline, closeOutline } from 'ionicons/icons/index.js';
-import { Button, Link, useAlert, useModal } from '@/components/ui';
+import { Button, Link, useAlert, useModalOpenState } from '@/components/ui';
 import { AnnotationPhaseType, useCurrentCampaign, useEndPhase } from '@/api';
 import { AnnotationPhaseCreateAnnotationModal, AnnotationPhaseCreateVerificationModal } from './PhaseCreateModal'
 import styles from './styles.module.scss';
@@ -15,8 +15,8 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
     const phase = useMemo(() => phases?.find(p => p.phase === phaseType), [ phases, phaseType ])
 
     const alert = useAlert();
-    const verificationModal = useModal();
-    const annotationModal = useModal();
+    const verificationModal = useModalOpenState();
+    const annotationModal = useModalOpenState();
 
     const openModal = useCallback(() => {
         switch (phaseType) {

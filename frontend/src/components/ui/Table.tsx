@@ -23,7 +23,7 @@ export const Table: React.FC<TableProps> = ({
     if (size === 'small') classes.push(styles.small)
     if (_className) classes.push(_className)
     return classes.join(' ')
-  }, [ _className, isFirstColumnSticky, columns ])
+  }, [ _className, isFirstColumnSticky, columns, size ])
 
   return <div
     className={ [ className, styles.table, isFirstColumnSticky && 'first-column-sticky', `columns-${ columns }`, size ].join(' ') }

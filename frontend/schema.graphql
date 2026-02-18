@@ -1066,6 +1066,7 @@ type Query {
   ): AnnotationFileRangeNodeNodeConnection
   annotationSpectrogramById(id: ID!): AnnotationSpectrogramNode
   browse(path: String): [StorageUnion]
+  search(path: String!): StorageUnion
 }
 
 type LabelNodeNodeConnection {

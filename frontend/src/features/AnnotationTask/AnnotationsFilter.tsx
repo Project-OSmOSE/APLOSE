@@ -7,7 +7,7 @@ import { IonIcon } from '@ionic/react';
 import { funnel, funnelOutline } from 'ionicons/icons/index.js';
 import { createPortal } from 'react-dom';
 import styles from './styles.module.scss';
-import { Modal, useModal } from '@/components/ui';
+import { Modal, useModalOpenState } from '@/components/ui';
 import { DetectorSelect } from '@/features/Detector';
 import { UserSelect } from '@/features/User';
 import { type AploseNavParams } from '@/features/UX';
@@ -19,7 +19,7 @@ export const AnnotationsFilter: React.FC<{
   const { phaseType } = useParams<AploseNavParams>();
   const { campaign, isFetching } = useCurrentCampaign()
   const { params, updateParams } = useAllTasksFilters()
-  const modal = useModal()
+  const modal = useModalOpenState()
 
   const setWithAnnotations = useCallback((withAnnotations?: boolean) => {
     if (withAnnotations && params.withAnnotations) return;

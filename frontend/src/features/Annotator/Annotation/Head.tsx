@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback } from 'react';
-import { Kbd, TooltipOverlay, useModal } from '@/components/ui';
+import { Kbd, TooltipOverlay, useModalOpenState } from '@/components/ui';
 import { IoChatbubbleEllipses, IoChatbubbleOutline, IoPlayCircle, IoSwapHorizontal, IoTrashBin } from 'react-icons/io5';
 import styles from './styles.module.scss';
 import { useAudio } from '@/features/Audio';
@@ -13,7 +13,7 @@ export const AnnotationHeadContent: React.FC<{
   annotation: Annotation,
 }> = ({ annotation }) => {
   const audio = useAudio()
-  const labelUpdateModal = useModal()
+  const labelUpdateModal = useModalOpenState()
   const focusedLabel = useAppSelector(selectFocusLabel)
   const updateAnnotation = useUpdateAnnotation()
   const removeAnnotation = useRemoveAnnotation()

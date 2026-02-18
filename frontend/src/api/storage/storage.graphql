@@ -23,6 +23,31 @@ query browseStorage($path: String) {
     }
 }
 
+query searchStorage($path: String!) {
+    search(path: $path) {
+        ... on FolderNode {
+            __typename
+            name
+            path
+        }
+        ... on DatasetStorageNode {
+            __typename
+            name
+            path
+            importStatus
+            model {
+                id
+            }
+        }
+        ... on AnalysisStorageNode {
+            __typename
+            name
+            path
+            importStatus
+        }
+    }
+}
+
 mutation importDatasetFromStorage($path: String!) {
     importDataset(path: $path) {
         ok

@@ -4606,6 +4606,7 @@ export type Query = {
   platformById?: Maybe<PlatformNode>;
   posterById?: Maybe<PosterNode>;
   projectById?: Maybe<ProjectNode>;
+  search?: Maybe<StorageUnion>;
   siteById?: Maybe<SiteNode>;
   softwareById?: Maybe<SoftwareNode>;
   soundById?: Maybe<SoundNode>;
@@ -5711,6 +5712,12 @@ export type QueryPosterByIdArgs = {
 /** Global query */
 export type QueryProjectByIdArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+/** Global query */
+export type QuerySearchArgs = {
+  path: Scalars['String']['input'];
 };
 
 

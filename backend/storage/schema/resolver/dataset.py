@@ -1,3 +1,4 @@
+import traceback
 from pathlib import Path, PureWindowsPath
 from typing import Optional
 
@@ -65,7 +66,7 @@ class Dataset(BaseResolver):
         try:
             json_path = self._join(self.path, "dataset.json")
             self.osekit = OSEkitDataset.from_json(Path(self._path_to_server(json_path)))
-        except Exception:
+        except Exception as e:
             pass
         self.legacy_datasets_in_csv = [
             d for d in self.legacy_datasets_in_csv if d["path"] == self.path

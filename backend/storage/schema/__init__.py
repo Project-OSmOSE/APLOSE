@@ -1,11 +1,12 @@
 import graphene
 
-from .queries import BrowseField
-from .mutations import ImportAnalysisMutationField, ImportDatasetMutationField
+from .queries import *
+from .mutations import *
 
 
 class StorageQuery(graphene.ObjectType):
     browse = BrowseField
+    search = SearchField
 
 
 class StorageMutation(graphene.ObjectType):

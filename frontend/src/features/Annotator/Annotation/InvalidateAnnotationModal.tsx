@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback } from 'react';
-import { Button, Modal, ModalHeader, useModal } from '@/components/ui';
+import { Button, Modal, ModalHeader, useModalOpenState } from '@/components/ui';
 import { Annotation, focusAnnotation } from './slice'
 import { AnnotationType } from '@/api';
 import { useInvalidateAnnotation, useUpdateAnnotation } from './hooks';
@@ -14,7 +14,7 @@ export const InvalidateAnnotationModal: React.FC<{
 }> = ({ onClose, annotation, isOpen }) => {
   const updateAnnotation = useUpdateAnnotation()
   const invalidate = useInvalidateAnnotation()
-  const labelModal = useModal()
+  const labelModal = useModalOpenState()
   const dispatch = useAppDispatch();
 
   const move = useCallback(() => {

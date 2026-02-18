@@ -1,6 +1,6 @@
 import React, { Fragment, MouseEvent, useCallback, useMemo } from 'react';
 import { type Annotation, focusAnnotation } from './slice';
-import { TableContent, useModal } from '@/components/ui';
+import { TableContent, useModalOpenState } from '@/components/ui';
 import styles from './styles.module.scss';
 import { AnnotationLabelInfo } from './AnnotationLabelInfo';
 import {
@@ -42,7 +42,7 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
   const { annotations } = useAnnotationTask()
   const focusTime = useFocusCanvasOnTime()
   const { user } = useCurrentUser()
-  const invalidateModal = useModal()
+  const invalidateModal = useModalOpenState()
   const dispatch = useAppDispatch();
 
   const completeInfo: CompleteInfo | undefined = useMemo(() => {

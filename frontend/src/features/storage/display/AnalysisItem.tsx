@@ -1,15 +1,16 @@
 import React, { type MouseEvent, useCallback, useEffect, useMemo } from 'react';
 import { Status, type StorageAnalysis, useImportAnalysisFromStorage } from '@/api';
 import { CheckRead, FileFavourite, Unread } from '@solar-icons/react';
-import styles from '@/features/storage/styles.module.scss';
+import styles from './styles.module.scss';
 import { IonButton, IonSpinner } from '@ionic/react';
 import { useToast } from '@/components/ui';
 
 export const AnalysisItem: React.FC<{
     analysis: StorageAnalysis,
     dataset: { path: string }
+    search?: string,
     onUpdated?: () => void
-}> = ({ analysis, dataset, onUpdated }) => {
+}> = ({ analysis, dataset, onUpdated, }) => {
     const { importAnalysis, isLoading, error } = useImportAnalysisFromStorage()
     const toast = useToast()
     const canImport = useMemo(() => {

@@ -13,6 +13,11 @@ export const StorageGqlAPI = api.enhanceEndpoints({
                 args ? { type: 'Folders', id: args.path ?? '' } : 'Folders',
             ],
         },
+        searchStorage: {
+            providesTags: (result) => [
+                result?.search ? { type: 'Folders', id: result.search.path ?? '' } : 'Folders',
+            ],
+        },
         importDatasetFromStorage: {
             invalidatesTags: (_result, _error, { path }) =>
                 getInvalidateTagsFromPath(path),

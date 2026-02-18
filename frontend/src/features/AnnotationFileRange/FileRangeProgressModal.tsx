@@ -11,7 +11,7 @@ import {
   TableDivider,
   TableHead,
   TooltipOverlay,
-  useModal,
+  useModalOpenState,
   useToast,
   WarningText,
 } from '@/components/ui';
@@ -45,7 +45,7 @@ type Sort = {
 }
 
 export const FileRangeProgressModalButton: React.FC = () => {
-  const modal = useModal()
+  const modal = useModalOpenState()
   return <Fragment>
     <TooltipOverlay tooltipContent={ <p>Annotators progression</p> } anchor="right">
       <IonButton fill="clear" color="medium" onClick={ modal.toggle } data-testid="progress">
