@@ -1,4 +1,3 @@
 """API data spectrogram analysis GraphQL tests"""
 from .all_spectrogram_analysis import AllSpectrogramAnalysisTestCase
-from .all_spectrogram_analysis_for_import import AllSpectrogramAnalysisForImportTestCase
 from .import_spectrogram_analysis import ImportSpectrogramAnalysisTestCase

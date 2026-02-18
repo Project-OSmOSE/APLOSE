@@ -19,7 +19,6 @@ from .nodes import (
 )
 from .queries import (
     AllAnalysisForImportField,
-    AllDatasetForImportField,
     AllAnnotationSpectrogramsField,
     AnnotationPhaseByCampaignPhase,
     AnnotationLabelsForDeploymentIdField,
@@ -70,7 +69,6 @@ class APIQuery(graphene.ObjectType):
     """API GraphQL queries"""
 
     # Dataset
-    all_datasets_for_import = AllDatasetForImportField
     all_datasets = AuthenticatedPaginationConnectionField(DatasetNode)
     dataset_by_id = ByIdField(
         DatasetNode,

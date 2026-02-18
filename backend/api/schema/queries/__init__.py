@@ -1,6 +1,5 @@
 """API GQL queries"""
 from .all_analysis_for_import import AllAnalysisForImportField
 from .all_annotation_spectrograms import AllAnnotationSpectrogramsField
-from .all_datasets_for_import import AllDatasetForImportField
 from .annotation_labels_for_deployment_id import AnnotationLabelsForDeploymentIdField
 from .annotation_phase_by_campaign_phase import AnnotationPhaseByCampaignPhase
