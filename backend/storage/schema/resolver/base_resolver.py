@@ -66,9 +66,9 @@ class BaseResolver:
     def _list_folders(self, path: str) -> list[str]:
         return [
             item
-            for item in listdir(self._path_to_server(path))
-            if self._exists(item)
-            if not self._isfile(item)
+            for item in self._list(path)
+            if self._exists(join(path, item))
+            if not self._isfile(join(path, item))
         ]
 
     def _isfile(self, path: str) -> bool:

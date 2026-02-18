@@ -57,8 +57,8 @@ class BrowseTestCase(ExtendedTestCase):
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Forbidden")
 
-    @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
-    def test_legacy(self):
+    @override_settings(DATASET_EXPORT_PATH=GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
+    def test_root(self):
         response = self.gql_query(
             QUERY,
             variables={"path": ""},
@@ -85,6 +85,21 @@ class BrowseTestCase(ExtendedTestCase):
         self.assertEqual(len(content), 1)
         self.assertEqual(content[0]["name"], "my_first_analysis")
         self.assertEqual(content[0]["path"], "tp_osekit/processed/my_first_analysis")
+        self.assertEqual(content[0]["importStatus"], "Available")
+
+    @override_settings(DATASET_EXPORT_PATH=Path(""), VOLUMES_ROOT=VOLUMES_ROOT)
+    def test_subfolder(self):
+        response = self.gql_query(
+            QUERY,
+            variables={"path": "good"},
+            user=User.objects.get(username="staff"),
+        )
+        self.assertResponseNoErrors(response)
+
+        content = json.loads(response.content)["data"]["browse"]
+        self.assertEqual(len(content), 1)
+        self.assertEqual(content[0]["name"], "tp_osekit")
+        self.assertEqual(content[0]["path"], "good/tp_osekit")
         self.assertEqual(content[0]["importStatus"], "Available")
 
     @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
