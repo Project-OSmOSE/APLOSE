@@ -1,8 +1,7 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { createPortal } from 'react-dom';
 import { IonIcon, IonSkeletonText } from '@ionic/react';
 import { addOutline, closeOutline } from 'ionicons/icons/index.js';
-import { Button, Link, useAlert, useModalOpenState } from '@/components/ui';
+import { Button, Link, useAlert, useModal } from '@/components/ui';
 import { AnnotationPhaseType, useCurrentCampaign, useEndPhase } from '@/api';
 import { AnnotationPhaseCreateAnnotationModal, AnnotationPhaseCreateVerificationModal } from './PhaseCreateModal'
 import styles from './styles.module.scss';
@@ -15,8 +14,10 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
     const phase = useMemo(() => phases?.find(p => p.phase === phaseType), [ phases, phaseType ])
 
     const alert = useAlert();
-    const verificationModal = useModalOpenState();
-    const annotationModal = useModalOpenState();
+    const verificationModal = useModal(AnnotationPhaseCreateVerificationModal);
+    const annotationModal = useModal(AnnotationPhaseCreateAnnotationModal, {
+        alsoCreateVerification: phaseType === AnnotationPhaseType.Verification,
+    });
 
     const openModal = useCallback(() => {
         switch (phaseType) {
@@ -39,7 +40,7 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
                     })
                 }
         }
-    }, [ phases, verificationModal ])
+    }, [ phases, annotationModal, verificationModal, alert, phaseType ])
 
     const { endPhase } = useEndPhase()
     const end = useCallback(async () => {
@@ -55,7 +56,7 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
                 } ],
             });
         } else endPhase({ id: phase.id, campaignID })
-    }, [ endPhase, phase, campaignID ]);
+    }, [ endPhase, phase, campaignID, alert ]);
 
     if (!campaign) return <Fragment/>
     if (isFetching)
@@ -79,10 +80,7 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
             <IonIcon icon={ addOutline } slot="end"/>
         </Button>
 
-        { annotationModal.isOpen && createPortal(<AnnotationPhaseCreateAnnotationModal
-            alsoCreateVerification={ phaseType === AnnotationPhaseType.Verification }
-            onClose={ annotationModal.close }/>, document.body) }
-        { verificationModal.isOpen && createPortal(<AnnotationPhaseCreateVerificationModal
-            onClose={ verificationModal.close }/>, document.body) }
+        { annotationModal.element }
+        { verificationModal.element }
     </Fragment>
 }

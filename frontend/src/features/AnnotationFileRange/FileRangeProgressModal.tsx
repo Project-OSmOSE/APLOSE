@@ -5,19 +5,17 @@ import {
   Modal,
   ModalFooter,
   ModalHeader,
+  type ModalProps,
   Progress,
   Table,
   TableContent,
   TableDivider,
   TableHead,
-  TooltipOverlay,
-  useModalOpenState,
   useToast,
   WarningText,
 } from '@/components/ui';
-import { IonButton, IonIcon, IonNote, IonSpinner } from '@ionic/react';
-import { analytics, caretDown, caretUp, downloadOutline } from 'ionicons/icons/index.js';
-import { createPortal } from 'react-dom';
+import { IonIcon, IonNote, IonSpinner } from '@ionic/react';
+import { caretDown, caretUp, downloadOutline } from 'ionicons/icons/index.js';
 import {
   AnnotationFileRangeNode,
   AnnotationTaskNodeNodeConnection,
@@ -44,21 +42,7 @@ type Sort = {
   sort: 'ASC' | 'DESC';
 }
 
-export const FileRangeProgressModalButton: React.FC = () => {
-  const modal = useModalOpenState()
-  return <Fragment>
-    <TooltipOverlay tooltipContent={ <p>Annotators progression</p> } anchor="right">
-      <IonButton fill="clear" color="medium" onClick={ modal.toggle } data-testid="progress">
-        <IonIcon icon={ analytics } slot="icon-only"/>
-      </IonButton>
-    </TooltipOverlay>
-    { modal.isOpen && createPortal(<FileRangeProgressModal onClose={ modal.toggle }/>, document.body) }
-  </Fragment>
-}
-
-export const FileRangeProgressModal: React.FC<{
-  onClose?(): void;
-}> = ({ onClose }) => {
+export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
   const { phase } = useCurrentPhase()
   const { users, isFetching: isLoadingUsers, error: userError } = useAllUsers();
   const { allFileRanges, isFetching: isLoadingFileRanges, error: fileRangeError } = useAllFileRanges();

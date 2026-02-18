@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 
 export type ModalProps = { onClose: () => void };
 
-export const useModal = (component: React.FC<ModalProps>) => {
+export const useModal = (component: React.FC<ModalProps & any>, extraArgs?: object) => {
     const [ isOpen, setIsOpen ] = useState<boolean>(false);
     const toggle = useCallback(() => setIsOpen(prev => !prev), [ setIsOpen ])
     const open = useCallback(() => setIsOpen(true), [ setIsOpen ])
@@ -14,6 +14,6 @@ export const useModal = (component: React.FC<ModalProps>) => {
         toggle,
         open,
         close,
-        element: isOpen ? createPortal(createElement(component, { onClose: close }), document.body) : <Fragment/>,
-    }), [ isOpen, toggle, open, close, component ]);
+        element: isOpen ? createPortal(createElement(component, { onClose: close, ...(extraArgs ?? {})  }), document.body) : <Fragment/>,
+    }), [ isOpen, toggle, open, close, component, extraArgs ]);
 }

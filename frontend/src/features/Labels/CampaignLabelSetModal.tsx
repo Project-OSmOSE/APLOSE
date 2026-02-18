@@ -1,29 +1,14 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { Modal, ModalFooter, ModalHeader, useModalOpenState, useToast, WarningText } from '@/components/ui';
+import { Modal, ModalFooter, ModalHeader, type ModalProps, useToast, WarningText } from '@/components/ui';
 import { IonButton, IonSpinner } from '@ionic/react';
-import { createPortal } from 'react-dom';
 import { AnnotationLabelNode, ErrorType, useCurrentCampaign, useUpdateCampaignFeaturedLabels } from '@/api';
 import { LabelSetFeaturesSelect } from '@/features/Labels';
 import styles from './styles.module.scss';
 
 
-export const LabelSetModalButton: React.FC = () => {
-  const { campaign } = useCurrentCampaign()
-  const modal = useModalOpenState()
-  return <Fragment>
-    <IonButton fill="outline" color="medium" className="ion-text-wrap"
-               disabled={ !campaign?.labelSet?.name }
-               onClick={ modal.toggle }>
-      { campaign?.labelSet?.name ?? 'No label set' }
-    </IonButton>
-    { modal.isOpen && createPortal(<LabelSetModal onClose={ modal.toggle }/>, document.body) }
-  </Fragment>
-}
 type Label = Pick<AnnotationLabelNode, 'id' | 'name'>
 
-export const LabelSetModal: React.FC<{
-  onClose?(): void;
-}> = ({ onClose }) => {
+export const LabelSetModal: React.FC<ModalProps> = ({ onClose }) => {
   const { campaign, isFetching } = useCurrentCampaign()
   const toast = useToast();
   const {

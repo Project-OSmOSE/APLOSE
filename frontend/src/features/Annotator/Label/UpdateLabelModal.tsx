@@ -1,20 +1,16 @@
-import React, { Fragment } from 'react';
-import { createPortal } from 'react-dom';
-import { Button, Modal, ModalHeader } from '@/components/ui';
+import React from 'react';
+import { Button, Modal, ModalHeader, type ModalProps } from '@/components/ui';
 import { IonNote } from '@ionic/react';
 import styles from './styles.module.scss';
 import { useAppSelector } from '@/features/App';
 import { selectAllLabels } from '@/features/Annotator/Label/selectors';
 
-export const UpdateLabelModal: React.FC<{
-  isModalOpen: boolean,
-  onClose: () => void,
+export const UpdateLabelModal: React.FC<ModalProps & {
   selected?: string,
   onUpdate: (label: string) => void;
-}> = ({ isModalOpen, onClose, selected, onUpdate }) => {
+}> = ({ onClose, selected, onUpdate }) => {
   const allLabels = useAppSelector(selectAllLabels)
-  if (!isModalOpen) return <Fragment/>
-  return createPortal(<Modal onClose={ onClose }>
+  return <Modal onClose={ onClose }>
     <ModalHeader title="Update annotation label" onClose={ onClose }/>
     <IonNote>Choose a new label</IonNote>
     <div className={ styles.labelsButtons }>
@@ -29,5 +25,5 @@ export const UpdateLabelModal: React.FC<{
         { label }
       </Button>) }
     </div>
-  </Modal>, document.body)
+  </Modal>
 }
