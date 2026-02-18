@@ -4,13 +4,14 @@ from pathlib import PureWindowsPath
 
 from django.conf import settings
 from django.db import migrations
+from django.db.models import Count, Q
 
 
 def format_path(path):
     return PureWindowsPath(path).as_posix()
 
 
-def migration_paths(apps, _):
+def clean_paths(apps, _):
     Dataset = apps.get_model("api", "Dataset")
 
     for d in Dataset.objects.all():
@@ -19,12 +20,37 @@ def migration_paths(apps, _):
         d.save()
 
 
-def reverse_migration_paths(apps, _):
+def reverse_clean_paths(apps, _):
     Dataset = apps.get_model("api", "Dataset")
 
     for d in Dataset.objects.all():
         d.path = format_path(os.path.join(settings.DATASET_EXPORT_PATH, d.path))
         d.save()
+
+
+def handle_duplicate_paths(apps, _):
+    Dataset = apps.get_model("api", "Dataset")
+    SpectrogramAnalysis = apps.get_model("api", "SpectrogramAnalysis")
+    AnnotationCampaign = apps.get_model("api", "AnnotationCampaign")
+    duplicated_path = (
+        Dataset.objects.values("path")
+        .annotate(count=Count("path"))
+        .order_by("-count")
+        .filter(count__gt=1)
+        .values_list("path", flat=True)
+    )
+
+    for path in duplicated_path:
+        kept_dataset = Dataset.objects.filter(path=path).first()
+        kept_dataset.name = PureWindowsPath(path).stem
+        kept_dataset.save()
+        SpectrogramAnalysis.objects.filter(dataset__path=path).update(
+            dataset=kept_dataset
+        )
+        AnnotationCampaign.objects.filter(dataset__path=path).update(
+            dataset=kept_dataset
+        )
+        Dataset.objects.filter(path=path).filter(~Q(id=kept_dataset.id)).delete()
 
 
 class Migration(migrations.Migration):
@@ -34,5 +60,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(migration_paths, reverse_migration_paths),
+        migrations.RunPython(clean_paths, reverse_clean_paths),
+        migrations.RunPython(handle_duplicate_paths, migrations.RunPython.noop),
     ]
