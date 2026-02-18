@@ -52,7 +52,10 @@ class Analysis(BaseResolver):
     ):
         super().__init__(root, path)
         self.dataset_path = dataset_path or ""
-        self.model = AnalysisModel.objects.filter(path=self.relative_path).first()
+        self.model = AnalysisModel.objects.filter(
+            dataset__path=self.dataset_path,
+            path=self.relative_path,
+        ).first()
         self.osekit = osekit
 
     def browse(self) -> list:
