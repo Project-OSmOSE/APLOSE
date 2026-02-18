@@ -5,8 +5,6 @@ const {
   listDatasets,
   listDatasetsAndAnalysis,
   getDatasetByID,
-  listAvailableDatasetsForImport,
-  importDataset,
 } = DatasetGqlAPI.endpoints
 
 export const useDataset = ({ id }: { id?: string }) => {
@@ -30,17 +28,4 @@ export const useAllDatasetsAndAnalysis = () => {
     ...info,
     allDatasets: info.data?.allDatasets?.results.filter(d => d !== null).map(d => d!),
   }), [info])
-}
-
-export const useAvailableDatasetsForImport = () => {
-  const info = listAvailableDatasetsForImport.useQuery({}, { refetchOnMountOrArgChange: true })
-  return useMemo(() => ({
-    ...info,
-    availableDatasets: info.data?.allDatasetsForImport?.filter(d => d !== null).map(d => d!),
-  }), [info])
-}
-
-export const useImportDataset = () => {
-  const [method, info] = importDataset.useMutation()
-  return { ...info, importDataset: method }
 }

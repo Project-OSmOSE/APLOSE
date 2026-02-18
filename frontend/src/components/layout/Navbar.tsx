@@ -41,6 +41,9 @@ export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
           { user?.isAdmin && <Fragment>
               <Link appPath="/dataset" onClick={ close }>Datasets</Link>
           </Fragment> }
+          { user?.isAdmin && <Fragment>
+              <Link appPath="/storage" onClick={ close }>Storage</Link>
+          </Fragment> }
         </div>
 
         { user?.isAdmin && <Fragment>

@@ -1,0 +1,33 @@
+query browseStorage($path: String) {
+    browse(path: $path) {
+        ... on FolderNode {
+            __typename
+            name
+            path
+        }
+        ... on DatasetStorageNode {
+            __typename
+            name
+            path
+            importStatus
+        }
+        ... on AnalysisStorageNode {
+            __typename
+            name
+            path
+            importStatus
+        }
+    }
+}
+
+mutation importDatasetFromStorage($path: String!) {
+    importDataset(path: $path) {
+        ok
+    }
+}
+
+mutation importAnalysisFromStorage($name: String!, $datasetPath: String!) {
+    importAnalysis(name: $name, datasetPath: $datasetPath) {
+        ok
+    }
+}

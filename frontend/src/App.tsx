@@ -24,6 +24,7 @@ const SqlQuery = lazy(() => import('./view/admin/sql'));
 const OntologyPage = lazy(() => import('./view/admin/ontology'));
 const OntologyTab = lazy(() => import('./view/admin/ontology/[type]'));
 const OntologyPanel = lazy(() => import('./view/admin/ontology/[type]/[id]'));
+const StorageBrowser = lazy(() => import('./view/storage'));
 const DatasetList = lazy(() => import('./view/dataset'));
 const DatasetDetail = lazy(() => import('./view/dataset/[datasetID]'));
 const AnnotationCampaignList = lazy(() => import('./view/annotation-campaign'));
@@ -83,6 +84,10 @@ const AppContent: React.FC = () => {
                 <Route path="dataset">
                     <Route index element={ <Suspense><DatasetList/></Suspense> }/>
                     <Route path=":datasetID" element={ <Suspense><DatasetDetail/></Suspense> }/>
+                </Route>
+
+                <Route path="storage">
+                    <Route index element={ <Suspense><StorageBrowser/></Suspense> }/>
                 </Route>
 
                 <Route path="annotation-campaign">

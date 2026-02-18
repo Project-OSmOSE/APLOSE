@@ -1,21 +1,14 @@
-import { api } from "./spectrogram-analysis.generated";
+import { api, type ListSpectrogramAnalysisQueryVariables } from './spectrogram-analysis.generated';
+
+export function listSpectrogramAnalysisTag(args: ListSpectrogramAnalysisQueryVariables | void) {
+    return { type: 'SpectrogramAnalysis', id: `${ args?.datasetID ?? '' }-${ args?.annotationCampaignID ?? '' }` }
+}
 
 export const SpectrogramAnalysisGqlAPI = api.enhanceEndpoints({
-  endpoints: {
-    listSpectrogramAnalysis: {
-      // @ts-expect-error: result and error are unused
-      providesTags: (result, error, args) => [
-        { type: 'SpectrogramAnalysis', id: JSON.stringify(args) }
-      ]
+    endpoints: {
+        listSpectrogramAnalysis: {
+            providesTags: (_result, _error, args) =>
+                [ listSpectrogramAnalysisTag(args) ],
+        },
     },
-    listAvailableSpectrogramAnalysisForImport: {
-      // @ts-expect-error: result and error are unused
-      providesTags: (result, error, args) => [
-        { type: 'ImportSpectrogramAnalysis', id: JSON.stringify(args) }
-      ]
-    },
-    importSpectrogramAnalysis: {
-      invalidatesTags: (_, error) => error ? [] : [ 'Dataset', 'SpectrogramAnalysis' ]
-    },
-  }
 })

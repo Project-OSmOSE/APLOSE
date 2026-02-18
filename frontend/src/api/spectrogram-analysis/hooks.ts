@@ -4,8 +4,6 @@ import { useMemo } from 'react';
 
 const {
   listSpectrogramAnalysis,
-  listAvailableSpectrogramAnalysisForImport,
-  importSpectrogramAnalysis,
 } = SpectrogramAnalysisGqlAPI.endpoints
 
 export const useAllSpectrogramAnalysis = (variables: ListSpectrogramAnalysisQueryVariables | void) => {
@@ -14,23 +12,4 @@ export const useAllSpectrogramAnalysis = (variables: ListSpectrogramAnalysisQuer
     ...info,
     allSpectrogramAnalysis: info.data?.allSpectrogramAnalysis?.results.filter(r => r !== null),
   }), [info])
-}
-
-export const useAvailableSpectrogramAnalysisForImport = ({ datasetID }: { datasetID?: string }) => {
-  const info = listAvailableSpectrogramAnalysisForImport.useQuery({
-    datasetID: datasetID ?? '',
-  }, {
-    refetchOnMountOrArgChange: true,
-    skip: !datasetID,
-  })
-  return useMemo(() => ({
-    ...info,
-    availableSpectrogramAnalysis: info.data?.allAnalysisForImport?.filter(d => d !== null).map(d => d!),
-    dataset: info?.data?.datasetById,
-  }), [info])
-}
-
-export const useImportSpectrogramAnalysis = () => {
-  const [method, info] = importSpectrogramAnalysis.useMutation()
-  return { ...info, importSpectrogramAnalysis: method }
 }

@@ -108,6 +108,13 @@ export type AcousticFeaturesNode = ExtendedInterface & {
   trend?: Maybe<SignalTrendType>;
 };
 
+export type AnalysisStorageNode = {
+  __typename?: 'AnalysisStorageNode';
+  importStatus: Status;
+  name: Scalars['String']['output'];
+  path: Scalars['String']['output'];
+};
+
 export type AnnotationAcousticFeaturesSerializerInput = {
   doesOverlapOtherSignals?: InputMaybe<Scalars['Boolean']['input']>;
   /** [Hz] Frequency at the end of the signal */
@@ -2122,6 +2129,13 @@ export type DatasetNodeNodeConnection = {
   totalCount?: Maybe<Scalars['Int']['output']>;
 };
 
+export type DatasetStorageNode = {
+  __typename?: 'DatasetStorageNode';
+  importStatus: Status;
+  name: Scalars['String']['output'];
+  path: Scalars['String']['output'];
+};
+
 export type DeleteSoundMutation = {
   __typename?: 'DeleteSoundMutation';
   ok?: Maybe<Scalars['Boolean']['output']>;
@@ -2883,6 +2897,12 @@ export enum FinancingEnum {
   Public = 'Public'
 }
 
+export type FolderNode = {
+  __typename?: 'FolderNode';
+  name: Scalars['String']['output'];
+  path: Scalars['String']['output'];
+};
+
 export enum HydrophoneDirectivityEnum {
   BiDirectional = 'BiDirectional',
   Cardioid = 'Cardioid',
@@ -2916,34 +2936,16 @@ export type HydrophoneSpecificationNode = ExtendedInterface & {
   operatingMinTemperature?: Maybe<Scalars['Float']['output']>;
 };
 
-/** "Import spectrogram analysis mutation */
+/** "Import Analysis mutation */
 export type ImportAnalysisMutation = {
   __typename?: 'ImportAnalysisMutation';
   ok?: Maybe<Scalars['Boolean']['output']>;
 };
 
-/** Type for import dataset */
-export type ImportAnalysisNode = {
-  __typename?: 'ImportAnalysisNode';
-  name: Scalars['String']['output'];
-  path: Scalars['String']['output'];
-};
-
-/** Import dataset mutation */
+/** "Import Dataset mutation */
 export type ImportDatasetMutation = {
   __typename?: 'ImportDatasetMutation';
-  ok: Scalars['Boolean']['output'];
-};
-
-/** Type for import dataset */
-export type ImportDatasetNode = {
-  __typename?: 'ImportDatasetNode';
-  analysis?: Maybe<Array<Maybe<ImportAnalysisNode>>>;
-  failed?: Maybe<Scalars['Boolean']['output']>;
-  legacy?: Maybe<Scalars['Boolean']['output']>;
-  name: Scalars['String']['output'];
-  path: Scalars['String']['output'];
-  stack?: Maybe<Scalars['String']['output']>;
+  ok?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type InstitutionNode = ExtendedInterface & {
@@ -3531,10 +3533,10 @@ export type Mutation = {
   deleteSource?: Maybe<DeleteSourceMutation>;
   /** Archive annotation phase mutation */
   endAnnotationPhase?: Maybe<EndAnnotationPhaseMutation>;
-  /** Import dataset mutation */
+  /** "Import Analysis mutation */
+  importAnalysis?: Maybe<ImportAnalysisMutation>;
+  /** "Import Dataset mutation */
   importDataset?: Maybe<ImportDatasetMutation>;
-  /** "Import spectrogram analysis mutation */
-  importSpectrogramAnalysis?: Maybe<ImportAnalysisMutation>;
   postSound?: Maybe<PostSoundMutationPayload>;
   postSource?: Maybe<PostSourceMutationPayload>;
   submitAnnotationTask?: Maybe<SubmitAnnotationTaskMutation>;
@@ -3591,19 +3593,14 @@ export type MutationEndAnnotationPhaseArgs = {
 
 
 /** Global mutation */
-export type MutationImportDatasetArgs = {
-  legacy?: InputMaybe<Scalars['Boolean']['input']>;
+export type MutationImportAnalysisArgs = {
+  datasetPath: Scalars['String']['input'];
   name: Scalars['String']['input'];
-  path: Scalars['String']['input'];
 };
 
 
 /** Global mutation */
-export type MutationImportSpectrogramAnalysisArgs = {
-  datasetName: Scalars['String']['input'];
-  datasetPath: Scalars['String']['input'];
-  legacy?: InputMaybe<Scalars['Boolean']['input']>;
-  name: Scalars['String']['input'];
+export type MutationImportDatasetArgs = {
   path: Scalars['String']['input'];
 };
 
@@ -4537,7 +4534,6 @@ export type ProjectTypeNodeNodeConnection = {
 export type Query = {
   __typename?: 'Query';
   _debug?: Maybe<DjangoDebug>;
-  allAnalysisForImport?: Maybe<Array<Maybe<ImportAnalysisNode>>>;
   allAnnotationCampaigns?: Maybe<AnnotationCampaignNodeNodeConnection>;
   allAnnotationFileRanges?: Maybe<AnnotationFileRangeNodeNodeConnection>;
   allAnnotationPhases?: Maybe<AnnotationPhaseNodeNodeConnection>;
@@ -4552,7 +4548,6 @@ export type Query = {
   allConference?: Maybe<ConferenceNodeNodeConnection>;
   allConfidenceSets?: Maybe<ConfidenceSetNodeNodeConnection>;
   allDatasets?: Maybe<DatasetNodeNodeConnection>;
-  allDatasetsForImport?: Maybe<Array<Maybe<ImportDatasetNode>>>;
   allDeployments?: Maybe<DeploymentNodeNodeConnection>;
   allDetectionFiles?: Maybe<DetectionFileNodeNodeConnection>;
   allDetectors?: Maybe<DetectorNodeNodeConnection>;
@@ -4591,6 +4586,7 @@ export type Query = {
   audioFileById?: Maybe<AudioFileNode>;
   authorById?: Maybe<AuthorNode>;
   bibliographyById?: Maybe<BibliographyUnion>;
+  browse?: Maybe<Array<Maybe<StorageUnion>>>;
   campaignById?: Maybe<CampaignNode>;
   channelConfigurationById?: Maybe<ChannelConfigurationNode>;
   conferenceById?: Maybe<ConferenceNode>;
@@ -4616,12 +4612,6 @@ export type Query = {
   teamById?: Maybe<TeamNode>;
   teamMemberById?: Maybe<TeamMemberNode>;
   websiteProjectById?: Maybe<WebsiteProjectNode>;
-};
-
-
-/** Global query */
-export type QueryAllAnalysisForImportArgs = {
-  datasetId: Scalars['ID']['input'];
 };
 
 
@@ -5616,6 +5606,12 @@ export type QueryBibliographyByIdArgs = {
 
 
 /** Global query */
+export type QueryBrowseArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Global query */
 export type QueryCampaignByIdArgs = {
   id: Scalars['ID']['input'];
 };
@@ -6505,6 +6501,14 @@ export type SpectrogramNodeNodeConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+/** An enumeration. */
+export enum Status {
+  Available = 'Available',
+  Imported = 'Imported',
+  Partial = 'Partial',
+  Unavailable = 'Unavailable'
+}
+
 export type StorageSpecificationNode = ExtendedInterface & {
   __typename?: 'StorageSpecificationNode';
   /** Capacity of the storage. */
@@ -6514,6 +6518,8 @@ export type StorageSpecificationNode = ExtendedInterface & {
   /** Type of storage. */
   type?: Maybe<Scalars['String']['output']>;
 };
+
+export type StorageUnion = AnalysisStorageNode | DatasetStorageNode | FolderNode;
 
 export type SubmitAnnotationTaskMutation = {
   __typename?: 'SubmitAnnotationTaskMutation';

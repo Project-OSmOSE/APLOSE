@@ -28,28 +28,3 @@ query listSpectrogramAnalysis(
         }
     }
 }
-
-query listAvailableSpectrogramAnalysisForImport(
-    $datasetID: ID!
-) {
-    allAnalysisForImport(datasetId: $datasetID) {
-        name
-        path
-    }
-    datasetById(id: $datasetID) {
-        name
-        path
-    }
-}
-
-mutation importSpectrogramAnalysis(
-    $datasetName: String!
-    $datasetPath: String!
-    $legacy: Boolean
-    $name: String!
-    $path: String!
-) {
-    importSpectrogramAnalysis(datasetName: $datasetName, datasetPath: $datasetPath, legacy: $legacy, name: $name, path: $path) {
-        ok
-    }
-}
