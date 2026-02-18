@@ -33,6 +33,7 @@ class Dataset(BaseResolver):
         n = DatasetStorageNode()
         n.name = self.name
         n.path = self.path
+        n.model = self.model
         n.import_status = self.import_status
         return n
 

@@ -1,18 +1,24 @@
 import React, { Fragment, type MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { Status, type StorageAnalysis, useBrowseStorage, useImportDatasetFromStorage } from '@/api';
+import {
+    Status,
+    type StorageAnalysis,
+    type StorageDataset,
+    useBrowseStorage,
+    useImportDatasetFromStorage,
+} from '@/api';
 import { IonButton, IonNote, IonSpinner } from '@ionic/react';
 import { useToast, WarningText } from '@/components/ui';
 import { AltArrowDown, AltArrowRight, CheckRead, FolderFavouriteStar, Unread } from '@solar-icons/react';
 
 import { AnalysisItem } from './AnalysisItem';
 import styles from './styles.module.scss';
+import { DatasetName } from '@/features/Dataset';
 
 export const DatasetItem: React.FC<{
     dataset: {
         name: string,
         path: string,
-        importStatus?: Status
-    },
+    } & Partial<StorageDataset>,
     fixedOpen?: boolean;
     onUpdated?: () => void
 }> = ({ dataset, fixedOpen, onUpdated }) => {
@@ -77,7 +83,7 @@ export const DatasetItem: React.FC<{
     return <div className={ styles.item }>
         <div onClick={ toggleOpen } className={ styles.dataset }>
             <FolderFavouriteStar size={ 24 } weight="BoldDuotone"/>
-            <p>{ dataset.name }</p>
+            <DatasetName name={ dataset.name } id={ dataset.model?.id } link/>
             { importStatusIcon }
             { !fixedOpen && <IonNote>{ isOpen ? <AltArrowDown/> : <AltArrowRight/> }</IonNote> }
             { canImport && <IonButton size="small" fill="outline" onClick={ download }>

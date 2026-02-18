@@ -1,4 +1,6 @@
-from graphene import ObjectType, NonNull, String, Enum
+from graphene import ObjectType, NonNull, String, Enum, Field
+
+from backend.api.schema import DatasetNode
 from .resolver import ImportStatus
 
 __all__ = [
@@ -18,6 +20,7 @@ class DatasetStorageNode(ObjectType):
     name = NonNull(String)
     path = NonNull(String)
     import_status = NonNull(Enum.from_enum(enum=ImportStatus))
+    model = Field(DatasetNode)
 
 
 class FolderNode(ObjectType):

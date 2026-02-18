@@ -1,42 +1,27 @@
 import * as Types from '../types.gql-generated';
 
 import { gqlAPI } from '@/api/baseGqlApi';
-
 export type BrowseStorageQueryVariables = Types.Exact<{
-    path?: Types.InputMaybe<Types.Scalars['String']['input']>;
+  path?: Types.InputMaybe<Types.Scalars['String']['input']>;
 }>;
 
 
-export type BrowseStorageQuery = {
-    __typename?: 'Query',
-    browse?: Array<{ __typename: 'AnalysisStorageNode', name: string, path: string, importStatus: Types.Status } | {
-        __typename: 'DatasetStorageNode',
-        name: string,
-        path: string,
-        importStatus: Types.Status
-    } | { __typename: 'FolderNode', name: string, path: string } | null> | null
-};
+export type BrowseStorageQuery = { __typename?: 'Query', browse?: Array<{ __typename: 'AnalysisStorageNode', name: string, path: string, importStatus: Types.Status } | { __typename: 'DatasetStorageNode', name: string, path: string, importStatus: Types.Status, model?: { __typename?: 'DatasetNode', id: string } | null } | { __typename: 'FolderNode', name: string, path: string } | null> | null };
 
 export type ImportDatasetFromStorageMutationVariables = Types.Exact<{
-    path: Types.Scalars['String']['input'];
+  path: Types.Scalars['String']['input'];
 }>;
 
 
-export type ImportDatasetFromStorageMutation = {
-    __typename?: 'Mutation',
-    importDataset?: { __typename?: 'ImportDatasetMutation', ok?: boolean | null } | null
-};
+export type ImportDatasetFromStorageMutation = { __typename?: 'Mutation', importDataset?: { __typename?: 'ImportDatasetMutation', ok?: boolean | null } | null };
 
 export type ImportAnalysisFromStorageMutationVariables = Types.Exact<{
-    name: Types.Scalars['String']['input'];
-    datasetPath: Types.Scalars['String']['input'];
+  name: Types.Scalars['String']['input'];
+  datasetPath: Types.Scalars['String']['input'];
 }>;
 
 
-export type ImportAnalysisFromStorageMutation = {
-    __typename?: 'Mutation',
-    importAnalysis?: { __typename?: 'ImportAnalysisMutation', ok?: boolean | null } | null
-};
+export type ImportAnalysisFromStorageMutation = { __typename?: 'Mutation', importAnalysis?: { __typename?: 'ImportAnalysisMutation', ok?: boolean | null } | null };
 
 
 export const BrowseStorageDocument = `
@@ -52,6 +37,9 @@ export const BrowseStorageDocument = `
       name
       path
       importStatus
+      model {
+        id
+      }
     }
     ... on AnalysisStorageNode {
       __typename
@@ -78,17 +66,17 @@ export const ImportAnalysisFromStorageDocument = `
     `;
 
 const injectedRtkApi = gqlAPI.injectEndpoints({
-    endpoints: (build) => ({
-        browseStorage: build.query<BrowseStorageQuery, BrowseStorageQueryVariables | void>({
-            query: (variables) => ({ document: BrowseStorageDocument, variables }),
-        }),
-        importDatasetFromStorage: build.mutation<ImportDatasetFromStorageMutation, ImportDatasetFromStorageMutationVariables>({
-            query: (variables) => ({ document: ImportDatasetFromStorageDocument, variables }),
-        }),
-        importAnalysisFromStorage: build.mutation<ImportAnalysisFromStorageMutation, ImportAnalysisFromStorageMutationVariables>({
-            query: (variables) => ({ document: ImportAnalysisFromStorageDocument, variables }),
-        }),
+  endpoints: (build) => ({
+    browseStorage: build.query<BrowseStorageQuery, BrowseStorageQueryVariables | void>({
+      query: (variables) => ({ document: BrowseStorageDocument, variables })
     }),
+    importDatasetFromStorage: build.mutation<ImportDatasetFromStorageMutation, ImportDatasetFromStorageMutationVariables>({
+      query: (variables) => ({ document: ImportDatasetFromStorageDocument, variables })
+    }),
+    importAnalysisFromStorage: build.mutation<ImportAnalysisFromStorageMutation, ImportAnalysisFromStorageMutationVariables>({
+      query: (variables) => ({ document: ImportAnalysisFromStorageDocument, variables })
+    }),
+  }),
 });
 
 export { injectedRtkApi as api };

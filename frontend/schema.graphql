@@ -4381,6 +4381,7 @@ type DatasetStorageNode {
   name: String!
   path: String!
   importStatus: Status!
+  model: DatasetNode
 }
 
 """An enumeration."""

@@ -10,6 +10,9 @@ query browseStorage($path: String) {
             name
             path
             importStatus
+            model {
+                id
+            }
         }
         ... on AnalysisStorageNode {
             __typename

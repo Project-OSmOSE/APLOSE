@@ -2132,6 +2132,7 @@ export type DatasetNodeNodeConnection = {
 export type DatasetStorageNode = {
   __typename?: 'DatasetStorageNode';
   importStatus: Status;
+  model?: Maybe<DatasetNode>;
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
 };

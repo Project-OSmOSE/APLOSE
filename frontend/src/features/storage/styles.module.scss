@@ -10,6 +10,13 @@
   svg[color=success] {
     color: var(--ion-color-success);
   }
+
+  > ion-button:nth-child(2) {
+    --padding-start: 0;
+    --padding-end: 0;
+    --padding-top: 0;
+    --padding-bottom: 0;
+  }
 }
 
 .dataset > :first-child,
