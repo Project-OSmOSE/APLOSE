@@ -1,4 +1,3 @@
-import traceback
 from pathlib import Path, PureWindowsPath
 from typing import Optional
 
@@ -55,6 +54,7 @@ class Dataset(BaseResolver):
         path: Optional[str] = None,
         legacy_datasets_in_csv: list[LegacyCSVDataset] = None,
     ):
+        # pylint: disable=broad-except
         super().__init__(
             root,
             path,
@@ -66,7 +66,7 @@ class Dataset(BaseResolver):
         try:
             json_path = self._join(self.path, "dataset.json")
             self.osekit = OSEkitDataset.from_json(Path(self._path_to_server(json_path)))
-        except Exception as e:
+        except Exception:
             pass
         self.legacy_datasets_in_csv = [
             d for d in self.legacy_datasets_in_csv if d["path"] == self.path

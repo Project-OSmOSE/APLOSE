@@ -1,7 +1,7 @@
 from graphene import ObjectType, NonNull, String, Enum, Field
 
 from backend.api.schema import DatasetNode
-from .resolver import ImportStatus
+from .resolver.types import ImportStatus
 
 __all__ = [
     "AnalysisStorageNode",

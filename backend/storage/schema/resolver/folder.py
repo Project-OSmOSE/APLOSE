@@ -1,6 +1,5 @@
-from typing import Union, Optional
+from typing import Union
 
-from . import LegacyCSVDataset
 from .base_resolver import BaseResolver
 from .dataset import Dataset
 from ..nodes import FolderNode

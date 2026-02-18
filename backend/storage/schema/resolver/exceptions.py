@@ -10,7 +10,7 @@ class FileFolderException(Exception):
 
 class AnalysisBrowseException(Exception):
     def __init__(self, path):
-        super().__init__(f"Cannot browse an analysis")
+        super().__init__("Cannot browse an analysis")
 
 
 __all__ = [

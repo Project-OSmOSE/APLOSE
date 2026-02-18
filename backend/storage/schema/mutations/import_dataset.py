@@ -25,7 +25,7 @@ class ImportDatasetMutation(Mutation):
         storage_dataset: DatasetResolver = get_resolver(
             settings.DATASET_EXPORT_PATH, path
         )
-        dataset, _ = Dataset.objects.get_or_create(
+        Dataset.objects.get_or_create(
             name=storage_dataset.name,
             path=path,
             owner=info.context.user,
