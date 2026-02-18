@@ -26,7 +26,8 @@ class SpectrogramManager(models.Manager):
         spectrograms_data = []
         if analysis.dataset.legacy:
             audio_csv_path = join(
-                settings.DATASET_IMPORT_FOLDER,
+                settings.VOLUMES_ROOT,
+                settings.DATASET_EXPORT_PATH,
                 analysis.dataset.path,
                 "data",
                 "audio",
@@ -36,7 +37,8 @@ class SpectrogramManager(models.Manager):
             with open(audio_csv_path, encoding="utf-8") as csvfile:
                 audio: dict = next(csv.DictReader(csvfile))
             timestamp_csv_path = join(
-                settings.DATASET_IMPORT_FOLDER,
+                settings.VOLUMES_ROOT,
+                settings.DATASET_EXPORT_PATH,
                 analysis.dataset.path,
                 "data",
                 "audio",

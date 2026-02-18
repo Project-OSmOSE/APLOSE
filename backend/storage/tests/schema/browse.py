@@ -57,8 +57,8 @@ class BrowseTestCase(ExtendedTestCase):
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Forbidden")
 
-    @override_settings(DATASET_EXPORT_PATH=GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
-    def test_root(self):
+    @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
+    def test_legacy(self):
         response = self.gql_query(
             QUERY,
             variables={"path": ""},

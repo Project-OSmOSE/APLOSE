@@ -6,6 +6,19 @@ from django_extension.schema.fields import (
 )
 from django_extension.schema.permissions import GraphQLPermissions
 
+from .mutations import (
+    ImportAnalysisMutation,
+    ImportDatasetMutation,
+    CreateAnnotationCampaignMutation,
+    UpdateAnnotationCampaignMutation,
+    UpdateAnnotationPhaseFileRangesMutation,
+    EndAnnotationPhaseMutation,
+    CreateAnnotationPhase,
+    ArchiveAnnotationCampaignMutation,
+    UpdateAnnotationCommentsMutation,
+    UpdateAnnotationsMutation,
+    SubmitAnnotationTaskMutation,
+)
 from .nodes import (
     AnnotationCampaignNode,
     AnnotationSpectrogramNode,
@@ -23,19 +36,6 @@ from .queries import (
     AnnotationPhaseByCampaignPhase,
     AnnotationLabelsForDeploymentIdField,
 )
-from .mutations import (
-    ImportAnalysisMutation,
-    ImportDatasetMutation,
-    CreateAnnotationCampaignMutation,
-    UpdateAnnotationCampaignMutation,
-    UpdateAnnotationPhaseFileRangesMutation,
-    EndAnnotationPhaseMutation,
-    CreateAnnotationPhase,
-    ArchiveAnnotationCampaignMutation,
-    UpdateAnnotationCommentsMutation,
-    UpdateAnnotationsMutation,
-    SubmitAnnotationTaskMutation,
-)
 
 
 class APIMutation(graphene.ObjectType):
@@ -43,9 +43,6 @@ class APIMutation(graphene.ObjectType):
 
     # Dataset
     import_dataset = ImportDatasetMutation.Field()
-
-    # Spectrogram analysis
-    import_spectrogram_analysis = ImportAnalysisMutation.Field()
 
     # Annotation campaign
     create_annotation_campaign = CreateAnnotationCampaignMutation.Field()
