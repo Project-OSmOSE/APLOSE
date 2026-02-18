@@ -8,7 +8,7 @@ from graphene import Boolean, Mutation, String
 from backend.api.models import Dataset, SpectrogramAnalysis, Spectrogram
 from backend.storage.schema.resolver import Dataset as DatasetResolver, get_resolver
 
-__all__ = ["ImportAnalysisMutationField"]
+__all__ = ["ImportAnalysisMutationField", "ImportAnalysisMutation"]
 
 
 class ImportAnalysisMutation(Mutation):
