@@ -39,7 +39,7 @@ export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
             </ul>
         </IonNote>
         if (!item) return <IonNote>Not found</IonNote>
-        return <Item node={ item } onUpdated={ invalidateStorage }/>
+        return <Item node={ item } fixedOpen onUpdated={ invalidateStorage }/>
     }, [isLoading, error, item, searchQuery, invalidateStorage])
 
     return (

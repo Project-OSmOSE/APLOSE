@@ -35,22 +35,25 @@ export const Item: React.FC<{
     node: StorageItem,
     search?: string,
     onUpdated?: () => void,
-}> = ({ node, parentNode, onUpdated, search }) => {
+    fixedOpen?: boolean;
+}> = ({ node, parentNode, onUpdated, search, fixedOpen }) => {
     return useMemo(() => {
         switch (node.__typename) {
             case 'FolderNode':
                 return <FolderItem folder={ node }
                                    search={ search }
-                                   onUpdated={ onUpdated }/>
+                                   onUpdated={ onUpdated }
+                                   fixedOpen={ fixedOpen }/>
             case 'DatasetStorageNode':
                 return <DatasetItem dataset={ node }
                                     search={ search }
-                                    onUpdated={ onUpdated }/>
+                                    onUpdated={ onUpdated }
+                                    fixedOpen={ fixedOpen }/>
             case 'AnalysisStorageNode':
                 return <AnalysisItem dataset={ parentNode! }
                                      analysis={ node }
                                      search={ search }
                                      onUpdated={ onUpdated }/>
         }
-    }, [ node, parentNode, onUpdated, search ])
+    }, [ node, parentNode, onUpdated, search, fixedOpen ])
 }

@@ -10,17 +10,19 @@ export const FolderItem: React.FC<{
     folder: StorageFolder
     onUpdated?: () => void
     search?: string,
-}> = ({ folder, onUpdated, search }) => {
-    const [ isOpen, setIsOpen ] = useState<boolean>(false);
+    fixedOpen?: boolean;
+}> = ({ folder, onUpdated, search, fixedOpen }) => {
+    const [ isOpen, setIsOpen ] = useState<boolean>(fixedOpen || false);
     const toggleOpen = useCallback(() => {
+        if (fixedOpen) return;
         setIsOpen(prev => !prev);
-    }, [ setIsOpen ])
+    }, [ setIsOpen, fixedOpen ])
 
     return <div className={ styles.item }>
         <div onClick={ toggleOpen } className={ styles.folder }>
             { isOpen ? <FolderOpen size={ 24 } weight="Linear"/> : <FolderIcon size={ 24 } weight="Linear"/> }
             <p>{ folder.name }</p>
-            <IonNote>{ isOpen ? <AltArrowDown/> : <AltArrowRight/> }</IonNote>
+            { !fixedOpen && <IonNote>{ isOpen ? <AltArrowDown/> : <AltArrowRight/> }</IonNote> }
         </div>
 
         { isOpen && <ItemList parentNode={ folder } onUpdated={ onUpdated } search={ search }/> }
