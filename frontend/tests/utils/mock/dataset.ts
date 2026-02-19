@@ -1,18 +1,12 @@
 import type { GqlQuery } from './_types';
-import {
-  GetDatasetByIdQuery,
-  ImportNewDatasetMutation,
-  ListAvailableDatasetsForImportQuery,
-  ListDatasetsAndAnalysisQuery,
-  ListDatasetsQuery,
-} from '../../../src/api/dataset';
+import { GetDatasetByIdQuery, ListDatasetsAndAnalysisQuery, ListDatasetsQuery } from '../../../src/api/dataset';
 import type { Colormap } from '../../../src/features/Colormap';
 import { dataset, spectrogramAnalysis, USERS } from './types';
 
 export const DATASET_QUERIES: {
   listDatasets: GqlQuery<ListDatasetsQuery>,
   getDatasetByID: GqlQuery<GetDatasetByIdQuery>,
-  listAvailableDatasetsForImport: GqlQuery<ListAvailableDatasetsForImportQuery>,
+  listAvailableDatasetsForImport: GqlQuery<any>,
   listDatasetsAndAnalysis: GqlQuery<ListDatasetsAndAnalysisQuery>,
 } = {
   listDatasets: {
@@ -28,6 +22,7 @@ export const DATASET_QUERIES: {
           {
             id: dataset.id,
             name: dataset.name,
+            path: dataset.path,
             legacy: dataset.legacy,
             createdAt: dataset.createdAt,
             description: dataset.description,
@@ -109,7 +104,7 @@ export const DATASET_QUERIES: {
 }
 
 export const DATASET_MUTATIONS: {
-  importDataset: GqlQuery<ImportNewDatasetMutation, never>,
+  importDataset: GqlQuery<any, never>,
 } = {
   importDataset: {
     defaultType: 'empty',

@@ -10,9 +10,11 @@ import { FILE_RANGE_MUTATIONS, FILE_RANGE_QUERIES } from './fileRange';
 import type { UserType } from './types';
 import { DETECTOR_QUERIES } from './detector';
 import { COLLABORATOR_QUERIES } from './collaborators';
+import { STORAGE_QUERIES } from './storage';
 
 type GqlQueries =
   typeof DATASET_QUERIES
+  & typeof STORAGE_QUERIES
   & typeof CHANNEL_CONFIGURATION_QUERIES
   & typeof ANALYSIS_QUERIES
   & typeof CAMPAIGN_QUERIES
@@ -26,6 +28,7 @@ type GqlQueries =
 
 const GQL_MOCK_QUERIES: GqlQueries & { getCurrentUser: typeof GET_CURRENT_USER_QUERY } = {
   ...DATASET_QUERIES,
+  ...STORAGE_QUERIES,
   ...CHANNEL_CONFIGURATION_QUERIES,
   ...ANALYSIS_QUERIES,
   ...CAMPAIGN_QUERIES,

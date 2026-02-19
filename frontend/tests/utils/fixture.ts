@@ -14,6 +14,7 @@ import {
   PhaseDetailPage,
   PhaseEditAnnotatorsPage,
   PhaseImportAnnotationsPage,
+  StoragePage,
 } from './pages';
 
 interface PageExtension {
@@ -21,6 +22,8 @@ interface PageExtension {
   readonly login: LoginPage;
   readonly navbar: Navbar;
   readonly account: AccountPage;
+
+  readonly storage: StoragePage;
 
   readonly datasets: DatasetPage;
   readonly datasetDetail: DatasetDetailPage;
@@ -59,6 +62,7 @@ export const test = testBase.extend<Fixture>({
       login: new LoginPage(page),
       navbar: new Navbar(page),
       account: new AccountPage(page),
+      storage: new StoragePage(page),
       datasets: new DatasetPage(page),
       datasetDetail: new DatasetDetailPage(page),
       campaigns: new CampaignListPage(page),

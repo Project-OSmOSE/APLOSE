@@ -16,7 +16,7 @@ export class DatasetPage {
   async go({ as }: Pick<Params, 'as'>) {
     await this.navbar.go({ as })
     await this.navbar.datasetsButton.click()
-    await expect(this.page.getByRole('heading', { name: 'Datasets', exact: true })).toBeVisible()
+    await expect(this.title).toBeVisible()
   }
 
 }
