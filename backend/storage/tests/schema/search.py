@@ -120,10 +120,49 @@ class BrowseTestCase(ExtendedTestCase):
         self.assertEqual(content["importStatus"], "Available")
 
     @override_settings(DATASET_EXPORT_PATH=GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
+    def test_path_to_dataset_json(self):
+        response = self.gql_query(
+            QUERY,
+            variables={"path": r"tp_osekit/dataset.json"},
+            user=User.objects.get(username="staff"),
+        )
+        self.assertResponseNoErrors(response)
+
+        content = json.loads(response.content)["data"]["search"]
+        self.assertIsNotNone(content)
+        self.assertEqual(content["name"], "tp_osekit")
+        self.assertEqual(content["path"], "tp_osekit")
+        self.assertEqual(content["importStatus"], "Available")
+
+    @override_settings(DATASET_EXPORT_PATH=GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_invalid_path(self):
         response = self.gql_query(
             QUERY,
             variables={"path": r"invalid"},
+            user=User.objects.get(username="staff"),
+        )
+        self.assertResponseNoErrors(response)
+
+        content = json.loads(response.content)["data"]["search"]
+        self.assertIsNone(content)
+
+    @override_settings(DATASET_EXPORT_PATH=GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
+    def test_path_folder_to_dataset_json(self):
+        response = self.gql_query(
+            QUERY,
+            variables={"path": r"dataset.json"},
+            user=User.objects.get(username="staff"),
+        )
+        self.assertResponseNoErrors(response)
+
+        content = json.loads(response.content)["data"]["search"]
+        self.assertIsNone(content)
+
+    @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
+    def test_path_legacy_to_dataset_json(self):
+        response = self.gql_query(
+            QUERY,
+            variables={"path": r"gliderSPAmsDemo/dataset.json"},
             user=User.objects.get(username="staff"),
         )
         self.assertResponseNoErrors(response)
