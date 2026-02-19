@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSearchStorage } from '@/api';
 import { useAppDispatch } from '@/features/App';
 import { gqlAPI } from '@/api/baseGqlApi';
@@ -14,7 +14,11 @@ export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
     const validateSearch = useCallback(() => {
         setSearchQuery(search)
     }, [ search, setSearchQuery ])
-    useKeyDownEvent(['Enter'], validateSearch)
+    useKeyDownEvent([ 'Enter' ], validateSearch)
+    const updateSearch = useCallback((value: string) => {
+        setSearch(value)
+        if (!value) setSearchQuery(undefined)
+    }, [setSearch, setSearchQuery])
 
     const { item, isLoading, error } = useSearchStorage({ path: searchQuery ?? '' }, { skip: !searchQuery })
     const dispatch = useAppDispatch();
@@ -23,21 +27,34 @@ export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
         dispatch(gqlAPI.util.invalidateTags([ 'Folders' ]))
     }, [ dispatch ])
 
+    const content = useMemo(() => {
+        if (isLoading) return <IonSpinner />
+        if (error) return <WarningText error={ error } />
+        if (!searchQuery) return <IonNote>
+            You can search for the exact path of:
+            <ul>
+                <li>a common folder</li>
+                <li>a dataset folder</li>
+                <li>an OSEkit dataset.json file describing a dataset</li>
+            </ul>
+        </IonNote>
+        if (!item) return <IonNote>Not found</IonNote>
+        return <Item node={ item } onUpdated={ invalidateStorage }/>
+    }, [isLoading, error, item, searchQuery, invalidateStorage])
+
     return (
         <Modal onClose={ onClose }>
-            <ModalHeader title="Import an analysis"
+            <ModalHeader title="Search path"
                          onClose={ onClose }/>
 
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <Searchbar placeholder='Enter exact path'
+            <div style={ { display: 'flex', gap: '0.5rem' } }>
+                <Searchbar placeholder="Enter exact path"
                            search={ search }
-                           onInput={ setSearch }/>
+                           onInput={ updateSearch }/>
                 <Button fill="clear" onClick={ validateSearch }>Search</Button>
             </div>
 
-            { isLoading ? <IonSpinner/> :
-                error ? <WarningText error={ error }/> :
-                    item ? <Item node={ item } onUpdated={ invalidateStorage }/> : <IonNote>Not found</IonNote> }
+            { content }
 
             <ModalFooter>
                 <HelpButton url="/doc/user/data/generate"
