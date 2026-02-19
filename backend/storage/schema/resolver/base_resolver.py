@@ -36,10 +36,10 @@ class BaseResolver:
     ):
         self.root = PureWindowsPath(root or "")
         self.path = path or ""
-        if not self._exists(path):
-            raise InexistentPathException(path)
-        if self._isfile(path):
-            raise FileFolderException(path)
+        if not self._exists(self.path):
+            raise InexistentPathException(self._path_to_server(self.path))
+        if self._isfile(self.path):
+            raise FileFolderException(self._path_to_server(self.path))
         if legacy_datasets_in_csv is None:
             self._load_legacy()
         else:
