@@ -65,7 +65,9 @@ class Dataset(BaseResolver):
         self.model = DatasetModel.objects.filter(path=path).first()
         try:
             json_path = self._join(self.path, "dataset.json")
-            self.osekit = OSEkitDataset.from_json(Path(self._path_to_server(json_path)))
+            self.osekit = OSEkitDataset.from_json(
+                Path(self._path_to_server(json_path).as_posix())
+            )
         except Exception:
             pass
         self.legacy_datasets_in_csv = [

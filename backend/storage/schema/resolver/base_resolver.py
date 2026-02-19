@@ -37,9 +37,9 @@ class BaseResolver:
         self.root = PureWindowsPath(root or "")
         self.path = path or ""
         if not self._exists(self.path):
-            raise InexistentPathException(self._path_to_server(self.path))
+            raise InexistentPathException(self._path_to_server(self.path).as_posix())
         if self._isfile(self.path):
-            raise FileFolderException(self._path_to_server(self.path))
+            raise FileFolderException(self._path_to_server(self.path).as_posix())
         if legacy_datasets_in_csv is None:
             self._load_legacy()
         else:
@@ -61,7 +61,7 @@ class BaseResolver:
         return PureWindowsPath(str(server_path))
 
     def _list(self, path: str) -> list[str]:
-        return listdir(self._path_to_server(path))
+        return listdir(self._path_to_server(path).as_posix())
 
     def _list_folders(self, path: str) -> list[str]:
         return [
@@ -72,13 +72,13 @@ class BaseResolver:
         ]
 
     def _isfile(self, path: str) -> bool:
-        return isfile(self._path_to_server(path))
+        return isfile(self._path_to_server(path).as_posix())
 
     def _exists(self, path: str) -> bool:
-        return exists(self._path_to_server(path))
+        return exists(self._path_to_server(path).as_posix())
 
     def _open(self, path: str) -> TextIOWrapper:
-        return open(self._path_to_server(path), encoding="utf-8")
+        return open(self._path_to_server(path).as_posix(), encoding="utf-8")
 
     def _join(self, a: str, *paths: str) -> str:
         return PureWindowsPath(join(a, *paths)).as_posix()
