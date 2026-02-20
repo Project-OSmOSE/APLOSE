@@ -1,15 +1,14 @@
 import React, { Fragment, useCallback } from 'react';
-import { Button, Modal, ModalHeader, type ModalProps, useModal } from '@/components/ui';
+import { Button, Modal, ModalHeader, type ModalProps } from '@/components/ui';
 import { Annotation, focusAnnotation } from './slice'
 import { AnnotationType } from '@/api';
-import { useInvalidateAnnotation, useUpdateAnnotation } from './hooks';
-import { UpdateLabelModal } from '@/features/Labels';
+import { useInvalidateAnnotation } from './hooks';
 import { useAppDispatch } from '@/features/App';
 
 export const InvalidateAnnotationModal: React.FC<ModalProps & {
-    annotation: Annotation
-}> = ({ onClose, annotation }) => {
-    const updateAnnotation = useUpdateAnnotation()
+    annotation: Annotation,
+    onAskLabelChange: () => void
+}> = ({ onClose, annotation, onAskLabelChange }) => {
     const invalidate = useInvalidateAnnotation()
 
     const dispatch = useAppDispatch();
@@ -19,28 +18,18 @@ export const InvalidateAnnotationModal: React.FC<ModalProps & {
         dispatch(focusAnnotation(annotation))
     }, [ onClose, dispatch, annotation ]);
 
-    const updateLabel = useCallback((label: string) => {
-        if (!annotation) return;
-        updateAnnotation(annotation, { label })
-    }, [ annotation, updateAnnotation ]);
-    const labelModal = useModal(UpdateLabelModal, {
-        selected: annotation.label,
-        onUpdate: updateLabel,
-    })
-
     const askUpdateLabel = useCallback(() => {
-        onClose();
         dispatch(focusAnnotation(annotation))
-        labelModal.open()
-    }, [ labelModal, dispatch, annotation, onClose ]);
+        onAskLabelChange()
+        onClose();
+    }, [ dispatch, annotation, onClose, onAskLabelChange ]);
 
     const remove = useCallback(() => {
         onClose()
         invalidate(annotation)
     }, [ onClose, invalidate, annotation ]);
 
-    return <Fragment>
-        <Modal onClose={ onClose }>
+    return <Modal onClose={ onClose }>
             <ModalHeader title="Invalidate a result" onClose={ onClose }/>
             <h5>Why do you want to invalidate this result?</h5>
 
@@ -66,7 +55,4 @@ export const InvalidateAnnotationModal: React.FC<ModalProps & {
             </div>
 
         </Modal>
-
-        { labelModal.element }
-    </Fragment>
 }

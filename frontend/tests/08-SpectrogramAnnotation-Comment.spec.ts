@@ -1,23 +1,23 @@
 import { annotatorTag, essentialTag, expect, test } from './utils';
 import {
-  boxAnnotation,
-  campaign,
-  CONFIDENCES,
-  LABELS,
-  phase as phaseObj,
-  spectrogramAnalysis,
-  taskComment,
-  TASKS,
-  USERS,
-  type UserType,
-  weakAnnotation,
-  weakAnnotationComment,
+    boxAnnotation,
+    campaign,
+    CONFIDENCES,
+    LABELS,
+    phase as phaseObj,
+    spectrogramAnalysis,
+    taskComment,
+    TASKS,
+    USERS,
+    type UserType,
+    weakAnnotation,
+    weakAnnotationComment,
 } from './utils/mock/types';
 import {
-  type AnnotationCommentInput,
-  type AnnotationInput,
-  AnnotationPhaseType,
-  AnnotationType,
+    type AnnotationCommentInput,
+    type AnnotationInput,
+    AnnotationPhaseType,
+    AnnotationType,
 } from '../src/api/types.gql-generated';
 import { gqlURL, interceptRequests } from './utils/mock';
 import type { SubmitTaskMutationVariables } from '../src/api/annotation-task/annotation-task.generated';
@@ -153,7 +153,7 @@ const TEST = {
 
 
 // Tests
-test.describe('[Spectrogram] Comments', { tag: [ annotatorTag, essentialTag ] }, () => {
+test.describe('/annotation-campaign/:campaignID/phase/:phaseType/spectrogram/:spectrogramID',{ tag: [ annotatorTag, essentialTag ] }, () => {
   const as: UserType = 'annotator'
 
   TEST.canAddComments({ as, phase: AnnotationPhaseType.Annotation })

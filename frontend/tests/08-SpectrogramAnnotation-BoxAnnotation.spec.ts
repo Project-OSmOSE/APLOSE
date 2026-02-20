@@ -5,57 +5,50 @@ import {
   LABELS,
   phase as phaseObj,
   spectrogramAnalysis,
+  taskComment,
   TASKS,
   USERS,
   type UserType,
+  weakAnnotation,
+  weakAnnotationComment,
 } from './utils/mock/types';
-import { type AnnotationInput, AnnotationPhaseType, AnnotationType } from '../src/api/types.gql-generated';
+import {
+  type AnnotationCommentInput,
+  type AnnotationInput,
+  AnnotationPhaseType,
+  AnnotationType,
+} from '../src/api/types.gql-generated';
 import { gqlURL, interceptRequests } from './utils/mock';
 import type { SubmitTaskMutationVariables } from '../src/api/annotation-task/annotation-task.generated';
 import type { Params } from './utils/types';
 
 
 // Utils
-const type = AnnotationType.Point
 const TEST = {
-  cannotAddPointAnnotations: ({ as, phase }: Pick<Params, 'as' | 'phase'>) =>
-    test(`Cannot add point annotation if campaign doesn't allow on "${ phase } phase`, async ({ page }) => {
+  canAddBoxAnnotations: ({ as, phase }: Pick<Params, 'as' | 'phase'>) =>
+    test(`Can add box annotation on "${ phase } phase`, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: 'annotator',
         getAnnotationPhase: phase,
         getAnnotationTask: 'unsubmitted',
       })
       await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
+      const type = AnnotationType.Box
 
       await expect(page.getByText('No results')).toBeVisible()
       await page.annotator.addWeak(LABELS.classic, { method: 'mouse' })
-      await page.annotator.getAnnotationForLabel(LABELS.classic, { type: AnnotationType.Weak }).click()
 
-      await test.step('Cannot add point annotation', async () => {
-        await page.annotator.draw(type);
-        await expect(page.annotator.getAnnotationForLabel(LABELS.classic, { type })).not.toBeVisible()
+      await test.step('Select weak annotation', async () => {
+        await page.annotator.getAnnotationForLabel(LABELS.classic, { type: AnnotationType.Weak }).click()
       })
-    }),
 
-  canAddPointAnnotations: ({ as, phase }: Pick<Params, 'as' | 'phase'>) =>
-    test(`Can add point annotation on "${ phase } phase`, async ({ page }) => {
-      await interceptRequests(page, {
-        getCurrentUser: 'annotator',
-        getCampaign: 'allowPoint',
-        getAnnotationPhase: phase,
-        getAnnotationTask: 'unsubmitted',
-      })
-      await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
-
-      await expect(page.getByText('No results')).toBeVisible()
-      await page.annotator.addWeak(LABELS.classic, { method: 'mouse' })
-      await page.annotator.getAnnotationForLabel(LABELS.classic, { type: AnnotationType.Weak }).click()
-
-      const bounds = await test.step('Add point annotation', async () => {
+      const bounds = await test.step('Add box annotation', async () => {
         const bounds = await page.annotator.draw(type);
         expect(page.annotator.getAnnotationForLabel(LABELS.classic, { type })).toBeTruthy()
         await expect(page.annotator.annotationsBlock.getByText(Math.floor(bounds.startTime).toString()).first()).toBeVisible();
+        await expect(page.annotator.annotationsBlock.getByText(Math.floor(bounds.endTime).toString()).first()).toBeVisible();
         await expect(page.annotator.annotationsBlock.getByText(bounds.startFrequency.toString()).first()).toBeVisible();
+        await expect(page.annotator.annotationsBlock.getByText(bounds.endFrequency.toString()).first()).toBeVisible();
         return bounds
       })
 
@@ -76,8 +69,8 @@ const TEST = {
           annotator: USERS[as].id,
           comments: [],
         } as AnnotationInput, {
-          annotationPhase: phaseObj.id,
           ...bounds,
+          annotationPhase: phaseObj.id,
           label: LABELS.classic.name,
           confidence: CONFIDENCES.sure.label,
           analysis: spectrogramAnalysis.id,
@@ -88,21 +81,17 @@ const TEST = {
       })
     }),
 
-  canRemovePointAnnotations: ({ as, phase, method }: Pick<Params, 'as' | 'phase' | 'method'>) =>
-    test(`Can remove point annotation using ${ method } on "${ phase } phase`, async ({ page }) => {
+  canRemoveBoxAnnotations: ({ as, phase, method }: Pick<Params, 'as' | 'phase' | 'method'>) =>
+    test(`Can remove box annotation using ${ method } on "${ phase } phase`, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: 'annotator',
-        getCampaign: 'allowPoint',
         getAnnotationPhase: phase,
-        getAnnotationTask: 'unsubmitted',
+        getAnnotationTask: 'submitted',
       })
       await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
+      const type = AnnotationType.Box
 
-      await expect(page.getByText('No results')).toBeVisible()
-      await page.annotator.addWeak(LABELS.classic, { method })
-      await page.annotator.draw(type);
-
-      await test.step('Remove point annotation', async () => {
+      await test.step('Remove box annotation', async () => {
         await page.annotator.removeStrong(LABELS.classic, { type, method })
         await expect(page.annotator.getAnnotationForLabel(LABELS.classic, { type })).not.toBeVisible()
       })
@@ -119,30 +108,35 @@ const TEST = {
         expect(variables.annotations).toEqual([
           {
             annotationPhase: phaseObj.id,
+            id: +weakAnnotation.id,
+            comments: [ {
+              id: +weakAnnotationComment.id,
+              comment: weakAnnotationComment.comment,
+            } ],
             label: LABELS.classic.name,
+            annotator: USERS.annotator.id,
             confidence: CONFIDENCES.sure.label,
             analysis: spectrogramAnalysis.id,
-            annotator: USERS[as].id,
-            comments: [],
           } as AnnotationInput ]);
-        expect(variables.taskComments).toEqual([]);
+        expect(variables.taskComments).toEqual([ {
+          comment: taskComment.comment,
+          id: +taskComment.id,
+        } as AnnotationCommentInput ]);
       })
     }),
+
 }
 
 
 // Tests
-test.describe('[Spectrogram] Point annotations', { tag: [ annotatorTag, essentialTag ] }, () => {
+test.describe('/annotation-campaign/:campaignID/phase/:phaseType/spectrogram/:spectrogramID',{ tag: [ annotatorTag, essentialTag ] }, () => {
   const as: UserType = 'annotator'
 
-  TEST.canAddPointAnnotations({ as, phase: AnnotationPhaseType.Annotation })
-  TEST.canAddPointAnnotations({ as, phase: AnnotationPhaseType.Verification })
+  TEST.canAddBoxAnnotations({ as, phase: AnnotationPhaseType.Annotation })
+  TEST.canAddBoxAnnotations({ as, phase: AnnotationPhaseType.Verification })
 
-  TEST.cannotAddPointAnnotations({ as, phase: AnnotationPhaseType.Annotation })
-  TEST.cannotAddPointAnnotations({ as, phase: AnnotationPhaseType.Verification })
-
-  TEST.canRemovePointAnnotations({ as, phase: AnnotationPhaseType.Annotation, method: 'mouse' })
-  TEST.canRemovePointAnnotations({ as, phase: AnnotationPhaseType.Annotation, method: 'shortcut' })
-  TEST.canRemovePointAnnotations({ as, phase: AnnotationPhaseType.Verification, method: 'mouse' })
-  TEST.canRemovePointAnnotations({ as, phase: AnnotationPhaseType.Verification, method: 'shortcut' })
+  TEST.canRemoveBoxAnnotations({ as, phase: AnnotationPhaseType.Annotation, method: 'mouse' })
+  TEST.canRemoveBoxAnnotations({ as, phase: AnnotationPhaseType.Annotation, method: 'shortcut' })
+  TEST.canRemoveBoxAnnotations({ as, phase: AnnotationPhaseType.Verification, method: 'mouse' })
+  TEST.canRemoveBoxAnnotations({ as, phase: AnnotationPhaseType.Verification, method: 'shortcut' })
 })
