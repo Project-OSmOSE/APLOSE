@@ -1,4 +1,4 @@
-import { annotatorTag, essentialTag, expect, test } from './utils';
+import { essentialTag, expect, test } from './utils';
 import { interceptRequests } from './utils/mock';
 import { campaign, type UserType } from './utils/mock/types';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
@@ -39,7 +39,7 @@ const TEST = {
 
 // Tests
 
-test.describe('[Spectrogram] Base', { tag: [ annotatorTag ] }, () => {
+test.describe('/annotation-campaign/:campaignID/phase/:phaseType/spectrogram/:spectrogramID', () => {
   const as: UserType = 'annotator'
 
   TEST.canGoBackToCampaign({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
