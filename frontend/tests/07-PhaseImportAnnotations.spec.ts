@@ -176,7 +176,7 @@ const TEST = {
 
 // Tests
 
-test.describe('[Phase import annotations]', () => {
+test.describe('/annotation-campaign/:campaignID/phase/:phaseType/import-annotations', () => {
   const as: UserType = 'creator'
 
   TEST.importAll({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
