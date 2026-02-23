@@ -26,6 +26,7 @@ class Analysis(BaseResolver):
 
     @property
     def node(self):
+        # pylint: disable=duplicate-code
         n = AnalysisStorageNode()
         n.name = self.name
         n.path = self.path

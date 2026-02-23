@@ -13,7 +13,7 @@ __all__ = ["SearchField"]
 @GraphQLResolve(permission=GraphQLPermissions.STAFF_OR_SUPERUSER)
 def resolve_search(root, _, path: str):
     """Get all datasets for import"""
-    # pylint: disable=broad-except
+    # pylint: disable=broad-except, protected-access
     path = PureWindowsPath(path)
     path_str = PureWindowsPath(path).as_posix()
     root: str = PureWindowsPath(settings.DATASET_EXPORT_PATH).as_posix()
