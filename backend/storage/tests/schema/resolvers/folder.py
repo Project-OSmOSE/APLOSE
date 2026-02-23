@@ -1,4 +1,4 @@
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from django.conf import settings
 from django.test import override_settings
@@ -30,7 +30,7 @@ class FolderResolverTestCase(BaseResolverTestCase):
         resolver = self.resolver_class(LEGACY_GOOD.as_posix(), self.path)
         content = resolver.browse()
         self.assertEqual(1, len(content))
-        self.assertEqual(LEGACY_GOOD, content[0].root)
+        self.assertEqual(PureWindowsPath(settings.DATASET_EXPORT_PATH), content[0].root)
         self.assertEqual("gliderSPAmsDemo", content[0].path)
         self.assertIsInstance(content[0], Dataset)
         self.assertListEqual(

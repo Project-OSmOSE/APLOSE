@@ -51,7 +51,7 @@ class BaseResolverTestCase(TestCase):
     def test_resolve(self):
         resolver = self.resolver_class(settings.DATASET_EXPORT_PATH, self.path)
 
-        self.assertEqual(settings.DATASET_EXPORT_PATH, resolver.root)
+        self.assertEqual(PureWindowsPath(settings.DATASET_EXPORT_PATH), resolver.root)
         self.assertEqual("", resolver.path)
         self.assertEqual("", resolver.name)
 
