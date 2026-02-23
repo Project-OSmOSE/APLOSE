@@ -4,7 +4,6 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master ]
     types: [ ready_for_review, opened, reopened, synchronize ]
 
 jobs:
