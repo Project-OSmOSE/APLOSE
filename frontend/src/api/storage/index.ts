@@ -1,6 +1,7 @@
 import type { BrowseStorageQuery } from './storage.generated';
 
 export * from './hooks'
+export * from './middlewares'
 
 type N<T> = NonNullable<T>
 export type StorageItem = N<N<BrowseStorageQuery['browse']>[number]>

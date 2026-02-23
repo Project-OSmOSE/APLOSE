@@ -1,13 +1,9 @@
 from pathlib import Path, PureWindowsPath
 
 from django.conf import settings
-from django.test import TestCase
 from django.test import override_settings
 
 from backend.storage.schema.resolver import (
-    FileFolderException,
-    InexistentPathException,
-    Folder,
     Dataset,
     ImportStatus,
     Analysis,
@@ -35,7 +31,7 @@ class DatasetResolverTestCase(BaseResolverTestCase):
     def test_resolve(self):
         resolver = self.resolver_class(settings.DATASET_EXPORT_PATH, self.path)
 
-        self.assertEqual(settings.DATASET_EXPORT_PATH, resolver.root)
+        self.assertEqual(PureWindowsPath(settings.DATASET_EXPORT_PATH), resolver.root)
         self.assertEqual("tp_osekit", resolver.path)
         self.assertEqual("tp_osekit", resolver.name)
         self.assertListEqual([], resolver.legacy_datasets_in_csv)
@@ -56,7 +52,7 @@ class DatasetResolverTestCase(BaseResolverTestCase):
 
     def __check_analysis(self, analysis):
         self.assertIsNotNone(analysis)
-        self.assertEqual(GOOD, analysis.root)
+        self.assertEqual(PureWindowsPath(settings.DATASET_EXPORT_PATH), analysis.root)
         self.assertEqual("tp_osekit/processed/my_first_analysis", analysis.path)
         self.assertIsInstance(analysis, Analysis)
         self.assertListEqual([], analysis.legacy_datasets_in_csv)
@@ -66,7 +62,7 @@ class DatasetResolverTestCase(BaseResolverTestCase):
     def test_resolve_legacy(self):
         resolver = self.resolver_class(settings.DATASET_EXPORT_PATH, self.legacy_path)
 
-        self.assertEqual(settings.DATASET_EXPORT_PATH, resolver.root)
+        self.assertEqual(PureWindowsPath(settings.DATASET_EXPORT_PATH), resolver.root)
         self.assertEqual("gliderSPAmsDemo", resolver.path)
         self.assertEqual("gliderSPAmsDemo", resolver.name)
 
@@ -100,7 +96,7 @@ class DatasetResolverTestCase(BaseResolverTestCase):
 
     def __check_analysis_legacy(self, analysis):
         self.assertIsNotNone(analysis)
-        self.assertEqual(LEGACY_GOOD, analysis.root)
+        self.assertEqual(PureWindowsPath(settings.DATASET_EXPORT_PATH), analysis.root)
         self.assertEqual(
             "gliderSPAmsDemo/processed/spectrogram/600_480/4096_512_85", analysis.path
         )

@@ -6,7 +6,6 @@ import { dataset, spectrogramAnalysis, USERS } from './types';
 export const DATASET_QUERIES: {
   listDatasets: GqlQuery<ListDatasetsQuery>,
   getDatasetByID: GqlQuery<GetDatasetByIdQuery>,
-  listAvailableDatasetsForImport: GqlQuery<any>,
   listDatasetsAndAnalysis: GqlQuery<ListDatasetsAndAnalysisQuery>,
 } = {
   listDatasets: {
@@ -54,28 +53,6 @@ export const DATASET_QUERIES: {
       },
     },
   },
-  listAvailableDatasetsForImport: {
-    defaultType: 'filled',
-    empty: {
-      allDatasetsForImport: [],
-    },
-    filled: {
-      allDatasetsForImport: [ {
-        name: 'Test import dataset',
-        path: 'Test import dataset',
-        analysis: [
-          {
-            name: 'Test analysis 1',
-            path: 'Test analysis 1',
-          },
-          {
-            name: 'Test analysis 2',
-            path: 'Test analysis 2',
-          },
-        ],
-      } ],
-    },
-  },
   listDatasetsAndAnalysis: {
     defaultType: 'filled',
     empty: {
@@ -100,14 +77,5 @@ export const DATASET_QUERIES: {
         ],
       },
     },
-  },
-}
-
-export const DATASET_MUTATIONS: {
-  importDataset: GqlQuery<any, never>,
-} = {
-  importDataset: {
-    defaultType: 'empty',
-    empty: {},
   },
 }

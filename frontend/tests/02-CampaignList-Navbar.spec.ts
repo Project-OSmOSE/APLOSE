@@ -59,7 +59,7 @@ const STEP = {
 
 const TEST = {
     canAccessAllButAdmin: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
-        test(`can access all but admin as ${ as }`, { tag }, async ({ page }) => {
+        test(`Navbar can access all but admin as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, { getCurrentUser: as })
             await test.step(`Navigate`, () => page.navbar.go({ as }));
 
@@ -74,7 +74,7 @@ const TEST = {
         }),
 
     canAccessAll: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
-        test(`can access all as ${ as }`, { tag }, async ({ page }) => {
+        test(`Navbar can access all as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, { getCurrentUser: as })
             await test.step(`Navigate`, () => page.navbar.go({ as }));
 
@@ -91,7 +91,7 @@ const TEST = {
 
 // Tests
 
-test.describe('[Navbar]', () => {
+test.describe('/annotation-campaign', () => {
     TEST.canAccessAllButAdmin({ as: 'annotator', tag: essentialTag })
     TEST.canAccessAll({ as: 'staff', tag: essentialTag })
     TEST.canAccessAll({ as: 'superuser' })

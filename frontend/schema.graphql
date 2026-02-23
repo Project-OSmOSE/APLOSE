@@ -4397,6 +4397,7 @@ type AnalysisStorageNode {
   name: String!
   path: String!
   importStatus: Status!
+  model: SpectrogramAnalysisNode
 }
 
 """Global mutation"""
@@ -4677,10 +4678,10 @@ type SubmitAnnotationTaskMutation {
 
 """"Import Analysis mutation"""
 type ImportAnalysisMutation {
-  ok: Boolean
+  analysis: SpectrogramAnalysisNode!
 }
 
 """"Import Dataset mutation"""
 type ImportDatasetMutation {
-  ok: Boolean
+  dataset: DatasetNode!
 }

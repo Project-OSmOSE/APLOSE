@@ -12,7 +12,13 @@ import {
     useCurrentPhase,
     useCurrentUser,
 } from '@/api';
-import { useGetAnnotations, useInvalidateAnnotation, useRemoveAnnotation, useValidateAnnotation } from './hooks';
+import {
+    useGetAnnotations,
+    useInvalidateAnnotation,
+    useRemoveAnnotation,
+    useUpdateAnnotation,
+    useValidateAnnotation,
+} from './hooks';
 import { useFocusCanvasOnTime } from '@/features/Annotator/Canvas';
 import { AnnotationTimeInfo } from './AnnotationTimeInfo';
 import { AnnotationFrequencyInfo } from './AnnotationFrequencyInfo';
@@ -26,6 +32,7 @@ import { type AploseNavParams, useKeyDownEvent } from '@/features/UX';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
+import { UpdateLabelModal } from '@/features/Annotator/Label/UpdateLabelModal';
 
 type Spectro = NonNullable<GetAnnotationTaskQuery['annotationSpectrogramById']>
 type Task = NonNullable<Spectro['task']>
@@ -43,7 +50,20 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
     const { annotations } = useAnnotationTask()
     const focusTime = useFocusCanvasOnTime()
     const { user } = useCurrentUser()
-    const invalidateModal = useModal(InvalidateAnnotationModal, { annotation })
+
+    const updateAnnotation = useUpdateAnnotation()
+    const updateLabel = useCallback((label: string) => {
+        if (!annotation) return;
+        updateAnnotation(annotation, { label })
+    }, [ annotation, updateAnnotation ]);
+    const labelModal = useModal(UpdateLabelModal, {
+        selected: annotation.label,
+        onUpdate: updateLabel,
+    })
+    const invalidateModal = useModal(InvalidateAnnotationModal, {
+        annotation,
+        onAskLabelChange: labelModal.open
+    })
     const dispatch = useAppDispatch();
 
     const completeInfo: CompleteInfo | undefined = useMemo(() => {
@@ -152,5 +172,6 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
             </TableContent> }
 
         { invalidateModal.element }
+        { labelModal.element }
     </Fragment>
 }

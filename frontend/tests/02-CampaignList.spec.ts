@@ -3,7 +3,7 @@ import { AnnotationPhaseType } from '../src/api/types.gql-generated';
 import { gqlURL, interceptRequests } from './utils/mock';
 import { campaign, USERS, type UserType } from './utils/mock/types';
 import type { Params } from './utils/types';
-import { AllCampaignFilters } from "../src/api";
+import { AllCampaignFilters } from '../src/api';
 
 
 // Utils
@@ -150,7 +150,8 @@ const TEST = {
       })
     }),
 }
-test.describe('[Campaign list]', () => {
+
+test.describe('/annotation-campaign', () => {
   const as: UserType = 'annotator'
 
   TEST.handleEmptyState({ as, tag: essentialTag })

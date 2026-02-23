@@ -30,6 +30,7 @@ class Dataset(BaseResolver):
 
     @property
     def node(self):
+        # pylint: disable=duplicate-code
         n = DatasetStorageNode()
         n.name = self.name
         n.path = self.path

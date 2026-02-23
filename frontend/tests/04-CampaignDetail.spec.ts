@@ -159,7 +159,7 @@ const TEST = {
 }
 
 // Tests
-test.describe('[Campaign detail]', () => {
+test.describe('/annotation-campaign/:campaignID', () => {
 
   TEST.handleEmptyState({ as: 'annotator', tag: essentialTag })
   TEST.handleEmptyState({ as: 'creator' })

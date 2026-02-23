@@ -9,6 +9,7 @@ export const UpdateLabelModal: React.FC<ModalProps & {
   selected?: string,
   onUpdate: (label: string) => void;
 }> = ({ onClose, selected, onUpdate }) => {
+  console.log('open', selected)
   const allLabels = useAppSelector(selectAllLabels)
   return <Modal onClose={ onClose }>
     <ModalHeader title="Update annotation label" onClose={ onClose }/>

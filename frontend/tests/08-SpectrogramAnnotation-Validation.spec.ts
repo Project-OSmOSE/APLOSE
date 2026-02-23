@@ -1,25 +1,25 @@
 import { annotatorTag, essentialTag, expect, type Page, test } from './utils';
 import { gqlRegex, interceptRequests } from './utils/mock';
 import {
-  boxAnnotation,
-  campaign,
-  CONFIDENCES,
-  LABELS,
-  otherPhase,
-  phase as phaseObj,
-  spectrogramAnalysis,
-  taskComment,
-  TASKS,
-  USERS,
-  type UserType,
-  weakAnnotation,
-  weakAnnotationComment,
+    boxAnnotation,
+    campaign,
+    CONFIDENCES,
+    LABELS,
+    otherPhase,
+    phase as phaseObj,
+    spectrogramAnalysis,
+    taskComment,
+    TASKS,
+    USERS,
+    type UserType,
+    weakAnnotation,
+    weakAnnotationComment,
 } from './utils/mock/types';
 import {
-  type AnnotationCommentInput,
-  type AnnotationInput,
-  AnnotationPhaseType,
-  AnnotationType,
+    type AnnotationCommentInput,
+    type AnnotationInput,
+    AnnotationPhaseType,
+    AnnotationType,
 } from '../src/api/types.gql-generated';
 import type { SubmitTaskMutationVariables } from '../src/api/annotation-task/annotation-task.generated';
 import type { Params } from './utils/types';
@@ -274,7 +274,7 @@ const TEST = {
 
 
 // Tests
-test.describe('[Spectrogram] Annotation (in)validation', { tag: [ annotatorTag, essentialTag ] }, () => {
+test.describe('/annotation-campaign/:campaignID/phase/:phaseType/spectrogram/:spectrogramID',{ tag: [ annotatorTag, essentialTag ] }, () => {
   const as: UserType = 'annotator'
 
   TEST.canSendSubmittedVerification({ as, method: 'mouse', tag: essentialTag })

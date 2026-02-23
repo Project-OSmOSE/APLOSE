@@ -1,21 +1,21 @@
 import { annotatorTag, essentialTag, expect, test } from './utils';
 import { gqlURL, interceptRequests } from './utils/mock';
 import {
-  campaign,
-  CONFIDENCES,
-  LABELS,
-  phase as phaseObj,
-  spectrogramAnalysis,
-  taskComment,
-  TASKS,
-  USERS,
-  type UserType,
+    campaign,
+    CONFIDENCES,
+    LABELS,
+    phase as phaseObj,
+    spectrogramAnalysis,
+    taskComment,
+    TASKS,
+    USERS,
+    type UserType,
 } from './utils/mock/types';
 import {
-  type AnnotationCommentInput,
-  type AnnotationInput,
-  AnnotationPhaseType,
-  AnnotationType,
+    type AnnotationCommentInput,
+    type AnnotationInput,
+    AnnotationPhaseType,
+    AnnotationType,
 } from '../src/api/types.gql-generated';
 import type { SubmitTaskMutationVariables } from '../src/api/annotation-task/annotation-task.generated';
 import type { Params } from './utils/types';
@@ -153,7 +153,7 @@ const TEST = {
 
 
 // Tests
-test.describe('[Spectrogram] Weak annotations', { tag: [ annotatorTag, essentialTag ] }, () => {
+test.describe('/annotation-campaign/:campaignID/phase/:phaseType/spectrogram/:spectrogramID',{ tag: [ annotatorTag, essentialTag ] }, () => {
   const as: UserType = 'annotator'
 
   TEST.canAddWeakAnnotation({ as, phase: AnnotationPhaseType.Annotation, method: 'mouse' })

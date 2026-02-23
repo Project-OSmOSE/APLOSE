@@ -10,6 +10,9 @@
   svg[color=success] {
     color: var(--ion-color-success);
   }
+  svg[color=medium] {
+    color: var(--ion-color-medium);
+  }
 
   > ion-button:nth-child(2) {
     --padding-start: 0;

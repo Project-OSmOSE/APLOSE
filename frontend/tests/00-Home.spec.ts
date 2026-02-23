@@ -33,7 +33,7 @@ const TEST = {
 
 // Tests
 
-test.describe('[Home]', () => {
+test.describe('/', () => {
 
     TEST.canNavigate({ tag: essentialTag })
 

@@ -158,7 +158,7 @@ const TEST = {
 
 // Tests
 
-test.describe('[Phase edit annotators]', () => {
+test.describe('/annotation-campaign/:campaignID/phase/:phaseType/edit-annotators', () => {
   const as: UserType = 'creator';
 
   TEST.handleEmptyState({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })

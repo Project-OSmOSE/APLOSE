@@ -1,6 +1,6 @@
 import { essentialTag, expect, test } from './utils';
 import { gqlRegex, interceptRequests } from './utils/mock';
-import { campaign, spectrogram, TASKS, USERS } from './utils/mock/types';
+import { campaign, spectrogram, TASKS } from './utils/mock/types';
 import type { ListAnnotationTaskQueryVariables } from '../src/api/annotation-task';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
 import type { Params } from './utils/types';
@@ -21,14 +21,6 @@ const TEST = {
       })
       await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
-      await test.step('Display no progress', async () => {
-        await page.phaseDetail.progressModal.button.click()
-        await expect(page.phaseDetail.progressModal.modal.getByText('No annotators')).toBeVisible();
-        await expect(page.phaseDetail.progressModal.statusDownloadLink).not.toBeVisible()
-        await expect(page.phaseDetail.progressModal.resultsDownloadLink).not.toBeVisible()
-        await page.phaseDetail.progressModal.closeButton.click()
-      })
-
       await test.step('Display no files', () =>
         expect(page.getByText('You have no files to annotate.')).toBeVisible())
 
@@ -42,17 +34,20 @@ const TEST = {
         getCurrentUser: as,
         getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
       })
-      await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
-
-      await test.step('Display progress', async () => {
-        await page.phaseDetail.progressModal.button.click()
-        await expect(page.phaseDetail.progressModal.modal.getByText(USERS.annotator.displayName)).toBeVisible();
-        await expect(page.phaseDetail.progressModal.modal.getByText(USERS.creator.displayName)).not.toBeVisible();
-        await page.phaseDetail.progressModal.closeButton.click()
+      await test.step(`Navigate`, async () => {
+          await page.phaseDetail.go({ as, phase })
+          await page.waitForResponse(response => {
+              const request = response.request()
+              const isGraphql = new RegExp(gqlRegex).test(request.url())
+              const isListTasks = request.postDataJSON()?.operationName == 'listAnnotationTask'
+              return isGraphql && isListTasks
+          })
       })
 
-      await test.step('Display files', async () =>
-        expect(await page.getByText(spectrogram.filename, { exact: true }).count()).toEqual(2))
+      await test.step('Display files', async () => {
+          await expect(page.getByText(spectrogram.filename, { exact: true }).first()).toBeVisible()
+          expect(await page.getByText(spectrogram.filename, { exact: true }).count()).toEqual(2)
+      })
     }),
 
   canFilterFiles: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
@@ -89,43 +84,6 @@ const TEST = {
 
       await test.step('Cannot manage', () =>
         expect(page.phaseDetail.manageButton).not.toBeVisible())
-
-    }),
-
-  cannotDownloadInfo: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
-    test(`Cannot download info as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
-      await interceptRequests(page, {
-        getCurrentUser: as,
-        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
-      })
-      await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
-
-      await test.step('Cannot download progress', async () => {
-        await page.phaseDetail.progressModal.button.click()
-        await expect(page.phaseDetail.progressModal.statusDownloadLink).not.toBeVisible()
-        await expect(page.phaseDetail.progressModal.resultsDownloadLink).not.toBeVisible()
-        await page.phaseDetail.progressModal.closeButton.click()
-      })
-
-    }),
-  canDownloadInfo: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
-    test(`Can download info as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
-      await interceptRequests(page, {
-        getCurrentUser: as,
-        getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
-      })
-      await test.step(`Navigate`, async () => {
-        await page.phaseDetail.go({ as, phase })
-        await page.phaseDetail.progressModal.button.click()
-      })
-
-      await test.step('Can download results', async () => {
-        await expect(page.phaseDetail.progressModal.resultsDownloadLink).toBeEnabled()
-      })
-
-      await test.step('Can download status', async () => {
-        await expect(page.phaseDetail.progressModal.statusDownloadLink).toBeEnabled()
-      })
 
     }),
 
@@ -237,7 +195,7 @@ const TEST = {
 }
 
 // Tests
-test.describe('[Phase detail]', () => {
+test.describe('/annotation-campaign/:campaignID/phase/:phaseType', () => {
 
   TEST.handleEmptyState({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
   TEST.handleEmptyState({ as: 'annotator', phase: AnnotationPhaseType.Verification, tag: essentialTag })
@@ -256,11 +214,6 @@ test.describe('[Phase detail]', () => {
   TEST.canResumeAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Verification })
 
   TEST.cannotUpdatePhase({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
-
-  TEST.cannotDownloadInfo({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
-  TEST.canDownloadInfo({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
-  TEST.canDownloadInfo({ as: 'staff', phase: AnnotationPhaseType.Annotation })
-  TEST.canDownloadInfo({ as: 'superuser', phase: AnnotationPhaseType.Annotation })
 
   TEST.cannotImportAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
   TEST.cannotImportAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Verification })

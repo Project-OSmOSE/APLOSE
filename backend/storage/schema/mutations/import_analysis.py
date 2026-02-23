@@ -1,11 +1,13 @@
+import graphene
 from django.conf import settings
 from django.db import transaction
 from django.db.models import Min, Max
-from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from django_extension.schema.errors import NotFoundError
-from graphene import Boolean, Mutation, String
+from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
+from graphene import Mutation, String
 
 from backend.api.models import Dataset, SpectrogramAnalysis, Spectrogram
+from backend.api.schema import SpectrogramAnalysisNode
 from backend.storage.schema.resolver import Dataset as DatasetResolver, get_resolver
 
 __all__ = ["ImportAnalysisMutationField", "ImportAnalysisMutation"]
@@ -18,7 +20,7 @@ class ImportAnalysisMutation(Mutation):
         dataset_path = String(required=True)
         name = String(required=True)
 
-    ok = Boolean()
+    analysis = graphene.Field(SpectrogramAnalysisNode, required=True)
 
     @GraphQLResolve(permission=GraphQLPermissions.STAFF_OR_SUPERUSER)
     @transaction.atomic
@@ -58,7 +60,7 @@ class ImportAnalysisMutation(Mutation):
         analysis.end = info["end"]
         analysis.save()
 
-        return ImportAnalysisMutation(ok=True)
+        return ImportAnalysisMutation(analysis=analysis)
 
 
 ImportAnalysisMutationField = ImportAnalysisMutation.Field()
