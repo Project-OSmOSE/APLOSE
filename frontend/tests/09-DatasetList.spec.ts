@@ -14,7 +14,6 @@ const TEST = {
       await interceptRequests(page, {
         getCurrentUser: as,
         listDatasets: 'empty',
-        listAvailableDatasetsForImport: 'empty',
       })
       await test.step(`Navigate`, () => page.datasets.go({ as }));
 
