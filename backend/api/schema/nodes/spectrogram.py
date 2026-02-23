@@ -1,4 +1,4 @@
-from graphene import Int
+from graphene import Float
 
 from backend.api.models import Spectrogram
 from backend.api.schema.filter_sets import SpectrogramFilterSet
@@ -8,7 +8,7 @@ from backend.utils.schema.types import BaseObjectType, BaseNode
 class SpectrogramNode(BaseObjectType):
     """Spectrogram schema"""
 
-    duration = Int(required=True)
+    duration = Float(required=True)
 
     class Meta:
         model = Spectrogram

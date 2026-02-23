@@ -837,7 +837,7 @@ export type AnnotationSpectrogramNode = BaseNode & {
   annotationTasks: AnnotationTaskNodeConnection;
   annotations: AnnotationNodeConnection;
   audioPath?: Maybe<Scalars['String']['output']>;
-  duration: Scalars['Int']['output'];
+  duration: Scalars['Float']['output'];
   end: Scalars['DateTime']['output'];
   filename: Scalars['String']['output'];
   format: FileFormatNode;
@@ -7014,7 +7014,7 @@ export type SpectrogramNode = BaseNode & {
   annotationComments: AnnotationCommentNodeConnection;
   annotationTasks: AnnotationTaskNodeConnection;
   annotations: AnnotationNodeConnection;
-  duration: Scalars['Int']['output'];
+  duration: Scalars['Float']['output'];
   end: Scalars['DateTime']['output'];
   filename: Scalars['String']['output'];
   format: FileFormatNode;

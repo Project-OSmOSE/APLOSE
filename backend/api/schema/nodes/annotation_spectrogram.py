@@ -59,7 +59,7 @@ def get_task(
 
 class AnnotationSpectrogramNode(BaseObjectType):
 
-    duration = graphene.Int(required=True)
+    duration = graphene.Float(required=True)
     annotation_comments = AuthenticatedDjangoConnectionField(AnnotationCommentNode)
 
     class Meta:
