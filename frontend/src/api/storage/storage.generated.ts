@@ -6,21 +6,21 @@ export type BrowseStorageQueryVariables = Types.Exact<{
 }>;
 
 
-export type BrowseStorageQuery = { __typename?: 'Query', browse?: Array<{ __typename: 'AnalysisStorageNode', name: string, path: string, importStatus: Types.Status } | { __typename: 'DatasetStorageNode', name: string, path: string, importStatus: Types.Status, model?: { __typename?: 'DatasetNode', id: string } | null } | { __typename: 'FolderNode', name: string, path: string } | null> | null };
+export type BrowseStorageQuery = { __typename?: 'Query', browse?: Array<{ __typename: 'AnalysisStorageNode', name: string, path: string, importStatus: Types.Status, model?: { __typename?: 'SpectrogramAnalysisNode', annotationCampaigns: { __typename?: 'AnnotationCampaignNodeConnection', edges: Array<{ __typename?: 'AnnotationCampaignNodeEdge', node?: { __typename?: 'AnnotationCampaignNode', isArchived: boolean } | null } | null> } } | null } | { __typename: 'DatasetStorageNode', name: string, path: string, importStatus: Types.Status, model?: { __typename?: 'DatasetNode', id: string, annotationCampaigns: { __typename?: 'AnnotationCampaignNodeConnection', edges: Array<{ __typename?: 'AnnotationCampaignNodeEdge', node?: { __typename?: 'AnnotationCampaignNode', isArchived: boolean } | null } | null> } } | null } | { __typename: 'FolderNode', name: string, path: string } | null> | null };
 
 export type SearchStorageQueryVariables = Types.Exact<{
   path: Types.Scalars['String']['input'];
 }>;
 
 
-export type SearchStorageQuery = { __typename?: 'Query', search?: { __typename: 'AnalysisStorageNode', name: string, path: string, importStatus: Types.Status } | { __typename: 'DatasetStorageNode', name: string, path: string, importStatus: Types.Status, model?: { __typename?: 'DatasetNode', id: string } | null } | { __typename: 'FolderNode', name: string, path: string } | null };
+export type SearchStorageQuery = { __typename?: 'Query', search?: { __typename: 'AnalysisStorageNode', name: string, path: string, importStatus: Types.Status, model?: { __typename?: 'SpectrogramAnalysisNode', annotationCampaigns: { __typename?: 'AnnotationCampaignNodeConnection', edges: Array<{ __typename?: 'AnnotationCampaignNodeEdge', node?: { __typename?: 'AnnotationCampaignNode', isArchived: boolean } | null } | null> } } | null } | { __typename: 'DatasetStorageNode', name: string, path: string, importStatus: Types.Status, model?: { __typename?: 'DatasetNode', id: string, annotationCampaigns: { __typename?: 'AnnotationCampaignNodeConnection', edges: Array<{ __typename?: 'AnnotationCampaignNodeEdge', node?: { __typename?: 'AnnotationCampaignNode', isArchived: boolean } | null } | null> } } | null } | { __typename: 'FolderNode', name: string, path: string } | null };
 
 export type ImportDatasetFromStorageMutationVariables = Types.Exact<{
   path: Types.Scalars['String']['input'];
 }>;
 
 
-export type ImportDatasetFromStorageMutation = { __typename?: 'Mutation', importDataset?: { __typename?: 'ImportDatasetMutation', ok?: boolean | null } | null };
+export type ImportDatasetFromStorageMutation = { __typename?: 'Mutation', importDataset?: { __typename?: 'ImportDatasetMutation', dataset: { __typename?: 'DatasetNode', id: string } } | null };
 
 export type ImportAnalysisFromStorageMutationVariables = Types.Exact<{
   name: Types.Scalars['String']['input'];
@@ -28,7 +28,7 @@ export type ImportAnalysisFromStorageMutationVariables = Types.Exact<{
 }>;
 
 
-export type ImportAnalysisFromStorageMutation = { __typename?: 'Mutation', importAnalysis?: { __typename?: 'ImportAnalysisMutation', ok?: boolean | null } | null };
+export type ImportAnalysisFromStorageMutation = { __typename?: 'Mutation', importAnalysis?: { __typename?: 'ImportAnalysisMutation', analysis: { __typename?: 'SpectrogramAnalysisNode', id: string } } | null };
 
 
 export const BrowseStorageDocument = `
@@ -46,6 +46,13 @@ export const BrowseStorageDocument = `
       importStatus
       model {
         id
+        annotationCampaigns {
+          edges {
+            node {
+              isArchived
+            }
+          }
+        }
       }
     }
     ... on AnalysisStorageNode {
@@ -53,6 +60,15 @@ export const BrowseStorageDocument = `
       name
       path
       importStatus
+      model {
+        annotationCampaigns {
+          edges {
+            node {
+              isArchived
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -72,6 +88,13 @@ export const SearchStorageDocument = `
       importStatus
       model {
         id
+        annotationCampaigns {
+          edges {
+            node {
+              isArchived
+            }
+          }
+        }
       }
     }
     ... on AnalysisStorageNode {
@@ -79,6 +102,15 @@ export const SearchStorageDocument = `
       name
       path
       importStatus
+      model {
+        annotationCampaigns {
+          edges {
+            node {
+              isArchived
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -86,14 +118,18 @@ export const SearchStorageDocument = `
 export const ImportDatasetFromStorageDocument = `
     mutation importDatasetFromStorage($path: String!) {
   importDataset(path: $path) {
-    ok
+    dataset {
+      id
+    }
   }
 }
     `;
 export const ImportAnalysisFromStorageDocument = `
     mutation importAnalysisFromStorage($name: String!, $datasetPath: String!) {
   importAnalysis(name: $name, datasetPath: $datasetPath) {
-    ok
+    analysis {
+      id
+    }
   }
 }
     `;

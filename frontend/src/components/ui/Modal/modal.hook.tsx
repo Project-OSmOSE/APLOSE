@@ -19,7 +19,6 @@ export const useModal = (component: React.FC<ModalProps & any>, extraArgs?: obje
     }, [ setIsOpen, component ])
 
     return useMemo(() => {
-        console.log('useModal', isOpen, component.name, extraArgs)
         return {
             isOpen,
             toggle,

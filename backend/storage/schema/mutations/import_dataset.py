@@ -1,9 +1,11 @@
+import graphene
 from django.conf import settings
 from django.db import transaction
 from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
-from graphene import Boolean, Mutation, String
+from graphene import Mutation, String
 
 from backend.api.models import Dataset
+from backend.api.schema import DatasetNode
 from backend.storage.schema.resolver import Dataset as DatasetResolver, get_resolver
 from .import_analysis import ImportAnalysisMutation
 
@@ -16,7 +18,7 @@ class ImportDatasetMutation(Mutation):
     class Arguments:
         path = String(required=True)
 
-    ok = Boolean()
+    dataset = graphene.Field(DatasetNode, required=True)
 
     @GraphQLResolve(permission=GraphQLPermissions.STAFF_OR_SUPERUSER)
     @transaction.atomic
@@ -25,7 +27,7 @@ class ImportDatasetMutation(Mutation):
         storage_dataset: DatasetResolver = get_resolver(
             settings.DATASET_EXPORT_PATH, path
         )
-        Dataset.objects.get_or_create(
+        dataset, _ = Dataset.objects.get_or_create(
             name=storage_dataset.name,
             path=path,
             owner=info.context.user,
@@ -39,7 +41,7 @@ class ImportDatasetMutation(Mutation):
                 name=analysis.name,
             )
 
-        return ImportDatasetMutation(ok=True)
+        return ImportDatasetMutation(dataset=dataset)
 
 
 ImportDatasetMutationField = ImportDatasetMutation.Field()

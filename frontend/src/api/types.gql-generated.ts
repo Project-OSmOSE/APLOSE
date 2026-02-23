@@ -111,6 +111,7 @@ export type AcousticFeaturesNode = ExtendedInterface & {
 export type AnalysisStorageNode = {
   __typename?: 'AnalysisStorageNode';
   importStatus: Status;
+  model?: Maybe<SpectrogramAnalysisNode>;
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
 };
@@ -2940,13 +2941,13 @@ export type HydrophoneSpecificationNode = ExtendedInterface & {
 /** "Import Analysis mutation */
 export type ImportAnalysisMutation = {
   __typename?: 'ImportAnalysisMutation';
-  ok?: Maybe<Scalars['Boolean']['output']>;
+  analysis: SpectrogramAnalysisNode;
 };
 
 /** "Import Dataset mutation */
 export type ImportDatasetMutation = {
   __typename?: 'ImportDatasetMutation';
-  ok?: Maybe<Scalars['Boolean']['output']>;
+  dataset: DatasetNode;
 };
 
 export type InstitutionNode = ExtendedInterface & {

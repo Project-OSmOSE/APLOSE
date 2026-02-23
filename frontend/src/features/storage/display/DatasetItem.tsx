@@ -1,8 +1,8 @@
 import React, { Fragment, type MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Status, type StorageDataset, useImportDatasetFromStorage } from '@/api';
 import { IonButton, IonNote, IonSpinner } from '@ionic/react';
-import { useToast } from '@/components/ui';
-import { AltArrowDown, AltArrowRight, CheckRead, FolderFavouriteStar, Unread } from '@solar-icons/react';
+import { TooltipOverlay, useToast } from '@/components/ui';
+import { AltArrowDown, AltArrowRight, CheckRead, FolderFavouriteStar, InfoCircle, Unread } from '@solar-icons/react';
 import { DatasetName } from '@/features/Dataset';
 import styles from './styles.module.scss';
 import { ItemList } from './ItemList';
@@ -42,6 +42,17 @@ export const DatasetItem: React.FC<{
         return <Fragment/>
     }, [ dataset, isLoading ])
 
+    const inUseWarning = useMemo(() => {
+        const campaigns = dataset.model?.annotationCampaigns.edges
+            .map(e => e?.node)
+            .filter(n => !!n && !n.isArchived) ?? []
+        if (campaigns.length > 0)
+            return <TooltipOverlay tooltipContent={ `Dataset is currently used in ${ campaigns.length } campaigns.` }>
+                <InfoCircle size={ 24 } color='medium'/>
+            </TooltipOverlay>
+        return <Fragment/>
+    }, [ dataset ])
+
     useEffect(() => {
         if (error) toast.raiseError({ error: error })
     }, [ error ]);
@@ -56,6 +67,7 @@ export const DatasetItem: React.FC<{
             <FolderFavouriteStar size={ 24 } weight="BoldDuotone"/>
             <DatasetName name={ dataset.name } id={ dataset.model?.id } link/>
             { importStatusIcon }
+            { inUseWarning }
             { !fixedOpen && <IonNote>{ isOpen ? <AltArrowDown/> : <AltArrowRight/> }</IonNote> }
             { canImport && <IonButton size="small" fill="outline" onClick={ download }>
                 Import

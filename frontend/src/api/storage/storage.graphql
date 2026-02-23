@@ -12,6 +12,13 @@ query browseStorage($path: String) {
             importStatus
             model {
                 id
+                annotationCampaigns {
+                    edges {
+                        node {
+                            isArchived
+                        }
+                    }
+                }
             }
         }
         ... on AnalysisStorageNode {
@@ -19,6 +26,15 @@ query browseStorage($path: String) {
             name
             path
             importStatus
+            model {
+                annotationCampaigns {
+                    edges {
+                        node {
+                            isArchived
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -37,6 +53,13 @@ query searchStorage($path: String!) {
             importStatus
             model {
                 id
+                annotationCampaigns {
+                    edges {
+                        node {
+                            isArchived
+                        }
+                    }
+                }
             }
         }
         ... on AnalysisStorageNode {
@@ -44,18 +67,31 @@ query searchStorage($path: String!) {
             name
             path
             importStatus
+            model {
+                annotationCampaigns {
+                    edges {
+                        node {
+                            isArchived
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
 mutation importDatasetFromStorage($path: String!) {
     importDataset(path: $path) {
-        ok
+        dataset {
+            id
+        }
     }
 }
 
 mutation importAnalysisFromStorage($name: String!, $datasetPath: String!) {
     importAnalysis(name: $name, datasetPath: $datasetPath) {
-        ok
+        analysis {
+            id
+        }
     }
 }

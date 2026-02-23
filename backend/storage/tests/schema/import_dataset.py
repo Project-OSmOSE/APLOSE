@@ -15,7 +15,9 @@ LEGACY_GOOD = Path("legacy/good")
 QUERY = """
 mutation ($path: String!) {
     importDataset(path: $path) {
-        ok
+        dataset {
+            id
+        }
     }
 }
 """
@@ -61,7 +63,7 @@ class ImportDatasetTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
         content = json.loads(response.content)["data"]["importDataset"]
-        self.assertTrue(content["ok"])
+        self.assertIsNotNone(content["dataset"])
 
         # Check amount of new data
         self.assertEqual(Dataset.objects.count(), previous_dataset_count + 1)
@@ -75,6 +77,7 @@ class ImportDatasetTestCase(ExtendedTestCase):
 
         # Check last dataset
         dataset: Dataset = Dataset.objects.order_by("pk").last()
+        self.assertEqual(content["dataset"]["id"], str(dataset.id))
         self.assertEqual(dataset.name, "tp_osekit")
         self.assertEqual(dataset.path, "tp_osekit")
         self.assertFalse(dataset.legacy)
@@ -93,7 +96,7 @@ class ImportDatasetTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
         content = json.loads(response.content)["data"]["importDataset"]
-        self.assertTrue(content["ok"])
+        self.assertIsNotNone(content["dataset"])
 
         # Check amount of new data
         self.assertEqual(Dataset.objects.count(), previous_dataset_count + 1)
@@ -107,6 +110,7 @@ class ImportDatasetTestCase(ExtendedTestCase):
 
         # Check last dataset
         dataset: Dataset = Dataset.objects.order_by("pk").last()
+        self.assertEqual(content["dataset"]["id"], str(dataset.id))
         self.assertEqual(dataset.name, "gliderSPAmsDemo")
         self.assertEqual(dataset.path, "gliderSPAmsDemo")
         self.assertTrue(dataset.legacy)
