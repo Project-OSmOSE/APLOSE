@@ -16,7 +16,9 @@ LEGACY_GOOD_WITH_SCALES = Path("legacy/Dual_LF_HF_scale")
 QUERY = """
 mutation ($name: String!, $datasetPath: String!) {
     importAnalysis(name: $name, datasetPath: $datasetPath) {
-        ok
+        analysis {
+            id
+        }
     }
 }
 """
@@ -67,7 +69,7 @@ class ImportAnalysisTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
         content = json.loads(response.content)["data"]["importAnalysis"]
-        self.assertTrue(content["ok"])
+        self.assertIsNotNone(content["analysis"])
 
         # Check amount of new data
         self.assertEqual(
@@ -82,6 +84,7 @@ class ImportAnalysisTestCase(ExtendedTestCase):
         analysis: SpectrogramAnalysis = SpectrogramAnalysis.objects.order_by(
             "pk"
         ).last()
+        self.assertEqual(content["analysis"]["id"], str(analysis.id))
         self.assertEqual(analysis.name, "my_first_analysis")
         self.assertEqual(analysis.path, "processed/my_first_analysis")
         self.assertFalse(analysis.legacy)
@@ -98,7 +101,7 @@ class ImportAnalysisTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
         content = json.loads(response.content)["data"]["importAnalysis"]
-        self.assertTrue(content["ok"])
+        self.assertIsNotNone(content["analysis"])
 
         # Check amount of new data
         self.assertEqual(
@@ -113,6 +116,7 @@ class ImportAnalysisTestCase(ExtendedTestCase):
         analysis: SpectrogramAnalysis = SpectrogramAnalysis.objects.order_by(
             "pk"
         ).last()
+        self.assertEqual(content["analysis"]["id"], str(analysis.id))
         self.assertEqual(analysis.name, "4096_512_85")
         self.assertEqual(analysis.path, "processed/spectrogram/600_480/4096_512_85")
         self.assertTrue(analysis.legacy)
@@ -131,7 +135,7 @@ class ImportAnalysisTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
         content = json.loads(response.content)["data"]["importAnalysis"]
-        self.assertTrue(content["ok"])
+        self.assertIsNotNone(content["analysis"])
 
         # Check amount of new data
         self.assertEqual(
@@ -146,6 +150,7 @@ class ImportAnalysisTestCase(ExtendedTestCase):
         analysis: SpectrogramAnalysis = SpectrogramAnalysis.objects.order_by(
             "pk"
         ).last()
+        self.assertEqual(content["analysis"]["id"], str(analysis.id))
         self.assertEqual(
             analysis.legacy_configuration.multi_linear_frequency_scale.name,
             "dual_lf_hf",
