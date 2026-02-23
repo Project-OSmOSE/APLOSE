@@ -3,18 +3,18 @@ import { type StorageAnalysis, type StorageDataset, type StorageFolder } from '.
 
 export const storageFolder: StorageFolder = {
     __typename: 'FolderNode',
-    name: 'test',
+    name: 'Storage folder',
     path: 'test',
 }
 export const storageDataset: StorageDataset = {
     __typename: 'DatasetStorageNode',
-    name: 'dataset',
+    name: 'Storage dataset',
     path: 'test/dataset',
     importStatus: Status.Available,
 }
 export const storageAnalysis: StorageAnalysis = {
     __typename: 'AnalysisStorageNode',
-    name: 'test_analysis',
+    name: 'Storage analysis',
     path: 'test/dataset/processed/test_analysis',
     importStatus: Status.Available,
 }
