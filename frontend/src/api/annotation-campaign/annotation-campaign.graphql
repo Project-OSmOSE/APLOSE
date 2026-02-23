@@ -166,6 +166,9 @@ mutation createCampaign(
     }) {
         annotationCampaign {
             id
+            dataset {
+                path
+            }
         }
         errors {
             field

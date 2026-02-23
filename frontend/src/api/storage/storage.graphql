@@ -83,7 +83,7 @@ query searchStorage($path: String!) {
 mutation importDatasetFromStorage($path: String!) {
     importDataset(path: $path) {
         dataset {
-            id
+            path
         }
     }
 }
@@ -91,7 +91,9 @@ mutation importDatasetFromStorage($path: String!) {
 mutation importAnalysisFromStorage($name: String!, $datasetPath: String!) {
     importAnalysis(name: $name, datasetPath: $datasetPath) {
         analysis {
-            id
+            dataset {
+                path
+            }
         }
     }
 }

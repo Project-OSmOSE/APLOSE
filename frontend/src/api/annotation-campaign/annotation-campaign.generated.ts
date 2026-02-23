@@ -33,7 +33,7 @@ export type CreateCampaignMutationVariables = Types.Exact<{
 }>;
 
 
-export type CreateCampaignMutation = { __typename?: 'Mutation', createAnnotationCampaign?: { __typename?: 'CreateAnnotationCampaignMutationPayload', annotationCampaign?: { __typename?: 'AnnotationCampaignNode', id: string } | null, errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }> } | null };
+export type CreateCampaignMutation = { __typename?: 'Mutation', createAnnotationCampaign?: { __typename?: 'CreateAnnotationCampaignMutationPayload', annotationCampaign?: { __typename?: 'AnnotationCampaignNode', id: string, dataset: { __typename?: 'DatasetNode', path: string } } | null, errors: Array<{ __typename?: 'ErrorType', field: string, messages: Array<string> }> } | null };
 
 export type ArchiveCampaignMutationVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
@@ -198,6 +198,9 @@ export const CreateCampaignDocument = `
   ) {
     annotationCampaign {
       id
+      dataset {
+        path
+      }
     }
     errors {
       field

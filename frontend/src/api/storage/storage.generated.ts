@@ -20,7 +20,7 @@ export type ImportDatasetFromStorageMutationVariables = Types.Exact<{
 }>;
 
 
-export type ImportDatasetFromStorageMutation = { __typename?: 'Mutation', importDataset?: { __typename?: 'ImportDatasetMutation', dataset: { __typename?: 'DatasetNode', id: string } } | null };
+export type ImportDatasetFromStorageMutation = { __typename?: 'Mutation', importDataset?: { __typename?: 'ImportDatasetMutation', dataset: { __typename?: 'DatasetNode', path: string } } | null };
 
 export type ImportAnalysisFromStorageMutationVariables = Types.Exact<{
   name: Types.Scalars['String']['input'];
@@ -28,7 +28,7 @@ export type ImportAnalysisFromStorageMutationVariables = Types.Exact<{
 }>;
 
 
-export type ImportAnalysisFromStorageMutation = { __typename?: 'Mutation', importAnalysis?: { __typename?: 'ImportAnalysisMutation', analysis: { __typename?: 'SpectrogramAnalysisNode', id: string } } | null };
+export type ImportAnalysisFromStorageMutation = { __typename?: 'Mutation', importAnalysis?: { __typename?: 'ImportAnalysisMutation', analysis: { __typename?: 'SpectrogramAnalysisNode', dataset: { __typename?: 'DatasetNode', path: string } } } | null };
 
 
 export const BrowseStorageDocument = `
@@ -119,7 +119,7 @@ export const ImportDatasetFromStorageDocument = `
     mutation importDatasetFromStorage($path: String!) {
   importDataset(path: $path) {
     dataset {
-      id
+      path
     }
   }
 }
@@ -128,7 +128,9 @@ export const ImportAnalysisFromStorageDocument = `
     mutation importAnalysisFromStorage($name: String!, $datasetPath: String!) {
   importAnalysis(name: $name, datasetPath: $datasetPath) {
     analysis {
-      id
+      dataset {
+        path
+      }
     }
   }
 }
