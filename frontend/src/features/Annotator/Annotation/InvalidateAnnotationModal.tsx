@@ -1,74 +1,58 @@
 import React, { Fragment, useCallback } from 'react';
-import { Button, Modal, ModalHeader, useModal } from '@/components/ui';
+import { Button, Modal, ModalHeader, type ModalProps } from '@/components/ui';
 import { Annotation, focusAnnotation } from './slice'
 import { AnnotationType } from '@/api';
-import { useInvalidateAnnotation, useUpdateAnnotation } from './hooks';
-import { UpdateLabelModal } from '@/features/Labels';
-import { createPortal } from 'react-dom';
+import { useInvalidateAnnotation } from './hooks';
 import { useAppDispatch } from '@/features/App';
 
-export const InvalidateAnnotationModal: React.FC<{
-  isOpen: boolean,
-  onClose: () => void;
-  annotation: Annotation
-}> = ({ onClose, annotation, isOpen }) => {
-  const updateAnnotation = useUpdateAnnotation()
-  const invalidate = useInvalidateAnnotation()
-  const labelModal = useModal()
-  const dispatch = useAppDispatch();
+export const InvalidateAnnotationModal: React.FC<ModalProps & {
+    annotation: Annotation,
+    onAskLabelChange: () => void
+}> = ({ onClose, annotation, onAskLabelChange }) => {
+    const invalidate = useInvalidateAnnotation()
 
-  const move = useCallback(() => {
-    onClose();
-    dispatch(focusAnnotation(annotation))
-  }, [ onClose, dispatch, annotation ]);
+    const dispatch = useAppDispatch();
 
-  const askUpdateLabel = useCallback(() => {
-    onClose();
-    dispatch(focusAnnotation(annotation))
-    labelModal.open()
-  }, [ labelModal, dispatch, annotation ]);
+    const move = useCallback(() => {
+        onClose();
+        dispatch(focusAnnotation(annotation))
+    }, [ onClose, dispatch, annotation ]);
 
-  const updateLabel = useCallback((label: string) => {
-    if (!annotation) return;
-    updateAnnotation(annotation, { label })
-  }, [ annotation, updateAnnotation ]);
+    const askUpdateLabel = useCallback(() => {
+        dispatch(focusAnnotation(annotation))
+        onAskLabelChange()
+        onClose();
+    }, [ dispatch, annotation, onClose, onAskLabelChange ]);
 
-  const remove = useCallback(() => {
-    onClose()
-    invalidate(annotation)
-  }, [ onClose, invalidate, annotation ]);
+    const remove = useCallback(() => {
+        onClose()
+        invalidate(annotation)
+    }, [ onClose, invalidate, annotation ]);
 
-  return <Fragment>
-    { isOpen && createPortal(<Modal onClose={ onClose }>
-      <ModalHeader title="Invalidate a result" onClose={ onClose }/>
-      <h5>Why do you want to invalidate this result?</h5>
+    return <Modal onClose={ onClose }>
+            <ModalHeader title="Invalidate a result" onClose={ onClose }/>
+            <h5>Why do you want to invalidate this result?</h5>
 
-      <div>
-        { annotation.type !== AnnotationType.Weak && <Fragment>
-            <p>The position or dimension of the annotation is incorrect</p>
-            <Button fill="outline" onClick={ move }>
-                Move or resize
-            </Button>
-        </Fragment> }
-      </div>
-      <div>
-        <p>The label is incorrect</p>
-        <Button fill="outline" onClick={ askUpdateLabel }>
-          Change the label
-        </Button>
-      </div>
-      <div>
-        <p>The annotation shouldn't exist</p>
-        <Button fill="outline" onClick={ remove }>
-          Remove
-        </Button>
-      </div>
+            <div>
+                { annotation.type !== AnnotationType.Weak && <Fragment>
+                    <p>The position or dimension of the annotation is incorrect</p>
+                    <Button fill="outline" onClick={ move }>
+                        Move or resize
+                    </Button>
+                </Fragment> }
+            </div>
+            <div>
+                <p>The label is incorrect</p>
+                <Button fill="outline" onClick={ askUpdateLabel }>
+                    Change the label
+                </Button>
+            </div>
+            <div>
+                <p>The annotation shouldn't exist</p>
+                <Button fill="outline" onClick={ remove }>
+                    Remove
+                </Button>
+            </div>
 
-    </Modal>, document.body) }
-
-    <UpdateLabelModal isModalOpen={ labelModal.isOpen }
-                      onClose={ labelModal.close }
-                      selected={ annotation.label }
-                      onUpdate={ updateLabel }/>
-  </Fragment>
+        </Modal>
 }

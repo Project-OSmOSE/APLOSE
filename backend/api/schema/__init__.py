@@ -18,15 +18,11 @@ from .nodes import (
     SpectrogramAnalysisNode,
 )
 from .queries import (
-    AllAnalysisForImportField,
-    AllDatasetForImportField,
     AllAnnotationSpectrogramsField,
     AnnotationPhaseByCampaignPhase,
     AnnotationLabelsForDeploymentIdField,
 )
 from .mutations import (
-    ImportAnalysisMutation,
-    ImportDatasetMutation,
     CreateAnnotationCampaignMutation,
     UpdateAnnotationCampaignMutation,
     UpdateAnnotationPhaseFileRangesMutation,
@@ -41,12 +37,6 @@ from .mutations import (
 
 class APIMutation(graphene.ObjectType):
     """API GraphQL mutations"""
-
-    # Dataset
-    import_dataset = ImportDatasetMutation.Field()
-
-    # Spectrogram analysis
-    import_spectrogram_analysis = ImportAnalysisMutation.Field()
 
     # Annotation campaign
     create_annotation_campaign = CreateAnnotationCampaignMutation.Field()
@@ -70,7 +60,6 @@ class APIQuery(graphene.ObjectType):
     """API GraphQL queries"""
 
     # Dataset
-    all_datasets_for_import = AllDatasetForImportField
     all_datasets = AuthenticatedPaginationConnectionField(DatasetNode)
     dataset_by_id = ByIdField(
         DatasetNode,
@@ -81,7 +70,6 @@ class APIQuery(graphene.ObjectType):
     all_spectrogram_analysis = AuthenticatedPaginationConnectionField(
         SpectrogramAnalysisNode
     )
-    all_analysis_for_import = AllAnalysisForImportField
 
     # Label
     all_label_sets = AuthenticatedPaginationConnectionField(LabelSetNode)

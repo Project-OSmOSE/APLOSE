@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework",
     "drf_spectacular",
+    "backend.storage.apps.AploseStorageConfig",
     "backend.api.apps.ApiConfig",
     "backend.osmosewebsite.apps.OsmoseWebsiteConfig",
     "backend.aplose.apps.AploseConfig",
@@ -124,7 +125,6 @@ STATIC_URL = "/backend/static/"
 STATICFILES_DIRS = [BASE_DIR / "backend/api/static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 VOLUMES_ROOT = Path("/opt/")
-DATASET_IMPORT_FOLDER = Path("/opt/datawork/dataset")
 DATASET_EXPORT_PATH = Path("datawork/dataset")  # linked to nginx conf
 DATASET_FILES_FOLDER = Path("data/audio")
 DATASET_SPECTRO_FOLDER = Path("processed/spectrogram")

@@ -17,6 +17,7 @@ from metadatax.schema import Mutation as MetadataxMutation, Query as MetadataxQu
 from .api.schema import APIQuery, APIMutation
 from .aplose.schema import AploseQuery, AploseMutation
 from .osmosewebsite.schema import OSmOSEWebsiteQuery, WebsiteProjectNode
+from .storage.schema import StorageQuery, StorageMutation
 
 
 class DeploymentFilter(FilterSet):
@@ -100,6 +101,7 @@ class ChannelConfigurationNode(MxChannelConfigurationNode):
 
 
 class Query(
+    StorageQuery,
     APIQuery,
     AploseQuery,
     OSmOSEWebsiteQuery,
@@ -118,6 +120,7 @@ class Query(
 
 
 class Mutation(
+    StorageMutation,
     APIMutation,
     AploseMutation,
     MetadataxMutation,

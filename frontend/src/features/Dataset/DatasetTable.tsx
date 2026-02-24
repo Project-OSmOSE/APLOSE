@@ -16,6 +16,7 @@ export const DatasetTable: React.FC = () => {
       <TableHead topSticky isFirstColumn={ true }>
         Name
       </TableHead>
+      <TableHead topSticky>Path</TableHead>
       <TableHead topSticky>Created at</TableHead>
       <TableHead topSticky>Number of analysis</TableHead>
       <TableHead topSticky>Number of files</TableHead>
@@ -36,6 +37,7 @@ export const DatasetTable: React.FC = () => {
         <TableContent isFirstColumn={ true }>
           <IonSkeletonText animated style={ { width: 256, justifySelf: 'center' } }/>
         </TableContent>
+        <TableContent><IonSkeletonText animated style={ { width: 256 } }/></TableContent>
         <TableContent><IonSkeletonText animated style={ { width: 128 } }/></TableContent>
         <TableContent><IonSkeletonText animated style={ { width: 32, justifySelf: 'center' } }/></TableContent>
         <TableContent><IonSkeletonText animated style={ { width: 32, justifySelf: 'center' } }/></TableContent>
@@ -56,6 +58,7 @@ export const DatasetTable: React.FC = () => {
 
     { allDatasets.map(d => <Fragment key={ d.name }>
       <TableContent isFirstColumn={ true }><DatasetName { ...d } link/></TableContent>
+      <TableContent>{ d.path }</TableContent>
       <TableContent>{ dateToString(d.createdAt) }</TableContent>
       <TableContent>{ d.analysisCount }</TableContent>
       <TableContent>{ d.spectrogramCount ?? 0 }</TableContent>

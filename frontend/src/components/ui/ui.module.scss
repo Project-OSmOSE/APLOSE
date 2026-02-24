@@ -106,7 +106,7 @@
 
   > .head,
   > .content {
-    padding: 0.25rem 1rem;
+    padding: 0.25rem 0.5rem;
     display: grid;
     grid-auto-flow: column;
     gap: 0.5rem;
@@ -173,7 +173,7 @@
 
 .head {
   display: grid;
-  gap: 1rem;
+  gap: 0.5rem;
 
   .title {
     display: grid;
@@ -195,6 +195,7 @@
 
   .buttons {
     grid-auto-flow: column;
+    justify-self: center;
   }
 }
 

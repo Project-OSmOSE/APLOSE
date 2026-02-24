@@ -4,7 +4,7 @@ import { gqlAPI } from '@/api/baseGqlApi';
 export type ListDatasetsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListDatasetsQuery = { __typename?: 'Query', allDatasets?: { __typename?: 'DatasetNodeNodeConnection', results: Array<{ __typename?: 'DatasetNode', id: string, name: string, description?: string | null, createdAt: any, legacy: boolean, analysisCount: number, spectrogramCount: number, start?: any | null, end?: any | null } | null> } | null };
+export type ListDatasetsQuery = { __typename?: 'Query', allDatasets?: { __typename?: 'DatasetNodeNodeConnection', results: Array<{ __typename?: 'DatasetNode', id: string, name: string, path: string, description?: string | null, createdAt: any, legacy: boolean, analysisCount: number, spectrogramCount: number, start?: any | null, end?: any | null } | null> } | null };
 
 export type GetDatasetByIdQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
@@ -12,20 +12,6 @@ export type GetDatasetByIdQueryVariables = Types.Exact<{
 
 
 export type GetDatasetByIdQuery = { __typename?: 'Query', datasetById?: { __typename?: 'DatasetNode', id: string, name: string, path: string, description?: string | null, start?: any | null, end?: any | null, createdAt: any, legacy: boolean, owner: { __typename?: 'UserNode', displayName: string } } | null };
-
-export type ListAvailableDatasetsForImportQueryVariables = Types.Exact<{ [key: string]: never; }>;
-
-
-export type ListAvailableDatasetsForImportQuery = { __typename?: 'Query', allDatasetsForImport?: Array<{ __typename?: 'ImportDatasetNode', name: string, path: string, legacy?: boolean | null, failed?: boolean | null, stack?: string | null, analysis?: Array<{ __typename?: 'ImportAnalysisNode', name: string, path: string } | null> | null } | null> | null };
-
-export type ImportDatasetMutationVariables = Types.Exact<{
-  name: Types.Scalars['String']['input'];
-  path: Types.Scalars['String']['input'];
-  legacy?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
-}>;
-
-
-export type ImportDatasetMutation = { __typename?: 'Mutation', importDataset?: { __typename?: 'ImportDatasetMutation', ok: boolean } | null };
 
 export type ListDatasetsAndAnalysisQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
@@ -39,6 +25,7 @@ export const ListDatasetsDocument = `
     results {
       id
       name
+      path
       description
       createdAt
       legacy
@@ -64,28 +51,6 @@ export const GetDatasetByIdDocument = `
     owner {
       displayName
     }
-  }
-}
-    `;
-export const ListAvailableDatasetsForImportDocument = `
-    query listAvailableDatasetsForImport {
-  allDatasetsForImport {
-    name
-    path
-    legacy
-    analysis {
-      name
-      path
-    }
-    failed
-    stack
-  }
-}
-    `;
-export const ImportDatasetDocument = `
-    mutation importDataset($name: String!, $path: String!, $legacy: Boolean) {
-  importDataset(name: $name, path: $path, legacy: $legacy) {
-    ok
   }
 }
     `;
@@ -116,12 +81,6 @@ const injectedRtkApi = gqlAPI.injectEndpoints({
     }),
     getDatasetByID: build.query<GetDatasetByIdQuery, GetDatasetByIdQueryVariables>({
       query: (variables) => ({ document: GetDatasetByIdDocument, variables })
-    }),
-    listAvailableDatasetsForImport: build.query<ListAvailableDatasetsForImportQuery, ListAvailableDatasetsForImportQueryVariables | void>({
-      query: (variables) => ({ document: ListAvailableDatasetsForImportDocument, variables })
-    }),
-    importDataset: build.mutation<ImportDatasetMutation, ImportDatasetMutationVariables>({
-      query: (variables) => ({ document: ImportDatasetDocument, variables })
     }),
     listDatasetsAndAnalysis: build.query<ListDatasetsAndAnalysisQuery, ListDatasetsAndAnalysisQueryVariables | void>({
       query: (variables) => ({ document: ListDatasetsAndAnalysisDocument, variables })

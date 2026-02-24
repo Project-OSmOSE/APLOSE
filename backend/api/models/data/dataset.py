@@ -60,7 +60,9 @@ class Dataset(AbstractDataset, models.Model):
     @deprecated("Related to old OSEkit")
     def get_config_folder(self) -> str:
         """Get config folder for legacy datasets"""
-        datasets_csv_path = settings.DATASET_IMPORT_FOLDER / settings.DATASET_FILE
+        datasets_csv_path = join(
+            settings.VOLUMES_ROOT, settings.DATASET_EXPORT_PATH, settings.DATASET_FILE
+        )
         with open(datasets_csv_path, encoding="utf-8") as csvfile:
             data = csv.DictReader(csvfile)
             d: dict
@@ -74,5 +76,10 @@ class Dataset(AbstractDataset, models.Model):
 
     def get_osekit_dataset(self) -> OSEkitDataset:
         """Get OSEkit dataset object"""
-        json_path = join(settings.DATASET_IMPORT_FOLDER, self.path, "dataset.json")
+        json_path = join(
+            settings.VOLUMES_ROOT,
+            settings.DATASET_EXPORT_PATH,
+            self.path,
+            "dataset.json",
+        )
         return OSEkitDataset.from_json(Path(json_path))

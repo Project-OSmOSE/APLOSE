@@ -27,15 +27,11 @@ class ImportAnalysis {
     return this.page.getByRole('dialog').first()
   }
 
-  get importAnalysisButton(): Locator {
-    return this.modal.getByTestId('download-analysis').first()
+  get importButton(): Locator {
+    return this.modal.getByRole('button', { name: 'Import' }).first()
   }
 
   constructor(private page: Page) {
-  }
-
-  public async search(text: string) {
-    await this.modal.getByPlaceholder('Search').fill(text)
   }
 
 }

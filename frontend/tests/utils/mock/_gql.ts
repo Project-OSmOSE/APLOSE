@@ -1,4 +1,4 @@
-import { DATASET_MUTATIONS, DATASET_QUERIES } from './dataset';
+import { DATASET_QUERIES } from './dataset';
 import { ANALYSIS_MUTATIONS, ANALYSIS_QUERIES } from './spectrogramAnalysis';
 import { CAMPAIGN_MUTATIONS, CAMPAIGN_QUERIES } from './campaign';
 import { LABEL_SET_QUERIES } from './labelSet';
@@ -10,9 +10,11 @@ import { FILE_RANGE_MUTATIONS, FILE_RANGE_QUERIES } from './fileRange';
 import type { UserType } from './types';
 import { DETECTOR_QUERIES } from './detector';
 import { COLLABORATOR_QUERIES } from './collaborators';
+import { STORAGE_MUTATIONS, STORAGE_QUERIES } from './storage';
 
 type GqlQueries =
   typeof DATASET_QUERIES
+  & typeof STORAGE_QUERIES
   & typeof CHANNEL_CONFIGURATION_QUERIES
   & typeof ANALYSIS_QUERIES
   & typeof CAMPAIGN_QUERIES
@@ -26,6 +28,7 @@ type GqlQueries =
 
 const GQL_MOCK_QUERIES: GqlQueries & { getCurrentUser: typeof GET_CURRENT_USER_QUERY } = {
   ...DATASET_QUERIES,
+  ...STORAGE_QUERIES,
   ...CHANNEL_CONFIGURATION_QUERIES,
   ...ANALYSIS_QUERIES,
   ...CAMPAIGN_QUERIES,
@@ -41,7 +44,7 @@ const GQL_MOCK_QUERIES: GqlQueries & { getCurrentUser: typeof GET_CURRENT_USER_Q
 }
 
 type GqlMutations =
-  typeof DATASET_MUTATIONS
+  typeof STORAGE_MUTATIONS
   & typeof ANALYSIS_MUTATIONS
   & typeof CAMPAIGN_MUTATIONS
   & typeof TASK_MUTATIONS
@@ -50,7 +53,7 @@ type GqlMutations =
 export type GqlMutation = keyof GqlMutations
 
 const GQL_MOCK_MUTATIONS: GqlMutations = {
-  ...DATASET_MUTATIONS,
+  ...STORAGE_MUTATIONS,
   ...ANALYSIS_MUTATIONS,
   ...CAMPAIGN_MUTATIONS,
   ...TASK_MUTATIONS,

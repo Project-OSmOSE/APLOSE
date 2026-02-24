@@ -33,7 +33,8 @@ class SpectrogramAnalysisManager(models.Manager):
         if dataset.legacy:
             # Get metadata
             audio_csv_path = join(
-                settings.DATASET_IMPORT_FOLDER,
+                settings.VOLUMES_ROOT,
+                settings.DATASET_EXPORT_PATH,
                 dataset.path,
                 "data",
                 "audio",
@@ -43,7 +44,11 @@ class SpectrogramAnalysisManager(models.Manager):
             with open(audio_csv_path, encoding="utf-8") as csvfile:
                 audio: dict = next(csv.DictReader(csvfile))
             spectrogram_csv_path = join(
-                settings.DATASET_IMPORT_FOLDER, dataset.path, path, "metadata.csv"
+                settings.VOLUMES_ROOT,
+                settings.DATASET_EXPORT_PATH,
+                dataset.path,
+                path,
+                "metadata.csv",
             )
             with open(spectrogram_csv_path, encoding="utf-8") as csvfile:
                 spectro: dict = next(csv.DictReader(csvfile))
@@ -115,7 +120,8 @@ class SpectrogramAnalysisManager(models.Manager):
         sd = SpectroDataset.from_json(
             Path(
                 join(
-                    str(settings.DATASET_IMPORT_FOLDER),
+                    settings.VOLUMES_ROOT,
+                    settings.DATASET_EXPORT_PATH,
                     dataset.path,
                     path,
                     f"{name}.json",
@@ -136,7 +142,7 @@ class SpectrogramAnalysisManager(models.Manager):
         return SpectrogramAnalysis.objects.create(
             dataset=dataset,
             name=sd.name,
-            path=str(sd.folder).split(dataset.path)[1].strip("\\").strip("/"),
+            path=path,
             owner=owner,
             start=sd.begin,
             end=sd.end,
@@ -325,7 +331,8 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
         """Get OSEkit dataset object"""
         return Path(
             join(
-                str(settings.DATASET_IMPORT_FOLDER),
+                settings.VOLUMES_ROOT,
+                settings.DATASET_EXPORT_PATH,
                 self.dataset.path,
                 self.path,
                 f"{self.name}.json",

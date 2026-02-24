@@ -1,0 +1,11 @@
+.content {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-auto-flow: row;
+  overflow-y: auto;
+  background: rgba(var(--ion-color-dark-rgb), 0.05);
+  border-radius: 2rem;
+  padding: 2rem;
+  align-content: start;
+}

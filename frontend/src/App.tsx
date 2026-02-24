@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect } from 'react';
+import React, { Fragment, lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import './css/bootstrap-4.1.3.min.css';
@@ -24,6 +24,7 @@ const SqlQuery = lazy(() => import('./view/admin/sql'));
 const OntologyPage = lazy(() => import('./view/admin/ontology'));
 const OntologyTab = lazy(() => import('./view/admin/ontology/[type]'));
 const OntologyPanel = lazy(() => import('./view/admin/ontology/[type]/[id]'));
+const StorageBrowser = lazy(() => import('./view/storage'));
 const DatasetList = lazy(() => import('./view/dataset'));
 const DatasetDetail = lazy(() => import('./view/dataset/[datasetID]'));
 const AnnotationCampaignList = lazy(() => import('./view/annotation-campaign'));
@@ -80,10 +81,6 @@ const AppContent: React.FC = () => {
 
             { isConnected && <Route element={ <Suspense><AploseSkeleton/></Suspense> }>
 
-                <Route path="dataset">
-                    <Route index element={ <Suspense><DatasetList/></Suspense> }/>
-                    <Route path=":datasetID" element={ <Suspense><DatasetDetail/></Suspense> }/>
-                </Route>
 
                 <Route path="annotation-campaign">
                     <Route index element={ <Suspense><AnnotationCampaignList/></Suspense> }/>
@@ -104,6 +101,17 @@ const AppContent: React.FC = () => {
                 </Route>
 
                 <Route path="account" element={ <Suspense><Account/></Suspense> }/>
+
+                { currentUser?.isAdmin && <Fragment>
+                    <Route path="dataset">
+                        <Route index element={ <Suspense><DatasetList/></Suspense> }/>
+                        <Route path=":datasetID" element={ <Suspense><DatasetDetail/></Suspense> }/>
+                    </Route>
+
+                    <Route path="storage">
+                        <Route index element={ <Suspense><StorageBrowser/></Suspense> }/>
+                    </Route>
+                </Fragment> }
 
                 { currentUser?.isSuperuser &&
                     <Route path="admin">

@@ -3,6 +3,7 @@ query listDatasets {
         results {
             id
             name
+            path
             description
             createdAt
             legacy
@@ -27,26 +28,6 @@ query getDatasetByID($id: ID!) {
         owner {
             displayName
         }
-    }
-}
-
-query listAvailableDatasetsForImport {
-    allDatasetsForImport {
-        name
-        path
-        legacy
-        analysis {
-            name
-            path
-        }
-        failed
-        stack
-    }
-}
-
-mutation importDataset($name: String!, $path: String!, $legacy: Boolean) {
-    importDataset(name: $name, path: $path, legacy: $legacy) {
-        ok
     }
 }
 

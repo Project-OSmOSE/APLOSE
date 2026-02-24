@@ -1,18 +1,11 @@
 import type { GqlQuery } from './_types';
-import {
-  GetDatasetByIdQuery,
-  ImportNewDatasetMutation,
-  ListAvailableDatasetsForImportQuery,
-  ListDatasetsAndAnalysisQuery,
-  ListDatasetsQuery,
-} from '../../../src/api/dataset';
+import { GetDatasetByIdQuery, ListDatasetsAndAnalysisQuery, ListDatasetsQuery } from '../../../src/api/dataset';
 import type { Colormap } from '../../../src/features/Colormap';
 import { dataset, spectrogramAnalysis, USERS } from './types';
 
 export const DATASET_QUERIES: {
   listDatasets: GqlQuery<ListDatasetsQuery>,
   getDatasetByID: GqlQuery<GetDatasetByIdQuery>,
-  listAvailableDatasetsForImport: GqlQuery<ListAvailableDatasetsForImportQuery>,
   listDatasetsAndAnalysis: GqlQuery<ListDatasetsAndAnalysisQuery>,
 } = {
   listDatasets: {
@@ -28,6 +21,7 @@ export const DATASET_QUERIES: {
           {
             id: dataset.id,
             name: dataset.name,
+            path: dataset.path,
             legacy: dataset.legacy,
             createdAt: dataset.createdAt,
             description: dataset.description,
@@ -59,28 +53,6 @@ export const DATASET_QUERIES: {
       },
     },
   },
-  listAvailableDatasetsForImport: {
-    defaultType: 'filled',
-    empty: {
-      allDatasetsForImport: [],
-    },
-    filled: {
-      allDatasetsForImport: [ {
-        name: 'Test import dataset',
-        path: 'Test import dataset',
-        analysis: [
-          {
-            name: 'Test analysis 1',
-            path: 'Test analysis 1',
-          },
-          {
-            name: 'Test analysis 2',
-            path: 'Test analysis 2',
-          },
-        ],
-      } ],
-    },
-  },
   listDatasetsAndAnalysis: {
     defaultType: 'filled',
     empty: {
@@ -105,14 +77,5 @@ export const DATASET_QUERIES: {
         ],
       },
     },
-  },
-}
-
-export const DATASET_MUTATIONS: {
-  importDataset: GqlQuery<ImportNewDatasetMutation, never>,
-} = {
-  importDataset: {
-    defaultType: 'empty',
-    empty: {},
   },
 }

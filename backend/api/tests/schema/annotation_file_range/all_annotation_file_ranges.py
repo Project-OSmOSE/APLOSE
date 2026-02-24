@@ -3,9 +3,6 @@ import json
 from django_extension.tests import ExtendedTestCase
 
 from backend.api.tests.fixtures import ALL_FIXTURES
-from backend.api.tests.schema.spectrogram_analysis.all_spectrogram_analysis_for_import import (
-    VARIABLES,
-)
 from backend.aplose.models import User
 
 QUERY = """

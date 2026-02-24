@@ -862,7 +862,6 @@ type Query {
     first: Int
     last: Int
   ): UserNodeNodeConnection
-  allAnalysisForImport(datasetId: ID!): [ImportAnalysisNode]
   allAnnotationSpectrograms(
     """Query limit"""
     limit: Int
@@ -893,7 +892,6 @@ type Query {
     """Ordering"""
     orderBy: String
   ): AnnotationSpectrogramNodeNodeConnection
-  allDatasetsForImport: [ImportDatasetNode]
   annotationLabelsForDeploymentId(
     deploymentId: ID!
 
@@ -1067,6 +1065,8 @@ type Query {
     annotationPhase_Phase: AnnotationPhaseType
   ): AnnotationFileRangeNodeNodeConnection
   annotationSpectrogramById(id: ID!): AnnotationSpectrogramNode
+  browse(path: String): [StorageUnion]
+  search(path: String!): StorageUnion
 }
 
 type LabelNodeNodeConnection {
@@ -4294,12 +4294,6 @@ type UserNodeNodeConnection {
   totalCount: Int
 }
 
-"""Type for import dataset"""
-type ImportAnalysisNode {
-  name: String!
-  path: String!
-}
-
 """Annotation spectrogram node connection"""
 type AnnotationSpectrogramNodeNodeConnection {
   """Pagination data for this connection."""
@@ -4312,16 +4306,6 @@ type AnnotationSpectrogramNodeNodeConnection {
   previousSpectrogramId(spectrogramId: ID): ID
   nextSpectrogramId(spectrogramId: ID): ID
   currentIndex(spectrogramId: ID): Int
-}
-
-"""Type for import dataset"""
-type ImportDatasetNode {
-  name: String!
-  path: String!
-  legacy: Boolean
-  analysis: [ImportAnalysisNode]
-  failed: Boolean
-  stack: String
 }
 
 type AnnotationLabelNodeNodeConnection {
@@ -4387,6 +4371,35 @@ type AnnotationFileRangeNodeNodeConnection {
   totalCount: Int
 }
 
+union StorageUnion = FolderNode | DatasetStorageNode | AnalysisStorageNode
+
+type FolderNode {
+  name: String!
+  path: String!
+}
+
+type DatasetStorageNode {
+  name: String!
+  path: String!
+  importStatus: Status!
+  model: DatasetNode
+}
+
+"""An enumeration."""
+enum Status {
+  Unavailable
+  Available
+  Partial
+  Imported
+}
+
+type AnalysisStorageNode {
+  name: String!
+  path: String!
+  importStatus: Status!
+  model: SpectrogramAnalysisNode
+}
+
 """Global mutation"""
 type Mutation {
   postSource(input: PostSourceMutationInput!): PostSourceMutationPayload
@@ -4400,12 +4413,6 @@ type Mutation {
 
   """Update user mutation"""
   currentUserUpdate(input: UpdateUserMutationInput!): UpdateUserMutationPayload
-
-  """Import dataset mutation"""
-  importDataset(legacy: Boolean, name: String!, path: String!): ImportDatasetMutation
-
-  """"Import spectrogram analysis mutation"""
-  importSpectrogramAnalysis(datasetName: String!, datasetPath: String!, legacy: Boolean, name: String!, path: String!): ImportAnalysisMutation
   createAnnotationCampaign(input: CreateAnnotationCampaignMutationInput!): CreateAnnotationCampaignMutationPayload
   updateAnnotationCampaign(input: UpdateAnnotationCampaignMutationInput!): UpdateAnnotationCampaignMutationPayload
 
@@ -4421,6 +4428,12 @@ type Mutation {
   updateAnnotations(input: UpdateAnnotationsMutationInput!): UpdateAnnotationsMutationPayload
   updateAnnotationComments(input: UpdateAnnotationCommentsMutationInput!): UpdateAnnotationCommentsMutationPayload
   submitAnnotationTask(annotations: [AnnotationInput]!, campaignId: ID!, endedAt: DateTime!, phaseType: AnnotationPhaseType!, spectrogramId: ID!, startedAt: DateTime!, taskComments: [AnnotationCommentInput]!): SubmitAnnotationTaskMutation
+
+  """"Import Analysis mutation"""
+  importAnalysis(datasetPath: String!, name: String!): ImportAnalysisMutation
+
+  """"Import Dataset mutation"""
+  importDataset(path: String!): ImportDatasetMutation
 }
 
 type PostSourceMutationPayload {
@@ -4494,16 +4507,6 @@ input UpdateUserMutationInput {
   email: String
   id: ID
   clientMutationId: String
-}
-
-"""Import dataset mutation"""
-type ImportDatasetMutation {
-  ok: Boolean!
-}
-
-""""Import spectrogram analysis mutation"""
-type ImportAnalysisMutation {
-  ok: Boolean
 }
 
 type CreateAnnotationCampaignMutationPayload {
@@ -4671,4 +4674,14 @@ type SubmitAnnotationTaskMutation {
   ok: Boolean!
   annotationErrors: [[ErrorType]]
   taskCommentsErrors: [[ErrorType]]
+}
+
+""""Import Analysis mutation"""
+type ImportAnalysisMutation {
+  analysis: SpectrogramAnalysisNode!
+}
+
+""""Import Dataset mutation"""
+type ImportDatasetMutation {
+  dataset: DatasetNode!
 }

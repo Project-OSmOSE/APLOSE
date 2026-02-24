@@ -24,6 +24,10 @@ export class Navbar {
     return this.page.getByRole('button', { name: 'Datasets' })
   }
 
+  get storageButton(): Locator {
+    return this.page.getByRole('button', { name: 'Storage' })
+  }
+
   get logoutButton(): Locator {
     return this.page.getByRole('button', { name: 'Logout' })
   }

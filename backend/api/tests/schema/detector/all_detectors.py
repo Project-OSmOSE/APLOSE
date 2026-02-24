@@ -4,9 +4,6 @@ from django_extension.tests import ExtendedTestCase
 
 from backend.api.models import Detector
 from backend.api.tests.fixtures import ALL_FIXTURES
-from backend.api.tests.schema.spectrogram_analysis.all_spectrogram_analysis_for_import import (
-    VARIABLES,
-)
 from backend.aplose.models import User
 
 QUERY = """
@@ -35,15 +32,13 @@ class AllDetectorsTestCase(ExtendedTestCase):
         self.client.logout()
 
     def test_not_connected(self):
-        response = self.gql_query(QUERY, variables=VARIABLES)
+        response = self.gql_query(QUERY)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
     def test_connected(self):
-        response = self.gql_query(
-            QUERY, user=User.objects.get(username="admin"), variables=VARIABLES
-        )
+        response = self.gql_query(QUERY, user=User.objects.get(username="admin"))
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["allDetectors"]["results"]

@@ -1,13 +1,15 @@
 import React, { Fragment } from 'react';
-import { IonSpinner } from '@ionic/react';
-import { WarningText } from '@/components/ui';
+import { IonButton, IonIcon, IonSpinner } from '@ionic/react';
+import { useModal, WarningText } from '@/components/ui';
 
 import { DatasetHead, DatasetInfoCreation } from '@/features/Dataset';
-import { ImportAnalysisModalButton, SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
+import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 import { ChannelConfigurationTable } from '@/features/ChannelConfiguration';
 import { useDataset } from '@/api';
 import { type DataNavParams } from '@/features/UX';
 import { useParams } from 'react-router-dom';
+import { downloadOutline } from 'ionicons/icons';
+import { ImportDatasetAnalysisModal } from '@/features/storage';
 
 
 export const DatasetDetail: React.FC = () => {
@@ -15,12 +17,11 @@ export const DatasetDetail: React.FC = () => {
 
   const { dataset, isLoading, error } = useDataset({ id })
 
+  const importAnalysisModal = useModal(ImportDatasetAnalysisModal);
+
   if (isLoading) return <Fragment><DatasetHead/><IonSpinner/></Fragment>
-
   if (error) return <Fragment><DatasetHead/><WarningText error={ error }/></Fragment>
-
   if (!dataset) return <Fragment><DatasetHead/><WarningText message="Dataset not found"/></Fragment>
-
   return <Fragment>
     <DatasetHead/>
 
@@ -31,11 +32,18 @@ export const DatasetDetail: React.FC = () => {
       <div style={ { overflowX: 'hidden', display: 'grid', gap: '1rem' } }>
         <SpectrogramAnalysisTable datasetID={ dataset.id }/>
 
-        <ImportAnalysisModalButton/>
+        <IonButton color="primary" fill="clear"
+                   style={ { zIndex: 2, justifySelf: 'center' } }
+                   onClick={ importAnalysisModal.toggle }>
+          <IonIcon icon={ downloadOutline } slot="start"/>
+          Import analysis
+        </IonButton>
       </div>
     </div>
 
     <DatasetInfoCreation/>
+
+    { importAnalysisModal.element }
   </Fragment>
 }
 

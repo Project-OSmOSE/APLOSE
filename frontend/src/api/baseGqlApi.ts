@@ -54,6 +54,9 @@ export const GqlTags =  [
 
     // Collaborator
     'Collaborator',
+
+    // Storage
+    'Folders',
   ]
 
 export const gqlAPI = createApi({

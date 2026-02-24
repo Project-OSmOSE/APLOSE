@@ -5,6 +5,7 @@ import {
   AllAnnotationTaskFilterSlice,
   getUserOnLoginMiddleware,
   logoutOn401Listener,
+  StorageSlice,
 } from '@/api';
 import { AuthSlice } from '@/features/Auth';
 import { gqlAPI } from '@/api/baseGqlApi';
@@ -16,6 +17,7 @@ export const AppStore = configureStore({
     event: EventSlice.reducer,
 
     auth: AuthSlice.reducer,
+    [StorageSlice.reducerPath]: StorageSlice.reducer,
     [gqlAPI.reducerPath]: gqlAPI.reducer,
     [restAPI.reducerPath]: restAPI.reducer,
 
@@ -30,7 +32,7 @@ export const AppStore = configureStore({
       .concat(gqlAPI.middleware)
       .concat(restAPI.middleware)
       .concat(getUserOnLoginMiddleware.middleware)
-      .concat(logoutOn401Listener.middleware),
+      .concat(logoutOn401Listener.middleware)
 })
 
 export type AppState = ReturnType<typeof AppStore.getState>;
