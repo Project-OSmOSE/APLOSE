@@ -15,10 +15,12 @@ export const AnalysisSelect: React.FC = () => {
   }, [ dispatch ])
 
   const options = useMemo(() => {
-    return allAnalysis?.map(a => {
-      const label = `nfft: ${ a!.fft.nfft }`;
-      return { value: a!.id, label }
-    }) ?? []
+    return [...(allAnalysis ?? [])]
+      .sort((a, b) => (a?.fft.nfft ?? 0) - (b?.fft.nfft ?? 0))
+      .map(a => {
+        const label = `nfft: ${ a!.fft.nfft }`;
+        return { value: a!.id, label }
+      })
   }, [ allAnalysis ]);
 
   const select = useCallback((value: string | number | undefined) => {
