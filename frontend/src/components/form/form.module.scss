@@ -52,6 +52,42 @@
         but it does not work well with ranges on Chrome */
       padding: 0.5rem 0;
       margin-right: 0.5rem;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+
+      &::-webkit-slider-runnable-track {
+        height: 6px;
+        background: #444;
+        border-radius: 3px;
+      }
+
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        background: var(--ion-color-primary);
+        border-radius: 50%;
+        margin-top: -4px;
+        border: none;
+      }
+
+      &::-moz-range-track {
+        height: 6px;
+        background: #444;
+        border-radius: 3px;
+        border: none;
+      }
+
+      &::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        background: var(--ion-color-primary);
+        border-radius: 50%;
+        border: none;
+      }
     }
 
     .startIcon, .endIcon {
