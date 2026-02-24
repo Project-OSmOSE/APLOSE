@@ -50,6 +50,11 @@ export const Frequency: React.FC<{ annotation: Annotation }> = ({ annotation }) 
                   onUpdate={ onMaxUpdate }/>
         <TableDivider className={ styles.span2ColsEnd }/>
 
+        {/* Range */}
+        <NoteRow label="Range" note={ `${(annotation.endFrequency ?? 0)
+            - (annotation.startFrequency ?? 0)}Hz` }/>
+        <TableDivider className={ styles.span2ColsEnd }/>
+
         {/* Start */ }
         <InputRow label="Start" value={ annotation.acousticFeatures?.startFrequency } max={ maxFrequency } unit="Hz"
                   onUpdate={ value => onFeatureUpdate('startFrequency', value) }
