@@ -73,7 +73,7 @@
 *[class*=ion-color-] {
     --ion-color-base: hsl(var(--label-color-h), var(--label-color-s), var(--label-color-l));
     --ion-color-shade: hsl(var(--label-color-h), var(--label-color-s), var(--label-color-l));
-    --ion-color-contrast: hsl(255,255, calc(1 - var(--label-color-l)));
+    --ion-color-contrast: hsl(var(--label-color-h), var(--label-color-s), 95%);
 }
 
 .viridis *[class*=ion-color-] {
