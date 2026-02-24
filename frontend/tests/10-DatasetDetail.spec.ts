@@ -10,7 +10,7 @@ const TEST = {
     // Page
 
     handlePageEmptyState: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
-        test(`Handle empty state as ${ as }`, { tag }, async ({ page }) => {
+        test(`as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 listSpectrogramAnalysis: 'empty',
@@ -24,7 +24,7 @@ const TEST = {
         }),
 
     pageDisplayLoadedData: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
-        test(`Display loaded data as ${ as }`, { tag }, async ({ page }) => {
+        test(`as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, { getCurrentUser: as })
             await test.step(`Navigate`, () => page.datasetDetail.go({ as }));
 
@@ -38,10 +38,14 @@ const TEST = {
 // Tests
 test.describe('/dataset/:datasetID', () => {
 
-    TEST.handlePageEmptyState({ as: 'staff', tag: essentialTag })
-    TEST.handlePageEmptyState({ as: 'superuser' })
+    test.describe('Handle empty state', () => {
+        TEST.handlePageEmptyState({ as: 'staff', tag: essentialTag })
+        TEST.handlePageEmptyState({ as: 'superuser' })
+    })
 
-    TEST.pageDisplayLoadedData({ as: 'staff', tag: essentialTag })
-    TEST.pageDisplayLoadedData({ as: 'superuser' })
+    test.describe('Display loaded data', () => {
+        TEST.pageDisplayLoadedData({ as: 'staff', tag: essentialTag })
+        TEST.pageDisplayLoadedData({ as: 'superuser' })
+    })
 
 })

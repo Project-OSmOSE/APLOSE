@@ -94,7 +94,7 @@ const TEST = {
 // Tests
 test.describe('/storage', () => {
 
-    test.describe('Search modal', () => {
+    test.describe('[Search modal]', () => {
 
         test.describe('Handle empty state', () => {
             TEST.handlePageEmptyState({ as: 'staff', tag: essentialTag })

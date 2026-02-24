@@ -8,7 +8,7 @@ import type { Params } from './utils/types';
 // Utils
 const TEST = {
   canLogin: ({ as, method, tag }: Pick<Params, 'as' | 'method' | 'tag'>) =>
-    test(`Can login as ${ as } using ${ method }`, { tag }, async ({ page }) => {
+    test(`as ${ as } using ${ method }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         token: 'success',
@@ -28,7 +28,7 @@ const TEST = {
     }),
 
   canSeeErrors: ({ as, method, tag }: Pick<Params, 'as' | 'method' | 'tag'>) =>
-    test(`Can see errors on failed submit as ${ as } using ${ method }`, { tag }, async ({ page }) => {
+    test(`as ${ as } using ${ method }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
         token: 'forbidden',
@@ -49,9 +49,14 @@ const TEST = {
 test.describe('/login', () => {
   const as: UserType = 'annotator'
 
-  TEST.canLogin({ as, method: 'mouse', tag: essentialTag })
-  TEST.canLogin({ as, method: 'shortcut' })
+    test.describe('Can login', () => {
+        TEST.canLogin({ as, method: 'mouse', tag: essentialTag })
+        TEST.canLogin({ as, method: 'shortcut' })
+    })
 
-  TEST.canSeeErrors({ as, method: 'mouse', tag: essentialTag })
-  TEST.canSeeErrors({ as, method: 'shortcut' })
+    test.describe('Display errors', () => {
+        TEST.canSeeErrors({ as, method: 'mouse', tag: essentialTag })
+        TEST.canSeeErrors({ as, method: 'shortcut' })
+    })
+
 })

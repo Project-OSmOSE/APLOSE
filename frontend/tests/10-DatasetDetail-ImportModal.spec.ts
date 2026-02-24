@@ -9,7 +9,7 @@ import type { ImportAnalysisFromStorageMutationVariables } from '../src/api/stor
 const TEST = {
 
     handleModalEmptyState: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
-        test(`Handle empty state in Import modal as ${ as }`, { tag }, async ({ page }) => {
+        test(`as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 listSpectrogramAnalysis: 'empty',
@@ -30,10 +30,10 @@ const TEST = {
         }),
 
     modalDisplayLoadedData: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
-        test(`Display loaded data in Import modal as ${ as }`, { tag }, async ({ page }) => {
+        test(`as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
-                browseStorage: 'dataset'
+                browseStorage: 'dataset',
             })
             await test.step(`Navigate`, async () => {
                 await page.datasetDetail.go({ as })
@@ -48,7 +48,7 @@ const TEST = {
         }),
 
     importAnalysis: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
-        test(`Import an analysis as ${ as }`, { tag }, async ({ page }) => {
+        test(`as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 browseStorage: 'dataset',
@@ -73,14 +73,22 @@ const TEST = {
 
 // Tests
 test.describe('/dataset/:datasetID', () => {
+    test.describe('[Import modal]', () => {
 
-    TEST.handleModalEmptyState({ as: 'staff', tag: essentialTag })
-    TEST.handleModalEmptyState({ as: 'superuser' })
+        test.describe('Handle empty state', () => {
+            TEST.handleModalEmptyState({ as: 'staff', tag: essentialTag })
+            TEST.handleModalEmptyState({ as: 'superuser' })
+        })
 
-    TEST.modalDisplayLoadedData({ as: 'staff', tag: essentialTag })
-    TEST.modalDisplayLoadedData({ as: 'superuser' })
+        test.describe('Display loaded data', () => {
+            TEST.modalDisplayLoadedData({ as: 'staff', tag: essentialTag })
+            TEST.modalDisplayLoadedData({ as: 'superuser' })
+        })
 
-    TEST.importAnalysis({ as: 'staff', tag: essentialTag })
-    TEST.importAnalysis({ as: 'superuser' })
+        test.describe('Can import analysis', () => {
+            TEST.importAnalysis({ as: 'staff', tag: essentialTag })
+            TEST.importAnalysis({ as: 'superuser' })
+        })
+    })
 
 })
