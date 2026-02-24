@@ -12,7 +12,7 @@ import type {
 const TEST = {
 
     handlePageEmptyState: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
-        test(`Handle empty state in search modal as ${ as }`, { tag }, async ({ page }) => {
+        test(`as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 listDatasets: 'empty',
@@ -30,7 +30,7 @@ const TEST = {
         }),
 
     searchFolder: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
-        test(`Search folder in search modal as ${ as }`, { tag }, async ({ page }) => {
+        test(`as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 searchStorage: 'folder',
@@ -51,7 +51,7 @@ const TEST = {
 
                 const [ request ] = await Promise.all([
                     page.waitForRequest(gqlURL),
-                    modal.getByRole('button', { name: 'Import' }).click()
+                    modal.getByRole('button', { name: 'Import' }).click(),
                 ])
                 const variables: ImportDatasetFromStorageMutationVariables = request.postDataJSON().variables
                 expect(variables.path).toEqual(storageDataset.path)
@@ -59,7 +59,7 @@ const TEST = {
         }),
 
     searchDataset: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
-        test(`Search dataset in search modal as ${ as }`, { tag }, async ({ page }) => {
+        test(`as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 searchStorage: 'dataset',
@@ -80,7 +80,7 @@ const TEST = {
 
                 const [ request ] = await Promise.all([
                     page.waitForRequest(gqlURL),
-                    modal.getByRole('button', { name: 'Import' }).last().click()
+                    modal.getByRole('button', { name: 'Import' }).last().click(),
                 ])
                 const variables: ImportAnalysisFromStorageMutationVariables = request.postDataJSON().variables
                 expect(variables.name).toEqual(storageAnalysis.name)
@@ -94,13 +94,22 @@ const TEST = {
 // Tests
 test.describe('/storage', () => {
 
-    TEST.handlePageEmptyState({ as: 'staff', tag: essentialTag })
-    TEST.handlePageEmptyState({ as: 'superuser' })
+    test.describe('Search modal', () => {
 
-    TEST.searchFolder({ as: 'staff', tag: essentialTag })
-    TEST.searchFolder({ as: 'superuser' })
+        test.describe('Handle empty state', () => {
+            TEST.handlePageEmptyState({ as: 'staff', tag: essentialTag })
+            TEST.handlePageEmptyState({ as: 'superuser' })
+        })
 
-    TEST.searchDataset({ as: 'staff', tag: essentialTag })
-    TEST.searchDataset({ as: 'superuser' })
+        test.describe('Can search folder', () => {
+            TEST.searchFolder({ as: 'staff', tag: essentialTag })
+            TEST.searchFolder({ as: 'superuser' })
+        })
 
+        test.describe('Can search dataset', () => {
+            TEST.searchDataset({ as: 'staff', tag: essentialTag })
+            TEST.searchDataset({ as: 'superuser' })
+        })
+
+    })
 })
