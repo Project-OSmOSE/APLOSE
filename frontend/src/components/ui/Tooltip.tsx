@@ -34,6 +34,7 @@ export const TooltipOverlay: React.FC<{
     return {
       position: 'absolute', top: top + 8, ...anchorPosition,
       transition: 'opacity 150ms ease-in-out', opacity: isShown ? 1 : 0,
+      pointerEvents: 'none'
     }
   }, [ containerRef.current, isShown, top, left, right ]);
 
