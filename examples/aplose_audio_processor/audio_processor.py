@@ -19,7 +19,8 @@ class AudioProcessor:
         snippet_duration: Optional[float] = None,
         overlap: float = 0.0,
         filename_prefix: Optional[str] = None,
-        max_duration: Optional[float] = None
+        max_duration: Optional[float] = None,
+        datetime_format: Optional[str] = None
     ):
         """
         Initialize AudioProcessor.
@@ -30,12 +31,14 @@ class AudioProcessor:
             overlap: Overlap between consecutive snippets in seconds (default: 0.0).
             filename_prefix: Optional prefix to add to all output filenames.
             max_duration: Maximum duration in seconds to use from the audio file. If None, uses entire file.
+            datetime_format: strptime format to parse datetime from filenames.
         """
         self.target_sample_rate = target_sample_rate
         self.snippet_duration = snippet_duration
         self.overlap = overlap
         self.filename_prefix = filename_prefix
         self.max_duration = max_duration
+        self.datetime_format = datetime_format
 
     def process_audio_file(
         self,
@@ -209,20 +212,38 @@ class AudioProcessor:
             Generated filename.
         """
         from datetime import datetime
+        import re
 
-        # Common datetime formats to try
-        datetime_formats = [
+        # Round time offset to whole seconds
+        time_offset = int(round(time_offset))
+
+        # Common datetime formats to try (user-provided format takes priority)
+        datetime_formats = []
+        if self.datetime_format:
+            datetime_formats.append(self.datetime_format)
+        datetime_formats.extend([
             "%Y_%m_%d_%H_%M_%S",
             "%Y%m%d_%H%M%S",
             "%Y-%m-%d_%H-%M-%S",
             "%Y%m%d%H%M%S",
-        ]
+        ])
 
         # Try to parse datetime from base_name
         parsed_dt = None
         for fmt in datetime_formats:
             try:
-                # Try to find datetime pattern in the filename
+                # First try: parse using regex to find pattern anywhere in filename
+                regex_pattern = self._datetime_format_to_regex(fmt)
+                match = re.search(regex_pattern, base_name)
+                if match:
+                    matched_str = match.group(0)
+                    try:
+                        parsed_dt = datetime.strptime(matched_str, fmt)
+                        break
+                    except ValueError:
+                        pass
+
+                # Second try: find datetime pattern in the filename parts
                 parts = base_name.split('_')
                 # Try different combinations of parts
                 for i in range(len(parts)):
@@ -241,7 +262,7 @@ class AudioProcessor:
                 continue
 
         if parsed_dt:
-            # Add time offset
+            # Add time offset (rounded to whole seconds)
             new_dt = parsed_dt + timedelta(seconds=time_offset)
             timestamp_str = new_dt.strftime("%Y_%m_%d_%H_%M_%S")
             if self.filename_prefix:
@@ -252,3 +273,33 @@ class AudioProcessor:
             if self.filename_prefix:
                 return f"{self.filename_prefix}_{base_name}_snippet_{snippet_idx:04d}.wav"
             return f"{base_name}_snippet_{snippet_idx:04d}.wav"
+
+    def _datetime_format_to_regex(self, datetime_format: str) -> str:
+        """
+        Convert a strptime format string to a regex pattern.
+
+        Args:
+            datetime_format: strptime format string (e.g., '%Y%m%d%H%M%S').
+
+        Returns:
+            Regex pattern string that matches the datetime format.
+        """
+        # Mapping of strptime directives to regex patterns
+        format_to_regex = {
+            '%Y': r'(\d{4})',      # 4-digit year
+            '%y': r'(\d{2})',      # 2-digit year
+            '%m': r'(\d{2})',      # 2-digit month
+            '%d': r'(\d{2})',      # 2-digit day
+            '%H': r'(\d{2})',      # 2-digit hour (24h)
+            '%I': r'(\d{2})',      # 2-digit hour (12h)
+            '%M': r'(\d{2})',      # 2-digit minute
+            '%S': r'(\d{2})',      # 2-digit second
+            '%f': r'(\d{6})',      # 6-digit microsecond
+        }
+
+        # Build regex pattern from format string
+        pattern = datetime_format
+        for fmt, regex in format_to_regex.items():
+            pattern = pattern.replace(fmt, regex)
+
+        return pattern

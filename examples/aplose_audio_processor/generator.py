@@ -62,6 +62,11 @@ class AploseAudioProcessor:
                          When set, output is calibrated to dB re 1 µPa. Takes precedence over db_ref.
             normalize_audio: If True, normalize audio to [-1, 1] before computing spectrogram.
             datetime_format: strptime format to parse datetime from filenames.
+                            Common formats:
+                            - '%Y%m%d_%H%M%S' for 'prefix_20250130_223000.wav'
+                            - '%Y_%m_%d_%H_%M_%S' for 'prefix_2025_01_30_22_30_00.wav'
+                            - '%Y%m%d%H%M%S' for 'prefix_20250130223000.wav'
+                            - '%y%m%d%H%M%S' for '250130223000.wav' (2-digit year)
             target_sample_rate: Target sample rate for resampling. None = keep original.
             snippet_duration: Duration in seconds for audio snippets. None = no splitting.
             snippet_overlap: Overlap between snippets in seconds (default: 0.0).
@@ -101,7 +106,8 @@ class AploseAudioProcessor:
             snippet_duration=snippet_duration,
             overlap=snippet_overlap,
             filename_prefix=filename_prefix,
-            max_duration=max_duration
+            max_duration=max_duration,
+            datetime_format=datetime_format
         )
 
     def _process_single_audio_file(
@@ -425,8 +431,13 @@ class AploseAudioProcessor:
         # Save PNG
         img.save(png_path)
 
-        # Parse datetime
-        begin_dt, end_dt = self._parse_datetime(wav_stem, metadata['duration'])
+        # Parse datetime and round duration to integer
+        duration_rounded = int(round(metadata['duration']))
+        begin_dt, end_dt = self._parse_datetime(wav_stem, duration_rounded)
+
+        # Round timestamps to whole seconds (remove microseconds)
+        begin_dt = begin_dt.replace(microsecond=0)
+        end_dt = end_dt.replace(microsecond=0)
 
         # Build JSON metadata (using resampled dimensions)
         json_data = {
@@ -455,7 +466,7 @@ class AploseAudioProcessor:
             },
             'audio': {
                 'sample_rate': sample_rate,
-                'duration': float(metadata['duration']),
+                'duration': duration_rounded,
                 'filename': Path(wav_path).name
             },
             'analysis': {
