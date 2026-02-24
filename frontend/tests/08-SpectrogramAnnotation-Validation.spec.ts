@@ -218,7 +218,7 @@ const TEST = {
                 comments: [],
                 label: LABELS.featured.name,
                 annotator: USERS.annotator.id,
-                confidence: CONFIDENCES.notSure.label,
+                confidence: CONFIDENCES.sure.label,
                 analysis: spectrogramAnalysis.id,
             }, {
                 annotationPhase: phaseObj.id,
@@ -265,7 +265,7 @@ const TEST = {
                 comments: [],
                 label: LABELS.featured.name,
                 annotator: USERS.annotator.id,
-                confidence: CONFIDENCES.notSure.label,
+                confidence: CONFIDENCES.sure.label,
                 analysis: spectrogramAnalysis.id,
             })
         }),
