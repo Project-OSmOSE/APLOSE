@@ -4,7 +4,7 @@ import { addAnnotation, type Annotation, blur, focusAnnotation, removeAnnotation
 import { selectAllAnnotations } from './selectors'
 import { getNewItemID } from '@/service/function';
 import { AnnotationType, useCurrentPhase, useCurrentUser } from '@/api';
-import { selectFocusConfidence } from '@/features/Annotator/Confidence';
+import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
 import { type AploseNavParams } from '@/features/UX';
 import { useParams } from 'react-router-dom';
 import { useAlert } from '@/components/ui';
@@ -143,7 +143,7 @@ export const useUpdateAnnotation = () => {
   const { user } = useCurrentUser();
   const {phase} = useCurrentPhase()
   const allAnnotations = useAppSelector(selectAllAnnotations);
-  const focusedConfidence = useAppSelector(selectFocusConfidence);
+  const defaultConfidence = useAppSelector(selectDefaultConfidence);
   const getNewID = useGetNewAnnotationID()
   const add = useAddAnnotation()
   const _equals = useAnnotationEquals()
@@ -178,10 +178,11 @@ export const useUpdateAnnotation = () => {
       }
     }
     if (update.label && !allAnnotations.find(a => a.label === update.label && a.type === AnnotationType.Weak)) {
-      add({ type: AnnotationType.Weak, label: update.label, confidence: update.confidence ?? focusedConfidence })
+      // Add missing weak when changing label of an annotation
+      add({ type: AnnotationType.Weak, label: update.label, confidence: update.confidence ?? defaultConfidence })
     }
     dispatch(focusAnnotation(annotation))
-  }, [ dispatch, phaseType, allAnnotations, add, focus, _equals, validate, invalidate, user, getNewID, focusedConfidence, phase ])
+  }, [ dispatch, phaseType, allAnnotations, add, focus, _equals, validate, invalidate, user, getNewID, defaultConfidence, phase ])
 }
 
 export const useRemoveAnnotation = () => {

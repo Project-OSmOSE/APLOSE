@@ -8,7 +8,7 @@ import { MOUSE_DOWN_EVENT, MOUSE_MOVE_EVENT, MOUSE_UP_EVENT, useEvent } from '@/
 import { clearPosition, setPosition, useGetFreqTime, useIsHoverCanvas } from '@/features/Annotator/Pointer';
 import { formatTime } from '@/service/function';
 import { selectFocusLabel } from '@/features/Annotator/Label';
-import { selectFocusConfidence } from '@/features/Annotator/Confidence';
+import { selectDefaultConfidence, selectFocusConfidence } from '@/features/Annotator/Confidence';
 import { useToast } from '@/components/ui';
 import { useAddAnnotation } from '@/features/Annotator/Annotation';
 import { selectIsDrawingEnabled } from '@/features/Annotator/UX';
@@ -37,6 +37,7 @@ export const useTempAnnotationsEvents = () => {
   const timeScale = useTimeScale()
   const frequencyScale = useFrequencyScale()
   const focusedLabel = useAppSelector(selectFocusLabel)
+  const defaultConfidence = useAppSelector(selectDefaultConfidence);
   const focusedConfidence = useAppSelector(selectFocusConfidence)
   const { campaign } = useCurrentCampaign()
 
@@ -59,7 +60,7 @@ export const useTempAnnotationsEvents = () => {
       startFrequency: data.frequency,
       endFrequency: data.frequency,
     }))
-  }, [ isHoverCanvas, getFreqTime, isDrawingEnabled ])
+  }, [ isHoverCanvas, getFreqTime, isDrawingEnabled, dispatch ])
   useEvent(MOUSE_DOWN_EVENT, onStartTempAnnotation);
 
   const onUpdateTempAnnotation = useCallback((e: PointerEvent<HTMLDivElement>) => {
@@ -119,7 +120,7 @@ export const useTempAnnotationsEvents = () => {
           endTime: annotation.endTime,
           endFrequency: annotation.endFrequency,
           label: focusedLabel,
-          confidence: focusedConfidence ?? undefined,
+          confidence: defaultConfidence ?? focusedConfidence ?? undefined,
         })
       } else if (campaign?.allowPointAnnotation) {
         addAnnotation({
@@ -127,13 +128,13 @@ export const useTempAnnotationsEvents = () => {
           startTime: annotation.startTime,
           startFrequency: annotation.endFrequency,
           label: focusedLabel,
-          confidence: focusedConfidence ?? undefined,
+          confidence: defaultConfidence ?? focusedConfidence ?? undefined,
         })
       }
     }
     dispatch(clearTempAnnotation())
     if (!isHoverCanvas(e)) dispatch(clearPosition())
-  }, [ dispatch, addAnnotation, getFreqTime, timeScale, frequencyScale, campaign, focusedLabel, focusedConfidence, tempAnnotation ])
+  }, [ dispatch, addAnnotation, getFreqTime, isHoverCanvas, toast, timeScale, frequencyScale, campaign, focusedLabel, defaultConfidence, focusedConfidence, tempAnnotation ])
   useEvent(MOUSE_UP_EVENT, onEndNewAnnotation);
 
   return { onStartTempAnnotation }

@@ -14,7 +14,7 @@ import {
 } from '@/features/Annotator/Annotation';
 import { AnnotationType } from '@/api';
 import { useKeyDownEvent } from '@/features/UX';
-import { selectFocusConfidence } from '@/features/Annotator/Confidence';
+import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { setHiddenLabels } from './slice';
 import { selectAllLabels, selectFocusLabel, selectHiddenLabels } from './selectors';
@@ -31,7 +31,7 @@ export const LabelChip: React.FC<{
   const allLabels = useAppSelector(selectAllLabels)
   const focusedLabel = useAppSelector(selectFocusLabel)
   const hiddenLabels = useAppSelector(selectHiddenLabels)
-  const focusedConfidence = useAppSelector(selectFocusConfidence)
+  const defaultConfidence = useAppSelector(selectDefaultConfidence);
   const addAnnotation = useAddAnnotation()
   const updateAnnotation = useUpdateAnnotation()
   const focusedAnnotation = useAppSelector(selectAnnotation)
@@ -55,12 +55,12 @@ export const LabelChip: React.FC<{
     const weakProperties = {
       type: AnnotationType.Weak,
       label,
-      confidence: focusedConfidence,
+      confidence: defaultConfidence,
     }
     const weak = getAnnotation(weakProperties)
     if (weak) return dispatch(focusAnnotation(weak))
     addAnnotation(weakProperties)
-  }, [ focusedAnnotation, updateAnnotation, label, getAnnotation, dispatch, addAnnotation, focusedConfidence ])
+  }, [ focusedAnnotation, updateAnnotation, label, getAnnotation, dispatch, addAnnotation, defaultConfidence ])
   useKeyDownEvent([ number, key ], select)
 
   const show = useCallback((event: MouseEvent) => {
@@ -68,7 +68,7 @@ export const LabelChip: React.FC<{
     // Hide all but current if ctrlKey pressed
     if (event.ctrlKey) dispatch(setHiddenLabels(allLabels))
     dispatch(setHiddenLabels(hiddenLabels.filter(l => l !== label)))
-  }, [ label, hiddenLabels, dispatch ])
+  }, [ label, hiddenLabels, dispatch, allLabels ])
 
   const hide = useCallback((event: MouseEvent) => {
     event.stopPropagation();

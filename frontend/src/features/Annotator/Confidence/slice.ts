@@ -71,6 +71,7 @@ export const AnnotatorConfidenceSlice = createSlice({
   },
   selectors: {
     selectFocus: state => state.focus,
+    selectDefault: state => state._defaultConfidence,
   },
 })
 

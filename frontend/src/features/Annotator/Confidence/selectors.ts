@@ -7,6 +7,10 @@ export const selectFocusConfidence = createSelector(
   selectAnnotator, AnnotatorConfidenceSlice.selectors.selectFocus,
 )
 
+export const selectDefaultConfidence = createSelector(
+  selectAnnotator, AnnotatorConfidenceSlice.selectors.selectDefault,
+)
+
 export const selectConfidenceSet = createSelector(
   selectAnnotatorCampaign,
   (campaignQuery) => campaignQuery.data?.annotationCampaignById?.confidenceSet,
