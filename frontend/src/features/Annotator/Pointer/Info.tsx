@@ -3,17 +3,16 @@ import styles from './styles.module.scss';
 import { FadedText } from '@/components/ui';
 import { formatTime } from '@/service/function';
 import { useAnnotationTask } from '@/api';
-import { useAppSelector } from '@/features/App';
-import { selectPosition } from '@/features/Annotator/Pointer';
+import { usePointer } from '@/features/Annotator/Pointer';
 
 export const PointerInfo: React.FC = () => {
-  const position = useAppSelector(selectPosition)
+  const pointer = usePointer()
   const { spectrogram } = useAnnotationTask()
 
-  return <div className={ [ styles.pointerInfo, position ? '' : styles.hidden ].join(' ') }>
+  return <div className={ [ styles.pointerInfo, pointer.position ? '' : styles.hidden ].join(' ') }>
     <FadedText>Pointer</FadedText>
-    { position ?
-      <p>{ position.frequency.toFixed(2) }Hz
-        / { formatTime(position.time, (spectrogram?.duration ?? 0) < 60) }</p> : <p>0</p> }
+    { pointer.position ?
+      <p>{ pointer.position.frequency.toFixed(2) }Hz
+        / { formatTime(pointer.position.time, (spectrogram?.duration ?? 0) < 60) }</p> : <p>0</p> }
   </div>
 }

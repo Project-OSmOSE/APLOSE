@@ -13,69 +13,73 @@ import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
 import { type AploseNavParams } from '@/features/UX';
 import { useParams } from 'react-router-dom';
 import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
+import { PointerProvider } from '@/features/Annotator/Pointer/context';
 
 export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
-  const { campaignID, phaseType } = useParams<AploseNavParams>();
-  const { campaign } = useCurrentCampaign()
-  const { phase } = useCurrentPhase()
-  const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
-  const { spectrogram, navigationInfo } = useAnnotationTask();
-  const canNavigate = useAnnotatorCanNavigate()
-  const dispatch = useAppDispatch()
+    const { campaignID, phaseType } = useParams<AploseNavParams>();
+    const { campaign } = useCurrentCampaign()
+    const { phase } = useCurrentPhase()
+    const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
+    const { spectrogram, navigationInfo } = useAnnotationTask();
+    const canNavigate = useAnnotatorCanNavigate()
+    const dispatch = useAppDispatch()
 
-  const onBack = useCallback(() => {
-    dispatch(gqlAPI.util.invalidateTags([ {
-      type: 'AnnotationPhase',
-      id: phase?.id,
-    } ]))
-  }, [ phase ])
+    const onBack = useCallback(() => {
+        dispatch(gqlAPI.util.invalidateTags([ {
+            type: 'AnnotationPhase',
+            id: phase?.id,
+        } ]))
+    }, [ phase, dispatch ])
 
-  return <AnnotatorCanvasContextProvider>
-    <div className={ styles.page }>
-      <Header size="small"
-              canNavigate={ canNavigate }
-              buttons={ <Fragment>
+    return <PointerProvider>
+        <AnnotatorCanvasContextProvider>
+            <div className={ styles.page }>
+                <Header size="small"
+                        canNavigate={ canNavigate }
+                        buttons={ <Fragment>
 
-                { campaign?.instructionsUrl &&
-                    <Link color="medium" target="_blank"
-                          href={ campaign?.instructionsUrl }>
-                        <IonIcon icon={ helpBuoyOutline }
-                                 slot="start"/>
-                        Campaign instructions
-                    </Link>
-                }
+                            { campaign?.instructionsUrl &&
+                                <Link color="medium" target="_blank"
+                                      href={ campaign?.instructionsUrl }>
+                                    <IonIcon icon={ helpBuoyOutline }
+                                             slot="start"/>
+                                    Campaign instructions
+                                </Link>
+                            }
 
-                <Link color="medium" fill="outline"
-                      size="small"
-                      onClick={ onBack }
-                      appPath={ `/annotation-campaign/${ campaignID }/phase/${ phaseType }` }>
-                  Back to campaign
-                </Link>
-              </Fragment> }>
+                            <Link color="medium" fill="outline"
+                                  size="small"
+                                  onClick={ onBack }
+                                  appPath={ `/annotation-campaign/${ campaignID }/phase/${ phaseType }` }>
+                                Back to campaign
+                            </Link>
+                        </Fragment> }>
 
-        { spectrogram && campaign && <div className={ styles.info }>
-            <p>
-              { campaign.name }
-                <IoChevronForwardOutline/> { spectrogram.filename } { spectrogram.task?.status === AnnotationTaskStatus.Finished &&
-                <IoCheckmarkCircleOutline/> }
-            </p>
-          { isEditionAuthorized && navigationInfo?.totalCount &&
-              <Progress label="Position"
-                        className={ styles.progress }
-                        value={ (navigationInfo.currentIndex ?? 0) + 1 }
-                        total={ navigationInfo.totalCount }/> }
-          { campaign?.archive ? <IonNote>You cannot annotate an archived campaign.</IonNote> :
-            phase?.endedAt ? <IonNote>You cannot annotate an ended phase.</IonNote> :
-              !spectrogram.isAssigned ? <IonNote>You are not assigned to annotate this file.</IonNote> :
-                <Fragment/>
-          }
-        </div> }
+                    { spectrogram && campaign && <div className={ styles.info }>
+                        <p>
+                            { campaign.name }
+                            <IoChevronForwardOutline/> { spectrogram.filename } { spectrogram.task?.status === AnnotationTaskStatus.Finished &&
+                            <IoCheckmarkCircleOutline/> }
+                        </p>
+                        { isEditionAuthorized && navigationInfo?.totalCount &&
+                            <Progress label="Position"
+                                      className={ styles.progress }
+                                      value={ (navigationInfo.currentIndex ?? 0) + 1 }
+                                      total={ navigationInfo.totalCount }/> }
+                        { campaign?.archive ? <IonNote>You cannot annotate an archived campaign.</IonNote> :
+                            phase?.endedAt ? <IonNote>You cannot annotate an ended phase.</IonNote> :
+                                !spectrogram.isAssigned ?
+                                    <IonNote>You are not assigned to annotate this file.</IonNote> :
+                                    <Fragment/>
+                        }
+                    </div> }
 
-      </Header>
+                </Header>
 
-      { children }
+                { children }
 
-      <Footer/>
-    </div>
-  </AnnotatorCanvasContextProvider>
+                <Footer/>
+            </div>
+        </AnnotatorCanvasContextProvider>
+    </PointerProvider>
 }

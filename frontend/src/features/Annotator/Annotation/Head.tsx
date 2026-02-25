@@ -34,7 +34,6 @@ export const AnnotationHeadContent: React.FC<{
     }, [ annotation, removeAnnotation ]);
 
     return <Fragment>
-
         {/* Play annotation button */ }
         <TooltipOverlay tooltipContent={ <p>Play the audio of the annotation</p> }>
             <IoPlayCircle className={ styles.button } onClick={ play }/>
