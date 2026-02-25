@@ -48,9 +48,19 @@ interface DataPNGMetadata {
   };
 }
 
+interface FftOption {
+  value: number;
+  label: string;
+  fft: number;
+}
+
 interface DataPNGViewerProps {
   jsonPath: string;
   basePath: string;
+  wavFile?: string;
+  fftOptions?: FftOption[];
+  selectedFftIndex?: number;
+  onFftChange?: (index: number) => void;
   onPrevious?: () => void;
   onNext?: () => void;
   hasPrevious?: boolean;
@@ -71,6 +81,10 @@ const COLORSCALES = [
 export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
   jsonPath,
   basePath,
+  wavFile,
+  fftOptions = [],
+  selectedFftIndex = 0,
+  onFftChange,
   onPrevious,
   onNext,
   hasPrevious = false,
@@ -87,8 +101,8 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
   const [isPlaying, setIsPlaying] = useState(false);
 
   // Controls
-  const [colorscale, setColorscale] = useState('Viridis');
-  const [yAxisScale, setYAxisScale] = useState<'log' | 'linear'>('log');
+  const [colorscale, setColorscale] = useState('Greys_r');
+  const [yAxisScale, setYAxisScale] = useState<'log' | 'linear'>('linear');
   const [zmin, setZmin] = useState<number | null>(null);
   const [zmax, setZmax] = useState<number | null>(null);
 
@@ -101,17 +115,24 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
 
         // Load JSON metadata
         const jsonUrl = `${basePath}/${jsonPath}`;
+        console.log('Fetching metadata from:', jsonUrl);
         const jsonResponse = await fetch(jsonUrl);
         if (!jsonResponse.ok) {
-          throw new Error(`Failed to load metadata: ${jsonResponse.statusText}`);
+          throw new Error(`Failed to load metadata: ${jsonResponse.status} ${jsonResponse.statusText}`);
         }
         const meta: DataPNGMetadata = await jsonResponse.json();
         setMetadata(meta);
 
         // Load PNG and decode
         const pngUrl = `${basePath}/${meta.png_file}`;
+        console.log('Fetching PNG from:', pngUrl);
         const pngData = await decodePNG(pngUrl, meta);
         setSpectrogramData(pngData);
+
+        // Set initial y-axis scale from metadata
+        if (meta.spectrogram.frequency_scale) {
+          setYAxisScale(meta.spectrogram.frequency_scale);
+        }
 
         // Reset z-range to use data range
         setZmin(null);
@@ -125,7 +146,7 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
       }
     };
 
-    if (jsonPath) {
+    if (jsonPath && basePath) {
       loadData();
     }
   }, [jsonPath, basePath]);
@@ -198,7 +219,7 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
 
   // Calculate data range
   const dataRange = useMemo(() => {
-    if (!metadata) return { min: 0, max: 0 };
+    if (!metadata) return { min: -120, max: 0 };
     return { min: metadata.encoding.db_min, max: metadata.encoding.db_max };
   }, [metadata]);
 
@@ -210,24 +231,18 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
   const { frequencies, times } = useMemo(() => {
     if (!metadata || !spectrogramData) return { frequencies: [], times: [] };
 
-    const { frequency_min, frequency_max, frequency_scale, n_frequencies, time_min, time_max, n_times } = metadata.spectrogram;
+    const { frequency_min, frequency_max, time_min, time_max } = metadata.spectrogram;
+    const height = spectrogramData.length;
+    const width = spectrogramData[0]?.length || 0;
 
-    // Generate frequency array based on scale
-    let freqs: number[];
-    if (frequency_scale === 'log') {
-      freqs = Array.from({ length: n_frequencies }, (_, i) => {
-        const t = i / (n_frequencies - 1);
-        return frequency_min * Math.pow(frequency_max / frequency_min, t);
-      });
-    } else {
-      freqs = Array.from({ length: n_frequencies }, (_, i) =>
-        frequency_min + (frequency_max - frequency_min) * i / (n_frequencies - 1)
-      );
-    }
+    // Generate frequency array (linear spacing for display)
+    const freqs = Array.from({ length: height }, (_, i) =>
+      frequency_min + (frequency_max - frequency_min) * i / (height - 1)
+    );
 
     // Generate time array (always linear)
-    const timeArr = Array.from({ length: n_times }, (_, i) =>
-      time_min + (time_max - time_min) * i / (n_times - 1)
+    const timeArr = Array.from({ length: width }, (_, i) =>
+      time_min + (time_max - time_min) * i / (width - 1)
     );
 
     return { frequencies: freqs, times: timeArr };
@@ -250,7 +265,13 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
         reversescale: isReversed,
         zmin: effectiveZmin,
         zmax: effectiveZmax,
-        showscale: false,
+        showscale: true,
+        colorbar: {
+          title: 'dB',
+          titleside: 'right' as const,
+          tickfont: { color: '#aaa' },
+          titlefont: { color: '#aaa' },
+        },
         hovertemplate: 'Time: %{x:.2f}s<br>Frequency: %{y:.0f}Hz<br>Power: %{z:.1f}dB<extra></extra>',
       },
     ];
@@ -260,10 +281,10 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
   const layout = useMemo(() => {
     if (!metadata) return {};
 
-    const shapes: any[] = [];
+    const shapes: Plotly.Shape[] = [];
 
     // Playback indicator line
-    if (audioTime > 0) {
+    if (audioTime > 0 && metadata) {
       shapes.push({
         type: 'line',
         x0: audioTime,
@@ -276,26 +297,30 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
     }
 
     return {
-      margin: { l: 60, r: 20, t: 10, b: 40 },
+      margin: { l: 70, r: 80, t: 20, b: 50 },
       xaxis: {
-        title: { text: 'Time (s)' },
+        title: { text: 'Time (s)', font: { color: '#aaa' } },
         showgrid: true,
+        gridcolor: '#333',
         zeroline: false,
+        tickfont: { color: '#aaa' },
         range: [metadata.spectrogram.time_min, metadata.spectrogram.time_max],
       },
       yaxis: {
-        title: { text: 'Frequency (Hz)' },
+        title: { text: 'Frequency (Hz)', font: { color: '#aaa' } },
         showgrid: true,
+        gridcolor: '#333',
         zeroline: false,
+        tickfont: { color: '#aaa' },
         type: yAxisScale,
         range: yAxisScale === 'log'
-          ? [Math.log10(metadata.spectrogram.frequency_min), Math.log10(metadata.spectrogram.frequency_max)]
+          ? [Math.log10(Math.max(1, metadata.spectrogram.frequency_min)), Math.log10(metadata.spectrogram.frequency_max)]
           : [metadata.spectrogram.frequency_min, metadata.spectrogram.frequency_max],
       },
       shapes,
       hovermode: 'closest' as const,
-      plot_bgcolor: '#000',
-      paper_bgcolor: '#000',
+      plot_bgcolor: '#1a1a1a',
+      paper_bgcolor: '#1a1a1a',
       font: { color: '#fff' },
     };
   }, [metadata, yAxisScale, audioTime]);
@@ -303,16 +328,16 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
   const config = useMemo(() => ({
     displayModeBar: true,
     displaylogo: false,
-    scrollZoom: false,
+    scrollZoom: true,
     doubleClick: 'reset' as const,
     responsive: true,
-    modeBarButtonsToRemove: ['lasso2d'] as any,
+    modeBarButtonsToRemove: ['lasso2d', 'select2d'] as Plotly.ModeBarDefaultButtons[],
   }), []);
 
   // Click to seek audio
-  const handlePlotClick = useCallback((event: any) => {
+  const handlePlotClick = useCallback((event: Plotly.PlotMouseEvent) => {
     if (event?.points?.[0]?.x !== undefined && audioRef.current) {
-      audioRef.current.currentTime = event.points[0].x;
+      audioRef.current.currentTime = event.points[0].x as number;
     }
   }, []);
 
@@ -344,14 +369,29 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
     );
   }
 
-  const audioUrl = `${basePath}/${metadata.audio.filename}`;
+  const audioUrl = wavFile ? `${basePath}/${wavFile}` : `${basePath}/${metadata.audio.filename}`;
 
   return (
     <div className={styles.viewerContainer}>
       {/* Controls Panel */}
       <div className={styles.controlsPanel}>
+        {/* FFT Selector */}
+        {fftOptions.length > 0 && (
+          <div className={styles.controlGroup}>
+            <label>Analysis</label>
+            <select
+              value={selectedFftIndex}
+              onChange={(e) => onFftChange?.(parseInt(e.target.value))}
+            >
+              {fftOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div className={styles.controlGroup}>
-          <label>Y-Axis Scale</label>
+          <label>Y-Axis</label>
           <div className={styles.buttonGroup}>
             <button
               onClick={() => setYAxisScale('linear')}
@@ -378,35 +418,34 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
         </div>
 
         <div className={styles.controlGroup}>
-          <label>Min: {effectiveZmin.toFixed(1)} dB</label>
+          <label>Min: {effectiveZmin.toFixed(0)} dB</label>
           <input
             type="range"
             min={dataRange.min}
             max={dataRange.max}
-            step={(dataRange.max - dataRange.min) / 100}
+            step={1}
             value={effectiveZmin}
             onChange={(e) => setZmin(parseFloat(e.target.value))}
           />
         </div>
 
         <div className={styles.controlGroup}>
-          <label>Max: {effectiveZmax.toFixed(1)} dB</label>
+          <label>Max: {effectiveZmax.toFixed(0)} dB</label>
           <input
             type="range"
             min={dataRange.min}
             max={dataRange.max}
-            step={(dataRange.max - dataRange.min) / 100}
+            step={1}
             value={effectiveZmax}
             onChange={(e) => setZmax(parseFloat(e.target.value))}
           />
         </div>
 
         <button className={styles.resetButton} onClick={() => { setZmin(null); setZmax(null); }}>
-          Reset Range
+          Reset
         </button>
 
         <div className={styles.infoText}>
-          <span>FFT: {metadata.analysis.nfft}</span>
           <span>{metadata.temporal.begin}</span>
         </div>
       </div>
@@ -430,7 +469,7 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
             {isPlaying ? '⏸' : '▶'}
           </button>
           <span className={styles.timeDisplay}>
-            {audioTime.toFixed(1)}s / {metadata.audio.duration}s
+            {audioTime.toFixed(1)}s / {metadata.audio.duration.toFixed(1)}s
           </span>
         </div>
 

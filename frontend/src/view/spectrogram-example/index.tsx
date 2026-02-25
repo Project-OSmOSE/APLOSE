@@ -1,18 +1,24 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { IonSpinner } from '@ionic/react';
 import styles from './styles.module.scss';
 import { DataPNGViewer } from './DataPNGViewer';
 import { NetCDFViewer } from './NetCDFViewer';
 
-interface ExampleFile {
+interface Analysis {
+  fft: number;
   json: string;
   png: string | null;
-  wav: string | null;
+}
+
+interface Recording {
+  id: string;
+  wav: string;
   timestamp: string;
+  analyses: Analysis[];
 }
 
 interface ExampleFilesResponse {
-  files: ExampleFile[];
+  recordings: Recording[];
   basePath: string;
   message?: string;
 }
@@ -24,8 +30,9 @@ interface ExampleFilesResponse {
  * Supports both PNG/JSON format (new) and NetCDF format (legacy).
  */
 export const SpectrogramExamplePage: React.FC = () => {
-  const [files, setFiles] = useState<ExampleFile[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [recordings, setRecordings] = useState<Recording[]>([]);
+  const [selectedRecordingIndex, setSelectedRecordingIndex] = useState(0);
+  const [selectedFftIndex, setSelectedFftIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [basePath, setBasePath] = useState('');
   const [useNetCDF, setUseNetCDF] = useState(false);
@@ -41,12 +48,12 @@ export const SpectrogramExamplePage: React.FC = () => {
         }
         const data: ExampleFilesResponse = await response.json();
 
-        if (data.files.length === 0) {
+        if (!data.recordings || data.recordings.length === 0) {
           // No files, show NetCDF example instead
           setUseNetCDF(true);
         } else {
-          setFiles(data.files);
-          setBasePath('/api/netcdf/example-file');
+          setRecordings(data.recordings);
+          setBasePath(data.basePath);
         }
         setLoading(false);
       } catch (e) {
@@ -60,23 +67,37 @@ export const SpectrogramExamplePage: React.FC = () => {
     fetchFiles();
   }, []);
 
+  // Current selected recording and analysis
+  const selectedRecording = recordings[selectedRecordingIndex];
+  const selectedAnalysis = selectedRecording?.analyses[selectedFftIndex];
+
+  // Reset FFT index when recording changes
+  useEffect(() => {
+    setSelectedFftIndex(0);
+  }, [selectedRecordingIndex]);
+
   // Navigation handlers
   const handlePrevious = useCallback(() => {
-    if (selectedIndex > 0) {
-      setSelectedIndex(selectedIndex - 1);
+    if (selectedRecordingIndex > 0) {
+      setSelectedRecordingIndex(selectedRecordingIndex - 1);
     }
-  }, [selectedIndex]);
+  }, [selectedRecordingIndex]);
 
   const handleNext = useCallback(() => {
-    if (selectedIndex < files.length - 1) {
-      setSelectedIndex(selectedIndex + 1);
+    if (selectedRecordingIndex < recordings.length - 1) {
+      setSelectedRecordingIndex(selectedRecordingIndex + 1);
     }
-  }, [selectedIndex, files.length]);
+  }, [selectedRecordingIndex, recordings.length]);
 
-  // File selection handler
-  const handleFileSelect = useCallback((index: number) => {
-    setSelectedIndex(index);
-  }, []);
+  // FFT options for dropdown
+  const fftOptions = useMemo(() => {
+    if (!selectedRecording) return [];
+    return selectedRecording.analyses.map((a, idx) => ({
+      value: idx,
+      label: `nfft: ${a.fft}`,
+      fft: a.fft,
+    }));
+  }, [selectedRecording]);
 
   if (loading) {
     return (
@@ -111,33 +132,39 @@ export const SpectrogramExamplePage: React.FC = () => {
     );
   }
 
-  const selectedFile = files[selectedIndex];
-
   return (
     <div className={styles.pageContainer}>
-      <div className={styles.viewerContainer}>
-        {/* File Selector */}
-        <div className={styles.fileSelector}>
-          {files.map((file, index) => (
-            <button
-              key={file.json}
-              onClick={() => handleFileSelect(index)}
-              className={`${styles.fileButton} ${index === selectedIndex ? styles.active : ''}`}
+      <div className={styles.viewerWrapper}>
+        {/* Recording Selector */}
+        {recordings.length > 1 && (
+          <div className={styles.recordingSelector}>
+            <label>Recording:</label>
+            <select
+              value={selectedRecordingIndex}
+              onChange={(e) => setSelectedRecordingIndex(parseInt(e.target.value))}
             >
-              {file.timestamp || file.json.replace('.json', '')}
-            </button>
-          ))}
-        </div>
+              {recordings.map((rec, idx) => (
+                <option key={rec.id} value={idx}>
+                  {rec.timestamp || rec.id}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
-        {/* DataPNG Viewer */}
-        {selectedFile && (
+        {/* DataPNG Viewer with FFT selector */}
+        {selectedRecording && selectedAnalysis && (
           <DataPNGViewer
-            jsonPath={selectedFile.json}
+            jsonPath={selectedAnalysis.json}
             basePath={basePath}
+            wavFile={selectedRecording.wav}
+            fftOptions={fftOptions}
+            selectedFftIndex={selectedFftIndex}
+            onFftChange={setSelectedFftIndex}
             onPrevious={handlePrevious}
             onNext={handleNext}
-            hasPrevious={selectedIndex > 0}
-            hasNext={selectedIndex < files.length - 1}
+            hasPrevious={selectedRecordingIndex > 0}
+            hasNext={selectedRecordingIndex < recordings.length - 1}
           />
         )}
       </div>

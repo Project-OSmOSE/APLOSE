@@ -455,3 +455,45 @@
   color: #888;
   font-size: 0.9rem;
 }
+
+// Viewer wrapper
+.viewerWrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+// Recording selector
+.recordingSelector {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #2a2a2a;
+  border-radius: 6px;
+
+  label {
+    font-size: 0.9rem;
+    color: #ccc;
+    font-weight: 500;
+  }
+
+  select {
+    flex: 1;
+    max-width: 400px;
+    padding: 0.5rem 0.75rem;
+    background: #333;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: var(--ion-color-primary);
+    }
+  }
+}

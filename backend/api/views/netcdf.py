@@ -278,17 +278,26 @@ class NetCDFViewSet(ViewSet):
     def list_example_files(self, request):
         """
         List available PNG/JSON spectrogram files in the example dataset folder.
+        Groups files by recording (one WAV with multiple FFT analyses).
 
         Returns:
-            JSON response with list of available files:
+            JSON response with list of available recordings:
             {
-                "files": [
-                    {"json": "file1.json", "png": "file1_spectrogram.png", "wav": "file1.wav"},
-                    ...
+                "recordings": [
+                    {
+                        "id": "recording_base_name",
+                        "wav": "recording.wav",
+                        "timestamp": "2025-01-30T22:30:00",
+                        "analyses": [
+                            {"fft": 4096, "json": "file_fft4096_data.json", "png": "file_fft4096_data.png"},
+                            {"fft": 8192, "json": "file_fft8192_data.json", "png": "file_fft8192_data.png"},
+                        ]
+                    }
                 ],
-                "basePath": "/api/example-files"
+                "basePath": "/api/netcdf/example-file"
             }
         """
+        import re
         try:
             # Get the example folder path from settings or use default
             datawork_dir = Path(settings.DATAWORK_FOLDER if hasattr(settings, 'DATAWORK_FOLDER') else '/opt/datawork')
@@ -296,43 +305,69 @@ class NetCDFViewSet(ViewSet):
 
             if not example_dir.exists():
                 return JsonResponse({
-                    'files': [],
+                    'recordings': [],
                     'basePath': '',
                     'message': 'Example folder not found. Place PNG/JSON files in volumes/datawork/dataset/example/'
                 })
 
             # Find all JSON files (metadata files)
-            json_files = list(example_dir.glob('*.json'))
-            files = []
+            json_files = list(example_dir.glob('*_data.json'))
+
+            # Group by base recording name (without _fftXXXX_data suffix)
+            recordings_dict = {}
+            fft_pattern = re.compile(r'(.+)_fft(\d+)_data\.json$')
 
             for json_file in sorted(json_files):
-                # Read JSON to find associated PNG and WAV files
+                match = fft_pattern.match(json_file.name)
+                if not match:
+                    continue
+
+                base_name = match.group(1)
+                fft_size = int(match.group(2))
+
+                # Read JSON to get metadata
                 try:
                     with open(json_file, 'r') as f:
                         metadata = json.load(f)
 
-                    # Get the PNG filename from metadata
                     png_file = metadata.get('png_file', '')
                     wav_file = metadata.get('audio', {}).get('filename', '')
+                    timestamp = metadata.get('temporal', {}).get('begin', '')
 
-                    # Check if files exist
+                    # Check if PNG exists
                     png_path = example_dir / png_file if png_file else None
-                    wav_path = example_dir / wav_file if wav_file else None
+                    png_exists = png_path and png_path.exists()
 
-                    file_entry = {
+                    if base_name not in recordings_dict:
+                        recordings_dict[base_name] = {
+                            'id': base_name,
+                            'wav': wav_file,
+                            'timestamp': timestamp,
+                            'analyses': []
+                        }
+
+                    recordings_dict[base_name]['analyses'].append({
+                        'fft': fft_size,
                         'json': json_file.name,
-                        'png': png_file if png_path and png_path.exists() else None,
-                        'wav': wav_file if wav_path and wav_path.exists() else None,
-                        'timestamp': metadata.get('temporal', {}).get('begin', json_file.stem),
-                    }
-                    files.append(file_entry)
+                        'png': png_file if png_exists else None,
+                    })
+
                 except (json.JSONDecodeError, KeyError) as e:
                     logger.warning(f"Could not parse JSON file {json_file}: {e}")
                     continue
 
+            # Sort analyses by FFT size within each recording
+            recordings = []
+            for rec in recordings_dict.values():
+                rec['analyses'].sort(key=lambda x: x['fft'])
+                recordings.append(rec)
+
+            # Sort recordings by timestamp
+            recordings.sort(key=lambda x: x['timestamp'])
+
             return JsonResponse({
-                'files': files,
-                'basePath': '/api/example-files',
+                'recordings': recordings,
+                'basePath': '/api/netcdf/example-file',
             })
 
         except Exception as e:
