@@ -9,8 +9,10 @@ from django.db import models
 from django.db.models import Q, F, QuerySet
 from metadatax.data.models import FileFormat
 from osekit.config import TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
-from osekit.core_api.spectro_data import SpectroData
-from osekit.core_api.spectro_dataset import SpectroDataset
+
+# from osekit.core_api.spectro_data import SpectroData
+# from osekit.core_api.spectro_dataset import SpectroDataset
+from backend.utils.osekit_replace import SpectroDataset, SpectroData
 
 from .__abstract_file import AbstractFile
 from .__abstract_time_segment import TimeSegment

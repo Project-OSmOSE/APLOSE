@@ -10,10 +10,12 @@ from dateutil import parser
 from django.conf import settings
 from django.db import models
 from django.db.models import CheckConstraint, Q
-from osekit.core_api.spectro_dataset import SpectroDataset
 from typing_extensions import deprecated
 
 from backend.aplose.models import User
+
+# from osekit.core_api.spectro_dataset import SpectroDataset
+from backend.utils.osekit_replace import SpectroDataset
 from .__abstract_analysis import AbstractAnalysis
 from .colormap import Colormap
 from .dataset import Dataset
@@ -128,6 +130,7 @@ class SpectrogramAnalysisManager(models.Manager):
                 )
             )
         )
+        sd.load_data()  # TODO: remove - debug osekit only
         colormap, _ = Colormap.objects.get_or_create(name=sd.colormap)
         dynamic_min = [d.v_lim[0] for d in sd.data]
         dynamic_max = [d.v_lim[1] for d in sd.data]
@@ -323,9 +326,9 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
 
     def get_osekit_spectro_dataset(self) -> SpectroDataset:
         """Get OSEkit dataset object"""
-        return SpectroDataset.from_json(
-            self.get_osekit_spectro_dataset_serialized_path()
-        )
+        sd = SpectroDataset.from_json(self.get_osekit_spectro_dataset_serialized_path())
+        sd.load_data()  # TODO: remove - debug osekit only
+        return sd
 
     def get_osekit_spectro_dataset_serialized_path(self) -> Path:
         """Get OSEkit dataset object"""

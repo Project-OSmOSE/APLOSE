@@ -1,12 +1,10 @@
 """Datasets models"""
 import csv
 from os.path import join
-from pathlib import Path
 
 from django.conf import settings
 from django.db import models
 from metadatax.acquisition.models import ChannelConfiguration
-from osekit.public_api.dataset import Dataset as OSEkitDataset
 from typing_extensions import deprecated
 
 from backend.aplose.models import User
@@ -73,13 +71,3 @@ class Dataset(AbstractDataset, models.Model):
                 return ""
             dataset = datasets[0]
         return f"{dataset['spectro_duration']}_{dataset['dataset_sr']}"
-
-    def get_osekit_dataset(self) -> OSEkitDataset:
-        """Get OSEkit dataset object"""
-        json_path = join(
-            settings.VOLUMES_ROOT,
-            settings.DATASET_EXPORT_PATH,
-            self.path,
-            "dataset.json",
-        )
-        return OSEkitDataset.from_json(Path(json_path))
