@@ -27,7 +27,6 @@ export const SpectrogramExamplePage: React.FC = () => {
   const [files, setFiles] = useState<ExampleFile[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [basePath, setBasePath] = useState('');
   const [useNetCDF, setUseNetCDF] = useState(false);
 
