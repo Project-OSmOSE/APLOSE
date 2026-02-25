@@ -8,6 +8,7 @@ import numpy as np
 import xarray as xr
 from django.http import JsonResponse
 from django.conf import settings
+from django.http import FileResponse, Http404
 from rest_framework.decorators import action
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
@@ -270,5 +271,129 @@ class NetCDFViewSet(ViewSet):
             logger.error(f"Failed to load spectrogram for analysis {analysis_id}: {e}")
             return Response(
                 {'error': f'Failed to load spectrogram: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @action(detail=False, methods=['get'], url_path='list-example-files')
+    def list_example_files(self, request):
+        """
+        List available PNG/JSON spectrogram files in the example dataset folder.
+
+        Returns:
+            JSON response with list of available files:
+            {
+                "files": [
+                    {"json": "file1.json", "png": "file1_spectrogram.png", "wav": "file1.wav"},
+                    ...
+                ],
+                "basePath": "/api/example-files"
+            }
+        """
+        try:
+            # Get the example folder path from settings or use default
+            datawork_dir = Path(settings.DATAWORK_FOLDER if hasattr(settings, 'DATAWORK_FOLDER') else '/datawork')
+            example_dir = datawork_dir / 'dataset' / 'example'
+
+            if not example_dir.exists():
+                return JsonResponse({
+                    'files': [],
+                    'basePath': '',
+                    'message': 'Example folder not found. Place PNG/JSON files in volumes/datawork/dataset/example/'
+                })
+
+            # Find all JSON files (metadata files)
+            json_files = list(example_dir.glob('*.json'))
+            files = []
+
+            for json_file in sorted(json_files):
+                # Read JSON to find associated PNG and WAV files
+                try:
+                    with open(json_file, 'r') as f:
+                        metadata = json.load(f)
+
+                    # Get the PNG filename from metadata
+                    png_file = metadata.get('png_file', '')
+                    wav_file = metadata.get('audio', {}).get('filename', '')
+
+                    # Check if files exist
+                    png_path = example_dir / png_file if png_file else None
+                    wav_path = example_dir / wav_file if wav_file else None
+
+                    file_entry = {
+                        'json': json_file.name,
+                        'png': png_file if png_path and png_path.exists() else None,
+                        'wav': wav_file if wav_path and wav_path.exists() else None,
+                        'timestamp': metadata.get('temporal', {}).get('begin', json_file.stem),
+                    }
+                    files.append(file_entry)
+                except (json.JSONDecodeError, KeyError) as e:
+                    logger.warning(f"Could not parse JSON file {json_file}: {e}")
+                    continue
+
+            return JsonResponse({
+                'files': files,
+                'basePath': '/api/example-files',
+            })
+
+        except Exception as e:
+            logger.error(f"Failed to list example files: {e}")
+            return Response(
+                {'error': f'Failed to list example files: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @action(detail=False, methods=['get'], url_path='example-file/(?P<filename>.+)')
+    def serve_example_file(self, request, filename=None):
+        """
+        Serve a file from the example dataset folder.
+
+        URL parameters:
+            filename: Name of the file to serve (e.g., spectrogram.png)
+
+        Returns:
+            FileResponse with the requested file
+        """
+        if not filename:
+            return Response(
+                {'error': 'Filename is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Security: prevent directory traversal
+        if '..' in filename or filename.startswith('/'):
+            return Response(
+                {'error': 'Invalid filename'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            datawork_dir = Path(settings.DATAWORK_FOLDER if hasattr(settings, 'DATAWORK_FOLDER') else '/datawork')
+            example_dir = datawork_dir / 'dataset' / 'example'
+            file_path = example_dir / filename
+
+            if not file_path.exists() or not file_path.is_file():
+                raise Http404(f"File not found: {filename}")
+
+            # Determine content type
+            content_types = {
+                '.json': 'application/json',
+                '.png': 'image/png',
+                '.wav': 'audio/wav',
+                '.mp3': 'audio/mpeg',
+            }
+            content_type = content_types.get(file_path.suffix.lower(), 'application/octet-stream')
+
+            return FileResponse(
+                open(file_path, 'rb'),
+                content_type=content_type,
+                as_attachment=False
+            )
+
+        except Http404:
+            raise
+        except Exception as e:
+            logger.error(f"Failed to serve example file {filename}: {e}")
+            return Response(
+                {'error': f'Failed to serve file: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

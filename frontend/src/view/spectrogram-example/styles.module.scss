@@ -3,6 +3,7 @@
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  background: #121212;
 }
 
 .exampleContainer {
@@ -191,4 +192,266 @@
       color: var(--ion-color-primary);
     }
   }
+}
+
+// DataPNGViewer styles - dark theme matching annotation page
+.viewerContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 0.5rem;
+  background: #1a1a1a;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.controlsPanel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.75rem 1rem;
+  background: #2a2a2a;
+  border-radius: 6px;
+
+  .controlGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    label {
+      font-size: 0.85rem;
+      color: #ccc;
+      white-space: nowrap;
+    }
+
+    select {
+      padding: 0.4rem 0.75rem;
+      background: #333;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      cursor: pointer;
+
+      &:focus {
+        outline: none;
+        border-color: var(--ion-color-primary);
+      }
+    }
+
+    input[type="range"] {
+      width: 8rem;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+
+      &::-webkit-slider-runnable-track {
+        height: 6px;
+        background: #444;
+        border-radius: 3px;
+      }
+
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        background: var(--ion-color-primary);
+        border-radius: 50%;
+        margin-top: -4px;
+        border: none;
+      }
+
+      &::-moz-range-track {
+        height: 6px;
+        background: #444;
+        border-radius: 3px;
+        border: none;
+      }
+
+      &::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        background: var(--ion-color-primary);
+        border-radius: 50%;
+        border: none;
+      }
+    }
+  }
+
+  .buttonGroup {
+    display: flex;
+    gap: 0;
+
+    button {
+      padding: 0.4rem 0.75rem;
+      background: #333;
+      color: #aaa;
+      border: 1px solid #444;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:first-child {
+        border-radius: 4px 0 0 4px;
+      }
+
+      &:last-child {
+        border-radius: 0 4px 4px 0;
+        border-left: none;
+      }
+
+      &:hover {
+        background: #3a3a3a;
+      }
+
+      &.active {
+        background: var(--ion-color-primary);
+        color: #fff;
+        border-color: var(--ion-color-primary);
+      }
+    }
+  }
+
+  .resetButton {
+    padding: 0.4rem 0.75rem;
+    background: #333;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #3a3a3a;
+    }
+  }
+
+  .infoText {
+    display: flex;
+    gap: 1rem;
+    margin-left: auto;
+    font-size: 0.85rem;
+    color: #888;
+
+    span {
+      white-space: nowrap;
+    }
+  }
+}
+
+.plotArea {
+  flex: 1;
+  min-height: 400px;
+  background: #000;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.navigationPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #2a2a2a;
+  border-radius: 6px;
+
+  .audioControls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .playButton {
+      width: 40px;
+      height: 40px;
+      background: var(--ion-color-primary);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+
+      &:hover {
+        background: var(--ion-color-primary-shade);
+      }
+    }
+
+    .timeDisplay {
+      font-size: 0.9rem;
+      color: #ccc;
+      font-family: monospace;
+    }
+  }
+
+  .navButtons {
+    display: flex;
+    gap: 0.5rem;
+
+    .navButton {
+      padding: 0.5rem 1rem;
+      background: #333;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover:not(:disabled) {
+        background: #3a3a3a;
+      }
+
+      &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// File selector styles
+.fileSelector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #2a2a2a;
+  border-radius: 6px;
+  max-height: 150px;
+  overflow-y: auto;
+
+  .fileButton {
+    padding: 0.4rem 0.75rem;
+    background: #333;
+    color: #ccc;
+    border: 1px solid #444;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #3a3a3a;
+    }
+
+    &.active {
+      background: var(--ion-color-primary);
+      color: #fff;
+      border-color: var(--ion-color-primary);
+    }
+  }
+}
+
+.noFiles {
+  text-align: center;
+  padding: 2rem;
+  color: #888;
+  font-size: 0.9rem;
 }
