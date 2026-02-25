@@ -1,6 +1,6 @@
-import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useRef } from 'react';
 import styles from './styles.module.scss';
-import { ExtendedDiv, Table } from '@/components/ui';
+import { type ExtendedDivPosition, Table, useExtendedDiv } from '@/components/ui';
 import { IoRemoveCircleOutline } from 'react-icons/io5';
 import { AnnotationType, useCurrentCampaign } from '@/api';
 import { useTimeScale } from '@/features/Annotator/Axis';
@@ -14,6 +14,7 @@ import { Trend } from './Trend';
 import { Duration } from '@/features/Annotator/AcousticFeatures/Duration';
 import { NonLinearPhenomena } from '@/features/Annotator/AcousticFeatures/NonLinearPhenomena';
 import { Checks } from '@/features/Annotator/AcousticFeatures/Checks';
+import { useWindowWidth } from '@/features/Annotator/Canvas';
 
 export const AcousticFeatures: React.FC = () => {
     const focusedAnnotation = useAppSelector(selectAnnotation)
@@ -21,33 +22,6 @@ export const AcousticFeatures: React.FC = () => {
     const { campaign } = useCurrentCampaign()
     const timeScale = useTimeScale()
     const dispatch = useAppDispatch();
-
-    const initialLeft = useMemo(() => window.innerWidth - 500, [])
-
-    const [ top, setTop ] = useState<number>(128);
-    const [ left, setLeft ] = useState<number>(initialLeft);
-
-    const [ prevAnnotationID, setPrevAnnotationID ] = useState<number | undefined>();
-
-    useEffect(() => {
-        if (prevAnnotationID === focusedAnnotation?.id) return;
-        if (!focusedAnnotation?.endTime) return;
-        let newLeft = timeScale.valueToPosition(focusedAnnotation.endTime) + 80;
-        if (newLeft > initialLeft) {
-            const otherSideLeft = timeScale.valueToPosition(focusedAnnotation.endTime) - 80 - 500;
-            if (otherSideLeft > 0) newLeft = otherSideLeft
-        }
-        setPrevAnnotationID(focusedAnnotation.id);
-        setLeft(newLeft);
-    }, [ focusedAnnotation ]);
-
-    const onTopMove = useCallback((move: number) => {
-        setTop(prev => prev + move)
-    }, [ setTop ])
-
-    const onLeftMove = useCallback((move: number) => {
-        setLeft(prev => prev + move)
-    }, [ setLeft ])
 
     const quit = useCallback(() => {
         if (!focusedAnnotation) return
@@ -58,34 +32,68 @@ export const AcousticFeatures: React.FC = () => {
         if (weak) dispatch(focusAnnotation(weak))
     }, [ getAnnotation, focusedAnnotation, dispatch ])
 
-    if (!focusedAnnotation) return <Fragment/>;
-    if (!campaign?.labelsWithAcousticFeatures?.find(l => l?.name === focusedAnnotation.label)) return <Fragment/>;
-    if (focusedAnnotation.type !== AnnotationType.Box) return <Fragment/>;
-    // @ts-expect-error: --left isn't recognized
-    return <div style={ { top, '--left': `${ left }px` } }
-                className={ styles.features }
-                onMouseDown={ e => e.stopPropagation() }>
-        <ExtendedDiv draggable={ true }
-                     onTopMove={ onTopMove }
-                     onLeftMove={ onLeftMove }
-                     className={ styles.blocHeader }><h6>
-            Acoustic features
-            <IoRemoveCircleOutline onClick={ quit }/>
-        </h6></ExtendedDiv>
-        <div className={ styles.body }>
+    const divRef = useRef<HTMLDivElement | null>(null)
+    const windowWidth = useWindowWidth()
+    const initialPosition = useMemo(() => {
+        const initialLeft = window.innerWidth - 500
+        const position: ExtendedDivPosition ={
+            x: initialLeft,
+            y: 128,
+        }
+        if (!focusedAnnotation?.endTime) return position
+        position.x = timeScale.valueToPosition(focusedAnnotation.endTime) + 80;
+        if (position.x > initialLeft) {
+            const otherSideLeft = timeScale.valueToPosition(focusedAnnotation.endTime) - 80 - 500;
+            if (otherSideLeft > 0) position.x = otherSideLeft
+        }
+        return position
+    }, [focusedAnnotation, timeScale])
 
-            <QuantitySwitch annotation={ focusedAnnotation }/>
+    const {
+        className: extendedClassName,
+        initPosition,
+        handleMouseDown,
+    } = useExtendedDiv({
+        divRef, initialPosition,
+        minX: 0, maxX: windowWidth - 16 * 26,
+    })
+    useEffect(() => {
+        initPosition()
+    }, [timeScale]);
+    const prevAnnotationID = useRef<number | undefined>();
+    useEffect(() => {
+        if (prevAnnotationID.current === focusedAnnotation?.id) return;
+        initPosition()
+        prevAnnotationID.current = focusedAnnotation?.id
+    }, [ focusedAnnotation ]);
 
-            { focusedAnnotation.acousticFeatures && <Fragment>
-                <Checks annotation={ focusedAnnotation }/>
+    return useMemo(() => {
+        if (!focusedAnnotation) return <Fragment/>;
+        if (!campaign?.labelsWithAcousticFeatures?.find(l => l?.name === focusedAnnotation.label)) return <Fragment/>;
+        if (focusedAnnotation.type !== AnnotationType.Box) return <Fragment/>;
+        return <div ref={ divRef }
+                    className={ styles.features }
+                    onMouseDown={ e => e.stopPropagation() }>
+            <div onMouseDown={ e => handleMouseDown(e, 'drag') }
+                 className={ [ styles.blocHeader, extendedClassName ].join(' ') }><h6>
+                Acoustic features
+                <IoRemoveCircleOutline onClick={ quit }/>
+            </h6></div>
+            <div className={ styles.body }>
 
-                <Table columns={ 3 } className={ styles.table } size="small">
-                    <Frequency annotation={ focusedAnnotation }/>
-                    <Trend annotation={ focusedAnnotation }/>
-                    <Duration annotation={ focusedAnnotation }/>
-                    <NonLinearPhenomena annotation={ focusedAnnotation }/>
-                </Table>
-            </Fragment> }
+                <QuantitySwitch annotation={ focusedAnnotation }/>
+
+                { focusedAnnotation.acousticFeatures && <Fragment>
+                    <Checks annotation={ focusedAnnotation }/>
+
+                    <Table columns={ 3 } className={ styles.table } size="small">
+                        <Frequency annotation={ focusedAnnotation }/>
+                        <Trend annotation={ focusedAnnotation }/>
+                        <Duration annotation={ focusedAnnotation }/>
+                        <NonLinearPhenomena annotation={ focusedAnnotation }/>
+                    </Table>
+                </Fragment> }
+            </div>
         </div>
-    </div>
+    }, [ focusedAnnotation, campaign, handleMouseDown, extendedClassName, quit ])
 }

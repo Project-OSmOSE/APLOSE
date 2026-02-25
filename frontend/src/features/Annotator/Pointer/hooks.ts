@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
 import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
-import { type Position, type TimeFreqPosition } from './slice';
+import { type Position, type TimeFreqPosition } from './context';
 import { useAnnotatorCanvasContext } from '@/features/Annotator/Canvas/context';
 import type { AnnotationNode } from '@/api';
 

@@ -1,100 +1,113 @@
-$box-width: 3px;
+$border-size: 3px;
+$handle-long: 100%;
+$handle-thick: 0.75rem;
 
-.annotation {
-  border-width: $box-width;
+.strongAnnotation {
+  cursor: crosshair;
+  pointer-events: all;
 
-  .inner {
-    cursor: crosshair;
+  .void {
+    height: 100%;
+    width: 100%;
+    pointer-events: all;
+  }
+
+  &.box {
+    border: $border-size solid var(--ion-color-base, var(--ion-color-dark));
+  }
+
+  &.point {
+    height: 32px;
+    width: 32px;
+    transform: translate(-50%, -50%);
+    border: none ;
+
+    .vertical, .horizontal {
+      background: var(--ion-color-base);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 1px;
+    }
+
+    .vertical {
+      height: 2rem;
+      width: 2px;
+    }
+
+    .horizontal {
+      width: 2rem;
+      height: 2px;
+    }
+  }
+
+  &.disabled, &.editDisabled {
+    cursor: default;
   }
 
   &.disabled {
     opacity: 0.75;
 
-    .header .inner {
+    .header {
       cursor: default;
     }
   }
 
-  &.editDisabled {
+  &.editDisabled, &.editDisabled * {
     pointer-events: none !important;
-    * {
-      pointer-events: none !important;
-    }
   }
 
   &.pointerSelect {
-    pointer-events: auto !important;
+    pointer-events: auto;
     cursor: crosshair;
   }
-}
 
-.point {
-  height: 2rem;
-  width: 2rem;
-  transform: translate(-50%, -50%);
-  border: none !important;
-
-  .vertical, .horizontal {
-    background: var(--ion-color-base);
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 1px;
-  }
-
-  .vertical {
-    height: 2rem;
-    width: 2px;
-  }
-
-  .horizontal {
-    width: 2rem;
-    height: 2px;
-  }
-}
-
-.header {
-  cursor: default !important;
-  display: grid;
-  pointer-events: all;
-  background: var(--ion-color-base);
-  color: var(--ion-color-contrast);
-  position: absolute;
-  left: 50%;
-  width: calc(100% + 2 * $box-width); /* Box border size */
-  min-width: fit-content;
-
-  &.over {
-    top: 0;
-    transform: translate(-50%, -100%);
-
-    &.stickLeft, &.stickRight {
-      transform: translate(0%, -100%);
-    }
-  }
-
-  &.bellow {
-    bottom: 0;
-    transform: translate(-50%, 100%);
-
-    &.stickLeft, &.stickRight {
-      transform: translate(0%, 100%);
-    }
-  }
-
-  .inner {
+  .header {
     display: grid;
     align-items: center;
     align-content: center;
     justify-items: center;
     grid-template-columns: auto auto 1fr auto auto;
+    pointer-events: all;
+    background: var(--ion-color-base);
+    color: var(--ion-color-contrast);
+    position: absolute;
+    left: 50%;
+    width: calc(100% + 2 * $border-size); /* Box border size */
+    min-width: fit-content;
     border-radius: 0.25rem;
-    padding: 0 0.25rem;
     gap: 0.5rem;
+    padding: 0 0.25rem;
     white-space: nowrap;
-    position: relative;
     cursor: move;
+
+    &.over {
+      top: 0;
+      transform: translate(-50%, -100%);
+
+      &.stickLeft, &.stickRight {
+        transform: translate(0%, -100%);
+      }
+    }
+
+    &.bellow {
+      bottom: 0;
+      transform: translate(-50%, 100%);
+
+      &.stickLeft, &.stickRight {
+        transform: translate(0%, 100%);
+      }
+    }
+
+    &.stickLeft {
+      left: calc(-1 * $border-size);
+    }
+
+    &.stickRight {
+      left: unset;
+      right: calc(-1 * $border-size);
+    }
 
     > * {
       font-size: .9rem;
@@ -111,15 +124,6 @@ $box-width: 3px;
     .outlineIcon path {
       stroke-width: 3rem;
     }
-  }
-
-  &.stickLeft {
-    left: calc(-1 * $box-width);
-  }
-
-  &.stickRight {
-    left: unset;
-    right: calc(-1 * $box-width);
   }
 }
 

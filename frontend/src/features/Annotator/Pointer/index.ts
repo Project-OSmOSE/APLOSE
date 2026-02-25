@@ -1,5 +1,4 @@
-export * from './slice'
 export * from './hooks'
-export * from './selectors'
+export * from './context'
 
 export * from './Info'

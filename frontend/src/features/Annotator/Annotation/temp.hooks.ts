@@ -5,13 +5,14 @@ import { selectTempAnnotation } from './selectors';
 import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
 import { AnnotationType, useCurrentCampaign } from '@/api';
 import { MOUSE_DOWN_EVENT, MOUSE_MOVE_EVENT, MOUSE_UP_EVENT, useEvent } from '@/features/UX/Events';
-import { clearPosition, setPosition, useGetFreqTime, useIsHoverCanvas } from '@/features/Annotator/Pointer';
+import { useGetFreqTime, useIsHoverCanvas } from '@/features/Annotator/Pointer';
 import { formatTime } from '@/service/function';
 import { selectFocusLabel } from '@/features/Annotator/Label';
 import { selectDefaultConfidence, selectFocusConfidence } from '@/features/Annotator/Confidence';
 import { useToast } from '@/components/ui';
 import { useAddAnnotation } from '@/features/Annotator/Annotation';
 import { selectIsDrawingEnabled } from '@/features/Annotator/UX';
+import { usePointer } from '@/features/Annotator/Pointer/context';
 
 
 export const useDrawTempAnnotation = () => {
@@ -40,6 +41,7 @@ export const useTempAnnotationsEvents = () => {
   const defaultConfidence = useAppSelector(selectDefaultConfidence);
   const focusedConfidence = useAppSelector(selectFocusConfidence)
   const { campaign } = useCurrentCampaign()
+  const pointer = usePointer()
 
   const addAnnotation = useAddAnnotation()
   const getFreqTime = useGetFreqTime()
@@ -67,7 +69,7 @@ export const useTempAnnotationsEvents = () => {
     const isHover = isHoverCanvas(e)
     const data = getFreqTime(e);
     if (data) {
-      if (isHover) dispatch(setPosition(data))
+      if (isHover) pointer.setPosition(data)
       if (tempAnnotation) {
         dispatch(setTempAnnotation({
           ...tempAnnotation,
@@ -76,8 +78,8 @@ export const useTempAnnotationsEvents = () => {
         }))
       }
     }
-    if (!isHover || !data) dispatch(clearPosition())
-  }, [ isHoverCanvas, getFreqTime, dispatch, tempAnnotation ])
+    if (!isHover || !data) pointer.clearPosition()
+  }, [ isHoverCanvas, getFreqTime, dispatch, tempAnnotation, pointer ])
   useEvent(MOUSE_MOVE_EVENT, onUpdateTempAnnotation);
 
   const onEndNewAnnotation = useCallback((e: PointerEvent<HTMLDivElement>) => {
@@ -133,8 +135,8 @@ export const useTempAnnotationsEvents = () => {
       }
     }
     dispatch(clearTempAnnotation())
-    if (!isHoverCanvas(e)) dispatch(clearPosition())
-  }, [ dispatch, addAnnotation, getFreqTime, isHoverCanvas, toast, timeScale, frequencyScale, campaign, focusedLabel, defaultConfidence, focusedConfidence, tempAnnotation ])
+    if (!isHoverCanvas(e)) pointer.clearPosition()
+  }, [ dispatch, pointer, addAnnotation, getFreqTime, isHoverCanvas, toast, timeScale, frequencyScale, campaign, focusedLabel, defaultConfidence, focusedConfidence, tempAnnotation ])
   useEvent(MOUSE_UP_EVENT, onEndNewAnnotation);
 
   return { onStartTempAnnotation }

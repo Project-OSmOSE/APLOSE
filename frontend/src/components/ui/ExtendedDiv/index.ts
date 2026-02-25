@@ -1,4 +1,2 @@
-export * from './DraggableDiv'
-export * from './ExtendedDiv'
-export * from './Handles'
-export * from './ResizableDiv'
+export * from './hook'
+export * from './types'
