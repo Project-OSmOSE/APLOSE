@@ -291,7 +291,7 @@ class NetCDFViewSet(ViewSet):
         """
         try:
             # Get the example folder path from settings or use default
-            datawork_dir = Path(settings.DATAWORK_FOLDER if hasattr(settings, 'DATAWORK_FOLDER') else '/datawork')
+            datawork_dir = Path(settings.DATAWORK_FOLDER if hasattr(settings, 'DATAWORK_FOLDER') else '/opt/datawork')
             example_dir = datawork_dir / 'dataset' / 'example'
 
             if not example_dir.exists():
@@ -367,7 +367,7 @@ class NetCDFViewSet(ViewSet):
             )
 
         try:
-            datawork_dir = Path(settings.DATAWORK_FOLDER if hasattr(settings, 'DATAWORK_FOLDER') else '/datawork')
+            datawork_dir = Path(settings.DATAWORK_FOLDER if hasattr(settings, 'DATAWORK_FOLDER') else '/opt/datawork')
             example_dir = datawork_dir / 'dataset' / 'example'
             file_path = example_dir / filename
 
