@@ -9,6 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.shortcuts import get_object_or_404
 from django.templatetags.static import static
 from osekit.core_api.audio_file import AudioFile
+from osekit.core_api.audio_data import AudioData
 from osekit.core_api.spectro_data import SpectroData
 from pandas import Timestamp
 from rest_framework.decorators import action
@@ -18,7 +19,6 @@ from scipy.signal import ShortTimeFFT
 from scipy.signal.windows import hamming
 
 from backend.api.models import Spectrogram, SpectrogramAnalysis
-from backend.utils.osekit_replace import AudioData
 
 
 class ZoomViewSet(ViewSet):
