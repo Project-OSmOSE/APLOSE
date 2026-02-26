@@ -267,8 +267,7 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
         zmax: effectiveZmax,
         showscale: true,
         colorbar: {
-          title: 'dB',
-          titleside: 'right' as const,
+          title: { text: 'dB' },
           tickfont: { color: '#aaa' },
           titlefont: { color: '#aaa' },
         },
@@ -281,7 +280,7 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
   const layout = useMemo(() => {
     if (!metadata) return {};
 
-    const shapes: Plotly.Shape[] = [];
+    const shapes: any[] = [];
 
     // Playback indicator line
     if (audioTime > 0 && metadata) {
@@ -331,11 +330,11 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
     scrollZoom: true,
     doubleClick: 'reset' as const,
     responsive: true,
-    modeBarButtonsToRemove: ['lasso2d', 'select2d'] as Plotly.ModeBarDefaultButtons[],
+    modeBarButtonsToRemove: ['lasso2d', 'select2d'] as any,
   }), []);
 
   // Click to seek audio
-  const handlePlotClick = useCallback((event: Plotly.PlotMouseEvent) => {
+  const handlePlotClick = useCallback((event: any) => {
     if (event?.points?.[0]?.x !== undefined && audioRef.current) {
       audioRef.current.currentTime = event.points[0].x as number;
     }
