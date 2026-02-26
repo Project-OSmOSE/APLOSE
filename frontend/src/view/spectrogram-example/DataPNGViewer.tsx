@@ -304,6 +304,9 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
         zeroline: false,
         tickfont: { color: '#aaa' },
         range: [metadata.spectrogram.time_min, metadata.spectrogram.time_max],
+        autorange: false,
+        constrain: 'domain',
+        constraintoward: 'center',
       },
       yaxis: {
         title: { text: 'Frequency (Hz)', font: { color: '#aaa' } },
@@ -315,6 +318,9 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
         range: yAxisScale === 'log'
           ? [Math.log10(Math.max(1, metadata.spectrogram.frequency_min)), Math.log10(metadata.spectrogram.frequency_max)]
           : [metadata.spectrogram.frequency_min, metadata.spectrogram.frequency_max],
+        autorange: false,
+        constrain: 'domain',
+        constraintoward: 'center',
       },
       shapes,
       hovermode: 'closest' as const,
