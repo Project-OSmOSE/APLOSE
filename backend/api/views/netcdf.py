@@ -461,6 +461,10 @@ class NetCDFViewSet(ViewSet):
             datawork_dir = Path(settings.DATAWORK_FOLDER if hasattr(settings, 'DATAWORK_FOLDER') else '/opt/datawork')
             library_dir = datawork_dir / 'dataset' / 'sound_library'
 
+            logger.info(f"Sound library list - datawork_dir: {datawork_dir}")
+            logger.info(f"Sound library list - library_dir: {library_dir}")
+            logger.info(f"Sound library list - library_dir exists: {library_dir.exists()}")
+
             if not library_dir.exists():
                 return JsonResponse({
                     'files': [],
@@ -576,8 +580,25 @@ class NetCDFViewSet(ViewSet):
             library_dir = datawork_dir / 'dataset' / 'sound_library'
             file_path = library_dir / filename
 
+            logger.info(f"Sound library file request: {filename}")
+            logger.info(f"Looking in directory: {library_dir}")
+            logger.info(f"Full path: {file_path}")
+            logger.info(f"Directory exists: {library_dir.exists()}")
+            logger.info(f"File exists: {file_path.exists()}")
+
+            if not library_dir.exists():
+                logger.error(f"Sound library directory not found: {library_dir}")
+                return Response(
+                    {'error': f'Sound library directory not found: {library_dir}'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
             if not file_path.exists() or not file_path.is_file():
-                raise Http404(f"File not found: {filename}")
+                # List available files for debugging
+                available_files = list(library_dir.glob('*.png'))[:10]
+                logger.error(f"File not found: {file_path}")
+                logger.error(f"Available PNG files: {[f.name for f in available_files]}")
+                raise Http404(f"File not found: {filename}. Directory: {library_dir}")
 
             # Determine content type
             content_types = {
