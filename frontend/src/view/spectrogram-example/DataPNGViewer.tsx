@@ -1,6 +1,10 @@
-import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import Plot from 'react-plotly.js';
 import { IonSpinner } from '@ionic/react';
+import { useAudio } from '@/features/Audio/context';
+import { PlayPauseButton } from '@/features/Audio/PlayPauseButton';
+import { CurrentTime } from '@/features/Audio/CurrentTime';
+import { PlaybackRate } from '@/features/Audio/PlaybackRate';
 import styles from './styles.module.scss';
 
 interface DataPNGMetadata {
@@ -95,10 +99,8 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Audio state
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [audioTime, setAudioTime] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+  // Use the global audio context
+  const audio = useAudio();
 
   // Controls
   const [colorscale, setColorscale] = useState('Greys_r');
@@ -138,6 +140,12 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
         setZmin(null);
         setZmax(null);
 
+        // Set audio source
+        const audioUrl = wavFile
+          ? `${basePath}${encodeURIComponent(wavFile)}`
+          : `${basePath}${encodeURIComponent(meta.audio.filename)}`;
+        audio.setSource(audioUrl);
+
         setLoading(false);
       } catch (e) {
         console.error('Error loading data:', e);
@@ -149,29 +157,11 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
     if (jsonPath && basePath) {
       loadData();
     }
-  }, [jsonPath, basePath]);
-
-  // Audio time update
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const updateTime = () => setAudioTime(audio.currentTime);
-    const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
-
-    audio.addEventListener('timeupdate', updateTime);
-    audio.addEventListener('play', handlePlay);
-    audio.addEventListener('pause', handlePause);
-    audio.addEventListener('ended', handlePause);
 
     return () => {
-      audio.removeEventListener('timeupdate', updateTime);
-      audio.removeEventListener('play', handlePlay);
-      audio.removeEventListener('pause', handlePause);
-      audio.removeEventListener('ended', handlePause);
+      audio.clearSource();
     };
-  }, [metadata]);
+  }, [jsonPath, basePath, wavFile]);
 
   // Decode 16-bit PNG to spectrogram data
   const decodePNG = async (url: string, meta: DataPNGMetadata): Promise<number[][]> => {
@@ -248,7 +238,7 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
     return { frequencies: freqs, times: timeArr };
   }, [metadata, spectrogramData]);
 
-  // Plot data
+  // Plot data - no colorbar
   const plotData = useMemo(() => {
     if (!spectrogramData || !frequencies.length || !times.length) return [];
 
@@ -265,29 +255,24 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
         reversescale: isReversed,
         zmin: effectiveZmin,
         zmax: effectiveZmax,
-        showscale: true,
-        colorbar: {
-          title: { text: 'dB' },
-          tickfont: { color: '#aaa' },
-          titlefont: { color: '#aaa' },
-        },
+        showscale: false,
         hovertemplate: 'Time: %{x:.2f}s<br>Frequency: %{y:.0f}Hz<br>Power: %{z:.1f}dB<extra></extra>',
       },
     ];
   }, [spectrogramData, frequencies, times, colorscale, effectiveZmin, effectiveZmax]);
 
-  // Layout
+  // Layout with playback indicator line
   const layout = useMemo(() => {
     if (!metadata) return {};
 
     const shapes: any[] = [];
 
-    // Playback indicator line
-    if (audioTime > 0 && metadata) {
+    // Playback indicator line - animated with audio time
+    if (audio.time > 0) {
       shapes.push({
         type: 'line',
-        x0: audioTime,
-        x1: audioTime,
+        x0: audio.time,
+        x1: audio.time,
         y0: metadata.spectrogram.frequency_min,
         y1: metadata.spectrogram.frequency_max,
         line: { color: '#ff0000', width: 2 },
@@ -296,7 +281,7 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
     }
 
     return {
-      margin: { l: 70, r: 80, t: 20, b: 50 },
+      margin: { l: 70, r: 20, t: 20, b: 50 },
       xaxis: {
         title: { text: 'Time (s)', font: { color: '#aaa' } },
         showgrid: true,
@@ -328,7 +313,7 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
       paper_bgcolor: '#1a1a1a',
       font: { color: '#fff' },
     };
-  }, [metadata, yAxisScale, audioTime]);
+  }, [metadata, yAxisScale, audio.time]);
 
   const config = useMemo(() => ({
     displayModeBar: true,
@@ -341,20 +326,10 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
 
   // Click to seek audio
   const handlePlotClick = useCallback((event: any) => {
-    if (event?.points?.[0]?.x !== undefined && audioRef.current) {
-      audioRef.current.currentTime = event.points[0].x as number;
+    if (event?.points?.[0]?.x !== undefined) {
+      audio.seek(event.points[0].x as number);
     }
-  }, []);
-
-  // Play/pause toggle
-  const togglePlayback = useCallback(() => {
-    if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
-    }
-  }, [isPlaying]);
+  }, [audio]);
 
   if (loading) {
     return (
@@ -373,10 +348,6 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
       </div>
     );
   }
-
-  const audioUrl = wavFile
-    ? `${basePath}${encodeURIComponent(wavFile)}`
-    : `${basePath}${encodeURIComponent(metadata.audio.filename)}`;
 
   return (
     <div className={styles.viewerContainer}>
@@ -469,15 +440,12 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
         />
       </div>
 
-      {/* Audio Controls and Navigation */}
+      {/* Audio Controls and Navigation - using same components as annotation page */}
       <div className={styles.navigationPanel}>
         <div className={styles.audioControls}>
-          <button onClick={togglePlayback} className={styles.playButton}>
-            {isPlaying ? '⏸' : '▶'}
-          </button>
-          <span className={styles.timeDisplay}>
-            {audioTime.toFixed(1)}s / {metadata.audio.duration.toFixed(1)}s
-          </span>
+          <PlayPauseButton />
+          <CurrentTime />
+          <PlaybackRate />
         </div>
 
         <div className={styles.navButtons}>
@@ -497,9 +465,6 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
           </button>
         </div>
       </div>
-
-      {/* Hidden audio element */}
-      <audio ref={audioRef} src={audioUrl} preload="auto" />
     </div>
   );
 };
