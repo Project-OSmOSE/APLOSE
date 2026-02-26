@@ -2,12 +2,13 @@ from pathlib import Path, PureWindowsPath
 from typing import Optional
 
 from django.conf import settings
-from osekit.public_api.dataset import (
-    Dataset as OSEkitDataset,
-    SpectroDataset as OSEkitSpectroDataset,
-)
 
-from backend.api.models import Dataset as DatasetModel
+from backend.api.models.data.dataset import Dataset as DatasetModel
+
+# from osekit.public_api.dataset import (
+#     SpectroDataset,
+# )
+from backend.utils.osekit_replace import SpectroDataset, OSEkitDataset
 from .analysis import Analysis
 from .base_resolver import BaseResolver
 from .types import LegacyCSVDataset, ImportStatus
@@ -108,7 +109,7 @@ class Dataset(BaseResolver):
         # Browse datasets
         if self.osekit is not None:
             for [_name, d] in self.osekit.datasets.items():
-                if d["class"] != OSEkitSpectroDataset.__name__:
+                if d["class"] != SpectroDataset.__name__:
                     continue
                 path = (
                     PureWindowsPath(d["dataset"].folder)

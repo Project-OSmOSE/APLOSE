@@ -10,8 +10,10 @@ from django_extension.schema.errors import NotFoundError
 from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 from django_extension.schema.types import ExtendedNode
 from graphql import GraphQLResolveInfo
-from osekit.core_api.spectro_data import SpectroData
-from osekit.core_api.spectro_dataset import SpectroDataset
+
+# from osekit.core_api.spectro_data import SpectroData
+# from osekit.core_api.spectro_dataset import SpectroDataset
+from backend.utils.osekit_replace import SpectroDataset, SpectroData
 
 from backend.api.models import (
     Spectrogram,

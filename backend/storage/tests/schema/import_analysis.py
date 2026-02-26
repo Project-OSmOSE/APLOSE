@@ -20,6 +20,11 @@ mutation ($name: String!, $datasetPath: String!) {
             id
         }
     }
+  _debug {
+    exceptions {
+      stack
+    }
+  }
 }
 """
 VARIABLES = {
