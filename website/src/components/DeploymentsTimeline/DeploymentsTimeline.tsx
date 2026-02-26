@@ -3,7 +3,6 @@ import ReactApexChart from 'react-apexcharts'
 import { ApexOptions } from 'apexcharts';
 import { intToRGB } from '../DeploymentsMap/utils.functions';
 import { LightDeployment } from '../../api';
-import { ChannelConfigurationStatusEnum } from '../../api/types.gql-generated';
 
 type CampaignSerie = {
     campaign: LightDeployment['campaign'] | null
@@ -21,7 +20,7 @@ export const DeploymentsTimeline: React.FC<{
     const campaignSeries = useMemo<CampaignSerie[]>(() => {
         const campaigns = new Array<CampaignSerie>();
         for (const deployment of deployments) {
-            if (!deployment.recoveryDate && !deployment.channelConfigurations.edges.some(e => e?.node?.status === ChannelConfigurationStatusEnum.Active)) {
+            if (!deployment.recoveryDate && !deployment.channelConfigurations.edges.some(e => !e?.node?.isLost)) {
                 continue
             }
 
@@ -36,7 +35,7 @@ export const DeploymentsTimeline: React.FC<{
     }, [ deployments ]);
 
     const series: ApexAxisChartSeries = useMemo(() => {
-        const series = campaignSeries.map(s => ({
+        return campaignSeries.map(s => ({
             name: `${ s?.campaign?.name ?? 'No campaign' }${ s.state === 'recovered' ? '' : ' (ongoing)' }`,
             data: deployments.filter(d => {
                 // Only current campaign
@@ -45,7 +44,7 @@ export const DeploymentsTimeline: React.FC<{
                 if (!d.deploymentDate) return false;
 
                 if (s.state === 'recovered' && !!d.recoveryDate) return true;
-                return s.state === 'active' && !d.recoveryDate && d.channelConfigurations.edges.some(e => e?.node?.status === ChannelConfigurationStatusEnum.Active)
+                return s.state === 'active' && !d.recoveryDate && d.channelConfigurations.edges.some(e => !e?.node?.isLost)
             }).map(d => ({
                 x: d.site?.name ?? 'No site',
                 y: [
@@ -64,7 +63,6 @@ export const DeploymentsTimeline: React.FC<{
                 },
             })),
         }))
-        return series
     }, [ campaignSeries, deployments ])
     const options: ApexOptions = useMemo(() => ({
         chart: {
@@ -117,7 +115,7 @@ export const DeploymentsTimeline: React.FC<{
         legend: {
             position: 'bottom',
         },
-    }), [ deployments, height, campaignSeries ])
+    }), [ deployments, height, campaignSeries, setSelectedDeploymentID ])
 
     return (
         <ReactApexChart ref={ chart }

@@ -29,7 +29,7 @@ export type AllDeploymentsQueryVariables = Types.Exact<{
 }>;
 
 
-export type AllDeploymentsQuery = { __typename?: 'Query', allDeployments?: { __typename?: 'DeploymentNodeNodeConnection', results: Array<{ __typename?: 'DeploymentNode', id: string, latitude: number, longitude: number, name?: string | null, deploymentDate?: any | null, recoveryDate?: any | null, project: { __typename?: 'ProjectNodeOverride', id: string, name: string }, site?: { __typename?: 'SiteNode', id: string, name: string } | null, campaign?: { __typename?: 'CampaignNode', id: string, name: string } | null, contacts?: Array<{ __typename?: 'ContactRelationNode', id: string, role?: Types.RoleEnum | null, contact?: { __typename?: 'InstitutionNode', name: string } | { __typename?: 'PersonNode', firstName: string, lastName: string } | { __typename?: 'TeamNode', name: string } | null } | null> | null, channelConfigurations: { __typename?: 'ChannelConfigurationNodeConnection', edges: Array<{ __typename?: 'ChannelConfigurationNodeEdge', node?: { __typename?: 'ChannelConfigurationNode', status?: Types.ChannelConfigurationStatusEnum | null, recorderSpecification?: { __typename?: 'ChannelConfigurationRecorderSpecificationNode', samplingFrequency: number } | null } | null } | null> } } | null> } | null };
+export type AllDeploymentsQuery = { __typename?: 'Query', allDeployments?: { __typename?: 'DeploymentNodeNodeConnection', results: Array<{ __typename?: 'DeploymentNode', id: string, latitude: number, longitude: number, name?: string | null, deploymentDate?: any | null, recoveryDate?: any | null, project: { __typename?: 'ProjectNodeOverride', id: string, name: string }, site?: { __typename?: 'SiteNode', id: string, name: string } | null, campaign?: { __typename?: 'CampaignNode', id: string, name: string } | null, contacts?: Array<{ __typename?: 'ContactRelationNode', id: string, role?: Types.RoleEnum | null, contact?: { __typename?: 'InstitutionNode', name: string } | { __typename?: 'PersonNode', firstName: string, lastName: string } | { __typename?: 'TeamNode', name: string } | null } | null> | null, channelConfigurations: { __typename?: 'ChannelConfigurationNodeConnection', edges: Array<{ __typename?: 'ChannelConfigurationNodeEdge', node?: { __typename?: 'ChannelConfigurationNode', isLost: boolean, recorderSpecification?: { __typename?: 'ChannelConfigurationRecorderSpecificationNode', samplingFrequency: number } | null } | null } | null> } } | null> } | null };
 
 export type DeploymentByIdQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
@@ -176,7 +176,7 @@ export const AllDeploymentsDocument = gql`
       channelConfigurations {
         edges {
           node {
-            status
+            isLost
             recorderSpecification {
               samplingFrequency
             }

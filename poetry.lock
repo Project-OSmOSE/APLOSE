@@ -885,13 +885,13 @@ Django = ">=1.11"
 
 [[package]]
 name = "django-extension"
-version = "0.1.3"
+version = "0.1.4"
 description = "Extended class for Django usage"
 optional = false
 python-versions = ">=3.9,<4.0"
 groups = ["main"]
 files = [
-    {file = "django_extension-0.1.3.tar.gz", hash = "sha256:7a4fda9807848e7f8fd9f4791deb1d832d3ca41eb1fa38e84ecdc87f7e77ff54"},
+    {file = "django_extension-0.1.4.tar.gz", hash = "sha256:dc35da7551d051efc75846df4a510e14660c9c4f2de269a6733b7274b2f6a976"},
 ]
 
 [package.dependencies]
@@ -903,7 +903,7 @@ graphene-django-pagination = {url = "https://github.com/instruct-br/graphene-dja
 
 [package.source]
 type = "url"
-url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.3/django_extension-0.1.3.tar.gz"
+url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.4/django_extension-0.1.4.tar.gz"
 
 [[package]]
 name = "django-filter"
@@ -2227,13 +2227,13 @@ files = [
 
 [[package]]
 name = "metadatax"
-version = "0.5.0"
+version = "0.5.2"
 description = "PAM acquisition metadata"
 optional = false
 python-versions = ">=3.9,<4.0"
 groups = ["main"]
 files = [
-    {file = "v0.5.0.tar.gz", hash = "sha256:647a026fe618b79f7f6809aed4b3bad5658dbeed1b7cee4c1c6712eddc91b7a9"},
+    {file = "v0.5.2.tar.gz", hash = "sha256:08ecc1053fb33051756327022eca4c313674a1274cde0966c9dc584ba3225673"},
 ]
 
 [package.dependencies]
@@ -2241,7 +2241,7 @@ Django = ">=3.2,<4.0"
 django-admin-multiple-choice-list-filter = ">=0.1.1,<0.2.0"
 django-better-admin-arrayfield = ">=1.4.2,<2.0.0"
 django-durationwidget = ">=1.0.5,<2.0.0"
-django-extension = {url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.3/django_extension-0.1.3.tar.gz"}
+django-extension = {url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.4/django_extension-0.1.4.tar.gz"}
 django-filter = ">=2"
 django-model-prefix = ">=1.1.0,<2.0.0"
 djangorestframework = ">=3.15.1,<4.0.0"
@@ -2253,7 +2253,7 @@ python-dotenv = ">=1.0.1,<2.0.0"
 
 [package.source]
 type = "url"
-url = "https://github.com/PAM-Standardization/metadatax/archive/refs/tags/v0.5.0.tar.gz"
+url = "https://github.com/PAM-Standardization/metadatax/archive/refs/tags/v0.5.2.tar.gz"
 
 [[package]]
 name = "mistune"
@@ -4076,4 +4076,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "e3dbabf081a5e7754846133aefdd127318aef2a5e00e3a66164681c75aac9641"
+content-hash = "f95e45125abaed37c71a81e5bd82b88a60524e0e3e62c1c8742d9b39abfdd91a"

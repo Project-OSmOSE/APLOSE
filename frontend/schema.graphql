@@ -2890,7 +2890,9 @@ type ChannelConfigurationNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
   deployment: DeploymentNode!
-  status: ChannelConfigurationStatusEnum
+
+  """If the equipment is lost."""
+  isLost: Boolean!
 
   """Each specification is dedicated to one file."""
   recorderSpecification: ChannelConfigurationRecorderSpecificationNode
@@ -2938,12 +2940,6 @@ type ChannelConfigurationNode implements ExtendedInterface {
     """Ordering"""
     orderBy: String
   ): DatasetNodeConnection!
-}
-
-enum ChannelConfigurationStatusEnum {
-  Active
-  Failed
-  Lost
 }
 
 type ChannelConfigurationDetectorSpecificationNode implements ExtendedInterface {

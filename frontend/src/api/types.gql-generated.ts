@@ -1556,13 +1556,14 @@ export type ChannelConfigurationNode = ExtendedInterface & {
   id: Scalars['ID']['output'];
   /** Immersion depth of instrument (in positive meters). */
   instrumentDepth?: Maybe<Scalars['Int']['output']>;
+  /** If the equipment is lost. */
+  isLost: Scalars['Boolean']['output'];
   /** Date at which the channel configuration finished to record in (in UTC). */
   recordEndDate?: Maybe<Scalars['DateTime']['output']>;
   /** Date at which the channel configuration started to record (in UTC). */
   recordStartDate?: Maybe<Scalars['DateTime']['output']>;
   /** Each specification is dedicated to one file. */
   recorderSpecification?: Maybe<ChannelConfigurationRecorderSpecificationNode>;
-  status?: Maybe<ChannelConfigurationStatusEnum>;
   storages?: Maybe<Array<Maybe<EquipmentNode>>>;
   /** Timezone of the recording (ISO format, eg: +00:00). */
   timezone?: Maybe<Scalars['String']['output']>;
@@ -1639,12 +1640,6 @@ export type ChannelConfigurationRecorderSpecificationNodeEdge = {
   /** The item at the end of the edge */
   node?: Maybe<ChannelConfigurationRecorderSpecificationNode>;
 };
-
-export enum ChannelConfigurationStatusEnum {
-  Active = 'Active',
-  Failed = 'Failed',
-  Lost = 'Lost'
-}
 
 /** Collaborator node */
 export type CollaboratorNode = ExtendedInterface & {
