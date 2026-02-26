@@ -8,7 +8,7 @@ export const AuthRestAPI = restAPI.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, { username: string, password: string }>({
       query: (credentials) => ({
-        url: 'token/',
+        url: '/api/token/',
         method: 'POST',
         body: credentials,
       }),

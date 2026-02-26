@@ -1,11 +1,9 @@
 from typing import Optional
 
 from django.conf import settings
+from osekit.core_api.spectro_dataset import SpectroDataset
 
 from backend.api.models import SpectrogramAnalysis as AnalysisModel
-
-# from osekit.core_api.spectro_dataset import SpectroDataset
-from backend.utils.osekit_replace import SpectroDataset
 from .base_resolver import BaseResolver
 from .exceptions import AnalysisBrowseException
 from .types import ImportStatus

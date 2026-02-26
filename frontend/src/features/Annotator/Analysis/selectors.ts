@@ -7,6 +7,10 @@ export const selectAnalysisID = createSelector(
   selectAnnotator, AnnotatorAnalysisSlice.selectors.selectID,
 )
 
+export const selectFFT = createSelector(
+  selectAnnotator, AnnotatorAnalysisSlice.selectors.selectFFT,
+)
+
 
 export const selectAllAnalysis = createSelector(
   selectAnnotatorCampaign,

@@ -14,8 +14,8 @@ from typing_extensions import deprecated
 
 from backend.aplose.models import User
 
-# from osekit.core_api.spectro_dataset import SpectroDataset
-from backend.utils.osekit_replace import SpectroDataset
+from osekit.core_api.spectro_dataset import SpectroDataset
+
 from .__abstract_analysis import AbstractAnalysis
 from .colormap import Colormap
 from .dataset import Dataset

@@ -1,18 +1,23 @@
 """Spectrogram model"""
 import csv
 from datetime import datetime, timedelta
+from os import path
 from os.path import join
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from django.conf import settings
 from django.db import models
 from django.db.models import Q, F, QuerySet
+from django.utils import timezone
 from metadatax.data.models import FileFormat
 from osekit.config import TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
-
-# from osekit.core_api.spectro_data import SpectroData
-# from osekit.core_api.spectro_dataset import SpectroDataset
-from backend.utils.osekit_replace import SpectroDataset, SpectroData
+from osekit.core_api.audio_data import AudioData
+from osekit.core_api.audio_file import AudioFile
+from osekit.core_api.spectro_data import SpectroData
+from osekit.core_api.spectro_dataset import SpectroDataset
+from pandas import Timestamp
+from scipy.signal import ShortTimeFFT
+from scipy.signal.windows import hamming
 
 from .__abstract_file import AbstractFile
 from .__abstract_time_segment import TimeSegment
@@ -157,6 +162,110 @@ class Spectrogram(AbstractFile, TimeSegment, models.Model):
 
     analysis = models.ManyToManyField(SpectrogramAnalysis, related_name="spectrograms")
 
+    def get_audio_path(self, analysis: SpectrogramAnalysis) -> str:
+        if analysis.dataset.legacy:
+            folders = PureWindowsPath(analysis.path).as_posix().split("/")
+            folders.pop()
+            return path.join(
+                analysis.dataset.path.split(
+                    settings.DATASET_EXPORT_PATH.stem + "/"
+                ).pop(),
+                PureWindowsPath(settings.DATASET_FILES_FOLDER),
+                PureWindowsPath(folders.pop()),
+                PureWindowsPath(f"{self.filename}.wav"),
+            )
+        else:
+            spectro_data: SpectroData = self.get_spectro_data_for(analysis)
+            audio_files = list(spectro_data.audio_data.files)
+            if len(audio_files) != 1:
+                return None
+
+            audio_file = audio_files[0]
+            if audio_file.begin != (
+                self.start if audio_file.begin.tz else timezone.make_naive(self.start)
+            ):
+                return None
+            if audio_file.end < (
+                self.end if audio_file.end.tz else timezone.make_naive(self.end)
+            ):
+                return None
+
+            audio_path = str(audio_file.path)
+            return (
+                audio_path.split(str(settings.DATASET_EXPORT_PATH)).pop().lstrip("\\")
+            )
+
+    def get_base_spectro_path(self, analysis: SpectrogramAnalysis) -> str:
+        if analysis.dataset.legacy:
+            return path.join(
+                PureWindowsPath(
+                    analysis.dataset.path.split(
+                        settings.DATASET_EXPORT_PATH.stem + "/"
+                    ).pop()
+                ),
+                PureWindowsPath(analysis.path),
+                PureWindowsPath("image"),
+                PureWindowsPath(f"{self.filename}.{self.format.name}"),
+            )
+        else:
+            spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
+            spectro_dataset_path = str(spectro_dataset.folder).split(
+                str(settings.DATASET_EXPORT_PATH)
+            )[1]
+            return path.join(
+                PureWindowsPath(spectro_dataset_path),
+                PureWindowsPath("spectrogram"),  # TODO: avoid static path parts!!!
+                PureWindowsPath(f"{self.filename}.{self.format.name}"),
+            ).lstrip("\\")
+
     def get_spectro_data_for(self, analysis: SpectrogramAnalysis) -> SpectroData:
-        spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
-        return [d for d in spectro_dataset.data if d.name == self.filename].pop()
+        if analysis.legacy:
+            audio_path = Path(
+                join(
+                    settings.VOLUMES_ROOT,
+                    settings.DATASET_EXPORT_PATH,
+                    self.get_audio_path(analysis),
+                )
+            )
+            audio_file = AudioFile(
+                path=audio_path,
+                begin=Timestamp.fromisoformat(self.start.isoformat()),
+            )
+            audio_data = AudioData.from_files([audio_file])
+            overlap = analysis.fft.overlap or 0.95
+            hop = round(analysis.fft.window_size * (1 - overlap))
+            return SpectroData.from_audio_data(
+                data=audio_data,
+                fft=ShortTimeFFT(
+                    win=hamming(analysis.fft.window_size),
+                    hop=hop,
+                    fs=analysis.fft.sampling_frequency,
+                    scale_to="magnitude",
+                ),
+                colormap="viridis",  # This is the default value
+            )
+        else:
+            spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
+            return [d for d in spectro_dataset.data if d.name == self.filename].pop()
+
+    def get_audio_data_for(self, analysis: SpectrogramAnalysis) -> AudioData:
+        if analysis.legacy:
+            audio_path = Path(
+                join(
+                    settings.VOLUMES_ROOT,
+                    settings.DATASET_EXPORT_PATH,
+                    self.get_audio_path(analysis),
+                )
+            )
+            audio_file = AudioFile(
+                path=audio_path,
+                begin=Timestamp.fromisoformat(self.start.isoformat()),
+            )
+            return AudioData.from_files([audio_file])
+        else:
+            spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
+            return (
+                [d for d in spectro_dataset.data if d.name == self.filename]
+                .pop()
+                .audio_data
+            )

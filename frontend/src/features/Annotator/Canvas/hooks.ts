@@ -1,22 +1,17 @@
 import { useAnnotatorCanvasContext } from './context';
 import { useCallback } from 'react';
 import { selectZoom } from '@/features/Annotator/Zoom';
-import { useDrawSpectrogram } from '@/features/Annotator/Spectrogram';
 import { useApplyColormap, useApplyFilter } from '@/features/Annotator/VisualConfiguration';
 import { useDrawTempAnnotation } from '@/features/Annotator/Annotation';
-import {
-  useWindowContainerWidth,
-  useWindowHeight,
-  useWindowWidth,
-  Y_AXIS_WIDTH,
-} from '@/features/Annotator/Canvas/window.hooks';
+import { Y_AXIS_WIDTH } from '@/features/Annotator/Canvas/axis-size.const';
 import { useTimeScale } from '@/features/Annotator/Axis';
 import { useAppSelector } from '@/features/App';
+import { useSpectrogramDimensions } from '@/features/Spectrogram/Display/dimension.hook';
 
 
 export const useFocusCanvasOnTime = () => {
   const timeScale = useTimeScale()
-  const containerWidth = useWindowContainerWidth()
+  const { width: containerWidth } = useSpectrogramDimensions(0)
   const {
     mainCanvasRef,
   } = useAnnotatorCanvasContext()
@@ -24,14 +19,13 @@ export const useFocusCanvasOnTime = () => {
   return useCallback((time: number) => {
     const left = timeScale.valueToPosition(time) - containerWidth / 2;
     mainCanvasRef?.current?.parentElement?.scrollTo({ left })
-  }, [ timeScale, containerWidth ])
+  }, [ timeScale, containerWidth, mainCanvasRef ])
 }
 
 export const useDrawCanvas = () => {
-  const width = useWindowWidth()
-  const height = useWindowHeight()
+  const zoom = useAppSelector(selectZoom)
+  const { width, height } = useSpectrogramDimensions(zoom)
 
-  const drawSpectrogram = useDrawSpectrogram()
   const drawTempAnnotation = useDrawTempAnnotation()
   const applyFilter = useApplyFilter()
   const applyColormap = useApplyColormap()
@@ -39,26 +33,25 @@ export const useDrawCanvas = () => {
   const { mainCanvasRef } = useAnnotatorCanvasContext()
 
   return useCallback(async () => {
-    const context = mainCanvasRef?.current?.getContext('2d', { alpha: false });
+    const context = mainCanvasRef?.current?.getContext('2d');
     if (!context) return;
 
     // Reset
     context.clearRect(0, 0, width, height);
 
-    applyFilter(context)
-    await drawSpectrogram(context)
-    applyColormap(context)
+    // applyFilter(context)
+    // applyColormap(context)
     drawTempAnnotation(context)
-  }, [ width, height, drawSpectrogram, applyFilter, applyColormap, drawTempAnnotation ]);
+  }, [ width, height, applyFilter, applyColormap, drawTempAnnotation, mainCanvasRef ]);
 }
 
 export const useDownloadCanvas = () => {
-  const height = useWindowHeight()
   const zoom = useAppSelector(selectZoom)
+  const { height } = useSpectrogramDimensions(zoom)
 
   const draw = useDrawCanvas()
 
-  const { mainCanvasRef, xAxisCanvasRef, yAxisCanvasRef } = useAnnotatorCanvasContext()
+  const { xAxisCanvasRef, yAxisCanvasRef } = useAnnotatorCanvasContext()
 
   return useCallback(async (filename: string) => {
     const link = document.createElement('a');
@@ -68,7 +61,7 @@ export const useDownloadCanvas = () => {
 
     // Get spectro images
     await draw()
-    const spectroDataURL = mainCanvasRef?.current?.toDataURL('image/png');
+    const spectroDataURL = (document.getElementById('spectrogram') as HTMLCanvasElement)?.toDataURL('image/png');
     if (!spectroDataURL) throw new Error('Cannot recover spectro dataURL');
     draw()
     const spectroImg = new Image();
@@ -127,5 +120,5 @@ export const useDownloadCanvas = () => {
     link.target = '_blank';
     link.download = filename;
     link.click();
-  }, [ height, zoom, draw ])
+  }, [ height, zoom, draw, xAxisCanvasRef, yAxisCanvasRef  ])
 }

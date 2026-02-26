@@ -5,10 +5,7 @@ from django.conf import settings
 
 from backend.api.models.data.dataset import Dataset as DatasetModel
 
-# from osekit.public_api.dataset import (
-#     SpectroDataset,
-# )
-from backend.utils.osekit_replace import SpectroDataset, OSEkitDataset
+from osekit.public_api.dataset import SpectroDataset, Dataset as OSEkitDataset
 from .analysis import Analysis
 from .base_resolver import BaseResolver
 from .types import LegacyCSVDataset, ImportStatus

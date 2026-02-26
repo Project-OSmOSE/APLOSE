@@ -1,4 +1,4 @@
-import React, { MouseEvent, UIEvent, useCallback, useEffect, useRef, WheelEvent } from 'react';
+import React, { MouseEvent, UIEvent, useCallback, useEffect, useRef, useState, WheelEvent } from 'react';
 import styles from './styles.module.scss';
 import { FrequencyAxis, TimeAxis } from '@/features/Annotator/Axis';
 import { TimeBar } from './TimeBar';
@@ -8,8 +8,8 @@ import {
     StrongAnnotation,
     useTempAnnotationsEvents,
 } from '@/features/Annotator/Annotation';
-import { useWindowContainerWidth, useWindowHeight, useWindowWidth, Y_AXIS_WIDTH } from './window.hooks';
-import { useGetCoords, useGetFreqTime, useIsHoverCanvas, usePointer } from '@/features/Annotator/Pointer';
+import { Y_AXIS_WIDTH } from './axis-size.const';
+import { usePointer, useGetCoords, useGetFreqTime, useIsHoverCanvas } from '@/features/Annotator/Pointer';
 import { selectZoom, selectZoomOrigin, useZoomIn, useZoomOut } from '@/features/Annotator/Zoom';
 import { selectCanDraw } from '@/features/Annotator/UX';
 import { useAudio } from '@/features/Audio';
@@ -23,14 +23,17 @@ import {
     selectColormap,
     selectContrast,
     selectIsColormapReversed,
+    selectSpectrogramMode,
 } from '@/features/Annotator/VisualConfiguration';
-import { selectAnalysis } from '@/features/Annotator/Analysis';
+import { selectAnalysis, selectFFT } from '@/features/Annotator/Analysis';
+import { SpectrogramDisplay } from '@/features/Spectrogram/Display';
 import { AcousticFeatures } from '@/features/Annotator/AcousticFeatures';
+import { useSpectrogramDimensions } from '@/features/Spectrogram/Display/dimension.hook';
 
 export const AnnotatorCanvasWindow: React.FC = () => {
-    const width = useWindowWidth()
-    const height = useWindowHeight()
-    const containerWidth = useWindowContainerWidth()
+    const zoom = useAppSelector(selectZoom)
+    const { width, height } = useSpectrogramDimensions(zoom)
+    const { width: containerWidth } = useSpectrogramDimensions(0)
     const { mainCanvasRef, windowCanvasRef } = useAnnotatorCanvasContext()
     const { onStartTempAnnotation } = useTempAnnotationsEvents()
     const getFreqTime = useGetFreqTime()
@@ -43,6 +46,9 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     const draw = useDrawCanvas()
     const dispatch = useAppDispatch()
     const pointer = usePointer()
+    const mode = useAppSelector(selectSpectrogramMode);
+    const fft = useAppSelector(selectFFT);
+    const [ left, setLeft ] = useState<number>(0);
 
     const clearPointer = useCallback(() => {
         pointer.clearPosition()
@@ -53,7 +59,8 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         const div = event.currentTarget;
         const left = div.scrollWidth - div.scrollLeft - div.clientWidth;
         if (left <= 0) dispatch(setAllFileAsSeen())
-    }, [dispatch])
+        setLeft(div.scrollLeft)
+    }, [ dispatch, setAllFileAsSeen, setLeft ])
 
     const onWheel = useCallback((event: WheelEvent) => {
         // Disable zoom if the user wants horizontal scroll
@@ -67,7 +74,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         else if (event.deltaY > 0) zoomOut(origin)
     }, [ zoomIn, zoomOut, getCoords ])
 
-    const seekAudio = useCallback((event: MouseEvent<HTMLCanvasElement>) => {
+    const seekAudio = useCallback((event: MouseEvent<HTMLElement>) => {
         seek(getFreqTime(event)?.time ?? 0)
     }, [ seek, getFreqTime ])
 
@@ -111,7 +118,6 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
 
     // Zoom update
-    const zoom = useAppSelector(selectZoom)
     const zoomOrigin = useAppSelector(selectZoomOrigin)
     const oldZoom = useRef<number>(1)
     const isHoverCanvas = useIsHoverCanvas()
@@ -160,9 +166,18 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         <div className={ styles.spectrogram }
              onWheel={ onWheel }
              onPointerLeave={ clearPointer }
+             onClick={ seekAudio }
              onMouseDown={ e => e.stopPropagation() }>
 
-            <canvas className={ canDraw ? styles.drawable : '' }
+            { spectrogram && analysis &&
+                <SpectrogramDisplay spectrogram={ spectrogram }
+                                    analysis={ analysis }
+                                    left={ left }
+                                    fft={ fft }
+                                    zoom={ zoom }
+                                    mode={ mode }/> }
+
+            <canvas className={ [ styles.interfaction, canDraw ? styles.drawable : '' ].join(' ') }
                     data-testid="drawable-canvas"
                     ref={ mainCanvasRef }
                     height={ height }

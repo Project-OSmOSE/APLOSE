@@ -9,10 +9,10 @@ export const useZoomOut = () => {
   const dispatch = useAppDispatch()
 
   return useCallback((zoomOrigin?: Point) => {
-    if (!zoomOutLevel) return;
+    if (zoomOutLevel == undefined) return;
     dispatch(setZoom(zoomOutLevel))
     dispatch(setZoomOrigin(zoomOrigin))
-  }, [ zoomOutLevel ])
+  }, [ zoomOutLevel, dispatch  ]);
 }
 
 
@@ -21,8 +21,8 @@ export const useZoomIn = () => {
   const dispatch = useAppDispatch()
 
   return useCallback((zoomOrigin?: Point) => {
-    if (!zoomInLevel) return;
+    if (zoomInLevel == undefined) return;
     dispatch(setZoom(zoomInLevel))
     dispatch(setZoomOrigin(zoomOrigin))
-  }, [ zoomInLevel ])
+  }, [ zoomInLevel, dispatch ])
 }

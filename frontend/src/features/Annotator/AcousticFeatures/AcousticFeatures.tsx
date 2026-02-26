@@ -14,7 +14,7 @@ import { Trend } from './Trend';
 import { Duration } from '@/features/Annotator/AcousticFeatures/Duration';
 import { NonLinearPhenomena } from '@/features/Annotator/AcousticFeatures/NonLinearPhenomena';
 import { Checks } from '@/features/Annotator/AcousticFeatures/Checks';
-import { useWindowWidth } from '@/features/Annotator/Canvas';
+import { useSpectrogramDimensions } from '@/features/Spectrogram/Display/dimension.hook';
 
 export const AcousticFeatures: React.FC = () => {
     const focusedAnnotation = useAppSelector(selectAnnotation)
@@ -33,7 +33,7 @@ export const AcousticFeatures: React.FC = () => {
     }, [ getAnnotation, focusedAnnotation, dispatch ])
 
     const divRef = useRef<HTMLDivElement | null>(null)
-    const windowWidth = useWindowWidth()
+    const { width: windowWidth } = useSpectrogramDimensions(0)
     const initialPosition = useMemo(() => {
         const initialLeft = window.innerWidth - 500
         const position: ExtendedDivPosition ={

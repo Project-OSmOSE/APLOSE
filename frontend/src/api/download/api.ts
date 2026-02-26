@@ -9,7 +9,7 @@ export const DownloadRestAPI = restAPI.injectEndpoints({
     downloadAnalysis: builder.mutation<void, Pick<SpectrogramAnalysisNode, 'id' | 'name'>>({
       query: ({ id, name }) => {
         return {
-          url: `/download/analysis-export/${ id }/`,
+          url: `/api/download/analysis-export/${ id }/`,
           responseHandler: getDownloadResponseHandler(`${ name }.zip`),
         }
       },
@@ -18,7 +18,7 @@ export const DownloadRestAPI = restAPI.injectEndpoints({
     downloadAnnotations: builder.mutation<void, { phaseID: string, campaignName: string }>({
       query: ({ phaseID, campaignName }) => {
         return {
-          url: `/download/phase-annotations/${ phaseID }/`,
+          url: `/api/download/phase-annotations/${ phaseID }/`,
           responseHandler: getDownloadResponseHandler(`${ campaignName.replaceAll(' ', '_') }_results.csv`),
         }
       },
@@ -27,7 +27,7 @@ export const DownloadRestAPI = restAPI.injectEndpoints({
     downloadProgress: builder.mutation<void, { phaseID: string, campaignName: string }>({
       query: ({ phaseID, campaignName }) => {
         return {
-          url: `/download/phase-progression/${ phaseID }/`,
+          url: `/api/download/phase-progression/${ phaseID }/`,
           responseHandler: getDownloadResponseHandler(`${ campaignName.replaceAll(' ', '_') }_status.csv`),
         }
       },
