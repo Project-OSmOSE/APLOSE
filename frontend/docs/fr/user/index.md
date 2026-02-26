@@ -1,6 +1,6 @@
 # Commencer avec APLOSE
 
-APLOSE est une plateforme d'annotation audio développé par l'équipe [OSmOSE](https://osmose.ifremer.fr).
+APLOSE est une plateforme d'annotation audio pour la recherche en acoustique passive marine.
 La plateforme permet d'annoter des fichiers audios en se basant sur leurs spectrogrammes. Elle permet de faire annoter
 un ou plusieurs utilisateurs sur les mêmes fichiers.
 

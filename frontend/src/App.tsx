@@ -14,9 +14,6 @@ import { StoreProvider, useAppSelector } from '@/features/App';
 const Login = lazy(() => import('./view/auth/Login'));
 const Account = lazy(() => import('./view/account'));
 const SqlQuery = lazy(() => import('./view/admin/sql'));
-const OntologyPage = lazy(() => import('./view/admin/ontology'));
-const OntologyTab = lazy(() => import('./view/admin/ontology/[type]'));
-const OntologyPanel = lazy(() => import('./view/admin/ontology/[type]/[id]'));
 const DatasetList = lazy(() => import('./view/dataset'));
 const DatasetDetail = lazy(() => import('./view/dataset/[datasetID]'));
 const AnnotationCampaignList = lazy(() => import('./view/annotation-campaign'));
@@ -108,11 +105,6 @@ const AppContent: React.FC = () => {
         { currentUser?.isSuperuser &&
             <Route path="admin">
                 <Route path="sql" element={ <Suspense><SqlQuery/></Suspense> }/>
-                <Route path="ontology" element={ <Suspense><OntologyPage/></Suspense> }>
-                    <Route path=":type" element={ <Suspense><OntologyTab/></Suspense> }>
-                        <Route path=":id" element={ <Suspense><OntologyPanel/></Suspense> }/>
-                    </Route>
-                </Route>
             </Route> }
 
           <Route path="" element={ <Navigate to="/annotation-campaign" replace state={ { from } }/> }/>

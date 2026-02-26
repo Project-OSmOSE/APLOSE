@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useState } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
 import { closeOutline, menuOutline } from 'ionicons/icons/index.js';
 import { useCurrentUser, useLogout } from '@/api';
-import { DocumentationButton, Link } from '@/components/ui';
+import { Link } from '@/components/ui';
 import styles from './layout.module.scss';
 import logo from '/images/ode_logo_192x192.png';
 
@@ -49,9 +49,6 @@ export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
             <Link href="/backend/admin" target="_blank" color="medium">Admin</Link>
         </Fragment> }
 
-        <DocumentationButton/>
-
-        { user?.isSuperuser && <Link appPath="/admin/ontology/source" color="medium" onClick={ close }>Ontology</Link> }
         { user?.isSuperuser && <Link appPath="/admin/sql" color="medium" onClick={ close }>SQL query</Link> }
 
         <Link appPath="/account" color="medium" onClick={ close }>Account</Link>

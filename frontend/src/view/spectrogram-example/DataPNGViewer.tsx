@@ -217,18 +217,28 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
   const effectiveZmin = zmin ?? dataRange.min;
   const effectiveZmax = zmax ?? dataRange.max;
 
-  // Generate frequency and time arrays
+  // Generate frequency and time arrays based on metadata scale
   const { frequencies, times } = useMemo(() => {
     if (!metadata || !spectrogramData) return { frequencies: [], times: [] };
 
-    const { frequency_min, frequency_max, time_min, time_max } = metadata.spectrogram;
+    const { frequency_min, frequency_max, frequency_scale, time_min, time_max } = metadata.spectrogram;
     const height = spectrogramData.length;
     const width = spectrogramData[0]?.length || 0;
 
-    // Generate frequency array (linear spacing for display)
-    const freqs = Array.from({ length: height }, (_, i) =>
-      frequency_min + (frequency_max - frequency_min) * i / (height - 1)
-    );
+    // Generate frequency array based on scale from JSON
+    let freqs: number[];
+    if (frequency_scale === 'log') {
+      // Log-spaced frequencies
+      freqs = Array.from({ length: height }, (_, i) => {
+        const t = i / (height - 1);
+        return frequency_min * Math.pow(frequency_max / frequency_min, t);
+      });
+    } else {
+      // Linear-spaced frequencies
+      freqs = Array.from({ length: height }, (_, i) =>
+        frequency_min + (frequency_max - frequency_min) * i / (height - 1)
+      );
+    }
 
     // Generate time array (always linear)
     const timeArr = Array.from({ length: width }, (_, i) =>
