@@ -72,7 +72,8 @@ class ZoomViewSet(ViewSet):
                 image_path = base_path
 
         local_path = path.join(
-            PureWindowsPath(settings.DATASET_IMPORT_FOLDER),
+            PureWindowsPath(settings.VOLUMES_ROOT),
+            PureWindowsPath(settings.DATASET_EXPORT_PATH),
             PureWindowsPath(image_path),
         )
         if not path.exists(local_path):
@@ -96,14 +97,14 @@ class ZoomViewSet(ViewSet):
         zoom=0,
         tile=0,
     ):
+        zoom_level = pow(2, zoom)
         if analysis.legacy:
             return HttpResponse(
-                f"Cannot query npz for old OSEkit format.",
+                f"Cannot query wav for old OSEkit format.",
                 status=HTTPStatus.BAD_REQUEST,
             )
 
         # Check matrix exists
-        zoom_level = pow(2, zoom)
         spectro_data: SpectroData = spectrogram.get_spectro_data_for(analysis)
         spectro_data = spectro_data.split(zoom_level)[tile]
 

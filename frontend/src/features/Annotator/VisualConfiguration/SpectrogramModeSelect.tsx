@@ -18,7 +18,7 @@ export const SpectrogramModeSelect: React.FC = () => {
                    options={ ([
                        { value: 'png', label: 'From png' },
                        { value: 'wav', label: 'From wav' },
-                       { value: 'npz', label: 'From npz' },
+                       // { value: 'npz', label: 'From npz' },
                    ]) }
                    optionsContainer="popover"
                    value={ mode }
