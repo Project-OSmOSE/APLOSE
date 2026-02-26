@@ -8,7 +8,9 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.shortcuts import get_object_or_404
 from django.templatetags.static import static
+from osekit.core_api.audio_file import AudioFile
 from osekit.core_api.spectro_data import SpectroData
+from pandas import Timestamp
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.viewsets import ViewSet
@@ -16,6 +18,7 @@ from scipy.signal import ShortTimeFFT
 from scipy.signal.windows import hamming
 
 from backend.api.models import Spectrogram, SpectrogramAnalysis
+from backend.utils.osekit_replace import AudioData
 
 
 class ZoomViewSet(ViewSet):
@@ -98,32 +101,38 @@ class ZoomViewSet(ViewSet):
         tile=0,
     ):
         zoom_level = pow(2, zoom)
-        if analysis.legacy:
-            return HttpResponse(
-                f"Cannot query wav for old OSEkit format.",
-                status=HTTPStatus.BAD_REQUEST,
-            )
+        win_size = int(query_params.get("windowSize", analysis.fft.window_size))
+        overlap = query_params.get("overlap", analysis.fft.overlap)
+        mfft = int(query_params.get("nfft", analysis.fft.nfft))
+        fft = ShortTimeFFT(
+            mfft=mfft,
+            win=hamming(win_size),
+            hop=round(win_size * (1 - float(overlap))),
+            fs=analysis.fft.sampling_frequency,
+            scale_to="magnitude",
+        )
 
-        # Check matrix exists
-        spectro_data: SpectroData = spectrogram.get_spectro_data_for(analysis)
+        if analysis.legacy:
+            audio_file = AudioFile(
+                path=spectrogram.get_audio_path(analysis),
+                begin=Timestamp(str(spectrogram.start)),
+            )
+            audio_data = AudioData.from_files([audio_file])
+            spectro_data = SpectroData.from_audio_data(
+                data=audio_data,
+                fft=fft,
+                colormap="viridis",  # This is the default value
+            )
+        else:
+            # Check matrix exists
+            spectro_data: SpectroData = spectrogram.get_spectro_data_for(analysis)
+            spectro_data.fft = fft
+
         spectro_data = spectro_data.split(zoom_level)[tile]
 
         colormap = query_params.get("colormap", None)
         if colormap is not None:
             spectro_data.colormap = colormap
-
-        win_size = int(query_params.get("windowSize", len(spectro_data.fft.win)))
-        overlap = query_params.get("overlap", None)
-        mfft = int(query_params.get("nfft", spectro_data.fft.mfft))
-        spectro_data.fft = ShortTimeFFT(
-            mfft=mfft,
-            win=hamming(win_size),
-            hop=round(win_size * (1 - float(overlap)))
-            if overlap
-            else spectro_data.fft.hop,
-            fs=spectro_data.fft.fs,
-            scale_to="magnitude",
-        )
 
         spectro_data.plot()
 

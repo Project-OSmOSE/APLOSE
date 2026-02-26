@@ -72,7 +72,7 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
                     const p = spectrogramRef.current.path
                     const f = spectrogramRef.current.filename
                     query = getTile({
-                        url: `${ p.split(f)[0] }${ f }_${ zoomRef.current }_${ index }${ p.split(f)[1] }`,
+                        url: `${ p.split(f)[0] }${ f }_${ zoomRef.current + 1 }_${ index }${ p.split(f)[1] }`,
                     })
                 } else {
                     query = getTile({
