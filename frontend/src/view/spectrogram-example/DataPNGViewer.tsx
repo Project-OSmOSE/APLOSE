@@ -4,7 +4,7 @@ import { IonSpinner } from '@ionic/react';
 import { useAudio } from '@/features/Audio/context';
 import { PlayPauseButton } from '@/features/Audio/PlayPauseButton';
 import { CurrentTime } from '@/features/Audio/CurrentTime';
-import { PlaybackRate } from '@/features/Audio/PlaybackRate';
+import { PlaybackRateSelect } from '@/features/Audio/PlaybackRate';
 import styles from './styles.module.scss';
 
 interface DataPNGMetadata {
@@ -300,8 +300,8 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
         tickfont: { color: '#aaa' },
         range: [metadata.spectrogram.time_min, metadata.spectrogram.time_max],
         autorange: false,
-        constrain: 'domain',
-        constraintoward: 'center',
+        constrain: 'domain' as const,
+        constraintoward: 'center' as const,
       },
       yaxis: {
         title: { text: 'Frequency (Hz)', font: { color: '#aaa' } },
@@ -314,8 +314,8 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
           ? [Math.log10(Math.max(1, metadata.spectrogram.frequency_min)), Math.log10(metadata.spectrogram.frequency_max)]
           : [metadata.spectrogram.frequency_min, metadata.spectrogram.frequency_max],
         autorange: false,
-        constrain: 'domain',
-        constraintoward: 'center',
+        constrain: 'domain' as const,
+        constraintoward: 'center' as const,
       },
       shapes,
       hovermode: 'closest' as const,
@@ -455,7 +455,7 @@ export const DataPNGViewer: React.FC<DataPNGViewerProps> = ({
         <div className={styles.audioControls}>
           <PlayPauseButton />
           <CurrentTime />
-          <PlaybackRate />
+          <PlaybackRateSelect />
         </div>
 
         <div className={styles.navButtons}>
