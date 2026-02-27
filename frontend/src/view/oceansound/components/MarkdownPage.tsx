@@ -138,7 +138,6 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
 
   const processTextStyles = (text: string): React.ReactNode => {
     // Process bold and italic
-    let result = text;
     const parts: React.ReactNode[] = [];
 
     // Simple approach: split by ** for bold and * for italic
