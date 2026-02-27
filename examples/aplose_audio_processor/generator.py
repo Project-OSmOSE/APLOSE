@@ -251,6 +251,95 @@ class AploseAudioProcessor:
             'png_files': all_png_files
         }
 
+    def process_file_list(
+        self,
+        input_list: list,
+        output_folder: str,
+        audio_extensions: List[str] = None,
+        preserve_timestamps: bool = True,
+        datetime_format: Optional[str] = None
+    ) -> Dict[str, List[str]]:
+        """
+        Process all audio files in a folder.
+
+        Args:
+            input_folder: Path to folder containing audio files.
+            output_folder: Path to output folder for WAV and spectrogram files.
+            audio_extensions: List of audio file extensions to process (default: ['.wav', '.WAV']).
+            preserve_timestamps: Preserve timestamps in snippet filenames.
+            datetime_format: Optional datetime format override for parsing filenames.
+                           If not provided, uses the instance's datetime_format.
+
+        Returns:
+            Dictionary with 'wav_files' and 'png_files' lists.
+        """
+
+        output_path = Path(output_folder)
+
+        # Create output directory
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        # path_objects = [Path(path_str) for path_str in path_strings]
+
+        audio_files =  [Path(path_str) for path_str in input_list]
+
+        print(f"Found {len(audio_files)} audio file(s) to process")
+
+        # Temporarily override datetime_format if provided
+        original_datetime_format = self.datetime_format
+        if datetime_format is not None:
+            self.datetime_format = datetime_format
+
+        all_wav_files = []
+        all_png_files = []
+
+        audio_files_sorted = sorted(audio_files)
+
+        if self.num_workers > 1 and len(audio_files_sorted) > 1:
+            # Use multithreading for parallel processing
+            print(f"Using {self.num_workers} parallel workers")
+            with ThreadPoolExecutor(max_workers=self.num_workers) as executor:
+                futures = {
+                    executor.submit(
+                        self._process_single_audio_file,
+                        audio_file,
+                        output_path,
+                        preserve_timestamps
+                    ): audio_file
+                    for audio_file in audio_files_sorted
+                }
+
+                for future in as_completed(futures):
+                    audio_file = futures[future]
+                    try:
+                        result = future.result()
+                        all_wav_files.extend(result['wav_files'])
+                        all_png_files.extend(result['png_files'])
+                    except Exception as e:
+                        print(f"Error processing {audio_file.name}: {e}")
+        else:
+            # Sequential processing
+            for audio_file in audio_files_sorted:
+                result = self._process_single_audio_file(
+                    audio_file, output_path, preserve_timestamps
+                )
+                all_wav_files.extend(result['wav_files'])
+                all_png_files.extend(result['png_files'])
+
+        # Restore original datetime_format
+        self.datetime_format = original_datetime_format
+
+        print(f"\nProcessing complete!")
+        print(f"Generated {len(all_wav_files)} WAV files")
+        if self.generate_data_png:
+            print(f"Generated {len(all_png_files)} PNG files")
+
+        return {
+            'wav_files': all_wav_files,
+            'png_files': all_png_files
+        }
+
+
     def process_single_file(
         self,
         input_file: str,
