@@ -37,7 +37,7 @@ export const Link: React.FC<LinkProps> = ({
     if (onClick) onClick()
   }, [ appPath ])
 
-  const openAux = useCallback(() => window.open(`/app${ appPath }`, '_blank'), [ appPath ])
+  const openAux = useCallback(() => window.open(`${ appPath }`, '_blank'), [ appPath ])
 
   if (href !== undefined) return <a style={ { textDecoration: 'none' } } className={ className }
                                     target={ target } rel="noopener, noreferrer"
