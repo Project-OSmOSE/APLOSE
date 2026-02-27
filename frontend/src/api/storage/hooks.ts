@@ -14,7 +14,7 @@ function _mapData(data?: BrowseStorageQuery) {
 }
 
 export const useBrowseStorage = (vars?: BrowseStorageQueryVariables, options?: { skip?: boolean }) => {
-    const info = browseStorage.useQuery(vars, options)
+    const info = browseStorage.useQuery({ path: vars?.path ?? '' }, options)
     return useMemo(() => ({ ...info, subfolders: _mapData(info.data) }), [ info ])
 }
 

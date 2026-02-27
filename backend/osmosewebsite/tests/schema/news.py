@@ -47,7 +47,6 @@ class NewsGqlTestCase(ExtendedTestCase):
     def test_list(self):
         """NewsViewSet 'list' returns list of news"""
         response = self.gql_query(ALL_QUERY)
-        print(response.content)
         self.assertResponseNoErrors(response)
         content = json.loads(response.content)["data"]["allNews"]["results"]
         self.assertEqual(len(content), 2)
@@ -63,7 +62,6 @@ class NewsGqlTestCase(ExtendedTestCase):
     def test_retrieve(self):
         """NewsViewSet 'retrieve' returns news details"""
         response = self.gql_query(BY_ID_QUERY, variables={"id": 2})
-        print(response.content)
         self.assertResponseNoErrors(response)
         content = json.loads(response.content)["data"]["newsById"]
         self.assertEqual(

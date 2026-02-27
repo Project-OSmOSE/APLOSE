@@ -106,6 +106,7 @@ class Dataset(BaseResolver):
                 if not self._exists(csv_path):
                     continue
                 analysis.append(Analysis(self.root.as_posix(), path, self.path))
+
         # Browse datasets
         if self.osekit is not None:
             for [_name, d] in self.osekit.datasets.items():

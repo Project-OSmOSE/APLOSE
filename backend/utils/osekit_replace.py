@@ -3,6 +3,8 @@ from os.path import join
 from pathlib import PureWindowsPath, Path
 
 import numpy as np
+from osekit.config import TIMESTAMP_FORMATS_EXPORTED_FILES
+from osekit.utils.timestamp_utils import strptime_from_text
 from pandas import Timestamp, Timedelta
 from scipy.signal import ShortTimeFFT
 
@@ -12,131 +14,163 @@ class TFile:
     end: Timestamp
     path: str
 
-    def __init__(self, d: dict, dataset_path):
-        self.begin = d["begin"]
-        self.end = d["end"]
-        self.path = join(
-            dataset_path,
-            PureWindowsPath(d["path"])
-            .as_posix()
-            .split(PureWindowsPath(dataset_path).stem)
-            .pop()
-            .strip("/"),
-        )
+    def __init__(self, begin: Timestamp, end: Timestamp, path: str):
+        self.begin = begin
+        self.end = end
+        self.path = path
 
 
 class AudioData:
-    dataset_path: Path
-
     files: list[TFile]
 
-    def __init__(self, d: dict, dataset_path):
-        self.dataset_path = dataset_path
-        self.audio_data = [TFile(d, dataset_path) for name, d in d["files"].items()]
+    def __init__(self, files: list[TFile]):
+        self.files = files
 
 
 class SpectroData:
-    dataset_path: Path
     name: str
-    v_lim: list[int]  # TODO
+    v_lim: list[int]
     begin: Timestamp
     end: Timestamp
     duration: Timedelta
     audio_data: AudioData
 
-    def __init__(self, d: dict, name, dataset_path):
-        self.dataset_path = dataset_path
+    def __init__(
+        self,
+        name: str,
+        begin: Timestamp,
+        end: Timestamp,
+        v_lim: list[int],
+        audio_data: AudioData,
+    ):
         self.name = name
-        self.begin = Timestamp(d["begin"])
-        self.end = Timestamp(d["end"])
-        self.v_lim = d["v_lim"]
+        self.begin = begin
+        self.end = end
+        self.v_lim = v_lim
         self.duration = self.end - self.begin
-        self.audio_data = AudioData(d["audio_data"], dataset_path)
+        self.audio_data = audio_data
 
 
 class SpectroDataset:
     folder: Path
     name: str
-    data: list[SpectroData] = []
+    fft: ShortTimeFFT | None
+    colormap: str | None
 
-    def __init__(self, d: dict, path):
-        self.d = d
-        self.folder = path
-        self.name = d["name"]
+    data: list[SpectroData]
+    data_duration: Timedelta
+    begin: Timestamp
+    end: Timestamp
 
-    @property
-    def fft(self) -> ShortTimeFFT:
-        sft = list(self.d["sft"].values())[0]
-        return ShortTimeFFT(
-            win=np.array(sft["win"]),
-            hop=sft["hop"],
-            fs=sft["fs"],
-            mfft=sft["mfft"],
-        )
-
-    @property
-    def colormap(self) -> str | None:
-        return list(self.d["data"].values())[0]["colormap"]
-
-    @property
-    def begin(self) -> Timestamp:
-        """Begin of the first data object."""
-        return min(data.begin for data in self.data)
-
-    @property
-    def end(self) -> Timestamp:
-        """End of the last data object."""
-        return max(data.end for data in self.data)
-
-    @property
-    def data_duration(self) -> Timedelta:
-        data_durations = [
-            Timedelta(data.duration).round(freq="1s") for data in self.data
-        ]
-        return max(set(data_durations), key=data_durations.count)
-
-    def load_data(self):
-        self.data = [
-            SpectroData(d, name, self.folder) for name, d in self.d["data"].items()
-        ]
+    def __init__(
+        self,
+        folder: Path,
+        name: str,
+        fft: ShortTimeFFT | None,
+        colormap: str | None,
+        data: list[SpectroData],
+    ):
+        self.name = name
+        self.folder = folder
+        self.fft = fft
+        self.colormap = colormap
+        self.begin = min(d.begin for d in data)
+        self.end = max(d.end for d in data)
+        data_durations = [Timedelta(d.duration).round(freq="1s") for d in data]
+        self.data_duration = max(set(data_durations), key=data_durations.count)
 
     @staticmethod
     def from_json(json_path: Path) -> "SpectroDataset":
         with json_path.open("r") as f:
-            return SpectroDataset(
-                json.loads(f.read()),
+            dataset_data = json.loads(f.read())
+            sft = (
+                list(dataset_data["sft"].values())[0]
+                if "sft" in dataset_data and dataset_data["sft"]
+                else None
+            )
+            folder = Path(
                 PureWindowsPath(json_path).as_posix()[
                     : -len(f"/{json_path.stem}{json_path.suffix}")
+                ]
+            )
+            return SpectroDataset(
+                folder=folder,
+                name=dataset_data["name"],
+                fft=ShortTimeFFT(
+                    win=np.array(sft["win"]),
+                    hop=sft["hop"],
+                    fs=sft["fs"],
+                    mfft=sft["mfft"],
+                )
+                if sft
+                else None,
+                colormap=list(dataset_data["data"].values())[0]["colormap"],
+                data=[
+                    SpectroData(
+                        name=name,
+                        begin=Timestamp(spectro_data["begin"]),
+                        end=Timestamp(spectro_data["end"]),
+                        v_lim=spectro_data["v_lim"],
+                        audio_data=AudioData(
+                            files=[
+                                TFile(
+                                    path=join(
+                                        folder,
+                                        PureWindowsPath(file["path"])
+                                        .as_posix()
+                                        .split(PureWindowsPath(folder).stem)
+                                        .pop()
+                                        .strip("/"),
+                                    ),
+                                    begin=Timestamp(
+                                        strptime_from_text(
+                                            file["begin"],
+                                            datetime_template=TIMESTAMP_FORMATS_EXPORTED_FILES,
+                                        )
+                                    ),
+                                    end=Timestamp(
+                                        strptime_from_text(
+                                            file["end"],
+                                            datetime_template=TIMESTAMP_FORMATS_EXPORTED_FILES,
+                                        )
+                                    ),
+                                )
+                                for name, file in spectro_data["audio_data"][
+                                    "files"
+                                ].items()
+                            ],
+                        ),
+                    )
+                    for name, spectro_data in dataset_data["data"].items()
                 ],
             )
 
 
 class OSEkitDataset:
     datasets: dict
+    folder: Path
 
-    def __init__(self, d: dict, path):
-        self.datasets = {}
-        for name, dataset in d["datasets"].items():
-            analysis_json_path = join(
-                path,
-                PureWindowsPath(dataset["json"])
-                .as_posix()
-                .split(PureWindowsPath(path).stem)
-                .pop()
-                .strip("/"),
-            )
-            self.datasets[name] = {
-                "class": dataset["class"],
-                "analysis": dataset["analysis"],
-                "dataset": SpectroDataset.from_json(
-                    Path(PureWindowsPath(analysis_json_path).as_posix())
-                ),
-            }
+    def __init__(self, folder: Path, datasets: dict):
+        self.datasets = datasets
+        self.folder = folder
 
     @staticmethod
     def from_json(json_path: Path) -> "OSEkitDataset":
         with json_path.open("r") as f:
+            d = json.loads(f.read())
+            datasets = {}
+            for name, dataset in d["datasets"].items():
+                if dataset["class"] != SpectroDataset.__name__:
+                    continue
+                datasets[name] = {
+                    "class": dataset["class"],
+                    "analysis": dataset["analysis"],
+                    "dataset": SpectroDataset.from_json(
+                        Path(PureWindowsPath(dataset["json"]).as_posix())
+                    ),
+                }
+
             return OSEkitDataset(
-                json.loads(f.read()),
-                PureWindowsPath(json_path).as_posix()[: -len("/dataset.json")],
+                folder=Path(d["folder"]),
+                datasets=datasets,
             )

@@ -161,9 +161,11 @@ class AnnotationSpectrogramNode(ExtendedNode):
             )
         else:
             spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
-            spectro_dataset_path = str(spectro_dataset.folder).split(
-                str(settings.DATASET_EXPORT_PATH)
-            )[1]
+            spectro_dataset_path = (
+                str(spectro_dataset.folder)
+                .split(str(settings.DATASET_EXPORT_PATH))
+                .pop()
+            )
             spectrogram_path = path.join(
                 PureWindowsPath(spectro_dataset_path),
                 PureWindowsPath("spectrogram"),  # TODO: avoid static path parts!!!
