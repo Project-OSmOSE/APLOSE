@@ -1,8 +1,3 @@
-map $http_referer $webroot {
-    "~/app" "/usr/share/nginx/app";
-    "~/"    "/usr/share/nginx/website";
-}
-
 server {
   listen 8080;
   server_name osmose;
@@ -11,14 +6,7 @@ server {
   gzip on;
   gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
 
-  location /app {
-    root /usr/share/nginx/;
-    proxy_intercept_errors on;
-    error_page 404 = /app/index.html;
-    proxy_no_cache 1;
-    client_max_body_size 10M;
-  }
-
+  # Documentation
   location /doc {
     # content location
     rewrite ^/doc/(.*) /$1 break;
@@ -42,15 +30,18 @@ server {
     }
   }
 
+  # Main React app - serves both /oceansound (public) and /app (authenticated)
   location / {
-    root /usr/share/nginx/website/;
-    proxy_intercept_errors on;
-    error_page 404 = /index.html;
+    root /usr/share/nginx/html;
+    index index.html;
+    try_files $uri $uri/ /index.html;
     proxy_no_cache 1;
+    client_max_body_size 10M;
   }
 
+  # Static files from React app
   location /static {
-    root $webroot;
+    root /usr/share/nginx/html;
   }
 
   location /api/ {

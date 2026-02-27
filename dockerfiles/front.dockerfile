@@ -16,23 +16,10 @@ COPY frontend .
 RUN apk add --no-cache git
 #COPY .git .
 
-RUN PUBLIC_URL=/app npm run build
+# Build React app (vite.config.ts sets base: '/')
+RUN npm run build
 
 RUN npm run docs:build
-
-# Build website stage
-FROM node:16-alpine3.13 as build-website
-
-WORKDIR /opt
-
-COPY website/package.json .
-COPY website/package-lock.json .
-
-RUN npm install
-
-COPY website .
-
-RUN npm run build
 
 # Deploy stage
 FROM nginxinc/nginx-unprivileged:1.20-alpine
@@ -42,9 +29,9 @@ ARG GID=101
 
 COPY ./dockerfiles/nginx.conf.template /etc/nginx/templates/default.conf.template
 
-COPY --from=build-app /opt/dist /usr/share/nginx/app
+# Copy React app to nginx html directory (serves both /oceansound and /app routes)
+COPY --from=build-app /opt/dist /usr/share/nginx/html
 COPY --from=build-app /opt/docs/.vitepress/dist /usr/share/nginx/doc
-COPY --from=build-website /opt/build /usr/share/nginx/website
 
 USER 0
 
