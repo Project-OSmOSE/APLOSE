@@ -593,3 +593,95 @@ $accent-color: #00d4aa;
   gap: 1rem;
   color: $text-muted;
 }
+
+// Sound Modal Styles
+.soundModal {
+  --background: transparent;
+  --width: 90%;
+  --max-width: 800px;
+  --height: auto;
+  --max-height: 90vh;
+}
+
+.modalContent {
+  background: $background-card;
+  border-radius: 16px;
+  border: 1px solid $border-color;
+  overflow: hidden;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid $border-color;
+
+  h2 {
+    color: $text-primary;
+    margin: 0;
+    font-size: 1.25rem;
+  }
+
+  ion-button {
+    --color: #{$text-muted};
+    margin: 0;
+  }
+}
+
+.modalBody {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.modalImage {
+  width: 100%;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+.modalInfo {
+  margin-bottom: 1.5rem;
+
+  p {
+    color: $text-secondary;
+    margin: 0.5rem 0;
+
+    strong {
+      color: $text-primary;
+    }
+  }
+}
+
+.analysisItem {
+  display: inline-block;
+  background: rgba($primary-color, 0.2);
+  color: $primary-light;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  margin: 0.25rem 0.25rem 0.25rem 0;
+}
+
+.modalCta {
+  text-align: center;
+  padding: 1.5rem;
+  background: rgba($primary-color, 0.1);
+  border-radius: 8px;
+
+  p {
+    color: $text-secondary;
+    margin: 0 0 1rem 0;
+  }
+}
