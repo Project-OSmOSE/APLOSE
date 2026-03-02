@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { IonSpinner, IonModal, IonButton, IonIcon } from '@ionic/react';
-import { closeOutline } from 'ionicons/icons';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { IonSpinner } from '@ionic/react';
+import { useParams, useNavigate } from 'react-router-dom';
 import styles from '../styles.module.scss';
+import { SoundLibraryViewer } from '@/view/sound-library/SoundLibraryViewer';
 
 interface Analysis {
   fft: number;
@@ -27,24 +27,36 @@ interface SoundLibraryResponse {
  * Public Sound Library Page
  *
  * Displays sound library thumbnails publicly.
- * Users can browse sounds but need to log in for full functionality.
+ * Clicking a thumbnail opens the full spectrogram viewer directly.
  */
 export const SoundLibraryPublic: React.FC = () => {
   const [files, setFiles] = useState<SoundFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [basePath, setBasePath] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<SoundFile | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFftIndex, setSelectedFftIndex] = useState(0);
 
-  const handleCardClick = (file: SoundFile) => {
-    setSelectedFile(file);
-    setIsModalOpen(true);
+  const { fileIndex } = useParams<{ fileIndex?: string }>();
+  const navigate = useNavigate();
+
+  // Parse selected file index from URL
+  const selectedFileIndex = fileIndex !== undefined ? parseInt(fileIndex, 10) : null;
+  const selectedFile = selectedFileIndex !== null && !isNaN(selectedFileIndex) ? files[selectedFileIndex] : null;
+  const selectedAnalysis = selectedFile?.analyses[selectedFftIndex];
+
+  // Reset FFT index when file changes
+  useEffect(() => {
+    setSelectedFftIndex(0);
+  }, [selectedFileIndex]);
+
+  // Navigate to file view
+  const handleCardClick = (index: number) => {
+    navigate(`/oceansound/sounds/${index}`);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedFile(null);
+  // Navigate back to thumbnails
+  const handleBack = () => {
+    navigate('/oceansound/sounds');
   };
 
   // Fetch file list on mount
@@ -86,6 +98,16 @@ export const SoundLibraryPublic: React.FC = () => {
     return null;
   }, [basePath]);
 
+  // FFT options for dropdown
+  const fftOptions = useMemo(() => {
+    if (!selectedFile) return [];
+    return selectedFile.analyses.map((a, idx) => ({
+      value: idx,
+      label: `nfft: ${a.fft}`,
+      fft: a.fft,
+    }));
+  }, [selectedFile]);
+
   if (loading) {
     return (
       <div className={styles.page}>
@@ -97,12 +119,42 @@ export const SoundLibraryPublic: React.FC = () => {
     );
   }
 
+  // Show full spectrogram viewer when a file is selected via URL
+  if (selectedFile && selectedAnalysis && files.length > 0) {
+    return (
+      <div className={styles.spectrogramViewerPage}>
+        <SoundLibraryViewer
+          jsonPath={selectedAnalysis.json}
+          basePath={basePath}
+          wavFile={selectedFile.filename}
+          fftOptions={fftOptions}
+          selectedFftIndex={selectedFftIndex}
+          onFftChange={setSelectedFftIndex}
+          onBack={handleBack}
+          fileSelector={
+            <select
+              value={selectedFileIndex ?? ''}
+              onChange={(e) => navigate(`/oceansound/sounds/${e.target.value}`)}
+              className={styles.fileDropdown}
+            >
+              {files.map((file, idx) => (
+                <option key={file.filename || file.baseName} value={idx}>
+                  {file.prefix}
+                </option>
+              ))}
+            </select>
+          }
+        />
+      </div>
+    );
+  }
+
+  // Show thumbnail grid
   return (
     <div className={styles.page}>
       <h1>Sound Library</h1>
       <p className={styles.pageIntro}>
-        Browse our collection of marine acoustic recordings. Each spectrogram represents
-        a unique underwater sound captured through passive acoustic monitoring.
+        Browse our collection of marine acoustic recordings. Click any spectrogram to explore it in detail.
       </p>
 
       {error ? (
@@ -111,82 +163,33 @@ export const SoundLibraryPublic: React.FC = () => {
           <p>Check back later for new sounds.</p>
         </div>
       ) : (
-        <>
-          <div className={styles.soundGrid}>
-            {files.map((file) => {
-              const thumbnailUrl = getThumbnailUrl(file);
-              return (
-                <div
-                  key={file.filename || file.baseName}
-                  className={styles.soundCard}
-                  onClick={() => handleCardClick(file)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <div className={styles.soundThumbnail}>
-                    {thumbnailUrl ? (
-                      <img src={thumbnailUrl} alt={file.prefix} />
-                    ) : (
-                      <div className={styles.noImage}>No preview</div>
-                    )}
-                  </div>
-                  <div className={styles.soundInfo}>
-                    <h3>{file.prefix}</h3>
-                    <p className={styles.analysisCount}>
-                      {file.analyses.length} analysis{file.analyses.length !== 1 ? 'es' : ''}
-                    </p>
-                  </div>
+        <div className={styles.soundGrid}>
+          {files.map((file, index) => {
+            const thumbnailUrl = getThumbnailUrl(file);
+            return (
+              <div
+                key={file.filename || file.baseName}
+                className={styles.soundCard}
+                onClick={() => handleCardClick(index)}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className={styles.soundThumbnail}>
+                  {thumbnailUrl ? (
+                    <img src={thumbnailUrl} alt={file.prefix} />
+                  ) : (
+                    <div className={styles.noImage}>No preview</div>
+                  )}
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Modal for viewing sound details */}
-          <IonModal isOpen={isModalOpen} onDidDismiss={closeModal} className={styles.soundModal}>
-            <div className={styles.modalContent}>
-              <div className={styles.modalHeader}>
-                <h2>{selectedFile?.prefix}</h2>
-                <IonButton fill="clear" onClick={closeModal}>
-                  <IonIcon icon={closeOutline} slot="icon-only" />
-                </IonButton>
+                <div className={styles.soundInfo}>
+                  <h3>{file.prefix}</h3>
+                  <p className={styles.analysisCount}>
+                    {file.analyses.length} analysis{file.analyses.length !== 1 ? 'es' : ''}
+                  </p>
+                </div>
               </div>
-              {selectedFile && (
-                <div className={styles.modalBody}>
-                  <div className={styles.modalImage}>
-                    {getThumbnailUrl(selectedFile) ? (
-                      <img src={getThumbnailUrl(selectedFile)!} alt={selectedFile.prefix} />
-                    ) : (
-                      <div className={styles.noImage}>No preview available</div>
-                    )}
-                  </div>
-                  <div className={styles.modalInfo}>
-                    <p><strong>File:</strong> {selectedFile.baseName}</p>
-                    <p><strong>Analyses:</strong> {selectedFile.analyses.length}</p>
-                    {selectedFile.analyses.map((analysis, idx) => (
-                      <div key={idx} className={styles.analysisItem}>
-                        <span>FFT: {analysis.fft}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className={styles.modalCta}>
-                    <p>Log in to APLOSE to listen to this sound and explore the full spectrogram.</p>
-                    <Link to="/app/login" className={styles.ctaButton} onClick={closeModal}>
-                      Log in to APLOSE
-                    </Link>
-                  </div>
-                </div>
-              )}
-            </div>
-          </IonModal>
-
-          <div className={styles.ctaSection}>
-            <p>
-              Want to explore these sounds in detail or contribute annotations?
-            </p>
-            <Link to="/app/login" className={styles.ctaButton}>
-              Log in to APLOSE
-            </Link>
-          </div>
-        </>
+            );
+          })}
+        </div>
       )}
     </div>
   );

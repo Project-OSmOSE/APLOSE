@@ -21,6 +21,7 @@ export const OceanSoundApp: React.FC = () => {
         <Route path="pam" element={<PassiveAcousticMonitoring />} />
         <Route path="publications" element={<Publications />} />
         <Route path="sounds" element={<SoundLibraryPublic />} />
+        <Route path="sounds/:fileIndex" element={<SoundLibraryPublic />} />
         <Route path="*" element={<Navigate to="/oceansound" replace />} />
       </Routes>
     </OceanSoundLayout>

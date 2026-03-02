@@ -685,3 +685,40 @@ $accent-color: #00d4aa;
     margin: 0 0 1rem 0;
   }
 }
+
+// Spectrogram Viewer Page (Full-screen)
+.spectrogramViewerPage {
+  position: fixed;
+  top: 0;
+  left: 280px;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 768px) {
+    left: 0;
+  }
+}
+
+.fileDropdown {
+  background: $background-card;
+  color: $text-primary;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  min-width: 200px;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+  }
+
+  option {
+    background: $background-card;
+    color: $text-primary;
+  }
+}
