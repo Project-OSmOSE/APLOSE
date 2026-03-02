@@ -1,10 +1,13 @@
+from osekit.config import TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
+
+from backend.utils.osekit_replace import OSEkitDataset, SpectroDataset, TFile
 from ..storage import StorageResolver
-from backend.utils.osekit_replace import OSEkitDataset, SpectroDataset
 
 
 class AbstractOSEkitResolver:
 
     storage: StorageResolver
+    legacy = False
 
     dataset: OSEkitDataset | None = None
     analysis: SpectroDataset | None = None
@@ -46,6 +49,19 @@ class AbstractOSEkitResolver:
             if self.storage.clean_path(a.folder) == path:
                 return a
         return None
+
+    def get_analysis_spectro_files(self, sd: SpectroDataset) -> list[TFile]:
+        return [
+            TFile(
+                begin=d.begin,
+                end=d.end,
+                path=self.storage.join(
+                    self.storage.format_path(sd.folder),
+                    f"{d.begin.strftime(TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED)}.png",
+                ),
+            )
+            for d in sd.data
+        ]
 
 
 __all__ = ["AbstractOSEkitResolver"]

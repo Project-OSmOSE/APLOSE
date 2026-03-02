@@ -9,18 +9,8 @@ from graphql import GraphQLError
 
 from backend.api.models import Dataset, SpectrogramAnalysis, Spectrogram
 from backend.api.schema import SpectrogramAnalysisNode
-from backend.storage.resolvers import (
-    GraphQLResolver,
-    LegacyOSEkitResolver,
-    OSEkitResolver,
-    ModelResolver,
-)
-from backend.storage.schema.nodes import FolderNode, DatasetStorageNode
-from backend.storage.schema.resolver import (
-    Dataset as DatasetResolver,
-    get_resolver,
-    Folder,
-)
+from backend.storage.resolvers import ModelResolver, OSEkitResolver
+from backend.storage.schema.resolver import Dataset as DatasetResolver, get_resolver
 
 __all__ = ["ImportAnalysisMutationField", "ImportAnalysisMutation"]
 
@@ -38,30 +28,24 @@ class ImportAnalysisMutation(Mutation):
     @transaction.atomic
     def mutate(self, info, dataset_path: str, name: str):
         """Do the mutation: create required analysis"""
-        gql_resolver = GraphQLResolver.get(dataset_path)
-        if not isinstance(gql_resolver.get_node(), DatasetStorageNode):
-            raise GraphQLError(f"Cannot get dataset for path: {dataset_path}")
+        model_resolver = ModelResolver.get(dataset_path)
+        dataset = model_resolver.get_or_create_dataset(owner=info.context.user)
 
-        dataset_model_resolver = ModelResolver.get(dataset_path)
-        dataset = dataset_model_resolver.get_or_create_dataset(owner=info.context.user)
+        osekit_resolver = OSEkitResolver.get(dataset_path)
+        spectro_dataset = next(
+            a for a in osekit_resolver.all_analysis if a.name == name
+        )
+
+        if spectro_dataset is None:
+            raise GraphQLError("Analysis not found")
 
         if dataset.spectrogram_analysis.filter(name=name).exists():
-            raise GraphQLError(
-                f"Analysis {name} is already imported for dataset {dataset.name}"
-            )
+            raise GraphQLError("Analysis already imported")
 
-        analysis = SpectrogramAnalysis.objects.import_for_dataset(
-            dataset,
-            name,
-            storage_analysis.relative_path,
+        analysis = model_resolver.import_analysis(
             owner=info.context.user,
+            name=name,
         )
-        Spectrogram.objects.import_all_for_analysis(analysis)
-
-        info = analysis.spectrograms.aggregate(start=Min("start"), end=Max("end"))
-        analysis.start = info["start"]
-        analysis.end = info["end"]
-        analysis.save()
 
         return ImportAnalysisMutation(analysis=analysis)
 

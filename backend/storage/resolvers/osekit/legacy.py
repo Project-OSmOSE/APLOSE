@@ -1,8 +1,9 @@
 import csv
 from pathlib import Path
-from typing import TypedDict
+from typing import TypedDict, Tuple
 
 from django.conf import settings
+from osekit.config import TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
 from pandas import Timestamp, Timedelta
 from scipy.signal import ShortTimeFFT
 from scipy.signal.windows import hamming
@@ -32,6 +33,8 @@ class LegacyCSVAnalysis(LegacyCSVDataset):
 @deprecated("Use OSEkitResolver")
 class LegacyOSEkitResolver(AbstractOSEkitResolver):
     """Resolver class for OSEkit related content"""
+
+    legacy = True
 
     def _load_dataset(self, path: str):
         self.dataset = None
@@ -127,7 +130,19 @@ class LegacyOSEkitResolver(AbstractOSEkitResolver):
                             fs=int(d["dataset_sr"]),
                             mfft=int(metadata["nfft"]),
                         ),
-                        data=spectro_data,
+                        data=[
+                            SpectroData(
+                                name=d.name,
+                                begin=d.begin,
+                                end=d.end,
+                                v_lim=[
+                                    int(metadata["dynamic_min"]),
+                                    int(metadata["dynamic_max"]),
+                                ],
+                                audio_data=d.audio_data,
+                            )
+                            for d in spectro_data
+                        ],
                     ),
                 }
 
@@ -135,6 +150,26 @@ class LegacyOSEkitResolver(AbstractOSEkitResolver):
             folder=Path(dataset_path),
             datasets=osekit_datasets,
         )
+
+    def get_analysis(self, path: str) -> SpectroDataset | None:
+        """Get analysis for given path"""
+        for a in self.all_analysis:
+            if self.storage.clean_path(a.folder) == path:
+                return a
+        return None
+
+    def get_analysis_spectro_files(self, sd: SpectroDataset) -> list[TFile]:
+        return [
+            TFile(
+                begin=d.begin,
+                end=d.end,
+                path=self.storage.join(
+                    self.storage.format_path(sd.folder),
+                    f"{d.begin.strftime(TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED)}.png",
+                ),
+            )
+            for d in sd.data
+        ]
 
 
 __all__ = ["LegacyOSEkitResolver"]

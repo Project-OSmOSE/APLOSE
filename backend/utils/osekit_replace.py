@@ -74,6 +74,7 @@ class SpectroDataset:
         self.folder = folder
         self.fft = fft
         self.colormap = colormap
+        self.data = data
         self.begin = min(d.begin for d in data)
         self.end = max(d.end for d in data)
         data_durations = [Timedelta(d.duration).round(freq="1s") for d in data]

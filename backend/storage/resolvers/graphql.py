@@ -58,18 +58,11 @@ class GraphQLResolver:
 
         if model_resolver.dataset is not None:
             status = ImportStatus.Imported
-            if model_resolver.dataset.legacy:
-                all_analysis_path = [
-                    self.storage.join(a["path"], a["relative_path"])
-                    for a in self.legacy_osekit.__get_all_analysis(path) or []
-                ]
-            else:
-                osekit_resolver = OSEkitResolver.get(path)
-                all_analysis_path = [
-                    a["complete_path"] for a in osekit_resolver.all_analysis or []
-                ]
-            for p in all_analysis_path:
-                if not self.model.get_analysis(p):
+            osekit_resolver = OSEkitResolver.get(path)
+            for analysis in osekit_resolver.all_analysis:
+                if not self.model.get_analysis(
+                    self.storage.clean_path(analysis.folder)
+                ):
                     status = ImportStatus.Partial
                     break
             return (
