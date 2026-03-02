@@ -87,7 +87,11 @@ class AudioProcessor:
             )
         else:
             # Process entire file
-            output_name = f"{self.filename_prefix}_{base_name}" if self.filename_prefix else base_name
+            # When filename_prefix is set, use only the prefix (drop original filename)
+            if self.filename_prefix:
+                output_name = self.filename_prefix
+            else:
+                output_name = base_name
             output_path = os.path.join(output_dir, f"{output_name}.wav")
             sf.write(output_path, audio, sample_rate)
 
@@ -270,8 +274,9 @@ class AudioProcessor:
             return f"{timestamp_str}.wav"
         else:
             # Fallback to simple numbering
+            # When filename_prefix is set, use only the prefix (drop original filename)
             if self.filename_prefix:
-                return f"{self.filename_prefix}_{base_name}_snippet_{snippet_idx:04d}.wav"
+                return f"{self.filename_prefix}_snippet_{snippet_idx:04d}.wav"
             return f"{base_name}_snippet_{snippet_idx:04d}.wav"
 
     def _datetime_format_to_regex(self, datetime_format: str) -> str:

@@ -843,9 +843,9 @@ class AploseAudioProcessor:
                 continue
 
         if not parsed_dt:
-            # Fallback to current time if parsing fails
-            print(f"  Warning: Could not parse datetime from '{filename}' using any format, using current time")
-            parsed_dt = datetime.now()
+            # Fallback to default datetime if parsing fails
+            print(f"  Warning: Could not parse datetime from '{filename}' using any format, using 2000-01-01 00:00:00")
+            parsed_dt = datetime(2000, 1, 1, 0, 0, 0)
 
         begin_dt = parsed_dt
 
