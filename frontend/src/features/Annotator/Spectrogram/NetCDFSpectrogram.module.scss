@@ -152,9 +152,27 @@
     cursor: pointer;
     font-size: 0.85rem;
     transition: background 0.2s;
+    white-space: nowrap;
 
     &:hover {
       background: #666;
+    }
+  }
+
+  .applyButton {
+    padding: 5px 14px;
+    background: #0066cc;
+    border: 1px solid #0055aa;
+    border-radius: 3px;
+    color: white;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.2s;
+    white-space: nowrap;
+
+    &:hover {
+      background: #0077ee;
     }
   }
 }

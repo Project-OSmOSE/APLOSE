@@ -84,22 +84,19 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
     dispatch(setPlotlyColorscale(scale));
   };
 
-  const handleApplyZRange = () => {
+  const handleApplyAll = () => {
     dispatch(setPlotlyZmin(draftZmin));
     dispatch(setPlotlyZmax(draftZmax));
-  };
-
-  const handleResetRange = () => {
-    setDraftZmin(dataMin);
-    setDraftZmax(dataMax);
-    dispatch(resetPlotlyZRange());
-  };
-
-  const handleApplyFreqRange = () => {
     const clampedMin = Math.max(Math.round(freqMin), Math.min(draftFreqMin, draftFreqMax));
     const clampedMax = Math.min(Math.round(freqMax), Math.max(draftFreqMin, draftFreqMax));
     dispatch(setPlotlyFreqMin(clampedMin));
     dispatch(setPlotlyFreqMax(clampedMax));
+  };
+
+  const handleResetZRange = () => {
+    setDraftZmin(dataMin);
+    setDraftZmax(dataMax);
+    dispatch(resetPlotlyZRange());
   };
 
   const handleResetFreqRange = () => {
@@ -161,13 +158,7 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
           value={draftZmax}
           onChange={(e) => setDraftZmax(parseFloat(e.target.value))}
         />
-      </div>
-
-      <div className={styles.controlGroup}>
-        <button onClick={handleApplyZRange} className={styles.resetButton}>
-          Apply dB
-        </button>
-        <button onClick={handleResetRange} className={styles.resetButton}>
+        <button onClick={handleResetZRange} className={styles.resetButton}>
           Reset dB
         </button>
       </div>
@@ -194,14 +185,14 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
           value={draftFreqMax}
           onChange={(e) => setDraftFreqMax(parseInt(e.target.value, 10))}
         />
-      </div>
-
-      <div className={styles.controlGroup}>
-        <button onClick={handleApplyFreqRange} className={styles.resetButton}>
-          Apply
-        </button>
         <button onClick={handleResetFreqRange} className={styles.resetButton}>
           Reset Freq
+        </button>
+      </div>
+
+      <div className={styles.controlGroup} style={{ marginLeft: 'auto' }}>
+        <button onClick={handleApplyAll} className={styles.applyButton}>
+          Apply ranges
         </button>
       </div>
     </div>
