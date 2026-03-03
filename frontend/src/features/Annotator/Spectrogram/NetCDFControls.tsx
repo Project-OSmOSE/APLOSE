@@ -174,9 +174,9 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
       </div>
 
       <div className={styles.controlGroup}>
-        <label>Freq Min (Hz)</label>
+        <label>Freq Min: {draftFreqMin} Hz</label>
         <input
-          type="number"
+          type="range"
           min={Math.round(freqMin)}
           max={Math.round(freqMax)}
           step={1}
@@ -186,9 +186,9 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
       </div>
 
       <div className={styles.controlGroup}>
-        <label>Freq Max (Hz)</label>
+        <label>Freq Max: {draftFreqMax} Hz</label>
         <input
-          type="number"
+          type="range"
           min={Math.round(freqMin)}
           max={Math.round(freqMax)}
           step={1}
