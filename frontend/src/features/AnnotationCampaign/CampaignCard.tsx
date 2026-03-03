@@ -22,11 +22,11 @@ export const Cards: React.FC = () => {
 
   const getLink = useCallback((campaign: Campaign) => {
     if (campaign.phaseTypes.filter(p => p !== null).length > 0)
-      return `/annotation-campaign/${ campaign.id }/phase/Annotation`;
-    return `/annotation-campaign/${ campaign.id }`
+      return `/app/annotation-campaign/${ campaign.id }/phase/Annotation`;
+    return `/app/annotation-campaign/${ campaign.id }`
   }, [])
   const accessDetail = useCallback((campaign: Campaign) => navigate(getLink(campaign)), [ getLink ]);
-  const accessAuxDetail = useCallback((campaign: Campaign) => window.open(`/app${ getLink(campaign) }`, '_blank'), [ getLink ]);
+  const accessAuxDetail = useCallback((campaign: Campaign) => window.open(getLink(campaign), '_blank'), [ getLink ]);
 
   const getDeadline = useCallback((campaign: Campaign): Date | undefined => campaign.deadline ? new Date(campaign.deadline) : undefined, []);
   const getBadgeLabel = useCallback((campaign: Campaign) => {

@@ -93,7 +93,7 @@ export const NewAnnotationCampaign: React.FC = () => {
   }, [ errors ]);
   useEffect(() => {
     if (!campaign) return;
-    navigate(`/annotation-campaign/${ campaign.id }/`)
+    navigate(`/app/annotation-campaign/${ campaign.id }/`)
   }, [ campaign ]);
 
   return <div className={ styles.page } ref={ page }>

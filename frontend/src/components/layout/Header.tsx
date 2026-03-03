@@ -23,7 +23,7 @@ export const Header: React.FC<{
   const onAPLOSEClick = useCallback(async () => {
     if (currentUser) {
       if (!canNavigate || await canNavigate()) {
-        navigate(`/annotation-campaign/`);
+        navigate(`/app/annotation-campaign/`);
       }
     } else {
       navigate(`/`);

@@ -61,7 +61,7 @@ export const FileRangeActionBar: React.FC = () => {
                         {/* Manage annotators */ }
                           <TooltipOverlay tooltipContent={ <p>Manage annotators</p> } anchor="right">
                               <Link fill="outline" color="medium" data-testid="manage"
-                                    appPath={ `/annotation-campaign/${ campaignID }/phase/${ phaseType }/edit-annotators` }>
+                                    appPath={ `/app/annotation-campaign/${ campaignID }/phase/${ phaseType }/edit-annotators` }>
                                   <IonIcon icon={ peopleOutline } slot="icon-only"/>
                               </Link>
                           </TooltipOverlay>

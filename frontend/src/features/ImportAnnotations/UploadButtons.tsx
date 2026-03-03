@@ -13,8 +13,8 @@ export const UploadButtons: React.FC = () => {
   const navigate = useNavigate();
 
   const back = useCallback(() => {
-    if (annotationPhase) navigate(`/annotation-campaign/${ campaignID }/phase/${ annotationPhase.phase }`)
-    else navigate(`/annotation-campaign/${ campaignID }/phase/${ phaseType }`)
+    if (annotationPhase) navigate(`/app/annotation-campaign/${ campaignID }/phase/${ annotationPhase.phase }`)
+    else navigate(`/app/annotation-campaign/${ campaignID }/phase/${ phaseType }`)
   }, [ campaignID, annotationPhase, phaseType ])
 
   useEffect(() => {

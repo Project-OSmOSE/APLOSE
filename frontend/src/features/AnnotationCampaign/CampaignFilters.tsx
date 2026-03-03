@@ -13,7 +13,7 @@ export const AnnotationCampaignListFilterActionBar: React.FC = () => {
                     onSearchChange={ search => updateParams({ search }) }
                     actionButton={ <Link color="primary"
                                          fill="outline"
-                                         appPath="/annotation-campaign/new">
+                                         appPath="/app/annotation-campaign/new">
                       <IonIcon icon={ addOutline } slot="start"/>
                       New annotation campaign
                     </Link> }>

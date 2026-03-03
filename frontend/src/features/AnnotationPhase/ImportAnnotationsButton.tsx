@@ -12,7 +12,7 @@ export const ImportAnnotationsButton: React.FC = () => {
   const { verificationPhase } = useCurrentCampaign()
 
   const path = useMemo(() => {
-    return `/annotation-campaign/${ campaignID }/phase/Annotation/import-annotations`
+    return `/app/annotation-campaign/${ campaignID }/phase/Annotation/import-annotations`
   }, [ campaignID ])
 
   if (phaseType !== 'Annotation') return <Fragment/>
