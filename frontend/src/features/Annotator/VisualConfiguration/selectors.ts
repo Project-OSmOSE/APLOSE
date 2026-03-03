@@ -36,6 +36,14 @@ export const selectPlotlyZmax = createSelector(
   selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectPlotlyZmax,
 )
 
+export const selectPlotlyFreqMin = createSelector(
+  selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectPlotlyFreqMin,
+)
+
+export const selectPlotlyFreqMax = createSelector(
+  selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectPlotlyFreqMax,
+)
+
 export const selectCanChangeColormap = createSelector(
   [
     selectAnnotatorCampaign,

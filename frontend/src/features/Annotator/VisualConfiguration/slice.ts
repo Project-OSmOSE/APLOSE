@@ -16,6 +16,8 @@ type VisualConfigurationState = {
   plotlyColorscale: string; // Colorscale for Plotly spectrogram
   plotlyZmin: number | null; // Min dB value for Plotly colorscale (null = use data min)
   plotlyZmax: number | null; // Max dB value for Plotly colorscale (null = use data max)
+  plotlyFreqMin: number | null; // Min frequency for y-axis (null = use data min)
+  plotlyFreqMax: number | null; // Max frequency for y-axis (null = use data max)
 
   _campaignDefaultColormap?: Colormap
   _campaignDefaultReversedColormap?: boolean
@@ -31,6 +33,8 @@ const initialState: VisualConfigurationState = {
   plotlyColorscale: 'Viridis', // Default Plotly colorscale
   plotlyZmin: null,
   plotlyZmax: null,
+  plotlyFreqMin: null,
+  plotlyFreqMax: null,
 
   _campaignDefaultColormap: undefined,
   _campaignDefaultReversedColormap: undefined,
@@ -76,6 +80,16 @@ export const AnnotatorVisualConfigurationSlice = createSlice({
       state.plotlyZmin = null;
       state.plotlyZmax = null;
     },
+    setPlotlyFreqMin: (state, action: { payload: number | null }) => {
+      state.plotlyFreqMin = action.payload;
+    },
+    setPlotlyFreqMax: (state, action: { payload: number | null }) => {
+      state.plotlyFreqMax = action.payload;
+    },
+    resetPlotlyFreqRange: (state) => {
+      state.plotlyFreqMin = null;
+      state.plotlyFreqMax = null;
+    },
   },
   extraReducers: builder => {
     builder.addCase(setAnalysis, (state: VisualConfigurationState, action: { payload: Analysis }) => {
@@ -113,6 +127,8 @@ export const AnnotatorVisualConfigurationSlice = createSlice({
     selectPlotlyColorscale: state => state.plotlyColorscale,
     selectPlotlyZmin: state => state.plotlyZmin,
     selectPlotlyZmax: state => state.plotlyZmax,
+    selectPlotlyFreqMin: state => state.plotlyFreqMin,
+    selectPlotlyFreqMax: state => state.plotlyFreqMax,
   },
 })
 
@@ -126,5 +142,8 @@ export const {
   setPlotlyZmin,
   setPlotlyZmax,
   resetPlotlyZRange,
+  setPlotlyFreqMin,
+  setPlotlyFreqMax,
+  resetPlotlyFreqRange,
 } = AnnotatorVisualConfigurationSlice.actions
 

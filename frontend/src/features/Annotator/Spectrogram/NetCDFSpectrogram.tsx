@@ -11,7 +11,7 @@ import { selectFocusConfidence } from '@/features/Annotator/Confidence';
 import { selectIsDrawingEnabled } from '@/features/Annotator/UX';
 import { useAudio } from '@/features/Audio';
 import { focusAnnotation } from '@/features/Annotator/Annotation/slice';
-import { selectFrequencyScaleType, selectPlotlyColorscale, selectPlotlyZmin, selectPlotlyZmax } from '@/features/Annotator/VisualConfiguration';
+import { selectFrequencyScaleType, selectPlotlyColorscale, selectPlotlyZmin, selectPlotlyZmax, selectPlotlyFreqMin, selectPlotlyFreqMax } from '@/features/Annotator/VisualConfiguration';
 
 interface NetCDFData {
   spectrogram: number[][];
@@ -47,11 +47,13 @@ export const NetCDFSpectrogram: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Y-axis scale, colorscale, and z-range from Redux state (persists across files)
+  // Y-axis scale, colorscale, z-range, and freq range from Redux state (persists across files)
   const yAxisScale = useAppSelector(selectFrequencyScaleType);
   const colorscale = useAppSelector(selectPlotlyColorscale);
   const storedZmin = useAppSelector(selectPlotlyZmin);
   const storedZmax = useAppSelector(selectPlotlyZmax);
+  const storedFreqMin = useAppSelector(selectPlotlyFreqMin);
+  const storedFreqMax = useAppSelector(selectPlotlyFreqMax);
 
   // Plot reference for managing dragmode
   const plotRef = useRef<any>(null);
@@ -141,25 +143,29 @@ export const NetCDFSpectrogram: React.FC = () => {
     const controlsHeight = 80;
     const plotHeight = height - controlsHeight;
 
+    // Get y-axis range limits for clamping
+    const minFreq = netcdfData.frequency[0];
+    const maxFreq = netcdfData.frequency[netcdfData.frequency.length - 1];
+
+    // Apply user-selected freq range, clamped to data bounds
+    const yMin = storedFreqMin !== null ? Math.max(minFreq, storedFreqMin) : minFreq;
+    const yMax = storedFreqMax !== null ? Math.min(maxFreq, storedFreqMax) : maxFreq;
+
     const yAxisConfig = yAxisScale === 'log'
       ? {
           type: 'log' as const,
           // For log axis, range is [log10(min), log10(max)]
           // But data coordinates (heatmap, shapes) remain in actual values
-          range: [Math.log10(netcdfData.frequency[0]), Math.log10(netcdfData.frequency[netcdfData.frequency.length - 1])],
+          range: [Math.log10(yMin), Math.log10(yMax)],
           autorange: false,
           fixedrange: false, // Allow zooming but constrain in onRelayout
         }
       : {
           type: 'linear' as const,
-          range: [netcdfData.frequency[0], netcdfData.frequency[netcdfData.frequency.length - 1]],
+          range: [yMin, yMax],
           autorange: false,
           fixedrange: false, // Allow zooming but constrain in onRelayout
         };
-
-    // Get y-axis range limits for clamping
-    const minFreq = netcdfData.frequency[0];
-    const maxFreq = netcdfData.frequency[netcdfData.frequency.length - 1];
 
     // Add playback position indicator line
     const shapes: any[] = [];
@@ -266,7 +272,7 @@ export const NetCDFSpectrogram: React.FC = () => {
         color: '#fff',
       },
     };
-  }, [netcdfData, width, height, isDrawingEnabled, yAxisScale, audioTime, audioDuration, allAnnotations, focusedAnnotation, allLabels]);
+  }, [netcdfData, width, height, isDrawingEnabled, yAxisScale, audioTime, audioDuration, allAnnotations, focusedAnnotation, allLabels, storedFreqMin, storedFreqMax]);
 
   const config = useMemo(() => ({
     displayModeBar: true,
@@ -433,6 +439,8 @@ export const NetCDFSpectrogram: React.FC = () => {
       <NetCDFControls
         dataMin={dataRange.min}
         dataMax={dataRange.max}
+        freqMin={netcdfData.frequency[0]}
+        freqMax={netcdfData.frequency[netcdfData.frequency.length - 1]}
       />
       <div className={styles.plotContainer} onMouseDown={onPlotMouseDown}>
         <Plot

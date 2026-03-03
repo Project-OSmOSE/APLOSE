@@ -12,11 +12,18 @@ import {
   selectPlotlyZmin,
   selectPlotlyZmax,
   resetPlotlyZRange,
+  setPlotlyFreqMin,
+  setPlotlyFreqMax,
+  selectPlotlyFreqMin,
+  selectPlotlyFreqMax,
+  resetPlotlyFreqRange,
 } from '@/features/Annotator/VisualConfiguration';
 
 interface NetCDFControlsProps {
   dataMin: number;
   dataMax: number;
+  freqMin: number;
+  freqMax: number;
 }
 
 const COLORSCALES = [
@@ -40,16 +47,22 @@ const COLORSCALES = [
 export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
   dataMin,
   dataMax,
+  freqMin,
+  freqMax,
 }) => {
   const dispatch = useAppDispatch();
   const frequencyScale = useAppSelector(selectFrequencyScaleType);
   const colorscale = useAppSelector(selectPlotlyColorscale);
   const storedZmin = useAppSelector(selectPlotlyZmin);
   const storedZmax = useAppSelector(selectPlotlyZmax);
+  const storedFreqMin = useAppSelector(selectPlotlyFreqMin);
+  const storedFreqMax = useAppSelector(selectPlotlyFreqMax);
 
   // Use stored values if available, otherwise use data range
   const zmin = storedZmin ?? dataMin;
   const zmax = storedZmax ?? dataMax;
+  const currentFreqMin = storedFreqMin ?? freqMin;
+  const currentFreqMax = storedFreqMax ?? freqMax;
 
   const handleScaleChange = (scale: FrequencyScaleType) => {
     dispatch(setFrequencyScaleType(scale));
@@ -69,6 +82,18 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
 
   const handleResetRange = () => {
     dispatch(resetPlotlyZRange());
+  };
+
+  const handleFreqMinChange = (value: number) => {
+    dispatch(setPlotlyFreqMin(Math.min(value, currentFreqMax)));
+  };
+
+  const handleFreqMaxChange = (value: number) => {
+    dispatch(setPlotlyFreqMax(Math.max(value, currentFreqMin)));
+  };
+
+  const handleResetFreqRange = () => {
+    dispatch(resetPlotlyFreqRange());
   };
 
   return (
@@ -136,6 +161,43 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
           className={styles.resetButton}
         >
           Reset Range
+        </button>
+      </div>
+
+      <div className={styles.controlGroup}>
+        <label>
+          Freq Min: {currentFreqMin.toFixed(0)} Hz
+        </label>
+        <input
+          type="range"
+          min={freqMin}
+          max={freqMax}
+          step={(freqMax - freqMin) / 200}
+          value={currentFreqMin}
+          onChange={(e) => handleFreqMinChange(parseFloat(e.target.value))}
+        />
+      </div>
+
+      <div className={styles.controlGroup}>
+        <label>
+          Freq Max: {currentFreqMax.toFixed(0)} Hz
+        </label>
+        <input
+          type="range"
+          min={freqMin}
+          max={freqMax}
+          step={(freqMax - freqMin) / 200}
+          value={currentFreqMax}
+          onChange={(e) => handleFreqMaxChange(parseFloat(e.target.value))}
+        />
+      </div>
+
+      <div className={styles.controlGroup}>
+        <button
+          onClick={handleResetFreqRange}
+          className={styles.resetButton}
+        >
+          Reset Freq
         </button>
       </div>
     </div>
