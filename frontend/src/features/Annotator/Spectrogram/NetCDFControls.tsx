@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './NetCDFSpectrogram.module.scss';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import {
@@ -61,8 +61,16 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
   // Use stored values if available, otherwise use data range
   const zmin = storedZmin ?? dataMin;
   const zmax = storedZmax ?? dataMax;
-  const currentFreqMin = storedFreqMin ?? freqMin;
-  const currentFreqMax = storedFreqMax ?? freqMax;
+
+  // Local draft state — only pushed to Redux (and thus the plot) on Apply
+  const [draftFreqMin, setDraftFreqMin] = useState(() => Math.round(storedFreqMin ?? freqMin));
+  const [draftFreqMax, setDraftFreqMax] = useState(() => Math.round(storedFreqMax ?? freqMax));
+
+  // Sync drafts when the underlying data bounds change (new spectrogram loaded)
+  useEffect(() => {
+    setDraftFreqMin(Math.round(storedFreqMin ?? freqMin));
+    setDraftFreqMax(Math.round(storedFreqMax ?? freqMax));
+  }, [freqMin, freqMax]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleScaleChange = (scale: FrequencyScaleType) => {
     dispatch(setFrequencyScaleType(scale));
@@ -84,15 +92,16 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
     dispatch(resetPlotlyZRange());
   };
 
-  const handleFreqMinChange = (value: number) => {
-    dispatch(setPlotlyFreqMin(Math.min(value, currentFreqMax)));
-  };
-
-  const handleFreqMaxChange = (value: number) => {
-    dispatch(setPlotlyFreqMax(Math.max(value, currentFreqMin)));
+  const handleApplyFreqRange = () => {
+    const clampedMin = Math.max(Math.round(freqMin), Math.min(draftFreqMin, draftFreqMax));
+    const clampedMax = Math.min(Math.round(freqMax), Math.max(draftFreqMin, draftFreqMax));
+    dispatch(setPlotlyFreqMin(clampedMin));
+    dispatch(setPlotlyFreqMax(clampedMax));
   };
 
   const handleResetFreqRange = () => {
+    setDraftFreqMin(Math.round(freqMin));
+    setDraftFreqMax(Math.round(freqMax));
     dispatch(resetPlotlyFreqRange());
   };
 
@@ -171,8 +180,8 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
           min={Math.round(freqMin)}
           max={Math.round(freqMax)}
           step={1}
-          value={Math.round(currentFreqMin)}
-          onChange={(e) => handleFreqMinChange(parseInt(e.target.value, 10))}
+          value={draftFreqMin}
+          onChange={(e) => setDraftFreqMin(parseInt(e.target.value, 10))}
         />
       </div>
 
@@ -183,16 +192,16 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
           min={Math.round(freqMin)}
           max={Math.round(freqMax)}
           step={1}
-          value={Math.round(currentFreqMax)}
-          onChange={(e) => handleFreqMaxChange(parseInt(e.target.value, 10))}
+          value={draftFreqMax}
+          onChange={(e) => setDraftFreqMax(parseInt(e.target.value, 10))}
         />
       </div>
 
       <div className={styles.controlGroup}>
-        <button
-          onClick={handleResetFreqRange}
-          className={styles.resetButton}
-        >
+        <button onClick={handleApplyFreqRange} className={styles.resetButton}>
+          Apply
+        </button>
+        <button onClick={handleResetFreqRange} className={styles.resetButton}>
           Reset Freq
         </button>
       </div>
