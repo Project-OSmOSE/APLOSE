@@ -48,7 +48,8 @@ class AploseAudioProcessor:
         data_png_freq_scale: str = 'log',
         max_duration: Optional[float] = None,
         num_workers: int = 1,
-        min_frequency: Optional[float] = None
+        min_frequency: Optional[float] = None,
+        time_offset: float = 0.0
     ):
         """
         Initialize the APLOSE audio processor.
@@ -79,6 +80,8 @@ class AploseAudioProcessor:
             max_duration: Maximum duration in seconds to use from each audio file. None = use entire file.
             num_workers: Number of parallel workers for processing (default: 1 = sequential).
             min_frequency: Minimum frequency in Hz to include in spectrogram. None = include all frequencies.
+            time_offset: Number of seconds to skip at the beginning of each audio file (default: 0.0).
+                        E.g., time_offset=5 will skip the first 5 seconds of every input file.
         """
         # Handle single or multiple FFT sizes
         if isinstance(fft_sizes, int):
@@ -107,7 +110,8 @@ class AploseAudioProcessor:
             overlap=snippet_overlap,
             filename_prefix=filename_prefix,
             max_duration=max_duration,
-            datetime_format=datetime_format
+            datetime_format=datetime_format,
+            time_offset=time_offset
         )
 
     def _process_single_audio_file(

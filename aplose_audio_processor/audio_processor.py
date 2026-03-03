@@ -20,7 +20,8 @@ class AudioProcessor:
         overlap: float = 0.0,
         filename_prefix: Optional[str] = None,
         max_duration: Optional[float] = None,
-        datetime_format: Optional[str] = None
+        datetime_format: Optional[str] = None,
+        time_offset: float = 0.0
     ):
         """
         Initialize AudioProcessor.
@@ -32,6 +33,7 @@ class AudioProcessor:
             filename_prefix: Optional prefix to add to all output filenames.
             max_duration: Maximum duration in seconds to use from the audio file. If None, uses entire file.
             datetime_format: strptime format to parse datetime from filenames.
+            time_offset: Number of seconds to skip at the beginning of each audio file (default: 0.0).
         """
         self.target_sample_rate = target_sample_rate
         self.snippet_duration = snippet_duration
@@ -39,6 +41,7 @@ class AudioProcessor:
         self.filename_prefix = filename_prefix
         self.max_duration = max_duration
         self.datetime_format = datetime_format
+        self.time_offset = time_offset
 
     def process_audio_file(
         self,
@@ -59,6 +62,14 @@ class AudioProcessor:
         """
         # Read audio file
         audio, original_sr = sf.read(input_path)
+
+        # Skip the first time_offset seconds if specified
+        if self.time_offset > 0:
+            offset_samples = int(self.time_offset * original_sr)
+            if offset_samples < len(audio):
+                audio = audio[offset_samples:]
+            else:
+                audio = audio[:0]  # Empty array if offset exceeds file length
 
         # Truncate to max_duration if specified
         if self.max_duration is not None:
@@ -83,7 +94,8 @@ class AudioProcessor:
         # Generate snippets or process entire file
         if self.snippet_duration:
             return self._create_snippets(
-                audio, sample_rate, base_name, output_dir, preserve_timestamps
+                audio, sample_rate, base_name, output_dir, preserve_timestamps,
+                base_time_offset=self.time_offset
             )
         else:
             # Process entire file
@@ -133,7 +145,8 @@ class AudioProcessor:
         sample_rate: int,
         base_name: str,
         output_dir: str,
-        preserve_timestamps: bool
+        preserve_timestamps: bool,
+        base_time_offset: float = 0.0
     ) -> list[Tuple[str, dict]]:
         """
         Create audio snippets from full audio.
@@ -144,6 +157,8 @@ class AudioProcessor:
             base_name: Base filename without extension.
             output_dir: Output directory.
             preserve_timestamps: Whether to preserve timestamps in filenames.
+            base_time_offset: Additional time offset in seconds already applied to the audio
+                              (e.g. from time_offset skipping the start of the file).
 
         Returns:
             List of tuples (output_path, metadata_dict) for each snippet.
@@ -162,8 +177,8 @@ class AudioProcessor:
             end_sample = min(start_sample + snippet_samples, len(audio))
             snippet = audio[start_sample:end_sample]
 
-            # Calculate time offset for this snippet
-            time_offset = start_sample / sample_rate
+            # Calculate time offset for this snippet (relative to original file start)
+            time_offset = base_time_offset + start_sample / sample_rate
 
             # Generate filename
             if preserve_timestamps:

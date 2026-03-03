@@ -33,6 +33,10 @@ Examples:
   python -m aplose_audio_processor.cli -i audio_files/ -o output/ \\
     --sample-rate 48000 --snippet-duration 60
 
+  # Skip the first 5 seconds of each audio file
+  python -m aplose_audio_processor.cli -i audio_files/ -o output/ \\
+    --time-offset 5
+
   # Use only first 5 minutes of each audio file
   python -m aplose_audio_processor.cli -i audio_files/ -o output/ \\
     --max-duration 300
@@ -77,6 +81,13 @@ Examples:
         type=int,
         default=None,
         help='Target sample rate in Hz (default: keep original)'
+    )
+    parser.add_argument(
+        '--time-offset',
+        type=float,
+        default=0.0,
+        help='Number of seconds to skip at the beginning of each audio file (default: 0). '
+             'E.g., --time-offset 5 to skip the first 5 seconds.'
     )
     parser.add_argument(
         '--max-duration',
@@ -222,6 +233,8 @@ Examples:
     print(f"  FFT sizes: {args.fft_sizes}")
     print(f"  Window: {args.window}")
     print(f"  Sample rate: {args.sample_rate if args.sample_rate else 'original'}")
+    if args.time_offset:
+        print(f"  Time offset: {args.time_offset}s (skipping first {args.time_offset} seconds)")
     if args.max_duration:
         print(f"  Max duration: {args.max_duration}s ({args.max_duration / 60:.1f} minutes)")
     print(f"  Snippet duration: {args.snippet_duration if args.snippet_duration else 'full file'}")
@@ -266,7 +279,8 @@ Examples:
         data_png_freq_scale=args.data_png_freq_scale,
         max_duration=args.max_duration,
         num_workers=args.workers,
-        min_frequency=args.min_frequency
+        min_frequency=args.min_frequency,
+        time_offset=args.time_offset
     )
 
     # Process files
