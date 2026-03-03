@@ -7,6 +7,9 @@ from django.conf import settings
 
 __all__ = ["StorageResolver"]
 
+from backend.storage.exceptions import InvalidFolderException
+from backend.storage.types import Folder
+
 _Path = str | Path | PureWindowsPath
 
 
@@ -33,10 +36,15 @@ class StorageResolver:
     def clean_path(self, path: _Path) -> str:
         """Clean the path"""
         path = self.format_path(path)
-        if self.server_root in path:
+        has_storage_root = (
+            len(self.storage_root) > 0
+            and self.storage_root != "."
+            and self.storage_root != "/"
+        )
+        if self.server_root in path and not has_storage_root:
             # Path should be relative
             return path.split(self.server_root).pop().strip("/")
-        if self.storage_root in path:
+        if self.storage_root in path and has_storage_root:
             # Path should be relative
             return path.split(self.storage_root).pop().strip("/")
         return self.format_path(path)
@@ -48,7 +56,15 @@ class StorageResolver:
 
     def absolute_server_path(self, path: _Path) -> str:
         """Get absolute server path"""
-        return StorageResolver.join(self.storage_server_path, path)
+        return StorageResolver.join(self.storage_server_path, self.clean_path(path))
+
+    def absolute_static_path(self, path: _Path) -> str:
+        """Get absolute server path"""
+        return StorageResolver.join(
+            self.format_path(settings.STATIC_URL),
+            self.storage_root,
+            self.clean_path(path),
+        )
 
     def exists(self, path: _Path) -> bool:
         """Check if path exists"""
@@ -98,3 +114,8 @@ class StorageResolver:
         """If path is a local root"""
         path = StorageResolver.format_path(path)
         return path == "" or path == "." or path == "/"
+
+    def get_folder(self, path) -> Folder:
+        if self.is_file(path):
+            raise InvalidFolderException(path)
+        return Folder(path)

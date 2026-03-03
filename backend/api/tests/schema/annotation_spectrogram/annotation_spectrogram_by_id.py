@@ -13,11 +13,13 @@ query (
     $analysisID: ID!
     $phaseType: AnnotationPhaseType!
 ) {
+    spectrogramPaths(spectrogramId: $spectrogramID, analysisId: $analysisID) {
+        audioPath
+        spectrogramPath
+    }
     annotationSpectrogramById(id: $spectrogramID) {
         id
         filename
-        audioPath(analysisId: $analysisID)
-        path(analysisId: $analysisID)
         start
         duration
 
@@ -111,10 +113,6 @@ class AnnotationSpectrogramByIDTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ALL_FIXTURES
-
-    def tearDown(self):
-        """Logout when tests ends"""
-        self.client.logout()
 
     def test_not_connected(self):
         response = self.gql_query(QUERY, variables=VARIABLES)

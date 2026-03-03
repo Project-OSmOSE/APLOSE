@@ -4,9 +4,6 @@ from datetime import datetime
 from django.db import models
 from django.db.models import Q, F, QuerySet
 
-# from osekit.core_api.spectro_data import SpectroData
-# from osekit.core_api.spectro_dataset import SpectroDataset
-from backend.utils.osekit_replace import SpectroDataset, SpectroData
 from .__abstract_file import AbstractFile
 from .__abstract_time_segment import TimeSegment
 from .spectrogram_analysis import SpectrogramAnalysis
@@ -51,7 +48,3 @@ class Spectrogram(AbstractFile, TimeSegment, models.Model):
         return f"{self.filename}.{self.format}"
 
     analysis = models.ManyToManyField(SpectrogramAnalysis, related_name="spectrograms")
-
-    def get_spectro_data_for(self, analysis: SpectrogramAnalysis) -> SpectroData:
-        spectro_dataset: SpectroDataset = analysis.get_osekit_spectro_dataset()
-        return [d for d in spectro_dataset.data if d.name == self.filename].pop()

@@ -1065,8 +1065,9 @@ type Query {
     annotationPhase_Phase: AnnotationPhaseType
   ): AnnotationFileRangeNodeNodeConnection
   annotationSpectrogramById(id: ID!): AnnotationSpectrogramNode
-  browse(path: String): [StorageUnion]
   search(path: String!): StorageUnion
+  browse(path: String): [StorageUnion]
+  spectrogramPaths(spectrogramId: ID!, analysisId: ID!): SpectrogramPathsNode
 }
 
 type LabelNodeNodeConnection {
@@ -3203,8 +3204,6 @@ type AnnotationSpectrogramNode implements ExtendedInterface {
   ): AnnotationCommentNodeNodeConnection
   duration: Int!
   isAssigned(campaignId: ID!, phase: AnnotationPhaseType!): Boolean!
-  audioPath(analysisId: ID!): String
-  path(analysisId: ID!): String!
   task(campaignId: ID!, phase: AnnotationPhaseType!): AnnotationTaskNode
 }
 
@@ -4367,33 +4366,38 @@ type AnnotationFileRangeNodeNodeConnection {
   totalCount: Int
 }
 
-union StorageUnion = FolderNode | DatasetStorageNode | AnalysisStorageNode
+union StorageUnion = AnalysisStorageNode | DatasetStorageNode | FolderNode
 
-type FolderNode {
+type AnalysisStorageNode {
   name: String!
   path: String!
-}
-
-type DatasetStorageNode {
-  name: String!
-  path: String!
-  importStatus: Status!
-  model: DatasetNode
+  importStatus: ImportStatus!
+  model: SpectrogramAnalysisNode
 }
 
 """An enumeration."""
-enum Status {
+enum ImportStatus {
   Unavailable
   Available
   Partial
   Imported
 }
 
-type AnalysisStorageNode {
+type DatasetStorageNode {
   name: String!
   path: String!
-  importStatus: Status!
-  model: SpectrogramAnalysisNode
+  importStatus: ImportStatus!
+  model: DatasetNode
+}
+
+type FolderNode {
+  name: String!
+  path: String!
+}
+
+type SpectrogramPathsNode {
+  audioPath: String
+  spectrogramPath: String
 }
 
 """Global mutation"""

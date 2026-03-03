@@ -18,12 +18,12 @@ from backend.api.models import (
     LinearScale,
     MultiLinearScale,
 )
+from backend.api.models.data.scales import get_frequency_scales
 from backend.aplose.models import User
-from . import AbstractOSEkitResolver
-from .osekit import OSEkitResolver
+from backend.utils.osekit_replace import SpectroDataset, TFile
+from .osekit import OSEkitResolver, AbstractOSEkitResolver
 from .storage import StorageResolver
-from ...api.models.data.scales import get_frequency_scales
-from ...utils.osekit_replace import SpectroDataset, TFile
+from ..types import StorageDataset, ImportStatus, StorageAnalysis
 
 _all__ = ["ModelResolver"]
 
@@ -212,3 +212,18 @@ class ModelResolver:
         analysis.end = info["end"]
         analysis.save()
         return analysis
+
+    def get_storage_dataset(self) -> StorageDataset | None:
+        if self.dataset is None:
+            return None
+        status = ImportStatus.Imported
+        for analysis in self.osekit.all_analysis:
+            if not self.get_analysis(self.storage.clean_path(analysis.folder)):
+                status = ImportStatus.Partial
+                break
+        return StorageDataset.from_model(model=self.dataset, import_status=status)
+
+    def get_storage_analysis(self) -> StorageAnalysis | None:
+        if self.analysis is None:
+            return None
+        return StorageAnalysis.from_model(model=self.analysis)

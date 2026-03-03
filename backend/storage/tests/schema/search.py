@@ -144,7 +144,7 @@ class SearchTestCase(ExtendedTestCase):
         self.assertResponseHasErrors(response)
 
         error = json.loads(response.content)["errors"][0]["message"]
-        self.assertIn("Path does not exists", error)
+        self.assertIn("Path not found", error)
 
     @override_settings(DATASET_EXPORT_PATH=GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_path_folder_to_dataset_json(self):
@@ -156,7 +156,7 @@ class SearchTestCase(ExtendedTestCase):
         self.assertResponseHasErrors(response)
 
         error = json.loads(response.content)["errors"][0]["message"]
-        self.assertIn("Path does not exists", error)
+        self.assertIn("Path not found", error)
 
     @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_path_legacy_to_dataset_json(self):
@@ -168,4 +168,4 @@ class SearchTestCase(ExtendedTestCase):
         self.assertResponseHasErrors(response)
 
         error = json.loads(response.content)["errors"][0]["message"]
-        self.assertIn("Path does not exists", error)
+        self.assertIn("Path not found", error)

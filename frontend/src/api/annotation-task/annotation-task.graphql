@@ -118,11 +118,13 @@ query getAnnotationTask(
     $annotationAnnotator: ID
     $withAcousticFeatures: Boolean
 ) {
+    spectrogramPaths(spectrogramId: $spectrogramID, analysisId: $analysisID) {
+        audioPath
+        spectrogramPath
+    }
     annotationSpectrogramById(id: $spectrogramID) {
         id
         filename
-        audioPath(analysisId: $analysisID)
-        path(analysisId: $analysisID)
         start
         duration
 

@@ -1,10 +1,6 @@
 """Spectrogram analysis model"""
-import csv
-from ast import literal_eval
-from datetime import datetime
 from os.path import join
 from pathlib import Path
-from typing import Optional
 
 from dateutil import parser
 from django.conf import settings
@@ -12,16 +8,10 @@ from django.db import models
 from django.db.models import CheckConstraint, Q
 from typing_extensions import deprecated
 
-from backend.aplose.models import User
-
-# from osekit.core_api.spectro_dataset import SpectroDataset
-from backend.utils.osekit_replace import SpectroDataset
 from .__abstract_analysis import AbstractAnalysis
 from .colormap import Colormap
 from .dataset import Dataset
 from .fft import FFT
-from .legacy_spectrogram_configuration import LegacySpectrogramConfiguration
-from .scales import get_frequency_scales, LinearScale, MultiLinearScale
 
 
 class SpectrogramAnalysis(AbstractAnalysis, models.Model):
@@ -188,12 +178,6 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
         data.append(config_data)
 
         return "\n".join([",".join(line) for line in data])
-
-    def get_osekit_spectro_dataset(self) -> SpectroDataset:
-        """Get OSEkit dataset object"""
-        return SpectroDataset.from_json(
-            self.get_osekit_spectro_dataset_serialized_path()
-        )
 
     def get_osekit_spectro_dataset_serialized_path(self) -> Path:
         """Get OSEkit dataset object"""

@@ -33,19 +33,20 @@ export const AnnotatorPage: React.FC = () => {
     const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
     const {
         spectrogram,
+        paths,
         isFetching,
         error,
     } = useAnnotationTask({ refetchOnMountOrArgChange: true });
     const audio = useAudio()
 
     useEffect(() => {
-        if (spectrogram?.audioPath) audio.setSource(spectrogram.audioPath)
+        if (paths?.audioPath) audio.setSource(paths.audioPath)
         else audio.clearSource()
 
         return () => {
             audio.clearSource() // TODO: check behavior when navigating between files
         }
-    }, [ spectrogram ]);
+    }, [ paths ]);
 
     const previousCampaignID = useRef<string | undefined>()
     useEffect(() => {

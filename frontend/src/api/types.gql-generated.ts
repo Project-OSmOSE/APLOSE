@@ -110,7 +110,7 @@ export type AcousticFeaturesNode = ExtendedInterface & {
 
 export type AnalysisStorageNode = {
   __typename?: 'AnalysisStorageNode';
-  importStatus: Status;
+  importStatus: ImportStatus;
   model?: Maybe<SpectrogramAnalysisNode>;
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
@@ -745,7 +745,6 @@ export type AnnotationSpectrogramNode = ExtendedInterface & {
   annotationComments?: Maybe<AnnotationCommentNodeNodeConnection>;
   annotationTasks: AnnotationTaskNodeConnection;
   annotations: AnnotationNodeConnection;
-  audioPath?: Maybe<Scalars['String']['output']>;
   duration: Scalars['Int']['output'];
   end: Scalars['DateTime']['output'];
   filename: Scalars['String']['output'];
@@ -753,7 +752,6 @@ export type AnnotationSpectrogramNode = ExtendedInterface & {
   /** The ID of the object */
   id: Scalars['ID']['output'];
   isAssigned: Scalars['Boolean']['output'];
-  path: Scalars['String']['output'];
   start: Scalars['DateTime']['output'];
   task?: Maybe<AnnotationTaskNode>;
 };
@@ -822,19 +820,9 @@ export type AnnotationSpectrogramNodeAnnotationsArgs = {
 };
 
 
-export type AnnotationSpectrogramNodeAudioPathArgs = {
-  analysisId: Scalars['ID']['input'];
-};
-
-
 export type AnnotationSpectrogramNodeIsAssignedArgs = {
   campaignId: Scalars['ID']['input'];
   phase: AnnotationPhaseType;
-};
-
-
-export type AnnotationSpectrogramNodePathArgs = {
-  analysisId: Scalars['ID']['input'];
 };
 
 
@@ -2127,7 +2115,7 @@ export type DatasetNodeNodeConnection = {
 
 export type DatasetStorageNode = {
   __typename?: 'DatasetStorageNode';
-  importStatus: Status;
+  importStatus: ImportStatus;
   model?: Maybe<DatasetNode>;
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
@@ -2944,6 +2932,14 @@ export type ImportDatasetMutation = {
   __typename?: 'ImportDatasetMutation';
   dataset: DatasetNode;
 };
+
+/** An enumeration. */
+export enum ImportStatus {
+  Available = 'Available',
+  Imported = 'Imported',
+  Partial = 'Partial',
+  Unavailable = 'Unavailable'
+}
 
 export type InstitutionNode = ExtendedInterface & {
   __typename?: 'InstitutionNode';
@@ -4607,6 +4603,7 @@ export type Query = {
   softwareById?: Maybe<SoftwareNode>;
   soundById?: Maybe<SoundNode>;
   sourceById?: Maybe<SourceNode>;
+  spectrogramPaths?: Maybe<SpectrogramPathsNode>;
   teamById?: Maybe<TeamNode>;
   teamMemberById?: Maybe<TeamMemberNode>;
   websiteProjectById?: Maybe<WebsiteProjectNode>;
@@ -5742,6 +5739,13 @@ export type QuerySourceByIdArgs = {
 
 
 /** Global query */
+export type QuerySpectrogramPathsArgs = {
+  analysisId: Scalars['ID']['input'];
+  spectrogramId: Scalars['ID']['input'];
+};
+
+
+/** Global query */
 export type QueryTeamByIdArgs = {
   id: Scalars['ID']['input'];
 };
@@ -6505,13 +6509,11 @@ export type SpectrogramNodeNodeConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
-/** An enumeration. */
-export enum Status {
-  Available = 'Available',
-  Imported = 'Imported',
-  Partial = 'Partial',
-  Unavailable = 'Unavailable'
-}
+export type SpectrogramPathsNode = {
+  __typename?: 'SpectrogramPathsNode';
+  audioPath?: Maybe<Scalars['String']['output']>;
+  spectrogramPath?: Maybe<Scalars['String']['output']>;
+};
 
 export type StorageSpecificationNode = ExtendedInterface & {
   __typename?: 'StorageSpecificationNode';

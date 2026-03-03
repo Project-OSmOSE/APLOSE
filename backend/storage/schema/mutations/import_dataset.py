@@ -1,15 +1,11 @@
 import graphene
-from django.conf import settings
 from django.db import transaction
 from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from graphene import Mutation, String
 
-from backend.api.models import Dataset
-from backend.api.schema import DatasetNode
-from backend.storage.schema.resolver import Dataset as DatasetResolver, get_resolver
+from backend.api.schema.nodes import DatasetNode
+from ...resolvers import ModelResolver, OSEkitResolver
 from .import_analysis import ImportAnalysisMutation
-
-__all__ = ["ImportDatasetMutationField"]
 
 
 class ImportDatasetMutation(Mutation):
@@ -24,16 +20,11 @@ class ImportDatasetMutation(Mutation):
     @transaction.atomic
     def mutate(self, info, path: str):
         """Do the mutation: create required analysis"""
-        storage_dataset: DatasetResolver = get_resolver(
-            settings.DATASET_EXPORT_PATH, path
-        )
-        dataset, _ = Dataset.objects.get_or_create(
-            name=storage_dataset.name,
-            path=path,
-            owner=info.context.user,
-            legacy=storage_dataset.is_legacy(),
-        )
-        for analysis in storage_dataset.browse():
+        model_resolver = ModelResolver.get(path)
+        dataset = model_resolver.get_or_create_dataset(owner=info.context.user)
+        osekit = OSEkitResolver.get(path)
+
+        for analysis in osekit.all_analysis:
             analysis_mutation = ImportAnalysisMutation()
             analysis_mutation.mutate(
                 info,
@@ -45,3 +36,4 @@ class ImportDatasetMutation(Mutation):
 
 
 ImportDatasetMutationField = ImportDatasetMutation.Field()
+__all__ = ["ImportDatasetMutationField"]
