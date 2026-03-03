@@ -20,6 +20,7 @@ interface MarkdownPageProps {
  * - Unordered lists (- item)
  * - Ordered lists (1. item)
  * - Links [text](url)
+ * - Images ![alt](url)
  * - Blockquotes (> quote)
  * - Horizontal rules (---)
  */
@@ -93,34 +94,35 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
   let key = 0;
 
   const processInlineMarkdown = (text: string): React.ReactNode => {
-    // Process links [text](url)
-    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    // Process images ![alt](url) and links [text](url) in a single pass
+    const tokenRegex = /(!?\[([^\]]*)\]\(([^)]+)\))/g;
     const parts: React.ReactNode[] = [];
     let lastIndex = 0;
     let match;
 
-    while ((match = linkRegex.exec(text)) !== null) {
-      // Add text before the link
+    while ((match = tokenRegex.exec(text)) !== null) {
       if (match.index > lastIndex) {
         parts.push(processTextStyles(text.slice(lastIndex, match.index)));
       }
 
-      // Add the link
-      const linkText = match[1];
-      const url = match[2];
+      const isImage = match[0].startsWith('!');
+      const altOrText = match[2];
+      const url = match[3];
 
-      if (url.startsWith('/')) {
-        // Internal link
+      if (isImage) {
+        parts.push(
+          <img key={`img-${match.index}`} src={url} alt={altOrText} className={styles.markdownImage} />
+        );
+      } else if (url.startsWith('/')) {
         parts.push(
           <Link key={`link-${match.index}`} to={url} className={styles.inlineLink}>
-            {linkText}
+            {altOrText}
           </Link>
         );
       } else {
-        // External link
         parts.push(
           <a key={`link-${match.index}`} href={url} target="_blank" rel="noopener noreferrer">
-            {linkText}
+            {altOrText}
           </a>
         );
       }
@@ -128,12 +130,11 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
       lastIndex = match.index + match[0].length;
     }
 
-    // Add remaining text
     if (lastIndex < text.length) {
       parts.push(processTextStyles(text.slice(lastIndex)));
     }
 
-    return parts.length === 1 ? parts[0] : <>{parts}</>;
+    return parts.length === 0 ? text : parts.length === 1 ? parts[0] : <>{parts}</>;
   };
 
   const processTextStyles = (text: string): React.ReactNode => {

@@ -419,9 +419,30 @@ $accent-color: #00d4aa;
     }
   }
 
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    display: block;
+    margin: 1.5rem auto;
+  }
+
+  p:has(> img:only-child) {
+    text-align: center;
+    margin: 0;
+  }
+
   section {
     margin-bottom: 2rem;
   }
+}
+
+.markdownImage {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  display: block;
+  margin: 1.5rem auto;
 }
 
 // Publications Styles
