@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { IonButton, IonIcon } from '@ionic/react';
 import { closeOutline, menuOutline } from 'ionicons/icons/index.js';
 import { useAppSelector } from '@/features/App';
-import { selectCurrentUser } from '@/api';
+import { selectIsConnected } from '@/features/Auth';
 import styles from './layout.module.scss'
 
 export const Header: React.FC<{
@@ -14,20 +14,20 @@ export const Header: React.FC<{
 }> = ({ children, buttons, size, canNavigate }) => {
 
   const [ isOpen, setIsOpen ] = useState<boolean>(false);
-  const currentUser = useAppSelector(selectCurrentUser)
+  const isConnected = useAppSelector(selectIsConnected)
   const navigate = useNavigate();
 
   const toggleOpening = useCallback(() => setIsOpen(previous => !previous), [])
 
   const onAPLOSEClick = useCallback(async () => {
-    if (currentUser) {
+    if (isConnected) {
       if (!canNavigate || await canNavigate()) {
         navigate(`/app/annotation-campaign/`);
       }
     } else {
-      navigate(`/`);
+      navigate(`/app/login`);
     }
-  }, [])
+  }, [ isConnected, canNavigate, navigate ])
 
   return (
     <header
