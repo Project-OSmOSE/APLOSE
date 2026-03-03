@@ -58,15 +58,19 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
   const storedFreqMin = useAppSelector(selectPlotlyFreqMin);
   const storedFreqMax = useAppSelector(selectPlotlyFreqMax);
 
-  // Use stored values if available, otherwise use data range
-  const zmin = storedZmin ?? dataMin;
-  const zmax = storedZmax ?? dataMax;
-
   // Local draft state — only pushed to Redux (and thus the plot) on Apply
+  const [draftZmin, setDraftZmin] = useState(() => storedZmin ?? dataMin);
+  const [draftZmax, setDraftZmax] = useState(() => storedZmax ?? dataMax);
   const [draftFreqMin, setDraftFreqMin] = useState(() => Math.round(storedFreqMin ?? freqMin));
   const [draftFreqMax, setDraftFreqMax] = useState(() => Math.round(storedFreqMax ?? freqMax));
 
-  // Sync drafts when the underlying data bounds change (new spectrogram loaded)
+  // Sync dB drafts when data range changes (new spectrogram)
+  useEffect(() => {
+    setDraftZmin(storedZmin ?? dataMin);
+    setDraftZmax(storedZmax ?? dataMax);
+  }, [dataMin, dataMax]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync freq drafts when data bounds change (new spectrogram loaded)
   useEffect(() => {
     setDraftFreqMin(Math.round(storedFreqMin ?? freqMin));
     setDraftFreqMax(Math.round(storedFreqMax ?? freqMax));
@@ -80,15 +84,14 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
     dispatch(setPlotlyColorscale(scale));
   };
 
-  const handleZminChange = (value: number) => {
-    dispatch(setPlotlyZmin(value));
-  };
-
-  const handleZmaxChange = (value: number) => {
-    dispatch(setPlotlyZmax(value));
+  const handleApplyZRange = () => {
+    dispatch(setPlotlyZmin(draftZmin));
+    dispatch(setPlotlyZmax(draftZmax));
   };
 
   const handleResetRange = () => {
+    setDraftZmin(dataMin);
+    setDraftZmax(dataMax);
     dispatch(resetPlotlyZRange());
   };
 
@@ -137,39 +140,35 @@ export const NetCDFControls: React.FC<NetCDFControlsProps> = ({
       </div>
 
       <div className={styles.controlGroup}>
-        <label>
-          Min: {zmin.toFixed(1)} dB
-        </label>
+        <label>Min: {draftZmin.toFixed(1)} dB</label>
         <input
           type="range"
           min={dataMin}
           max={dataMax}
           step={(dataMax - dataMin) / 100}
-          value={zmin}
-          onChange={(e) => handleZminChange(parseFloat(e.target.value))}
+          value={draftZmin}
+          onChange={(e) => setDraftZmin(parseFloat(e.target.value))}
         />
       </div>
 
       <div className={styles.controlGroup}>
-        <label>
-          Max: {zmax.toFixed(1)} dB
-        </label>
+        <label>Max: {draftZmax.toFixed(1)} dB</label>
         <input
           type="range"
           min={dataMin}
           max={dataMax}
           step={(dataMax - dataMin) / 100}
-          value={zmax}
-          onChange={(e) => handleZmaxChange(parseFloat(e.target.value))}
+          value={draftZmax}
+          onChange={(e) => setDraftZmax(parseFloat(e.target.value))}
         />
       </div>
 
       <div className={styles.controlGroup}>
-        <button
-          onClick={handleResetRange}
-          className={styles.resetButton}
-        >
-          Reset Range
+        <button onClick={handleApplyZRange} className={styles.resetButton}>
+          Apply dB
+        </button>
+        <button onClick={handleResetRange} className={styles.resetButton}>
+          Reset dB
         </button>
       </div>
 
