@@ -2,7 +2,6 @@ import React, { ReactNode, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonButton, IonIcon } from '@ionic/react';
 import { closeOutline, menuOutline } from 'ionicons/icons/index.js';
-import { DocumentationButton } from '@/components/ui';
 import { useAppSelector } from '@/features/App';
 import { selectCurrentUser } from '@/api';
 import styles from './layout.module.scss'
@@ -45,8 +44,6 @@ export const Header: React.FC<{
       { children && <div className={ styles.info }>{ children }</div> }
 
       <div className={ styles.links }>
-        <DocumentationButton size={ size }/>
-
         { buttons }
 
       </div>

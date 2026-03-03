@@ -14,7 +14,7 @@ import {
 } from '@/features/Annotator/VisualConfiguration';
 import { ZoomButtons } from '@/features/Annotator/Zoom';
 import { PointerInfo } from '@/features/Annotator/Pointer';
-import { SpectrogramDownloadButton, SpectrogramInfo } from '@/features/Annotator/Spectrogram';
+import { SpectrogramInfo } from '@/features/Annotator/Spectrogram';
 import { NavigationButtons } from '@/features/Annotator/Navigation';
 import { FocusedAnnotationBloc } from '@/features/Annotator/Annotation';
 import { LabelsBloc } from '@/features/Annotator/Label';
@@ -116,7 +116,6 @@ export const AnnotatorPage: React.FC = () => {
 
       <div className={ styles.downloadButtons }>
         <AudioDownloadButton/>
-        <SpectrogramDownloadButton/>
       </div>
     </div>
   </AnnotatorSkeleton>
