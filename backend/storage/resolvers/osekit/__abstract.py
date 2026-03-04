@@ -1,3 +1,5 @@
+import traceback
+
 from osekit.config import TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
 
 from backend.utils.osekit_replace import OSEkitDataset, SpectroDataset, TFile
@@ -11,6 +13,8 @@ class AbstractOSEkitResolver:
     legacy = False
 
     dataset: OSEkitDataset | None = None
+    dataset_error: Exception | None
+    dataset_stack: str | None
     analysis: SpectroDataset | None = None
     all_analysis: list[SpectroDataset] = []
 
@@ -24,7 +28,13 @@ class AbstractOSEkitResolver:
     def __init__(self, storage: StorageResolver, path: str):
         self.storage = storage
         path = storage.clean_path(path)
-        self._load_dataset(path)
+        try:
+            self._load_dataset(path)
+            self.dataset_error = None
+            self.dataset_stack = None
+        except Exception as e:
+            self.dataset_error = e
+            self.dataset_stack = traceback.format_exc()
         self._load_all_analysis()
         self._load_analysis(path)
 
@@ -67,6 +77,12 @@ class AbstractOSEkitResolver:
         ]
 
     def get_storage_dataset(self) -> StorageDataset | None:
+        if self.dataset_error:
+            return StorageDataset(
+                error=str(self.dataset_error),
+                stack=self.dataset_stack,
+                path=self.dataset_path,
+            )
         if self.dataset is None:
             return None
         return StorageDataset(path=self.storage.clean_path(self.dataset.folder))

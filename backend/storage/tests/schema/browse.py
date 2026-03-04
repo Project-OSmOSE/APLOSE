@@ -18,12 +18,16 @@ query browse($path: String) {
             __typename
             name
             path
+            error
+            stack
         }
         ... on DatasetStorageNode {
             __typename
             name
             path
             importStatus
+            error
+            stack
         }
         ... on AnalysisStorageNode {
             __typename

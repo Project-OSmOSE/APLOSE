@@ -14,16 +14,30 @@ class ImportStatus(Enum):
 class Folder:
     path: str
     name: str
+    error: str | None = None
+    stack: str | None = None
 
-    def __init__(self, path: str, name: str | None = None):
+    def __init__(
+        self,
+        path: str,
+        name: str | None = None,
+        error: Exception | None = None,
+        stack: str | None = None,
+    ):
         path = PureWindowsPath(path)
         self.path = path.as_posix()
         self.name = name or path.name
+        self.error = str(error) if error else None
+        self.stack = stack
+
+
+class StorageFolder(Folder):
+    pass
 
 
 class StorageDataset(Folder):
-    import_status: ImportStatus
-    model: type[Dataset]
+    import_status: ImportStatus | None = None
+    model: type[Dataset] | None = None
 
     def __init__(
         self,
@@ -31,8 +45,10 @@ class StorageDataset(Folder):
         import_status: ImportStatus = ImportStatus.Available,
         model: type[Dataset] | None = None,
         name: str | None = None,
+        error: str | None = None,
+        stack: str | None = None,
     ):
-        super().__init__(path, name)
+        super().__init__(path, name, error, stack)
         self.import_status = import_status
         self.model = model
 
@@ -56,8 +72,10 @@ class StorageAnalysis(Folder):
         import_status: ImportStatus = ImportStatus.Available,
         model: type[SpectrogramAnalysis] | None = None,
         name: str | None = None,
+        error: str | None = None,
+        stack: str | None = None,
     ):
-        super().__init__(path, name)
+        super().__init__(path, name, error, stack)
         self.import_status = import_status
         self.model = model
 
@@ -71,9 +89,12 @@ class StorageAnalysis(Folder):
         )
 
 
+StorageItem = StorageFolder | StorageDataset | StorageAnalysis
+
 __all__ = [
-    "Folder",
+    "StorageFolder",
     "StorageDataset",
     "StorageAnalysis",
+    "StorageItem",
     "ImportStatus",
 ]

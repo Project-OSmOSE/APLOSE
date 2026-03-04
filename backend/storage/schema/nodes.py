@@ -1,7 +1,7 @@
 from graphene import ObjectType, NonNull, String, Enum, Field
 
 from backend.api.schema.nodes import DatasetNode, SpectrogramAnalysisNode
-from ..types import ImportStatus, StorageAnalysis, StorageDataset, Folder
+from ..types import ImportStatus, StorageAnalysis, StorageDataset, StorageFolder
 
 __all__ = [
     "AnalysisStorageNode",
@@ -27,6 +27,8 @@ class DatasetStorageNode(ObjectType):
     path = NonNull(String)
     import_status = NonNull(ImportStatusEnum)
     model = Field(DatasetNode)
+    error = String()
+    stack = String()
 
     class Meta:
         possible_types = (StorageDataset,)
@@ -35,6 +37,8 @@ class DatasetStorageNode(ObjectType):
 class FolderNode(ObjectType):
     name = NonNull(String)
     path = NonNull(String)
+    error = String()
+    stack = String()
 
     class Meta:
-        possible_types = (Folder,)
+        possible_types = (StorageFolder,)

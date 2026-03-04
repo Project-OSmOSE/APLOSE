@@ -4388,6 +4388,8 @@ type DatasetStorageNode {
   path: String!
   importStatus: ImportStatus!
   model: DatasetNode
+  error: String
+  stack: String
 }
 
 type FolderNode {

@@ -2115,10 +2115,12 @@ export type DatasetNodeNodeConnection = {
 
 export type DatasetStorageNode = {
   __typename?: 'DatasetStorageNode';
+  error?: Maybe<Scalars['String']['output']>;
   importStatus: ImportStatus;
   model?: Maybe<DatasetNode>;
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
+  stack?: Maybe<Scalars['String']['output']>;
 };
 
 export type DeleteSoundMutation = {

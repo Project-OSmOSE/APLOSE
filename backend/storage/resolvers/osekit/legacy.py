@@ -26,10 +26,6 @@ class LegacyCSVDataset(TypedDict):
     dataset_sr: str
 
 
-class LegacyCSVAnalysis(LegacyCSVDataset):
-    analysis_path: str
-
-
 @deprecated("Use OSEkitResolver")
 class LegacyOSEkitResolver(AbstractOSEkitResolver):
     """Resolver class for OSEkit related content"""

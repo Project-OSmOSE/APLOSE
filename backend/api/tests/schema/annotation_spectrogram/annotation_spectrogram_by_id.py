@@ -1,9 +1,15 @@
 import json
+from pathlib import Path
 
+from django.conf import settings
 from django_extension.tests import ExtendedTestCase
 
 from backend.api.tests.fixtures import ALL_FIXTURES
 from backend.aplose.models import User
+from django.test import override_settings
+
+VOLUMES_ROOT = settings.FIXTURE_DIRS[1] / "data" / "dataset" / "list_to_import"
+LEGACY_GOOD = Path("legacy/good")
 
 QUERY = """
 query (
@@ -120,6 +126,7 @@ class AnnotationSpectrogramByIDTestCase(ExtendedTestCase):
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
+    @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_connected_owner(self):
         response = self.gql_query(
             QUERY,
@@ -137,6 +144,7 @@ class AnnotationSpectrogramByIDTestCase(ExtendedTestCase):
         self.assertEqual(len(content["task"]["comments"]["results"]), 0)
         self.assertEqual(len(content["task"]["annotations"]["results"]), 0)
 
+    @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_connected_empty_user(self):
         response = self.gql_query(
             QUERY,
@@ -150,6 +158,7 @@ class AnnotationSpectrogramByIDTestCase(ExtendedTestCase):
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Not found")
 
+    @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_connected_admin(self):
         response = self.gql_query(
             QUERY,
@@ -167,6 +176,7 @@ class AnnotationSpectrogramByIDTestCase(ExtendedTestCase):
         self.assertEqual(len(content["task"]["comments"]["results"]), 0)
         self.assertEqual(len(content["task"]["annotations"]["results"]), 0)
 
+    @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_connected_annotator(self):
         response = self.gql_query(
             QUERY,

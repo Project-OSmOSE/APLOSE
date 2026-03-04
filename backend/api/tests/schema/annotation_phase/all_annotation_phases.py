@@ -77,7 +77,6 @@ class AllAnnotationPhasesTestCase(ExtendedTestCase):
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["allAnnotationPhases"]["results"]
-        print("count", AnnotationPhase.objects.count())
         self.assertEqual(len(content), AnnotationPhase.objects.count())
         self.assertEqual(content[1]["phase"], "Annotation")
 

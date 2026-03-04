@@ -2,7 +2,7 @@ import * as Types from '../types.gql-generated';
 
 import { gqlAPI } from '@/api/baseGqlApi';
 export type BrowseStorageQueryVariables = Types.Exact<{
-  path?: Types.InputMaybe<Types.Scalars['String']['input']>;
+  path: Types.Scalars['String']['input'];
 }>;
 
 
@@ -32,7 +32,7 @@ export type ImportAnalysisFromStorageMutation = { __typename?: 'Mutation', impor
 
 
 export const BrowseStorageDocument = `
-    query browseStorage($path: String) {
+    query browseStorage($path: String!) {
   browse(path: $path) {
     ... on FolderNode {
       __typename
@@ -138,7 +138,7 @@ export const ImportAnalysisFromStorageDocument = `
 
 const injectedRtkApi = gqlAPI.injectEndpoints({
   endpoints: (build) => ({
-    browseStorage: build.query<BrowseStorageQuery, BrowseStorageQueryVariables | void>({
+    browseStorage: build.query<BrowseStorageQuery, BrowseStorageQueryVariables>({
       query: (variables) => ({ document: BrowseStorageDocument, variables })
     }),
     searchStorage: build.query<SearchStorageQuery, SearchStorageQueryVariables>({

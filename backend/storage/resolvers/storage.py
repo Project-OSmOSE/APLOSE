@@ -8,7 +8,7 @@ from django.conf import settings
 __all__ = ["StorageResolver"]
 
 from backend.storage.exceptions import InvalidFolderException
-from backend.storage.types import Folder
+from backend.storage.types import StorageFolder
 
 _Path = str | Path | PureWindowsPath
 
@@ -115,7 +115,7 @@ class StorageResolver:
         path = StorageResolver.format_path(path)
         return path == "" or path == "." or path == "/"
 
-    def get_folder(self, path) -> Folder:
+    def get_folder(self, path) -> StorageFolder:
         if self.is_file(path):
             raise InvalidFolderException(path)
-        return Folder(path)
+        return StorageFolder(path)

@@ -1,7 +1,7 @@
 import React, { Fragment, useMemo } from 'react';
 import { type StorageItem, useBrowseStorage, useStorageBrowse, useStorageSearch } from '@/api';
 import { IonNote, IonSpinner } from '@ionic/react';
-import { WarningText } from '@/components/ui';
+import { GraphQLErrorText, WarningText } from '@/components/ui';
 import styles from './styles.module.scss';
 import { AnalysisItem } from './AnalysisItem';
 import { FolderItem } from './FolderItem';
@@ -17,7 +17,7 @@ export const ItemList: React.FC<{
 
     return useMemo(() => {
         if (isLoading) return <IonSpinner/>
-        if (error) return <WarningText error={ error }/>
+        if (error) return <GraphQLErrorText error={ error }/>
         if (!subfolders) return <WarningText>Cannot recover folders</WarningText>
         if (subfolders.length === 0) return <IonNote>Empty</IonNote>
         return <div className={ styles.list }>

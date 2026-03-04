@@ -1,5 +1,5 @@
 import React, { Fragment, type MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { Status, type StorageDataset, useImportDatasetFromStorage } from '@/api';
+import { ImportStatus, type StorageDataset, useImportDatasetFromStorage } from '@/api';
 import { IonButton, IonNote, IonSpinner } from '@ionic/react';
 import { TooltipOverlay, useToast } from '@/components/ui';
 import { AltArrowDown, AltArrowRight, CheckRead, FolderFavouriteStar, InfoCircle, Unread } from '@solar-icons/react';
@@ -22,7 +22,7 @@ export const DatasetItem: React.FC<{
     const { importDataset, isLoading, error } = useImportDatasetFromStorage()
     const toast = useToast()
     const canImport = useMemo(() => {
-        return !isLoading && (dataset.importStatus === Status.Partial || dataset.importStatus === Status.Available);
+        return !isLoading && (dataset.importStatus === ImportStatus.Partial || dataset.importStatus === ImportStatus.Available);
     }, [ dataset, isLoading ])
     const download = useCallback((event: MouseEvent) => {
         event.stopPropagation()
@@ -34,9 +34,9 @@ export const DatasetItem: React.FC<{
     const importStatusIcon = useMemo(() => {
         if (isLoading) return <IonSpinner/>
         switch (dataset.importStatus) {
-            case Status.Imported:
+            case ImportStatus.Imported:
                 return <CheckRead color="success" size={ 24 }/>
-            case Status.Partial:
+            case ImportStatus.Partial:
                 return <Unread color="success" size={ 24 }/>
         }
         return <Fragment/>

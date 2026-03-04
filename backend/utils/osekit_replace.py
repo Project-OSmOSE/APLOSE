@@ -1,6 +1,7 @@
 import json
 from os.path import join
 from pathlib import PureWindowsPath, Path
+from typing import TypedDict
 
 import numpy as np
 from osekit.config import TIMESTAMP_FORMATS_EXPORTED_FILES
@@ -148,7 +149,19 @@ class SpectroDataset:
 
 
 class OSEkitDataset:
-    datasets: dict
+    datasets: dict[
+        str,
+        type[
+            TypedDict(
+                "",
+                {
+                    "class": str,
+                    "analysis": str,
+                    "dataset": SpectroDataset,
+                },
+            )
+        ],
+    ]
     folder: Path
 
     def __init__(self, folder: Path, datasets: dict):

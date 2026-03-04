@@ -1,4 +1,4 @@
-query browseStorage($path: String) {
+query browseStorage($path: String!) {
     browse(path: $path) {
         ... on FolderNode {
             __typename

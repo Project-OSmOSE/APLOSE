@@ -9,7 +9,6 @@ class OSEkitResolver(AbstractOSEkitResolver):
     """Resolver class for OSEkit related content"""
 
     def _load_dataset(self, path: str):
-        # pylint: disable=broad-except
         if "dataset.json" in path:
             json_path = path
         else:
@@ -20,8 +19,7 @@ class OSEkitResolver(AbstractOSEkitResolver):
                     Path(self.storage.absolute_server_path(json_path))
                 )
                 return None
-            except Exception:
-                traceback.print_exc()
+            except FileNotFoundError:
                 pass
 
         if self.storage.is_local_root(path):
