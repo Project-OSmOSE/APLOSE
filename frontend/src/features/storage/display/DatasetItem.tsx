@@ -28,7 +28,7 @@ export const DatasetItem: React.FC<{
         event.stopPropagation()
         if (!canImport) return;
         importDataset({
-            path: dataset.path,
+            datasetPath: dataset.path,
         }).unwrap().finally(onUpdated)
     }, [ canImport, dataset, importDataset, onUpdated ])
     const importStatusIcon = useMemo(() => {

@@ -6,7 +6,6 @@ const {
     browseStorage,
     searchStorage,
     importDatasetFromStorage,
-    importAnalysisFromStorage,
 } = StorageGqlAPI.endpoints
 
 function _mapData(data?: BrowseStorageQuery) {
@@ -26,10 +25,4 @@ export const useSearchStorage = (vars: SearchStorageQueryVariables, options?: { 
 export const useImportDatasetFromStorage = () => {
     const [ method, { isSuccess, ...info } ] = importDatasetFromStorage.useMutation()
     return { isSuccess, ...info, importDataset: method }
-}
-
-
-export const useImportAnalysisFromStorage = () => {
-    const [ method, { isSuccess, ...info } ] = importAnalysisFromStorage.useMutation()
-    return { isSuccess, ...info, importAnalysis: method }
 }

@@ -2886,8 +2886,10 @@ export enum FinancingEnum {
 
 export type FolderNode = {
   __typename?: 'FolderNode';
+  error?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
+  stack?: Maybe<Scalars['String']['output']>;
 };
 
 export enum HydrophoneDirectivityEnum {
@@ -2924,14 +2926,9 @@ export type HydrophoneSpecificationNode = ExtendedInterface & {
 };
 
 /** "Import Analysis mutation */
-export type ImportAnalysisMutation = {
-  __typename?: 'ImportAnalysisMutation';
-  analysis: SpectrogramAnalysisNode;
-};
-
-/** "Import Dataset mutation */
 export type ImportDatasetMutation = {
   __typename?: 'ImportDatasetMutation';
+  analysis?: Maybe<SpectrogramAnalysisNode>;
   dataset: DatasetNode;
 };
 
@@ -3529,8 +3526,6 @@ export type Mutation = {
   /** Archive annotation phase mutation */
   endAnnotationPhase?: Maybe<EndAnnotationPhaseMutation>;
   /** "Import Analysis mutation */
-  importAnalysis?: Maybe<ImportAnalysisMutation>;
-  /** "Import Dataset mutation */
   importDataset?: Maybe<ImportDatasetMutation>;
   postSound?: Maybe<PostSoundMutationPayload>;
   postSource?: Maybe<PostSourceMutationPayload>;
@@ -3588,15 +3583,9 @@ export type MutationEndAnnotationPhaseArgs = {
 
 
 /** Global mutation */
-export type MutationImportAnalysisArgs = {
-  datasetPath: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-};
-
-
-/** Global mutation */
 export type MutationImportDatasetArgs = {
-  path: Scalars['String']['input'];
+  analysisPath?: InputMaybe<Scalars['String']['input']>;
+  datasetPath: Scalars['String']['input'];
 };
 
 

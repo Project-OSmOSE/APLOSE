@@ -22,6 +22,7 @@ class StorageResolver(AbstractResolver):
         if not exists(path):
             raise PathNotFoundException(path)
         super().__init__(path)
+        print("StorageResolver.__init__", self.path)
 
     def get_child_items(self) -> list[StorageFolder]:
         if isfile(self.path):

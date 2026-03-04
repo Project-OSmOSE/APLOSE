@@ -15,7 +15,7 @@ const TEST = {
                 getCurrentUser: as,
                 listSpectrogramAnalysis: 'empty',
                 listChannelConfigurations: 'empty',
-                listAvailableSpectrogramAnalysisForImport: 'empty',
+                browseStorage: 'empty',
             })
             await test.step(`Navigate`, () => page.datasetDetail.go({ as }));
 

@@ -25,7 +25,6 @@ def resolve_paths(root, info, spectrogram_id: int, analysis_id: int):
         spectrogram.analysis.all(), pk=analysis_id
     )
 
-    print(join(analysis.dataset.path, analysis.path))
     resolver = Resolver(join(analysis.dataset.path, analysis.path))
     return SpectrogramPathsNode(
         audio_path=resolver.get_audio_path(spectrogram),

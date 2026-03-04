@@ -5,7 +5,7 @@ from pathlib import Path
 from dateutil import parser
 from django.conf import settings
 from django.db import models
-from django.db.models import CheckConstraint, Q
+from django.db.models import CheckConstraint, Q, Min, Max
 from typing_extensions import deprecated
 
 from .__abstract_analysis import AbstractAnalysis
@@ -190,3 +190,10 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
                 f"{self.name}.json",
             )
         )
+
+    def update_dates(self):
+        """Update start and end dates based on spectrogram data"""
+        info = self.spectrograms.aggregate(start=Min("start"), end=Max("end"))
+        self.start = info["start"]
+        self.end = info["end"]
+        self.save()

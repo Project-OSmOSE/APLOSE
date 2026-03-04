@@ -1,5 +1,5 @@
 import React, { Fragment, type MouseEvent, useCallback, useEffect, useMemo } from 'react';
-import { ImportStatus, type StorageAnalysis, useImportAnalysisFromStorage } from '@/api';
+import { ImportStatus, type StorageAnalysis, useImportDatasetFromStorage } from '@/api';
 import { CheckRead, FileFavourite, InfoCircle, Unread } from '@solar-icons/react';
 import styles from './styles.module.scss';
 import { IonButton, IonSpinner } from '@ionic/react';
@@ -11,7 +11,7 @@ export const AnalysisItem: React.FC<{
     search?: string,
     onUpdated?: () => void
 }> = ({ analysis, dataset, onUpdated }) => {
-    const { importAnalysis, isLoading, error } = useImportAnalysisFromStorage()
+    const { importDataset, isLoading, error } = useImportDatasetFromStorage()
     const toast = useToast()
     const canImport = useMemo(() => {
         return !isLoading && (analysis.importStatus === ImportStatus.Partial || analysis.importStatus === ImportStatus.Available);
@@ -19,11 +19,11 @@ export const AnalysisItem: React.FC<{
     const doImport = useCallback((event: MouseEvent) => {
         event.stopPropagation()
         if (!canImport) return;
-        importAnalysis({
-            name: analysis.name,
+        importDataset({
+            analysisPath: analysis.path,
             datasetPath: dataset.path,
         }).unwrap().finally(onUpdated)
-    }, [ canImport, analysis, importAnalysis, analysis, dataset, onUpdated ])
+    }, [ canImport, analysis, importDataset, analysis, dataset, onUpdated ])
     const importStatusIcon = useMemo(() => {
         if (isLoading) return <IonSpinner/>
         switch (analysis.importStatus) {

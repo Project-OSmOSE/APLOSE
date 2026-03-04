@@ -4,44 +4,52 @@ from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissio
 from graphene import Mutation, String
 from graphql import GraphQLError
 
+from backend.api.models import Dataset
+from backend.api.schema import DatasetNode
 from backend.api.schema.nodes import SpectrogramAnalysisNode
-from ...resolvers import ModelResolver, OSEkitResolver
+from backend.storage.utils import join, make_path_relative
+from backend.storage.resolvers import Resolver
 
 
-class ImportAnalysisMutation(Mutation):
+class ImportDatasetMutation(Mutation):
     """ "Import Analysis mutation"""
 
     class Arguments:
         dataset_path = String(required=True)
-        name = String(required=True)
+        analysis_path = String()
 
-    analysis = graphene.Field(SpectrogramAnalysisNode, required=True)
+    dataset = graphene.Field(DatasetNode, required=True)
+    analysis = graphene.Field(SpectrogramAnalysisNode)
 
     @GraphQLResolve(permission=GraphQLPermissions.STAFF_OR_SUPERUSER)
     @transaction.atomic
-    def mutate(self, info, dataset_path: str, name: str):
+    def mutate(self, info, dataset_path: str, analysis_path: str | None = None):
         """Do the mutation: create required analysis"""
-        model_resolver = ModelResolver.get(dataset_path)
-        dataset = model_resolver.get_or_create_dataset(owner=info.context.user)
+        resolver = Resolver(join(dataset_path, analysis_path or ""))
 
-        osekit_resolver = OSEkitResolver.get(dataset_path)
-        spectro_dataset = next(
-            a for a in osekit_resolver.all_analysis if a.name == name
-        )
+        dataset: Dataset = resolver.model.get_or_create_dataset(owner=info.context.user)
 
-        if spectro_dataset is None:
-            raise GraphQLError("Analysis not found")
+        if analysis_path:
+            storage_analysis = resolver.get_analysis()
+            if storage_analysis is None:
+                raise GraphQLError("Analysis not found")
 
-        if dataset.spectrogram_analysis.filter(name=name).exists():
-            raise GraphQLError("Analysis already imported")
+            if dataset.spectrogram_analysis.filter(path=analysis_path).exists():
+                raise GraphQLError("Analysis already imported")
 
-        analysis = model_resolver.import_analysis(
-            owner=info.context.user,
-            name=name,
-        )
+            analysis = resolver.model.create_analysis(owner=info.context.user)
 
-        return ImportAnalysisMutation(analysis=analysis)
+            return ImportDatasetMutation(analysis=analysis, dataset=dataset)
+        else:
+            for sd in resolver.osekit.get_all_spectro_dataset():
+                relative_path = make_path_relative(sd.folder, to=dataset.path)
+                if dataset.spectrogram_analysis.filter(path=relative_path).exists():
+                    continue
+                resolver.model.create_analysis(
+                    owner=info.context.user, spectro_dataset=sd
+                )
+        return ImportDatasetMutation(dataset=dataset)
 
 
-ImportAnalysisMutationField = ImportAnalysisMutation.Field()
-__all__ = ["ImportAnalysisMutationField", "ImportAnalysisMutation"]
+ImportDatasetMutationField = ImportDatasetMutation.Field()
+__all__ = ["ImportDatasetMutationField", "ImportDatasetMutation"]

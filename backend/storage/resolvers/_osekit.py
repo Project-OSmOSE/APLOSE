@@ -1,11 +1,10 @@
 import csv
 from pathlib import PureWindowsPath, Path
-from typing import TypedDict, Tuple
+from typing import TypedDict
 
 from django.conf import settings
 from numpy import hamming
 from osekit.config import TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
-from osekit.core_api.spectro_file import SpectroFile
 from pandas import Timestamp, Timedelta
 from scipy.signal import ShortTimeFFT
 
@@ -105,7 +104,7 @@ class OSEkitLegacyResolver:
                                 name=PureWindowsPath(file["filename"]).name,
                                 begin=begin,
                                 end=end,
-                                v_lim=[],
+                                v_lim=(0, 0),
                                 audio_data=AudioData(
                                     files=[
                                         TFile(
@@ -152,10 +151,10 @@ class OSEkitLegacyResolver:
                                     name=d.name,
                                     begin=d.begin,
                                     end=d.end,
-                                    v_lim=[
-                                        int(metadata["dynamic_min"]),
-                                        int(metadata["dynamic_max"]),
-                                    ],
+                                    v_lim=(
+                                        float(metadata["dynamic_min"]),
+                                        float(metadata["dynamic_max"]),
+                                    ),
                                     audio_data=d.audio_data,
                                 )
                                 for d in spectro_data
@@ -189,31 +188,27 @@ class OSEkitResolver(AbstractResolver):
     __storage: StorageResolver
 
     __legacy: OSEkitLegacyResolver
-    __is_legacy: bool = False
+    _is_legacy: bool = False
 
     __dataset: OSEkitDataset | None = None
-    __analysis: SpectroDataset | None = None
+    __spectro_dataset: SpectroDataset | None = None
+
+    @property
+    def spectro_dataset(self) -> SpectroDataset | None:
+        return self.__spectro_dataset
 
     def __init__(self, storage: StorageResolver):
         self.__storage = storage
         self.__legacy = OSEkitLegacyResolver(storage)
         super().__init__(storage.path)
 
-        self.__load_dataset(self.path)
+        self.__dataset, self._is_legacy = self._get_osekit_dataset(self.path, deep=True)
         if self.__dataset:
-            self.__analysis = self.__get_spectro_dataset(self.path)
+            self.__spectro_dataset = self.__get_spectro_dataset(self.path)
 
-    def __load_dataset(self, path: str):
-        path = "".join(
-            path.split("dataset.json")
-        )  # Remove potential dataset.json in the path
-        self.__dataset, self.__is_legacy = self.__get_osekit_dataset(path)
-        if not self.__dataset and not is_local_root(path):
-            self.__load_dataset(clean_path(PureWindowsPath(path).parent))
-
-    def __get_osekit_dataset(
-        self, path: str | None = None
-    ) -> Tuple[OSEkitDataset | None, bool]:
+    def _get_osekit_dataset(
+        self, path: str | None = None, deep: bool = False
+    ) -> tuple[OSEkitDataset | None, bool]:
         path = path or self.path
         json_path = join(path, "dataset.json")
         if exists(json_path):
@@ -227,6 +222,10 @@ class OSEkitResolver(AbstractResolver):
         d = self.__legacy.get_osekit_dataset(path)
         if d:
             return d, True
+        if deep and not is_local_root(path):
+            return self._get_osekit_dataset(
+                clean_path(PureWindowsPath(path).parent), deep=True
+            )
         return None, False
 
     def get_all_spectro_dataset(
@@ -235,7 +234,7 @@ class OSEkitResolver(AbstractResolver):
         if dataset_path is None:
             dataset = self.__dataset
         else:
-            dataset = self.__get_osekit_dataset(dataset_path)
+            dataset = self._get_osekit_dataset(dataset_path)[0]
 
         return (
             [
@@ -249,7 +248,7 @@ class OSEkitResolver(AbstractResolver):
 
     def __get_spectro_dataset(self, path: str | None = None) -> SpectroDataset | None:
         if path is None:
-            return self.__analysis
+            return self.__spectro_dataset
         for sd in self.get_all_spectro_dataset():
             if make_path_relative(sd.folder) == path:
                 return sd
@@ -259,9 +258,10 @@ class OSEkitResolver(AbstractResolver):
         if path is None:
             dataset = self.__dataset
         else:
-            dataset = self.__get_osekit_dataset(path)
+            dataset = self._get_osekit_dataset(path)[0]
+        print("OSEkitResolver.get_dataset", path, dataset)
         if dataset is None:
-            return self.__storage.get_dataset()
+            return self.__storage.get_dataset(path)
 
         return StorageDataset(path=make_path_relative(dataset.folder))
 
@@ -274,7 +274,7 @@ class OSEkitResolver(AbstractResolver):
         elif spectro_dataset:
             sd = spectro_dataset
         else:
-            sd = self.__analysis
+            sd = self.__spectro_dataset
 
         if sd is None:
             return self.__storage.get_analysis()
@@ -287,7 +287,7 @@ class OSEkitResolver(AbstractResolver):
         )
 
     def get_child_items(self) -> list[StorageItem]:
-        if self.__analysis:
+        if self.__spectro_dataset:
             raise CannotGetChildrenException(self.path)
         if self.__dataset:
             return [
@@ -296,8 +296,11 @@ class OSEkitResolver(AbstractResolver):
             ]
         return self.__storage.get_child_items()
 
-    def __get_analysis_spectro_files(self) -> list[TFile]:
-        if not self.__analysis:
+    def _get_analysis_spectro_files(
+        self, spectro_dataset: SpectroDataset | None = None
+    ) -> list[TFile]:
+        spectro_dataset = spectro_dataset or self.__spectro_dataset
+        if not spectro_dataset:
             return []
         return (
             [
@@ -305,24 +308,24 @@ class OSEkitResolver(AbstractResolver):
                     begin=d.begin,
                     end=d.end,
                     path=join(
-                        clean_path(self.__analysis.folder),
+                        clean_path(spectro_dataset.folder),
                         f"{d.begin.strftime(TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED)}.png",
                     ),
                 )
-                for d in self.__analysis.data
+                for d in spectro_dataset.data
             ]
-            if not self.__is_legacy
-            else self.__legacy.get_analysis_spectro_files(self.__analysis)
+            if not self._is_legacy
+            else self.__legacy.get_analysis_spectro_files(spectro_dataset)
         )
 
     def get_spectrogram_path(self, spectrogram: Spectrogram) -> str | None:
-        for file in self.__get_analysis_spectro_files():
+        for file in self._get_analysis_spectro_files():
             if PureWindowsPath(file.path).name == spectrogram.filename:
                 return make_static_url(file.path)
         return None
 
     def get_audio_path(self, spectrogram: Spectrogram) -> str | None:
-        for spectro_data in self.__analysis.data:
+        for spectro_data in self.__spectro_dataset.data:
             for file in spectro_data.audio_data.files:
                 if PureWindowsPath(file.path).name == spectrogram.filename:
                     return make_static_url(file.path)

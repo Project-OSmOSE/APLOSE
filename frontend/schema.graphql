@@ -1065,8 +1065,8 @@ type Query {
     annotationPhase_Phase: AnnotationPhaseType
   ): AnnotationFileRangeNodeNodeConnection
   annotationSpectrogramById(id: ID!): AnnotationSpectrogramNode
-  search(path: String!): StorageUnion
   browse(path: String): [StorageUnion]
+  search(path: String!): StorageUnion
   spectrogramPaths(spectrogramId: ID!, analysisId: ID!): SpectrogramPathsNode
 }
 
@@ -4395,6 +4395,8 @@ type DatasetStorageNode {
 type FolderNode {
   name: String!
   path: String!
+  error: String
+  stack: String
 }
 
 type SpectrogramPathsNode {
@@ -4432,10 +4434,7 @@ type Mutation {
   submitAnnotationTask(annotations: [AnnotationInput]!, campaignId: ID!, endedAt: DateTime!, phaseType: AnnotationPhaseType!, spectrogramId: ID!, startedAt: DateTime!, taskComments: [AnnotationCommentInput]!): SubmitAnnotationTaskMutation
 
   """"Import Analysis mutation"""
-  importAnalysis(datasetPath: String!, name: String!): ImportAnalysisMutation
-
-  """"Import Dataset mutation"""
-  importDataset(path: String!): ImportDatasetMutation
+  importDataset(analysisPath: String, datasetPath: String!): ImportDatasetMutation
 }
 
 type PostSourceMutationPayload {
@@ -4679,11 +4678,7 @@ type SubmitAnnotationTaskMutation {
 }
 
 """"Import Analysis mutation"""
-type ImportAnalysisMutation {
-  analysis: SpectrogramAnalysisNode!
-}
-
-""""Import Dataset mutation"""
 type ImportDatasetMutation {
   dataset: DatasetNode!
+  analysis: SpectrogramAnalysisNode
 }

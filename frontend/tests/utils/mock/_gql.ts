@@ -1,5 +1,5 @@
 import { DATASET_QUERIES } from './dataset';
-import { ANALYSIS_MUTATIONS, ANALYSIS_QUERIES } from './spectrogramAnalysis';
+import { ANALYSIS_QUERIES } from './spectrogramAnalysis';
 import { CAMPAIGN_MUTATIONS, CAMPAIGN_QUERIES } from './campaign';
 import { LABEL_SET_QUERIES } from './labelSet';
 import { CHANNEL_CONFIGURATION_QUERIES } from './channelConfiguration';
@@ -45,7 +45,6 @@ const GQL_MOCK_QUERIES: GqlQueries & { getCurrentUser: typeof GET_CURRENT_USER_Q
 
 type GqlMutations =
   typeof STORAGE_MUTATIONS
-  & typeof ANALYSIS_MUTATIONS
   & typeof CAMPAIGN_MUTATIONS
   & typeof TASK_MUTATIONS
   & typeof PHASE_MUTATIONS
@@ -54,7 +53,6 @@ export type GqlMutation = keyof GqlMutations
 
 const GQL_MOCK_MUTATIONS: GqlMutations = {
   ...STORAGE_MUTATIONS,
-  ...ANALYSIS_MUTATIONS,
   ...CAMPAIGN_MUTATIONS,
   ...TASK_MUTATIONS,
   ...PHASE_MUTATIONS,

@@ -1,7 +1,6 @@
 import type { GqlQuery } from './_types';
 import {
     BrowseStorageQuery,
-    type ImportAnalysisFromStorageMutation,
     type ImportDatasetFromStorageMutation,
     type SearchStorageQuery,
 } from '../../../src/api/storage/storage.generated';
@@ -28,13 +27,8 @@ export const STORAGE_QUERIES: {
 
 export const STORAGE_MUTATIONS: {
     importDatasetFromStorage: GqlQuery<ImportDatasetFromStorageMutation, never>
-    importAnalysisFromStorage: GqlQuery<ImportAnalysisFromStorageMutation, never>
 } = {
     importDatasetFromStorage: {
-        defaultType: 'empty',
-        empty: {},
-    },
-    importAnalysisFromStorage: {
         defaultType: 'empty',
         empty: {},
     },

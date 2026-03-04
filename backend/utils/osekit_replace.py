@@ -30,7 +30,7 @@ class AudioData:
 
 class SpectroData:
     name: str
-    v_lim: list[int]
+    v_lim: tuple[float, float]
     begin: Timestamp
     end: Timestamp
     duration: Timedelta
@@ -41,7 +41,7 @@ class SpectroData:
         name: str,
         begin: Timestamp,
         end: Timestamp,
-        v_lim: list[int],
+        v_lim: tuple[float, float],
         audio_data: AudioData,
     ):
         self.name = name
@@ -146,6 +146,14 @@ class SpectroDataset:
                     for name, spectro_data in dataset_data["data"].items()
                 ],
             )
+
+    @property
+    def v_lim(self) -> tuple[float, float] | None:
+        """Return the most frequent v_lim of the spectro dataset."""
+        return max(
+            [d.v_lim for d in self.data],
+            key=[d.v_lim for d in self.data].count,
+        )
 
 
 class OSEkitDataset:
