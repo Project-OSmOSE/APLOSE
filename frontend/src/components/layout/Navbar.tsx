@@ -40,10 +40,10 @@ export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
           </Link>
           { user?.isAdmin && <Fragment>
               <Link appPath="/app/dataset" onClick={ close }>Datasets</Link>
-              <Link appPath="/app/spectrogram-example" onClick={ close }>Spectrogram Example</Link>
-              <Link appPath="/app/documentation" onClick={ close }>Documentation</Link>
-              <Link appPath="/app/sound-library" onClick={ close }>Sound Library</Link>
           </Fragment> }
+          <Link appPath="/app/spectrogram-example" onClick={ close }>Spectrogram Example</Link>
+          <Link appPath="/app/documentation" onClick={ close }>Documentation</Link>
+          <Link appPath="/app/sound-library" onClick={ close }>Sound Library</Link>
         </div>
 
         { user?.isAdmin && <Fragment>
