@@ -3,14 +3,14 @@ from typing import Optional
 import graphene
 from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 
-from backend.storage.resolvers import Resolver
+from backend.storage.model_resolvers import Resolver
 from ..union import StorageUnion
 
 
 @GraphQLResolve(permission=GraphQLPermissions.STAFF_OR_SUPERUSER)
 def resolve_browse(root, info, path: Optional[str] = None):
     """Get all datasets for import"""
-    return Resolver(path).get_child_items()
+    return Resolver(path).get_children_items()
 
 
 BrowseField = graphene.Field(

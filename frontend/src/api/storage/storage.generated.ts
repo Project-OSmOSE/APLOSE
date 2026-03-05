@@ -6,14 +6,14 @@ export type BrowseStorageQueryVariables = Types.Exact<{
 }>;
 
 
-export type BrowseStorageQuery = { __typename?: 'Query', browse?: Array<{ __typename: 'AnalysisStorageNode', name: string, path: string, importStatus: Types.ImportStatus, model?: { __typename?: 'SpectrogramAnalysisNode', annotationCampaigns: { __typename?: 'AnnotationCampaignNodeConnection', edges: Array<{ __typename?: 'AnnotationCampaignNodeEdge', node?: { __typename?: 'AnnotationCampaignNode', isArchived: boolean } | null } | null> } } | null } | { __typename: 'DatasetStorageNode', name: string, path: string, importStatus: Types.ImportStatus, model?: { __typename?: 'DatasetNode', id: string, annotationCampaigns: { __typename?: 'AnnotationCampaignNodeConnection', edges: Array<{ __typename?: 'AnnotationCampaignNodeEdge', node?: { __typename?: 'AnnotationCampaignNode', isArchived: boolean } | null } | null> } } | null } | { __typename: 'FolderNode', name: string, path: string } | null> | null };
+export type BrowseStorageQuery = { __typename?: 'Query', browse?: Array<{ __typename: 'AnalysisStorageNode', name: string, path: string, importStatus: Types.ImportStatus, model?: { __typename?: 'SpectrogramAnalysisNode', annotationCampaigns: { __typename?: 'AnnotationCampaignNodeConnection', edges: Array<{ __typename?: 'AnnotationCampaignNodeEdge', node?: { __typename?: 'AnnotationCampaignNode', isArchived: boolean } | null } | null> } } | null } | { __typename: 'DatasetStorageNode', name: string, path: string, importStatus: Types.ImportStatus, error?: string | null, stack?: string | null, model?: { __typename?: 'DatasetNode', id: string, annotationCampaigns: { __typename?: 'AnnotationCampaignNodeConnection', edges: Array<{ __typename?: 'AnnotationCampaignNodeEdge', node?: { __typename?: 'AnnotationCampaignNode', isArchived: boolean } | null } | null> } } | null } | { __typename: 'FolderNode', name: string, path: string, error?: string | null, stack?: string | null } | null> | null };
 
 export type SearchStorageQueryVariables = Types.Exact<{
   path: Types.Scalars['String']['input'];
 }>;
 
 
-export type SearchStorageQuery = { __typename?: 'Query', search?: { __typename: 'AnalysisStorageNode', name: string, path: string, importStatus: Types.ImportStatus, model?: { __typename?: 'SpectrogramAnalysisNode', annotationCampaigns: { __typename?: 'AnnotationCampaignNodeConnection', edges: Array<{ __typename?: 'AnnotationCampaignNodeEdge', node?: { __typename?: 'AnnotationCampaignNode', isArchived: boolean } | null } | null> } } | null } | { __typename: 'DatasetStorageNode', name: string, path: string, importStatus: Types.ImportStatus, model?: { __typename?: 'DatasetNode', id: string, annotationCampaigns: { __typename?: 'AnnotationCampaignNodeConnection', edges: Array<{ __typename?: 'AnnotationCampaignNodeEdge', node?: { __typename?: 'AnnotationCampaignNode', isArchived: boolean } | null } | null> } } | null } | { __typename: 'FolderNode', name: string, path: string } | null };
+export type SearchStorageQuery = { __typename?: 'Query', search?: { __typename: 'AnalysisStorageNode', name: string, path: string, importStatus: Types.ImportStatus, model?: { __typename?: 'SpectrogramAnalysisNode', annotationCampaigns: { __typename?: 'AnnotationCampaignNodeConnection', edges: Array<{ __typename?: 'AnnotationCampaignNodeEdge', node?: { __typename?: 'AnnotationCampaignNode', isArchived: boolean } | null } | null> } } | null } | { __typename: 'DatasetStorageNode', name: string, path: string, importStatus: Types.ImportStatus, error?: string | null, stack?: string | null, model?: { __typename?: 'DatasetNode', id: string, annotationCampaigns: { __typename?: 'AnnotationCampaignNodeConnection', edges: Array<{ __typename?: 'AnnotationCampaignNodeEdge', node?: { __typename?: 'AnnotationCampaignNode', isArchived: boolean } | null } | null> } } | null } | { __typename: 'FolderNode', name: string, path: string, error?: string | null, stack?: string | null } | null };
 
 export type ImportDatasetFromStorageMutationVariables = Types.Exact<{
   datasetPath: Types.Scalars['String']['input'];
@@ -31,6 +31,8 @@ export const BrowseStorageDocument = `
       __typename
       name
       path
+      error
+      stack
     }
     ... on DatasetStorageNode {
       __typename
@@ -47,6 +49,8 @@ export const BrowseStorageDocument = `
           }
         }
       }
+      error
+      stack
     }
     ... on AnalysisStorageNode {
       __typename
@@ -73,6 +77,8 @@ export const SearchStorageDocument = `
       __typename
       name
       path
+      error
+      stack
     }
     ... on DatasetStorageNode {
       __typename
@@ -89,6 +95,8 @@ export const SearchStorageDocument = `
           }
         }
       }
+      error
+      stack
     }
     ... on AnalysisStorageNode {
       __typename

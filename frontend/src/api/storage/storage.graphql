@@ -4,6 +4,8 @@ query browseStorage($path: String!) {
             __typename
             name
             path
+            error
+            stack
         }
         ... on DatasetStorageNode {
             __typename
@@ -20,6 +22,8 @@ query browseStorage($path: String!) {
                     }
                 }
             }
+            error
+            stack
         }
         ... on AnalysisStorageNode {
             __typename
@@ -45,6 +49,8 @@ query searchStorage($path: String!) {
             __typename
             name
             path
+            error
+            stack
         }
         ... on DatasetStorageNode {
             __typename
@@ -61,6 +67,8 @@ query searchStorage($path: String!) {
                     }
                 }
             }
+            error
+            stack
         }
         ... on AnalysisStorageNode {
             __typename

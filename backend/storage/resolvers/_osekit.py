@@ -1,4 +1,5 @@
 import csv
+import traceback
 from pathlib import PureWindowsPath, Path
 from typing import TypedDict
 
@@ -193,6 +194,8 @@ class OSEkitResolver(AbstractResolver):
     __dataset: OSEkitDataset | None = None
     __spectro_dataset: SpectroDataset | None = None
 
+    __error: tuple[Exception, str] = ()
+
     @property
     def spectro_dataset(self) -> SpectroDataset | None:
         return self.__spectro_dataset
@@ -202,13 +205,15 @@ class OSEkitResolver(AbstractResolver):
         self.__legacy = OSEkitLegacyResolver(storage)
         super().__init__(storage.path)
 
-        self.__dataset, self._is_legacy = self._get_osekit_dataset(self.path, deep=True)
+        self.__dataset, self._is_legacy, self.__error = self._get_osekit_dataset(
+            self.path, deep=True
+        )
         if self.__dataset:
             self.__spectro_dataset = self.__get_spectro_dataset(self.path)
 
     def _get_osekit_dataset(
         self, path: str | None = None, deep: bool = False
-    ) -> tuple[OSEkitDataset | None, bool]:
+    ) -> tuple[OSEkitDataset | None, bool, tuple[Exception, str] | None]:
         path = path or self.path
         json_path = join(path, "dataset.json")
         if exists(json_path):
@@ -216,17 +221,18 @@ class OSEkitResolver(AbstractResolver):
                 return (
                     OSEkitDataset.from_json(Path(make_absolute_server(json_path))),
                     False,
+                    None,
                 )
-            except FileNotFoundError:
-                pass
+            except FileNotFoundError as e:
+                return None, False, (e, traceback.format_exc())
         d = self.__legacy.get_osekit_dataset(path)
         if d:
-            return d, True
+            return d, True, None
         if deep and not is_local_root(path):
             return self._get_osekit_dataset(
                 clean_path(PureWindowsPath(path).parent), deep=True
             )
-        return None, False
+        return None, False, None
 
     def get_all_spectro_dataset(
         self, dataset_path: str | None = None
@@ -257,9 +263,13 @@ class OSEkitResolver(AbstractResolver):
     def get_dataset(self, path: str | None = None) -> StorageDataset | StorageFolder:
         if path is None:
             dataset = self.__dataset
+            error = self.__error
         else:
-            dataset = self._get_osekit_dataset(path)[0]
-        print("OSEkitResolver.get_dataset", path, dataset)
+            dataset, _, error = self._get_osekit_dataset(path=path)
+        if error is not None:
+            return StorageDataset(
+                path=make_path_relative(path), error=str(error[0]), stack=error[1]
+            )
         if dataset is None:
             return self.__storage.get_dataset(path)
 

@@ -62,10 +62,29 @@ export const useToast = () => {
         ],
       }).catch(console.warn);
     });
-  }, [])
+  }, [present, dismiss])
+
+  const presentInfo = useCallback((message: string): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      present({
+        message,
+        color: 'primary',
+        duration: 3_000,
+        buttons: [
+          {
+            icon: closeCircle, handler: () => {
+              resolve(false)
+              dismiss();
+            },
+          },
+        ],
+      }).catch(console.warn);
+    });
+  }, [present, dismiss])
 
   return {
     raiseError,
+    presentInfo,
     presentSuccess,
     dismiss: () => {
       dismiss().catch(console.warn)

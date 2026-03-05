@@ -1,7 +1,7 @@
 import React, { Fragment, type MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { ImportStatus, type StorageDataset, useImportDatasetFromStorage } from '@/api';
 import { IonButton, IonNote, IonSpinner } from '@ionic/react';
-import { TooltipOverlay, useToast } from '@/components/ui';
+import { CopyErrorStackButton, TooltipOverlay, useToast } from '@/components/ui';
 import { AltArrowDown, AltArrowRight, CheckRead, FolderFavouriteStar, InfoCircle, Unread } from '@solar-icons/react';
 import { DatasetName } from '@/features/Dataset';
 import styles from './styles.module.scss';
@@ -15,14 +15,14 @@ export const DatasetItem: React.FC<{
 }> = ({ dataset, fixedOpen, onUpdated, search }) => {
     const [ isOpen, setIsOpen ] = useState<boolean>(fixedOpen || false);
     const toggleOpen = useCallback(() => {
-        if (fixedOpen) return;
+        if (fixedOpen || dataset.error) return;
         setIsOpen(prev => !prev);
-    }, [ setIsOpen, fixedOpen ])
+    }, [ setIsOpen, fixedOpen, dataset ])
 
     const { importDataset, isLoading, error } = useImportDatasetFromStorage()
     const toast = useToast()
     const canImport = useMemo(() => {
-        return !isLoading && (dataset.importStatus === ImportStatus.Partial || dataset.importStatus === ImportStatus.Available);
+        return !isLoading && (dataset.importStatus === ImportStatus.Partial || dataset.importStatus === ImportStatus.Available) && !dataset.error;
     }, [ dataset, isLoading ])
     const download = useCallback((event: MouseEvent) => {
         event.stopPropagation()
@@ -48,9 +48,17 @@ export const DatasetItem: React.FC<{
             .filter(n => !!n && !n.isArchived) ?? []
         if (campaigns.length > 0)
             return <TooltipOverlay tooltipContent={ `Dataset is currently used in ${ campaigns.length } campaigns.` }>
-                <InfoCircle size={ 24 } color='medium'/>
+                <InfoCircle size={ 24 } color="medium"/>
             </TooltipOverlay>
         return <Fragment/>
+    }, [ dataset ])
+
+    const errorInfo = useMemo(() => {
+        if (!dataset.error) return <Fragment/>
+        return <Fragment>
+            <IonNote color="danger">{ dataset.error }</IonNote>
+            <CopyErrorStackButton stack={ dataset.stack }/>
+        </Fragment>
     }, [ dataset ])
 
     useEffect(() => {
@@ -68,10 +76,11 @@ export const DatasetItem: React.FC<{
             <DatasetName name={ dataset.name } id={ dataset.model?.id } link/>
             { importStatusIcon }
             { inUseWarning }
-            { !fixedOpen && <IonNote>{ isOpen ? <AltArrowDown/> : <AltArrowRight/> }</IonNote> }
+            { !fixedOpen && !dataset.error && <IonNote>{ isOpen ? <AltArrowDown/> : <AltArrowRight/> }</IonNote> }
             { canImport && <IonButton size="small" fill="outline" onClick={ download }>
                 Import
             </IonButton> }
+            { errorInfo }
         </div>
 
         { isOpen && <ItemList search={ search } parentNode={ dataset } onUpdated={ onUpdated }/> }

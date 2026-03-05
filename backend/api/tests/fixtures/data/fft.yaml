@@ -4,7 +4,7 @@
     nfft: 4096
     window_size: 2000
     overlap: 0.9
-    sampling_frequency: 128000.0
+    sampling_frequency: 480.0
     legacy: true
 
 - model: api.fft
@@ -13,5 +13,5 @@
     nfft: 2048
     window_size: 1000
     overlap: 0.9
-    sampling_frequency: 128000.0
+    sampling_frequency: 480.0
     legacy: true

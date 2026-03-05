@@ -83,7 +83,6 @@ class ImportDatasetTestCase(ExtendedTestCase):
             user=User.objects.get(username="staff"),
         )
         self.assertResponseNoErrors(response)
-        print(json.loads(response.content))
         content = json.loads(response.content)["data"]["importDataset"]
         self.assertIsNotNone(content["dataset"])
 

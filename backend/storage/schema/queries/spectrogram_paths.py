@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 
 from backend.api.models import Spectrogram, SpectrogramAnalysis
-from backend.storage.resolvers import Resolver
+from backend.storage.model_resolvers import Resolver
 from backend.storage.utils import join
 
 
@@ -27,8 +27,8 @@ def resolve_paths(root, info, spectrogram_id: int, analysis_id: int):
 
     resolver = Resolver(join(analysis.dataset.path, analysis.path))
     return SpectrogramPathsNode(
-        audio_path=resolver.get_audio_path(spectrogram),
-        spectrogram_path=resolver.get_spectrogram_path(spectrogram),
+        audio_path=resolver.get_audio_path(spectrogram, analysis),
+        spectrogram_path=resolver.get_spectrogram_path(spectrogram, analysis),
     )
 
 

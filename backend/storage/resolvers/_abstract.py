@@ -23,7 +23,6 @@ class AbstractResolver:
 
     def get_dataset(self, path: str | None = None) -> StorageDataset | StorageFolder:
         """Returns dataset or folder from storage"""
-        print("AbstractResolver.get_dataset", path, self.path)
         return StorageFolder(path=path or self.path)
 
     def get_analysis(self, path: str | None = None) -> StorageAnalysis | None:

@@ -52,7 +52,6 @@ class Resolver(AbstractResolver):
         super().__init__(path)
 
     def get_dataset(self, path: str | None = None) -> StorageDataset | StorageFolder:
-        print("\nResolver.get_dataset", path)
         return self.__model.get_dataset(path=path)
 
     def get_analysis(self, path: str | None = None) -> StorageAnalysis | None:

@@ -71,7 +71,6 @@ class ModelResolver(AbstractResolver):
         else:
             dataset = self.__get_dataset_model(path)
 
-        print("ModelResolver.get_dataset", path, dataset)
         if dataset is None:
             return self.__osekit.get_dataset(path)
 
@@ -106,7 +105,7 @@ class ModelResolver(AbstractResolver):
         analysis = __analysis
 
         if analysis is None:
-            return self.__osekit.get_analysis(spectro_dataset)
+            return self.__osekit.get_analysis(spectro_dataset=spectro_dataset)
 
         return StorageAnalysis(
             name=analysis.name,

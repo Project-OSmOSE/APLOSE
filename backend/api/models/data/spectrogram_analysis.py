@@ -191,6 +191,31 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
             )
         )
 
+    def add_spectrograms(self, spectrograms: list["Spectrogram"]):
+        """Add spectrogram objects to current analysis"""
+        self.spectrograms.bulk_create(
+            spectrograms, ignore_conflicts=True, batch_size=100
+        )
+        self.spectrograms.through.objects.bulk_create(
+            [
+                self.spectrograms.through(
+                    spectrogram=self.spectrograms.model.objects.get(
+                        filename=spectrogram.filename,
+                        format=spectrogram.format,
+                        start=spectrogram.start,
+                        end=spectrogram.end,
+                    ),
+                    spectrogramanalysis=self,
+                )
+                for spectrogram in spectrograms
+            ]
+        )
+
+        info = self.spectrograms.aggregate(start=Min("start"), end=Max("end"))
+        self.start = info["start"]
+        self.end = info["end"]
+        self.save()
+
     def update_dates(self):
         """Update start and end dates based on spectrogram data"""
         info = self.spectrograms.aggregate(start=Min("start"), end=Max("end"))

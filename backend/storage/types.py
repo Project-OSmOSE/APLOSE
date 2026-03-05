@@ -1,3 +1,4 @@
+import traceback
 from enum import Enum
 from pathlib import PureWindowsPath
 
@@ -89,6 +90,37 @@ class StorageAnalysis(Folder):
         )
 
 
+class FailedItem:
+    path: str
+    error: Exception
+    stacktrace: str
+
+    @property
+    def name(self) -> str:
+        return PureWindowsPath(self.path).name
+
+    def __init__(self, path: str, error: Exception):
+        self.path = path
+        self.error = error
+        self.stacktrace = traceback.format_exc()
+
+    @property
+    def __storage_options(self) -> dict:
+        return {
+            "path": self.path,
+            "name": PureWindowsPath(self.path).name,
+            "import_status": ImportStatus.Unavailable,
+            "error": str(self.error),
+            "stack": self.stacktrace,
+        }
+
+    def to_storage_dataset(self) -> StorageDataset:
+        return StorageDataset(**self.__storage_options)
+
+    def to_storage_analysis(self) -> StorageAnalysis:
+        return StorageAnalysis(**self.__storage_options)
+
+
 StorageItem = StorageFolder | StorageDataset | StorageAnalysis
 
 __all__ = [
@@ -97,4 +129,5 @@ __all__ = [
     "StorageAnalysis",
     "StorageItem",
     "ImportStatus",
+    "FailedItem",
 ]

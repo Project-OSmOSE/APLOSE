@@ -63,6 +63,8 @@ class SpectroDataset:
     begin: Timestamp
     end: Timestamp
 
+    __name__ = "type"
+
     def __init__(
         self,
         folder: Path,

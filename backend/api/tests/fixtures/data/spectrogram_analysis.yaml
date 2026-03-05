@@ -7,7 +7,7 @@
     owner: 1
     path: processed/spectrogram/600_480/4096_512_85
     dataset: 1
-    data_duration: 10.0
+    data_duration: 600.0
     fft: 1
     colormap: 1
     dynamic_min: 0
@@ -25,7 +25,7 @@
     owner: 1
     path: processed/spectrogram/600_480/4096_512_85
     dataset: 1
-    data_duration: 10.0
+    data_duration: 600.0
     fft: 2
     colormap: 1
     dynamic_min: 0
@@ -43,7 +43,7 @@
     owner: 1
     path: processed/spectrogram/600_480/4096_512_85
     dataset: 2
-    data_duration: 10.0
+    data_duration: 600.0
     fft: 2
     colormap: 1
     dynamic_min: 0
