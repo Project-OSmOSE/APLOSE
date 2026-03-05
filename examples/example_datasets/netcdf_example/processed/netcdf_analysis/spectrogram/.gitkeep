@@ -1,3 +1,0 @@
-# This directory will contain NetCDF spectrogram files
-# Run: python examples/generate_netcdf_dataset.py
-# to generate example .nc files in this directory
