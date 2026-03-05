@@ -1,1 +1,1 @@
-from .main import Resolver
+from .main import *
