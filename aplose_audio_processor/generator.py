@@ -61,7 +61,7 @@ class AploseAudioProcessor:
             db_ref: Reference value for dB conversion (default: 1.0). Ignored if db_fullscale is set.
             db_fullscale: dB re 1 µPa value corresponding to digital full scale (max WAV value).
                          When set, output is calibrated to dB re 1 µPa. Takes precedence over db_ref.
-            normalize_audio: If True, normalize audio to [-1, 1] before computing spectrogram.
+            normalize_audio: If True, divide audio by its mean absolute value before computing spectrogram.
             datetime_format: strptime format to parse datetime from filenames.
                             Common formats:
                             - '%Y%m%d_%H%M%S' for 'prefix_20250130_223000.wav'
@@ -645,9 +645,9 @@ class AploseAudioProcessor:
         """
         # Normalize audio if requested
         if self.normalize_audio:
-            max_val = np.max(np.abs(audio))
-            if max_val > 0:
-                audio = audio / max_val
+            mean_val = np.mean(np.abs(audio))
+            if mean_val > 0:
+                audio = audio / mean_val
 
         # Get window function
         if self.window == 'hann':
