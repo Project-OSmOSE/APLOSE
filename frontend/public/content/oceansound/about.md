@@ -1,15 +1,15 @@
 
 # About
 
-IMR OceanSound is based on the APLOSE platform (https://github.com/Project-OSmOSE/APLOSE) developed at Ifremer. We thank them for sharing their codebase and great ideas. APLOSE (Annotation Platform for Ocean Sound Exploration) was modified and implemented at IMR by Sebastian Menze who also manages IMRs passive acoustic monitoring program in the Southern Ocean. 
+IMR OceanSound is based on the APLOSE platform ([https://github.com/Project-OSmOSE/APLOSE](https://github.com/Project-OSmOSE/APLOSE)) developed at Ifremer. We thank them for sharing their codebase and great ideas. APLOSE (Annotation Platform for Ocean Sound Exploration) was modified and implemented at IMR by Sebastian Menze who also manages IMRs passive acoustic monitoring program in the Southern Ocean. 
 
 This portal is running as docker container, the modified APLOSE codebase can be found here: https://github.com/sebastianmenze/APLOSE-IMR
 
 ## Contact
 
 For questions about the OceanSound portal and passive acoustic data analysis, please contact sebastian.menze@imr.no.
-![Description of image](/images/home/smenze.jpg)
 
+[https://github.com/sebastianmenze/APLOSE-IMR](https://github.com/sebastianmenze/APLOSE-IMR)
 
 ## Our Mission
 
