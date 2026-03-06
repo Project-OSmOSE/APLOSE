@@ -1,7 +1,7 @@
 import graphene
 from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 
-from backend.storage.model_resolvers import Resolver
+from backend.storage.resolvers import Resolver
 from ..union import StorageUnion
 
 

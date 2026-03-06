@@ -9,13 +9,10 @@ from backend.api.models import (
     SpectrogramAnalysis,
     FFT,
     Colormap,
-    LegacySpectrogramConfiguration,
-    LinearScale,
-    MultiLinearScale,
 )
 from backend.api.schema import DatasetNode
 from backend.api.schema.nodes import SpectrogramAnalysisNode
-from backend.storage.model_resolvers import Resolver
+from backend.storage.resolvers import Resolver
 from backend.storage.types import FailedItem
 from backend.storage.utils import join
 
