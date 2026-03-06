@@ -4371,12 +4371,13 @@ union StorageUnion = AnalysisStorageNode | DatasetStorageNode | FolderNode
 type AnalysisStorageNode {
   name: String!
   path: String!
-  importStatus: ImportStatus!
+  importStatus: ImportStatusEnum!
   model: SpectrogramAnalysisNode
+  error: String
+  stack: String
 }
 
-"""An enumeration."""
-enum ImportStatus {
+enum ImportStatusEnum {
   Unavailable
   Available
   Partial
@@ -4386,7 +4387,7 @@ enum ImportStatus {
 type DatasetStorageNode {
   name: String!
   path: String!
-  importStatus: ImportStatus!
+  importStatus: ImportStatusEnum!
   model: DatasetNode
   error: String
   stack: String

@@ -3,12 +3,13 @@ from backend.api.models import (
     SpectrogramAnalysis,
     Spectrogram,
 )
+from backend.storage.models import ImportStatus
 from backend.storage.types import (
     StorageAnalysis,
-    ImportStatus,
     StorageDataset,
     FailedItem,
 )
+from backend.storage.utils import exists, join
 from ._osekit import OSEkitResolver
 
 
@@ -24,12 +25,15 @@ class ModelResolver(OSEkitResolver):
         self, dataset: Dataset
     ) -> list[SpectrogramAnalysis | FailedItem]:
         analysis = []
-        for data in super()._get_all_analysis_for_dataset(dataset=dataset):
-            a = SpectrogramAnalysis.objects.filter(path=data.path).first()
-            if a:
+
+        for a in dataset.spectrogram_analysis.all():
+            if exists(join(dataset.path, a.path)):
                 analysis.append(a)
-            else:
-                analysis.append(data)
+
+        for a in super()._get_all_analysis_for_dataset(dataset=dataset):
+            if not dataset.spectrogram_analysis.filter(path=a.path).exists():
+                analysis.append(a)
+
         return analysis
 
     def _get_storage_analysis_from_spectrogram_analysis(
@@ -38,20 +42,20 @@ class ModelResolver(OSEkitResolver):
         return StorageAnalysis(
             path=analysis.path,
             name=analysis.name,
-            import_status=ImportStatus.Imported
+            import_status=ImportStatus.IMPORTED
             if analysis.pk
-            else ImportStatus.Available,
+            else ImportStatus.AVAILABLE,
             model=analysis if analysis.pk else None,
         )
 
     def _get_storage_dataset_from_dataset(self, dataset: Dataset) -> StorageDataset:
-        status = ImportStatus.Imported
+        status = ImportStatus.IMPORTED
         if dataset.pk is None:
-            status = ImportStatus.Available
+            status = ImportStatus.AVAILABLE
         else:
             for analysis in self.get_all_analysis(path=dataset.path):
                 if analysis.pk is None:
-                    status = ImportStatus.Partial
+                    status = ImportStatus.PARTIAL
                     break
         return StorageDataset(
             name=dataset.name,

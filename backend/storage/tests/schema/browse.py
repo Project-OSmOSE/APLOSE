@@ -132,7 +132,7 @@ class BrowseTestCase(ExtendedTestCase):
 
         content = json.loads(response.content)["data"]["browse"]
         self.assertEqual(len(content), 1)
-        self.assertEqual(content[0]["name"], "4096_512_85")
+        self.assertEqual(content[0]["name"], "600_480/4096_512_85")
         self.assertEqual(
             content[0]["path"],
             "processed/spectrogram/600_480/4096_512_85",

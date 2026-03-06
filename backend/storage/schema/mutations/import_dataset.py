@@ -6,7 +6,6 @@ from graphene import Mutation, String
 from graphql import GraphQLError
 
 from backend.api.models import (
-    SpectrogramAnalysis,
     FFT,
     Colormap,
 )
@@ -43,18 +42,17 @@ class ImportDatasetMutation(Mutation):
             resolver.dataset.owner = info.context.user
         resolver.dataset.save()
 
-        if analysis_path:
-            if not resolver.analysis:
-                raise GraphQLError("Analysis not found")
-            if isinstance(resolver.analysis, FailedItem):
-                raise GraphQLError(
-                    str(resolver.analysis.error), original_error=resolver.analysis.error
-                )
-            analysis = [resolver.analysis]
-        else:
-            analysis = [
-                a for a in resolver.all_analysis if isinstance(a, SpectrogramAnalysis)
-            ]
+        analysis = []
+        for a in resolver.get_all_analysis(detailed=True):
+            if analysis_path and a.path == analysis_path:
+                if isinstance(a, FailedItem):
+                    raise GraphQLError(str(a.error), original_error=a.error)
+                analysis.append(a)
+                continue
+            if isinstance(a, FailedItem):
+                continue
+            if not analysis_path:
+                analysis.append(a)
 
         for sa in analysis:
             if sa.pk is not None:

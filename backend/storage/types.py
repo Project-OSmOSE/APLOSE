@@ -1,15 +1,8 @@
 import traceback
-from enum import Enum
 from pathlib import PureWindowsPath
 
 from backend.api.models import Dataset, SpectrogramAnalysis
-
-
-class ImportStatus(Enum):
-    Unavailable = -1
-    Available = 0
-    Partial = 1
-    Imported = 2
+from backend.storage.models import ImportStatus
 
 
 class Folder:
@@ -43,14 +36,14 @@ class StorageDataset(Folder):
     def __init__(
         self,
         path: str,
-        import_status: ImportStatus = ImportStatus.Available,
+        import_status: ImportStatus = ImportStatus.AVAILABLE,
         model: type[Dataset] | None = None,
         name: str | None = None,
         error: str | None = None,
         stack: str | None = None,
     ):
         super().__init__(path, name, error, stack)
-        self.import_status = import_status
+        self.import_status = import_status.value
         self.model = model
 
     @staticmethod
@@ -70,14 +63,14 @@ class StorageAnalysis(Folder):
     def __init__(
         self,
         path: str,
-        import_status: ImportStatus = ImportStatus.Available,
+        import_status: ImportStatus = ImportStatus.AVAILABLE,
         model: type[SpectrogramAnalysis] | None = None,
         name: str | None = None,
         error: str | None = None,
         stack: str | None = None,
     ):
         super().__init__(path, name, error, stack)
-        self.import_status = import_status
+        self.import_status = import_status.value
         self.model = model
 
     @staticmethod
@@ -85,22 +78,20 @@ class StorageAnalysis(Folder):
         return StorageAnalysis(
             name=model.name,
             path=model.path,
-            import_status=ImportStatus.Imported,
+            import_status=ImportStatus.IMPORTED,
             model=model,
         )
 
 
 class FailedItem:
     path: str
+    name: str
     error: Exception
     stacktrace: str
 
-    @property
-    def name(self) -> str:
-        return PureWindowsPath(self.path).name
-
-    def __init__(self, path: str, error: Exception):
+    def __init__(self, path: str, error: Exception, name: str | None = None):
         self.path = path
+        self.name = name if name else PureWindowsPath(self.path).name
         self.error = error
         self.stacktrace = traceback.format_exc()
 
@@ -108,8 +99,8 @@ class FailedItem:
     def __storage_options(self) -> dict:
         return {
             "path": self.path,
-            "name": PureWindowsPath(self.path).name,
-            "import_status": ImportStatus.Unavailable,
+            "name": self.name,
+            "import_status": ImportStatus.UNAVAILABLE,
             "error": str(self.error),
             "stack": self.stacktrace,
         }

@@ -1,18 +1,16 @@
-import React, { Fragment, useMemo } from 'react';
-import { type StorageItem, useBrowseStorage, useStorageBrowse, useStorageSearch } from '@/api';
+import React, { useMemo } from 'react';
+import { type StorageItem, useBrowseStorage, useStorageBrowse } from '@/api';
 import { IonNote, IonSpinner } from '@ionic/react';
 import { GraphQLErrorText, WarningText } from '@/components/ui';
 import styles from './styles.module.scss';
-import { AnalysisItem } from './AnalysisItem';
-import { FolderItem } from './FolderItem';
-import { DatasetItem } from './DatasetItem';
+import { Item } from './Item';
 
 export const ItemList: React.FC<{
     parentNode?: StorageItem,
     search?: string,
     onUpdated?: () => void
 }> = ({ parentNode, search, onUpdated }) => {
-    const { isLoading, error } = useBrowseStorage({ path: parentNode?.path })
+    const { isLoading, error } = useBrowseStorage({ path: parentNode?.path ?? '' })
     const subfolders = useStorageBrowse(parentNode?.path)
 
     return useMemo(() => {
@@ -23,41 +21,10 @@ export const ItemList: React.FC<{
         return <div className={ styles.list }>
             { subfolders.map((node, index) =>
                 <Item key={ index } onUpdated={ onUpdated }
-                      parentNode={ parentNode }
+                      parentItem={ parentNode }
                       search={ search }
                       path={ node.path }/>,
             ) }
         </div>
     }, [ isLoading, error, subfolders, onUpdated, parentNode, search ])
-}
-
-export const Item: React.FC<{
-    parentNode?: StorageItem,
-    path: string,
-    search?: string,
-    onUpdated?: () => void,
-    fixedOpen?: boolean;
-}> = ({ path, parentNode, onUpdated, search, fixedOpen }) => {
-    const item = useStorageSearch(path)
-
-    return useMemo(() => {
-        if (!item) return <Fragment/>
-        switch (item.__typename) {
-            case 'FolderNode':
-                return <FolderItem folder={ item }
-                                   search={ search }
-                                   onUpdated={ onUpdated }
-                                   fixedOpen={ fixedOpen }/>
-            case 'DatasetStorageNode':
-                return <DatasetItem dataset={ item }
-                                    search={ search }
-                                    onUpdated={ onUpdated }
-                                    fixedOpen={ fixedOpen }/>
-            case 'AnalysisStorageNode':
-                return <AnalysisItem dataset={ parentNode! }
-                                     analysis={ item }
-                                     search={ search }
-                                     onUpdated={ onUpdated }/>
-        }
-    }, [ item, parentNode, onUpdated, search, fixedOpen ])
 }

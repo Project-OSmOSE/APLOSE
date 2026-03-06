@@ -75,4 +75,4 @@ def listdir(path: _Path) -> list[str]:
 def is_local_root(path: _Path) -> bool:
     """If path is a local root"""
     path = clean_path(path)
-    return path == "" or path == "." or path == "/"
+    return path in ("", ".", "/")

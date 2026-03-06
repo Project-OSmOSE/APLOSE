@@ -197,7 +197,7 @@ class ImportDatasetTestCase(ExtendedTestCase):
             "pk"
         ).last()
         self.assertEqual(content["analysis"]["id"], str(analysis.id))
-        self.assertEqual(analysis.name, "4096_512_85")
+        self.assertEqual(analysis.name, "600_480/4096_512_85")
         self.assertEqual(analysis.path, "processed/spectrogram/600_480/4096_512_85")
         self.assertTrue(analysis.legacy)
 

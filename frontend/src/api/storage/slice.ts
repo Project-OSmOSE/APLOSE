@@ -76,7 +76,7 @@ const selectParents = createSelector(state => state, StorageSlice.selectors.sele
 const selectInvalidatedPath = createSelector(state => state, StorageSlice.selectors.selectInvalidatedPath)
 const selectInvalidatedListPath = createSelector(state => state, StorageSlice.selectors.selectInvalidatedListPath)
 
-export const useStorageSearch = (path: string) => {
+export const useStorageSearch = (path: string): StorageItem | undefined => {
     const record = useAppSelector(selectRecord)
     const invalidatedPath = useAppSelector(selectInvalidatedPath)
 

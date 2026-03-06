@@ -21,7 +21,9 @@ export const StorageBrowser: React.FC = () => {
               }/>
 
         <div className={ styles.content }>
-            <ServerItem name="datawork/datasets"/>
+            <div className={ styles.inner }>
+                <ServerItem name="datawork/datasets"/>
+            </div>
         </div>
         <IonNote>
             Are available for import:

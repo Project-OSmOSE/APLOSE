@@ -109,7 +109,7 @@ class LegacyOSEkitResolver(StorageResolver):
         csv_datasets = self.__get_related_csv_datasets(path)
         if len(csv_datasets) == 0:
             return super()._get_dataset_for_path(path=path)
-        elif len(csv_datasets) == 1:
+        if len(csv_datasets) == 1:
             return Dataset(
                 name=csv_datasets[0]["dataset"],
                 path=csv_datasets[0]["path"],
@@ -125,6 +125,7 @@ class LegacyOSEkitResolver(StorageResolver):
     def _get_all_analysis_for_dataset(
         self, dataset: Dataset
     ) -> list[SpectrogramAnalysis | FailedItem]:
+        # pylint: disable=broad-exception-caught
         csv_datasets = self.__get_related_csv_datasets(dataset.path)
         analysis: list[SpectrogramAnalysis | FailedItem] = []
         for line in csv_datasets:
@@ -147,6 +148,8 @@ class LegacyOSEkitResolver(StorageResolver):
                 continue
 
             for folder in listdir(base_folder):
+                pwp = PureWindowsPath(folder)
+                name = f"{pwp.parent.name}/{pwp.name}"
                 try:
                     spectro_metadata_csv = join(folder, "metadata.csv")
                     with open_file(spectro_metadata_csv) as csvfile:
@@ -155,12 +158,12 @@ class LegacyOSEkitResolver(StorageResolver):
                             csv.DictReader(csvfile)
                         )
                 except Exception as e:
-                    analysis.append(FailedItem(path=folder, error=e))
+                    analysis.append(FailedItem(path=folder, name=name, error=e))
                     continue
 
                 analysis.append(
                     SpectrogramAnalysis(
-                        name=PureWindowsPath(folder).name,
+                        name=name,
                         path=make_path_relative(folder, to=dataset.path),
                         legacy=True,
                         start=min(i["timestamp"] for i in timestamps),
@@ -299,25 +302,26 @@ class LegacyOSEkitResolver(StorageResolver):
             audio_files_subtypes=literal_eval(audio["sample_bits"]),
             channel_count=int(audio["channel_count"]),
         )
+        return None
 
-    def get_spectrogram_path(
+    def get_spectrogram_paths(
         self, spectrogram: Spectrogram, analysis: SpectrogramAnalysis
-    ) -> str | None:
-        return make_static_url(
-            join(
-                analysis.dataset.path, analysis.path, f"{spectrogram.filename}_1_0.png"
-            )
-        )
-
-    def get_audio_path(
-        self, spectrogram: Spectrogram, analysis: SpectrogramAnalysis
-    ) -> str | None:
+    ) -> tuple[str | None, str | None]:
         config = f"{int(analysis.data_duration)}_{analysis.fft.sampling_frequency}"
-        return make_static_url(
-            join(
-                analysis.dataset.path,
-                "data/audio",
-                config,
-                f"{spectrogram.filename}.wav",
-            )
+        return (
+            make_static_url(
+                join(
+                    analysis.dataset.path,
+                    "data/audio",
+                    config,
+                    f"{spectrogram.filename}.wav",
+                )
+            ),
+            make_static_url(
+                join(
+                    analysis.dataset.path,
+                    analysis.path,
+                    f"{spectrogram.filename}_1_0.png",
+                )
+            ),
         )

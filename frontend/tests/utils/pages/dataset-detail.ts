@@ -28,7 +28,7 @@ class ImportAnalysis {
   }
 
   get importButton(): Locator {
-    return this.modal.getByRole('button', { name: 'Import' }).first()
+    return this.modal.getByRole('button', { name: 'Import' }).last()
   }
 
   constructor(private page: Page) {

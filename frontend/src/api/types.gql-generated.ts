@@ -110,10 +110,12 @@ export type AcousticFeaturesNode = ExtendedInterface & {
 
 export type AnalysisStorageNode = {
   __typename?: 'AnalysisStorageNode';
-  importStatus: ImportStatus;
+  error?: Maybe<Scalars['String']['output']>;
+  importStatus: ImportStatusEnum;
   model?: Maybe<SpectrogramAnalysisNode>;
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
+  stack?: Maybe<Scalars['String']['output']>;
 };
 
 export type AnnotationAcousticFeaturesSerializerInput = {
@@ -2116,7 +2118,7 @@ export type DatasetNodeNodeConnection = {
 export type DatasetStorageNode = {
   __typename?: 'DatasetStorageNode';
   error?: Maybe<Scalars['String']['output']>;
-  importStatus: ImportStatus;
+  importStatus: ImportStatusEnum;
   model?: Maybe<DatasetNode>;
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
@@ -2932,8 +2934,7 @@ export type ImportDatasetMutation = {
   dataset: DatasetNode;
 };
 
-/** An enumeration. */
-export enum ImportStatus {
+export enum ImportStatusEnum {
   Available = 'Available',
   Imported = 'Imported',
   Partial = 'Partial',
