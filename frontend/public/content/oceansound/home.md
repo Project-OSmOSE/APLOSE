@@ -19,7 +19,7 @@ Powerful tools for visualizing spectrograms and annotating acoustic events with 
 
 ## Getting Started
 
-1. **Create an Account** - Request access to the APLOSE annotation platform by contacting the administrator (sebastian.menze@hi.no).
+1. **Create an Account** - Request access to the APLOSE annotation platform by contacting the administrator (sebastian.menze@imr.no).
 2. **Join a Campaign** - Participate in annotation campaigns organized by research teams.
 3. **Annotate Sounds** - Use our spectrogram tools to identify and label acoustic events.
 4. **Contribute to Science** - Your annotations help build datasets for marine research and conservation.
