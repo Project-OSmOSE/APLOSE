@@ -9,7 +9,7 @@ from osekit.utils.timestamp_utils import strptime_from_text
 from pandas import Timestamp, Timedelta
 from scipy.signal import ShortTimeFFT
 
-from backend.storage.utils import make_path_relative, clean_path
+from backend.storage.utils import make_path_relative, clean_path, make_absolute_server
 
 
 class TFile:
@@ -204,6 +204,6 @@ class OSEkitDataset:
                 }
 
             return OSEkitDataset(
-                folder=Path(d["folder"]),
+                folder=Path(make_absolute_server(make_path_relative(d["folder"]))),
                 datasets=datasets,
             )
