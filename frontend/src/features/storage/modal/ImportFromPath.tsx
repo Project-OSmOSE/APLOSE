@@ -2,7 +2,15 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useSearchStorage } from '@/api';
 import { useAppDispatch } from '@/features/App';
 import { gqlAPI } from '@/api/baseGqlApi';
-import { Button, HelpButton, Modal, ModalFooter, ModalHeader, type ModalProps, WarningText } from '@/components/ui';
+import {
+    Button,
+    GraphQLErrorText,
+    HelpButton,
+    Modal,
+    ModalFooter,
+    ModalHeader,
+    type ModalProps,
+} from '@/components/ui';
 import { Item } from '@/features/storage';
 import { Searchbar } from '@/components/form';
 import { IonNote, IonSpinner } from '@ionic/react';
@@ -18,7 +26,7 @@ export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
     const updateSearch = useCallback((value: string) => {
         setSearch(value)
         if (!value) setSearchQuery(undefined)
-    }, [setSearch, setSearchQuery])
+    }, [ setSearch, setSearchQuery ])
 
     const { item, isLoading, error } = useSearchStorage({ path: searchQuery ?? '' }, { skip: !searchQuery })
     const dispatch = useAppDispatch();
@@ -28,8 +36,8 @@ export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
     }, [ dispatch ])
 
     const content = useMemo(() => {
-        if (isLoading) return <IonSpinner />
-        if (error) return <WarningText error={ error } />
+        if (isLoading) return <IonSpinner/>
+        if (error) return <GraphQLErrorText error={ error }/>
         if (!searchQuery) return <IonNote>
             You can search for the exact path of:
             <ul>
@@ -39,8 +47,8 @@ export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
             </ul>
         </IonNote>
         if (!item) return <IonNote>Not found</IonNote>
-        return <Item path={ item.path } fixedOpen onUpdated={ invalidateStorage }/>
-    }, [isLoading, error, item, searchQuery, invalidateStorage])
+        return <Item path={ item.path } forceOpen onUpdated={ invalidateStorage }/>
+    }, [ isLoading, error, item, searchQuery, invalidateStorage ])
 
     return (
         <Modal onClose={ onClose }>

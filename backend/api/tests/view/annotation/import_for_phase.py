@@ -132,7 +132,7 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.assertEqual(annotation_2.start_time, 0)
         self.assertEqual(annotation_2.end_time, 10 * 60)
         self.assertEqual(annotation_2.start_frequency, 0)
-        self.assertEqual(annotation_2.end_frequency, 64_000)
+        self.assertEqual(annotation_2.end_frequency, 240)
         self.assertEqual(annotation_2.type, Annotation.Type.BOX)
 
     def __check_point_annotation(self, annotation: Annotation, phase_id: int):
@@ -142,7 +142,7 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.assertEqual(annotation.type, Annotation.Type.POINT)
         self.assertEqual(annotation.start_time, 0.8)
         self.assertEqual(annotation.end_time, None)
-        self.assertEqual(annotation.start_frequency, 32416)
+        self.assertEqual(annotation.start_frequency, 100)
         self.assertEqual(annotation.end_frequency, None)
 
     def __check_box_one_file_annotation(self, annotation: Annotation, phase_id: int):
@@ -151,8 +151,8 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.assertEqual(annotation.spectrogram_id, 1)
         self.assertEqual(annotation.start_time, 0.8)
         self.assertEqual(annotation.end_time, 1.8)
-        self.assertEqual(annotation.start_frequency, 32416)
-        self.assertEqual(annotation.end_frequency, 53916)
+        self.assertEqual(annotation.start_frequency, 100)
+        self.assertEqual(annotation.end_frequency, 200)
         self.assertEqual(annotation.type, Annotation.Type.BOX)
 
     def __check_box_two_files_annotation(
@@ -164,8 +164,8 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.assertEqual(annotation_1.spectrogram_id, 1)
         self.assertEqual(annotation_1.start_time, 0.8)
         self.assertEqual(annotation_1.end_time, 15 * 60)
-        self.assertEqual(annotation_1.start_frequency, 32416)
-        self.assertEqual(annotation_1.end_frequency, 53916)
+        self.assertEqual(annotation_1.start_frequency, 100)
+        self.assertEqual(annotation_1.end_frequency, 200)
         self.assertEqual(annotation_1.type, Annotation.Type.BOX)
         annotation_2: Annotation = annotations.exclude(id=annotation_1.id).first()
         self.__check_global_result(annotation_2)
@@ -173,8 +173,8 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.assertEqual(annotation_2.spectrogram_id, 2)
         self.assertEqual(annotation_2.start_time, 0)
         self.assertEqual(annotation_2.end_time, 8)
-        self.assertEqual(annotation_2.start_frequency, 32416)
-        self.assertEqual(annotation_2.end_frequency, 53916)
+        self.assertEqual(annotation_2.start_frequency, 100)
+        self.assertEqual(annotation_2.end_frequency, 200)
         self.assertEqual(annotation_2.type, Annotation.Type.BOX)
 
     def tearDown(self):

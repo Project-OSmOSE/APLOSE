@@ -1,47 +1,79 @@
 import graphene
-from django.conf import settings
 from django.db import transaction
+from django.forms import model_to_dict
 from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from graphene import Mutation, String
+from graphql import GraphQLError
 
-from backend.api.models import Dataset
+from backend.api.models import (
+    FFT,
+    Colormap,
+)
 from backend.api.schema import DatasetNode
-from backend.storage.schema.resolver import Dataset as DatasetResolver, get_resolver
-from .import_analysis import ImportAnalysisMutation
-
-__all__ = ["ImportDatasetMutationField"]
+from backend.api.schema.nodes import SpectrogramAnalysisNode
+from backend.storage.resolvers import Resolver
+from backend.storage.types import FailedItem
+from backend.storage.utils import join
 
 
 class ImportDatasetMutation(Mutation):
-    """ "Import Dataset mutation"""
+    """ "Import Analysis mutation"""
 
     class Arguments:
-        path = String(required=True)
+        dataset_path = String(required=True)
+        analysis_path = String()
 
     dataset = graphene.Field(DatasetNode, required=True)
+    analysis = graphene.Field(SpectrogramAnalysisNode)
 
     @GraphQLResolve(permission=GraphQLPermissions.STAFF_OR_SUPERUSER)
     @transaction.atomic
-    def mutate(self, info, path: str):
+    def mutate(self, info, dataset_path: str, analysis_path: str | None = None):
         """Do the mutation: create required analysis"""
-        storage_dataset: DatasetResolver = get_resolver(
-            settings.DATASET_EXPORT_PATH, path
-        )
-        dataset, _ = Dataset.objects.get_or_create(
-            name=storage_dataset.name,
-            path=path,
-            owner=info.context.user,
-            legacy=storage_dataset.is_legacy(),
-        )
-        for analysis in storage_dataset.browse():
-            analysis_mutation = ImportAnalysisMutation()
-            analysis_mutation.mutate(
-                info,
-                dataset_path=path,
-                name=analysis.name,
-            )
+        resolver = Resolver(join(dataset_path, analysis_path or ""))
 
-        return ImportDatasetMutation(dataset=dataset)
+        if not resolver.dataset:
+            raise GraphQLError("Dataset not found")
+        if isinstance(resolver.dataset, FailedItem):
+            raise GraphQLError(
+                str(resolver.dataset.error), original_error=resolver.dataset.error
+            )
+        if resolver.dataset.pk is None:
+            resolver.dataset.owner = info.context.user
+        resolver.dataset.save()
+
+        analysis = []
+        for a in resolver.get_all_analysis(detailed=True):
+            if analysis_path and a.path == analysis_path:
+                if isinstance(a, FailedItem):
+                    raise GraphQLError(str(a.error), original_error=a.error)
+                analysis.append(a)
+                continue
+            if isinstance(a, FailedItem):
+                continue
+            if not analysis_path:
+                analysis.append(a)
+
+        for sa in analysis:
+            if sa.pk is not None:
+                continue
+            sa.owner = info.context.user
+            sa.dataset = resolver.dataset
+
+            sa.fft, _ = FFT.objects.get_or_create(**model_to_dict(sa.fft))
+            sa.colormap, _ = Colormap.objects.get_or_create(name=sa.colormap.name)
+            sa.save()
+
+            resolver.create_legacy_configuration(sa)
+
+            spectrograms = resolver.get_all_spectrograms_for_analysis(analysis=sa)
+            sa.add_spectrograms(spectrograms=spectrograms)
+
+        return ImportDatasetMutation(
+            dataset=resolver.dataset,
+            analysis=analysis.pop() if analysis_path else None,
+        )
 
 
 ImportDatasetMutationField = ImportDatasetMutation.Field()
+__all__ = ["ImportDatasetMutationField", "ImportDatasetMutation"]

@@ -1,4 +1,4 @@
-import React, { Fragment, lazy, Suspense, useEffect } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import './css/bootstrap-4.1.3.min.css';
@@ -14,8 +14,8 @@ import { useLoadEventService } from '@/features/UX/Events';
 import { AlertProvider } from '@/components/ui/Alert';
 import { selectIsConnected } from '@/features/Auth';
 import { ReactFlowProvider } from '@xyflow/react';
-import { selectCurrentUser } from '@/api';
 import { AudioProvider } from '@/features/Audio';
+import { SuspenseAdminOnly, SuspenseSuperUserOnly } from '@/components/layout';
 
 const Home = lazy(() => import('./view/home/Home'));
 const Login = lazy(() => import('./view/auth/Login'));
@@ -64,13 +64,8 @@ const AppContent: React.FC = () => {
     useLoadEventService();
 
     const isConnected = useAppSelector(selectIsConnected)
-    const currentUser = useAppSelector(selectCurrentUser)
 
     const from = useLocation()
-
-    useEffect(() => {
-        console.log('isConnected', isConnected)
-    }, [ isConnected ]);
 
     return (
         <Routes>
@@ -80,7 +75,6 @@ const AppContent: React.FC = () => {
             <Route path="login" element={ <Suspense><Login/></Suspense> }/>
 
             { isConnected && <Route element={ <Suspense><AploseSkeleton/></Suspense> }>
-
 
                 <Route path="annotation-campaign">
                     <Route index element={ <Suspense><AnnotationCampaignList/></Suspense> }/>
@@ -102,26 +96,24 @@ const AppContent: React.FC = () => {
 
                 <Route path="account" element={ <Suspense><Account/></Suspense> }/>
 
-                { currentUser?.isAdmin && <Fragment>
-                    <Route path="dataset">
-                        <Route index element={ <Suspense><DatasetList/></Suspense> }/>
-                        <Route path=":datasetID" element={ <Suspense><DatasetDetail/></Suspense> }/>
-                    </Route>
+                <Route path="dataset">
+                    <Route index element={ <SuspenseAdminOnly><DatasetList/></SuspenseAdminOnly> }/>
+                    <Route path=":datasetID" element={ <SuspenseAdminOnly><DatasetDetail/></SuspenseAdminOnly> }/>
+                </Route>
 
-                    <Route path="storage">
-                        <Route index element={ <Suspense><StorageBrowser/></Suspense> }/>
-                    </Route>
-                </Fragment> }
+                <Route path="storage">
+                    <Route index element={ <SuspenseAdminOnly><StorageBrowser/></SuspenseAdminOnly> }/>
+                </Route>
 
-                { currentUser?.isSuperuser &&
-                    <Route path="admin">
-                        <Route path="sql" element={ <Suspense><SqlQuery/></Suspense> }/>
-                        <Route path="ontology" element={ <Suspense><OntologyPage/></Suspense> }>
-                            <Route path=":type" element={ <Suspense><OntologyTab/></Suspense> }>
-                                <Route path=":id" element={ <Suspense><OntologyPanel/></Suspense> }/>
-                            </Route>
+                <Route path="admin">
+                    <Route path="sql" element={ <SuspenseSuperUserOnly><SqlQuery/></SuspenseSuperUserOnly> }/>
+                    <Route path="ontology" element={ <SuspenseSuperUserOnly><OntologyPage/></SuspenseSuperUserOnly> }>
+                        <Route path=":type" element={ <SuspenseSuperUserOnly><OntologyTab/></SuspenseSuperUserOnly> }>
+                            <Route path=":id"
+                                   element={ <SuspenseSuperUserOnly><OntologyPanel/></SuspenseSuperUserOnly> }/>
                         </Route>
-                    </Route> }
+                    </Route>
+                </Route>
 
                 <Route path="" element={ <Navigate to="/annotation-campaign" replace/> }/>
             </Route> }

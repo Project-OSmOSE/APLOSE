@@ -1,4 +1,4 @@
-import { Status } from '../../../../src/api/types.gql-generated';
+import { ImportStatusEnum } from '../../../../src/api/types.gql-generated';
 import { type StorageAnalysis, type StorageDataset, type StorageFolder } from '../../../../src/api/storage';
 
 export const storageFolder: StorageFolder = {
@@ -10,11 +10,11 @@ export const storageDataset: StorageDataset = {
     __typename: 'DatasetStorageNode',
     name: 'Storage dataset',
     path: 'test/dataset',
-    importStatus: Status.Available,
+    importStatus: ImportStatusEnum.Available,
 }
 export const storageAnalysis: StorageAnalysis = {
     __typename: 'AnalysisStorageNode',
     name: 'Storage analysis',
     path: 'test/dataset/processed/test_analysis',
-    importStatus: Status.Available,
+    importStatus: ImportStatusEnum.Available,
 }

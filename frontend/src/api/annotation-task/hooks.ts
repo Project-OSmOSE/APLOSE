@@ -49,7 +49,7 @@ export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
     resumeSpectrogramID: info.data?.allAnnotationSpectrograms?.resumeSpectrogramId,
     page: filters.page,
     pageCount: Math.ceil((info.data?.allAnnotationSpectrograms?.totalCount ?? 0) / PAGE_SIZE),
-  }), [ info ])
+  }), [ info, filters.page ])
 }
 
 export const useGetAnnotationTaskParams = (): GetAnnotationTaskQueryVariables => {
@@ -81,6 +81,7 @@ export const useAnnotationTask = (options: {
   return useMemo(() => ({
     ...info,
     spectrogram: info.data?.annotationSpectrogramById,
+    paths: info.data?.spectrogramPaths,
     navigationInfo: info.data?.allAnnotationSpectrograms,
     annotations: [
       ...info.data?.annotationSpectrogramById?.task?.userAnnotations?.results ?? [],

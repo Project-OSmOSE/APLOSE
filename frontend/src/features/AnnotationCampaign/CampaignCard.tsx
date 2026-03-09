@@ -5,7 +5,7 @@ import { Color } from '@ionic/core';
 import { crop } from 'ionicons/icons/index.js';
 
 import { dateToString, pluralize } from '@/service/function';
-import { Progress, SkeletonProgress, WarningText } from '@/components/ui';
+import { GraphQLErrorText, Progress, SkeletonProgress } from '@/components/ui';
 import { type ListCampaignsQuery, useAllCampaigns, useAllCampaignsFilters } from '@/api';
 import styles from './styles.module.scss';
 
@@ -26,7 +26,7 @@ export const Cards: React.FC = () => {
             return `/annotation-campaign/${ campaign.id }/phase/${ phases.filter(p => p !== null)[0]?.phase }`;
         return `/annotation-campaign/${ campaign.id }`
     }, [])
-    const accessDetail = useCallback((campaign: Campaign) => navigate(getLink(campaign), {state: {from: '/annotation-campaign'}}), [ getLink ]);
+    const accessDetail = useCallback((campaign: Campaign) => navigate(getLink(campaign), { state: { from: '/annotation-campaign' } }), [ getLink, navigate ]);
     const accessAuxDetail = useCallback((campaign: Campaign) => window.open(`/app${ getLink(campaign) }`, '_blank'), [ getLink ]);
 
     const getDeadline = useCallback((campaign: Campaign): Date | undefined => campaign.deadline ? new Date(campaign.deadline) : undefined, []);
@@ -54,7 +54,7 @@ export const Cards: React.FC = () => {
         </div>
 
     if (error)
-        return <WarningText error={ error }/>
+        return <GraphQLErrorText error={ error }/>
 
     if (!allCampaigns || allCampaigns.length === 0)
         return <IonNote color="medium">No campaigns</IonNote>

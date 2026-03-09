@@ -21,7 +21,7 @@ export const NavigationButtons: React.FC = () => {
     if (isLoading) return;
     if (!navigationInfo?.previousSpectrogramId) return;
     if (await canNavigate()) openAnnotator(navigationInfo.previousSpectrogramId)
-  }, [ openAnnotator, isLoading, navigationInfo ])
+  }, [ openAnnotator, isLoading, navigationInfo, canNavigate ])
   const navNext = useCallback(async () => {
     if (isLoading) return;
     if (!navigationInfo?.nextSpectrogramId) return;

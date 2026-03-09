@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { IonNote } from '@ionic/react';
 import { Select } from '@/components/form';
-import { WarningText } from '@/components/ui';
+import { GraphQLErrorText } from '@/components/ui';
 import { useAllConfidenceSets } from '@/api';
 
 export const ConfidenceSetSelect: React.FC<{
@@ -24,14 +24,12 @@ export const ConfidenceSetSelect: React.FC<{
     onSelected(pk)
   }, [ onSelected ])
 
-  if (fetchingError) return <WarningText message="Failing loading confidence sets"
-                                         error={ fetchingError }/>
+  if (fetchingError) return <GraphQLErrorText error={ fetchingError }/>
 
-  if (!allConfidenceSets) return <Fragment/>
   return <Select label="Confidence indicator set" placeholder={ placeholder }
-                 options={ allConfidenceSets.map(s => ({ value: s!.id, label: s!.name })) ?? [] }
+                 options={ allConfidenceSets?.map(s => ({ value: s!.id, label: s!.name })) ?? [] }
                  optionsContainer="alert"
-                 disabled={ !allConfidenceSets.length }
+                 disabled={ !allConfidenceSets?.length }
                  value={ selectedID }
                  isLoading={ isFetching }
                  error={ error }
@@ -44,7 +42,7 @@ export const ConfidenceSetSelect: React.FC<{
         )) }
       </Fragment>)
     }
-    { allConfidenceSets.length === 0 &&
+    { allConfidenceSets?.length === 0 &&
         <IonNote>You need to create a confidence set to use it in your campaign</IonNote> }
   </Select>
 }

@@ -10,7 +10,7 @@ import { useAppSelector } from '@/features/App';
 export const useDrawSpectrogram = () => {
   const analysis = useAppSelector(selectAnalysis)
   const zoom = useAppSelector(selectZoom)
-  const { spectrogram } = useAnnotationTask()
+  const { spectrogram, paths } = useAnnotationTask()
   const height = useWindowHeight()
   const timeScale = useTimeScale()
   const toast = useToast()
@@ -22,7 +22,7 @@ export const useDrawSpectrogram = () => {
   }, [ zoom ])
 
   const loadImages = useCallback(async () => {
-    if (!analysis || !spectrogram?.path) {
+    if (!analysis || !paths?.spectrogramPath || !spectrogram) {
       images.current = new Map();
       return;
     }
@@ -31,7 +31,7 @@ export const useDrawSpectrogram = () => {
     const filename = spectrogram.filename
     return Promise.all(
       Array.from(new Array<HTMLImageElement | undefined>(zoom)).map(async (_, index) => {
-        let src = spectrogram?.path;
+        let src = paths.spectrogramPath;
         if (!src) return;
         if (analysis.legacy) {
           src = `${ src.split(filename)[0] }${ filename }_${ zoom }_${ index }${ src.split(filename)[1] }`
@@ -58,7 +58,7 @@ export const useDrawSpectrogram = () => {
     ).then(loadedImages => {
       images.current.set(zoom, loadedImages)
     })
-  }, [ analysis, zoom, failedImagesSources, areAllImagesLoaded, spectrogram, analysis ])
+  }, [ analysis, zoom, failedImagesSources, areAllImagesLoaded, spectrogram, analysis, paths, toast ])
 
   return useCallback(async (context: CanvasRenderingContext2D) => {
     if (!areAllImagesLoaded()) await loadImages();

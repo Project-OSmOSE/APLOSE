@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { IonButton, IonIcon, IonSpinner } from '@ionic/react';
-import { useModal, WarningText } from '@/components/ui';
+import { GraphQLErrorText, useModal, WarningText } from '@/components/ui';
 
 import { DatasetHead, DatasetInfoCreation } from '@/features/Dataset';
 import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
@@ -20,7 +20,7 @@ export const DatasetDetail: React.FC = () => {
   const importAnalysisModal = useModal(ImportDatasetAnalysisModal);
 
   if (isLoading) return <Fragment><DatasetHead/><IonSpinner/></Fragment>
-  if (error) return <Fragment><DatasetHead/><WarningText error={ error }/></Fragment>
+  if (error) return <Fragment><DatasetHead/><GraphQLErrorText error={ error }/></Fragment>
   if (!dataset) return <Fragment><DatasetHead/><WarningText message="Dataset not found"/></Fragment>
   return <Fragment>
     <DatasetHead/>

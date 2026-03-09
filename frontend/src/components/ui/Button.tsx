@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { chevronBackOutline } from 'ionicons/icons/index.js';
 import { TooltipOverlay } from './Tooltip';
 import { Link } from './Link';
-import { helpBuoyOutline } from 'ionicons/icons';
+import { copyOutline, helpBuoyOutline } from 'ionicons/icons';
+import { useToast } from '@/components/ui/toast.hook';
 
 type Props = {
     disabledExplanation?: string;
@@ -29,18 +30,13 @@ export const BackButton: React.FC = () => {
     const navigate = useNavigate()
     const location = useLocation()
 
-    const [ from, setFrom ] = useState<string | undefined>();
     const [ isBackAsked, setIsBackAsked ] = useState<boolean>(false);
-
-    useEffect(() => {
-        if (location.state?.from) setFrom(location.state?.from)
-    }, [ location ])
 
     useEffect(() => {
         if (isBackAsked && location.state?.from !== location.pathname) {
             navigate(-1)
         }
-    }, [ location, from, isBackAsked ])
+    }, [ location, isBackAsked ])
 
     const onBack = useCallback(() => {
         setIsBackAsked(true)
@@ -65,4 +61,20 @@ export const HelpButton: React.FC<{ url: string, label?: string }> = ({ url, lab
         { label ?? 'Help' }
         <IonIcon icon={ helpBuoyOutline } slot="end"/>
     </Button>
+}
+
+export const CopyErrorStackButton: React.FC<{ stack: any, withLabel?: boolean }> = ({ stack, withLabel }) => {
+    const toast = useToast();
+
+    const copy = useCallback(async () => {
+        await navigator.clipboard.writeText(typeof stack == 'string' ? stack : JSON.stringify(stack))
+        toast.present(`Error stack trace has been copied into the clipboard`, 'medium')
+    }, [ toast, stack ])
+
+    return useMemo(() =>
+            <Button fill="clear" color="danger" size="small" onClick={ copy }>
+                <IonIcon icon={ copyOutline } slot={ withLabel ? 'start' : 'icon-only' }/>
+                { withLabel && 'Copy error stack trace' }
+            </Button>
+        , [ copy, withLabel ])
 }

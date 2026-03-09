@@ -6,7 +6,6 @@ const {
     browseStorage,
     searchStorage,
     importDatasetFromStorage,
-    importAnalysisFromStorage,
 } = StorageGqlAPI.endpoints
 
 function _mapData(data?: BrowseStorageQuery) {
@@ -14,7 +13,7 @@ function _mapData(data?: BrowseStorageQuery) {
 }
 
 export const useBrowseStorage = (vars?: BrowseStorageQueryVariables, options?: { skip?: boolean }) => {
-    const info = browseStorage.useQuery(vars, options)
+    const info = browseStorage.useQuery({ path: vars?.path ?? '' }, options)
     return useMemo(() => ({ ...info, subfolders: _mapData(info.data) }), [ info ])
 }
 
@@ -26,10 +25,4 @@ export const useSearchStorage = (vars: SearchStorageQueryVariables, options?: { 
 export const useImportDatasetFromStorage = () => {
     const [ method, { isSuccess, ...info } ] = importDatasetFromStorage.useMutation()
     return { isSuccess, ...info, importDataset: method }
-}
-
-
-export const useImportAnalysisFromStorage = () => {
-    const [ method, { isSuccess, ...info } ] = importAnalysisFromStorage.useMutation()
-    return { isSuccess, ...info, importAnalysis: method }
 }

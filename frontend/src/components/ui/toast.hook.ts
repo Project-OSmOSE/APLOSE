@@ -4,6 +4,8 @@ import { ToastButton } from '@ionic/core/dist/types/components/toast/toast-inter
 import { getErrorMessage } from '@/service/function';
 import { useLocation } from 'react-router-dom';
 import { useCallback, useEffect } from 'react';
+import type { Color } from '@ionic/core';
+import type { GqlError } from '@/api/baseGqlApi';
 
 export const useToast = () => {
   const [ present, dismiss ] = useIonToast();
@@ -17,11 +19,13 @@ export const useToast = () => {
   const raiseError = useCallback(({
                                     message,
                                     error,
+                                    gqlError,
                                     canForce,
                                     forceText,
                                   }: {
     message?: string;
     error?: any,
+    gqlError?: GqlError,
   } & ({ canForce?: never, forceText?: never } | { canForce: true, forceText: string })) => {
     return new Promise<boolean>((resolve) => {
       const buttons: Array<ToastButton> = [];
@@ -34,23 +38,24 @@ export const useToast = () => {
           dismiss();
         },
       });
-      let text = ''
-      if (message) text += message;
-      if (message && error) text += '\n'
-      if (error) text += getErrorMessage(error)
+      const text = []
+      if (message) text.push(message)
+      if (error) text.push(getErrorMessage(error))
+      if (gqlError?.statusErrorMessage) text.push(getErrorMessage(gqlError.statusErrorMessage))
+      if (gqlError?.messages) text.push(getErrorMessage(gqlError.messages.join(' ')))
       present({
-        message: text,
+        message: text.join('\n'),
         color: 'danger',
         buttons,
       }).catch(console.warn);
     });
-  }, [ present ])
+  }, [ present, dismiss ])
 
-  const presentSuccess = useCallback((message: string): Promise<boolean> => {
+  const _present = useCallback((message: string, color: Color): Promise<boolean> => {
     return new Promise<boolean>((resolve) => {
       present({
         message,
-        color: 'success',
+        color,
         duration: 3_000,
         buttons: [
           {
@@ -62,11 +67,11 @@ export const useToast = () => {
         ],
       }).catch(console.warn);
     });
-  }, [])
+  }, [present, dismiss])
 
   return {
     raiseError,
-    presentSuccess,
+    present: _present,
     dismiss: () => {
       dismiss().catch(console.warn)
     },

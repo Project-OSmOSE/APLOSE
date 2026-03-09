@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useRef } from 'react';
 import { useAnnotationTask } from '@/api';
 import { IonSpinner } from '@ionic/react';
-import { WarningText } from '@/components/ui';
+import { GraphQLErrorText } from '@/components/ui';
 import { AudioDownloadButton, CurrentTime, PlaybackRateSelect, PlayPauseButton, useAudio } from '@/features/Audio';
 import styles from './styles.module.scss';
 import { AnnotatorCanvasWindow } from '@/features/Annotator/Canvas';
@@ -33,19 +33,20 @@ export const AnnotatorPage: React.FC = () => {
     const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
     const {
         spectrogram,
+        paths,
         isFetching,
         error,
     } = useAnnotationTask({ refetchOnMountOrArgChange: true });
     const audio = useAudio()
 
     useEffect(() => {
-        if (spectrogram?.audioPath) audio.setSource(spectrogram.audioPath)
+        if (paths?.audioPath) audio.setSource(paths.audioPath)
         else audio.clearSource()
 
         return () => {
             audio.clearSource() // TODO: check behavior when navigating between files
         }
-    }, [ spectrogram ]);
+    }, [ paths ]);
 
     const previousCampaignID = useRef<string | undefined>()
     useEffect(() => {
@@ -65,7 +66,7 @@ export const AnnotatorPage: React.FC = () => {
     }, [ pointer.position ]);
 
     if (isFetching) return <AnnotatorSkeleton children={ <IonSpinner/> }/>
-    if (error) return <AnnotatorSkeleton children={ <WarningText error={ error }/> }/>
+    if (error) return <AnnotatorSkeleton children={ <GraphQLErrorText error={ error }/> }/>
     if (!spectrogram) return <AnnotatorSkeleton>
         <div></div>
     </AnnotatorSkeleton>

@@ -6,7 +6,7 @@ import { useAppDispatch } from '@/features/App';
 import { gqlAPI } from '@/api/baseGqlApi';
 import { listSpectrogramAnalysisTag } from '@/api/spectrogram-analysis/api';
 import { HelpButton, Modal, ModalFooter, ModalHeader, type ModalProps } from '@/components/ui';
-import { DatasetItem } from '@/features/storage/display';
+import { Item } from '@/features/storage';
 
 export const ImportDatasetAnalysisModal: React.FC<ModalProps> = ({ onClose }) => {
     const { datasetID } = useParams<DataNavParams>();
@@ -25,7 +25,7 @@ export const ImportDatasetAnalysisModal: React.FC<ModalProps> = ({ onClose }) =>
             <ModalHeader title="Import an analysis"
                          onClose={ onClose }/>
 
-            <DatasetItem dataset={ dataset as any } fixedOpen onUpdated={ invalidateSpectrogramList }/>
+            { dataset && <Item path={ dataset.path } forceOpen onUpdated={ invalidateSpectrogramList }/> }
 
             <ModalFooter>
                 <HelpButton url="/doc/user/data/generate"

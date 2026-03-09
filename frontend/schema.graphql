@@ -1067,6 +1067,7 @@ type Query {
   annotationSpectrogramById(id: ID!): AnnotationSpectrogramNode
   browse(path: String): [StorageUnion]
   search(path: String!): StorageUnion
+  spectrogramPaths(spectrogramId: ID!, analysisId: ID!): SpectrogramPathsNode
 }
 
 type LabelNodeNodeConnection {
@@ -3203,8 +3204,6 @@ type AnnotationSpectrogramNode implements ExtendedInterface {
   ): AnnotationCommentNodeNodeConnection
   duration: Int!
   isAssigned(campaignId: ID!, phase: AnnotationPhaseType!): Boolean!
-  audioPath(analysisId: ID!): String
-  path(analysisId: ID!): String!
   task(campaignId: ID!, phase: AnnotationPhaseType!): AnnotationTaskNode
 }
 
@@ -4367,33 +4366,43 @@ type AnnotationFileRangeNodeNodeConnection {
   totalCount: Int
 }
 
-union StorageUnion = FolderNode | DatasetStorageNode | AnalysisStorageNode
+union StorageUnion = AnalysisStorageNode | DatasetStorageNode | FolderNode
 
-type FolderNode {
+type AnalysisStorageNode {
   name: String!
   path: String!
+  importStatus: ImportStatusEnum!
+  model: SpectrogramAnalysisNode
+  error: String
+  stack: String
 }
 
-type DatasetStorageNode {
-  name: String!
-  path: String!
-  importStatus: Status!
-  model: DatasetNode
-}
-
-"""An enumeration."""
-enum Status {
+enum ImportStatusEnum {
   Unavailable
   Available
   Partial
   Imported
 }
 
-type AnalysisStorageNode {
+type DatasetStorageNode {
   name: String!
   path: String!
-  importStatus: Status!
-  model: SpectrogramAnalysisNode
+  importStatus: ImportStatusEnum!
+  model: DatasetNode
+  error: String
+  stack: String
+}
+
+type FolderNode {
+  name: String!
+  path: String!
+  error: String
+  stack: String
+}
+
+type SpectrogramPathsNode {
+  audioPath: String
+  spectrogramPath: String
 }
 
 """Global mutation"""
@@ -4426,10 +4435,7 @@ type Mutation {
   submitAnnotationTask(annotations: [AnnotationInput]!, campaignId: ID!, endedAt: DateTime!, phaseType: AnnotationPhaseType!, spectrogramId: ID!, startedAt: DateTime!, taskComments: [AnnotationCommentInput]!): SubmitAnnotationTaskMutation
 
   """"Import Analysis mutation"""
-  importAnalysis(datasetPath: String!, name: String!): ImportAnalysisMutation
-
-  """"Import Dataset mutation"""
-  importDataset(path: String!): ImportDatasetMutation
+  importDataset(analysisPath: String, datasetPath: String!): ImportDatasetMutation
 }
 
 type PostSourceMutationPayload {
@@ -4673,11 +4679,7 @@ type SubmitAnnotationTaskMutation {
 }
 
 """"Import Analysis mutation"""
-type ImportAnalysisMutation {
-  analysis: SpectrogramAnalysisNode!
-}
-
-""""Import Dataset mutation"""
 type ImportDatasetMutation {
   dataset: DatasetNode!
+  analysis: SpectrogramAnalysisNode
 }

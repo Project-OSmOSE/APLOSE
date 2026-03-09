@@ -115,15 +115,15 @@ class CreateTestCase(TestCase):
                 **presence_result,
                 "start_time": 9 * 60,
                 "end_time": 7 * 60,
-                "start_frequency": 9_000,
-                "end_frequency": 7_000,
+                "start_frequency": 200,
+                "end_frequency": 100,
             }
         )
         self.assertTrue(serializer.is_valid(raise_exception=True))
         self.assertEqual(serializer.data["start_time"], 7 * 60)
         self.assertEqual(serializer.data["end_time"], 9 * 60)
-        self.assertEqual(serializer.data["start_frequency"], 7_000)
-        self.assertEqual(serializer.data["end_frequency"], 9_000)
+        self.assertEqual(serializer.data["start_frequency"], 100)
+        self.assertEqual(serializer.data["end_frequency"], 200)
 
     # Errors
     def test_required(self):
@@ -300,16 +300,16 @@ class UpdateTestCase(CreateTestCase):
                 **presence_result,
                 "start_time": 9,
                 "end_time": 7,
-                "start_frequency": 9_000,
-                "end_frequency": 7_000,
+                "start_frequency": 200,
+                "end_frequency": 100,
             }
         )
         self.assertTrue(serializer.is_valid(raise_exception=True))
         serializer.save()
         self.assertEqual(serializer.instance.start_time, 7)
         self.assertEqual(serializer.instance.end_time, 9)
-        self.assertEqual(serializer.instance.start_frequency, 7_000)
-        self.assertEqual(serializer.instance.end_frequency, 9_000)
+        self.assertEqual(serializer.instance.start_frequency, 100)
+        self.assertEqual(serializer.instance.end_frequency, 200)
 
 
 @freeze_time("2012-01-14 00:00:00")

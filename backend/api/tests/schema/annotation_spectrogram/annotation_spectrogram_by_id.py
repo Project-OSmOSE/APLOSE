@@ -1,23 +1,26 @@
 import json
+from pathlib import Path
 
+from django.conf import settings
 from django_extension.tests import ExtendedTestCase
 
 from backend.api.tests.fixtures import ALL_FIXTURES
 from backend.aplose.models import User
+from django.test import override_settings
+
+VOLUMES_ROOT = settings.FIXTURE_DIRS[1] / "data" / "dataset" / "list_to_import"
+LEGACY_GOOD = Path("legacy/good")
 
 QUERY = """
 query (
     $spectrogramID: ID!
     $annotatorID: ID!
     $campaignID: ID!
-    $analysisID: ID!
     $phaseType: AnnotationPhaseType!
 ) {
     annotationSpectrogramById(id: $spectrogramID) {
         id
         filename
-        audioPath(analysisId: $analysisID)
-        path(analysisId: $analysisID)
         start
         duration
 
@@ -102,7 +105,6 @@ VARIABLES = {
     "spectrogramID": 7,
     "annotatorID": 1,
     "campaignID": 1,
-    "analysisID": 1,
     "phaseType": "Annotation",
 }
 
@@ -112,16 +114,13 @@ class AnnotationSpectrogramByIDTestCase(ExtendedTestCase):
     GRAPHQL_URL = "/api/graphql"
     fixtures = ALL_FIXTURES
 
-    def tearDown(self):
-        """Logout when tests ends"""
-        self.client.logout()
-
     def test_not_connected(self):
         response = self.gql_query(QUERY, variables=VARIABLES)
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Unauthorized")
 
+    @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_connected_owner(self):
         response = self.gql_query(
             QUERY,
@@ -139,6 +138,7 @@ class AnnotationSpectrogramByIDTestCase(ExtendedTestCase):
         self.assertEqual(len(content["task"]["comments"]["results"]), 0)
         self.assertEqual(len(content["task"]["annotations"]["results"]), 0)
 
+    @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_connected_empty_user(self):
         response = self.gql_query(
             QUERY,
@@ -152,6 +152,7 @@ class AnnotationSpectrogramByIDTestCase(ExtendedTestCase):
         content = json.loads(response.content)
         self.assertEqual(content["errors"][0]["message"], "Not found")
 
+    @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_connected_admin(self):
         response = self.gql_query(
             QUERY,
@@ -169,6 +170,7 @@ class AnnotationSpectrogramByIDTestCase(ExtendedTestCase):
         self.assertEqual(len(content["task"]["comments"]["results"]), 0)
         self.assertEqual(len(content["task"]["annotations"]["results"]), 0)
 
+    @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_connected_annotator(self):
         response = self.gql_query(
             QUERY,

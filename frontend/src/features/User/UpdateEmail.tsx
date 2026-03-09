@@ -48,7 +48,7 @@ export const UpdateEmail: React.FC = () => {
 
   useEffect(() => {
     if (isPatchSuccessful) {
-      toast.presentSuccess('You email have been changed')
+      toast.present('You email have been changed', 'success')
     }
   }, [ isPatchSuccessful ]);
 

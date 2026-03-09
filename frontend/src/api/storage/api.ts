@@ -6,8 +6,5 @@ export const StorageGqlAPI = api.enhanceEndpoints({
         importDatasetFromStorage: {
             invalidatesTags: [ 'Dataset', 'DatasetsAndAnalysis' ],
         },
-        importAnalysisFromStorage: {
-            invalidatesTags: [ 'Dataset', 'DatasetsAndAnalysis' ],
-        },
     },
 })

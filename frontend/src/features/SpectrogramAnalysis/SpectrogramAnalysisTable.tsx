@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useMemo } from 'react';
 import { IonIcon, IonNote, IonSpinner } from '@ionic/react';
 import { downloadOutline } from 'ionicons/icons/index.js';
 import { dateToString } from '@/service/function';
-import { Button, Table, TableContent, TableDivider, TableHead, useToast, WarningText } from '@/components/ui';
+import { Button, GraphQLErrorText, Table, TableContent, TableDivider, TableHead, useToast } from '@/components/ui';
 import styles from './styles.module.scss'
 import { ListSpectrogramAnalysisQueryVariables, useAllSpectrogramAnalysis } from '@/api';
 import { useDownloadAnalysis } from '@/api/download';
@@ -25,7 +25,7 @@ export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVari
 
 
   if (isLoading) return <IonSpinner/>
-  if (error) return <WarningText error={ error }/>
+  if (error) return <GraphQLErrorText error={ error }/>
   if (!analysis || analysis.length === 0) return <IonNote color="medium">No spectrogram analysis</IonNote>
 
   return <Table columns={ 12 }>

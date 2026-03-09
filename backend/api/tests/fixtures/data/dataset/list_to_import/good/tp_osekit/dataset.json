@@ -3,15 +3,16 @@
         "my_first_analysis": {
             "analysis": "my_first_analysis",
             "class": "SpectroDataset",
-            "json": "processed\\my_first_analysis\\my_first_analysis.json"
+            "json": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\processed\\my_first_analysis\\my_first_analysis.json"
         },
         "original": {
             "analysis": "original",
             "class": "AudioDataset",
-            "json": "data\\audio\\original\\original.json"
+            "json": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit\\data\\audio\\original\\original.json"
         }
     },
     "depth": 0.0,
+    "folder": "C:\\Users\\morinel\\IdeaProjects\\osmose-app\\backend\\api\\tests\\fixtures\\data\\dataset\\list_to_import\\good\\tp_osekit",
     "gps_coordinates": [
         0,
         0

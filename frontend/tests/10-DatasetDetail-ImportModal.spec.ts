@@ -1,8 +1,8 @@
 import { essentialTag, expect, test } from './utils';
 import { gqlURL, interceptRequests } from './utils/mock';
 import type { Params } from './utils/types';
-import { dataset, storageAnalysis } from './utils/mock/types';
-import type { ImportAnalysisFromStorageMutationVariables } from '../src/api/storage/storage.generated';
+import { storageAnalysis, storageDataset } from './utils/mock/types';
+import type { ImportDatasetFromStorageMutationVariables } from '../src/api/storage/storage.generated';
 
 // Utils
 
@@ -14,7 +14,7 @@ const TEST = {
                 getCurrentUser: as,
                 listSpectrogramAnalysis: 'empty',
                 listChannelConfigurations: 'empty',
-                listAvailableSpectrogramAnalysisForImport: 'empty',
+                searchStorage: 'dataset',
                 browseStorage: 'empty',
             })
             await test.step(`Navigate`, async () => {
@@ -24,7 +24,7 @@ const TEST = {
             });
 
             await test.step('Display empty message', async () => {
-                await expect(page.datasetDetail.importAnalysis.modal).toContainText(dataset.name)
+                await expect(page.datasetDetail.importAnalysis.modal).toContainText(storageDataset.name)
                 await expect(page.datasetDetail.importAnalysis.modal).toContainText('Empty')
             })
         }),
@@ -33,6 +33,7 @@ const TEST = {
         test(`as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
+                searchStorage: 'dataset',
                 browseStorage: 'dataset',
             })
             await test.step(`Navigate`, async () => {
@@ -42,7 +43,7 @@ const TEST = {
             });
 
             await test.step('Import modal display data', async () => {
-                await expect(page.datasetDetail.importAnalysis.modal).toContainText(dataset.name)
+                await expect(page.datasetDetail.importAnalysis.modal).toContainText(storageDataset.name)
                 await expect(page.datasetDetail.importAnalysis.modal).toContainText(storageAnalysis.name)
             })
         }),
@@ -51,11 +52,13 @@ const TEST = {
         test(`as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
+                searchStorage: 'dataset',
                 browseStorage: 'dataset',
-                importAnalysisFromStorage: 'empty',
+                importDatasetFromStorage: 'empty',
             })
             await test.step(`Navigate`, async () => {
                 await page.datasetDetail.go({ as })
+                page.waitForTimeout(500)
                 await page.datasetDetail.importAnalysis.button.click()
                 await expect(page.datasetDetail.importAnalysis.modal).toBeVisible()
             });
@@ -64,9 +67,9 @@ const TEST = {
                 page.waitForRequest(gqlURL),
                 await page.datasetDetail.importAnalysis.importButton.click(),
             ])
-            const variables: ImportAnalysisFromStorageMutationVariables = request.postDataJSON().variables
-            expect(variables.name).toEqual(storageAnalysis.name)
-            expect(variables.datasetPath).toEqual(dataset.path)
+            const variables: ImportDatasetFromStorageMutationVariables = request.postDataJSON().variables
+            expect(variables.analysisPath).toEqual(storageAnalysis.path)
+            expect(variables.datasetPath).toEqual(storageDataset.path)
         }),
 }
 

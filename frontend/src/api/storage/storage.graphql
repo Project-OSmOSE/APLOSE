@@ -1,9 +1,11 @@
-query browseStorage($path: String) {
+query browseStorage($path: String!) {
     browse(path: $path) {
         ... on FolderNode {
             __typename
             name
             path
+            error
+            stack
         }
         ... on DatasetStorageNode {
             __typename
@@ -20,6 +22,8 @@ query browseStorage($path: String) {
                     }
                 }
             }
+            error
+            stack
         }
         ... on AnalysisStorageNode {
             __typename
@@ -35,6 +39,8 @@ query browseStorage($path: String) {
                     }
                 }
             }
+            error
+            stack
         }
     }
 }
@@ -45,6 +51,8 @@ query searchStorage($path: String!) {
             __typename
             name
             path
+            error
+            stack
         }
         ... on DatasetStorageNode {
             __typename
@@ -61,6 +69,8 @@ query searchStorage($path: String!) {
                     }
                 }
             }
+            error
+            stack
         }
         ... on AnalysisStorageNode {
             __typename
@@ -76,24 +86,16 @@ query searchStorage($path: String!) {
                     }
                 }
             }
+            error
+            stack
         }
     }
 }
 
-mutation importDatasetFromStorage($path: String!) {
-    importDataset(path: $path) {
+mutation importDatasetFromStorage($datasetPath: String!, $analysisPath: String) {
+    importDataset(datasetPath: $datasetPath, analysisPath: $analysisPath) {
         dataset {
             path
-        }
-    }
-}
-
-mutation importAnalysisFromStorage($name: String!, $datasetPath: String!) {
-    importAnalysis(name: $name, datasetPath: $datasetPath) {
-        analysis {
-            dataset {
-                path
-            }
         }
     }
 }

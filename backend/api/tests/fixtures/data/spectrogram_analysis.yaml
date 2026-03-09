@@ -5,9 +5,9 @@
     name: spectro_config1
     description: null
     owner: 1
-    path: processed/spectrogram/15_128000/spectro_config1
+    path: processed/spectrogram/600_480/4096_512_85
     dataset: 1
-    data_duration: 10.0
+    data_duration: 600.0
     fft: 1
     colormap: 1
     dynamic_min: 0
@@ -23,9 +23,9 @@
     name: spectro_config2
     description: null
     owner: 1
-    path: processed/spectrogram/15_128000/spectro_config2
+    path: processed/spectrogram/600_480/4096_512_85
     dataset: 1
-    data_duration: 10.0
+    data_duration: 600.0
     fft: 2
     colormap: 1
     dynamic_min: 0
@@ -41,9 +41,9 @@
     name: spectro_config3
     description: null
     owner: 1
-    path: processed/spectrogram/15_128000/spectro_config3
+    path: processed/spectrogram/600_480/4096_512_85
     dataset: 2
-    data_duration: 10.0
+    data_duration: 600.0
     fft: 2
     colormap: 1
     dynamic_min: 0

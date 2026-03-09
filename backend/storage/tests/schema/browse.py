@@ -18,12 +18,16 @@ query browse($path: String) {
             __typename
             name
             path
+            error
+            stack
         }
         ... on DatasetStorageNode {
             __typename
             name
             path
             importStatus
+            error
+            stack
         }
         ... on AnalysisStorageNode {
             __typename
@@ -84,7 +88,7 @@ class BrowseTestCase(ExtendedTestCase):
         content = json.loads(response.content)["data"]["browse"]
         self.assertEqual(len(content), 1)
         self.assertEqual(content[0]["name"], "my_first_analysis")
-        self.assertEqual(content[0]["path"], "tp_osekit/processed/my_first_analysis")
+        self.assertEqual(content[0]["path"], "processed/my_first_analysis")
         self.assertEqual(content[0]["importStatus"], "Available")
 
     @override_settings(DATASET_EXPORT_PATH=Path(""), VOLUMES_ROOT=VOLUMES_ROOT)
@@ -128,9 +132,9 @@ class BrowseTestCase(ExtendedTestCase):
 
         content = json.loads(response.content)["data"]["browse"]
         self.assertEqual(len(content), 1)
-        self.assertEqual(content[0]["name"], "4096_512_85")
+        self.assertEqual(content[0]["name"], "600_480/4096_512_85")
         self.assertEqual(
             content[0]["path"],
-            "gliderSPAmsDemo/processed/spectrogram/600_480/4096_512_85",
+            "processed/spectrogram/600_480/4096_512_85",
         )
         self.assertEqual(content[0]["importStatus"], "Available")

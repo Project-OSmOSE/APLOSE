@@ -18,12 +18,16 @@ query ($path: String!) {
             __typename
             name
             path
+            error
+            stack
         }
         ... on DatasetStorageNode {
             __typename
             name
             path
             importStatus
+            error
+            stack
         }
         ... on AnalysisStorageNode {
             __typename
@@ -36,7 +40,7 @@ query ($path: String!) {
 """
 
 
-class BrowseTestCase(ExtendedTestCase):
+class SearchTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ["users"]
@@ -141,10 +145,10 @@ class BrowseTestCase(ExtendedTestCase):
             variables={"path": r"invalid"},
             user=User.objects.get(username="staff"),
         )
-        self.assertResponseNoErrors(response)
+        self.assertResponseHasErrors(response)
 
-        content = json.loads(response.content)["data"]["search"]
-        self.assertIsNone(content)
+        error = json.loads(response.content)["errors"][0]["message"]
+        self.assertIn("Path not found", error)
 
     @override_settings(DATASET_EXPORT_PATH=GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_path_folder_to_dataset_json(self):
@@ -153,10 +157,10 @@ class BrowseTestCase(ExtendedTestCase):
             variables={"path": r"dataset.json"},
             user=User.objects.get(username="staff"),
         )
-        self.assertResponseNoErrors(response)
+        self.assertResponseHasErrors(response)
 
-        content = json.loads(response.content)["data"]["search"]
-        self.assertIsNone(content)
+        error = json.loads(response.content)["errors"][0]["message"]
+        self.assertIn("Path not found", error)
 
     @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_path_legacy_to_dataset_json(self):
@@ -165,7 +169,7 @@ class BrowseTestCase(ExtendedTestCase):
             variables={"path": r"gliderSPAmsDemo/dataset.json"},
             user=User.objects.get(username="staff"),
         )
-        self.assertResponseNoErrors(response)
+        self.assertResponseHasErrors(response)
 
-        content = json.loads(response.content)["data"]["search"]
-        self.assertIsNone(content)
+        error = json.loads(response.content)["errors"][0]["message"]
+        self.assertIn("Path not found", error)

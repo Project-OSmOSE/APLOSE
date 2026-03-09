@@ -30,7 +30,7 @@ export const LabelSetModal: React.FC<ModalProps> = ({ onClose }) => {
     if (patchError) toast.raiseError({ error: patchError });
   }, [ patchError ]);
   useEffect(() => {
-    if (isPatchSuccessful) toast.presentSuccess(`Labels successfully updated`);
+    if (isPatchSuccessful) toast.present(`Labels successfully updated`, 'success');
   }, [ isPatchSuccessful ]);
 
   const toggleDisabled = useCallback(() => {

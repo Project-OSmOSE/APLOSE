@@ -1,5 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { GraphQLClient } from 'graphql-request';
+import { ClientError, GraphQLClient } from 'graphql-request';
 import { graphqlRequestBaseQuery } from '@rtk-query/graphql-request-base-query';
 import { prepareHeaders } from './utils';
 
@@ -7,15 +7,15 @@ import { prepareHeaders } from './utils';
 export const client = new GraphQLClient(`/api/graphql`)
 
 function prepareGqlHeaders(headers: Headers) {
-  headers = prepareHeaders(headers);
+    headers = prepareHeaders(headers);
 
-  // Set "Accept" header
-  headers.set('Accept', 'application/json, multipart/mixed')
+    // Set "Accept" header
+    headers.set('Accept', 'application/json, multipart/mixed')
 
-  return headers
+    return headers
 }
 
-export const GqlTags =  [
+export const GqlTags = [
     // Annotation Campaign
     'Campaign',
 
@@ -57,20 +57,38 @@ export const GqlTags =  [
 
     // Storage
     'Folders',
-  ]
+]
+
+export type GqlError = {
+    status: number;
+    statusErrorMessage: string;
+    messages?: string[];
+    original?: any[];
+}
 
 export const gqlAPI = createApi({
-  tagTypes: GqlTags,
-  reducerPath: 'gql',
-  baseQuery: async (args, api, extraOptions) => {
-    const result: any = await graphqlRequestBaseQuery({
-      client,
-      prepareHeaders: prepareGqlHeaders,
-    })(args, api, extraOptions)
-    if (!('error' in result) && 'data' in result && 'errors' in result.data) {
-      result.error = result.data.errors
-    }
-    return result
-  },
-  endpoints: () => ({}),
+    tagTypes: GqlTags,
+    reducerPath: 'gql',
+    baseQuery: async (args, api, extraOptions) => {
+        const result: any = await graphqlRequestBaseQuery({
+            client,
+            prepareHeaders: prepareGqlHeaders,
+            customErrors: ({ response }: ClientError) => {
+                let statusErrorMessage = `GraphQL Error (Code: ${response.status})`
+                switch (response.status) {
+                    case 500:
+                        statusErrorMessage = 'Internal Server Error';
+                        break;
+                }
+                return {
+                    status: response.status,
+                    statusErrorMessage,
+                    messages: response.errors?.map(e => e.message),
+                    original: response.errors
+                }
+            }
+        })(args, api, extraOptions)
+        return { ...result, error: result.data?.errors ?? result.error }
+    },
+    endpoints: () => ({}),
 })
