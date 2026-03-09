@@ -101,7 +101,7 @@ class FailedItem:
             "path": self.path,
             "name": self.name,
             "import_status": ImportStatus.UNAVAILABLE,
-            "error": str(self.error),
+            "error": f"{self.error.__class__.__name__}: {self.error}",
             "stack": self.stacktrace,
         }
 

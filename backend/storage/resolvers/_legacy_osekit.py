@@ -196,7 +196,7 @@ class LegacyOSEkitResolver(StorageResolver):
             return [
                 Spectrogram(
                     format=img_format,
-                    filename=PureWindowsPath(info["filename"]).name,
+                    filename=PureWindowsPath(info["filename"]).stem,
                     start=Timestamp(info["timestamp"]),
                     end=Timestamp(info["timestamp"])
                     + Timedelta(seconds=analysis.data_duration),

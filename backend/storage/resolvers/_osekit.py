@@ -3,10 +3,9 @@ from pathlib import PureWindowsPath, Path
 
 from metadatax.data.models import FileFormat
 from osekit.config import TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
-from osekit.core_api.spectro_dataset import SpectroDataset
-from osekit.public_api.dataset import Dataset as OSEkitDataset
 
 from backend.api.models import SpectrogramAnalysis, Dataset, Colormap, FFT, Spectrogram
+from backend.storage.exceptions import AnalysisNotFoundException
 from backend.storage.types import (
     FailedItem,
 )
@@ -19,8 +18,11 @@ from backend.storage.utils import (
     clean_path,
     open_file,
 )
+
+# from osekit.core_api.spectro_dataset import SpectroDataset
+# from osekit.public_api.dataset import Dataset as OSEkitDataset
+from backend.utils.osekit_replace import SpectroDataset, OSEkitDataset
 from ._legacy_osekit import LegacyOSEkitResolver
-from ..exceptions import AnalysisNotFoundException
 
 
 class OSEkitResolver(LegacyOSEkitResolver):
@@ -110,16 +112,16 @@ class OSEkitResolver(LegacyOSEkitResolver):
             return None
         osekit_dataset = OSEkitDataset.from_json(Path(make_absolute_server(json_path)))
 
-        sd: SpectroDataset | None = [
+        sd: list[SpectroDataset] = [
             d["dataset"]
             for d in osekit_dataset.datasets.values()
             if d["class"] == SpectroDataset.__name__
             and make_path_relative(d["dataset"].folder, to=analysis.dataset.path)
             == analysis.path
-        ].pop()
-        if not sd:
+        ]
+        if len(sd) == 0:
             raise AnalysisNotFoundException(analysis.path)
-        return sd
+        return sd[0]
 
     def get_all_spectrograms_for_analysis(
         self, analysis: SpectrogramAnalysis
@@ -147,18 +149,21 @@ class OSEkitResolver(LegacyOSEkitResolver):
                 spectrogram=spectrogram, analysis=analysis
             )
 
-        audio_path = None
         for spectro_data in sd.data:
-            for file in spectro_data.audio_data.files:
-                if PureWindowsPath(file.path).name == spectrogram.filename:
-                    audio_path = make_static_url(file.path)
-
-        spectro_path = None
-        for spectro_data in sd.data:
-            path = join(
-                clean_path(sd.folder),
-                f"{spectro_data.begin.strftime(TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED)}.png",
+            filename = spectro_data.begin.strftime(
+                TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
             )
-            if PureWindowsPath(path).name == spectrogram.filename:
-                spectro_path = make_static_url(path)
-        return audio_path, spectro_path
+            if filename == spectrogram.filename:
+                file = spectro_data.audio_data.files.pop(0)
+                return (
+                    make_static_url(Path(file.path).resolve()) if file else None,
+                    make_static_url(
+                        join(
+                            clean_path(sd.folder),
+                            "spectrogram",
+                            f"{spectro_data.begin.strftime(TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED)}.png",
+                        )
+                    ),
+                )
+
+        return None, None

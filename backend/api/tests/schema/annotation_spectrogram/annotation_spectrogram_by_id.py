@@ -16,13 +16,8 @@ query (
     $spectrogramID: ID!
     $annotatorID: ID!
     $campaignID: ID!
-    $analysisID: ID!
     $phaseType: AnnotationPhaseType!
 ) {
-    spectrogramPaths(spectrogramId: $spectrogramID, analysisId: $analysisID) {
-        audioPath
-        spectrogramPath
-    }
     annotationSpectrogramById(id: $spectrogramID) {
         id
         filename
@@ -110,7 +105,6 @@ VARIABLES = {
     "spectrogramID": 7,
     "annotatorID": 1,
     "campaignID": 1,
-    "analysisID": 1,
     "phaseType": "Annotation",
 }
 
