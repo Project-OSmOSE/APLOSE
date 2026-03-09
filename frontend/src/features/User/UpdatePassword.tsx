@@ -34,7 +34,7 @@ export const UpdatePassword: React.FC = () => {
     }
     if (formErrors && formErrors.length) return;
     if (isUpdateSuccessful) {
-      toast.presentSuccess('You password have been changed')
+      toast.present('You password have been changed', 'success')
       setOldPassword('')
       setNewPassword('')
       setNewPasswordConfirm('')
@@ -43,7 +43,7 @@ export const UpdatePassword: React.FC = () => {
 
   const submitPassword = useCallback(() => {
     updatePassword({ oldPassword, newPassword })
-  }, [ oldPassword, newPassword ])
+  }, [ oldPassword, newPassword, updatePassword ])
 
   return <FormBloc label="Update password">
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './styles.module.scss'
-import { FadedText, WarningText } from '@/components/ui';
+import { FadedText, GraphQLErrorText } from '@/components/ui';
 import { IonSpinner } from '@ionic/react';
 import { FormBloc } from '@/components/form';
 import { UpdateEmail, UpdatePassword } from '@/features/User';
@@ -13,7 +13,7 @@ export const Account: React.FC = () => {
     <h2>Account</h2>
 
     { isLoading && <IonSpinner/> }
-    { error && <WarningText error={ error }/> }
+    { error && <GraphQLErrorText error={ error }/> }
 
     { user && <div className={ styles.content }>
         <FormBloc>

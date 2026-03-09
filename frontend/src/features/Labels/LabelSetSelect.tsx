@@ -1,9 +1,9 @@
-import React, { Fragment, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { IonNote } from '@ionic/react';
 import { Select } from '@/components/form';
-import { WarningText } from '@/components/ui';
 import { LabelSetFeaturesSelect } from './LabelSetFeaturesSelect';
 import { AnnotationLabelNode, LabelSetNode, Maybe, useAllLabelSets } from '@/api';
+import { GraphQLErrorText } from '@/components/ui';
 
 type Label = Pick<AnnotationLabelNode, 'id' | 'name'>
 type LabelSet = Pick<LabelSetNode, 'id' | 'description'> & {
@@ -35,9 +35,8 @@ export const LabelSetSelect: React.FC<{
     onSelected(allLabelSets?.find(s => s?.id === pk) ?? undefined)
   }, [ onSelected, allLabelSets ])
 
-  if (fetchingError) return <WarningText message="Fail loading label sets" error={ fetchingError }/>
+  if (fetchingError) return <GraphQLErrorText error={ fetchingError }/>
 
-  if (!allLabelSets) return <Fragment/>
   return <Select label="Label set"
                  placeholder={ placeholder }
                  error={ labelSetError }
@@ -58,7 +57,7 @@ export const LabelSetSelect: React.FC<{
                                           labelsWithAcousticFeatures={ labelsWithAcousticFeatures }
                                           setLabelsWithAcousticFeatures={ setLabelsWithAcousticFeatures }/> }
 
-    { allLabelSets.length === 0 &&
+    { allLabelSets?.length === 0 &&
         <IonNote>You need to create a label set to use it in your campaign</IonNote> }
   </Select>
 }

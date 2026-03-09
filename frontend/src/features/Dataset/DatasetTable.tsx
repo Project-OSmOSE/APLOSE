@@ -1,7 +1,7 @@
 import React, { Fragment, useMemo } from 'react';
 import { IonNote, IonSkeletonText } from '@ionic/react';
 
-import { Table, TableContent, TableDivider, TableHead, WarningText } from '@/components/ui';
+import { GraphQLErrorText, Table, TableContent, TableDivider, TableHead } from '@/components/ui';
 import { dateToString } from '@/service/function';
 
 import { DatasetName } from './DatasetInfo';
@@ -26,7 +26,7 @@ export const DatasetTable: React.FC = () => {
     </Fragment>
   }, [ isFetching ])
 
-  if (error) return <WarningText error={ error }/>
+  if (error) return <GraphQLErrorText error={ error }/>
 
   if (isFetching) {
     const skeletons = Array.from(new Array(7));

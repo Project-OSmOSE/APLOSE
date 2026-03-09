@@ -9,8 +9,8 @@ export const MailButton: React.FC<{ user: Pick<UserNode, 'email' | 'displayName'
 
   const copy = useCallback(async () => {
     await navigator.clipboard.writeText(user.email)
-    toast.presentSuccess(`Successfully copy ${ user.displayName } email address into the clipboard`)
-  }, [ user ])
+    toast.present(`Successfully copy ${ user.displayName } email address into the clipboard`, 'success')
+  }, [ user, toast ])
 
   return <IonButton fill="clear" color="medium" size="small"
                     onClick={ copy } data-tooltip={ user.email }>

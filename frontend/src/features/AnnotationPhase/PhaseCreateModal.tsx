@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonSpinner } from '@ionic/react';
-import { Button, Modal, ModalHeader, WarningText } from '@/components/ui';
+import { Button, GraphQLErrorText, Modal, ModalHeader } from '@/components/ui';
 import { FormBloc, Input } from '@/components/form';
 import { LabelSetSelect } from '@/features/Labels';
 import { ConfidenceSetSelect } from '@/features/Confidence';
@@ -109,7 +109,7 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
 
             </FormBloc>
 
-            { error && <WarningText error={ error }/> }
+            { error && <GraphQLErrorText error={ error }/> }
         </div>
         <div className={ styles.buttons }>
             <Button color="medium" fill="clear" onClick={ onClose }>
@@ -159,7 +159,7 @@ export const AnnotationPhaseCreateVerificationModal: React.FC<{
             <p>Annotations come from the "Annotation" phase and may be created manually or imported (e.g., from an
                 automatic
                 detector).</p>
-            { error && <WarningText error={ error }/> }
+            { error && <GraphQLErrorText error={ error }/> }
         </div>
 
         <div className={ styles.buttons }>

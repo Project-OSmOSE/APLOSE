@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useRef } from 'react';
 import { useAnnotationTask } from '@/api';
 import { IonSpinner } from '@ionic/react';
-import { WarningText } from '@/components/ui';
+import { GraphQLErrorText } from '@/components/ui';
 import { AudioDownloadButton, CurrentTime, PlaybackRateSelect, PlayPauseButton, useAudio } from '@/features/Audio';
 import styles from './styles.module.scss';
 import { AnnotatorCanvasWindow } from '@/features/Annotator/Canvas';
@@ -66,7 +66,7 @@ export const AnnotatorPage: React.FC = () => {
     }, [ pointer.position ]);
 
     if (isFetching) return <AnnotatorSkeleton children={ <IonSpinner/> }/>
-    if (error) return <AnnotatorSkeleton children={ <WarningText error={ error }/> }/>
+    if (error) return <AnnotatorSkeleton children={ <GraphQLErrorText error={ error }/> }/>
     if (!spectrogram) return <AnnotatorSkeleton>
         <div></div>
     </AnnotatorSkeleton>

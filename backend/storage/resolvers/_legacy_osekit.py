@@ -1,5 +1,6 @@
 import csv
 from ast import literal_eval
+from functools import reduce
 from pathlib import PureWindowsPath
 from typing import TypedDict
 
@@ -101,7 +102,15 @@ class LegacyOSEkitResolver(StorageResolver):
     def __get_related_csv_datasets(self, path: str) -> list[LegacyCSVDataset]:
         if not self.__csv_datasets:
             self.__load_csv_datasets()
-        return [line for line in self.__csv_datasets if line["path"] in path]
+        return [
+            line
+            for line in self.__csv_datasets
+            if reduce(
+                lambda is_in, part: is_in and part in PureWindowsPath(path).parts,
+                PureWindowsPath(line["path"]).parts,
+                True,
+            )
+        ]
 
     def _get_dataset_for_path(
         self, path: str | None = None
@@ -307,7 +316,7 @@ class LegacyOSEkitResolver(StorageResolver):
     def get_spectrogram_paths(
         self, spectrogram: Spectrogram, analysis: SpectrogramAnalysis
     ) -> tuple[str | None, str | None]:
-        config = f"{int(analysis.data_duration)}_{analysis.fft.sampling_frequency}"
+        config = PureWindowsPath(analysis.path).parts[-2]
         return (
             make_static_url(
                 join(
@@ -321,7 +330,8 @@ class LegacyOSEkitResolver(StorageResolver):
                 join(
                     analysis.dataset.path,
                     analysis.path,
-                    f"{spectrogram.filename}_1_0.png",
+                    "image",
+                    f"{spectrogram.filename}.png",
                 )
             ),
         )

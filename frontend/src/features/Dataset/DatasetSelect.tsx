@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { IonSpinner } from '@ionic/react';
-import { Link, WarningText } from '@/components/ui';
+import { GraphQLErrorText, Link, WarningText } from '@/components/ui';
 import { ChipsInput, Select } from '@/components/form';
 import { useAllDatasetsAndAnalysis } from '@/api';
 
@@ -65,7 +65,7 @@ export const DatasetSelect: React.FC<{
     if (isFetching)
         return <IonSpinner/>
     if (error)
-        return <WarningText message="Fail loading datasets" error={ error }/>
+        return <GraphQLErrorText error={ error }/>
     if (!allDatasets || allDatasets.length === 0)
         return <WarningText message="You should first import dataset from Storage"
                             children={ <Link appPath="/storage">Storage</Link> }/>

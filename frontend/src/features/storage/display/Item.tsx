@@ -48,7 +48,7 @@ export const Item: React.FC<Props> = ({
     }, [ _setIsOpen, canToggle ])
 
     // Import
-    const { importDataset, isLoading, error } = useImportDatasetFromStorage()
+    const { importDataset, isLoading } = useImportDatasetFromStorage()
     const toast = useToast()
     const canImport = useMemo(() => {
         if (!item || item.error || isLoading) return false
@@ -63,23 +63,24 @@ export const Item: React.FC<Props> = ({
     const download = useCallback((event: MouseEvent) => {
         event.stopPropagation()
         if (!canImport || !item) return;
+        let importCall;
         switch (item.__typename) {
             case 'DatasetStorageNode':
-                importDataset({
+                importCall = importDataset({
                     datasetPath: item.path,
-                }).unwrap().finally(onUpdated)
+                })
                 break;
             case 'AnalysisStorageNode':
-                importDataset({
+                importCall = importDataset({
                     analysisPath: item.path,
                     datasetPath: parentItem!.path,
-                }).unwrap().finally(onUpdated)
+                })
                 break;
+            default:
+                return;
         }
-    }, [ canImport, item, importDataset, onUpdated, parentItem ])
-    useEffect(() => {
-        if (error) toast.raiseError({ error: error })
-    }, [ error ]);
+        importCall.unwrap().catch(error => toast.raiseError({ gqlError: error })).finally(onUpdated)
+    }, [ canImport, item, importDataset, onUpdated, parentItem, toast ])
     useEffect(() => {
         return () => {
             toast.dismiss();

@@ -116,7 +116,9 @@ class OSEkitResolver(LegacyOSEkitResolver):
             d["dataset"]
             for d in osekit_dataset.datasets.values()
             if d["class"] == SpectroDataset.__name__
-            and make_path_relative(d["dataset"].folder, to=analysis.dataset.path)
+            and make_path_relative(
+                d["dataset"].folder, to=clean_path(osekit_dataset.folder)
+            )
             == analysis.path
         ]
         if len(sd) == 0:

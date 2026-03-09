@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import styles from './styles.module.scss';
 import { IonSkeletonText, IonSpinner } from '@ionic/react';
-import { FadedText, Head, Link, WarningText } from '@/components/ui';
+import { FadedText, GraphQLErrorText, Head, Link } from '@/components/ui';
 import { dateToString } from '@/service/function';
 import { MailButton } from '@/features/User';
 import { AnnotationPhaseTab } from '@/features/AnnotationPhase';
@@ -31,7 +31,7 @@ export const AnnotationCampaignDetail: React.FC = () => {
             <IonSkeletonText animated style={ { width: 512, height: '1ch', justifySelf: 'center' } }/> }/>
 
     { isFetching && <IonSpinner/> }
-    { error && <WarningText error={ error }/> }
+    { error && <GraphQLErrorText error={ error }/> }
 
     { campaign && <div style={ {
       height: '100%',

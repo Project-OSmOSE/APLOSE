@@ -68,7 +68,7 @@ export const CopyErrorStackButton: React.FC<{ stack: any, withLabel?: boolean }>
 
     const copy = useCallback(async () => {
         await navigator.clipboard.writeText(typeof stack == 'string' ? stack : JSON.stringify(stack))
-        toast.presentInfo(`Error stack trace has been copied into the clipboard`)
+        toast.present(`Error stack trace has been copied into the clipboard`, 'medium')
     }, [ toast, stack ])
 
     return useMemo(() =>

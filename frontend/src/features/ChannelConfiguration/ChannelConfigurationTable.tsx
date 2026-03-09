@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { IonNote, IonSpinner } from '@ionic/react';
 
-import { FadedText, Table, TableContent, TableDivider, TableHead, WarningText } from '@/components/ui';
+import { FadedText, GraphQLErrorText, Table, TableContent, TableDivider, TableHead } from '@/components/ui';
 import { useAllChannelConfigurations } from '@/api';
 import styles from './styles.module.scss'
 
@@ -15,7 +15,7 @@ export const ChannelConfigurationTable: React.FC<{ datasetID: string }> = ({ dat
   } = useAllChannelConfigurations({ datasetID });
 
   if (isLoading) return <IonSpinner/>
-  if (error) return <WarningText error={ error }/>
+  if (error) return <GraphQLErrorText error={ error }/>
   if (!allChannelConfigurations || allChannelConfigurations.length === 0)
     return <IonNote color="medium">No acquisition information</IonNote>
 

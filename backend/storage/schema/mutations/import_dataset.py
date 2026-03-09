@@ -61,9 +61,7 @@ class ImportDatasetMutation(Mutation):
             sa.dataset = resolver.dataset
 
             sa.fft, _ = FFT.objects.get_or_create(**model_to_dict(sa.fft))
-            sa.colormap, _ = Colormap.objects.get_or_create(
-                **model_to_dict(sa.colormap)
-            )
+            sa.colormap, _ = Colormap.objects.get_or_create(name=sa.colormap.name)
             sa.save()
 
             resolver.create_legacy_configuration(sa)

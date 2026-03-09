@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 import {
-  Button,
+  Button, GraphQLErrorText,
   Modal,
   ModalFooter,
   ModalHeader,
@@ -12,7 +12,6 @@ import {
   TableDivider,
   TableHead,
   useToast,
-  WarningText,
 } from '@/components/ui';
 import { IonIcon, IonNote, IonSpinner } from '@ionic/react';
 import { caretDown, caretUp, downloadOutline } from 'ionicons/icons/index.js';
@@ -120,8 +119,8 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
 
       { (isLoadingUsers || isLoadingFileRanges) && <IonSpinner/> }
 
-      { userError && <WarningText error={ userError }/> }
-      { fileRangeError && <WarningText error={ fileRangeError }/> }
+      { userError && <GraphQLErrorText error={ userError }/> }
+      { fileRangeError && <GraphQLErrorText error={ fileRangeError }/> }
 
       { (!isLoadingUsers && !isLoadingFileRanges) && progress.length === 0 && <IonNote>No annotators</IonNote> }
 

@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styles from './styles.module.scss'
 import { IonIcon, IonSpinner } from '@ionic/react';
-import { Pagination, Table, TableDivider, TableHead, useModal, WarningText } from '@/components/ui';
+import { GraphQLErrorText, Pagination, Table, TableDivider, TableHead, useModal, WarningText } from '@/components/ui';
 import { AnnotationsFilterModal, DateFilter, StatusFilter } from '@/features/AnnotationTask';
 import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
 import { useAllAnnotationTasks, useAllTasksFilters, useCurrentCampaign, useCurrentPhase } from '@/api';
@@ -85,7 +85,7 @@ export const AnnotationCampaignPhaseDetail: React.FC = () => {
             { allSpectrograms && allSpectrograms.length > 0 &&
                 <Pagination currentPage={ params.page ?? 1 } totalPages={ pageCount } setCurrentPage={ updatePage }/> }
 
-            { error && <WarningText error={ error }/> }
+            { error && <GraphQLErrorText error={ error }/> }
             { !isFetching && !error && (!allSpectrograms || allSpectrograms.length === 0) &&
                 <p>You have no files to annotate.</p> }
             { campaign?.isArchived ? <p>The campaign is archived. No more annotation can be done.</p> :

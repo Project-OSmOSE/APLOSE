@@ -111,5 +111,5 @@ class SpectrogramPathsTestCase(ExtendedTestCase):
         )
         self.assertEqual(
             content["spectrogramPath"],
-            "/backend/static/legacy/good/gliderSPAmsDemo/processed/spectrogram/600_480/4096_512_85/29_30_280219_135150_250_HYDRO_1_0.png",
+            "/backend/static/legacy/good/gliderSPAmsDemo/processed/spectrogram/600_480/4096_512_85/image/29_30_280219_135150_250_HYDRO.png",
         )

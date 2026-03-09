@@ -1,16 +1,16 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './styles.module.scss';
-import { Head, Table, TableDivider, TableHead, useToast, WarningText } from '@/components/ui';
+import { GraphQLErrorText, Head, Table, TableDivider, TableHead, useToast } from '@/components/ui';
 import { IonButton, IonNote, IonSkeletonText, IonSpinner } from '@ionic/react';
 import { getNewItemID } from '@/service/function';
 import { FormBloc, type Item, ListSearchbar, type SearchItem } from '@/components/form';
 import {
-  AnnotationFileRangeInput,
-  useAllFileRanges,
-  useAllUsers,
-  useCurrentCampaign,
-  useCurrentPhase,
-  useUpdateFileRanges,
+    AnnotationFileRangeInput,
+    useAllFileRanges,
+    useAllUsers,
+    useCurrentCampaign,
+    useCurrentPhase,
+    useUpdateFileRanges,
 } from '@/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import { QueryStatus } from '@reduxjs/toolkit/query';
@@ -155,11 +155,11 @@ export const EditAnnotators: React.FC = () => {
       {/* Loading */ }
       { (isFetchingCampaign || isFetchingUsers || isFetchingFileRanges) && <IonSpinner/> }
       { errorLoadingCampaign &&
-          <WarningText message="Fail loading campaign" error={ errorLoadingCampaign }/> }
+          <GraphQLErrorText error={ errorLoadingCampaign }/> }
       { errorLoadingUsers &&
-          <WarningText message="Fail loading users" error={ errorLoadingUsers }/> }
+          <GraphQLErrorText error={ errorLoadingUsers }/> }
       { errorLoadingFileRanges &&
-          <WarningText message="Fail loading file ranges" error={ errorLoadingFileRanges }/> }
+          <GraphQLErrorText error={ errorLoadingFileRanges }/> }
 
       { !(isFetchingCampaign || isFetchingUsers || isFetchingFileRanges) &&
           <Table columns={ 3 } className={ styles.table }>
