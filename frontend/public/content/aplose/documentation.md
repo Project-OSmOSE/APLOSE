@@ -1,3 +1,4 @@
+
 # APLOSE Documentation
 
 Audio Processing and Annotation Workflow Guide
@@ -118,6 +119,29 @@ Example JSON metadata:
 ```
 
 For the full list of options see the [APLOSE Audio Processor README](https://github.com/sebastianmenze/APLOSE-IMR/tree/main/aplose_audio_processor).
+
+
+### Converting Soundtrap SUD files into wav files (on server)
+
+The Soundtrap Host or Card reader GUI can be used to convert .sud files int .wav files, but need to be run on your local PC and can take many hours or days to convert a full year of data. It is more practical to run this file conversion on a server, for example anhur.im.no or another unix server. A python & java command line tool to convert the files can be found here: [https://github.com/sebastianmenze/SUD2WAV_cmd/tree/claude/python-only-sud2wav-Im9d8](https://github.com/sebastianmenze/SUD2WAV_cmd/tree/claude/python-only-sud2wav-Im9d8)
+
+ Open an SSH session and download the conversion scripts, than run them as tmux session in the background:
+```
+# if first time user, download the conversion scripts
+git clone https://github.com/sebastianmenze/SUD2WAV_cmd.git
+git pull origin claude/python-only-sud2wav-Im9d8
+
+cd SUD2WAV_cmd/python_pkg
+# One-time setup - downloads JARs from Maven Central,
+# fetches x3 source from GitHub, compiles with javac
+python setup_java.py
+
+# now you can run conversions
+tmux new -s conversion
+# navigate to /SUD2WAV_cmd/python_pkg
+python -m sud2wav /path/to/input /path/to/output
+# Ctrl+b then d: Detaches from the current session, keeping it running in the background.
+```
 
 ---
 
