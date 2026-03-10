@@ -1,6 +1,6 @@
-import React, { Fragment, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { type Annotation, useUpdateAnnotation } from '@/features/Annotator/Annotation';
-import { TableContent, TableDivider } from '@/components/ui';
+import { Td, Th, Tr } from '@/components/ui';
 import { useAnnotationTask, useCurrentPhase } from '@/api';
 import { Input } from '@/components/form';
 import styles from './styles.module.scss';
@@ -23,16 +23,17 @@ export const Duration: React.FC<{ annotation: Annotation }> = ({ annotation }) =
         return +(maxTime - minTime).toFixed(3)
     }, [ annotation?.startTime, annotation?.endTime ]);
 
-    return <Fragment>
-        <TableContent isFirstColumn>Duration</TableContent>
-        <TableContent className={ [ styles.inputCell, styles.span2ColsEnd ].join(' ') }>
-            <Input value={ duration } type="number"
-                   step={ 0.001 }
-                   min={ 0.01 } max={ spectrogram?.duration ?? 0 }
-                   disabled={ phase?.phase === 'Verification' }
-                   onChange={ e => onDurationUpdate(+e.currentTarget.value) }/>
-            <IonNote>s</IonNote>
-        </TableContent>
-        <TableDivider/>
-    </Fragment>
+    return <Tr>
+        <Th scope="col">Duration</Th>
+        <Td colSpan={ 2 }>
+            <div className={ [styles.inputCell, styles.duration].join(' ') }>
+                <Input className={styles.input} value={ duration } type="number"
+                       step={ 0.001 }
+                       min={ 0.01 } max={ spectrogram?.duration ?? 0 }
+                       disabled={ phase?.phase === 'Verification' }
+                       onChange={ e => onDurationUpdate(+e.currentTarget.value) }/>
+                <IonNote>s</IonNote>
+            </div>
+        </Td>
+    </Tr>
 }

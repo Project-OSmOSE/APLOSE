@@ -13,38 +13,43 @@ import { ImportDatasetAnalysisModal } from '@/features/storage';
 
 
 export const DatasetDetail: React.FC = () => {
-  const { datasetID: id } = useParams<DataNavParams>();
+    const { datasetID: id } = useParams<DataNavParams>();
 
-  const { dataset, isLoading, error } = useDataset({ id })
+    const { dataset, isLoading, error } = useDataset({ id })
 
-  const importAnalysisModal = useModal(ImportDatasetAnalysisModal);
+    const importAnalysisModal = useModal(ImportDatasetAnalysisModal);
 
-  if (isLoading) return <Fragment><DatasetHead/><IonSpinner/></Fragment>
-  if (error) return <Fragment><DatasetHead/><GraphQLErrorText error={ error }/></Fragment>
-  if (!dataset) return <Fragment><DatasetHead/><WarningText message="Dataset not found"/></Fragment>
-  return <Fragment>
-    <DatasetHead/>
+    if (isLoading) return <Fragment><DatasetHead/><IonSpinner/></Fragment>
+    if (error) return <Fragment><DatasetHead/><GraphQLErrorText error={ error }/></Fragment>
+    if (!dataset) return <Fragment><DatasetHead/><WarningText message="Dataset not found"/></Fragment>
+    return <Fragment>
+        <DatasetHead/>
 
-    <div style={ { overflowX: 'hidden', display: 'grid', gap: '4rem' } }>
+        <div style={ { overflowX: 'hidden', display: 'grid', gap: '4rem' } }>
 
-      <ChannelConfigurationTable datasetID={ dataset.id }/>
+            <div>
+                <h5>Channel configurations</h5>
+                <ChannelConfigurationTable datasetID={ dataset.id }/>
+            </div>
 
-      <div style={ { overflowX: 'hidden', display: 'grid', gap: '1rem' } }>
-        <SpectrogramAnalysisTable datasetID={ dataset.id }/>
+            <div style={ { overflowX: 'hidden', display: 'grid', gap: '1rem' } }>
+                <h5>Analysis</h5>
 
-        <IonButton color="primary" fill="clear"
-                   style={ { zIndex: 2, justifySelf: 'center' } }
-                   onClick={ importAnalysisModal.toggle }>
-          <IonIcon icon={ downloadOutline } slot="start"/>
-          Import analysis
-        </IonButton>
-      </div>
-    </div>
+                <SpectrogramAnalysisTable datasetID={ dataset.id }/>
 
-    <DatasetInfoCreation/>
+                <IonButton color="primary" fill="clear"
+                           style={ { zIndex: 2, justifySelf: 'center' } }
+                           onClick={ importAnalysisModal.toggle }>
+                    <IonIcon icon={ downloadOutline } slot="start"/>
+                    Import analysis
+                </IonButton>
+            </div>
+        </div>
 
-    { importAnalysisModal.element }
-  </Fragment>
+        <DatasetInfoCreation/>
+
+        { importAnalysisModal.element }
+    </Fragment>
 }
 
 export default DatasetDetail

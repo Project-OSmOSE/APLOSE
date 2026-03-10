@@ -29,46 +29,33 @@
     padding: 1rem;
     flex-wrap: wrap;
 
-    .table {
-      overflow: visible;
+    .checkCell, .inputCell, .cellButton {
+      display: grid;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: start;
+    }
 
-      .span3Cols {
-        grid-column: 1 / 4;
+    .inputCell  {
+      grid-template-columns:6rem 2ch;
+
+      &.cellButton {
+        grid-template-columns:6rem 2ch auto;
       }
 
-      .span2ColsEnd {
-        grid-column: 2 / 4;
+      &.checkCell {
+        grid-template-columns: auto 10rem;
       }
+    }
 
-      .frequencyCell {
-        grid-row: 1 / 20;
-      }
+    .input {
+      max-width: 6rem;
+    }
 
-      .phenomenaCell {
-        grid-row: 25 / 33;
-      }
-
-      .checkCell, .inputCell, .cellButton {
-        display: grid;
-        align-items: center;
-        gap: 0.5rem;
-        justify-content: start;
-      }
-
-      .inputCell {
-        grid-template-columns:6rem 2ch;
-
-        &.cellButton {
-          grid-template-columns:6rem 2ch auto;
-        }
-
-        &.checkCell {
-          grid-template-columns: auto 6rem;
-        }
-      }
-
+    .inputCell.duration {
+      grid-template-columns:10rem 2ch;
       .input {
-        max-width: 6rem;
+        max-width: 10rem;
       }
     }
 

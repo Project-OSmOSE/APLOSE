@@ -7,6 +7,7 @@ export type ListCampaignsQueryVariables = Types.Exact<{
   filter_phase?: Types.InputMaybe<Types.AnnotationPhaseType>;
   filter_ownerID?: Types.InputMaybe<Types.Scalars['ID']['input']>;
   filter_annotatorID?: Types.InputMaybe<Types.Scalars['ID']['input']>;
+  filter_datasetID?: Types.InputMaybe<Types.Scalars['ID']['input']>;
 }>;
 
 
@@ -55,13 +56,14 @@ export type UpdateCampaignFeaturedLabelsMutation = { __typename?: 'Mutation', up
 
 
 export const ListCampaignsDocument = `
-    query listCampaigns($search: String, $filter_isArchived: Boolean, $filter_phase: AnnotationPhaseType, $filter_ownerID: ID, $filter_annotatorID: ID) {
+    query listCampaigns($search: String, $filter_isArchived: Boolean, $filter_phase: AnnotationPhaseType, $filter_ownerID: ID, $filter_annotatorID: ID, $filter_datasetID: ID) {
   allAnnotationCampaigns(
     isArchived: $filter_isArchived
     phases_Phase: $filter_phase
     ownerId: $filter_ownerID
     phases_AnnotationFileRanges_AnnotatorId: $filter_annotatorID
     search: $search
+    analysis_DatasetId: $filter_datasetID
     orderBy: "name"
   ) {
     results {

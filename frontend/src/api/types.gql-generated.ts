@@ -447,6 +447,7 @@ export type AnnotationLabelNodeAnnotationSetArgs = {
 /** Label schema */
 export type AnnotationLabelNodeAnnotationcampaignSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
+  analysis_DatasetId?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isArchived?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1919,6 +1920,7 @@ export type ConfidenceSetNode = ExtendedInterface & {
 /** ConfidenceSet schema */
 export type ConfidenceSetNodeAnnotationcampaignSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
+  analysis_DatasetId?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isArchived?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2020,6 +2022,7 @@ export type DatasetNode = ExtendedInterface & {
 /** Dataset schema */
 export type DatasetNodeAnnotationCampaignsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
+  analysis_DatasetId?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isArchived?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3271,6 +3274,7 @@ export type LabelSetNode = ExtendedInterface & {
 /** LabelSet schema */
 export type LabelSetNodeAnnotationcampaignSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
+  analysis_DatasetId?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isArchived?: InputMaybe<Scalars['Boolean']['input']>;
@@ -4605,6 +4609,7 @@ export type Query = {
 /** Global query */
 export type QueryAllAnnotationCampaignsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
+  analysis_DatasetId?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isArchived?: InputMaybe<Scalars['Boolean']['input']>;
@@ -6321,6 +6326,7 @@ export type SpectrogramAnalysisNode = ExtendedInterface & {
 /** SpectrogramAnalysis schema */
 export type SpectrogramAnalysisNodeAnnotationCampaignsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
+  analysis_DatasetId?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isArchived?: InputMaybe<Scalars['Boolean']['input']>;
@@ -6897,6 +6903,7 @@ export type UserNodeAnnotationTasksArgs = {
 /** User node */
 export type UserNodeAnnotationcampaignSetArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
+  analysis_DatasetId?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isArchived?: InputMaybe<Scalars['Boolean']['input']>;

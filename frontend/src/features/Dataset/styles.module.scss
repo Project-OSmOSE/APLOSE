@@ -29,3 +29,16 @@
     overflow: auto;
   }
 }
+
+.light {
+  font-weight: 300;
+}
+
+.campaignList {
+  display: grid;
+  justify-items: start;
+}
+
+.dates {
+  text-wrap: nowrap;
+}

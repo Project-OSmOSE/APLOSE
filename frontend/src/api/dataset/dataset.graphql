@@ -11,6 +11,15 @@ query listDatasets {
             spectrogramCount
             start
             end
+            annotationCampaigns {
+                edges {
+                    node {
+                        id
+                        name
+                        isArchived
+                    }
+                }
+            }
         }
     }
 }

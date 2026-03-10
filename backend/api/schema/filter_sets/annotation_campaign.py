@@ -25,6 +25,7 @@ class AnnotationCampaignFilterSet(ExtendedFilterSet):
         fields = {
             "phases__annotation_file_ranges__annotator_id": ("exact",),
             "owner_id": ("exact",),
+            "analysis__dataset_id": ("exact",),
         }
 
     order_by = OrderingFilter(fields=(("name", "name"),))

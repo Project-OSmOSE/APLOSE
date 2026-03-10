@@ -107,7 +107,6 @@ class AnnotationCampaignNode(ExtendedNode):
             super()
             .resolve_queryset(queryset, info)
             .distinct()
-            .select_related("dataset")
             .prefetch_related("phases")
             .annotate(
                 dataset_name=F("dataset__name"),

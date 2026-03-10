@@ -6,7 +6,7 @@ import { CopyErrorStackButton } from '@/components/ui/Button';
 import type { GqlError } from '@/api/baseGqlApi';
 
 export const FadedText: React.FC<{ children: ReactNode }> = ({ children }) => (
-    <p className={ styles.fadedText }>{ children }</p>
+    <span className={ styles.fadedText }>{ children }</span>
 )
 
 export const WarningText: React.FC<{
