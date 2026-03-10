@@ -1,6 +1,6 @@
 import React, { Fragment, MouseEvent, useCallback, useMemo } from 'react';
 import { type Annotation, focusAnnotation } from './slice';
-import { TableContent, useModal } from '@/components/ui';
+import { Td, Th, Tr, useModal } from '@/components/ui';
 import styles from './styles.module.scss';
 import { AnnotationLabelInfo } from './AnnotationLabelInfo';
 import {
@@ -62,7 +62,7 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
     })
     const invalidateModal = useModal(InvalidateAnnotationModal, {
         annotation,
-        onAskLabelChange: labelModal.open
+        onAskLabelChange: labelModal.open,
     })
     const dispatch = useAppDispatch();
 
@@ -74,10 +74,6 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
     }, [ annotations, annotation, user, phase ])
 
     const isActive = useMemo(() => annotation.id === focusedAnnotation?.id ? styles.active : undefined, [ annotation, focusedAnnotation ])
-
-    const className = useMemo(() => {
-        return [ styles.item, isActive ].join(' ')
-    }, [ isActive ])
 
     const onClick = useCallback(() => {
         dispatch(focusAnnotation(annotation))
@@ -105,54 +101,45 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
     }, [ annotation, removeAnnotation, isActive, getAnnotations ]);
     useKeyDownEvent([ 'Delete' ], remove);
 
-    return <Fragment>
+    return <Tr className={ annotation.id !== focusedAnnotation?.id ? 'disabled' : '' } onClick={ onClick }>
 
         {/* Label */ }
-        <TableContent isFirstColumn={ true }
-                      className={ [ className, annotation.type === AnnotationType.Weak ? styles.presenceLabel : styles.strongLabel ].join(' ') }
-                      onClick={ onClick }>
+        <Th scope="row"
+            colSpan={ annotation.type === AnnotationType.Weak ? 3 : 1 }>
             <AnnotationLabelInfo annotation={ annotation }/>
-        </TableContent>
+        </Th>
 
         {/* Time & Frequency */ }
         { annotation.type !== AnnotationType.Weak && <Fragment>
-            <TableContent className={ className } onClick={ onClick }>
-                <AnnotationTimeInfo annotation={ annotation }/>
-            </TableContent>
-            <TableContent className={ className } onClick={ onClick }>
-                <AnnotationFrequencyInfo annotation={ annotation }/>
-            </TableContent>
+            <Td><AnnotationTimeInfo annotation={ annotation }/></Td>
+            <Td><AnnotationFrequencyInfo annotation={ annotation }/></Td>
         </Fragment> }
 
         {/* Confidence */ }
-        { campaign?.confidenceSet && <TableContent className={ className } onClick={ onClick }>
-            <AnnotationConfidenceInfo annotation={ annotation }/>
-        </TableContent> }
+        { campaign?.confidenceSet && <Td><AnnotationConfidenceInfo annotation={ annotation }/></Td> }
 
         {/* Detector | Annotator */ }
         { phaseType === AnnotationPhaseType.Verification && (
             completeInfo?.detectorConfiguration ?
-                <TableContent className={ className } onClick={ onClick }>
+                <Td>
                     <RiRobot2Fill/>
                     <p>{ completeInfo?.detectorConfiguration.detector.name }</p>
-                </TableContent>
+                </Td>
                 :
-                <TableContent
-                    className={ [ className, completeInfo?.annotator?.id === user?.id ? 'disabled' : '' ].join(' ') }
-                    onClick={ onClick }>
+                <Td className={ completeInfo?.annotator?.id === user?.id ? 'disabled' : '' }>
                     <RiUser3Fill/>
                     <p>{ completeInfo?.annotator?.displayName } { completeInfo?.annotator?.id === user?.id ? '(self)' : '' }</p>
-                </TableContent>
+                </Td>
         ) }
 
         {/* Comments */ }
-        <TableContent className={ className } onClick={ onClick }>
+        <Td>
             { annotation.comments && annotation.comments.length > 0 ? <IoChatbubbleEllipses/> : <IoChatbubbleOutline/> }
-        </TableContent>
+        </Td>
 
         {/* Validation */ }
         { phaseType === AnnotationPhaseType.Verification &&
-            <TableContent className={ className } onClick={ onClick }>
+            <Td>
                 { completeInfo?.annotator?.id !== user?.id ? <Fragment>
                     <IonButton className="validate"
                                data-testid="validate"
@@ -169,9 +156,9 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
                         <IonIcon slot="icon-only" icon={ closeOutline }/>
                     </IonButton>
                 </Fragment> : <Fragment/> }
-            </TableContent> }
+            </Td> }
 
         { invalidateModal.element }
         { labelModal.element }
-    </Fragment>
+    </Tr>
 }

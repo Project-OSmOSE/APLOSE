@@ -8,6 +8,7 @@ function reset(state: AllCampaignFilters) {
   state.filter_annotatorID = undefined;
   state.filter_ownerID = undefined;
   state.filter_isArchived = undefined;
+  state.filter_datasetID = undefined;
   state.filter_phase = undefined;
   state.search = undefined;
 }

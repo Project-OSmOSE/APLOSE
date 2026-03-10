@@ -62,29 +62,6 @@
       }
     }
 
-    .progressContent {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      gap: 0.5rem;
-
-      > div {
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        align-items: center;
-        gap: 0 0.25rem;
-
-        .total {
-          grid-column: 1 / -1;
-          text-align: center;
-          line-height: 0.9rem;
-        }
-      }
-
-      .icon {
-        font-size: .95rem;
-      }
-    }
   }
 
   .buttons {
@@ -143,9 +120,27 @@
     }
   }
 }
+
 .annotatorButton {
   --padding-bottom: 0.25rem;
   --padding-top: 0.25rem;
   --padding-start: 0.5rem;
   --padding-end: 0.5rem;
+}
+
+.progressContent {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0 0.25rem;
+
+  .total {
+    grid-column: 1 / -1;
+    text-align: center;
+    line-height: 0.9rem;
+  }
+
+  .icon {
+    font-size: .95rem;
+  }
 }

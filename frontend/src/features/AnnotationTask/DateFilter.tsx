@@ -1,5 +1,5 @@
 import React, { ChangeEvent, Fragment, useCallback, useMemo, useState } from 'react';
-import { Button, Modal } from '@/components/ui';
+import { Button, Modal, type ModalProps } from '@/components/ui';
 import { Input } from '@/components/form';
 import { IonIcon } from '@ionic/react';
 import { closeOutline, funnel, funnelOutline } from 'ionicons/icons/index.js';
@@ -7,13 +7,10 @@ import { createPortal } from 'react-dom';
 import { useAllTasksFilters } from '@/api';
 import styles from './styles.module.scss'
 
-export const DateFilter: React.FC<{
+export const DateFilterModal: React.FC<ModalProps & {
   onUpdate: () => void
-}> = ({ onUpdate }) => {
+}> = ({ onUpdate, onClose }) => {
   const { params, updateParams } = useAllTasksFilters()
-
-  const hasDateFilter = useMemo(() => !!params.to || !!params.from, [ params ]);
-  const [ filterModalOpen, setFilterModalOpen ] = useState<boolean>(false);
 
   const minDate: string = useMemo(() => {
     if (!params.from) return '';
@@ -47,29 +44,24 @@ export const DateFilter: React.FC<{
   const setMin = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     updateParams({ from: getDateString(event) })
     onUpdate()
-  }, [])
+  }, [updateParams, onUpdate])
   const resetMin = useCallback(() => {
     updateParams({ from: undefined })
     onUpdate()
-  }, [])
+  }, [updateParams, onUpdate])
 
   const setMax = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     updateParams({ to: getDateString(event) })
     onUpdate()
-  }, [])
+  }, [updateParams, onUpdate])
   const resetMax = useCallback(() => {
     updateParams({ to: undefined })
     onUpdate()
-  }, [])
+  }, [updateParams, onUpdate])
 
 
-  return <Fragment>
-    { hasDateFilter ?
-      <IonIcon onClick={ () => setFilterModalOpen(true) } color="primary" icon={ funnel }/> :
-      <IonIcon onClick={ () => setFilterModalOpen(true) } color="dark" icon={ funnelOutline }/> }
-
-    { filterModalOpen && createPortal(<Modal className={ styles.dateFilterModal }
-                                             onClose={ () => setFilterModalOpen(false) }>
+  return <Modal className={ styles.dateFilterModal }
+                                             onClose={ onClose }>
       <Input label="Minimum date" type="datetime-local" placeholder="Min date" step="1"
              value={ minDate } onChange={ setMin }/>
       <Button fill="clear" onClick={ resetMin } disabled={ !minDate }>
@@ -81,6 +73,5 @@ export const DateFilter: React.FC<{
       <Button fill="clear" onClick={ resetMax } disabled={ !maxDate }>
         <IonIcon icon={ closeOutline }/>
       </Button>
-    </Modal>, document.body) }
-  </Fragment>
+    </Modal>
 }

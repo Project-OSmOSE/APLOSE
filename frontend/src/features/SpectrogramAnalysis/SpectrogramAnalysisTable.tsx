@@ -1,70 +1,70 @@
-import React, { Fragment, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { IonIcon, IonNote, IonSpinner } from '@ionic/react';
 import { downloadOutline } from 'ionicons/icons/index.js';
 import { dateToString } from '@/service/function';
-import { Button, GraphQLErrorText, Table, TableContent, TableDivider, TableHead, useToast } from '@/components/ui';
-import styles from './styles.module.scss'
+import { Button, GraphQLErrorText, Table, Tbody, Td, Th, Thead, Tr, useToast } from '@/components/ui';
 import { ListSpectrogramAnalysisQueryVariables, useAllSpectrogramAnalysis } from '@/api';
 import { useDownloadAnalysis } from '@/api/download';
 
 export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVariables> = (option) => {
 
-  const {
-    data,
-    isLoading,
-    error,
-    isFetching,
-  } = useAllSpectrogramAnalysis(option);
-  const analysis = useMemo(() => data?.allSpectrogramAnalysis?.results.filter(r => r && r.spectrograms).map(r => r!), [ data ])
-  const [ downloadAnalysis, { error: downloadError } ] = useDownloadAnalysis()
-  const toast = useToast()
+    const {
+        data,
+        error,
+        isFetching,
+    } = useAllSpectrogramAnalysis(option);
+    const analysis = useMemo(() => data?.allSpectrogramAnalysis?.results.filter(r => r && r.spectrograms).map(r => r!), [ data ])
+    const [ downloadAnalysis, { error: downloadError } ] = useDownloadAnalysis()
+    const toast = useToast()
 
-  useEffect(() => {
-    if (downloadError) toast.raiseError({ error: downloadError })
-  }, [ downloadError ]);
+    useEffect(() => {
+        if (downloadError) toast.raiseError({ error: downloadError })
+    }, [ downloadError ]);
 
 
-  if (isLoading) return <IonSpinner/>
-  if (error) return <GraphQLErrorText error={ error }/>
-  if (!analysis || analysis.length === 0) return <IonNote color="medium">No spectrogram analysis</IonNote>
+    if (isFetching) return <IonSpinner/>
+    if (error) return <GraphQLErrorText error={ error }/>
+    if (!analysis || analysis.length === 0) return <IonNote color="medium">No spectrogram analysis</IonNote>
 
-  return <Table columns={ 12 }>
-    <TableHead topSticky isFirstColumn={ true }>
-      Analysis
-      { isFetching && <IonSpinner className={ styles.gridSpinner }/> }
-    </TableHead>
-    <TableHead topSticky>Type</TableHead>
-    <TableHead topSticky>Created at</TableHead>
-    <TableHead topSticky>Number of files</TableHead>
-    <TableHead topSticky>Start date</TableHead>
-    <TableHead topSticky>End date</TableHead>
-    <TableHead topSticky>File duration</TableHead>
-    <TableHead topSticky>Sampling frequency</TableHead>
-    <TableHead topSticky>NFFT</TableHead>
-    <TableHead topSticky>Window size</TableHead>
-    <TableHead topSticky>Overlap</TableHead>
-    <TableHead topSticky>Configuration</TableHead>
-    <TableDivider/>
+    return <Table>
+        <Thead>
+            <Tr>
+                <Th scope="col">Analysis</Th>
+                <Th scope="col">Type</Th>
+                <Th scope="col">Created at</Th>
+                <Th scope="col">Number of files</Th>
+                <Th scope="col">Start date</Th>
+                <Th scope="col">End date</Th>
+                <Th scope="col">File duration</Th>
+                <Th scope="col">Sampling frequency</Th>
+                <Th scope="col">NFFT</Th>
+                <Th scope="col">Window size</Th>
+                <Th scope="col">Overlap</Th>
+                <Th scope="col">Configuration</Th>
+            </Tr>
+        </Thead>
 
-    { analysis.map(analysis => <Fragment key={ analysis.name }>
-      <TableContent isFirstColumn={ true }>{ analysis.name }</TableContent>
-      <TableContent>Spectrogram</TableContent>
-      <TableContent>{ dateToString(analysis.createdAt) }</TableContent>
-      <TableContent>{ analysis.spectrograms!.totalCount }</TableContent>
-      <TableContent>{ dateToString(analysis.start) }</TableContent>
-      <TableContent>{ dateToString(analysis.end) }</TableContent>
-      <TableContent>{ analysis.dataDuration }</TableContent>
-      <TableContent>{ analysis.fft.samplingFrequency }</TableContent>
-      <TableContent>{ analysis.fft.nfft }</TableContent>
-      <TableContent>{ analysis.fft.windowSize }</TableContent>
-      <TableContent>{ analysis.fft.overlap }</TableContent>
-      <TableContent className={ styles.downloadCell }>
-        <Button size="small" color="dark" fill="clear" onClick={ () => downloadAnalysis(analysis) }>
-          <IonIcon icon={ downloadOutline } slot="icon-only"/>
-        </Button>
-        { analysis.legacy && <IonNote color="medium">{ 'OSEkit v<0.2.5' }</IonNote> }
-      </TableContent>
-      <TableDivider/>
-    </Fragment>) }
-  </Table>
+        <Tbody>
+        { analysis.map(analysis => <Tr key={ analysis.id }>
+            <Th scope='col'>{ analysis.name }</Th>
+            <Td>Spectrogram</Td>
+            <Td>{ dateToString(analysis.createdAt) }</Td>
+            <Td>{ analysis.spectrograms!.totalCount }</Td>
+            <Td>{ dateToString(analysis.start) }</Td>
+            <Td>{ dateToString(analysis.end) }</Td>
+            <Td>{ analysis.dataDuration }</Td>
+            <Td>{ analysis.fft.samplingFrequency }</Td>
+            <Td>{ analysis.fft.nfft }</Td>
+            <Td>{ analysis.fft.windowSize }</Td>
+            <Td>{ analysis.fft.overlap }</Td>
+            <Td>
+                <Button size="small" color="dark" fill="clear" onClick={ () => downloadAnalysis(analysis) }>
+                    <IonIcon icon={ downloadOutline } slot="icon-only"/>
+                </Button>
+                <br/>
+                { analysis.legacy && <IonNote color="medium">{ 'OSEkit v<0.2.5' }</IonNote> }
+            </Td>
+        </Tr>) }
+        </Tbody>
+    </Table>
 }

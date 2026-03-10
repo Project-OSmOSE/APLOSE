@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useRef } from 'react';
 import styles from './styles.module.scss';
-import { type ExtendedDivPosition, Table, useExtendedDiv } from '@/components/ui';
+import { type ExtendedDivPosition, Table, Tbody, useExtendedDiv } from '@/components/ui';
 import { IoRemoveCircleOutline } from 'react-icons/io5';
 import { AnnotationType, useCurrentCampaign } from '@/api';
 import { useTimeScale } from '@/features/Annotator/Axis';
@@ -36,7 +36,7 @@ export const AcousticFeatures: React.FC = () => {
     const windowWidth = useWindowWidth()
     const initialPosition = useMemo(() => {
         const initialLeft = window.innerWidth - 500
-        const position: ExtendedDivPosition ={
+        const position: ExtendedDivPosition = {
             x: initialLeft,
             y: 128,
         }
@@ -47,7 +47,7 @@ export const AcousticFeatures: React.FC = () => {
             if (otherSideLeft > 0) position.x = otherSideLeft
         }
         return position
-    }, [focusedAnnotation, timeScale])
+    }, [ focusedAnnotation, timeScale ])
 
     const {
         className: extendedClassName,
@@ -59,7 +59,7 @@ export const AcousticFeatures: React.FC = () => {
     })
     useEffect(() => {
         initPosition()
-    }, [timeScale]);
+    }, [ timeScale ]);
     const prevAnnotationID = useRef<number | undefined>();
     useEffect(() => {
         if (prevAnnotationID.current === focusedAnnotation?.id) return;
@@ -86,11 +86,13 @@ export const AcousticFeatures: React.FC = () => {
                 { focusedAnnotation.acousticFeatures && <Fragment>
                     <Checks annotation={ focusedAnnotation }/>
 
-                    <Table columns={ 3 } className={ styles.table } size="small">
-                        <Frequency annotation={ focusedAnnotation }/>
-                        <Trend annotation={ focusedAnnotation }/>
-                        <Duration annotation={ focusedAnnotation }/>
-                        <NonLinearPhenomena annotation={ focusedAnnotation }/>
+                    <Table spacing="small">
+                        <Tbody>
+                            <Frequency annotation={ focusedAnnotation }/>
+                            <Trend annotation={ focusedAnnotation }/>
+                            <Duration annotation={ focusedAnnotation }/>
+                            <NonLinearPhenomena annotation={ focusedAnnotation }/>
+                        </Tbody>
                     </Table>
                 </Fragment> }
             </div>

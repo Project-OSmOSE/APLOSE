@@ -1012,6 +1012,7 @@ type Query {
     last: Int
     phases_AnnotationFileRanges_AnnotatorId: ID
     ownerId: ID
+    analysis_DatasetId: ID
     isArchived: Boolean
     phases_Phase: AnnotationPhaseType
 
@@ -1391,6 +1392,7 @@ type AnnotationLabelNode implements ExtendedInterface {
     last: Int
     phases_AnnotationFileRanges_AnnotatorId: ID
     ownerId: ID
+    analysis_DatasetId: ID
     isArchived: Boolean
     phases_Phase: AnnotationPhaseType
 
@@ -1435,6 +1437,7 @@ type LabelSetNode implements ExtendedInterface {
     last: Int
     phases_AnnotationFileRanges_AnnotatorId: ID
     ownerId: ID
+    analysis_DatasetId: ID
     isArchived: Boolean
     phases_Phase: AnnotationPhaseType
 
@@ -1585,6 +1588,7 @@ type DatasetNode implements ExtendedInterface {
     last: Int
     phases_AnnotationFileRanges_AnnotatorId: ID
     ownerId: ID
+    analysis_DatasetId: ID
     isArchived: Boolean
     phases_Phase: AnnotationPhaseType
 
@@ -1716,6 +1720,7 @@ type UserNode implements ExtendedInterface {
     last: Int
     phases_AnnotationFileRanges_AnnotatorId: ID
     ownerId: ID
+    analysis_DatasetId: ID
     isArchived: Boolean
     phases_Phase: AnnotationPhaseType
 
@@ -1884,6 +1889,7 @@ type SpectrogramAnalysisNode implements ExtendedInterface {
     last: Int
     phases_AnnotationFileRanges_AnnotatorId: ID
     ownerId: ID
+    analysis_DatasetId: ID
     isArchived: Boolean
     phases_Phase: AnnotationPhaseType
 
@@ -3579,6 +3585,7 @@ type ConfidenceSetNode implements ExtendedInterface {
     last: Int
     phases_AnnotationFileRanges_AnnotatorId: ID
     ownerId: ID
+    analysis_DatasetId: ID
     isArchived: Boolean
     phases_Phase: AnnotationPhaseType
 
