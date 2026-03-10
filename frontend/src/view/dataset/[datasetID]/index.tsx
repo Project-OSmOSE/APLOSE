@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { IonButton, IonIcon, IonSpinner } from '@ionic/react';
-import { GraphQLErrorText, useModal, WarningText } from '@/components/ui';
+import { GraphQLErrorText, Link, useModal, WarningText } from '@/components/ui';
 
 import { DatasetHead, DatasetInfoCreation } from '@/features/Dataset';
 import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
@@ -10,6 +10,8 @@ import { type DataNavParams } from '@/features/UX';
 import { useParams } from 'react-router-dom';
 import { downloadOutline } from 'ionicons/icons';
 import { ImportDatasetAnalysisModal } from '@/features/storage';
+import { Cards } from '@/features/AnnotationCampaign';
+import { addOutline } from 'ionicons/icons/index.js';
 
 
 export const DatasetDetail: React.FC = () => {
@@ -25,7 +27,7 @@ export const DatasetDetail: React.FC = () => {
     return <Fragment>
         <DatasetHead/>
 
-        <div style={ { overflowX: 'hidden', display: 'grid', gap: '4rem' } }>
+        <div style={ { overflowX: 'hidden', display: 'grid', gap: '4rem', alignItems: 'start', height: '100%' } }>
 
             <div>
                 <h5>Channel configurations</h5>
@@ -43,6 +45,18 @@ export const DatasetDetail: React.FC = () => {
                     <IonIcon icon={ downloadOutline } slot="start"/>
                     Import analysis
                 </IonButton>
+            </div>
+
+            <div style={ { overflowX: 'hidden', display: 'grid', gap: '1rem' } }>
+                <h5>Annotation campaigns</h5>
+                <Cards filters={ { filter_datasetID: id } }/>
+
+                <Link color="primary" fill="clear"
+                      style={ { zIndex: 2, justifySelf: 'center' } }
+                      appPath={ `/annotation-campaign/new?dataset_id=${ dataset.id }` }>
+                    <IonIcon icon={ addOutline } slot="start"/>
+                    Create campaign
+                </Link>
             </div>
         </div>
 

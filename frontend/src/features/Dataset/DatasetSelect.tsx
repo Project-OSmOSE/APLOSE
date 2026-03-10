@@ -7,6 +7,7 @@ import { useAllDatasetsAndAnalysis } from '@/api';
 export const DatasetSelect: React.FC<{
     datasetError?: string,
     analysisError?: string,
+    initialDatasetId?: string,
     onDatasetSelected: (id?: string) => void,
     selectAnalysis?: true,
     onAnalysisSelected?: (selection: string[]) => void,
@@ -14,6 +15,7 @@ export const DatasetSelect: React.FC<{
 }> = ({
           datasetError,
           analysisError,
+                                      initialDatasetId,
           onDatasetSelected,
           selectAnalysis,
           onAnalysisSelected,
@@ -28,7 +30,7 @@ export const DatasetSelect: React.FC<{
         })) ?? []
     }, [ allDatasets ])
 
-    const [ selectedDatasetID, setSelectedDatasetID ] = useState<string | undefined>();
+    const [ selectedDatasetID, setSelectedDatasetID ] = useState<string | undefined>(initialDatasetId);
 
     const analysisItems = useMemo(() => {
         return allDatasets?.find(d => d?.id === selectedDatasetID)
