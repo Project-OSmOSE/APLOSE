@@ -50,7 +50,7 @@ export const Cards: React.FC<{ filters?: AllCampaignFilters }> = ({ filters }) =
 
     if (isFetching)
         return <div className={ styles.cards }>
-            { Array.from(new Array(7)).map((_, i) => <SkeletonCard key={ i }/>) }
+            { Array.from(new Array(3)).map((_, i) => <SkeletonCard key={ i }/>) }
         </div>
 
     if (error)
