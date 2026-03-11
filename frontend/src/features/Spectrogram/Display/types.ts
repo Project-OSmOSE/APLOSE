@@ -1,6 +1,6 @@
 import type { FftNode } from '@/api';
 
-export type SpectrogramMode = 'wav' | 'png' | 'npz'
+export type SpectrogramMode = 'wav' | 'png' | 'npz' | 'png-numeric-zoom'
 
 export type FFT = Pick<FftNode, 'nfft' | 'overlap' | 'windowSize'>
 

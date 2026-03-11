@@ -57,22 +57,35 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
         });
         image.src = objectURL;
         await loadPromise;
-        context.drawImage(
-            image,
-            index * tileDimensions.width,
-            0,
-            tileDimensions.width,
-            tileDimensions.height,
-        )
+        switch (modeRef.current) {
+            case 'png-numeric-zoom':
+                context.drawImage(
+                    image,
+                    0,
+                    0,
+                    tileDimensions.width * Math.pow(2, zoomRef.current),
+                    tileDimensions.height,
+                )
+                break
+            default:
+                context.drawImage(
+                    image,
+                    index * tileDimensions.width,
+                    0,
+                    tileDimensions.width,
+                    tileDimensions.height,
+                )
+                break
+        }
     }, [ canvasRef, tileDimensions ])
     const fetchTileObjectURL = useCallback(async (index: number): Promise<string> => {
         if (!analysisRef.current) throw Error('Missing analysis');
         if (!spectrogramRef.current) throw Error('Missing spectrogram');
         if (!pathRef.current) throw Error('Missing spectrogram path');
         const query = getTile({
-            mode: modeRef.current,
+            mode: modeRef.current === 'png-numeric-zoom' ? 'png' : modeRef.current,
             tile: index,
-            zoom: zoomRef.current,
+            zoom: modeRef.current == 'png-numeric-zoom' ? 1 : Math.pow(2, zoomRef.current),
             spectrogramPath: pathRef.current,
             spectrogram: spectrogramRef.current,
             analysis: analysisRef.current,
@@ -89,7 +102,7 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
     }, [ modeRef, analysisRef, spectrogramRef, getTile, zoomRef, fftRef, loadedTileIndexesRef ])
     const loadTile = useCallback(async (index: number): Promise<void> => {
         if (loadedTileIndexesRef.current.some(i => i === index)) return;
-        const tilesCount = Math.pow(2, zoomRef.current)
+        const tilesCount = modeRef.current == 'png-numeric-zoom' ? 1 : Math.pow(2, zoomRef.current)
         if (index < 0 || index >= tilesCount) return;
         try {
             const objectURL = await fetchTileObjectURL(index)
@@ -102,7 +115,7 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
         }
     }, [ zoomRef, loadedTileIndexesRef, fetchTileObjectURL, displayTile, toast ])
     const update = useCallback(async (): Promise<void> => {
-        const tilesCount = Math.pow(2, zoomRef.current)
+        const tilesCount = modeRef.current == 'png-numeric-zoom' ? 1 : Math.pow(2, zoomRef.current)
 
         const startTileIdx = Math.floor(leftRef.current / tileDimensions.width);
         const endTileIdx = Math.ceil((leftRef.current + tileDimensions.width) / tileDimensions.width);

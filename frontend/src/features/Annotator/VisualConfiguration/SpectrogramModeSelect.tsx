@@ -15,10 +15,12 @@ export const SpectrogramModeSelect: React.FC = () => {
     }, [ dispatch ])
 
     return <Select placeholder="Select spectrogram generation mode"
+                   stick='left'
                    options={ ([
-                       { value: 'png', label: 'From png' },
-                       { value: 'wav', label: 'From wav' },
-                       { value: 'npz', label: 'From npz' },
+                       { value: 'png' as SpectrogramMode, label: 'From png' },
+                       { value: 'png-numeric-zoom' as SpectrogramMode, label: 'From png using numeric zoom' },
+                       { value: 'npz' as SpectrogramMode, label: 'From npz' },
+                       { value: 'wav' as SpectrogramMode, label: 'From wav' },
                    ]) }
                    optionsContainer="popover"
                    value={ mode }
