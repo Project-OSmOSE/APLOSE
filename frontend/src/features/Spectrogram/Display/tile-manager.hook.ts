@@ -1,9 +1,8 @@
 import { type MutableRefObject, useCallback, useEffect, useRef } from 'react';
-import { AnnotationSpectrogramNode, SpectrogramAnalysisNode } from '@/api';
-import type { FFT, SpectrogramMode, SpectrogramOptions } from '@/features/Spectrogram/Display/types';
+import { AnnotationSpectrogramNode, SpectrogramAnalysisNode, useLazyGetTile } from '@/api';
+import type { FFT, SpectrogramMode } from '@/features/Spectrogram/Display/types';
 import { useSpectrogramDimensions } from '@/features/Spectrogram/Display/dimension.hook';
-import { SpectrogramRestAPI } from '@/api/spectrogram';
-import type { FetchArgs, QueryActionCreatorResult, QueryDefinition } from '@reduxjs/toolkit/query';
+import type { QueryActionCreatorResult } from '@reduxjs/toolkit/query';
 import { useToast } from '@/components/ui';
 
 export type TileManagerOptions = {
@@ -40,7 +39,7 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
     const zoomRef = useRef<number>(0)
     const leftRef = useRef<number>(0)
 
-    const [ getTile ] = SpectrogramRestAPI.endpoints.getTile.useLazyQuery()
+    const [ getTile ] = useLazyGetTile()
 
     const clearCanvas = useCallback((): void => {
         const context = canvasRef.current?.getContext('2d', { alpha: false });
@@ -70,36 +69,23 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
         if (!analysisRef.current) throw Error('Missing analysis');
         if (!spectrogramRef.current) throw Error('Missing spectrogram');
         if (!pathRef.current) throw Error('Missing spectrogram path');
-        let query: QueryActionCreatorResult<QueryDefinition<FetchArgs, any, any, string, any>>
-        switch (modeRef.current) {
-            case 'png':
-                if (analysisRef.current.legacy) {
-                    const p = pathRef.current
-                    const f = spectrogramRef.current.filename
-                    query = getTile({
-                        url: `${ p.split(f)[0] }${ f }_${ zoomRef.current + 1 }_${ index }${ p.split(f)[1] }`,
-                    })
-                } else {
-                    query = getTile({
-                        url: pathRef.current,
-                    })
-                }
-                break;
-            default:
-                query = getTile({
-                    url: `/api/data/analysis/${ analysisRef.current.id }/spectrogram/${ spectrogramRef.current.id }/`,
-                    params: {
-                        ...(fftRef.current ?? {}),
-                        mode: modeRef.current,
-                        zoom: zoomRef.current,
-                        tile: index,
-                    } satisfies SpectrogramOptions,
-                })
-                break;
+        const query = getTile({
+            mode: modeRef.current,
+            tile: index,
+            zoom: zoomRef.current,
+            spectrogramPath: pathRef.current,
+            spectrogram: spectrogramRef.current,
+            analysis: analysisRef.current,
+        });
+        if (typeof query === 'string') {
+            loadedTileIndexesRef.current.push(index)
+            return query
+        } else {
+            queriesRef.current.push(query);
+            const source = await query.unwrap()
+            loadedTileIndexesRef.current.push(index)
+            return source
         }
-        queriesRef.current.push(query);
-        loadedTileIndexesRef.current.push(index)
-        return await query.unwrap();
     }, [ modeRef, analysisRef, spectrogramRef, getTile, zoomRef, fftRef, loadedTileIndexesRef ])
     const loadTile = useCallback(async (index: number): Promise<void> => {
         if (loadedTileIndexesRef.current.some(i => i === index)) return;

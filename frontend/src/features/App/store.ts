@@ -5,6 +5,7 @@ import {
   AllAnnotationTaskFilterSlice,
   getUserOnLoginMiddleware,
   logoutOn401Listener,
+  SpectrogramDisplaySlice,
   StorageSlice,
 } from '@/api';
 import { AuthSlice } from '@/features/Auth';
@@ -21,6 +22,7 @@ export const AppStore = configureStore({
     [gqlAPI.reducerPath]: gqlAPI.reducer,
     [restAPI.reducerPath]: restAPI.reducer,
 
+    spectrogramDisplay: SpectrogramDisplaySlice.reducer,
     [AllAnnotationCampaignFilterSlice.reducerPath]: AllAnnotationCampaignFilterSlice.reducer,
     [AllAnnotationTaskFilterSlice.reducerPath]: AllAnnotationTaskFilterSlice.reducer,
 
