@@ -26,6 +26,7 @@ import { AploseNavParams } from '@/features/UX';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '@/features/App';
 import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
+import { SpectrogramModeSelect } from '@/features/Annotator/VisualConfiguration/SpectrogramModeSelect';
 
 export const AnnotatorPage: React.FC = () => {
     const { campaignID } = useParams<AploseNavParams>();
@@ -79,6 +80,7 @@ export const AnnotatorPage: React.FC = () => {
                 <div className={ styles.spectrogramData }>
 
                     <div className={ styles.spectrogramConfiguration }>
+                        <SpectrogramModeSelect/>
                         <AnalysisSelect/>
                         <div>
                             <ColormapSelect/>

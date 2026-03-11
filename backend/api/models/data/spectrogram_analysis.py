@@ -199,12 +199,12 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
         self.spectrograms.through.objects.bulk_create(
             [
                 self.spectrograms.through(
-                    spectrogram=self.spectrograms.model.objects.get(
+                    spectrogram=self.spectrograms.model.objects.filter(
                         filename=spectrogram.filename,
                         format=spectrogram.format,
                         start=spectrogram.start,
                         end=spectrogram.end,
-                    ),
+                    ).last(),
                     spectrogramanalysis=self,
                 )
                 for spectrogram in spectrograms

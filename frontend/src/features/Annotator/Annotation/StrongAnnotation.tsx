@@ -16,7 +16,8 @@ import { formatTime } from '@/service/function';
 import { useUpdateAnnotation } from '@/features/Annotator/Annotation/hooks';
 import { AnnotationHeadContent } from '@/features/Annotator/Annotation/Head';
 import { MOUSE_DOWN_EVENT } from '@/features/UX';
-import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
+import { useSpectrogramDimensions } from '@/features/Spectrogram/Display/dimension.hook';
+import { selectZoom } from '@/features/Annotator/Zoom';
 
 const POINT_RADIUS = 16; // px
 
@@ -25,8 +26,8 @@ export const StrongAnnotation: React.FC<{
 }> = ({ annotation }) => {
     const dispatch = useAppDispatch();
     const { spectrogram } = useAnnotationTask()
-    const windowWidth = useWindowWidth()
-    const windowHeight = useWindowHeight()
+    const zoom = useAppSelector(selectZoom)
+    const { width: windowWidth, height: windowHeight } = useSpectrogramDimensions(zoom)
 
     const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
     const isDrawingEnabled = useAppSelector(selectIsDrawingEnabled)

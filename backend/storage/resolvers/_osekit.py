@@ -104,7 +104,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
             )
         return analysis
 
-    def __get_spectro_dataset(
+    def _get_spectro_dataset(
         self, analysis: SpectrogramAnalysis
     ) -> SpectroDataset | None:
         json_path = join(analysis.dataset.path, "dataset.json")
@@ -128,7 +128,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
     def get_all_spectrograms_for_analysis(
         self, analysis: SpectrogramAnalysis
     ) -> list[Spectrogram]:
-        sd = self.__get_spectro_dataset(analysis=analysis)
+        sd = self._get_spectro_dataset(analysis=analysis)
         if not sd:
             return super().get_all_spectrograms_for_analysis(analysis=analysis)
         img_format, _ = FileFormat.objects.get_or_create(name="png")
@@ -145,7 +145,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
     def get_spectrogram_paths(
         self, spectrogram: Spectrogram, analysis: SpectrogramAnalysis
     ) -> tuple[str | None, str | None]:
-        sd = self.__get_spectro_dataset(analysis=analysis)
+        sd = self._get_spectro_dataset(analysis=analysis)
         if not sd:
             return super().get_spectrogram_paths(
                 spectrogram=spectrogram, analysis=analysis

@@ -67,12 +67,12 @@ def isfile(path: _Path) -> bool:
     return os.path.isfile(make_absolute_server(path))
 
 
-def listdir(path: _Path) -> list[str]:
+def listdir(path: _Path, return_absolute: bool = True) -> list[str]:
     """List all content in path"""
     sorted_list = sorted(
         os.listdir(make_absolute_server(path)), key=lambda item: item.lower()
     )
-    return [join(path, item) for item in sorted_list]
+    return [join(path, item) if return_absolute else item for item in sorted_list]
 
 
 def is_local_root(path: _Path) -> bool:

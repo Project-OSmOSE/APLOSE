@@ -1,13 +1,15 @@
 import { useCallback } from 'react';
-import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
 import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
 import { type Position, type TimeFreqPosition } from './context';
 import { useAnnotatorCanvasContext } from '@/features/Annotator/Canvas/context';
 import type { AnnotationNode } from '@/api';
+import { useAppSelector } from '@/features/App';
+import { selectZoom } from '@/features/Annotator/Zoom';
+import { useSpectrogramDimensions } from '@/features/Spectrogram/Display/dimension.hook';
 
 export const useIsHoverCanvas = () => {
-  const width = useWindowWidth()
-  const height = useWindowHeight()
+  const zoom = useAppSelector(selectZoom)
+  const { width, height } = useSpectrogramDimensions(zoom)
 
   return useCallback((e: Position): boolean => {
     return document.elementsFromPoint(e.clientX, e.clientY).some((element: Element): boolean => {
@@ -33,7 +35,7 @@ export const useGetCoords = () => {
         y: Math.min(Math.max(0, y), bounds.height),
       }
     } else return { x, y }
-  }, [])
+  }, [mainCanvasRef])
 }
 
 export const useGetFreqTime = () => {
