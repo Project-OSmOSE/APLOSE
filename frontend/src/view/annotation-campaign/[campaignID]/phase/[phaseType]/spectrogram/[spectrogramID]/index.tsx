@@ -12,7 +12,7 @@ import {
     ColormapSelect,
     ContrastSelect,
 } from '@/features/Annotator/VisualConfiguration';
-import { ZoomButtons } from '@/features/Annotator/Zoom';
+import { ZoomButtons, ZoomModeSelect } from '@/features/Annotator/Zoom';
 import { PointerInfo, usePointer } from '@/features/Annotator/Pointer';
 import { SpectrogramDownloadButton, SpectrogramInfo } from '@/features/Annotator/Spectrogram';
 import { NavigationButtons } from '@/features/Annotator/Navigation';
@@ -88,6 +88,7 @@ export const AnnotatorPage: React.FC = () => {
                         </div>
                         <BrightnessSelect/>
                         <ContrastSelect/>
+                        <ZoomModeSelect/>
                         <ZoomButtons/>
                     </div>
 

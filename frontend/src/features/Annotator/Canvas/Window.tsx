@@ -10,7 +10,7 @@ import {
 } from '@/features/Annotator/Annotation';
 import { Y_AXIS_WIDTH } from './axis-size.const';
 import { useGetCoords, useGetFreqTime, useIsHoverCanvas, usePointer } from '@/features/Annotator/Pointer';
-import { selectZoom, selectZoomOrigin, useZoomIn, useZoomOut } from '@/features/Annotator/Zoom';
+import { selectZoom, selectZoomMode, selectZoomOrigin, useZoomIn, useZoomOut } from '@/features/Annotator/Zoom';
 import { selectCanDraw } from '@/features/Annotator/UX';
 import { useAudio } from '@/features/Audio';
 import { useAnnotatorCanvasContext } from '@/features/Annotator/Canvas/context';
@@ -22,7 +22,8 @@ import {
     selectBrightness,
     selectColormap,
     selectContrast,
-    selectIsColormapReversed, selectSpectrogramMode,
+    selectIsColormapReversed,
+    selectSpectrogramMode,
 } from '@/features/Annotator/VisualConfiguration';
 import { selectAnalysis, selectFFT } from '@/features/Annotator/Analysis';
 import { AcousticFeatures } from '@/features/Annotator/AcousticFeatures';
@@ -47,6 +48,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     const pointer = usePointer()
     const mode = useAppSelector(selectSpectrogramMode);
     const fft = useAppSelector(selectFFT);
+    const zoomMode = useAppSelector(selectZoomMode);
     const [ left, setLeft ] = useState<number>(0);
 
     const clearPointer = useCallback(() => {
@@ -174,6 +176,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
                                     spectrogramPath={ paths?.spectrogramPath }
                                     left={ left }
                                     fft={ fft }
+                                    zoomMode={ zoomMode }
                                     zoom={ zoom }
                                     mode={ mode }/> }
 

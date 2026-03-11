@@ -235,8 +235,8 @@ class ZoomViewSet(ViewSet):
     ):
         zoom = int(query_params.get("zoom", 0))
         tile = int(query_params.get("tile", 0))
-        zoom_level = pow(2, zoom)
-        if zoom_level > 1:
+        if zoom > 1:
+            zoom_level = pow(2, zoom)
             spectro_data = spectro_data.split(zoom_level)[tile]
 
         colormap = query_params.get("colormap", None)

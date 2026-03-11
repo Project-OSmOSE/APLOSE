@@ -3,3 +3,4 @@ export * from './selectors'
 export * from './hooks'
 
 export * from './ZoomButtons'
+export * from './ZoomModeSelect'

@@ -1,6 +1,6 @@
 import { type MutableRefObject, useCallback, useEffect, useRef } from 'react';
 import { AnnotationSpectrogramNode, SpectrogramAnalysisNode, useLazyGetTile } from '@/api';
-import type { FFT, SpectrogramMode } from '@/features/Spectrogram/Display/types';
+import type { FFT, SpectrogramMode, ZoomMode } from '@/features/Spectrogram/Display/types';
 import { useSpectrogramDimensions } from '@/features/Spectrogram/Display/dimension.hook';
 import type { QueryActionCreatorResult } from '@reduxjs/toolkit/query';
 import { useToast } from '@/components/ui';
@@ -10,6 +10,7 @@ export type TileManagerOptions = {
     spectrogramPath?: string | null,
     analysis: Pick<SpectrogramAnalysisNode, 'id' | 'legacy'>,
     mode: SpectrogramMode,
+    zoomMode: ZoomMode,
     fft?: Partial<FFT>,
 }
 
@@ -37,6 +38,7 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
     const fftRef = useRef<Partial<FFT> | undefined>()
 
     const zoomRef = useRef<number>(0)
+    const zoomModeRef = useRef<ZoomMode>('processed')
     const leftRef = useRef<number>(0)
 
     const [ getTile ] = useLazyGetTile()
@@ -57,8 +59,8 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
         });
         image.src = objectURL;
         await loadPromise;
-        switch (modeRef.current) {
-            case 'png-numeric-zoom':
+        switch (zoomModeRef.current) {
+            case 'numeric':
                 context.drawImage(
                     image,
                     0,
@@ -67,7 +69,7 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
                     tileDimensions.height,
                 )
                 break
-            default:
+            case 'processed':
                 context.drawImage(
                     image,
                     index * tileDimensions.width,
@@ -77,15 +79,15 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
                 )
                 break
         }
-    }, [ canvasRef, tileDimensions ])
+    }, [ canvasRef, tileDimensions , zoomModeRef])
     const fetchTileObjectURL = useCallback(async (index: number): Promise<string> => {
         if (!analysisRef.current) throw Error('Missing analysis');
         if (!spectrogramRef.current) throw Error('Missing spectrogram');
         if (!pathRef.current) throw Error('Missing spectrogram path');
         const query = getTile({
-            mode: modeRef.current === 'png-numeric-zoom' ? 'png' : modeRef.current,
+            mode: modeRef.current,
             tile: index,
-            zoom: modeRef.current == 'png-numeric-zoom' ? 1 : Math.pow(2, zoomRef.current),
+            zoom: zoomModeRef.current == 'numeric' ? 1 : Math.pow(2, zoomRef.current),
             spectrogramPath: pathRef.current,
             spectrogram: spectrogramRef.current,
             analysis: analysisRef.current,
@@ -99,10 +101,10 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
             loadedTileIndexesRef.current.push(index)
             return source
         }
-    }, [ modeRef, analysisRef, spectrogramRef, getTile, zoomRef, fftRef, loadedTileIndexesRef ])
+    }, [ modeRef, analysisRef, spectrogramRef, getTile, zoomRef, fftRef, loadedTileIndexesRef, zoomModeRef ])
     const loadTile = useCallback(async (index: number): Promise<void> => {
         if (loadedTileIndexesRef.current.some(i => i === index)) return;
-        const tilesCount = modeRef.current == 'png-numeric-zoom' ? 1 : Math.pow(2, zoomRef.current)
+        const tilesCount = zoomModeRef.current == 'numeric' ? 1 : Math.pow(2, zoomRef.current)
         if (index < 0 || index >= tilesCount) return;
         try {
             const objectURL = await fetchTileObjectURL(index)
@@ -113,9 +115,9 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
                 toast.raiseError({ error })
             }
         }
-    }, [ zoomRef, loadedTileIndexesRef, fetchTileObjectURL, displayTile, toast ])
+    }, [ zoomRef, loadedTileIndexesRef, fetchTileObjectURL, displayTile, toast, zoomModeRef ])
     const update = useCallback(async (): Promise<void> => {
-        const tilesCount = modeRef.current == 'png-numeric-zoom' ? 1 : Math.pow(2, zoomRef.current)
+        const tilesCount = zoomModeRef.current == 'numeric' ? 1 : Math.pow(2, zoomRef.current)
 
         const startTileIdx = Math.floor(leftRef.current / tileDimensions.width);
         const endTileIdx = Math.ceil((leftRef.current + tileDimensions.width) / tileDimensions.width);
@@ -137,7 +139,7 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
         for (const index of newTiles) {
             await loadTile(index)
         }
-    }, [ leftRef, zoomRef, tileDimensions, loadedTileIndexesRef, loadingTileIndexesRef, loadTile ])
+    }, [ leftRef, zoomRef, tileDimensions, loadedTileIndexesRef, loadingTileIndexesRef, loadTile, zoomModeRef ])
 
     // Check either the manager need to be reinitiated
     const init = useCallback(() => {
@@ -153,6 +155,10 @@ export const useTileManager = ({ canvasRef, options, zoom: _zoom, left: _left }:
         if (options.mode !== modeRef.current) {
             needInit = true
             modeRef.current = options.mode
+        }
+        if (options.zoomMode !== zoomModeRef.current) {
+            needInit = true
+            zoomModeRef.current = options.zoomMode
         }
         if (options.analysis.id !== analysisRef.current?.id) {
             needInit = true
