@@ -34,7 +34,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
         if exists(json_path):
             try:
                 with open_file(json_path) as f:
-                    d = json.loads(f.read())
+                    json.loads(f.read())
                     return Dataset(
                         name=PureWindowsPath(path).name,
                         path=make_path_relative(path),
