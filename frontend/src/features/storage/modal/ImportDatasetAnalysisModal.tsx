@@ -25,7 +25,7 @@ export const ImportDatasetAnalysisModal: React.FC<ModalProps> = ({ onClose }) =>
             <ModalHeader title="Import an analysis"
                          onClose={ onClose }/>
 
-            { dataset && <Item path={ dataset.path } forceOpen onUpdated={ invalidateSpectrogramList }/> }
+            { dataset && <Item path={ dataset.path } forceOpen disableImport onUpdated={ invalidateSpectrogramList }/> }
 
             <ModalFooter>
                 <HelpButton url="/doc/user/data/generate"

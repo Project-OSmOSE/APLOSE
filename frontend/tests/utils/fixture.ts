@@ -1,5 +1,5 @@
 import { type Page as PageBase, test as testBase } from '@playwright/test';
-import { Route } from 'playwright-core';
+import { type Request, Route } from 'playwright-core';
 import {
   AccountPage,
   AnnotatorPage,
@@ -16,6 +16,7 @@ import {
   PhaseImportAnnotationsPage,
   StoragePage,
 } from './pages';
+import { gqlRegex } from './mock';
 
 interface PageExtension {
   readonly home: HomePage;
@@ -37,6 +38,8 @@ interface PageExtension {
   readonly phaseEdit: PhaseEditAnnotatorsPage;
 
   readonly annotator: AnnotatorPage;
+
+  waitForGqlRequest(operationName: string): Promise<Request>;
 }
 
 export interface Page extends PageBase, PageExtension {
@@ -72,8 +75,16 @@ export const test = testBase.extend<Fixture>({
       phaseImport: new PhaseImportAnnotationsPage(page),
       phaseEdit: new PhaseEditAnnotatorsPage(page),
       annotator: new AnnotatorPage(page),
+
+      waitForGqlRequest: (operationName: string): Promise<Request> => {
+        return page.waitForRequest((request: Request) => {
+          if (!new RegExp(gqlRegex).test(request.url())) return false;
+          return request.postDataJSON().operationName === operationName
+        })
+      }
     }
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(Object.assign(page, extension))
   },
 });

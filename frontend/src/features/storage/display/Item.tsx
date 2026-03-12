@@ -23,6 +23,7 @@ type Props = {
     search?: string,
     onUpdated?: () => void,
     forceOpen?: boolean,
+    disableImport?: boolean,
 }
 
 export const Item: React.FC<Props> = ({
@@ -31,6 +32,7 @@ export const Item: React.FC<Props> = ({
                                           search,
                                           onUpdated,
                                           forceOpen,
+                                          disableImport,
                                       }) => {
     const item = useStorageSearch(path)
 
@@ -51,7 +53,7 @@ export const Item: React.FC<Props> = ({
     const { importDataset, isLoading } = useImportDatasetFromStorage()
     const toast = useToast()
     const canImport = useMemo(() => {
-        if (!item || item.error || isLoading) return false
+        if (!item || item.error || isLoading || disableImport) return false
         switch (item.__typename) {
             case 'FolderNode':
                 return false
@@ -59,7 +61,7 @@ export const Item: React.FC<Props> = ({
             case 'AnalysisStorageNode':
                 return parentItem && item.importStatus === ImportStatusEnum.Partial || item.importStatus === ImportStatusEnum.Available
         }
-    }, [ item, isLoading ])
+    }, [ item, isLoading, disableImport ])
     const download = useCallback((event: MouseEvent) => {
         event.stopPropagation()
         if (!canImport || !item) return;

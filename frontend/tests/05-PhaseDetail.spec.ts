@@ -4,7 +4,6 @@ import { campaign, spectrogram, TASKS } from './utils/mock/types';
 import type { ListAnnotationTaskQueryVariables } from '../src/api/annotation-task';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
 import type { Params } from './utils/types';
-import type { Request } from 'playwright-core';
 
 // Utils
 
@@ -58,15 +57,11 @@ const TEST = {
             })
             await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
-            const checkRequest = (request: Request) => {
-                if (!new RegExp(gqlRegex).test(request.url())) return false;
-                return request.postDataJSON().operationName === 'listAnnotationTask'
-            }
-            await page.waitForRequest(checkRequest)
+            await page.waitForGqlRequest('listAnnotationTask')
 
             await test.step('Search file', async () => {
                 const [ request ] = await Promise.all([
-                    page.waitForRequest(checkRequest),
+                    page.waitForGqlRequest('listAnnotationTask'),
                     page.phaseDetail.searchFile(spectrogram.filename),
                 ])
                 const variables = request.postDataJSON().variables as ListAnnotationTaskQueryVariables

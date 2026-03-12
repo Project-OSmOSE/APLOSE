@@ -1,5 +1,5 @@
 import { annotatorTag, essentialTag, expect, type Page, test } from './utils';
-import { gqlRegex, interceptRequests } from './utils/mock';
+import { interceptRequests } from './utils/mock';
 import {
     boxAnnotation,
     campaign,
@@ -23,7 +23,6 @@ import {
 } from '../src/api/types.gql-generated';
 import type { SubmitTaskMutationVariables } from '../src/api/annotation-task/annotation-task.generated';
 import type { Params } from './utils/types';
-import type { Request } from 'playwright-core';
 
 // Utils
 const phase = AnnotationPhaseType.Verification
@@ -31,12 +30,8 @@ const phase = AnnotationPhaseType.Verification
 const STEP = {
     submit: (page: Page, validations: { weak: boolean, box: boolean }, ...extraAnnotations: AnnotationInput[]) =>
         test.step('Submit', async () => {
-            const checkRequest = (request: Request) => {
-                if (!new RegExp(gqlRegex).test(request.url())) return false;
-                return request.postDataJSON().operationName === 'submitTask'
-            }
             const [ request ] = await Promise.all([
-                page.waitForRequest(checkRequest),
+                page.waitForGqlRequest('submitTask'),
                 page.annotator.submit({ method: 'mouse' }),
             ])
             const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;
