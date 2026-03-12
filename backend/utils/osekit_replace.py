@@ -204,6 +204,6 @@ class OSEkitDataset:
                 }
 
             return OSEkitDataset(
-                folder=Path(make_absolute_server(make_path_relative(d["folder"]))),
+                folder=Path(make_absolute_server(make_path_relative(base_path))),
                 datasets=datasets,
             )

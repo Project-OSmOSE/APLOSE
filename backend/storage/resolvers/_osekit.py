@@ -36,7 +36,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
                 with open_file(json_path) as f:
                     d = json.loads(f.read())
                     return Dataset(
-                        name=PureWindowsPath(d["folder"]).name,
+                        name=PureWindowsPath(path).name,
                         path=make_path_relative(path),
                     )
             except Exception as e:
@@ -61,7 +61,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
                         name=name,
                         path=make_path_relative(
                             PureWindowsPath(info["json"]).parent.as_posix(),
-                            to=d["folder"],
+                            to=dataset.path,
                         ),
                     )
                 )
