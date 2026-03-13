@@ -37,6 +37,7 @@ class SpectroData:
     end: Timestamp
     duration: Timedelta
     audio_data: AudioData
+    files: list[TFile]
 
     def __init__(
         self,
@@ -45,6 +46,7 @@ class SpectroData:
         end: Timestamp,
         v_lim: tuple[float, float],
         audio_data: AudioData,
+        files: list[TFile],
     ):
         self.name = name
         self.begin = begin
@@ -52,6 +54,7 @@ class SpectroData:
         self.v_lim = v_lim
         self.duration = self.end - self.begin
         self.audio_data = audio_data
+        self.files = files
 
 
 class SpectroDataset:
@@ -122,12 +125,10 @@ class SpectroDataset:
                             files=[
                                 TFile(
                                     path=join(
-                                        folder,
-                                        PureWindowsPath(file["path"])
-                                        .as_posix()
-                                        .split(PureWindowsPath(folder).stem)
-                                        .pop()
-                                        .strip("/"),
+                                        folder.parent.parent,
+                                        make_path_relative(
+                                            file["path"], to=folder.parent.parent
+                                        ),
                                     ),
                                     begin=Timestamp(
                                         strptime_from_text(
@@ -147,6 +148,29 @@ class SpectroDataset:
                                 ].items()
                             ],
                         ),
+                        files=[
+                            TFile(
+                                path=join(
+                                    folder.parent.parent,
+                                    make_path_relative(
+                                        file["path"], to=folder.parent.parent
+                                    ),
+                                ),
+                                begin=Timestamp(
+                                    strptime_from_text(
+                                        file["begin"],
+                                        datetime_template=TIMESTAMP_FORMATS_EXPORTED_FILES,
+                                    )
+                                ),
+                                end=Timestamp(
+                                    strptime_from_text(
+                                        file["end"],
+                                        datetime_template=TIMESTAMP_FORMATS_EXPORTED_FILES,
+                                    )
+                                ),
+                            )
+                            for name, file in spectro_data["files"].items()
+                        ],
                     )
                     for name, spectro_data in dataset_data["data"].items()
                 ],
