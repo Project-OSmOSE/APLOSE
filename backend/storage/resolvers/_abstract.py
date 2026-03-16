@@ -1,7 +1,10 @@
 from pathlib import PureWindowsPath
 
 from backend.api.models import Dataset, SpectrogramAnalysis, Spectrogram
-from backend.storage.exceptions import CannotGetChildrenException
+from backend.storage.exceptions import (
+    CannotGetChildrenException,
+)
+from backend.storage.models import ImportStatus
 from backend.storage.types import (
     StorageItem,
     StorageDataset,
@@ -9,7 +12,6 @@ from backend.storage.types import (
     FailedItem,
     StorageFolder,
 )
-from backend.storage.models import ImportStatus
 from backend.storage.utils import make_path_relative, is_local_root, listdir, isfile
 
 
@@ -43,7 +45,6 @@ class AbstractResolver:
         return self.__analysis
 
     def __init__(self, path: str):
-        # pylint: disable=broad-exception-caught
         self.__path = path
         self.__dataset = self.get_dataset(path=self.path)
         self.__all_analysis = self.get_all_analysis(path=self.path)
@@ -56,7 +57,7 @@ class AbstractResolver:
 
     def get_dataset(self, path: str | None = None) -> Dataset | FailedItem | None:
         """Returns dataset from storage"""
-        # pylint: disable=broad-exception-caught, assignment-from-none
+        # pylint: disable=assignment-from-none
         if path is None:
             return self.dataset
 
@@ -70,14 +71,9 @@ class AbstractResolver:
         return self.get_dataset(path=PureWindowsPath(path).parent.as_posix())
 
     def _get_all_analysis_for_dataset(
-        self, dataset: Dataset
+        self, dataset: Dataset, detailed: bool = False
     ) -> list[SpectrogramAnalysis | FailedItem]:
         return []
-
-    def _get_all_detailed_analysis_for_dataset(
-        self, dataset: Dataset
-    ) -> list[SpectrogramAnalysis | FailedItem]:
-        return self._get_all_analysis_for_dataset(dataset=dataset)
 
     def get_all_analysis(
         self, path: str | None = None, detailed: bool = False
@@ -85,15 +81,19 @@ class AbstractResolver:
         """Returns analysis list from storage"""
         if path is None and not detailed:
             return self.all_analysis
+        path = self.path
         dataset = self.get_dataset(path=path)
         if not dataset or isinstance(dataset, FailedItem):
             return []
-        if detailed:
-            return self._get_all_detailed_analysis_for_dataset(dataset=dataset)
-        return self._get_all_analysis_for_dataset(dataset=dataset)
+        return self._get_all_analysis_for_dataset(dataset=dataset, detailed=detailed)
+
+    def _get_analysis(
+        self, dataset: Dataset, relative_path: str, detailed: bool = False
+    ) -> SpectrogramAnalysis | FailedItem | None:
+        return None
 
     def get_analysis(
-        self, path: str | None = None
+        self, path: str | None = None, detailed: bool = False
     ) -> SpectrogramAnalysis | FailedItem | None:
         """Returns analysis from storage"""
         if path is None:
@@ -103,10 +103,9 @@ class AbstractResolver:
             return None
         path = path or self.path
         relative_path = make_path_relative(path, to=dataset.path)
-        for analysis in self.get_all_analysis(path=path):
-            if analysis.path == relative_path:
-                return analysis
-        return None
+        return self._get_analysis(
+            dataset=dataset, relative_path=relative_path, detailed=detailed
+        )
 
     def get_all_spectrograms_for_analysis(
         self, analysis: SpectrogramAnalysis
@@ -130,19 +129,22 @@ class AbstractResolver:
             import_status=ImportStatus.AVAILABLE,
         )
 
-    def get_item(self, path: str | None = None) -> StorageItem | None:
+    def get_item(
+        self, path: str | None = None, discover_analysis: bool = True
+    ) -> StorageItem | None:
         """Get item from storage"""
         dataset = self.get_dataset(path)
         if not dataset:
             return StorageFolder(path=path)
 
-        analysis = self.get_analysis(path=path)
-        if analysis:
-            if isinstance(analysis, FailedItem):
-                return analysis.to_storage_analysis()
-            return self._get_storage_analysis_from_spectrogram_analysis(
-                analysis=analysis
-            )
+        if discover_analysis:
+            analysis = self.get_analysis(path=path)
+            if analysis:
+                if isinstance(analysis, FailedItem):
+                    return analysis.to_storage_analysis()
+                return self._get_storage_analysis_from_spectrogram_analysis(
+                    analysis=analysis
+                )
 
         if isinstance(dataset, FailedItem):
             return dataset.to_storage_dataset()
@@ -152,7 +154,7 @@ class AbstractResolver:
         """Get children items from storage"""
         dataset = self.get_dataset()
         analysis = self.get_analysis()
-        if analysis:
+        if analysis and not isinstance(analysis, FailedItem):
             raise CannotGetChildrenException(self.path)
 
         if dataset:
@@ -164,7 +166,7 @@ class AbstractResolver:
             ]
 
         return [
-            self.get_item(path=folder)
+            self.get_item(path=folder, discover_analysis=False)
             for folder in listdir(self.path)
             if not isfile(folder)
         ]

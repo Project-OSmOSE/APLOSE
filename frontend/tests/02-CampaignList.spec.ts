@@ -139,6 +139,16 @@ const TEST = {
       })
     }),
 
+  cannotAccessCampaignCreation: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
+    test(`Cannot access campaign creation ${ as }`, { tag }, async ({ page }) => {
+      await interceptRequests(page, { getCurrentUser: as })
+      await test.step(`Navigate`, () => page.campaigns.go({ as }));
+
+      await test.step('Cannot access campaign creation', async () => {
+        await expect(page.campaigns.createCampaignButton).not.toBeVisible()
+      })
+    }),
+
   accessCampaignCreation: ({ as, tag }: Pick<Params, 'as' | 'tag'>) =>
     test(`Access campaign creation ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, { getCurrentUser: as })
@@ -160,6 +170,8 @@ test.describe('/annotation-campaign', () => {
 
   TEST.filterCampaigns({ as, tag: essentialTag })
 
-  TEST.accessCampaignCreation({ as, tag: essentialTag })
+  TEST.cannotAccessCampaignCreation({ as, tag: essentialTag })
+  TEST.accessCampaignCreation({ as: 'staff', tag: essentialTag })
+  TEST.accessCampaignCreation({ as: 'superuser', tag: essentialTag })
 
 })

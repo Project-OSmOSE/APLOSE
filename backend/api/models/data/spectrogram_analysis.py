@@ -4,7 +4,7 @@ from pathlib import Path
 
 from dateutil import parser
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.db.models import CheckConstraint, Q, Min, Max
 from typing_extensions import deprecated
 
@@ -191,30 +191,47 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
             )
         )
 
+    @transaction.atomic
     def add_spectrograms(self, spectrograms: list["Spectrogram"]):
         """Add spectrogram objects to current analysis"""
-        self.spectrograms.bulk_create(
-            spectrograms, ignore_conflicts=True, batch_size=100
-        )
-        self.spectrograms.through.objects.bulk_create(
-            [
-                self.spectrograms.through(
-                    spectrogram=self.spectrograms.model.objects.get(
-                        filename=spectrogram.filename,
-                        format=spectrogram.format,
-                        start=spectrogram.start,
-                        end=spectrogram.end,
-                    ),
-                    spectrogramanalysis=self,
-                )
-                for spectrogram in spectrograms
-            ]
+        existing_spectrograms = []
+        new_spectrograms = []
+        dataset_spectrograms = self.spectrograms.model.objects.filter(
+            analysis__dataset=self.dataset
         )
 
-        info = self.spectrograms.aggregate(start=Min("start"), end=Max("end"))
-        self.start = info["start"]
-        self.end = info["end"]
-        self.save()
+        for s in spectrograms:
+            params = {
+                "filename": s.filename,
+                "format": s.format,
+                "start": s.start,
+                "end": s.end,
+            }
+            if dataset_spectrograms.filter(**params).exists():
+                existing_spectrograms.append(
+                    dataset_spectrograms.filter(**params).first()
+                )
+            else:
+                new_spectrograms.append(s)
+
+        new_spectrograms: list[
+            "Spectrogram"
+        ] = self.spectrograms.model.objects.bulk_create(
+            new_spectrograms, ignore_conflicts=True
+        )
+        spectrogram_analysis_rel = []
+        spectrograms = existing_spectrograms + new_spectrograms
+        for spectrogram in spectrograms:
+            spectrogram.save()
+            spectrogram_analysis_rel.append(
+                self.spectrograms.through(
+                    spectrogram=spectrogram, spectrogramanalysis=self
+                )
+            )
+
+        self.spectrograms.through.objects.bulk_create(spectrogram_analysis_rel)
+
+        self.update_dates()
 
     def update_dates(self):
         """Update start and end dates based on spectrogram data"""

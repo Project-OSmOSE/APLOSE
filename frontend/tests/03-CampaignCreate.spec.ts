@@ -142,7 +142,7 @@ const TEST = {
 
       await test.step('Cannot select a dataset if none is imported', async () => {
         await expect(page.getByText('You should first import dataset from Storage')).toBeVisible();
-        await expect(page.getByRole('button', { name: 'Storage' })).toBeEnabled();
+        await expect(page.getByRole('button', { name: 'Storage' }).last()).toBeEnabled();
       })
 
       await test.step('Cannot submit empty form', async () => {
@@ -157,7 +157,7 @@ const TEST = {
 
 // Tests
 test.describe('/annotation-campaign/new', () => {
-  const as: UserType = 'annotator'
+  const as: UserType = 'staff'
 
   TEST.handleEmptyState({ as, tag: essentialTag })
 

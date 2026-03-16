@@ -2,7 +2,6 @@ import json
 from pathlib import PureWindowsPath, Path
 
 from metadatax.data.models import FileFormat
-from osekit.config import TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
 
 from backend.api.models import SpectrogramAnalysis, Dataset, Colormap, FFT, Spectrogram
 from backend.storage.exceptions import AnalysisNotFoundException
@@ -44,7 +43,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
         return super()._get_dataset_for_path(path=path)
 
     def _get_all_analysis_for_dataset(
-        self, dataset: Dataset
+        self, dataset: Dataset, detailed: bool = False
     ) -> list[SpectrogramAnalysis]:
         json_path = join(dataset.path, "dataset.json")
         if not exists(json_path):
@@ -53,56 +52,83 @@ class OSEkitResolver(LegacyOSEkitResolver):
         analysis: list[SpectrogramAnalysis] = []
         with open_file(json_path) as f:
             d = json.loads(f.read())
-            for name, info in d["datasets"].items():
+            for _name, info in d["datasets"].items():
                 if info["class"] != SpectroDataset.__name__:
                     continue
                 analysis.append(
-                    SpectrogramAnalysis(
-                        name=name,
-                        path=make_path_relative(
+                    self._get_analysis(
+                        dataset=dataset,
+                        relative_path=make_path_relative(
                             PureWindowsPath(info["json"]).parent.as_posix(),
                             to=dataset.path,
                         ),
+                        detailed=detailed,
                     )
                 )
         return analysis
 
-    def _get_all_detailed_analysis_for_dataset(
-        self, dataset: Dataset
-    ) -> list[SpectrogramAnalysis]:
+    def _get_analysis(
+        self, dataset: Dataset, relative_path: str, detailed: bool = False
+    ) -> SpectrogramAnalysis | FailedItem | None:
+        if dataset.legacy:
+            return super()._get_analysis(
+                dataset=dataset, relative_path=relative_path, detailed=detailed
+            )
+        spectro_dataset: SpectroDataset | None = None
         json_path = join(dataset.path, "dataset.json")
-        if not exists(json_path):
-            return super()._get_all_detailed_analysis_for_dataset(dataset=dataset)
-        osekit_dataset = OSEkitDataset.from_json(Path(make_absolute_server(json_path)))
-        analysis: list[SpectrogramAnalysis] = []
-        for d in osekit_dataset.datasets.values():
-            if d["class"] != SpectroDataset.__name__:
-                continue
-            sd: SpectroDataset = d["dataset"]
-            relative_path = make_path_relative(
-                sd.folder, to=make_path_relative(osekit_dataset.folder)
+        if exists(json_path):
+            with open_file(json_path) as f:
+                d = json.loads(f.read())
+                for _name, info in d["datasets"].items():
+                    if info["class"] != SpectroDataset.__name__:
+                        continue
+                    path = make_path_relative(
+                        PureWindowsPath(info["json"]).parent.as_posix(),
+                        to=dataset.path,
+                    )
+                    if path == relative_path:
+                        if not detailed:
+                            return SpectrogramAnalysis(
+                                name=PureWindowsPath(relative_path).name,
+                                path=relative_path,
+                            )
+                        spectro_dataset = SpectroDataset.from_json(
+                            Path(
+                                make_absolute_server(
+                                    join(
+                                        dataset.path,
+                                        make_path_relative(
+                                            info["json"], to=dataset.path
+                                        ),
+                                    )
+                                )
+                            )
+                        )
+        if spectro_dataset is None:
+            return None
+
+        if not detailed:
+            return SpectrogramAnalysis(
+                name=PureWindowsPath(relative_path).name, path=relative_path
             )
-            analysis.append(
-                SpectrogramAnalysis(
-                    name=sd.name,
-                    path=relative_path,
-                    start=sd.begin,
-                    end=sd.end,
-                    dataset=dataset,
-                    data_duration=sd.data_duration.seconds,
-                    fft=FFT(
-                        nfft=sd.fft.mfft,
-                        window_size=sd.fft.win.size,
-                        overlap=1 - (sd.fft.hop / sd.fft.win.size),
-                        sampling_frequency=sd.fft.fs,
-                        scaling=sd.fft.scaling,
-                    ),
-                    colormap=Colormap(name=sd.colormap or "viridis"),
-                    dynamic_min=sd.v_lim[0],
-                    dynamic_max=sd.v_lim[1],
-                )
-            )
-        return analysis
+        return SpectrogramAnalysis(
+            name=PureWindowsPath(relative_path).name,
+            path=relative_path,
+            start=spectro_dataset.begin,
+            end=spectro_dataset.end,
+            dataset=dataset,
+            data_duration=spectro_dataset.data_duration.seconds,
+            fft=FFT(
+                nfft=spectro_dataset.fft.mfft,
+                window_size=spectro_dataset.fft.win.size,
+                overlap=1 - (spectro_dataset.fft.hop / spectro_dataset.fft.win.size),
+                sampling_frequency=spectro_dataset.fft.fs,
+                scaling=spectro_dataset.fft.scaling,
+            ),
+            colormap=Colormap(name=spectro_dataset.colormap or "viridis"),
+            dynamic_min=spectro_dataset.v_lim[0],
+            dynamic_max=spectro_dataset.v_lim[1],
+        )
 
     def __get_spectro_dataset(
         self, analysis: SpectrogramAnalysis
@@ -135,7 +161,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
         return [
             Spectrogram(
                 format=img_format,
-                filename=data.begin.strftime(TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED),
+                filename=data.name,
                 start=data.begin,
                 end=data.end,
             )
@@ -152,10 +178,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
             )
 
         for spectro_data in sd.data:
-            filename = spectro_data.begin.strftime(
-                TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
-            )
-            if filename == spectrogram.filename:
+            if spectro_data.name == spectrogram.filename:
                 file = spectro_data.audio_data.files.pop(0)
                 return (
                     make_static_url(Path(file.path).resolve()) if file else None,
@@ -163,7 +186,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
                         join(
                             clean_path(sd.folder),
                             "spectrogram",
-                            f"{spectro_data.begin.strftime(TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED)}.png",
+                            f"{spectrogram.filename}.png",
                         )
                     ),
                 )

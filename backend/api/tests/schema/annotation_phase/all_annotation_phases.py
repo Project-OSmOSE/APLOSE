@@ -102,7 +102,7 @@ class AllAnnotationPhasesTestCase(ExtendedTestCase):
 
         content = json.loads(response.content)["data"]["allAnnotationPhases"]["results"]
         self.assertEqual(len(content), AnnotationPhase.objects.count())
-        self.assertEqual(content[1]["phase"], "Annotation")
+        self.assertEqual(content[0]["phase"], "Annotation")
 
     def test_connected_admin_filter_annotator(self):
         response = self.gql_query(
