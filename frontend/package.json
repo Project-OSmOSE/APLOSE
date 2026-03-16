@@ -23,7 +23,6 @@
   "dependencies": {
     "@codemirror/commands": "^6.8.1",
     "@codemirror/lang-sql": "^6.8.0",
-    "@codemirror/lang-sql": "^6.8.0",
     "@codemirror/view": "^6.36.5",
     "@ionic/react": "^7.6.2",
     "@reduxjs/toolkit": "^2.2.1",
