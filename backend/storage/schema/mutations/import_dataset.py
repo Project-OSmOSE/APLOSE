@@ -1,9 +1,12 @@
+from datetime import datetime
 import graphene
+from IPython.testing.tools import full_path
 from django.db import transaction
 from django.forms import model_to_dict
 from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from graphene import Mutation, String
 from graphql import GraphQLError
+from msgpack import Timestamp
 
 from backend.api.models import (
     FFT,
@@ -30,7 +33,9 @@ class ImportDatasetMutation(Mutation):
     @transaction.atomic
     def mutate(self, info, dataset_path: str, analysis_path: str | None = None):
         """Do the mutation: create required analysis"""
-        resolver = Resolver(join(dataset_path, analysis_path or ""))
+
+        full_path = join(dataset_path, analysis_path or "")
+        resolver = Resolver(full_path)
 
         if not resolver.dataset:
             raise GraphQLError("Dataset not found")
@@ -43,15 +48,16 @@ class ImportDatasetMutation(Mutation):
         resolver.dataset.save()
 
         analysis = []
-        for a in resolver.get_all_analysis(detailed=True):
-            if analysis_path and a.path == analysis_path:
+        if analysis_path:
+            if isinstance(resolver.analysis, FailedItem):
+                raise GraphQLError(
+                    str(resolver.analysis.error), original_error=resolver.analysis.error
+                )
+            analysis.append(resolver.get_analysis(path=full_path, detailed=True))
+        else:
+            for a in resolver.all_analysis:
                 if isinstance(a, FailedItem):
-                    raise GraphQLError(str(a.error), original_error=a.error)
-                analysis.append(a)
-                continue
-            if isinstance(a, FailedItem):
-                continue
-            if not analysis_path:
+                    continue
                 analysis.append(a)
 
         for sa in analysis:

@@ -27,7 +27,7 @@ def make_path_relative(path: _Path, to: _Path | None = None) -> str:
     return clean_path(path)
 
 
-def join(a: str, /, *paths: str) -> str:
+def join(a: _Path, /, *paths: _Path) -> str:
     """Join multiple paths"""
     return clean_path(os.path.join(a, *paths))
 
