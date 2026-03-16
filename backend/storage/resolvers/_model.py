@@ -31,14 +31,12 @@ class ModelResolver(OSEkitResolver):
         for a in dataset.spectrogram_analysis.all():
             if exists(join(dataset.path, a.path)):
                 analysis.append(a)
-        print(datetime.now().isoformat(), "got model analysis")
 
         for a in super()._get_all_analysis_for_dataset(
             dataset=dataset, detailed=detailed
         ):
             if not dataset.spectrogram_analysis.filter(path=a.path).exists():
                 analysis.append(a)
-        print(datetime.now().isoformat(), "got osekit analysis")
 
         return analysis
 

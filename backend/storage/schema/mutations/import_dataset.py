@@ -1,12 +1,9 @@
-from datetime import datetime
 import graphene
-from IPython.testing.tools import full_path
 from django.db import transaction
 from django.forms import model_to_dict
 from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 from graphene import Mutation, String
 from graphql import GraphQLError
-from msgpack import Timestamp
 
 from backend.api.models import (
     FFT,
@@ -55,7 +52,7 @@ class ImportDatasetMutation(Mutation):
                 )
             analysis.append(resolver.get_analysis(path=full_path, detailed=True))
         else:
-            for a in resolver.all_analysis:
+            for a in resolver.get_all_analysis(detailed=True):
                 if isinstance(a, FailedItem):
                     continue
                 analysis.append(a)

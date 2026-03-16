@@ -81,8 +81,9 @@ class AbstractResolver:
         self, path: str | None = None, detailed: bool = False
     ) -> list[SpectrogramAnalysis | FailedItem]:
         """Returns analysis list from storage"""
-        if path is None:
+        if path is None and not detailed:
             return self.all_analysis
+        path = self.path
         dataset = self.get_dataset(path=path)
         if not dataset or isinstance(dataset, FailedItem):
             return []
@@ -155,7 +156,7 @@ class AbstractResolver:
         """Get children items from storage"""
         dataset = self.get_dataset()
         analysis = self.get_analysis()
-        if analysis:
+        if analysis and not isinstance(analysis, FailedItem):
             raise CannotGetChildrenException(self.path)
 
         if dataset:

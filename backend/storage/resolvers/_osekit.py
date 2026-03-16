@@ -1,9 +1,7 @@
 import json
-import traceback
 from pathlib import PureWindowsPath, Path
 
 from metadatax.data.models import FileFormat
-from osekit.config import TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
 
 from backend.api.models import SpectrogramAnalysis, Dataset, Colormap, FFT, Spectrogram
 from backend.storage.exceptions import AnalysisNotFoundException
@@ -163,7 +161,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
         return [
             Spectrogram(
                 format=img_format,
-                filename=data.begin.strftime(TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED),
+                filename=data.name,
                 start=data.begin,
                 end=data.end,
             )
@@ -180,10 +178,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
             )
 
         for spectro_data in sd.data:
-            filename = spectro_data.begin.strftime(
-                TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED
-            )
-            if filename == spectrogram.filename:
+            if spectro_data.name == spectrogram.filename:
                 file = spectro_data.audio_data.files.pop(0)
                 return (
                     make_static_url(Path(file.path).resolve()) if file else None,
@@ -191,7 +186,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
                         join(
                             clean_path(sd.folder),
                             "spectrogram",
-                            f"{spectro_data.begin.strftime(TIMESTAMP_FORMAT_EXPORTED_FILES_LOCALIZED)}.png",
+                            f"{spectrogram.filename}.png",
                         )
                     ),
                 )

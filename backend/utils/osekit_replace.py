@@ -103,6 +103,70 @@ class SpectroDataset:
                     : -len(f"/{json_path.stem}{json_path.suffix}")
                 ]
             )
+            all_spectro_data = []
+            for spectro_name, spectro_data in dataset_data["data"].items():
+                audio_files = []
+                spectro_files = []
+                for name, file in spectro_data["files"].items():
+                    spectro_files.append(
+                        TFile(
+                            path=join(
+                                folder.parent.parent,
+                                make_path_relative(
+                                    file["path"], to=folder.parent.parent
+                                ),
+                            ),
+                            begin=Timestamp(
+                                strptime_from_text(
+                                    file["begin"],
+                                    datetime_template=TIMESTAMP_FORMATS_EXPORTED_FILES,
+                                )
+                            ),
+                            end=Timestamp(
+                                strptime_from_text(
+                                    file["end"],
+                                    datetime_template=TIMESTAMP_FORMATS_EXPORTED_FILES,
+                                )
+                            ),
+                        )
+                    )
+                for name, file in spectro_data["audio_data"]["files"].items():
+                    audio_files.append(
+                        TFile(
+                            path=join(
+                                folder.parent.parent,
+                                make_path_relative(
+                                    Path(folder, file["path"]).resolve()
+                                    if ".." in file["path"]
+                                    else file["path"],
+                                    to=folder.parent.parent,
+                                ),
+                            ),
+                            begin=Timestamp(
+                                strptime_from_text(
+                                    file["begin"],
+                                    datetime_template=TIMESTAMP_FORMATS_EXPORTED_FILES,
+                                )
+                            ),
+                            end=Timestamp(
+                                strptime_from_text(
+                                    file["end"],
+                                    datetime_template=TIMESTAMP_FORMATS_EXPORTED_FILES,
+                                )
+                            ),
+                        )
+                    )
+                all_spectro_data.append(
+                    SpectroData(
+                        name=spectro_name,
+                        begin=Timestamp(spectro_data["begin"]),
+                        end=Timestamp(spectro_data["end"]),
+                        v_lim=spectro_data["v_lim"],
+                        audio_data=AudioData(files=audio_files),
+                        files=spectro_files,
+                    )
+                )
+
             return SpectroDataset(
                 folder=folder,
                 name=dataset_data["name"],
@@ -115,65 +179,7 @@ class SpectroDataset:
                 if sft
                 else None,
                 colormap=list(dataset_data["data"].values())[0]["colormap"],
-                data=[
-                    SpectroData(
-                        name=name,
-                        begin=Timestamp(spectro_data["begin"]),
-                        end=Timestamp(spectro_data["end"]),
-                        v_lim=spectro_data["v_lim"],
-                        audio_data=AudioData(
-                            files=[
-                                TFile(
-                                    path=join(
-                                        folder.parent.parent,
-                                        make_path_relative(
-                                            file["path"], to=folder.parent.parent
-                                        ),
-                                    ),
-                                    begin=Timestamp(
-                                        strptime_from_text(
-                                            file["begin"],
-                                            datetime_template=TIMESTAMP_FORMATS_EXPORTED_FILES,
-                                        )
-                                    ),
-                                    end=Timestamp(
-                                        strptime_from_text(
-                                            file["end"],
-                                            datetime_template=TIMESTAMP_FORMATS_EXPORTED_FILES,
-                                        )
-                                    ),
-                                )
-                                for name, file in spectro_data["audio_data"][
-                                    "files"
-                                ].items()
-                            ],
-                        ),
-                        files=[
-                            TFile(
-                                path=join(
-                                    folder.parent.parent,
-                                    make_path_relative(
-                                        file["path"], to=folder.parent.parent
-                                    ),
-                                ),
-                                begin=Timestamp(
-                                    strptime_from_text(
-                                        file["begin"],
-                                        datetime_template=TIMESTAMP_FORMATS_EXPORTED_FILES,
-                                    )
-                                ),
-                                end=Timestamp(
-                                    strptime_from_text(
-                                        file["end"],
-                                        datetime_template=TIMESTAMP_FORMATS_EXPORTED_FILES,
-                                    )
-                                ),
-                            )
-                            for name, file in spectro_data["files"].items()
-                        ],
-                    )
-                    for name, spectro_data in dataset_data["data"].items()
-                ],
+                data=all_spectro_data,
             )
 
     @property
