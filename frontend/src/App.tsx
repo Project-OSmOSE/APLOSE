@@ -78,7 +78,7 @@ const AppContent: React.FC = () => {
 
                 <Route path="annotation-campaign">
                     <Route index element={ <Suspense><AnnotationCampaignList/></Suspense> }/>
-                    <Route path="new" element={ <Suspense><NewAnnotationCampaign/></Suspense> }/>
+                    <Route path="new" element={ <SuspenseAdminOnly><NewAnnotationCampaign/></SuspenseAdminOnly> }/>
                     <Route path=":campaignID">
                         <Route element={ <Suspense><AnnotationCampaignDetail/></Suspense> }>
                             <Route index element={ <Suspense><AnnotationCampaignInfo/></Suspense> }/>
