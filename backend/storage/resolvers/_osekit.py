@@ -52,7 +52,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
         analysis: list[SpectrogramAnalysis] = []
         with open_file(json_path) as f:
             d = json.loads(f.read())
-            for name, info in d["datasets"].items():
+            for _name, info in d["datasets"].items():
                 if info["class"] != SpectroDataset.__name__:
                     continue
                 analysis.append(
@@ -79,7 +79,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
         if exists(json_path):
             with open_file(json_path) as f:
                 d = json.loads(f.read())
-                for name, info in d["datasets"].items():
+                for _name, info in d["datasets"].items():
                     if info["class"] != SpectroDataset.__name__:
                         continue
                     path = make_path_relative(

@@ -1,5 +1,4 @@
 import csv
-import traceback
 from ast import literal_eval
 from functools import reduce
 from pathlib import PureWindowsPath
@@ -29,10 +28,8 @@ from backend.storage.utils import (
     listdir,
     make_path_relative,
     make_static_url,
-    clean_path,
 )
 from ._storage import StorageResolver
-from ..exceptions import AnalysisNotFoundException
 
 
 class LegacyCSVDataset(TypedDict):
@@ -186,7 +183,6 @@ class LegacyOSEkitResolver(StorageResolver):
     def _get_all_analysis_for_dataset(
         self, dataset: Dataset, detailed: bool = False
     ) -> list[SpectrogramAnalysis | FailedItem]:
-        # pylint: disable=broad-exception-caught
         csv_datasets = self._get_csv_datasets(dataset.path)
         analysis: list[SpectrogramAnalysis | FailedItem] = []
         for line in csv_datasets:
@@ -207,6 +203,7 @@ class LegacyOSEkitResolver(StorageResolver):
     def _get_analysis(
         self, dataset: Dataset, relative_path: str, detailed: bool = False
     ) -> SpectrogramAnalysis | FailedItem | None:
+        # pylint: disable=broad-exception-caught
         full_path = PureWindowsPath(join(dataset.path, relative_path))
         name = f"{full_path.parent.name}/{full_path.name}"
         csv_datasets = self._get_csv_datasets(

@@ -107,7 +107,7 @@ class SpectroDataset:
             for spectro_name, spectro_data in dataset_data["data"].items():
                 audio_files = []
                 spectro_files = []
-                for name, file in spectro_data["files"].items():
+                for _name, file in spectro_data["files"].items():
                     spectro_files.append(
                         TFile(
                             path=join(
@@ -130,7 +130,7 @@ class SpectroDataset:
                             ),
                         )
                     )
-                for name, file in spectro_data["audio_data"]["files"].items():
+                for _name, file in spectro_data["audio_data"]["files"].items():
                     audio_files.append(
                         TFile(
                             path=join(

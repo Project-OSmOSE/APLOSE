@@ -1,5 +1,4 @@
 """Spectrogram analysis model"""
-from datetime import datetime
 from os.path import join
 from pathlib import Path
 
@@ -7,7 +6,6 @@ from dateutil import parser
 from django.conf import settings
 from django.db import models, transaction
 from django.db.models import CheckConstraint, Q, Min, Max
-from metadatax.data.models import FileFormat
 from typing_extensions import deprecated
 
 from .__abstract_analysis import AbstractAnalysis
@@ -198,7 +196,6 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
         """Add spectrogram objects to current analysis"""
         existing_spectrograms = []
         new_spectrograms = []
-        img_format, _ = FileFormat.objects.get_or_create(name="png")
         dataset_spectrograms = self.spectrograms.model.objects.filter(
             analysis__dataset=self.dataset
         )

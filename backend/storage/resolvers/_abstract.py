@@ -3,8 +3,8 @@ from pathlib import PureWindowsPath
 from backend.api.models import Dataset, SpectrogramAnalysis, Spectrogram
 from backend.storage.exceptions import (
     CannotGetChildrenException,
-    AnalysisNotFoundException,
 )
+from backend.storage.models import ImportStatus
 from backend.storage.types import (
     StorageItem,
     StorageDataset,
@@ -12,7 +12,6 @@ from backend.storage.types import (
     FailedItem,
     StorageFolder,
 )
-from backend.storage.models import ImportStatus
 from backend.storage.utils import make_path_relative, is_local_root, listdir, isfile
 
 
@@ -46,7 +45,6 @@ class AbstractResolver:
         return self.__analysis
 
     def __init__(self, path: str):
-        # pylint: disable=broad-exception-caught
         self.__path = path
         self.__dataset = self.get_dataset(path=self.path)
         self.__all_analysis = self.get_all_analysis(path=self.path)
@@ -59,7 +57,7 @@ class AbstractResolver:
 
     def get_dataset(self, path: str | None = None) -> Dataset | FailedItem | None:
         """Returns dataset from storage"""
-        # pylint: disable=broad-exception-caught, assignment-from-none
+        # pylint: disable=assignment-from-none
         if path is None:
             return self.dataset
 
