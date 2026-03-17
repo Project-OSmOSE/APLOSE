@@ -17,8 +17,8 @@ drf-spectacular = "^0.26.0"
 django-tinymce = "^3.6.1"
 python-dateutil = ">=2.4"
 whitenoise = "^6.9.0"
-osekit = "^0.4.1"
-#osekit = {path = "./OSEkit", develop=true}
+#osekit = "^0.4.1"
+osekit = {path = "../OSEkit"}
 graphene-django = "^3.2.3"
 graphene-django-pagination = {url = "https://github.com/instruct-br/graphene-django-pagination/archive/master.zip"}
 django-filter = ">=2"
