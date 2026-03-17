@@ -526,7 +526,11 @@ class AploseAudioProcessor:
 
         # Parse datetime and round duration to integer
         duration_rounded = int(round(metadata['duration']))
-        begin_dt, end_dt = self._parse_datetime(wav_stem, duration_rounded)
+        if metadata.get('begin_datetime') is not None:
+            begin_dt = metadata['begin_datetime']
+            end_dt = begin_dt + timedelta(seconds=duration_rounded)
+        else:
+            begin_dt, end_dt = self._parse_datetime(wav_stem, duration_rounded)
 
         # Round timestamps to whole seconds (remove microseconds)
         begin_dt = begin_dt.replace(microsecond=0)

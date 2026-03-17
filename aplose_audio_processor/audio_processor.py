@@ -170,6 +170,9 @@ class AudioProcessor:
         total_duration = len(audio) / sample_rate
         results = []
 
+        # Parse datetime from original filename once, reuse for all snippets
+        original_dt = self._parse_original_datetime(base_name)
+
         snippet_idx = 0
         start_sample = 0
 
@@ -194,12 +197,18 @@ class AudioProcessor:
             # Save snippet
             sf.write(output_path, snippet, sample_rate)
 
+            # Compute begin_datetime for this snippet if we could parse the original
+            begin_datetime = None
+            if original_dt is not None:
+                begin_datetime = original_dt + timedelta(seconds=int(round(time_offset)))
+
             metadata = {
                 'duration': len(snippet) / sample_rate,
                 'sample_rate': sample_rate,
                 'snippet_index': snippet_idx,
                 'time_offset': time_offset,
-                'original_file': base_name
+                'original_file': base_name,
+                'begin_datetime': begin_datetime
             }
 
             results.append((output_path, metadata))
@@ -212,6 +221,41 @@ class AudioProcessor:
                 break
 
         return results
+
+    def _parse_original_datetime(self, base_name: str):
+        """
+        Parse datetime from original filename using self.datetime_format.
+
+        Returns a datetime object, or None if parsing fails.
+        """
+        from datetime import datetime
+        import re
+
+        if not self.datetime_format:
+            return None
+
+        fmt = self.datetime_format
+        regex_pattern = self._datetime_format_to_regex(fmt)
+
+        # Try regex search anywhere in filename
+        match = re.search(regex_pattern, base_name)
+        if match:
+            try:
+                return datetime.strptime(match.group(0), fmt)
+            except ValueError:
+                pass
+
+        # Try splitting on underscores
+        parts = base_name.split('_')
+        for i in range(len(parts)):
+            for j in range(i + 1, min(i + 7, len(parts) + 1)):
+                candidate = '_'.join(parts[i:j])
+                try:
+                    return datetime.strptime(candidate, fmt)
+                except ValueError:
+                    continue
+
+        return None
 
     def _generate_snippet_filename(
         self,
