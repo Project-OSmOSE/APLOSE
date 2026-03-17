@@ -27,6 +27,7 @@ django-extension = {path = "../django-extension", develop = true}
 #django-extension = { url = "https://github.com/Project-OSmOSE/django-extension/releases/download/v0.1.4/django_extension-0.1.4.tar.gz" }
 metadatax = {path = "../metadatax", develop=true}
 #metadatax = {url = "https://github.com/PAM-Standardization/metadatax/archive/refs/tags/v0.5.3.tar.gz"}
+channels = {extras = ["daphne", "types"], version = "^4.3.2"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
