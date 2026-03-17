@@ -548,8 +548,8 @@ class AploseAudioProcessor:
                 'frequency_min': float(freqs[0]),
                 'frequency_max': float(freqs[-1]),
                 'frequency_scale': freq_scale,  # 'log' or 'linear'
-                'time_min': float(times[0]),
-                'time_max': float(times[-1]),
+                'time_min': int(round(float(times[0]))),
+                'time_max': int(round(float(times[-1]))),
                 'time_scale': 'linear',  # Time bins are linearly spaced
                 'n_frequencies': new_n_freqs,
                 'n_times': new_n_times,
@@ -760,96 +760,52 @@ class AploseAudioProcessor:
         Returns:
             Tuple of (begin_datetime, end_datetime).
         """
+        if not self.datetime_format:
+            raise ValueError(
+                f"No datetime format provided. Please specify a datetime_format to parse '{filename}'."
+            )
+
+        datetime_format = self.datetime_format
         parsed_dt = None
 
-        # List of formats to try (user-provided format first, then common formats)
-        # Always include %Y_%m_%d_%H_%M_%S since that's the output format from audio_processor
-        formats_to_try = []
-        if self.datetime_format:
-            formats_to_try.append(self.datetime_format)
-        formats_to_try.extend([
-            '%Y_%m_%d_%H_%M_%S',  # Output format from audio_processor
-            '%Y%m%d_%H%M%S',
-            '%Y%m%d%H%M%S',
-            '%Y-%m-%d_%H-%M-%S',
-        ])
-        # Remove duplicates while preserving order
-        seen = set()
-        formats_to_try = [x for x in formats_to_try if not (x in seen or seen.add(x))]
+        # Convert datetime format to regex pattern
+        regex_pattern = self._datetime_format_to_regex(datetime_format)
 
-        for datetime_format in formats_to_try:
-            if parsed_dt:
-                break
+        # First try: parse the entire filename
+        try:
+            parsed_dt = datetime.strptime(filename, datetime_format)
+        except ValueError:
+            pass
 
-            # Convert datetime format to regex pattern
-            regex_pattern = self._datetime_format_to_regex(datetime_format)
-
-            try:
-                # First try: parse the entire filename
+        # Second try: search for pattern anywhere in filename using regex
+        if not parsed_dt:
+            match = re.search(regex_pattern, filename)
+            if match:
+                matched_str = match.group(0)
                 try:
-                    parsed_dt = datetime.strptime(filename, datetime_format)
-                    continue
+                    parsed_dt = datetime.strptime(matched_str, datetime_format)
                 except ValueError:
                     pass
 
-                # Second try: search for pattern anywhere in filename using regex
-                if not parsed_dt:
-                    match = re.search(regex_pattern, filename)
-                    if match:
-                        matched_str = match.group(0)
-                        try:
-                            parsed_dt = datetime.strptime(matched_str, datetime_format)
-                            continue
-                        except ValueError:
-                            pass
-
-                # Third try: for formats with separators, try splitting and recombining
-                if not parsed_dt and '_' in datetime_format:
-                    parts = filename.split('_')
-                    for i in range(len(parts)):
-                        for j in range(i+1, min(i+7, len(parts)+1)):
-                            candidate = '_'.join(parts[i:j])
-                            try:
-                                parsed_dt = datetime.strptime(candidate, datetime_format)
-                                break
-                            except ValueError:
-                                continue
-                        if parsed_dt:
-                            break
-
-                # Fourth try: extract all digit sequences and try common patterns
-                if not parsed_dt:
-                    # Find all sequences of digits in the filename
-                    digit_sequences = re.findall(r'\d+', filename)
-
-                    # Try concatenating adjacent sequences to form datetime
-                    for i in range(len(digit_sequences)):
-                        # Try single sequence
-                        seq = digit_sequences[i]
-                        try:
-                            parsed_dt = datetime.strptime(seq, datetime_format)
-                            break
-                        except ValueError:
-                            pass
-
-                        # Try concatenating with next sequences
-                        for j in range(i+1, min(i+6, len(digit_sequences)+1)):
-                            combined = ''.join(digit_sequences[i:j])
-                            try:
-                                parsed_dt = datetime.strptime(combined, datetime_format)
-                                break
-                            except ValueError:
-                                continue
-                        if parsed_dt:
-                            break
-
-            except (ValueError, IndexError):
-                continue
+        # Third try: for formats with separators, try splitting and recombining
+        if not parsed_dt and '_' in datetime_format:
+            parts = filename.split('_')
+            for i in range(len(parts)):
+                for j in range(i+1, min(i+7, len(parts)+1)):
+                    candidate = '_'.join(parts[i:j])
+                    try:
+                        parsed_dt = datetime.strptime(candidate, datetime_format)
+                        break
+                    except ValueError:
+                        continue
+                if parsed_dt:
+                    break
 
         if not parsed_dt:
-            # Fallback to default datetime if parsing fails
-            print(f"  Warning: Could not parse datetime from '{filename}' using any format, using 2000-01-01 00:00:00")
-            parsed_dt = datetime(2000, 1, 1, 0, 0, 0)
+            raise ValueError(
+                f"Could not parse datetime from '{filename}' using format '{datetime_format}'. "
+                f"Please check that the datetime_format matches the datetime portion of the filename."
+            )
 
         begin_dt = parsed_dt
 
