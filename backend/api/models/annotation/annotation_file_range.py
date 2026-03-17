@@ -243,6 +243,7 @@ class AnnotationFileRange(models.Model):
                 spectrogram__end__lte=OuterRef("to_datetime"),
                 status=AnnotationTask.Status.FINISHED,
             )
+            .order_by()
             .annotate(count=Func(F("id"), function="Count"))
             .values("count")
         )

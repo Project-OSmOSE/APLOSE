@@ -129,6 +129,7 @@ class AnnotationCampaignNode(ExtendedNode):
                         AnnotationFileRange.objects.filter(
                             annotation_phase__annotation_campaign_id=OuterRef("pk"),
                         )
+                        .order_by()
                         .annotate(sum=Func(F("files_count"), function="Sum"))
                         .values("sum")
                     ),
@@ -140,6 +141,7 @@ class AnnotationCampaignNode(ExtendedNode):
                             annotation_phase__annotation_campaign_id=OuterRef("pk"),
                             annotator_id=info.context.user.id,
                         )
+                        .order_by()
                         .annotate(sum=Func(F("files_count"), function="Sum"))
                         .values("sum")
                     ),
@@ -150,6 +152,7 @@ class AnnotationCampaignNode(ExtendedNode):
                         annotation_phase__annotation_campaign_id=OuterRef("pk"),
                         status=AnnotationTask.Status.FINISHED,
                     )
+                    .order_by()
                     .annotate(count=Func(F("id"), function="count"))
                     .values("count")
                 ),
@@ -159,6 +162,7 @@ class AnnotationCampaignNode(ExtendedNode):
                         status=AnnotationTask.Status.FINISHED,
                         annotator_id=info.context.user.id,
                     )
+                    .order_by()
                     .annotate(count=Func(F("id"), function="count"))
                     .values("count")
                 ),
