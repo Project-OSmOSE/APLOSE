@@ -18,8 +18,6 @@ def process_background_task(self, task_id: int | str):
     except BackgroundTask.DoesNotExist:
         return {"error": "BackgroundTask not found"}
 
-    print("--> will process task", task)
-
     # Use context manager for automatic status updates
     with Tracker(task=task, celery_id=self.request.id) as tracker:
         if task.type == TaskType.ANALYSIS_IMPORT:
