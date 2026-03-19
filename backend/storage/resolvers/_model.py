@@ -3,7 +3,7 @@ from backend.api.models import (
     SpectrogramAnalysis,
     Spectrogram,
 )
-from backend.storage.models import ImportStatus
+from backend.storage.enums import ImportStatus
 from backend.storage.types import (
     StorageAnalysis,
     StorageDataset,
@@ -81,7 +81,8 @@ class ModelResolver(OSEkitResolver):
         )
 
     def get_all_spectrograms_for_analysis(
-        self, analysis: SpectrogramAnalysis
+        self,
+        analysis: SpectrogramAnalysis,
     ) -> list[Spectrogram]:
         return [
             *analysis.spectrograms.all(),

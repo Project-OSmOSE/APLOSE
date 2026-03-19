@@ -16,6 +16,7 @@ import {
 } from '@solar-icons/react';
 import { CopyErrorStackButton, TooltipOverlay, useToast } from '@/components/ui';
 import { DatasetName } from '@/features/Dataset';
+import { useWS } from '@/api/utils';
 
 type Props = {
     parentItem?: StorageItem,
@@ -35,6 +36,7 @@ export const Item: React.FC<Props> = ({
                                           disableImport,
                                       }) => {
     const item = useStorageSearch(path)
+    const ws = useWS()
 
     // Open
     const [ _isOpen, _setIsOpen ] = useState<boolean>(forceOpen || false);
@@ -81,8 +83,17 @@ export const Item: React.FC<Props> = ({
             default:
                 return;
         }
-        importCall.unwrap().catch(error => toast.raiseError({ gqlError: error })).finally(onUpdated)
-    }, [ canImport, item, importDataset, onUpdated, parentItem, toast ])
+        importCall.unwrap()
+            .then(async data => {
+                await ws.open()
+                for (const result of data.importDataset?.analysisResult ?? []) {
+                    if (result?.backgroundTaskId)
+                        ws.listen({ taskID: result.backgroundTaskId })
+                }
+            })
+            .catch(error => toast.raiseError({ gqlError: error }))
+            .finally(onUpdated)
+    }, [ canImport, item, importDataset, onUpdated, parentItem, toast, ws ])
     useEffect(() => {
         return () => {
             toast.dismiss();

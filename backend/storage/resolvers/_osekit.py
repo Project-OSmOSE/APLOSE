@@ -130,9 +130,8 @@ class OSEkitResolver(LegacyOSEkitResolver):
             dynamic_max=spectro_dataset.v_lim[1],
         )
 
-    def __get_spectro_dataset(
-        self, analysis: SpectrogramAnalysis
-    ) -> SpectroDataset | None:
+    @staticmethod
+    def __get_spectro_dataset(analysis: SpectrogramAnalysis) -> SpectroDataset | None:
         json_path = join(analysis.dataset.path, "dataset.json")
         if not exists(json_path):
             return None
@@ -152,9 +151,10 @@ class OSEkitResolver(LegacyOSEkitResolver):
         return sd[0]
 
     def get_all_spectrograms_for_analysis(
-        self, analysis: SpectrogramAnalysis
+        self,
+        analysis: SpectrogramAnalysis,
     ) -> list[Spectrogram]:
-        sd = self.__get_spectro_dataset(analysis=analysis)
+        sd = OSEkitResolver.__get_spectro_dataset(analysis=analysis)
         if not sd:
             return super().get_all_spectrograms_for_analysis(analysis=analysis)
         img_format, _ = FileFormat.objects.get_or_create(name="png")
@@ -171,7 +171,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
     def get_spectrogram_paths(
         self, spectrogram: Spectrogram, analysis: SpectrogramAnalysis
     ) -> tuple[str | None, str | None]:
-        sd = self.__get_spectro_dataset(analysis=analysis)
+        sd = OSEkitResolver.__get_spectro_dataset(analysis=analysis)
         if not sd:
             return super().get_spectrogram_paths(
                 spectrogram=spectrogram, analysis=analysis

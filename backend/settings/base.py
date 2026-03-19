@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "backend.api.apps.ApiConfig",
     "backend.osmosewebsite.apps.OsmoseWebsiteConfig",
     "backend.aplose.apps.AploseConfig",
+    "backend.background_tasks.apps.BackgroundTasksConfig",
     "tinymce",
     "django_admin_multiple_choice_list_filter",
     "django_better_admin_arrayfield",
@@ -85,6 +86,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "backend.wsgi.application"
 ASGI_APPLICATION = "backend.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -195,3 +204,7 @@ GRAPHENE = {
     "MIDDLEWARE": ["graphene_django.debug.middleware.DjangoDebugMiddleware"],
     "TESTING_ENDPOINT": "/api/graphql/public",
 }
+
+# Celery Configuration
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"

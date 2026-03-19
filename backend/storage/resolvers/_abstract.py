@@ -4,7 +4,7 @@ from backend.api.models import Dataset, SpectrogramAnalysis, Spectrogram
 from backend.storage.exceptions import (
     CannotGetChildrenException,
 )
-from backend.storage.models import ImportStatus
+from backend.storage.enums import ImportStatus
 from backend.storage.types import (
     StorageItem,
     StorageDataset,
@@ -20,9 +20,9 @@ class AbstractResolver:
 
     __path: str
 
-    __dataset: Dataset | FailedItem | None
-    __all_analysis: list[SpectrogramAnalysis | FailedItem]
-    __analysis: SpectrogramAnalysis | FailedItem | None
+    __dataset: Dataset | FailedItem | None = None
+    __all_analysis: list[SpectrogramAnalysis | FailedItem] = []
+    __analysis: SpectrogramAnalysis | FailedItem | None = None
 
     @property
     def path(self) -> str:
@@ -44,11 +44,12 @@ class AbstractResolver:
         """Analysis getter"""
         return self.__analysis
 
-    def __init__(self, path: str):
+    def __init__(self, path: str | None):
         self.__path = path
-        self.__dataset = self.get_dataset(path=self.path)
-        self.__all_analysis = self.get_all_analysis(path=self.path)
-        self.__analysis = self.get_analysis(path=self.path)
+        if path is not None:
+            self.__dataset = self.get_dataset(path=self.path)
+            self.__all_analysis = self.get_all_analysis(path=self.path)
+            self.__analysis = self.get_analysis(path=self.path)
 
     def _get_dataset_for_path(
         self, path: str | None = None
@@ -108,7 +109,8 @@ class AbstractResolver:
         )
 
     def get_all_spectrograms_for_analysis(
-        self, analysis: SpectrogramAnalysis
+        self,
+        analysis: SpectrogramAnalysis,
     ) -> list[Spectrogram]:
         """List spectrograms from analysis"""
         return []

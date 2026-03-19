@@ -8,4 +8,6 @@ class ImportStatus(ExtendedEnum):
     IMPORTED = ("I", "Imported")
 
 
-__all__ = ["ImportStatus"]
+__all__ = [
+    "ImportStatus",
+]

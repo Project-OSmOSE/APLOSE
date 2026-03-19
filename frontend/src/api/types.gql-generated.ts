@@ -108,6 +108,12 @@ export type AcousticFeaturesNode = ExtendedInterface & {
   trend?: Maybe<SignalTrendType>;
 };
 
+export type AnalysisImportReturnType = {
+  __typename?: 'AnalysisImportReturnType';
+  analysis?: Maybe<SpectrogramAnalysisNode>;
+  backgroundTaskId?: Maybe<Scalars['ID']['output']>;
+};
+
 export type AnalysisStorageNode = {
   __typename?: 'AnalysisStorageNode';
   error?: Maybe<Scalars['String']['output']>;
@@ -2935,7 +2941,7 @@ export type HydrophoneSpecificationNode = ExtendedInterface & {
 /** "Import Analysis mutation */
 export type ImportDatasetMutation = {
   __typename?: 'ImportDatasetMutation';
-  analysis?: Maybe<SpectrogramAnalysisNode>;
+  analysisResult?: Maybe<Array<Maybe<AnalysisImportReturnType>>>;
   dataset: DatasetNode;
 };
 

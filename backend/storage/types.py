@@ -2,7 +2,7 @@ import traceback
 from pathlib import PureWindowsPath
 
 from backend.api.models import Dataset, SpectrogramAnalysis
-from backend.storage.models import ImportStatus
+from backend.storage.enums import ImportStatus
 
 
 class Folder:

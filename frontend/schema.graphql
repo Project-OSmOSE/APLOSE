@@ -4685,5 +4685,10 @@ type SubmitAnnotationTaskMutation {
 """"Import Analysis mutation"""
 type ImportDatasetMutation {
   dataset: DatasetNode!
+  analysisResult: [AnalysisImportReturnType]
+}
+
+type AnalysisImportReturnType {
   analysis: SpectrogramAnalysisNode
+  backgroundTaskId: ID
 }

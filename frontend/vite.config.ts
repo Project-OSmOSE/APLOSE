@@ -11,6 +11,11 @@ export default (_: ConfigEnv): UserConfig => {
     server: {
       proxy: {
         '/api': 'http://localhost:8000',
+        '/ws': {
+          target: 'ws://localhost:8000',
+          ws: true,
+          rewriteWsOrigin: true,
+        },
         '/backend': 'http://localhost:8000',
         '/doc': 'http://localhost:5174',
       },

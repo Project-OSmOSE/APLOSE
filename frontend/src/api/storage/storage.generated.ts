@@ -21,7 +21,7 @@ export type ImportDatasetFromStorageMutationVariables = Types.Exact<{
 }>;
 
 
-export type ImportDatasetFromStorageMutation = { __typename?: 'Mutation', importDataset?: { __typename?: 'ImportDatasetMutation', dataset: { __typename?: 'DatasetNode', path: string } } | null };
+export type ImportDatasetFromStorageMutation = { __typename?: 'Mutation', importDataset?: { __typename?: 'ImportDatasetMutation', dataset: { __typename?: 'DatasetNode', path: string }, analysisResult?: Array<{ __typename?: 'AnalysisImportReturnType', backgroundTaskId?: string | null, analysis?: { __typename?: 'SpectrogramAnalysisNode', id: string, path: string } | null } | null> | null } | null };
 
 
 export const BrowseStorageDocument = `
@@ -125,6 +125,13 @@ export const ImportDatasetFromStorageDocument = `
   importDataset(datasetPath: $datasetPath, analysisPath: $analysisPath) {
     dataset {
       path
+    }
+    analysisResult {
+      analysis {
+        id
+        path
+      }
+      backgroundTaskId
     }
   }
 }

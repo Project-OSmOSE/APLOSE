@@ -2,7 +2,7 @@ from django_extension.schema.types import ExtendedEnumType
 from graphene import ObjectType, NonNull, String, Field
 
 from backend.api.schema.nodes import DatasetNode, SpectrogramAnalysisNode
-from backend.storage.models import ImportStatus
+from backend.storage.enums import ImportStatus
 from backend.storage.types import StorageAnalysis, StorageDataset, StorageFolder
 
 __all__ = [

@@ -97,5 +97,12 @@ mutation importDatasetFromStorage($datasetPath: String!, $analysisPath: String) 
         dataset {
             path
         }
+        analysisResult {
+            analysis {
+                id
+                path
+            }
+            backgroundTaskId
+        }
     }
 }

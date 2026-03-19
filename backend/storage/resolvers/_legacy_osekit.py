@@ -257,7 +257,8 @@ class LegacyOSEkitResolver(StorageResolver):
         )
 
     def get_all_spectrograms_for_analysis(
-        self, analysis: SpectrogramAnalysis
+        self,
+        analysis: SpectrogramAnalysis,
     ) -> list[Spectrogram]:
         img_format, _ = FileFormat.objects.get_or_create(name="png")
         config = f"{int(analysis.data_duration)}_{analysis.fft.sampling_frequency}"
