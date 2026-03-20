@@ -2,6 +2,7 @@ import React, { Fragment, useCallback } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
 import { pause, play } from 'ionicons/icons/index.js';
 import { Kbd, TooltipOverlay } from '@/components/ui';
+import { useKeyDownEvent } from '@/features/UX/Events';
 import { useAudio } from './context';
 
 export const PlayPauseButton: React.FC = () => {
@@ -17,6 +18,8 @@ export const PlayPauseButton: React.FC = () => {
         break;
     }
   }, [ audio.state ])
+
+  useKeyDownEvent([ ' ' ], toggle);
 
   if (!audio.source) return <Fragment/>
   return <TooltipOverlay title="Shortcut" tooltipContent={ <p><Kbd keys="space"/> : Play/Pause audio</p> }>
