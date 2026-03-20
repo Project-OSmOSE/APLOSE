@@ -48,21 +48,21 @@ class BackgroundTask(models.Model):
             self.started_at = timezone.now()
         self.save()
 
-    def pause(self):
-        """
-        Update status
-        """
-        print("pause", self.pk)
-        self.status = TaskStatus.PAUSE
-        self.save()
-
-    def resume(self):
-        """
-        Update status
-        """
-        print("resume", self.pk)
-        self.status = TaskStatus.PENDING
-        self.save()
+    # def pause(self):
+    #     """
+    #     Update status
+    #     """
+    #     print("pause", self.pk)
+    #     self.status = TaskStatus.PAUSE
+    #     self.save()
+    #
+    # def resume(self):
+    #     """
+    #     Update status
+    #     """
+    #     print("resume", self.pk)
+    #     self.status = TaskStatus.PENDING
+    #     self.save()
 
     def fail(self, error: str, traceback: str):
         """
@@ -100,6 +100,7 @@ class BackgroundTask(models.Model):
             "type": "background_task_update",
             "data": {
                 # Identification
+                "id": self.pk,
                 "type": self.type,
                 # Status
                 "status": self.status,

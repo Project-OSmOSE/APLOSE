@@ -7,7 +7,7 @@ class TaskStatus(ExtendedEnum):
     COMPLETED = ("COMPLETE", "Completed")
     FAILED = ("FAIL", "Failed")
     CANCELLED = ("CANCEL", "Cancelled")
-    PAUSE = ("PAUSE", "Cancelled")
+    PAUSE = ("PAUSE", "Paused")
 
 
 class TaskType(ExtendedEnum):

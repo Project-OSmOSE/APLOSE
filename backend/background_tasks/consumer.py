@@ -48,7 +48,7 @@ class BackgroundTaskConsumer(WebsocketConsumer):
         Handle messages from WebSocket.
 
         Params:
-            - command: 'add' or 'cancel' or 'pause' or 'resume' or 'retry'
+            - command: 'add' or 'cancel' or 'retry'
             - task_id: id of the background task
         """
         try:
@@ -60,10 +60,10 @@ class BackgroundTaskConsumer(WebsocketConsumer):
                 self.handle_add(task_id=data.get("task_id"))
             elif command == "cancel":
                 self.handle_cancel(task_id=data.get("task_id"))
-            elif command == "pause":
-                self.handle_pause(task_id=data.get("task_id"))
-            elif command == "resume":
-                self.handle_resume(task_id=data.get("task_id"))
+            # elif command == "pause":
+            #     self.handle_pause(task_id=data.get("task_id"))
+            # elif command == "resume":
+            #     self.handle_resume(task_id=data.get("task_id"))
             elif command == "retry":
                 self.handle_retry(task_id=data.get("task_id"))
 
@@ -100,39 +100,39 @@ class BackgroundTaskConsumer(WebsocketConsumer):
         except BackgroundTask.DoesNotExist:
             self.send_error(f"Task {task_id} does not exist")
 
-    # TODO: pause celery task as well!! to check
-    def handle_pause(self, task_id: int | str):
-        """
-        Handle 'pause' command from WebSocket.
-        """
-        try:
-            task = BackgroundTask.objects.get(pk=task_id)
-            revoke(task_id=task.celery_id)
-            task.pause()
-            async_to_sync(self.channel_layer.group_discard)(
-                task.get_ws_group_name(), self.channel_name
-            )
-            # Send current import status immediately
-            self.send(dict_data=task.get_ws_update_data())
-        except BackgroundTask.DoesNotExist:
-            self.send_error(f"Task {task_id} does not exist")
-
-    # TODO: resume celery task as well!! to check
-    def handle_resume(self, task_id: int | str):
-        """
-        Handle 'resume' command from WebSocket.
-        """
-        try:
-            task = BackgroundTask.objects.get(pk=task_id)
-            task.resume()
-            async_to_sync(self.channel_layer.group_add)(
-                task.get_ws_group_name(), self.channel_name
-            )
-            # Send current import status immediately
-            self.send(dict_data=task.get_ws_update_data())
-            process_background_task.delay(task_id=task.pk)
-        except BackgroundTask.DoesNotExist:
-            self.send_error(f"Task {task_id} does not exist")
+    # # TODO: pause celery task as well!! to check
+    # def handle_pause(self, task_id: int | str):
+    #     """
+    #     Handle 'pause' command from WebSocket.
+    #     """
+    #     try:
+    #         task = BackgroundTask.objects.get(pk=task_id)
+    #         revoke(task_id=task.celery_id)
+    #         task.pause()
+    #         async_to_sync(self.channel_layer.group_discard)(
+    #             task.get_ws_group_name(), self.channel_name
+    #         )
+    #         # Send current import status immediately
+    #         self.send(dict_data=task.get_ws_update_data())
+    #     except BackgroundTask.DoesNotExist:
+    #         self.send_error(f"Task {task_id} does not exist")
+    #
+    # # TODO: resume celery task as well!! to check
+    # def handle_resume(self, task_id: int | str):
+    #     """
+    #     Handle 'resume' command from WebSocket.
+    #     """
+    #     try:
+    #         task = BackgroundTask.objects.get(pk=task_id)
+    #         task.resume()
+    #         async_to_sync(self.channel_layer.group_add)(
+    #             task.get_ws_group_name(), self.channel_name
+    #         )
+    #         # Send current import status immediately
+    #         self.send(dict_data=task.get_ws_update_data())
+    #         process_background_task.delay(task_id=task.pk)
+    #     except BackgroundTask.DoesNotExist:
+    #         self.send_error(f"Task {task_id} does not exist")
 
     # TODO: retry celery task as well!! to check
     def handle_retry(self, task_id: int | str):
