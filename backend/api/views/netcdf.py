@@ -6,7 +6,7 @@ import logging
 
 import numpy as np
 import xarray as xr
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 from django.http import FileResponse, Http404
 from rest_framework.decorators import action
@@ -610,11 +610,35 @@ class NetCDFViewSet(ViewSet):
             }
             content_type = content_types.get(file_path.suffix.lower(), 'application/octet-stream')
 
-            return FileResponse(
+            file_size = file_path.stat().st_size
+            range_header = request.META.get('HTTP_RANGE', '')
+
+            if range_header and range_header.startswith('bytes='):
+                # Handle HTTP range request so browser can seek in audio files
+                byte_range = range_header[6:].split('-')
+                start = int(byte_range[0]) if byte_range[0] else 0
+                end = int(byte_range[1]) if len(byte_range) > 1 and byte_range[1] else file_size - 1
+                end = min(end, file_size - 1)
+                length = end - start + 1
+
+                with open(file_path, 'rb') as f:
+                    f.seek(start)
+                    data = f.read(length)
+
+                response = HttpResponse(data, status=206, content_type=content_type)
+                response['Content-Range'] = f'bytes {start}-{end}/{file_size}'
+                response['Accept-Ranges'] = 'bytes'
+                response['Content-Length'] = length
+                return response
+
+            response = FileResponse(
                 open(file_path, 'rb'),
                 content_type=content_type,
                 as_attachment=False
             )
+            response['Accept-Ranges'] = 'bytes'
+            response['Content-Length'] = file_size
+            return response
 
         except Http404:
             raise
