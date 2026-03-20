@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { useAnnotationTask } from '@/api';
 import { IonSpinner } from '@ionic/react';
 import { WarningText } from '@/components/ui';
-import { AudioDownloadButton, CurrentTime, PlaybackRateSelect, PlayPauseButton, useAudio } from '@/features/Audio';
+import { AudioDownloadButton, CurrentTime, NormalizeButton, PlaybackRateSelect, PlayPauseButton, useAudio } from '@/features/Audio';
 import styles from './styles.module.scss';
 import { AnnotatorCanvasWindow } from '@/features/Annotator/Canvas';
 import { AnalysisSelect } from '@/features/Annotator/Analysis';
@@ -98,6 +98,7 @@ export const AnnotatorPage: React.FC = () => {
           <div className={ styles.audioNavigation }>
             <PlayPauseButton/>
             <PlaybackRateSelect/>
+            <NormalizeButton/>
           </div>
           <NavigationButtons/>
           <CurrentTime/>
