@@ -1,11 +1,13 @@
 import React, { Fragment, useEffect, useMemo } from 'react';
-import { useBackgroundTask } from '@/features/BackgroundTask/Context';
-import { useAppSelector } from '@/features/App';
-import { BackgroundTaskSlice } from '@/features/BackgroundTask/Slice';
-import { TaskStatusEnum } from '@/api';
 import { IonNote, IonSpinner } from '@ionic/react';
-import { Progress } from '@/components/ui';
 import { CheckRead, Unread } from '@solar-icons/react';
+
+import { TaskStatusEnum } from '@/api';
+import { Progress } from '@/components/ui';
+import { useAppSelector } from '@/features/App';
+
+import { use } from '../hook'
+import { Slice } from '../Slice'
 
 /**
  *
@@ -14,7 +16,7 @@ import { CheckRead, Unread } from '@solar-icons/react';
  * @constructor
  */
 export const GroupIndicator: React.FC<{ taskIDs: string[] }> = ({ taskIDs }) => {
-    const { register, unregister } = useBackgroundTask()
+    const { register, unregister } = use()
     useEffect(() => {
         for (const taskID of taskIDs) register(taskID);
         return () => {
@@ -22,7 +24,7 @@ export const GroupIndicator: React.FC<{ taskIDs: string[] }> = ({ taskIDs }) => 
         }
     }, [ taskIDs ]);
 
-    const tasks = useAppSelector(state => BackgroundTaskSlice.selectors.selectTasks(state, taskIDs))
+    const tasks = useAppSelector(state => Slice.selectors.selectTasks(state, taskIDs))
 
     return useMemo(() => {
         const completion = tasks.reduce((count, task) => {

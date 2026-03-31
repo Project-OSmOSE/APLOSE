@@ -1,11 +1,13 @@
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { useBackgroundTask } from '@/features/BackgroundTask/Context';
-import { type AppState, useAppSelector } from '@/features/App';
-import { BackgroundTaskSlice } from '@/features/BackgroundTask/Slice';
-import { TaskStatusEnum } from '@/api';
 import { IonNote, IonSpinner } from '@ionic/react';
-import { Button, CopyErrorStackButton, Progress } from '@/components/ui';
 import { Unread } from '@solar-icons/react';
+
+import { TaskStatusEnum } from '@/api';
+import { Button, CopyErrorStackButton, Progress } from '@/components/ui';
+import { type AppState, useAppSelector } from '@/features/App';
+
+import { use } from '../hook'
+import { Slice } from '../Slice'
 import styles from './styles.module.scss'
 
 export const Indicator: React.FC<{
@@ -13,7 +15,7 @@ export const Indicator: React.FC<{
     forceState?: TaskStatusEnum | false | null,
     disableRetry?: boolean,
 }> = ({ taskID, forceState, disableRetry = false }) => {
-    const { register, unregister, request } = useBackgroundTask()
+    const { register, unregister, request } = use()
     useEffect(() => {
         if (!taskID) return;
 
@@ -25,7 +27,7 @@ export const Indicator: React.FC<{
 
     const taskSelector = useCallback((state: AppState) => {
         if (!taskID) return undefined;
-        return BackgroundTaskSlice.selectors.selectTask(state, taskID)
+        return Slice.selectors.selectTask(state, taskID)
     }, [ taskID ])
     const task = useAppSelector(taskSelector)
 

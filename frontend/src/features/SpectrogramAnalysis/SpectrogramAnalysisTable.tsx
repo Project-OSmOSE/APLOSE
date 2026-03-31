@@ -13,7 +13,6 @@ import {
 import { useDownloadAnalysis } from '@/api/download';
 import BackgroundTask from '@/features/BackgroundTask'
 import { type AppState, useAppSelector } from '@/features/App';
-import { BackgroundTaskSlice } from '@/features/BackgroundTask/Slice';
 
 export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVariables> = (option) => {
 
@@ -68,7 +67,7 @@ const SpectrogramAnalysisRow: React.FC<{
 
     const taskSelector = useCallback((state: AppState) => {
         if (importTasks.length === 0) return undefined;
-        return BackgroundTaskSlice.selectors.selectTask(state, importTasks[0]!.id)
+        return BackgroundTask.selectors.selectTask(state, importTasks[0]!.id)
     }, [ importTasks ])
     const task = useAppSelector(taskSelector)
 

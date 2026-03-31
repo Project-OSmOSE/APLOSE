@@ -11,7 +11,7 @@ import { useEffect, useMemo } from 'react';
 import { useAppSelector } from '@/features/App';
 import { AnnotationCampaignGqlAPI } from '@/api/annotation-campaign/api';
 import { type CreateCampaignMutation, TaskStatusEnum } from '@/api';
-import type { BackgroundTaskUpdateEvent } from '@/features/BackgroundTask/types';
+import type { BackgroundTaskUpdateEvent } from '@/features/BackgroundTask';
 
 export const StorageSlice = createSlice({
     name: 'storage',

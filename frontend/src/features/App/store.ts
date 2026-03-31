@@ -30,7 +30,7 @@ export const AppStore = configureStore({
     [AllAnnotationCampaignFilterSlice.reducerPath]: AllAnnotationCampaignFilterSlice.reducer,
     [AllAnnotationTaskFilterSlice.reducerPath]: AllAnnotationTaskFilterSlice.reducer,
 
-    [BackgroundTask.Slice.reducerPath]: BackgroundTask.Slice.reducer,
+    [BackgroundTask.reducerPath]: BackgroundTask.reducer,
     annotator: AnnotatorReducer,
   },
 

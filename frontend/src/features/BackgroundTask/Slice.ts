@@ -1,9 +1,10 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+
 import { type BackgroundTaskUpdateData, type BackgroundTaskUpdateEvent } from './types'
 
 type TaskInfo = BackgroundTaskUpdateData
 
-export const BackgroundTaskSlice = createSlice({
+export const Slice = createSlice({
     name: 'BackgroundTasks',
     reducerPath: 'backgroundTasks',
     initialState: {} as { [key in string]: TaskInfo },
