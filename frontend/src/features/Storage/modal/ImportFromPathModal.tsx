@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useSearchStorage } from '@/api';
+import { IonNote, IonSpinner } from '@ionic/react';
+
 import { useAppDispatch } from '@/features/App';
 import { gqlAPI } from '@/api/baseGqlApi';
 import {
@@ -11,10 +12,11 @@ import {
     ModalHeader,
     type ModalProps,
 } from '@/components/ui';
-import Storage from '@/features/Storage';
 import { Searchbar } from '@/components/form';
-import { IonNote, IonSpinner } from '@ionic/react';
 import { useKeyDownEvent } from '@/features/UX';
+
+import { useSearch } from '../hook'
+import { Item } from '../components/Item'
 
 export const ImportFromPathModal: React.FC<ModalProps> = ({ onClose }) => {
     const [ searchQuery, setSearchQuery ] = useState<string | undefined>();
@@ -28,7 +30,7 @@ export const ImportFromPathModal: React.FC<ModalProps> = ({ onClose }) => {
         if (!value) setSearchQuery(undefined)
     }, [ setSearch, setSearchQuery ])
 
-    const { item, isLoading, error } = useSearchStorage({ path: searchQuery ?? '' }, { skip: !searchQuery })
+    const { item, isLoading, error } = useSearch(searchQuery)
     const dispatch = useAppDispatch();
 
     const invalidateStorage = useCallback(() => {
@@ -47,7 +49,7 @@ export const ImportFromPathModal: React.FC<ModalProps> = ({ onClose }) => {
             </ul>
         </IonNote>
         if (!item) return <IonNote>Not found</IonNote>
-        return <Storage.Item path={ item.path } forceOpen onUpdated={ invalidateStorage }/>
+        return <Item path={ item.path } forceOpen onUpdated={ invalidateStorage }/>
     }, [ isLoading, error, item, searchQuery, invalidateStorage ])
 
     return (

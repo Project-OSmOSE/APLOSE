@@ -1,11 +1,13 @@
 import React, { useMemo } from 'react';
 import { FolderFavouriteStar } from '@solar-icons/react';
-import { type StorageDataset } from '@/api';
+
 import { DatasetName } from '@/features/Dataset';
-import styles from '../styles.module.scss';
-import { Structure } from './_Structure'
+
 import { ItemList } from '../ItemList';
-import { Usages } from '@/features/Storage/components/Item/_Usages';
+import { Structure } from './_Structure'
+import { Usages } from './_Usages';
+import { type StorageDataset } from '../../types';
+import styles from '../styles.module.scss';
 
 export const DatasetItem: React.FC<{
     item: StorageDataset,

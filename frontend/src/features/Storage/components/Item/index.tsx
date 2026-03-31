@@ -1,8 +1,10 @@
 import React, { Fragment, useMemo } from 'react';
-import { type StorageDataset, useStorageSearch } from '@/api';
+
 import { FolderItem } from './Folder'
 import { DatasetItem } from './Dataset'
 import { AnalysisItem } from './Analysis'
+import type { StorageDataset } from '../../types';
+import { useSearch } from '../../hook';
 
 type Props = {
     path: string,
@@ -17,7 +19,7 @@ export const Item: React.FC<Props> = ({
                                           parent,
                                           ...props
                                       }) => {
-    const item = useStorageSearch(path)
+    const { item } = useSearch(path)
 
     return useMemo(() => {
         if (!item) return <Fragment/>

@@ -1,12 +1,16 @@
 import React, { Fragment, type MouseEvent, useCallback, useMemo } from 'react';
+import { IonButton, IonSpinner } from '@ionic/react';
 import { FileFavourite } from '@solar-icons/react';
-import { type StorageAnalysis, type StorageDataset, TaskStatusEnum, useImportDatasetFromStorage } from '@/api';
+
+import { TaskStatusEnum } from '@/api';
 import BackgroundTask from '@/features/BackgroundTask';
-import styles from '../styles.module.scss';
+import { useToast } from '@/components/ui';
+
 import { Structure } from './_Structure'
 import { Usages } from './_Usages';
-import { useToast } from '@/components/ui';
-import { IonButton, IonSpinner } from '@ionic/react';
+import type { StorageAnalysis, StorageDataset, } from '../../types';
+import { useImportDataset } from '../../hook';
+import styles from '../styles.module.scss';
 
 export const AnalysisItem: React.FC<{
     item: StorageAnalysis,
@@ -15,7 +19,7 @@ export const AnalysisItem: React.FC<{
     onUpdated?: () => void,
 }> = ({ item, parent, search, onUpdated }) => {
     const toast = useToast()
-    const { doImport, isLoading } = useImportDatasetFromStorage()
+    const { doImport, isLoading } = useImportDataset()
     const currentTask = useMemo(() => {
         const allTasks = item.importTasks?.results.filter(t => !!t)
         return allTasks && allTasks.length > 0 ? allTasks[0] : undefined

@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
-import { type StorageFolder } from '@/api';
 import { Folder as FolderIcon, FolderOpen } from '@solar-icons/react';
-import styles from '../styles.module.scss';
+
 import { ItemList } from '../ItemList';
 import { Structure } from './_Structure'
+import type { StorageFolder } from '../../types';
+import styles from '../styles.module.scss';
 
 export const FolderItem: React.FC<{
     item: StorageFolder,

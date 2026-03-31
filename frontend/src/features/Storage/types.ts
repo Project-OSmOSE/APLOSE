@@ -1,4 +1,4 @@
-import type { BrowseStorageQuery } from '@/api/storage/storage.generated';
+import type { BrowseStorageQuery } from './api';
 
 type N<T> = NonNullable<T>
 export type StorageItem = N<N<BrowseStorageQuery['browse']>[number]>

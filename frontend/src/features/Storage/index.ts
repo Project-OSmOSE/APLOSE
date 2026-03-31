@@ -1,3 +1,6 @@
+import { Slice } from './Slice'
+import { useBrowse, useImportDataset, useSearch } from './hook'
+
 // Components
 import { ItemList } from './components/ItemList'
 import { ServerItem } from './components/ServerItem'
@@ -9,6 +12,8 @@ import { ImportFromPathModal } from './modal/ImportFromPathModal'
 
 
 const Storage = {
+    ...Slice,
+    useImportDataset, useSearch, useBrowse,
 
     Item, ItemList, ServerItem,
 
@@ -16,3 +21,5 @@ const Storage = {
 
 }
 export default Storage
+export type * from './types'
+export type * from './api'

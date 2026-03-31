@@ -1,7 +1,9 @@
 import React, { Fragment, useMemo } from 'react';
 import { InfoCircle } from '@solar-icons/react';
+
 import { TooltipOverlay } from '@/components/ui';
-import type { StorageAnalysis, StorageDataset } from '@/api';
+
+import type { StorageAnalysis, StorageDataset } from '../../types';
 
 export const Usages: React.FC<{
     item: StorageAnalysis | StorageDataset

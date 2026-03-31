@@ -8,13 +8,13 @@ import {
   AllAnnotationTaskFilterSlice,
   getUserOnLoginMiddleware,
   logoutOn401Listener,
-  StorageSlice,
 } from '@/api';
 
 import { AuthSlice } from '@/features/Auth';
 import { AnnotatorReducer } from '@/features/Annotator/reducer';
 import { EventSlice } from '@/features/UX/Events';
 import BackgroundTask from '@/features/BackgroundTask';
+import Storage from '@/features/Storage';
 
 enableMapSet()
 
@@ -23,7 +23,6 @@ export const AppStore = configureStore({
     event: EventSlice.reducer,
 
     auth: AuthSlice.reducer,
-    [StorageSlice.reducerPath]: StorageSlice.reducer,
     [gqlAPI.reducerPath]: gqlAPI.reducer,
     [restAPI.reducerPath]: restAPI.reducer,
 
@@ -31,6 +30,7 @@ export const AppStore = configureStore({
     [AllAnnotationTaskFilterSlice.reducerPath]: AllAnnotationTaskFilterSlice.reducer,
 
     [BackgroundTask.reducerPath]: BackgroundTask.reducer,
+    [Storage.reducerPath]: Storage.reducer,
     annotator: AnnotatorReducer,
   },
 

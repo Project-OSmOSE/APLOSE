@@ -2,7 +2,7 @@ import React, { createContext, type ReactNode, useCallback, useMemo, useRef, use
 import useWebSocket from 'react-use-websocket';
 import { ReadyState } from 'react-use-websocket/src/lib/constants';
 
-import { StorageSlice } from '@/api';
+import Storage from '@/features/Storage';
 import { gqlAPI } from '@/api/baseGqlApi';
 import { useAppDispatch } from '@/features/App';
 
@@ -35,7 +35,7 @@ export const Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const onMessage = useCallback((event: MessageEvent) => {
         const data = JSON.parse(event.data);
         dispatch(Slice.actions.onTaskUpdated(data))
-        dispatch(StorageSlice.actions.onTaskUpdated(data))
+        dispatch(Storage.actions.onTaskUpdated(data))
     }, [ dispatch ])
     const websocketURL = useMemo(() => {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';

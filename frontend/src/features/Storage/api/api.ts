@@ -1,7 +1,7 @@
-import { api } from './storage.generated'
+import { api } from './queries.generated'
 
 
-export const StorageGqlAPI = api.enhanceEndpoints({
+export const API = api.enhanceEndpoints({
     endpoints: {
         importDatasetFromStorage: {
             invalidatesTags: [ 'Dataset', 'DatasetsAndAnalysis' ],

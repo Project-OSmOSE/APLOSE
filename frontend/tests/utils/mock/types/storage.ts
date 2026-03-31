@@ -1,4 +1,4 @@
-import { type StorageAnalysis, type StorageDataset, type StorageFolder } from '../../../../src/api/storage';
+import type { StorageAnalysis, StorageDataset, StorageFolder } from '../../../../src/features/Storage';
 
 export const storageFolder: StorageFolder = {
     __typename: 'FolderNode',
