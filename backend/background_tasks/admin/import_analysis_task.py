@@ -7,7 +7,6 @@ from backend.background_tasks.models import ImportAnalysisBackgroundTask
 class ImportAnalysisBackgroundTaskAdmin(admin.ModelAdmin):
     list_display = [
         "id",
-        "type",
         "status",
         "completion_percentage",
         "created_at",
@@ -15,7 +14,6 @@ class ImportAnalysisBackgroundTaskAdmin(admin.ModelAdmin):
         "completed_at",
         "duration",
         "error",
-        "error_trace",
         "analysis",
         "analysis_path",
         "dataset",
