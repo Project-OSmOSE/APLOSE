@@ -94,6 +94,7 @@ class BackgroundTask(models.Model):
         """
         self.status = TaskStatus.COMPLETED
         self.completion_percentage = 100
+        self.completed_at = timezone.now()
         self.save()
 
     def cancel(self):
