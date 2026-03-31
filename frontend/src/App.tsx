@@ -16,6 +16,7 @@ import { selectIsConnected } from '@/features/Auth';
 import { ReactFlowProvider } from '@xyflow/react';
 import { AudioProvider } from '@/features/Audio';
 import { SuspenseAdminOnly, SuspenseSuperUserOnly } from '@/components/layout';
+import BackgroundTask from '@/features/BackgroundTask';
 
 const Home = lazy(() => import('./view/home/Home'));
 const Login = lazy(() => import('./view/auth/Login'));
@@ -50,9 +51,11 @@ export const App: React.FC = () => (
             <BrowserRouter basename="/app/">
                 <AudioProvider>
                     <AlertProvider>
-                        <ReactFlowProvider>
-                            <AppContent/>
-                        </ReactFlowProvider>
+                        <BackgroundTask.Provider>
+                            <ReactFlowProvider>
+                                <AppContent/>
+                            </ReactFlowProvider>
+                        </BackgroundTask.Provider>
                     </AlertProvider>
                 </AudioProvider>
             </BrowserRouter>

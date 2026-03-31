@@ -229,7 +229,9 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
                 )
             )
 
-        self.spectrograms.through.objects.bulk_create(spectrogram_analysis_rel)
+        self.spectrograms.through.objects.bulk_create(
+            spectrogram_analysis_rel, ignore_conflicts=True
+        )
 
         self.update_dates()
 

@@ -24,5 +24,6 @@ export const useSearchStorage = (vars: SearchStorageQueryVariables, options?: { 
 
 export const useImportDatasetFromStorage = () => {
     const [ method, { isSuccess, ...info } ] = importDatasetFromStorage.useMutation()
-    return { isSuccess, ...info, importDataset: method }
+
+    return { isSuccess, ...info, doImport: method }
 }

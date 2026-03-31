@@ -1,11 +1,11 @@
 import React, { Fragment } from 'react';
 import { Button, Head, HelpButton, useModal } from '@/components/ui';
-import { ImportFromPath, ServerItem } from '@/features/storage';
+import Storage from '@/features/Storage';
 import styles from './styles.module.scss'
 import { IonNote } from '@ionic/react';
 
 export const StorageBrowser: React.FC = () => {
-    const searchModal = useModal(ImportFromPath);
+    const searchModal = useModal(Storage.ImportFromPathModal);
 
     return <Fragment>
         <Head title="Storage"
@@ -22,7 +22,7 @@ export const StorageBrowser: React.FC = () => {
 
         <div className={ styles.content }>
             <div className={ styles.inner }>
-                <ServerItem name="datawork/datasets"/>
+                <Storage.ServerItem name="datawork/datasets"/>
             </div>
         </div>
         <IonNote>

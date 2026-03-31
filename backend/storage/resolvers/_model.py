@@ -3,7 +3,6 @@ from backend.api.models import (
     SpectrogramAnalysis,
     Spectrogram,
 )
-from backend.storage.enums import ImportStatus
 from backend.storage.types import (
     StorageAnalysis,
     StorageDataset,
@@ -58,33 +57,21 @@ class ModelResolver(OSEkitResolver):
         return StorageAnalysis(
             path=analysis.path,
             name=analysis.name,
-            import_status=ImportStatus.IMPORTED
-            if analysis.pk
-            else ImportStatus.AVAILABLE,
             model=analysis if analysis.pk else None,
         )
 
     def _get_storage_dataset_from_dataset(self, dataset: Dataset) -> StorageDataset:
-        status = ImportStatus.IMPORTED
-        if dataset.pk is None:
-            status = ImportStatus.AVAILABLE
-        else:
-            for analysis in self.get_all_analysis(path=dataset.path):
-                if analysis.pk is None:
-                    status = ImportStatus.PARTIAL
-                    break
         return StorageDataset(
             name=dataset.name,
             path=dataset.path,
-            import_status=status,
             model=dataset if dataset.pk else None,
         )
 
+    @staticmethod
     def get_all_spectrograms_for_analysis(
-        self,
         analysis: SpectrogramAnalysis,
     ) -> list[Spectrogram]:
         return [
             *analysis.spectrograms.all(),
-            *super().get_all_spectrograms_for_analysis(analysis=analysis),
+            *OSEkitResolver.get_all_spectrograms_for_analysis(analysis=analysis),
         ]

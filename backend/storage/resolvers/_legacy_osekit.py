@@ -191,7 +191,6 @@ class LegacyOSEkitResolver(StorageResolver):
             base_folder = join(line["path"], relative_path)
 
             for folder in listdir(base_folder):
-                print("get inner analysis", dataset, folder)
                 analysis.append(
                     self._get_analysis(
                         dataset=dataset,
@@ -256,8 +255,8 @@ class LegacyOSEkitResolver(StorageResolver):
             dynamic_max=float(metadata["dynamic_max"]),
         )
 
+    @staticmethod
     def get_all_spectrograms_for_analysis(
-        self,
         analysis: SpectrogramAnalysis,
     ) -> list[Spectrogram]:
         img_format, _ = FileFormat.objects.get_or_create(name="png")

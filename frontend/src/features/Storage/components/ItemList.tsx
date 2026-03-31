@@ -21,7 +21,7 @@ export const ItemList: React.FC<{
         return <div className={ styles.list }>
             { subfolders.map((node, index) =>
                 <Item key={ index } onUpdated={ onUpdated }
-                      parentItem={ parentNode }
+                      parent={ parentNode?.__typename === 'DatasetStorageNode' ? parentNode : undefined }
                       search={ search }
                       path={ node.path }/>,
             ) }

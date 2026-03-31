@@ -70,7 +70,6 @@ class AllAnnotationCampaignsTestCase(ExtendedTestCase):
                 **VARIABLES,
             },
         )
-        print(response.content)
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["allAnnotationCampaigns"][

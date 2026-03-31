@@ -28,6 +28,7 @@
 .progress {
   display: grid;
   gap: 0.25rem;
+  min-width: 3rem;
 
   span[class^=ion-color-] {
     color: var(--ion-color-base);

@@ -11,12 +11,12 @@ import {
     ModalHeader,
     type ModalProps,
 } from '@/components/ui';
-import { Item } from '@/features/storage';
+import Storage from '@/features/Storage';
 import { Searchbar } from '@/components/form';
 import { IonNote, IonSpinner } from '@ionic/react';
 import { useKeyDownEvent } from '@/features/UX';
 
-export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
+export const ImportFromPathModal: React.FC<ModalProps> = ({ onClose }) => {
     const [ searchQuery, setSearchQuery ] = useState<string | undefined>();
     const [ search, setSearch ] = useState<string | undefined>();
     const validateSearch = useCallback(() => {
@@ -47,7 +47,7 @@ export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
             </ul>
         </IonNote>
         if (!item) return <IonNote>Not found</IonNote>
-        return <Item path={ item.path } forceOpen onUpdated={ invalidateStorage }/>
+        return <Storage.Item path={ item.path } forceOpen onUpdated={ invalidateStorage }/>
     }, [ isLoading, error, item, searchQuery, invalidateStorage ])
 
     return (

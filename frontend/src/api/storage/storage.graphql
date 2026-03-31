@@ -11,7 +11,6 @@ query browseStorage($path: String!) {
             __typename
             name
             path
-            importStatus
             model {
                 id
                 annotationCampaigns {
@@ -29,7 +28,6 @@ query browseStorage($path: String!) {
             __typename
             name
             path
-            importStatus
             model {
                 annotationCampaigns {
                     edges {
@@ -37,6 +35,12 @@ query browseStorage($path: String!) {
                             isArchived
                         }
                     }
+                }
+            }
+            importTasks(limit: 1) {
+                results {
+                    id
+                    status
                 }
             }
             error
@@ -58,7 +62,6 @@ query searchStorage($path: String!) {
             __typename
             name
             path
-            importStatus
             model {
                 id
                 annotationCampaigns {
@@ -76,7 +79,6 @@ query searchStorage($path: String!) {
             __typename
             name
             path
-            importStatus
             model {
                 annotationCampaigns {
                     edges {
@@ -84,6 +86,12 @@ query searchStorage($path: String!) {
                             isArchived
                         }
                     }
+                }
+            }
+            importTasks(limit: 1) {
+                results {
+                    id
+                    status
                 }
             }
             error
@@ -98,11 +106,12 @@ mutation importDatasetFromStorage($datasetPath: String!, $analysisPath: String) 
             path
         }
         analysisResult {
-            analysis {
-                id
-                path
-            }
+            path
             backgroundTaskId
+            errors {
+                field
+                messages
+            }
         }
     }
 }

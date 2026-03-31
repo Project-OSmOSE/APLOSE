@@ -1,7 +1,8 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
-from ._enums import TaskType, TaskStatus
+from ._enums import TaskStatus, TaskType
 
 
 class BackgroundTask(models.Model):
@@ -9,9 +10,20 @@ class BackgroundTask(models.Model):
     Model to track analysis operations with progress updates.
     """
 
+    class Meta:
+        abstract = True
+
+    @property
+    def type(self) -> str:
+        return ""
+
+    @property
+    def task_identifier(self) -> str:
+        return f"{self.type}-{self.pk}"
+
     # Identification
-    type = models.CharField(choices=TaskType.choices, max_length=1)
     celery_id = models.CharField(max_length=64, null=True, blank=True)
+    requested_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     # Status
     status = models.CharField(
@@ -19,15 +31,18 @@ class BackgroundTask(models.Model):
         max_length=10,
         default=TaskStatus.PENDING,
     )
-    additional_info = models.JSONField(default=dict())
 
     # Progress
-    completion_percentage = models.PositiveIntegerField(default=0)
+    completion_percentage = models.FloatField(default=0)
 
     # Timing
     created_at = models.DateTimeField(auto_now_add=True)
     started_at = models.DateTimeField(blank=True, null=True)
     completed_at = models.DateTimeField(null=True, blank=True)
+
+    # Error
+    error = models.TextField(null=True, blank=True)
+    error_trace = models.TextField(null=True, blank=True)
 
     @property
     def duration(self):
@@ -41,7 +56,6 @@ class BackgroundTask(models.Model):
         """
         Update status and timestamps
         """
-        print("start", self.pk)
         self.status = TaskStatus.PROCESSING
         self.celery_id = celery_id
         if not self.started_at:
@@ -66,21 +80,19 @@ class BackgroundTask(models.Model):
 
     def fail(self, error: str, traceback: str):
         """
-        Update status, timestamp and additional_info
+        Update status, timestamp and error info
         """
-        print("fail", self.pk, error, traceback)
         self.status = TaskStatus.FAILED
         self.completed_at = timezone.now()
-        self.additional_info["error"] = error
-        self.additional_info["error_traceback"] = traceback
+        self.error = error
+        self.error_trace = traceback
         self.save()
 
     def complete(self):
         """
         Update status and percentage
         """
-        print("complete", self.pk)
-        self.status = TaskStatus.PROCESSING
+        self.status = TaskStatus.COMPLETED
         self.completion_percentage = 100
         self.save()
 
@@ -88,30 +100,58 @@ class BackgroundTask(models.Model):
         """
         Update status
         """
-        print("cancel", self.pk)
         self.status = TaskStatus.CANCELLED
         self.save()
 
     def get_ws_group_name(self):
         return f"background_task_{self.pk}"
 
+    def _get_ws_update_data_data_identification(self):
+        return {
+            # Identification
+            "id": self.pk,
+            "type": TaskType(self.type).label,
+            "requested_by_id": self.requested_by_id,
+        }
+
+    def _get_ws_update_data_data_state_processing(self):
+        return {
+            "completion_percentage": self.completion_percentage,
+            "started_at": self.started_at.isoformat() if self.started_at else None,
+        }
+
+    def _get_ws_update_data_data_state(self):
+        base_info = {
+            "status": TaskStatus(self.status).label,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+        if self.status == TaskStatus.PENDING or self.status == TaskStatus.CANCELLED:
+            return base_info
+        elif self.status == TaskStatus.PROCESSING:
+            return {**base_info, **self._get_ws_update_data_data_state_processing()}
+        elif self.status == TaskStatus.FAILED:
+            return {
+                **base_info,
+                "error": self.error,
+                "error_trace": self.error_trace,
+            }
+        # TaskStatus.COMPLETED
+        return {
+            **base_info,
+            "started_at": self.started_at.isoformat() if self.started_at else None,
+            "completed_at": self.completed_at.isoformat()
+            if self.completed_at
+            else None,
+        }
+
     def get_ws_update_data(self):
         return {
             "type": "background_task_update",
             "data": {
-                # Identification
-                "id": self.pk,
-                "type": self.type,
-                # Status
-                "status": self.status,
-                # Progress
-                "completion_percentage": self.completion_percentage,
-                "additional_info": self.additional_info,
-                # Timing
-                "created_at": self.created_at.isoformat() if self.created_at else None,
-                "started_at": self.started_at.isoformat() if self.started_at else None,
-                "completed_at": self.completed_at.isoformat()
-                if self.completed_at
-                else None,
+                **self._get_ws_update_data_data_identification(),
+                **self._get_ws_update_data_data_state(),
             },
         }
+
+    def copy(self) -> "BackgroundTask":
+        return BackgroundTask.objects.create(requested_by=self.requested_by)

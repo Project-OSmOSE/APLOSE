@@ -150,13 +150,15 @@ class OSEkitResolver(LegacyOSEkitResolver):
             raise AnalysisNotFoundException(analysis.path)
         return sd[0]
 
+    @staticmethod
     def get_all_spectrograms_for_analysis(
-        self,
         analysis: SpectrogramAnalysis,
     ) -> list[Spectrogram]:
         sd = OSEkitResolver.__get_spectro_dataset(analysis=analysis)
         if not sd:
-            return super().get_all_spectrograms_for_analysis(analysis=analysis)
+            return LegacyOSEkitResolver.get_all_spectrograms_for_analysis(
+                analysis=analysis
+            )
         img_format, _ = FileFormat.objects.get_or_create(name="png")
         return [
             Spectrogram(

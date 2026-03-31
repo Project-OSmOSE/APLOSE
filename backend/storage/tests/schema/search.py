@@ -25,7 +25,6 @@ query ($path: String!) {
             __typename
             name
             path
-            importStatus
             error
             stack
         }
@@ -33,7 +32,6 @@ query ($path: String!) {
             __typename
             name
             path
-            importStatus
         }
     }
 }
@@ -76,7 +74,6 @@ class SearchTestCase(ExtendedTestCase):
         self.assertIsNotNone(content)
         self.assertEqual(content["name"], "tp_osekit")
         self.assertEqual(content["path"], "tp_osekit")
-        self.assertEqual(content["importStatus"], "Available")
 
     @override_settings(DATASET_EXPORT_PATH=GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_relative_path_before_root(self):
@@ -91,7 +88,6 @@ class SearchTestCase(ExtendedTestCase):
         self.assertIsNotNone(content)
         self.assertEqual(content["name"], "tp_osekit")
         self.assertEqual(content["path"], "tp_osekit")
-        self.assertEqual(content["importStatus"], "Available")
 
     @override_settings(DATASET_EXPORT_PATH=GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_relative_path_root(self):
@@ -106,7 +102,6 @@ class SearchTestCase(ExtendedTestCase):
         self.assertIsNotNone(content)
         self.assertEqual(content["name"], "tp_osekit")
         self.assertEqual(content["path"], "tp_osekit")
-        self.assertEqual(content["importStatus"], "Available")
 
     @override_settings(DATASET_EXPORT_PATH=GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_relative_path_after_root(self):
@@ -121,7 +116,6 @@ class SearchTestCase(ExtendedTestCase):
         self.assertIsNotNone(content)
         self.assertEqual(content["name"], "tp_osekit")
         self.assertEqual(content["path"], "tp_osekit")
-        self.assertEqual(content["importStatus"], "Available")
 
     @override_settings(DATASET_EXPORT_PATH=GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_path_to_dataset_json(self):
@@ -136,7 +130,6 @@ class SearchTestCase(ExtendedTestCase):
         self.assertIsNotNone(content)
         self.assertEqual(content["name"], "tp_osekit")
         self.assertEqual(content["path"], "tp_osekit")
-        self.assertEqual(content["importStatus"], "Available")
 
     @override_settings(DATASET_EXPORT_PATH=GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_invalid_path(self):

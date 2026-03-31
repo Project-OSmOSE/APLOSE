@@ -16,6 +16,7 @@ from metadatax.schema import Mutation as MetadataxMutation, Query as MetadataxQu
 
 from .api.schema import APIQuery, APIMutation
 from .aplose.schema import AploseQuery, AploseMutation
+from .background_tasks.schema import BackgroundTasksQuery
 from .osmosewebsite.schema import OSmOSEWebsiteQuery, WebsiteProjectNode
 from .storage.schema import StorageQuery, StorageMutation
 
@@ -106,6 +107,7 @@ class Query(
     AploseQuery,
     OSmOSEWebsiteQuery,
     MetadataxQuery,
+    BackgroundTasksQuery,
     graphene.ObjectType,
 ):
     """Global query"""

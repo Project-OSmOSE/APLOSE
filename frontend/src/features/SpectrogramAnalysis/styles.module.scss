@@ -9,3 +9,15 @@
   top: 50%;
   transform: translateY(-50%);
 }
+
+.spectrogramsCell {
+  display: grid;
+  grid-auto-flow: row;
+  gap: 0.5rem;
+
+  .task {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 0.25rem;
+  }
+}

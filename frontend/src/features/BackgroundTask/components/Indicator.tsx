@@ -1,0 +1,65 @@
+import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
+import { useBackgroundTask } from '@/features/BackgroundTask/Context';
+import { type AppState, useAppSelector } from '@/features/App';
+import { BackgroundTaskSlice } from '@/features/BackgroundTask/Slice';
+import { TaskStatusEnum } from '@/api';
+import { IonNote, IonSpinner } from '@ionic/react';
+import { Button, CopyErrorStackButton, Progress } from '@/components/ui';
+import { Unread } from '@solar-icons/react';
+import styles from './styles.module.scss'
+
+export const Indicator: React.FC<{
+    taskID?: string | null,
+    forceState?: TaskStatusEnum | false | null,
+    disableRetry?: boolean,
+}> = ({ taskID, forceState, disableRetry = false }) => {
+    const { register, unregister, request } = useBackgroundTask()
+    useEffect(() => {
+        if (!taskID) return;
+
+        register(taskID);
+        return () => {
+            unregister(taskID);
+        }
+    }, [ taskID ]);
+
+    const taskSelector = useCallback((state: AppState) => {
+        if (!taskID) return undefined;
+        return BackgroundTaskSlice.selectors.selectTask(state, taskID)
+    }, [ taskID ])
+    const task = useAppSelector(taskSelector)
+
+    return useMemo(() => {
+        if (!task && !forceState) return <Fragment/>
+        switch (task?.status ?? forceState) {
+            case TaskStatusEnum.Cancelled:
+                return <Fragment/>
+            case TaskStatusEnum.Pending:
+                return <IonNote>Pending...</IonNote>
+            case TaskStatusEnum.Completed:
+                return <Unread color="success" size={ 24 }/>
+        }
+
+        if (!task) return <Fragment/>
+        switch (task.status) {
+            case TaskStatusEnum.Failed:
+                return <Fragment>
+                    <IonNote color="danger" className={ styles.errorNote }>Import failed: { task.error }</IonNote>
+                    <CopyErrorStackButton stack={ task.error_trace }/>
+                    { !disableRetry && <Button fill="clear" onClick={ () => request({
+                        command: 'retry',
+                        task_id: task.id.toString(),
+                    }) }>
+                        Retry
+                    </Button> }
+                </Fragment>
+            case TaskStatusEnum.Processing:
+                return <Fragment>
+                    <IonSpinner/>
+                    <Progress label="Imported spectrograms"
+                              value={ task.completed_spectrograms }
+                              total={ task.total_spectrograms }/>
+                </Fragment>
+        }
+    }, [ task, forceState, request, disableRetry ])
+}

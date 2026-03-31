@@ -1,8 +1,9 @@
-from django_extension.schema.types import ExtendedEnumType
 from graphene import ObjectType, NonNull, String, Field
+from graphene_django_pagination import DjangoPaginationConnectionField
 
 from backend.api.schema.nodes import DatasetNode, SpectrogramAnalysisNode
-from backend.storage.enums import ImportStatus
+from backend.background_tasks.models import ImportAnalysisBackgroundTask
+from backend.background_tasks.schema import ImportAnalysisBackgroundTaskNode
 from backend.storage.types import StorageAnalysis, StorageDataset, StorageFolder
 
 __all__ = [
@@ -12,20 +13,9 @@ __all__ = [
 ]
 
 
-class ImportStatusEnum(ExtendedEnumType):
-    class Meta:
-        enum = ImportStatus
-
-    Unavailable = "U"
-    Available = "A"
-    Partial = "P"
-    Imported = "I"
-
-
 class AnalysisStorageNode(ObjectType):
     name = NonNull(String)
     path = NonNull(String)
-    import_status = NonNull(ImportStatusEnum)
     model = Field(SpectrogramAnalysisNode)
     error = String()
     stack = String()
@@ -33,11 +23,15 @@ class AnalysisStorageNode(ObjectType):
     class Meta:
         possible_types = (StorageAnalysis,)
 
+    import_tasks = DjangoPaginationConnectionField(ImportAnalysisBackgroundTaskNode)
+
+    def resolve_import_tasks(self: StorageAnalysis, info, **kwargs):
+        return ImportAnalysisBackgroundTask.objects.filter(analysis_path=self.path)
+
 
 class DatasetStorageNode(ObjectType):
     name = NonNull(String)
     path = NonNull(String)
-    import_status = NonNull(ImportStatusEnum)
     model = Field(DatasetNode)
     error = String()
     stack = String()

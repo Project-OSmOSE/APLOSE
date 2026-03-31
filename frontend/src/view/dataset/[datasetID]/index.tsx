@@ -9,7 +9,7 @@ import { useDataset } from '@/api';
 import { type DataNavParams } from '@/features/UX';
 import { useParams } from 'react-router-dom';
 import { downloadOutline } from 'ionicons/icons';
-import { ImportDatasetAnalysisModal } from '@/features/storage';
+import Storage from '@/features/Storage';
 
 
 export const DatasetDetail: React.FC = () => {
@@ -17,7 +17,7 @@ export const DatasetDetail: React.FC = () => {
 
   const { dataset, isLoading, error } = useDataset({ id })
 
-  const importAnalysisModal = useModal(ImportDatasetAnalysisModal);
+  const importAnalysisModal = useModal(Storage.ImportDatasetAnalysisModal);
 
   if (isLoading) return <Fragment><DatasetHead/><IonSpinner/></Fragment>
   if (error) return <Fragment><DatasetHead/><GraphQLErrorText error={ error }/></Fragment>
@@ -25,7 +25,7 @@ export const DatasetDetail: React.FC = () => {
   return <Fragment>
     <DatasetHead/>
 
-    <div style={ { overflowX: 'hidden', display: 'grid', gap: '4rem' } }>
+    <div style={ { overflowX: 'hidden', display: 'grid', gap: '4rem', maxHeight: '100%' } }>
 
       <ChannelConfigurationTable datasetID={ dataset.id }/>
 

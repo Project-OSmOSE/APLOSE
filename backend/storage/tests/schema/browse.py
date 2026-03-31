@@ -25,7 +25,6 @@ query browse($path: String) {
             __typename
             name
             path
-            importStatus
             error
             stack
         }
@@ -33,7 +32,6 @@ query browse($path: String) {
             __typename
             name
             path
-            importStatus
         }
     }
 }
@@ -74,7 +72,6 @@ class BrowseTestCase(ExtendedTestCase):
         self.assertEqual(len(content), 1)
         self.assertEqual(content[0]["name"], "tp_osekit")
         self.assertEqual(content[0]["path"], "tp_osekit")
-        self.assertEqual(content[0]["importStatus"], "Available")
 
     @override_settings(DATASET_EXPORT_PATH=GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_dataset(self):
@@ -89,7 +86,6 @@ class BrowseTestCase(ExtendedTestCase):
         self.assertEqual(len(content), 1)
         self.assertEqual(content[0]["name"], "my_first_analysis")
         self.assertEqual(content[0]["path"], "processed/my_first_analysis")
-        self.assertEqual(content[0]["importStatus"], "Available")
 
     @override_settings(DATASET_EXPORT_PATH=Path(""), VOLUMES_ROOT=VOLUMES_ROOT)
     def test_subfolder(self):
@@ -104,7 +100,6 @@ class BrowseTestCase(ExtendedTestCase):
         self.assertEqual(len(content), 1)
         self.assertEqual(content[0]["name"], "tp_osekit")
         self.assertEqual(content[0]["path"], "good/tp_osekit")
-        self.assertEqual(content[0]["importStatus"], "Available")
 
     @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_legacy_root(self):
@@ -119,7 +114,6 @@ class BrowseTestCase(ExtendedTestCase):
         self.assertEqual(len(content), 1)
         self.assertEqual(content[0]["name"], "gliderSPAmsDemo")
         self.assertEqual(content[0]["path"], "gliderSPAmsDemo")
-        self.assertEqual(content[0]["importStatus"], "Available")
 
     @override_settings(DATASET_EXPORT_PATH=LEGACY_GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test_legacy_dataset(self):
@@ -137,4 +131,3 @@ class BrowseTestCase(ExtendedTestCase):
             content[0]["path"],
             "processed/spectrogram/600_480/4096_512_85",
         )
-        self.assertEqual(content[0]["importStatus"], "Available")

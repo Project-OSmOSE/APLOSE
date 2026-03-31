@@ -1,29 +1,25 @@
 import graphene
 from django.db import transaction
-from django.forms import model_to_dict
 from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
-from graphene import Mutation, String, ObjectType
+from graphene import Mutation, String
 from graphene_django.types import ErrorType
 from graphql import GraphQLError
 
-from backend.api.models import (
-    FFT,
-    Colormap,
-)
 from backend.api.schema import DatasetNode
-from backend.api.schema.nodes import SpectrogramAnalysisNode
+from backend.background_tasks.models import (
+    ImportAnalysisBackgroundTask,
+)
+from backend.background_tasks.tasks import process_background_task
 from backend.storage.resolvers import Resolver
 from backend.storage.types import FailedItem
 from backend.storage.utils import join
-from ....background_tasks.models import BackgroundTask, TaskType
-from ....background_tasks.tasks import process_background_task
 
 
 class AnalysisImportReturnType(graphene.ObjectType):
 
-    analysis = graphene.Field(SpectrogramAnalysisNode)
+    path = graphene.String(required=True)
     background_task_id = graphene.ID()
-    task_error = ErrorType()
+    errors = graphene.List(ErrorType)
 
 
 class ImportDatasetMutation(Mutation):
@@ -53,7 +49,6 @@ class ImportDatasetMutation(Mutation):
         if resolver.dataset.pk is None:
             resolver.dataset.owner = info.context.user
         resolver.dataset.save()
-        print("got dataset", resolver.dataset)
 
         analysis = []
         if analysis_path:
@@ -61,9 +56,9 @@ class ImportDatasetMutation(Mutation):
                 raise GraphQLError(
                     str(resolver.analysis.error), original_error=resolver.analysis.error
                 )
-            analysis.append(resolver.get_analysis(path=full_path, detailed=True))
+            analysis.append(resolver.analysis)
         else:
-            for a in resolver.get_all_analysis(detailed=True):
+            for a in resolver.all_analysis:
                 if isinstance(a, FailedItem):
                     continue
                 analysis.append(a)
@@ -72,29 +67,19 @@ class ImportDatasetMutation(Mutation):
         for sa in analysis:
             if sa.pk is not None:
                 continue
-            sa.owner = info.context.user
-            sa.dataset = resolver.dataset
-
-            sa.fft, _ = FFT.objects.get_or_create(**model_to_dict(sa.fft))
-            sa.colormap, _ = Colormap.objects.get_or_create(name=sa.colormap.name)
-            sa.save()
-            print("analysis saved", sa)
-
-            result = {"analysis": sa}
-
-            resolver.create_legacy_configuration(sa)
+            result = {"path": sa.path}
 
             try:
-                task = BackgroundTask.objects.create(
-                    type=TaskType.ANALYSIS_IMPORT,
-                    additional_info={"analysis_id": sa.pk, "chunk_size": 200},
+                bg_task = ImportAnalysisBackgroundTask.objects.create(
+                    dataset=resolver.dataset,
+                    analysis_path=sa.path,
+                    requested_by=info.context.user,
                 )
-                process_background_task.delay(task.pk)
-                result["background_task_id"] = task.pk
+                process_background_task.delay(bg_task.task_identifier)
+                result["background_task_id"] = bg_task.pk
             except Exception as e:
                 sa.delete()
-                print("exception", e)
-                result["task_error"] = e
+                result["errors"] = ErrorType.from_errors([e])
             analysis_result.append(result)
 
         return ImportDatasetMutation(

@@ -4,11 +4,10 @@ from asgiref.sync import async_to_sync
 from celery.worker.control import revoke
 from channels.generic.websocket import WebsocketConsumer
 from django.core.serializers.json import DjangoJSONEncoder
-from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import AccessToken
 
 from backend.aplose.models import User
-from backend.background_tasks.models import BackgroundTask
+from backend.background_tasks.models import ImportAnalysisBackgroundTask
 from backend.background_tasks.tasks import process_background_task
 
 
@@ -53,11 +52,12 @@ class BackgroundTaskConsumer(WebsocketConsumer):
         """
         try:
             data = json.loads(text_data)
-            print("receive", data)
             command = data.get("command")
 
             if command == "add":
                 self.handle_add(task_id=data.get("task_id"))
+            elif command == "remove":
+                self.handle_remove(task_id=data.get("task_id"))
             elif command == "cancel":
                 self.handle_cancel(task_id=data.get("task_id"))
             # elif command == "pause":
@@ -77,13 +77,25 @@ class BackgroundTaskConsumer(WebsocketConsumer):
         Handle 'add' command from WebSocket.
         """
         try:
-            task = BackgroundTask.objects.get(pk=task_id)
+            task = ImportAnalysisBackgroundTask.objects.get(pk=task_id)
             async_to_sync(self.channel_layer.group_add)(
                 task.get_ws_group_name(), self.channel_name
             )
             # Send current import status immediately
             self.send(dict_data=task.get_ws_update_data())
-        except BackgroundTask.DoesNotExist:
+        except ImportAnalysisBackgroundTask.DoesNotExist:
+            self.send_error(f"Task {task_id} does not exist")
+
+    def handle_remove(self, task_id: int | str):
+        """
+        Handle 'remove' command from WebSocket.
+        """
+        try:
+            task = ImportAnalysisBackgroundTask.objects.get(pk=task_id)
+            async_to_sync(self.channel_layer.group_discard)(
+                task.get_ws_group_name(), self.channel_name
+            )
+        except ImportAnalysisBackgroundTask.DoesNotExist:
             self.send_error(f"Task {task_id} does not exist")
 
     # TODO: cancel celery task as well!!
@@ -92,12 +104,12 @@ class BackgroundTaskConsumer(WebsocketConsumer):
         Handle 'cancel' command from WebSocket.
         """
         try:
-            task = BackgroundTask.objects.get(pk=task_id)
+            task = ImportAnalysisBackgroundTask.objects.get(pk=task_id)
             revoke(task_id=task.celery_id)
             async_to_sync(self.channel_layer.group_discard)(
                 task.get_ws_group_name(), self.channel_name
             )
-        except BackgroundTask.DoesNotExist:
+        except ImportAnalysisBackgroundTask.DoesNotExist:
             self.send_error(f"Task {task_id} does not exist")
 
     # # TODO: pause celery task as well!! to check
@@ -140,17 +152,20 @@ class BackgroundTaskConsumer(WebsocketConsumer):
         Handle 'retry' command from WebSocket.
         """
         try:
-            task = BackgroundTask.objects.get(pk=task_id)
-            new_task = BackgroundTask.objects.create(
-                type=task.type,
-                additional_info=task.additional_info,
+            task = ImportAnalysisBackgroundTask.objects.get(pk=task_id)
+            new_task = task.copy()
+
+            # Transfer listening to the new task
+            async_to_sync(self.channel_layer.group_discard)(
+                task.get_ws_group_name(), self.channel_name
             )
-            new_task.additional_info["error"] = None
-            new_task.additional_info["error_traceback"] = None
-            new_task.save()
             async_to_sync(self.channel_layer.group_add)(
                 new_task.get_ws_group_name(), self.channel_name
             )
+
+            # Request process of the new task
+            process_background_task.delay(new_task.task_identifier)
+
             # Send current import status immediately
             self.send(
                 dict_data={
@@ -161,7 +176,7 @@ class BackgroundTaskConsumer(WebsocketConsumer):
                     },
                 }
             )
-        except BackgroundTask.DoesNotExist:
+        except ImportAnalysisBackgroundTask.DoesNotExist:
             self.send_error(f"Task {task_id} does not exist")
 
     # Send info
@@ -181,4 +196,4 @@ class BackgroundTaskConsumer(WebsocketConsumer):
         """
         Receive background task update from channel layer and send to WebSocket.
         """
-        return self.send(text_data=json.dumps(event["data"], cls=DjangoJSONEncoder))
+        return self.send(text_data=json.dumps(event, cls=DjangoJSONEncoder))

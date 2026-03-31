@@ -2,7 +2,6 @@ import traceback
 from pathlib import PureWindowsPath
 
 from backend.api.models import Dataset, SpectrogramAnalysis
-from backend.storage.enums import ImportStatus
 
 
 class Folder:
@@ -30,47 +29,40 @@ class StorageFolder(Folder):
 
 
 class StorageDataset(Folder):
-    import_status: ImportStatus | None = None
     model: type[Dataset] | None = None
 
     def __init__(
         self,
         path: str,
-        import_status: ImportStatus = ImportStatus.AVAILABLE,
         model: type[Dataset] | None = None,
         name: str | None = None,
         error: str | None = None,
         stack: str | None = None,
     ):
         super().__init__(path, name, error, stack)
-        self.import_status = import_status.value
         self.model = model
 
     @staticmethod
-    def from_model(model: Dataset, import_status: ImportStatus):
+    def from_model(model: Dataset):
         return StorageDataset(
             name=model.name,
             path=model.path,
-            import_status=import_status,
             model=model,
         )
 
 
 class StorageAnalysis(Folder):
-    import_status: ImportStatus
     model: type[SpectrogramAnalysis]
 
     def __init__(
         self,
         path: str,
-        import_status: ImportStatus = ImportStatus.AVAILABLE,
         model: type[SpectrogramAnalysis] | None = None,
         name: str | None = None,
         error: str | None = None,
         stack: str | None = None,
     ):
         super().__init__(path, name, error, stack)
-        self.import_status = import_status.value
         self.model = model
 
     @staticmethod
@@ -78,7 +70,6 @@ class StorageAnalysis(Folder):
         return StorageAnalysis(
             name=model.name,
             path=model.path,
-            import_status=ImportStatus.IMPORTED,
             model=model,
         )
 
@@ -100,7 +91,6 @@ class FailedItem:
         return {
             "path": self.path,
             "name": self.name,
-            "import_status": ImportStatus.UNAVAILABLE,
             "error": f"{self.error.__class__.__name__}: {self.error}",
             "stack": self.stacktrace,
         }
@@ -119,6 +109,5 @@ __all__ = [
     "StorageDataset",
     "StorageAnalysis",
     "StorageItem",
-    "ImportStatus",
     "FailedItem",
 ]

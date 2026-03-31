@@ -1,7 +1,9 @@
 import traceback
+from types import TracebackType
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django.db import transaction
 
 from backend.background_tasks.models import BackgroundTask, TaskStatus
 
@@ -25,23 +27,24 @@ class Tracker:
 
     def __enter__(self):
         self.task.start(celery_id=self.celery_id)
-        self._send_update()
+        self.send_update()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val: Exception, exc_tb: TracebackType):
         if exc_type is not None:
             # Import failed with exception
             self.task.fail(
                 error=str(exc_val),
-                traceback=str(exc_tb),
+                traceback="\n".join(traceback.format_stack()),
             )
         else:
             # Import completed successfully
             self.task.complete()
 
-        self._send_update()
-        return False  # Don't suppress exceptions
+        self.send_update()
+        return True  # Suppress exceptions
 
+    @transaction.atomic
     def update(self, percentage: float):
         """
         Update background task progress.
@@ -49,8 +52,9 @@ class Tracker:
         """
         self.task.completion_percentage = percentage
         self.task.save()
-        self._send_update()
+        self.send_update()
 
+    @transaction.atomic
     def fail(self, exception: Exception):
         """
         Update background task state.
@@ -59,9 +63,9 @@ class Tracker:
         self.task.fail(
             error=str(exception), traceback="\n".join(traceback.format_stack())
         )
-        self._send_update()
+        self.send_update()
 
-    def _send_update(self):
+    def send_update(self):
         async_to_sync(self.channel_layer.group_send)(
             self.task.get_ws_group_name(), self.task.get_ws_update_data()
         )

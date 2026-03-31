@@ -8,7 +8,7 @@ export const SpectrogramAnalysisGqlAPI = api.enhanceEndpoints({
     endpoints: {
         listSpectrogramAnalysis: {
             providesTags: (_result, _error, args) =>
-                [ listSpectrogramAnalysisTag(args) ],
+                [ 'SpectrogramAnalysis', listSpectrogramAnalysisTag(args) ],
         },
     },
 })

@@ -1,5 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { EventSlice } from '@/features/UX/Events';
+import { enableMapSet } from 'immer'
+
+import { gqlAPI } from '@/api/baseGqlApi';
+import { restAPI } from '@/api/baseRestApi';
 import {
   AllAnnotationCampaignFilterSlice,
   AllAnnotationTaskFilterSlice,
@@ -7,10 +10,13 @@ import {
   logoutOn401Listener,
   StorageSlice,
 } from '@/api';
+
 import { AuthSlice } from '@/features/Auth';
-import { gqlAPI } from '@/api/baseGqlApi';
 import { AnnotatorReducer } from '@/features/Annotator/reducer';
-import { restAPI } from '@/api/baseRestApi';
+import { EventSlice } from '@/features/UX/Events';
+import BackgroundTask from '@/features/BackgroundTask';
+
+enableMapSet()
 
 export const AppStore = configureStore({
   reducer: {
@@ -24,6 +30,7 @@ export const AppStore = configureStore({
     [AllAnnotationCampaignFilterSlice.reducerPath]: AllAnnotationCampaignFilterSlice.reducer,
     [AllAnnotationTaskFilterSlice.reducerPath]: AllAnnotationTaskFilterSlice.reducer,
 
+    [BackgroundTask.Slice.reducerPath]: BackgroundTask.Slice.reducer,
     annotator: AnnotatorReducer,
   },
 

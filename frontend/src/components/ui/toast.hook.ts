@@ -15,6 +15,12 @@ export const useToast = () => {
     // Dismiss on navigation
     dismiss()
   }, [ location ]);
+  useEffect(() => {
+    return () => {
+      // Dismiss when usage is done
+      dismiss();
+    }
+  }, []);
 
   const raiseError = useCallback(({
                                     message,

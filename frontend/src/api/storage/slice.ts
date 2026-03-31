@@ -1,4 +1,4 @@
-import { createSelector, createSlice } from '@reduxjs/toolkit';
+import { createSelector, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { StorageGqlAPI } from './api';
 import type {
     BrowseStorageQuery,
@@ -10,7 +10,8 @@ import type { StorageItem } from './types';
 import { useEffect, useMemo } from 'react';
 import { useAppSelector } from '@/features/App';
 import { AnnotationCampaignGqlAPI } from '@/api/annotation-campaign/api';
-import type { CreateCampaignMutation } from '@/api';
+import { type CreateCampaignMutation, TaskStatusEnum } from '@/api';
+import type { BackgroundTaskUpdateEvent } from '@/features/BackgroundTask/types';
 
 export const StorageSlice = createSlice({
     name: 'storage',
@@ -20,7 +21,35 @@ export const StorageSlice = createSlice({
         invalidatedPath: [] as Array<string>,
         invalidatedListPaths: [] as Array<string>,
     },
-    reducers: {},
+    reducers: {
+        onTaskUpdated: (state, { payload }: PayloadAction<BackgroundTaskUpdateEvent>) => {
+            switch (payload.type) {
+                case 'background_task_update':
+                    // Update task status
+                    for (const item of Object.values(state.record)) {
+                        if (item.__typename !== 'AnalysisStorageNode') continue
+                        for (const task of item.importTasks?.results ?? []) {
+                            if (task?.id !== payload.data.id.toString()) continue
+                            task.status = payload.data.status
+                        }
+                    }
+                    return;
+                case 'background_task_retry':
+                    // Replace old task with new task
+                    for (const item of Object.values(state.record)) {
+                        if (item.__typename !== 'AnalysisStorageNode') continue
+                        if (item.importTasks?.results?.find(t => t?.id === payload.data.old_task_id.toString())) {
+                            item.importTasks.results = [{
+                                __typename: 'ImportAnalysisBackgroundTaskNode',
+                                id: payload.data.new_task_id?.toString(),
+                                status: TaskStatusEnum.Pending
+                            }]
+                        }
+                    }
+                    return;
+            }
+        },
+    },
     extraReducers: builder => {
 
         builder.addMatcher(StorageGqlAPI.endpoints.browseStorage.matchFulfilled,
@@ -61,7 +90,6 @@ export const StorageSlice = createSlice({
                 state.invalidatedPath = [ ...state.invalidatedPath, path ]
                 state.invalidatedListPaths = [ ...state.invalidatedListPaths, path ]
             })
-
     },
     selectors: {
         selectRecord: state => state.record,

@@ -1,10 +1,9 @@
 from pathlib import PureWindowsPath
 
-from backend.api.models import Dataset, SpectrogramAnalysis, Spectrogram
+from backend.api.models import Dataset, SpectrogramAnalysis
 from backend.storage.exceptions import (
     CannotGetChildrenException,
 )
-from backend.storage.enums import ImportStatus
 from backend.storage.types import (
     StorageItem,
     StorageDataset,
@@ -108,27 +107,18 @@ class AbstractResolver:
             dataset=dataset, relative_path=relative_path, detailed=detailed
         )
 
-    def get_all_spectrograms_for_analysis(
-        self,
-        analysis: SpectrogramAnalysis,
-    ) -> list[Spectrogram]:
-        """List spectrograms from analysis"""
-        return []
-
     def _get_storage_analysis_from_spectrogram_analysis(
         self, analysis: SpectrogramAnalysis
     ) -> StorageAnalysis:
         return StorageAnalysis(
             path=analysis.path,
             name=analysis.name,
-            import_status=ImportStatus.AVAILABLE,
         )
 
     def _get_storage_dataset_from_dataset(self, dataset: Dataset) -> StorageDataset:
         return StorageDataset(
             name=dataset.name,
             path=dataset.path,
-            import_status=ImportStatus.AVAILABLE,
         )
 
     def get_item(
