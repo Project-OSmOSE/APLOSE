@@ -19,6 +19,7 @@ type State<SpecificProcessingData> = {
     status: TaskStatusEnum.Processing;
     created_at: string,
     started_at: string,
+    duration: number,
     completion_percentage: number, // [0-1]
 } & SpecificProcessingData)
 

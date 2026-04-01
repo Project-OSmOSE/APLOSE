@@ -74,6 +74,7 @@ export const Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
     // Handle task listening
     const register = useCallback((taskID: string) => {
+        console.debug('register', taskID, readyState)
         const previousCount = registeredListenerRef.current.get(taskID) ?? 0
         if (previousCount == 0 && readyState === ReadyState.OPEN) {
             sendJsonMessage({ command: 'add', task_id: taskID } satisfies BackgroundTaskCommand)

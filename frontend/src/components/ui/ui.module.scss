@@ -33,6 +33,10 @@
   span[class^=ion-color-] {
     color: var(--ion-color-base);
   }
+
+  > ion-note {
+    text-align: end;
+  }
 }
 
 .kbd {

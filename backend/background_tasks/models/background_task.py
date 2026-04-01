@@ -118,6 +118,7 @@ class BackgroundTask(models.Model):
     def _get_ws_update_data_data_state_processing(self):
         return {
             "completion_percentage": self.completion_percentage,
+            "duration": self.duration,
             "started_at": self.started_at.isoformat() if self.started_at else None,
         }
 

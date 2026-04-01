@@ -9,6 +9,7 @@ import { type AppState, useAppSelector } from '@/features/App';
 import { use } from '../hook'
 import { Slice } from '../Slice'
 import styles from './styles.module.scss'
+import { formatTime } from '@/service/function';
 
 export const Indicator: React.FC<{
     taskID?: string | null,
@@ -58,9 +59,10 @@ export const Indicator: React.FC<{
             case TaskStatusEnum.Processing:
                 return <Fragment>
                     <IonSpinner/>
-                    <Progress label="Imported spectrograms"
+                    <Progress label="Importing spectrograms"
                               value={ task.completed_spectrograms }
-                              total={ task.total_spectrograms }/>
+                              total={ task.total_spectrograms ?? 0 }
+                              note={`~${formatTime(task.duration * (1 - task.completion_percentage) / task.completion_percentage)} remaining`}/>
                 </Fragment>
         }
     }, [ task, forceState, request, disableRetry ])

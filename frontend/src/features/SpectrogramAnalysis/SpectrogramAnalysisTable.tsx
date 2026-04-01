@@ -65,10 +65,14 @@ const SpectrogramAnalysisRow: React.FC<{
             .filter(n => !!n) ?? []
         , [ analysis ])
 
-    const taskSelector = useCallback((state: AppState) => {
+    const taskID = useMemo(() => {
         if (importTasks.length === 0) return undefined;
-        return BackgroundTask.selectors.selectTask(state, importTasks[0]!.id)
+        return importTasks[0]!.id
     }, [ importTasks ])
+    const taskSelector = useCallback((state: AppState) => {
+        if (!taskID) return undefined;
+        return BackgroundTask.selectors.selectTask(state, taskID)
+    }, [ taskID ])
     const task = useAppSelector(taskSelector)
 
     return useMemo(() => {
@@ -80,9 +84,9 @@ const SpectrogramAnalysisRow: React.FC<{
             <TableContent>{ dateToString(analysis.createdAt) }</TableContent>
             <TableContent>
                 <div className={ styles.spectrogramsCell }>
-                    { !task || task.status === TaskStatusEnum.Completed ?
+                    { !taskID || task?.status === TaskStatusEnum.Completed ?
                         analysis.spectrograms!.totalCount :
-                        <BackgroundTask.Indicator taskID={ task.id.toString() }/>
+                        <BackgroundTask.Indicator taskID={ taskID }/>
                     }
                 </div>
             </TableContent>
@@ -101,5 +105,5 @@ const SpectrogramAnalysisRow: React.FC<{
             </TableContent>
             <TableDivider/>
         </Fragment>
-    }, [ analysis, downloadAnalysis, task ])
+    }, [ analysis, downloadAnalysis, task, taskID ])
 }
