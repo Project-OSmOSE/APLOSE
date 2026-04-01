@@ -21,10 +21,15 @@ def process_background_task(self, task_identifier: str):
     Args:
         task_identifier: identifier of the BackgroundTask model instance to process
     """
+    task = None
     try:
-        task = get_instance_for_identifier(task_identifier)
-    except Model.DoesNotExist:
-        return {"error": "BackgroundTask not found"}
+        task_type, pk = task_identifier.split("-")
+        if task_type == TaskType.ANALYSIS_IMPORT:
+            task = ImportAnalysisBackgroundTask.objects.get(pk=pk)
+    except ImportAnalysisBackgroundTask.DoesNotExist:
+        return {"error": "ImportAnalysisBackgroundTask not found"}
+    if task is None:
+        return {"error": "Task not found"}
 
     # Use context manager for automatic status updates
     with Tracker(task=task, celery_id=self.request.id) as tracker:
