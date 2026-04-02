@@ -279,7 +279,7 @@ class Command(management.BaseCommand):
                 rels.append(
                     Spectrogram.analysis.through(
                         spectrogram=s,
-                        spectrogramanalysis=a,
+                        analysis=a,
                     )
                 )
         return spectrograms, rels
