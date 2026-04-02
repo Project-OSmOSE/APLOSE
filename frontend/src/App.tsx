@@ -36,6 +36,7 @@ const EditAnnotators = lazy(() => import('./view/annotation-campaign/[campaignID
 const ImportAnnotations = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/import-annotations'));
 const AnnotatorPage = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/spectrogram/[spectrogramID]'));
 
+const TermsOfUse = lazy(() => import('./view/terms'));
 const AploseSkeleton = lazy(() => import('./components/layout/Skeleton'));
 
 
@@ -73,6 +74,8 @@ const AppContent: React.FC = () => {
             <Route index element={ <Suspense><Home/></Suspense> }/>
 
             <Route path="login" element={ <Suspense><Login/></Suspense> }/>
+
+            <Route path="terms" element={ <Suspense><TermsOfUse/></Suspense> }/>
 
             { isConnected && <Route element={ <Suspense><AploseSkeleton/></Suspense> }>
 

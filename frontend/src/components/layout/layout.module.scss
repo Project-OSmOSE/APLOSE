@@ -9,12 +9,19 @@
   padding: 0.5rem 2rem;
   grid-column: 1 / -1;
 
-  > div:first-child {
-    justify-content: start;
-    justify-self: start;
+  > div {
     display: grid;
     grid-auto-flow: column;
     align-items: center;
+
+    &:first-child {
+      justify-self: start;
+      justify-content: start;
+    }
+    &:last-child {
+      justify-self: end;
+      justify-content: end;
+    }
 
     ion-note {
       opacity: 0.5;

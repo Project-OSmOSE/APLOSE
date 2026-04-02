@@ -9,49 +9,53 @@ import logo from '/images/ode_logo_192x192.png';
 import styles from './layout.module.scss'
 
 export const Header: React.FC<{
-  buttons?: ReactNode;
-  children?: ReactNode;
-  size?: 'small' | 'default';
-  canNavigate?: () => Promise<boolean>;
+    buttons?: ReactNode;
+    children?: ReactNode;
+    size?: 'small' | 'default';
+    canNavigate?: () => Promise<boolean>;
 }> = ({ children, buttons, size, canNavigate }) => {
 
-  const [ isOpen, setIsOpen ] = useState<boolean>(false);
-  const currentUser = useAppSelector(selectCurrentUser)
-  const navigate = useNavigate();
+    const [ isOpen, setIsOpen ] = useState<boolean>(false);
+    const currentUser = useAppSelector(selectCurrentUser)
+    const navigate = useNavigate();
 
-  const toggleOpening = useCallback(() => setIsOpen(previous => !previous), [])
+    const toggleOpening = useCallback(() => setIsOpen(previous => !previous), [])
 
-  const onAPLOSEClick = useCallback(async () => {
-    if (currentUser) {
-      if (!canNavigate || await canNavigate()) {
-        navigate(`/annotation-campaign/`);
-      }
-    } else {
-      navigate(`/`);
-    }
-  }, [])
+    const onAPLOSEClick = useCallback(async () => {
+        if (currentUser) {
+            if (!canNavigate || await canNavigate()) {
+                navigate(`/annotation-campaign/`);
+            }
+        } else {
+            navigate(`/`);
+        }
+    }, [])
 
-  return (
-    <header
-      className={ [ styles.header, isOpen ? styles.opened : styles.closed, size === 'small' ? styles.small : '', children ? styles.withInfo : '' ].join(' ') }>
-      <div className={ styles.title } onClick={ onAPLOSEClick }>
-        <img src={ logo } alt="OSmOSE"/>
-        <h1>APLOSE</h1>
-      </div>
+    const onAPLOSEAuxClick = useCallback(() => {
+        window.open('/', '_blank');
+    }, [])
 
-      <IonButton fill="outline" color="medium"
-                 className={ styles.toggle } onClick={ toggleOpening }>
-        <IonIcon icon={ isOpen ? closeOutline : menuOutline } slot="icon-only"/>
-      </IonButton>
+    return (
+        <header
+            className={ [ styles.header, isOpen ? styles.opened : styles.closed, size === 'small' ? styles.small : '', children ? styles.withInfo : '' ].join(' ') }>
+            <div className={ styles.title } onClick={ onAPLOSEClick } onAuxClick={ onAPLOSEAuxClick }>
+                <img src={ logo } alt="OSmOSE"/>
+                <h1>APLOSE</h1>
+            </div>
 
-      { children && <div className={ styles.info }>{ children }</div> }
+            <IonButton fill="outline" color="medium"
+                       className={ styles.toggle } onClick={ toggleOpening }>
+                <IonIcon icon={ isOpen ? closeOutline : menuOutline } slot="icon-only"/>
+            </IonButton>
 
-      <div className={ styles.links }>
-        <DocumentationButton size={ size }/>
+            { children && <div className={ styles.info }>{ children }</div> }
 
-        { buttons }
+            <div className={ styles.links }>
+                <DocumentationButton size={ size }/>
 
-      </div>
-    </header>
-  )
+                { buttons }
+
+            </div>
+        </header>
+    )
 }

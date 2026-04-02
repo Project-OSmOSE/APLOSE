@@ -8,27 +8,31 @@ import style from './layout.module.scss';
 import json from '../../../global-package.json'
 
 export const Footer: React.FC = () => {
-  const version = useMemo(() => json.version, [])
+    const version = useMemo(() => json.version, [])
 
-  return (
-    <footer className={ style.footer }>
-      <div>
-        <Link href={ GITHUB_URL } target="_blank" color="medium">
-          <IonIcon icon={ logoGithub } slot="start"/>
-          Github
-        </Link>
-        <IonNote color="medium">{ version }</IonNote>
-      </div>
+    return (
+        <footer className={ style.footer }>
+            <div>
+                <Link href={ GITHUB_URL } target="_blank" color="medium">
+                    <IonIcon icon={ logoGithub } slot="start"/>
+                    Github
+                </Link>
+                <IonNote color="medium">{ version }</IonNote>
+            </div>
 
-      <div className={ style.proposition }>
-        <p>Proposed by</p>
-        <Link href={ OSMOSE_URL }>OSmOSE <img src={ logo } alt="OSmOSE"/></Link>
-      </div>
+            <div className={ style.proposition }>
+                <p>Proposed by</p>
+                <Link href={ OSMOSE_URL }>OSmOSE <img src={ logo } alt="OSmOSE"/></Link>
+            </div>
 
-      <Link href={ CONTACT_URI } color="medium">
-        <IonIcon icon={ mailOutline } slot="end"/>
-        { CONTACT_MAIL }
-      </Link>
-    </footer>
-  );
+            <div>
+                <Link appPath='/terms' color="medium">Terms of use</Link>
+                <IonNote color="medium">|</IonNote>
+                <Link href={ CONTACT_URI } color="medium">
+                    <IonIcon icon={ mailOutline } slot="end"/>
+                    { CONTACT_MAIL }
+                </Link>
+            </div>
+        </footer>
+    );
 };
