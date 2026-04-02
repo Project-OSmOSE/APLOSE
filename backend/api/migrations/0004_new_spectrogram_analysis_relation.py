@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.PROTECT,
                         to="api.spectrogramanalysis",
-                        related_name="analysis_relations",
+                        related_name="spectrogram_relations",
                     ),
                 ),
                 (
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         to="api.spectrogram",
-                        related_name="spectrogram_relations",
+                        related_name="analysis_relations",
                     ),
                 ),
             ],
