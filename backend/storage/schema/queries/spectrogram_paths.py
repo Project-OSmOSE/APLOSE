@@ -2,7 +2,9 @@ import graphene
 from django.shortcuts import get_object_or_404
 from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 
-from backend.api.models import Spectrogram, SpectrogramAnalysis
+from backend.api.models import (
+    SpectrogramAnalysisRelation,
+)
 from backend.storage.resolvers import Resolver
 from backend.storage.utils import join
 
@@ -20,13 +22,14 @@ class SpectrogramPathsNode(graphene.ObjectType):
 
 @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
 def resolve_paths(root, info, spectrogram_id: int, analysis_id: int):
-    spectrogram: Spectrogram = get_object_or_404(Spectrogram, pk=spectrogram_id)
-    analysis: SpectrogramAnalysis = get_object_or_404(
-        spectrogram.analysis.all(), pk=analysis_id
+    relation: SpectrogramAnalysisRelation = get_object_or_404(
+        SpectrogramAnalysisRelation,
+        spectrogram_id=spectrogram_id,
+        analysis_id=analysis_id,
     )
 
-    resolver = Resolver(join(analysis.dataset.path, analysis.path))
-    paths = resolver.get_spectrogram_paths(spectrogram=spectrogram, analysis=analysis)
+    resolver = Resolver(join(relation.analysis.dataset.path, relation.analysis.path))
+    paths = resolver.get_spectrogram_paths(relation=relation)
     return SpectrogramPathsNode(
         audio_path=paths[0],
         spectrogram_path=paths[1],

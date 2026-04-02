@@ -1,10 +1,18 @@
-import json
+"""OSEkit resolver"""
 from pathlib import PureWindowsPath, Path
 
 from metadatax.data.models import FileFormat
+from osekit.core.spectro_dataset import SpectroDataset
+from osekit.public.project import Project
 
-from backend.api.models import SpectrogramAnalysis, Dataset, Colormap, FFT, Spectrogram
-from backend.storage.exceptions import AnalysisNotFoundException
+from backend.api.models import (
+    SpectrogramAnalysis,
+    Dataset,
+    Colormap,
+    FFT,
+    Spectrogram,
+    SpectrogramAnalysisRelation,
+)
 from backend.storage.types import (
     FailedItem,
 )
@@ -13,58 +21,59 @@ from backend.storage.utils import (
     join,
     make_path_relative,
     make_absolute_server,
-    make_static_url,
-    clean_path,
-    open_file,
 )
-
-# from osekit.core_api.spectro_dataset import SpectroDataset
-# from osekit.public_api.dataset import Dataset as OSEkitDataset
-from backend.utils.osekit_replace import SpectroDataset, OSEkitDataset
 from ._legacy_osekit import LegacyOSEkitResolver
 
 
 class OSEkitResolver(LegacyOSEkitResolver):
+
+    # Utils
+
+    @staticmethod
+    def _get_osekit_project(path: str) -> Project | None:
+        json_path = join(path, "project.json")
+        if exists(json_path):
+            return Project.from_json(Path(make_absolute_server(json_path)))
+        return None
+
+    # Implements
+
     def _get_dataset_for_path(
         self, path: str | None = None
     ) -> Dataset | FailedItem | None:
         # pylint: disable=broad-exception-caught
-        json_path = join(path, "dataset.json")
-        if exists(json_path):
-            try:
-                with open_file(json_path) as f:
-                    json.loads(f.read())
-                    return Dataset(
-                        name=PureWindowsPath(path).name,
-                        path=make_path_relative(path),
-                    )
-            except Exception as e:
-                return FailedItem(path=path, error=e)
-        return super()._get_dataset_for_path(path=path)
+        try:
+            project = self._get_osekit_project(path)
+            if not project:
+                return super()._get_dataset_for_path(path=path)
+            return Dataset(
+                name=PureWindowsPath(path).name,
+                path=make_path_relative(path),
+            )
+        except Exception as e:
+            return FailedItem(path=path, error=e)
 
     def _get_all_analysis_for_dataset(
         self, dataset: Dataset, detailed: bool = False
     ) -> list[SpectrogramAnalysis]:
-        json_path = join(dataset.path, "dataset.json")
-        if not exists(json_path):
+        osekit_project = self._get_osekit_project(dataset.path)
+        if not osekit_project:
             return super()._get_all_analysis_for_dataset(dataset=dataset)
 
         analysis: list[SpectrogramAnalysis] = []
-        with open_file(json_path) as f:
-            d = json.loads(f.read())
-            for _name, info in d["datasets"].items():
-                if info["class"] != SpectroDataset.__name__:
-                    continue
-                analysis.append(
-                    self._get_analysis(
-                        dataset=dataset,
-                        relative_path=make_path_relative(
-                            PureWindowsPath(info["json"]).parent.as_posix(),
-                            to=dataset.path,
-                        ),
-                        detailed=detailed,
-                    )
+        for _name, info in osekit_project.outputs.items():
+            if info["class"] != SpectroDataset.__name__:
+                continue
+            analysis.append(
+                self._get_analysis(
+                    dataset=dataset,
+                    relative_path=make_path_relative(
+                        PureWindowsPath(info["dataset"]).parent.as_posix(),
+                        to=dataset.path,
+                    ),
+                    detailed=detailed,
                 )
+            )
         return analysis
 
     def _get_analysis(
@@ -74,45 +83,32 @@ class OSEkitResolver(LegacyOSEkitResolver):
             return super()._get_analysis(
                 dataset=dataset, relative_path=relative_path, detailed=detailed
             )
+        osekit_dataset = self._get_osekit_project(dataset.path)
         spectro_dataset: SpectroDataset | None = None
-        json_path = join(dataset.path, "dataset.json")
-        if exists(json_path):
-            with open_file(json_path) as f:
-                d = json.loads(f.read())
-                for _name, info in d["datasets"].items():
-                    if info["class"] != SpectroDataset.__name__:
-                        continue
-                    path = make_path_relative(
-                        PureWindowsPath(info["json"]).parent.as_posix(),
-                        to=dataset.path,
+        if not osekit_dataset:
+            return None
+        for _name, info in osekit_dataset.outputs.items():
+            if info["class"] != SpectroDataset.__name__:
+                continue
+            path = make_path_relative(
+                PureWindowsPath(info["dataset"]).parent.as_posix(),
+                to=dataset.path,
+            )
+            if path == relative_path:
+                if not detailed:
+                    return SpectrogramAnalysis(
+                        name=PureWindowsPath(relative_path).name,
+                        path=relative_path,
                     )
-                    if path == relative_path:
-                        if not detailed:
-                            return SpectrogramAnalysis(
-                                name=PureWindowsPath(relative_path).name,
-                                path=relative_path,
-                            )
-                        spectro_dataset = SpectroDataset.from_json(
-                            Path(
-                                make_absolute_server(
-                                    join(
-                                        dataset.path,
-                                        make_path_relative(
-                                            info["json"], to=dataset.path
-                                        ),
-                                    )
-                                )
-                            )
-                        )
+                spectro_dataset = osekit_dataset.get_output(info["transform"])
+
         if spectro_dataset is None:
             return None
 
         if not detailed:
-            return SpectrogramAnalysis(
-                name=PureWindowsPath(relative_path).name, path=relative_path
-            )
+            return SpectrogramAnalysis(name=spectro_dataset.name, path=relative_path)
         return SpectrogramAnalysis(
-            name=PureWindowsPath(relative_path).name,
+            name=spectro_dataset.name,
             path=relative_path,
             start=spectro_dataset.begin,
             end=spectro_dataset.end,
@@ -130,31 +126,18 @@ class OSEkitResolver(LegacyOSEkitResolver):
             dynamic_max=spectro_dataset.v_lim[1],
         )
 
-    def __get_spectro_dataset(
-        self, analysis: SpectrogramAnalysis
-    ) -> SpectroDataset | None:
-        json_path = join(analysis.dataset.path, "dataset.json")
+    @staticmethod
+    def _get_spectro_dataset(analysis: SpectrogramAnalysis) -> SpectroDataset | None:
+        json_path = join(analysis.dataset.path, "project.json")
         if not exists(json_path):
             return None
-        osekit_dataset = OSEkitDataset.from_json(Path(make_absolute_server(json_path)))
-
-        sd: list[SpectroDataset] = [
-            d["dataset"]
-            for d in osekit_dataset.datasets.values()
-            if d["class"] == SpectroDataset.__name__
-            and make_path_relative(
-                d["dataset"].folder, to=clean_path(osekit_dataset.folder)
-            )
-            == analysis.path
-        ]
-        if len(sd) == 0:
-            raise AnalysisNotFoundException(analysis.path)
-        return sd[0]
+        osekit_dataset = Project.from_json(Path(make_absolute_server(json_path)))
+        return osekit_dataset.get_output(analysis.name)
 
     def get_all_spectrograms_for_analysis(
         self, analysis: SpectrogramAnalysis
     ) -> list[Spectrogram]:
-        sd = self.__get_spectro_dataset(analysis=analysis)
+        sd = self._get_spectro_dataset(analysis=analysis)
         if not sd:
             return super().get_all_spectrograms_for_analysis(analysis=analysis)
         img_format, _ = FileFormat.objects.get_or_create(name="png")
@@ -169,26 +152,18 @@ class OSEkitResolver(LegacyOSEkitResolver):
         ]
 
     def get_spectrogram_paths(
-        self, spectrogram: Spectrogram, analysis: SpectrogramAnalysis
+        self, relation: SpectrogramAnalysisRelation
     ) -> tuple[str | None, str | None]:
-        sd = self.__get_spectro_dataset(analysis=analysis)
+        """Get paths for spectrogram"""
+        sd = self._get_spectro_dataset(analysis=relation.analysis)
         if not sd:
-            return super().get_spectrogram_paths(
-                spectrogram=spectrogram, analysis=analysis
-            )
+            return super().get_spectrogram_paths(relation=relation)
 
         for spectro_data in sd.data:
-            if spectro_data.name == spectrogram.filename:
-                file = spectro_data.audio_data.files.pop(0)
-                return (
-                    make_static_url(Path(file.path).resolve()) if file else None,
-                    make_static_url(
-                        join(
-                            clean_path(sd.folder),
-                            "spectrogram",
-                            f"{spectrogram.filename}.png",
-                        )
-                    ),
+            if spectro_data.name == relation.spectrogram.filename:
+                paths = relation.get_paths(
+                    spectro_dataset=sd, spectro_data=spectro_data
                 )
+                return paths["audio"], paths["spectrogram"]
 
         return None, None

@@ -224,9 +224,7 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
         for spectrogram in spectrograms:
             spectrogram.save()
             spectrogram_analysis_rel.append(
-                self.spectrograms.through(
-                    spectrogram=spectrogram, spectrogramanalysis=self
-                )
+                self.spectrograms.through(spectrogram=spectrogram, analysis=self)
             )
 
         self.spectrograms.through.objects.bulk_create(spectrogram_analysis_rel)
