@@ -10,6 +10,7 @@ from backend.storage.resolvers._osekit import OSEkitResolver
 
 def store_paths(analysis: SpectrogramAnalysis):
     """Store spectrogram and audio paths in database"""
+    # pylint: disable=broad-exception-raised
     # Only process one analysis
 
     if analysis.legacy:
@@ -20,6 +21,7 @@ def store_paths(analysis: SpectrogramAnalysis):
             relation.save()
         return
 
+    # pylint: disable=protected-access
     spectro_dataset = OSEkitResolver._get_spectro_dataset(analysis=analysis)
     if not spectro_dataset:
         raise Exception(f"Cannot found spectro_dataset for analysis: {analysis}")

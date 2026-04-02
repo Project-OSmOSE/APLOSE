@@ -21,8 +21,6 @@ from backend.storage.utils import (
     join,
     make_path_relative,
     make_absolute_server,
-    make_static_url,
-    clean_path,
 )
 from ._legacy_osekit import LegacyOSEkitResolver
 

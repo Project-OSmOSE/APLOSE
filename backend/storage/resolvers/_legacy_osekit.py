@@ -28,7 +28,6 @@ from backend.storage.utils import (
     join,
     listdir,
     make_path_relative,
-    make_static_url,
 )
 from ._storage import StorageResolver
 

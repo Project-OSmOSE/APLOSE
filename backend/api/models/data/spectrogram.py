@@ -87,7 +87,7 @@ class SpectrogramAnalysisRelation(models.Model):
     ) -> Paths:
         """Set paths for OSEkit data"""
         file = (
-            [f for f in spectro_data.audio_data.files][0]
+            list(spectro_data.audio_data.files)[0]
             if len(spectro_data.audio_data.files) > 0
             else None
         )

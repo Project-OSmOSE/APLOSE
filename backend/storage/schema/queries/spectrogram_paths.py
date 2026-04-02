@@ -3,8 +3,6 @@ from django.shortcuts import get_object_or_404
 from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 
 from backend.api.models import (
-    Spectrogram,
-    SpectrogramAnalysis,
     SpectrogramAnalysisRelation,
 )
 from backend.storage.resolvers import Resolver
