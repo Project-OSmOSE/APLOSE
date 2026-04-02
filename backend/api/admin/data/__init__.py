@@ -6,3 +6,4 @@ from .legacy_spectrogram_configuration import LegacySpectrogramConfigurationAdmi
 from .scales import LinearScaleAdmin, MultiLinearScaleAdmin
 from .spectrogram import SpectrogramAdmin
 from .spectrogram_analysis import SpectrogramAnalysisAdmin
+from .spectrogram_analysis_relation import SpectrogramAnalysisRelationAdmin

@@ -5,7 +5,14 @@ from metadatax.data.models import FileFormat
 from osekit.core.spectro_dataset import SpectroDataset
 from osekit.public.project import Project
 
-from backend.api.models import SpectrogramAnalysis, Dataset, Colormap, FFT, Spectrogram
+from backend.api.models import (
+    SpectrogramAnalysis,
+    Dataset,
+    Colormap,
+    FFT,
+    Spectrogram,
+    SpectrogramAnalysisRelation,
+)
 from backend.storage.types import (
     FailedItem,
 )
@@ -122,7 +129,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
         )
 
     @staticmethod
-    def __get_spectro_dataset(analysis: SpectrogramAnalysis) -> SpectroDataset | None:
+    def _get_spectro_dataset(analysis: SpectrogramAnalysis) -> SpectroDataset | None:
         json_path = join(analysis.dataset.path, "project.json")
         if not exists(json_path):
             return None
@@ -132,7 +139,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
     def get_all_spectrograms_for_analysis(
         self, analysis: SpectrogramAnalysis
     ) -> list[Spectrogram]:
-        sd = self.__get_spectro_dataset(analysis=analysis)
+        sd = self._get_spectro_dataset(analysis=analysis)
         if not sd:
             return super().get_all_spectrograms_for_analysis(analysis=analysis)
         img_format, _ = FileFormat.objects.get_or_create(name="png")
@@ -147,31 +154,18 @@ class OSEkitResolver(LegacyOSEkitResolver):
         ]
 
     def get_spectrogram_paths(
-        self, spectrogram: Spectrogram, analysis: SpectrogramAnalysis
+        self, relation: SpectrogramAnalysisRelation
     ) -> tuple[str | None, str | None]:
         """Get paths for spectrogram"""
-        sd = self.__get_spectro_dataset(analysis=analysis)
+        sd = self._get_spectro_dataset(analysis=relation.analysis)
         if not sd:
-            return super().get_spectrogram_paths(
-                spectrogram=spectrogram, analysis=analysis
-            )
+            return super().get_spectrogram_paths(relation=relation)
 
         for spectro_data in sd.data:
-            if spectro_data.name == spectrogram.filename:
-                file = (
-                    [f for f in spectro_data.audio_data.files][0]
-                    if len(spectro_data.audio_data.files) > 0
-                    else None
+            if spectro_data.name == relation.spectrogram.filename:
+                paths = relation.get_paths(
+                    spectro_dataset=sd, spectro_data=spectro_data
                 )
-                return (
-                    make_static_url(Path(file.path).resolve()) if file else None,
-                    make_static_url(
-                        join(
-                            clean_path(sd.folder),
-                            "spectrogram",
-                            f"{spectrogram.filename}.png",
-                        )
-                    ),
-                )
+                return paths["audio"], paths["spectrogram"]
 
         return None, None

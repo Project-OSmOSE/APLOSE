@@ -17,6 +17,7 @@ from backend.api.models import (
     LinearScale,
     MultiLinearScale,
     Spectrogram,
+    SpectrogramAnalysisRelation,
 )
 from backend.storage.types import (
     FailedItem,
@@ -370,24 +371,7 @@ class LegacyOSEkitResolver(StorageResolver):
         return None
 
     def get_spectrogram_paths(
-        self, spectrogram: Spectrogram, analysis: SpectrogramAnalysis
+        self, relation: SpectrogramAnalysisRelation
     ) -> tuple[str | None, str | None]:
-        config = PureWindowsPath(analysis.path).parts[-2]
-        return (
-            make_static_url(
-                join(
-                    analysis.dataset.path,
-                    "data/audio",
-                    config,
-                    f"{spectrogram.filename}.wav",
-                )
-            ),
-            make_static_url(
-                join(
-                    analysis.dataset.path,
-                    analysis.path,
-                    "image",
-                    f"{spectrogram.filename}.png",
-                )
-            ),
-        )
+        paths = relation.get_legacy_paths()
+        return paths["audio"], paths["spectrogram"]

@@ -2,6 +2,7 @@ from backend.api.models import (
     Dataset,
     SpectrogramAnalysis,
     Spectrogram,
+    SpectrogramAnalysisRelation,
 )
 from backend.storage.models import ImportStatus
 from backend.storage.types import (
@@ -82,3 +83,11 @@ class ModelResolver(OSEkitResolver):
             *analysis.spectrograms.all(),
             *super().get_all_spectrograms_for_analysis(analysis=analysis),
         ]
+
+    def get_spectrogram_paths(
+        self, relation: SpectrogramAnalysisRelation
+    ) -> tuple[str | None, str | None]:
+        """Get paths for spectrogram"""
+        if relation.spectrogram_path:
+            return relation.audio_path, relation.spectrogram_path
+        return super().get_spectrogram_paths(relation=relation)

@@ -5,6 +5,7 @@ from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissio
 from graphene import Mutation, String
 from graphql import GraphQLError
 
+from backend.api.admin.data.spectrogram_analysis import store_paths
 from backend.api.models import (
     FFT,
     Colormap,
@@ -71,6 +72,7 @@ class ImportDatasetMutation(Mutation):
 
             spectrograms = resolver.get_all_spectrograms_for_analysis(analysis=sa)
             sa.add_spectrograms(spectrograms=spectrograms)
+            store_paths(analysis=sa)
 
         return ImportDatasetMutation(
             dataset=resolver.dataset,
