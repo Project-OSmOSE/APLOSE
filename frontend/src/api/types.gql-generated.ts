@@ -151,7 +151,6 @@ export type AnnotationCampaignNode = ExtendedInterface & {
   analysis: SpectrogramAnalysisNodeConnection;
   annotators?: Maybe<Array<Maybe<UserNode>>>;
   archive?: Maybe<ArchiveNode>;
-  canManage: Scalars['Boolean']['output'];
   colormapDefault?: Maybe<Scalars['String']['output']>;
   colormapInvertedDefault?: Maybe<Scalars['Boolean']['output']>;
   completedTasksCount: Scalars['Int']['output'];
@@ -166,6 +165,8 @@ export type AnnotationCampaignNode = ExtendedInterface & {
   id: Scalars['ID']['output'];
   instructionsUrl?: Maybe<Scalars['String']['output']>;
   isArchived: Scalars['Boolean']['output'];
+  isEditable: Scalars['Boolean']['output'];
+  isUserAllowedToManage: Scalars['Boolean']['output'];
   labelSet?: Maybe<LabelSetNode>;
   labelsWithAcousticFeatures?: Maybe<Array<Maybe<AnnotationLabelNode>>>;
   name: Scalars['String']['output'];
@@ -627,7 +628,6 @@ export type AnnotationPhaseNode = ExtendedInterface & {
   annotationFileRanges: AnnotationFileRangeNodeConnection;
   annotationTasks: AnnotationTaskNodeConnection;
   annotations: AnnotationNodeConnection;
-  canManage: Scalars['Boolean']['output'];
   completedTasksCount: Scalars['Int']['output'];
   createdAt: Scalars['DateTime']['output'];
   createdBy: UserNode;
@@ -637,7 +637,9 @@ export type AnnotationPhaseNode = ExtendedInterface & {
   /** The ID of the object */
   id: Scalars['ID']['output'];
   isCompleted: Scalars['Boolean']['output'];
+  isEditable: Scalars['Boolean']['output'];
   isOpen: Scalars['Boolean']['output'];
+  isUserAllowedToManage: Scalars['Boolean']['output'];
   phase: AnnotationPhaseType;
   tasksCount: Scalars['Int']['output'];
   userCompletedTasksCount: Scalars['Int']['output'];

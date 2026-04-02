@@ -173,7 +173,7 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
             }) }
           </Table> }
 
-      { phase?.canManage && users && allFileRanges && (
+      { phase?.isUserAllowedToManage && users && allFileRanges && (
         <ModalFooter className={ styles.footer }>
           <div className={ styles.buttons }>
             { progress.length > 0 && <Fragment>

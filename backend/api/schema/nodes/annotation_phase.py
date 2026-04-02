@@ -35,14 +35,16 @@ class AnnotationPhaseNode(ExtendedNode):
             phase=AnnotationPhase.Type.ANNOTATION
         ).annotations.exists()
 
-    can_manage = graphene.Boolean(required=True)
+    is_editable = graphene.Boolean(required=True)
 
     @graphene_django_optimizer.resolver_hints()
-    def resolve_can_manage(self: AnnotationPhase, info):
-        # Cannot manage ended/archived phase
-        if self.ended_at or self.ended_by or self.annotation_campaign.archive:
-            return False
+    def resolve_is_editable(self: AnnotationPhase, info):
+        return self.is_open and self.annotation_campaign.archive is None
 
+    is_user_allowed_to_manage = graphene.Boolean(required=True)
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_is_user_allowed_to_manage(self: AnnotationPhase, info):
         if info.context.user.is_staff or info.context.user.is_superuser:
             return True
 

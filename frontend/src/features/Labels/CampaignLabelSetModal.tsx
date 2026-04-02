@@ -68,14 +68,14 @@ export const LabelSetModal: React.FC<ModalProps> = ({ onClose }) => {
 
 
       <ModalFooter>
-        { campaign?.canManage && !campaign?.isArchived && (
+        { campaign?.isEditable && campaign?.isUserAllowedToManage && !campaign?.isArchived && (
           <IonButton fill="outline"
                      onClick={ toggleDisabled }
                      disabled={ isSubmitting || !disabled }>
             Update labels with features
           </IonButton>
         ) }
-        { campaign?.canManage && !disabled && (
+        { campaign?.isEditable && campaign?.isUserAllowedToManage && !disabled && (
           <IonButton fill="outline"
                      disabled={ isSubmitting }
                      onClick={ onSave }>

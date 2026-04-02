@@ -1521,7 +1521,8 @@ type AnnotationCampaignNode implements ExtendedInterface {
     orderBy: String
   ): AnnotationPhaseNodeNodeConnection
   isArchived: Boolean!
-  canManage: Boolean!
+  isEditable: Boolean!
+  isUserAllowedToManage: Boolean!
   datasetName: String!
   tasksCount: Int!
   userTasksCount: Int!
@@ -3337,7 +3338,8 @@ type AnnotationPhaseNode implements ExtendedInterface {
   isCompleted: Boolean!
   isOpen: Boolean!
   hasAnnotations: Boolean!
-  canManage: Boolean!
+  isEditable: Boolean!
+  isUserAllowedToManage: Boolean!
   tasksCount: Int!
   userTasksCount: Int!
   completedTasksCount: Int!

@@ -66,7 +66,7 @@ export const FileRangeActionBar: React.FC = () => {
                            </TooltipOverlay>
                        </div>
 
-                       { phase?.canManage && <Fragment>
+                       { phase?.isEditable && phase?.isUserAllowedToManage && <Fragment>
                            {/* Manage annotators */ }
                            <TooltipOverlay tooltipContent={ <p>Manage annotators</p> } anchor="right">
                                <Link fill="outline" color="medium" data-testid="manage"

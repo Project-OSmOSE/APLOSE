@@ -33,7 +33,7 @@ export type GetAnnotationPhaseQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetAnnotationPhaseQuery = { __typename?: 'Query', annotationPhaseByCampaignPhase?: { __typename?: 'AnnotationPhaseNode', id: string, phase: Types.AnnotationPhaseType, canManage: boolean, endedAt?: any | null, hasAnnotations: boolean, tasksCount: number, completedTasksCount: number, userTasksCount: number, userCompletedTasksCount: number } | null };
+export type GetAnnotationPhaseQuery = { __typename?: 'Query', annotationPhaseByCampaignPhase?: { __typename?: 'AnnotationPhaseNode', id: string, phase: Types.AnnotationPhaseType, isEditable: boolean, isUserAllowedToManage: boolean, endedAt?: any | null, hasAnnotations: boolean, tasksCount: number, completedTasksCount: number, userTasksCount: number, userCompletedTasksCount: number } | null };
 
 
 export const EndPhaseDocument = `
@@ -70,7 +70,8 @@ export const GetAnnotationPhaseDocument = `
   annotationPhaseByCampaignPhase(campaignId: $campaignID, phaseType: $phase) {
     id
     phase
-    canManage
+    isEditable
+    isUserAllowedToManage
     endedAt
     hasAnnotations
     tasksCount

@@ -34,9 +34,9 @@ export const AnnotationCampaignArchiveButton: React.FC = () => {
         } ],
       });
     } else archiveCampaign(campaign)
-  }, [ campaign, phases ]);
+  }, [ campaign, phases, archiveCampaign, alert ]);
 
-  if (!campaign || campaign.isArchived || !campaign.canManage) return <Fragment/>
+  if (!campaign || campaign.isArchived || !campaign.isEditable || !campaign.isUserAllowedToManage) return <Fragment/>
   return <IonButton color="medium" fill="outline" onClick={ archive }>
     <IonIcon icon={ archiveOutline } slot="start"/>
     Archive

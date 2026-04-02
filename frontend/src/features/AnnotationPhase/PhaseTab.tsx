@@ -69,10 +69,10 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
                      className={ [ styles.tab, currentPhaseType === phaseType ? styles.active : undefined ].join(' ') }>
             { phaseType }
 
-            { campaign.canManage && currentPhaseType === phaseType && phase?.isOpen &&
+            { campaign.isEditable && campaign.isUserAllowedToManage && currentPhaseType === phaseType && phase?.isOpen &&
                 <IonIcon icon={ closeOutline } slot="end" onClick={ end }/> }
         </Link>
-    if (!campaign.canManage) return <Fragment/>
+    if (!campaign.isEditable || !campaign.isUserAllowedToManage) return <Fragment/>
 
     return <Fragment>
         <Button fill="clear" color="medium" onClick={ openModal }>

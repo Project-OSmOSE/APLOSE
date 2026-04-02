@@ -16,7 +16,8 @@ query (
     ) {
         id
         phase
-        canManage
+        isEditable
+        isUserAllowedToManage
         endedAt
         tasksCount
         completedTasksCount
