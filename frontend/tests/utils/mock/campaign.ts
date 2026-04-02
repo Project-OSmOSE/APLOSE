@@ -38,7 +38,8 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
     createdAt: campaign.createdAt,
     allowImageTuning: campaign.allowImageTuning,
     allowPointAnnotation: campaign.allowPointAnnotation,
-    canManage: false,
+    isEditable: true,
+    isUserAllowedToManage: false,
     colormapDefault: campaign.colormapDefault,
     colormapInvertedDefault: campaign.colormapInvertedDefault,
     description: campaign.description,
@@ -153,7 +154,8 @@ export const CAMPAIGN_QUERIES: {
       ...DEFAULT_GET_CAMPAIGN,
       annotationCampaignById: {
         ...DEFAULT_GET_CAMPAIGN.annotationCampaignById,
-        canManage: true,
+        isEditable: true,
+        isUserAllowedToManage: true,
       },
     },
     withoutConfidence: {
@@ -197,6 +199,9 @@ export const CAMPAIGN_MUTATIONS: {
       createAnnotationCampaign: {
         annotationCampaign: {
           id: campaign.id,
+          dataset: {
+            path: dataset.path
+          }
         },
         errors: [],
       },

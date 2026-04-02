@@ -46,7 +46,8 @@ query getAnnotationPhase(
     ) {
         id
         phase
-        canManage
+        isEditable
+        isUserAllowedToManage
         endedAt
         hasAnnotations
         tasksCount

@@ -38,7 +38,8 @@ class AnnotationCampaignNode(ExtendedNode):
 
     archive = ArchiveNode()
     is_archived = graphene.Boolean(required=True)
-    can_manage = graphene.Boolean(required=True)
+    is_editable = graphene.Boolean(required=True)
+    is_user_allowed_to_manage = graphene.Boolean(required=True)
 
     dataset_name = graphene.String(required=True)
 
@@ -115,16 +116,17 @@ class AnnotationCampaignNode(ExtendedNode):
                     Q(archive__isnull=False),
                     output_field=models.BooleanField(),
                 ),
-                can_manage=ExpressionWrapper(
-                    Q(archive__isnull=True)
-                    & (
-                        Q()
-                        if info.context.user.is_staff or info.context.user.is_superuser
-                        else Q(owner_id=info.context.user.id)
-                    ),
+                is_editable=ExpressionWrapper(
+                    Q(archive__isnull=True),
                     output_field=models.BooleanField(),
                 ),
-                tasks_count=Coalesce(  # 0.03774690628051758 + 0.0019426345825195312
+                is_user_allowed_to_manage=ExpressionWrapper(
+                    Value(True)
+                    if info.context.user.is_staff or info.context.user.is_superuser
+                    else Q(owner_id=info.context.user.id),
+                    output_field=models.BooleanField(),
+                ),
+                tasks_count=Coalesce(
                     Subquery(
                         AnnotationFileRange.objects.filter(
                             annotation_phase__annotation_campaign_id=OuterRef("pk"),
