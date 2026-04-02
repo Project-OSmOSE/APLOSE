@@ -127,7 +127,7 @@ class SearchTestCase(ExtendedTestCase):
     def test_path_to_dataset_json(self):
         response = self.gql_query(
             QUERY,
-            variables={"path": r"tp_osekit/dataset.json"},
+            variables={"path": r"tp_osekit/project.json"},
             user=User.objects.get(username="staff"),
         )
         self.assertResponseNoErrors(response)
@@ -154,7 +154,7 @@ class SearchTestCase(ExtendedTestCase):
     def test_path_folder_to_dataset_json(self):
         response = self.gql_query(
             QUERY,
-            variables={"path": r"dataset.json"},
+            variables={"path": r"project.json"},
             user=User.objects.get(username="staff"),
         )
         self.assertResponseHasErrors(response)
@@ -166,7 +166,7 @@ class SearchTestCase(ExtendedTestCase):
     def test_path_legacy_to_dataset_json(self):
         response = self.gql_query(
             QUERY,
-            variables={"path": r"gliderSPAmsDemo/dataset.json"},
+            variables={"path": r"gliderSPAmsDemo/project.json"},
             user=User.objects.get(username="staff"),
         )
         self.assertResponseHasErrors(response)

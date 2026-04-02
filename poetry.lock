@@ -2478,13 +2478,15 @@ files = [
 
 [[package]]
 name = "osekit"
-version = "0.4.3"
+version = "1.0.0"
 description = "OSEkit"
 optional = false
 python-versions = ">=3.12"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "osekit-1.0.0-py3-none-any.whl", hash = "sha256:a86a6e7e222de1d321e4ed5004415671a26919973d486fafe783cb37af538bc0"},
+    {file = "osekit-1.0.0.tar.gz", hash = "sha256:012c50f74463e31b0304b065b2a33eaa72f2f11ae92fb261b2fdd2fe532ccd6b"},
+]
 
 [package.dependencies]
 matplotlib = ">=3.10.7"
@@ -2501,10 +2503,6 @@ tqdm = ">=4.67.1"
 
 [package.extras]
 mseed = ["obspy"]
-
-[package.source]
-type = "directory"
-url = "../OSEkit"
 
 [[package]]
 name = "packaging"
@@ -4081,4 +4079,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "399aa3f1b78f7a3162a9b053ad8253250d4b8b46fbb9ab4a6b3636a087d9d4b6"
+content-hash = "e006044ef9abe0a528b7be0d22f826bd933a41720bff9cbfbd87de6e494cdf89"

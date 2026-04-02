@@ -365,7 +365,7 @@
     "name": "my_first_analysis",
     "scale": null,
     "sft": {
-        "<scipy.signal._short_time_fft.ShortTimeFFT object at 0x0000021E0916FFB0>": {
+        "<scipy.signal._short_time_fft.ShortTimeFFT object at 0x000001F3D6CF5580>": {
             "fs": 24000,
             "hop": 205,
             "mfft": 2048,
