@@ -8,89 +8,96 @@ import { People } from './pages/People/People';
 import { Projects } from './pages/Projects/Projects';
 import { Publications } from './pages/Publications/Publications';
 import { NewsDetailPage } from './pages/News/NewsDetail/NewsDetailPage';
-import { PeopleDetail } from "./pages/People/PeopleDetail/PeopleDetail";
-import { ProjectDetail } from "./pages/Projects/ProjectDetail/ProjectDetail";
-import { setupIonicReact } from "@ionic/react";
+import { PeopleDetail } from './pages/People/PeopleDetail/PeopleDetail';
+import { ProjectDetail } from './pages/Projects/ProjectDetail/ProjectDetail';
+import { setupIonicReact } from '@ionic/react';
+import { Legals } from './pages/Legals/Legals';
 import '@ionic/react/css/core.css';
 
 
 setupIonicReact({
-  mode: 'md'
+    mode: 'md',
 })
 
 const App: React.FC = () => {
-  return (
-    <Router>
-      <Switch>
+    return (
+        <Router>
+            <Switch>
 
-        <Route exact path="/">
-          <Layout>
-            <HomePage/>
-          </Layout>
-        </Route>
+                <Route exact path="/">
+                    <Layout>
+                        <HomePage/>
+                    </Layout>
+                </Route>
 
-        <Route exact path="/people">
-          <Layout>
-            <People/>
-          </Layout>
-        </Route>
+                <Route exact path="/people">
+                    <Layout>
+                        <People/>
+                    </Layout>
+                </Route>
 
-        <Route path="/people/:id">
-          <Layout>
-            <PeopleDetail/>
-          </Layout>
-        </Route>
+                <Route path="/people/:id">
+                    <Layout>
+                        <PeopleDetail/>
+                    </Layout>
+                </Route>
 
-        <Route exact path="/projects">
-          <Layout>
-            <Projects/>
-          </Layout>
-        </Route>
+                <Route exact path="/projects">
+                    <Layout>
+                        <Projects/>
+                    </Layout>
+                </Route>
 
-        <Route path="/projects/:id">
-          <Layout>
-            <ProjectDetail/>
-          </Layout>
-        </Route>
+                <Route path="/projects/:id">
+                    <Layout>
+                        <ProjectDetail/>
+                    </Layout>
+                </Route>
 
-        <Route exact path="/publications">
-          <Layout>
-            <Publications/>
-          </Layout>
-        </Route>
+                <Route exact path="/publications">
+                    <Layout>
+                        <Publications/>
+                    </Layout>
+                </Route>
 
-        <Route exact path="/news">
-          <Layout>
-            <NewsPage/>
-          </Layout>
-        </Route>
+                <Route exact path="/news">
+                    <Layout>
+                        <NewsPage/>
+                    </Layout>
+                </Route>
 
-        <Route path="/news/:id">
-          <Layout>
-            <NewsDetailPage/>
-          </Layout>
-        </Route>
+                <Route path="/news/:id">
+                    <Layout>
+                        <NewsDetailPage/>
+                    </Layout>
+                </Route>
 
-        <Route exact path="/scientific-talks">
-          <Layout>
-            <ScientificTalksPage/>
-          </Layout>
-        </Route>
+                <Route exact path="/scientific-talks">
+                    <Layout>
+                        <ScientificTalksPage/>
+                    </Layout>
+                </Route>
 
-        <Route path="/app/*">
-          {/* APLOSE -> frontend/ */ }
-        </Route>
-        <Route path="/doc/*">
-          {/* APLOSEs doc -> frontend/doc/ */ }
-        </Route>
+                <Route exact path="/fr/legals">
+                    <Layout>
+                        <Legals/>
+                    </Layout>
+                </Route>
 
-        <Route path="*">
-          <Redirect to="/"></Redirect>
-        </Route>
+                <Route path="/app/*">
+                    {/* APLOSE -> frontend/ */ }
+                </Route>
+                <Route path="/doc/*">
+                    {/* APLOSEs doc -> frontend/doc/ */ }
+                </Route>
 
-      </Switch>
-    </Router>
-  );
+                <Route path="*">
+                    <Redirect to="/"></Redirect>
+                </Route>
+
+            </Switch>
+        </Router>
+    );
 }
 
 export default App;

@@ -1,0 +1,18 @@
+.page {
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+
+  .content {
+    gap: 1rem;
+    text-align: justify;
+
+    * {
+      max-width: 48rem;
+    }
+
+    h1, h2, h3 {
+      margin-top: 2rem;
+      color: var(--ion-color-primary-shade);
+    }
+  }
+}
