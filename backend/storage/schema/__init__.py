@@ -11,4 +11,4 @@ class StorageQuery(graphene.ObjectType):
 
 
 class StorageMutation(graphene.ObjectType):
-    import_dataset = ImportDatasetMutationField
+    import_data = ImportDataMutationField

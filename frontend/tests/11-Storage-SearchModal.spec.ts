@@ -2,7 +2,7 @@ import { essentialTag, expect, test } from './utils';
 import { gqlURL, interceptRequests } from './utils/mock';
 import { storageAnalysis, storageDataset, storageFolder } from './utils/mock/types';
 import type { Params } from './utils/types';
-import type { ImportDatasetFromStorageMutationVariables } from '../src/api/storage/storage.generated';
+import type { ImportDataFromStorageMutationVariables } from '../src/features/Storage/api';
 
 // Utils
 
@@ -32,7 +32,7 @@ const TEST = {
                 getCurrentUser: as,
                 searchStorage: 'folder',
                 browseStorage: 'folder',
-                importDatasetFromStorage: 'empty',
+                importDataFromStorage: 'empty',
             })
             await test.step(`Navigate`, async () => {
                 await page.storage.go({ as })
@@ -50,8 +50,8 @@ const TEST = {
                     page.waitForRequest(gqlURL),
                     modal.getByRole('button', { name: 'Import' }).click(),
                 ])
-                const variables: ImportDatasetFromStorageMutationVariables = request.postDataJSON().variables
-                expect(variables.datasetPath).toEqual(storageDataset.path)
+                const variables: ImportDataFromStorageMutationVariables = request.postDataJSON().variables
+                expect(variables.path).toEqual(storageDataset.path)
             })
         }),
 
@@ -61,7 +61,7 @@ const TEST = {
                 getCurrentUser: as,
                 searchStorage: 'dataset',
                 browseStorage: 'dataset',
-                importDatasetFromStorage: 'empty',
+                importDataFromStorage: 'empty',
             })
             await test.step(`Navigate`, async () => {
                 await page.storage.go({ as })
@@ -79,9 +79,8 @@ const TEST = {
                     page.waitForRequest(gqlURL),
                     modal.getByRole('button', { name: 'Import' }).last().click(),
                 ])
-                const variables: ImportDatasetFromStorageMutationVariables = request.postDataJSON().variables
-                expect(variables.analysisPath).toEqual(storageAnalysis.path)
-                expect(variables.datasetPath).toEqual(storageDataset.path)
+                const variables: ImportDataFromStorageMutationVariables = request.postDataJSON().variables
+                expect(variables.path).toEqual(storageAnalysis.path)
             })
         }),
 

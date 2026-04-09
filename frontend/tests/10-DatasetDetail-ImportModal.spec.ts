@@ -2,7 +2,7 @@ import { essentialTag, expect, test } from './utils';
 import { interceptRequests } from './utils/mock';
 import type { Params } from './utils/types';
 import { storageAnalysis, storageDataset } from './utils/mock/types';
-import type { ImportDatasetFromStorageMutationVariables } from '../src/api/storage/storage.generated';
+import type { ImportDataFromStorageMutationVariables } from '../src/features/Storage/api';
 
 // Utils
 
@@ -54,7 +54,7 @@ const TEST = {
                 getCurrentUser: as,
                 searchStorage: 'dataset',
                 browseStorage: 'dataset',
-                importDatasetFromStorage: 'empty',
+                importDataFromStorage: 'empty',
             })
             await test.step(`Navigate`, async () => {
                 await page.datasetDetail.go({ as })
@@ -63,12 +63,11 @@ const TEST = {
             });
 
             const [ request ] = await Promise.all([
-                page.waitForGqlRequest('importDatasetFromStorage'),
+                page.waitForGqlRequest('importDataFromStorage'),
                 await page.datasetDetail.importAnalysis.importButton.click(),
             ])
-            const variables: ImportDatasetFromStorageMutationVariables = request.postDataJSON().variables
-            expect(variables.analysisPath).toEqual(storageAnalysis.path)
-            expect(variables.datasetPath).toEqual(storageDataset.path)
+            const variables: ImportDataFromStorageMutationVariables = request.postDataJSON().variables
+            expect(variables.path).toEqual(storageAnalysis.path)
         }),
 }
 

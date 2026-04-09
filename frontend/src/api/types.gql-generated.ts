@@ -2973,9 +2973,9 @@ export type ImportAnalysisBackgroundTaskNode = {
   uuid: Scalars['String']['output'];
 };
 
-/** "Import Analysis mutation */
-export type ImportDatasetMutation = {
-  __typename?: 'ImportDatasetMutation';
+/** Import data mutation */
+export type ImportDataMutation = {
+  __typename?: 'ImportDataMutation';
   analysisResult?: Maybe<Array<Maybe<AnalysisImportReturnType>>>;
   dataset: DatasetNode;
 };
@@ -3565,8 +3565,8 @@ export type Mutation = {
   deleteSource?: Maybe<DeleteSourceMutation>;
   /** Archive annotation phase mutation */
   endAnnotationPhase?: Maybe<EndAnnotationPhaseMutation>;
-  /** "Import Analysis mutation */
-  importDataset?: Maybe<ImportDatasetMutation>;
+  /** Import data mutation */
+  importData?: Maybe<ImportDataMutation>;
   postSound?: Maybe<PostSoundMutationPayload>;
   postSource?: Maybe<PostSourceMutationPayload>;
   submitAnnotationTask?: Maybe<SubmitAnnotationTaskMutation>;
@@ -3623,7 +3623,7 @@ export type MutationEndAnnotationPhaseArgs = {
 
 
 /** Global mutation */
-export type MutationImportDatasetArgs = {
+export type MutationImportDataArgs = {
   path: Scalars['String']['input'];
 };
 

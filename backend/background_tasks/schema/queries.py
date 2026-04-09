@@ -14,17 +14,7 @@ class BackgroundTasksQuery(ObjectType):
     all_import_analysis_tasks = graphene.List(ImportAnalysisBackgroundTaskNode)
 
     def resolve_all_import_analysis_tasks(self, info, **kwargs):
-        redis = Redis()
-        tasks = []
-        import_task_identifier_start = (
-            f"{ImportAnalysisBackgroundTask.__name__}:{TaskType.ANALYSIS_IMPORT.label}"
-        )
-        for key in redis.scan_iter():
-            if isinstance(key, bytes):
-                key = key.decode()
-            if import_task_identifier_start in key and "path" not in key:
-                tasks.append(ImportAnalysisBackgroundTask.get(identifier=key))
-        return tasks
+        return ImportAnalysisBackgroundTask.list()
 
 
 __all__ = [

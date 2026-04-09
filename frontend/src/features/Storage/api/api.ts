@@ -3,7 +3,7 @@ import { api } from './queries.generated'
 
 export const API = api.enhanceEndpoints({
     endpoints: {
-        importDatasetFromStorage: {
+        importDataFromStorage: {
             invalidatesTags: [ 'Dataset', 'DatasetsAndAnalysis' ],
         },
     },

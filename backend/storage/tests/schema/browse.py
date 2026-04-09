@@ -85,7 +85,7 @@ class BrowseTestCase(ExtendedTestCase):
         content = json.loads(response.content)["data"]["browse"]
         self.assertEqual(len(content), 1)
         self.assertEqual(content[0]["name"], "my_first_analysis")
-        self.assertEqual(content[0]["path"], "processed/my_first_analysis")
+        self.assertEqual(content[0]["path"], "tp_osekit/processed/my_first_analysis")
 
     @override_settings(DATASET_EXPORT_PATH=Path(""), VOLUMES_ROOT=VOLUMES_ROOT)
     def test_subfolder(self):
@@ -129,5 +129,5 @@ class BrowseTestCase(ExtendedTestCase):
         self.assertEqual(content[0]["name"], "600_480/4096_512_85")
         self.assertEqual(
             content[0]["path"],
-            "processed/spectrogram/600_480/4096_512_85",
+            "gliderSPAmsDemo/processed/spectrogram/600_480/4096_512_85",
         )

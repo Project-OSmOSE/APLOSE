@@ -7,7 +7,6 @@ from graphene import Mutation, String
 from graphene_django.types import ErrorType
 from graphql import GraphQLError
 
-from backend.api.models import SpectrogramAnalysis
 from backend.api.schema import DatasetNode
 from backend.background_tasks.tasks import process_background_task
 from backend.background_tasks.types import ImportAnalysisBackgroundTask
@@ -23,8 +22,8 @@ class AnalysisImportReturnType(graphene.ObjectType):
     errors = graphene.List(ErrorType)
 
 
-class ImportDatasetMutation(Mutation):
-    """ "Import Analysis mutation"""
+class ImportDataMutation(Mutation):
+    """Import data mutation"""
 
     class Arguments:
         path = String(required=True)
@@ -82,11 +81,11 @@ class ImportDatasetMutation(Mutation):
                 result["errors"] = ErrorType.from_errors({"analysis": e})
             analysis_result.append(result)
 
-        return ImportDatasetMutation(
+        return ImportDataMutation(
             dataset=resolver.dataset,
             analysis_result=analysis_result,
         )
 
 
-ImportDatasetMutationField = ImportDatasetMutation.Field()
-__all__ = ["ImportDatasetMutationField", "ImportDatasetMutation"]
+ImportDataMutationField = ImportDataMutation.Field()
+__all__ = ["ImportDataMutationField", "ImportDataMutation"]

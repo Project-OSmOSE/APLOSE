@@ -60,7 +60,7 @@ class SpectrogramPathsTestCase(ExtendedTestCase):
         import_response = self.gql_query(
             IMPORT_QUERY, variables=IMPORT_VARIABLES, user=staff
         )
-        import_content = json.loads(import_response.content)["data"]["importDataset"]
+        import_content = json.loads(import_response.content)["data"]["importData"]
 
         analysis = SpectrogramAnalysis.objects.get(pk=import_content["analysis"]["id"])
         spectrogram = analysis.spectrograms.first()
@@ -90,7 +90,7 @@ class SpectrogramPathsTestCase(ExtendedTestCase):
         import_response = self.gql_query(
             IMPORT_QUERY, variables=IMPORT_LEGACY_VARIABLES, user=staff
         )
-        import_content = json.loads(import_response.content)["data"]["importDataset"]
+        import_content = json.loads(import_response.content)["data"]["importData"]
 
         analysis = SpectrogramAnalysis.objects.get(pk=import_content["analysis"]["id"])
         spectrogram = analysis.spectrograms.first()

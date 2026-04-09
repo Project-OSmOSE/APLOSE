@@ -4485,8 +4485,8 @@ type Mutation {
   updateAnnotationComments(input: UpdateAnnotationCommentsMutationInput!): UpdateAnnotationCommentsMutationPayload
   submitAnnotationTask(annotations: [AnnotationInput]!, campaignId: ID!, endedAt: DateTime!, phaseType: AnnotationPhaseType!, spectrogramId: ID!, startedAt: DateTime!, taskComments: [AnnotationCommentInput]!): SubmitAnnotationTaskMutation
 
-  """"Import Analysis mutation"""
-  importDataset(path: String!): ImportDatasetMutation
+  """Import data mutation"""
+  importData(path: String!): ImportDataMutation
 }
 
 type PostSourceMutationPayload {
@@ -4729,8 +4729,8 @@ type SubmitAnnotationTaskMutation {
   taskCommentsErrors: [[ErrorType]]
 }
 
-""""Import Analysis mutation"""
-type ImportDatasetMutation {
+"""Import data mutation"""
+type ImportDataMutation {
   dataset: DatasetNode!
   analysisResult: [AnalysisImportReturnType]
 }

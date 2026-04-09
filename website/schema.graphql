@@ -1,5 +1,7 @@
 """Global query"""
 type Query {
+  importAnalysisTaskByIdentifier(id: ID!): ImportAnalysisBackgroundTaskNode
+  allImportAnalysisTasks: [ImportAnalysisBackgroundTaskNode]
   allLabels(
     """Query limit"""
     limit: Int
@@ -945,6 +947,7 @@ type Query {
     last: Int
     dataset: ID
     annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
 
     """Ordering"""
     orderBy: String
@@ -1070,21 +1073,371 @@ type Query {
   spectrogramPaths(spectrogramId: ID!, analysisId: ID!): SpectrogramPathsNode
 }
 
-type LabelNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [LabelNode]!
-  totalCount: Int
+type ImportAnalysisBackgroundTaskNode {
+  uuid: String!
+  identifier: String!
+  requestedBy: UserNode!
+  createdAt: DateTime!
+  type: TaskTypeEnum!
+  otherInfo: JSONString
+  startedAt: DateTime
+  startedAtCompletion: Float
+  completionPercentage: Float
+  status: TaskStatusEnum
+  error: String
+  errorTrace: String
+  duration: Int
+  datasetId: Int!
+  chunkSize: Int!
+  completedSpectrograms: Int!
+  analysisPath: String!
+  totalSpectrograms: Int
+  analysisId: Int
 }
 
-type PageInfoExtra {
+"""User node"""
+type UserNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  lastLogin: DateTime
+
+  """
+  Designates that this user has all permissions without explicitly assigning them.
+  """
+  isSuperuser: Boolean!
+
+  """Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."""
+  username: String!
+  firstName: String!
+  lastName: String!
+  email: String!
+
+  """Designates whether the user can log into this admin site."""
+  isStaff: Boolean!
+
+  """
+  Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+  """
+  isActive: Boolean!
+  dateJoined: DateTime!
+  annotatorGroups(offset: Int, before: String, after: String, first: Int, last: Int): UserGroupNodeConnection!
+  archives(offset: Int, before: String, after: String, first: Int, last: Int, date: DateTime, byUser: ID): ArchiveNodeConnection!
+  datasetSet(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+
+    """Ordering"""
+    orderBy: String
+  ): DatasetNodeConnection!
+  spectrogramAnalysis(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    dataset: ID
+    annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
+
+    """Ordering"""
+    orderBy: String
+  ): SpectrogramAnalysisNodeConnection!
+  annotationTasks(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotator: ID
+    status: AnnotationTaskStatus
+    spectrogram_Filename_Icontains: String
+    spectrogram_Start_Lte: DateTime
+    spectrogram_End_Gte: DateTime
+    annotations_Exists: Boolean
+    annotations_Confidence_Label: String
+    annotations_LabelName: String
+    annotations_AcousticFeatures_Exists: Boolean
+    annotations_Detector: ID
+    annotations_Annotator: ID
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationTaskNodeConnection!
+  annotationFileRanges(offset: Int, before: String, after: String, first: Int, last: Int, annotator: ID, annotationPhase_AnnotationCampaign: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationFileRangeNodeConnection!
+  createdPhases(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotationCampaignId: ID
+    annotationCampaign_OwnerId: ID
+    annotationFileRanges_AnnotatorId: ID
+    isCampaignArchived: Boolean
+    phase: AnnotationPhaseType
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationPhaseNodeConnection!
+  endedPhases(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotationCampaignId: ID
+    annotationCampaign_OwnerId: ID
+    annotationFileRanges_AnnotatorId: ID
+    isCampaignArchived: Boolean
+    phase: AnnotationPhaseType
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationPhaseNodeConnection!
+  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
+  annotationcampaignSet(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    phases_AnnotationFileRanges_AnnotatorId: ID
+    ownerId: ID
+    isArchived: Boolean
+    phases_Phase: AnnotationPhaseType
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeConnection!
+  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationCommentNodeConnection!
+  annotationResultsValidation(offset: Int, before: String, after: String, first: Int, last: Int, annotator: ID): AnnotationValidationNodeConnection!
+  expertise: ExpertiseLevelType
+  displayName: String!
+  isAdmin: Boolean!
+}
+
+"""For fetching object id instead of Node id"""
+interface ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+}
+
+"""
+The `DateTime` scalar type represents a DateTime
+value as specified by
+[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
+"""
+scalar DateTime
+
+type UserGroupNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [UserGroupNodeEdge]!
+}
+
+"""
+The Relay compliant `PageInfo` type, containing data necessary to paginate this connection.
+"""
+type PageInfo {
   """When paginating forwards, are there more items?"""
   hasNextPage: Boolean!
 
   """When paginating backwards, are there more items?"""
   hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+"""A Relay edge containing a `UserGroupNode` and its cursor."""
+type UserGroupNodeEdge {
+  """The item at the end of the edge"""
+  node: UserGroupNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""User group node"""
+type UserGroupNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  name: String!
+  users: [UserNode]
+}
+
+type ArchiveNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [ArchiveNodeEdge]!
+}
+
+"""A Relay edge containing a `ArchiveNode` and its cursor."""
+type ArchiveNodeEdge {
+  """The item at the end of the edge"""
+  node: ArchiveNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""Archive schema"""
+type ArchiveNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  date: DateTime!
+  byUser: UserNode
+  annotationCampaign: AnnotationCampaignNode
+}
+
+"""AnnotationCampaign schema"""
+type AnnotationCampaignNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  createdAt: DateTime!
+  name: String!
+  description: String
+  instructionsUrl: String
+  deadline: Date
+  labelSet: LabelSetNode
+  labelsWithAcousticFeatures: [AnnotationLabelNode]
+  allowPointAnnotation: Boolean!
+  dataset: DatasetNode!
+  analysis(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    dataset: ID
+    annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
+
+    """Ordering"""
+    orderBy: String
+  ): SpectrogramAnalysisNodeConnection!
+  allowImageTuning: Boolean!
+  allowColormapTuning: Boolean!
+  colormapDefault: String
+  colormapInvertedDefault: Boolean
+  owner: UserNode!
+  confidenceSet: ConfidenceSetNode
+  archive: ArchiveNode
+  phases(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotationCampaignId: ID
+    annotationCampaign_OwnerId: ID
+    annotationFileRanges_AnnotatorId: ID
+    isCampaignArchived: Boolean
+    phase: AnnotationPhaseType
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationPhaseNodeNodeConnection
+  isArchived: Boolean!
+  canManage: Boolean!
+  datasetName: String!
+  tasksCount: Int!
+  userTasksCount: Int!
+  completedTasksCount: Int!
+  userCompletedTasksCount: Int!
+  detectors: [DetectorNode]
+  annotators: [UserNode]
+  spectrogramsCount: Int!
+}
+
+"""
+The `Date` scalar type represents a Date
+value as specified by
+[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
+"""
+scalar Date
+
+"""LabelSet schema"""
+type LabelSetNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  name: String!
+  description: String
+  labels: [AnnotationLabelNode]!
+  annotationcampaignSet(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    phases_AnnotationFileRanges_AnnotatorId: ID
+    ownerId: ID
+    isArchived: Boolean
+    phases_Phase: AnnotationPhaseType
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeConnection!
+}
+
+"""Label schema"""
+type AnnotationLabelNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  name: String!
+  metadataxLabel: LabelNode
+  annotationSet(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
+  labelsetSet(offset: Int, before: String, after: String, first: Int, last: Int, name: String, description: String, labels: ID): LabelSetNodeConnection!
+  annotationcampaignSet(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    phases_AnnotationFileRanges_AnnotatorId: ID
+    ownerId: ID
+    isArchived: Boolean
+    phases_Phase: AnnotationPhaseType
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeConnection!
+  uses(deploymentId: ID): Int!
 }
 
 type LabelNode implements ExtendedInterface {
@@ -1109,12 +1462,6 @@ type LabelNode implements ExtendedInterface {
   labelSet(offset: Int, before: String, after: String, first: Int, last: Int, annotation_AnnotationPhase_AnnotationCampaignId: ID, annotation_AnnotationPhase_Phase: AnnotationPhaseType, annotation_AnnotatorId: ID): AnnotationLabelNodeConnection!
 }
 
-"""For fetching object id instead of Node id"""
-interface ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-}
-
 type SourceNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
@@ -1134,23 +1481,6 @@ type SourceNodeConnection {
 
   """Contains the nodes in this connection."""
   edges: [SourceNodeEdge]!
-}
-
-"""
-The Relay compliant `PageInfo` type, containing data necessary to paginate this connection.
-"""
-type PageInfo {
-  """When paginating forwards, are there more items?"""
-  hasNextPage: Boolean!
-
-  """When paginating backwards, are there more items?"""
-  hasPreviousPage: Boolean!
-
-  """When paginating backwards, the cursor to continue."""
-  startCursor: String
-
-  """When paginating forwards, the cursor to continue."""
-  endCursor: String
 }
 
 """A Relay edge containing a `SourceNode` and its cursor."""
@@ -1375,58 +1705,41 @@ enum AnnotationType {
   Box
 }
 
-"""Label schema"""
-type AnnotationLabelNode implements ExtendedInterface {
+"""Confidence schema"""
+type ConfidenceNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
-  name: String!
-  metadataxLabel: LabelNode
+  label: String!
+  level: Int!
   annotationSet(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
-  labelsetSet(offset: Int, before: String, after: String, first: Int, last: Int, name: String, description: String, labels: ID): LabelSetNodeConnection!
-  annotationcampaignSet(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-    phases_AnnotationFileRanges_AnnotatorId: ID
-    ownerId: ID
-    isArchived: Boolean
-    phases_Phase: AnnotationPhaseType
-
-    """search"""
-    search: String
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationCampaignNodeConnection!
-  uses(deploymentId: ID): Int!
+  confidenceIndicatorSets(offset: Int, before: String, after: String, first: Int, last: Int, name: String, desc: String, confidenceIndicators: ID): ConfidenceSetNodeConnection!
+  isDefault: Boolean
 }
 
-type LabelSetNodeConnection {
+type ConfidenceSetNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfo!
 
   """Contains the nodes in this connection."""
-  edges: [LabelSetNodeEdge]!
+  edges: [ConfidenceSetNodeEdge]!
 }
 
-"""A Relay edge containing a `LabelSetNode` and its cursor."""
-type LabelSetNodeEdge {
+"""A Relay edge containing a `ConfidenceSetNode` and its cursor."""
+type ConfidenceSetNodeEdge {
   """The item at the end of the edge"""
-  node: LabelSetNode
+  node: ConfidenceSetNode
 
   """A cursor for use in pagination"""
   cursor: String!
 }
 
-"""LabelSet schema"""
-type LabelSetNode implements ExtendedInterface {
+"""ConfidenceSet schema"""
+type ConfidenceSetNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
   name: String!
-  description: String
-  labels: [AnnotationLabelNode]!
+  desc: String
+  confidenceIndicators: [ConfidenceNode]
   annotationcampaignSet(
     offset: Int
     before: String
@@ -1463,191 +1776,22 @@ type AnnotationCampaignNodeEdge {
   cursor: String!
 }
 
-"""AnnotationCampaign schema"""
-type AnnotationCampaignNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  createdAt: DateTime!
-  name: String!
-  description: String
-  instructionsUrl: String
-  deadline: Date
-  labelSet: LabelSetNode
-  labelsWithAcousticFeatures: [AnnotationLabelNode]
-  allowPointAnnotation: Boolean!
-  dataset: DatasetNode!
-  analysis(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-    dataset: ID
-    annotationCampaigns_Id: ID
-
-    """Ordering"""
-    orderBy: String
-  ): SpectrogramAnalysisNodeConnection!
-  allowImageTuning: Boolean!
-  allowColormapTuning: Boolean!
-  colormapDefault: String
-  colormapInvertedDefault: Boolean
-  owner: UserNode!
-  confidenceSet: ConfidenceSetNode
-  archive: ArchiveNode
-  phases(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    annotationCampaignId: ID
-    annotationCampaign_OwnerId: ID
-    annotationFileRanges_AnnotatorId: ID
-    isCampaignArchived: Boolean
-    phase: AnnotationPhaseType
-
-    """search"""
-    search: String
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationPhaseNodeNodeConnection
-  isArchived: Boolean!
-  canManage: Boolean!
-  datasetName: String!
-  tasksCount: Int!
-  userTasksCount: Int!
-  completedTasksCount: Int!
-  userCompletedTasksCount: Int!
-  detectors: [DetectorNode]
-  annotators: [UserNode]
-  spectrogramsCount: Int!
+"""From AnnotationPhase.Type"""
+enum AnnotationPhaseType {
+  Annotation
+  Verification
 }
 
-"""
-The `DateTime` scalar type represents a DateTime
-value as specified by
-[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
-"""
-scalar DateTime
-
-"""
-The `Date` scalar type represents a Date
-value as specified by
-[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
-"""
-scalar Date
-
-"""Dataset schema"""
-type DatasetNode implements ExtendedInterface {
+"""AnnotationPhase schema"""
+type AnnotationPhaseNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
+  phase: AnnotationPhaseType!
+  annotationCampaign: AnnotationCampaignNode!
   createdAt: DateTime!
-  name: String!
-  description: String
-  path: String!
-  owner: UserNode!
-  legacy: Boolean!
-  relatedChannelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, recordStartDate: DateTime, recordStartDate_Lt: DateTime, recordStartDate_Lte: DateTime, recordStartDate_Gt: DateTime, recordStartDate_Gte: DateTime, recordEndDate: DateTime, recordEndDate_Lt: DateTime, recordEndDate_Lte: DateTime, recordEndDate_Gt: DateTime, recordEndDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
-  spectrogramAnalysis(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    dataset: ID
-    annotationCampaigns_Id: ID
-
-    """Ordering"""
-    orderBy: String
-  ): SpectrogramAnalysisNodeNodeConnection
-  annotationCampaigns(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-    phases_AnnotationFileRanges_AnnotatorId: ID
-    ownerId: ID
-    isArchived: Boolean
-    phases_Phase: AnnotationPhaseType
-
-    """search"""
-    search: String
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationCampaignNodeConnection!
-  analysisCount: Int!
-  spectrogramCount: Int!
-  start: DateTime
-  end: DateTime
-}
-
-"""User node"""
-type UserNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  lastLogin: DateTime
-
-  """
-  Designates that this user has all permissions without explicitly assigning them.
-  """
-  isSuperuser: Boolean!
-
-  """Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."""
-  username: String!
-  firstName: String!
-  lastName: String!
-  email: String!
-
-  """Designates whether the user can log into this admin site."""
-  isStaff: Boolean!
-
-  """
-  Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
-  """
-  isActive: Boolean!
-  dateJoined: DateTime!
-  annotatorGroups(offset: Int, before: String, after: String, first: Int, last: Int): UserGroupNodeConnection!
-  archives(offset: Int, before: String, after: String, first: Int, last: Int, date: DateTime, byUser: ID): ArchiveNodeConnection!
-  datasetSet(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-
-    """Ordering"""
-    orderBy: String
-  ): DatasetNodeConnection!
-  spectrogramAnalysis(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-    dataset: ID
-    annotationCampaigns_Id: ID
-
-    """Ordering"""
-    orderBy: String
-  ): SpectrogramAnalysisNodeConnection!
+  createdBy: UserNode!
+  endedAt: DateTime
+  endedBy: UserNode
   annotationTasks(
     offset: Int
     before: String
@@ -1670,174 +1814,45 @@ type UserNode implements ExtendedInterface {
     orderBy: String
   ): AnnotationTaskNodeConnection!
   annotationFileRanges(offset: Int, before: String, after: String, first: Int, last: Int, annotator: ID, annotationPhase_AnnotationCampaign: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationFileRangeNodeConnection!
-  createdPhases(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-    annotationCampaignId: ID
-    annotationCampaign_OwnerId: ID
-    annotationFileRanges_AnnotatorId: ID
-    isCampaignArchived: Boolean
-    phase: AnnotationPhaseType
-
-    """search"""
-    search: String
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationPhaseNodeConnection!
-  endedPhases(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-    annotationCampaignId: ID
-    annotationCampaign_OwnerId: ID
-    annotationFileRanges_AnnotatorId: ID
-    isCampaignArchived: Boolean
-    phase: AnnotationPhaseType
-
-    """search"""
-    search: String
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationPhaseNodeConnection!
   annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
-  annotationcampaignSet(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-    phases_AnnotationFileRanges_AnnotatorId: ID
-    ownerId: ID
-    isArchived: Boolean
-    phases_Phase: AnnotationPhaseType
-
-    """search"""
-    search: String
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationCampaignNodeConnection!
   annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationCommentNodeConnection!
-  annotationResultsValidation(offset: Int, before: String, after: String, first: Int, last: Int, annotator: ID): AnnotationValidationNodeConnection!
-  expertise: ExpertiseLevelType
-  displayName: String!
-  isAdmin: Boolean!
+  annotationCampaignId: ID!
+  isCompleted: Boolean!
+  isOpen: Boolean!
+  hasAnnotations: Boolean!
+  canManage: Boolean!
+  tasksCount: Int!
+  userTasksCount: Int!
+  completedTasksCount: Int!
+  userCompletedTasksCount: Int!
 }
 
-type UserGroupNodeConnection {
+type AnnotationTaskNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfo!
 
   """Contains the nodes in this connection."""
-  edges: [UserGroupNodeEdge]!
+  edges: [AnnotationTaskNodeEdge]!
 }
 
-"""A Relay edge containing a `UserGroupNode` and its cursor."""
-type UserGroupNodeEdge {
+"""A Relay edge containing a `AnnotationTaskNode` and its cursor."""
+type AnnotationTaskNodeEdge {
   """The item at the end of the edge"""
-  node: UserGroupNode
+  node: AnnotationTaskNode
 
   """A cursor for use in pagination"""
   cursor: String!
 }
 
-"""User group node"""
-type UserGroupNode implements ExtendedInterface {
+"""AnnotationTask schema"""
+type AnnotationTaskNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
-  name: String!
-  users: [UserNode]
-}
-
-type ArchiveNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [ArchiveNodeEdge]!
-}
-
-"""A Relay edge containing a `ArchiveNode` and its cursor."""
-type ArchiveNodeEdge {
-  """The item at the end of the edge"""
-  node: ArchiveNode
-
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-"""Archive schema"""
-type ArchiveNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  date: DateTime!
-  byUser: UserNode
-  annotationCampaign: AnnotationCampaignNode
-}
-
-type DatasetNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [DatasetNodeEdge]!
-}
-
-"""A Relay edge containing a `DatasetNode` and its cursor."""
-type DatasetNodeEdge {
-  """The item at the end of the edge"""
-  node: DatasetNode
-
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-type SpectrogramAnalysisNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [SpectrogramAnalysisNodeEdge]!
-}
-
-"""A Relay edge containing a `SpectrogramAnalysisNode` and its cursor."""
-type SpectrogramAnalysisNodeEdge {
-  """The item at the end of the edge"""
-  node: SpectrogramAnalysisNode
-
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-"""SpectrogramAnalysis schema"""
-type SpectrogramAnalysisNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  createdAt: DateTime!
-  name: String!
-  description: String
-  path: String!
-  legacy: Boolean!
-  start: DateTime
-  end: DateTime
-  owner: UserNode!
-  dataset: DatasetNode!
-
-  """Duration of the segmented data (in s)"""
-  dataDuration: Float
-  fft: FFTNode!
-  colormap: ColormapNode!
-  dynamicMin: Float!
-  dynamicMax: Float!
-  legacyConfiguration: LegacySpectrogramConfigurationNode
-  spectrograms(
+  status: AnnotationTaskStatus!
+  annotationPhase: AnnotationPhaseNode!
+  annotator: UserNode!
+  spectrogram: AnnotationSpectrogramNode!
+  userAnnotations(
     """Query limit"""
     limit: Int
 
@@ -1850,191 +1865,61 @@ type SpectrogramAnalysisNode implements ExtendedInterface {
     after: String
     first: Int
     last: Int
-    start: DateTime
-    start_Lt: DateTime
-    start_Lte: DateTime
-    start_Gt: DateTime
-    start_Gte: DateTime
-    end: DateTime
-    end_Lt: DateTime
-    end_Lte: DateTime
-    end_Gt: DateTime
-    end_Gte: DateTime
-    campaignId: ID
-    phaseType: AnnotationPhaseType
-    annotatorId: ID
-    isTaskCompleted: Boolean
-    hasAnnotations: Boolean
-    annotatedByAnnotator: ID
-    annotatedByDetector: ID
-    annotatedWithLabel: String
-    annotatedWithConfidence: String
-    annotatedWithFeatures: Boolean
+    confidence_Label: String
+    label_Name: String
+    detectorConfiguration_Detector: ID
+    acousticFeatures_Exists: Boolean
+    isValidatedBy: ID
+    isUpdated: Boolean
+    annotator: ID
+  ): AnnotationNodeNodeConnection
+  userComments(
+    """Query limit"""
+    limit: Int
 
-    """Ordering"""
-    orderBy: String
-  ): SpectrogramNodeNodeConnection
-  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
-  annotationCampaigns(
+    """Query offset"""
     offset: Int
+
+    """Query order"""
+    ordering: String
     before: String
     after: String
     first: Int
     last: Int
-    phases_AnnotationFileRanges_AnnotatorId: ID
-    ownerId: ID
-    isArchived: Boolean
-    phases_Phase: AnnotationPhaseType
+    annotation_Isnull: Boolean
+    author: ID
+    annotationPhase_Phase: AnnotationPhaseType
+  ): AnnotationCommentNodeNodeConnection
+  annotationsToCheck(
+    """Query limit"""
+    limit: Int
 
-    """search"""
-    search: String
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationCampaignNodeConnection!
-}
-
-"""FFT schema"""
-type FFTNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  nfft: Int!
-  windowSize: Int!
-  overlap: Decimal!
-  samplingFrequency: Int!
-  scaling: String
-  legacy: Boolean!
-  spectrogramAnalysis(
+    """Query offset"""
     offset: Int
+
+    """Query order"""
+    ordering: String
     before: String
     after: String
     first: Int
     last: Int
-    dataset: ID
-    annotationCampaigns_Id: ID
-
-    """Ordering"""
-    orderBy: String
-  ): SpectrogramAnalysisNodeConnection!
+    confidence_Label: String
+    label_Name: String
+    detectorConfiguration_Detector: ID
+    acousticFeatures_Exists: Boolean
+    isValidatedBy: ID
+    isUpdated: Boolean
+    annotator: ID
+  ): AnnotationNodeNodeConnection
 }
 
-"""The `Decimal` scalar type represents a python Decimal."""
-scalar Decimal
-
-"""Colormap schema"""
-type ColormapNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  name: String!
-  spectrogramAnalysis(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-    dataset: ID
-    annotationCampaigns_Id: ID
-
-    """Ordering"""
-    orderBy: String
-  ): SpectrogramAnalysisNodeConnection!
+"""From AnnotationTask.Status"""
+enum AnnotationTaskStatus {
+  Created
+  Finished
 }
 
-"""LegacySpectrogramConfiguration schema"""
-type LegacySpectrogramConfigurationNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  spectrogramAnalysis: SpectrogramAnalysisNode!
-  folder: String!
-  audioFilesSubtypes: [String!]
-  channelCount: Int
-  fileOverlap: Int
-  zoomLevel: Int!
-  hpFilterMinFrequency: Int!
-  dataNormalization: String!
-  frequencyResolution: Float!
-  spectrogramNormalization: String!
-  zscoreDuration: String
-  windowType: String
-  peakVoltage: Float
-  sensitivityDb: Float
-  temporalResolution: Float
-  gainDb: Float
-  linearFrequencyScale: LinearScaleNode
-  multiLinearFrequencyScale: MultiLinearScaleNode
-  scaleName: String
-}
-
-"""LinearScale schema"""
-type LinearScaleNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  name: String
-  ratio: Float!
-  minValue: Float!
-  maxValue: Float!
-  outerScales(offset: Int, before: String, after: String, first: Int, last: Int): MultiLinearScaleNodeConnection!
-  legacyspectrogramconfigurationSet(offset: Int, before: String, after: String, first: Int, last: Int): LegacySpectrogramConfigurationNodeConnection!
-}
-
-type MultiLinearScaleNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [MultiLinearScaleNodeEdge]!
-}
-
-"""A Relay edge containing a `MultiLinearScaleNode` and its cursor."""
-type MultiLinearScaleNodeEdge {
-  """The item at the end of the edge"""
-  node: MultiLinearScaleNode
-
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-"""MultiLinearScale schema"""
-type MultiLinearScaleNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  name: String
-  innerScales: [LinearScaleNode]
-  legacyspectrogramconfigurationSet(offset: Int, before: String, after: String, first: Int, last: Int): LegacySpectrogramConfigurationNodeConnection!
-}
-
-type LegacySpectrogramConfigurationNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [LegacySpectrogramConfigurationNodeEdge]!
-}
-
-"""
-A Relay edge containing a `LegacySpectrogramConfigurationNode` and its cursor.
-"""
-type LegacySpectrogramConfigurationNodeEdge {
-  """The item at the end of the edge"""
-  node: LegacySpectrogramConfigurationNode
-
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-type SpectrogramNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [SpectrogramNode]!
-  totalCount: Int!
-  start: DateTime
-  end: DateTime
-}
-
-"""Spectrogram schema"""
-type SpectrogramNode implements ExtendedInterface {
+type AnnotationSpectrogramNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
   format: FileFormatNode!
@@ -2049,6 +1934,7 @@ type SpectrogramNode implements ExtendedInterface {
     last: Int
     dataset: ID
     annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
 
     """Ordering"""
     orderBy: String
@@ -2075,8 +1961,26 @@ type SpectrogramNode implements ExtendedInterface {
     orderBy: String
   ): AnnotationTaskNodeConnection!
   annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
-  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationCommentNodeConnection!
+  annotationComments(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotation_Isnull: Boolean
+    author: ID
+    annotationPhase_Phase: AnnotationPhaseType
+  ): AnnotationCommentNodeNodeConnection
   duration: Int!
+  isAssigned(campaignId: ID!, phase: AnnotationPhaseType!): Boolean!
+  task(campaignId: ID!, phase: AnnotationPhaseType!): AnnotationTaskNode
 }
 
 type FileFormatNode implements ExtendedInterface {
@@ -2670,6 +2574,9 @@ type CampaignNode implements ExtendedInterface {
   deployments(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], projectId: ID, projectId_In: [ID], siteId: ID, siteId_In: [ID], campaignId: ID, campaignId_In: [ID], platformId: ID, platformId_In: [ID], longitude: Float, longitude_Lt: Float, longitude_Lte: Float, longitude_Gt: Float, longitude_Gte: Float, latitude: Float, latitude_Lt: Float, latitude_Lte: Float, latitude_Gt: Float, latitude_Gte: Float, name: String, name_Icontains: String, bathymetricDepth: Int, bathymetricDepth_Lt: Int, bathymetricDepth_Lte: Int, bathymetricDepth_Gt: Int, bathymetricDepth_Gte: Int, deploymentDate: DateTime, deploymentDate_Lt: DateTime, deploymentDate_Lte: DateTime, deploymentDate_Gt: DateTime, deploymentDate_Gte: DateTime, deploymentVessel: String, deploymentVessel_Icontains: String, recoveryDate: DateTime, recoveryDate_Lt: DateTime, recoveryDate_Lte: DateTime, recoveryDate_Gt: DateTime, recoveryDate_Gte: DateTime, recoveryVessel: String, recoveryVessel_Icontains: String, description_Icontains: String, project_WebsiteProject_Id: Decimal): DeploymentNodeConnection!
 }
 
+"""The `Decimal` scalar type represents a python Decimal."""
+scalar Decimal
+
 type SiteNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfo!
@@ -2891,9 +2798,7 @@ type ChannelConfigurationNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
   deployment: DeploymentNode!
-
-  """If the equipment is lost."""
-  isLost: Boolean!
+  status: ChannelConfigurationStatusEnum
 
   """Each specification is dedicated to one file."""
   recorderSpecification: ChannelConfigurationRecorderSpecificationNode
@@ -2943,6 +2848,12 @@ type ChannelConfigurationNode implements ExtendedInterface {
   ): DatasetNodeConnection!
 }
 
+enum ChannelConfigurationStatusEnum {
+  Active
+  Failed
+  Lost
+}
+
 type ChannelConfigurationDetectorSpecificationNode implements ExtendedInterface {
   """The ID of the object"""
   id: ID!
@@ -2962,6 +2873,405 @@ type ChannelConfigurationDetectorSpecificationNode implements ExtendedInterface 
   """Description of the configuration"""
   configuration: String
   channelConfiguration: ChannelConfigurationNode
+}
+
+type DatasetNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [DatasetNodeEdge]!
+}
+
+"""A Relay edge containing a `DatasetNode` and its cursor."""
+type DatasetNodeEdge {
+  """The item at the end of the edge"""
+  node: DatasetNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""Dataset schema"""
+type DatasetNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  createdAt: DateTime!
+  name: String!
+  description: String
+  path: String!
+  owner: UserNode!
+  legacy: Boolean!
+  relatedChannelConfigurations(offset: Int, before: String, after: String, first: Int, last: Int, id: ID, id_In: [ID], recorderSpecification_Isnull: Boolean, detectorSpecification_Isnull: Boolean, continuous: Boolean, dutyCycleOn: Int, dutyCycleOn_Lt: Int, dutyCycleOn_Lte: Int, dutyCycleOn_Gt: Int, dutyCycleOn_Gte: Int, dutyCycleOff: Int, dutyCycleOff_Lt: Int, dutyCycleOff_Lte: Int, dutyCycleOff_Gt: Int, dutyCycleOff_Gte: Int, instrumentDepth: Int, instrumentDepth_Lt: Int, instrumentDepth_Lte: Int, instrumentDepth_Gt: Int, instrumentDepth_Gte: Int, timezone: String, recordStartDate: DateTime, recordStartDate_Lt: DateTime, recordStartDate_Lte: DateTime, recordStartDate_Gt: DateTime, recordStartDate_Gte: DateTime, recordEndDate: DateTime, recordEndDate_Lt: DateTime, recordEndDate_Lte: DateTime, recordEndDate_Gt: DateTime, recordEndDate_Gte: DateTime, datasetId: ID): ChannelConfigurationNodeConnection!
+  spectrogramAnalysis(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    dataset: ID
+    annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
+
+    """Ordering"""
+    orderBy: String
+  ): SpectrogramAnalysisNodeNodeConnection
+  annotationCampaigns(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    phases_AnnotationFileRanges_AnnotatorId: ID
+    ownerId: ID
+    isArchived: Boolean
+    phases_Phase: AnnotationPhaseType
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeConnection!
+  analysisCount: Int!
+  spectrogramCount: Int!
+  start: DateTime
+  end: DateTime
+}
+
+type SpectrogramAnalysisNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [SpectrogramAnalysisNode]!
+  totalCount: Int
+}
+
+type PageInfoExtra {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+}
+
+"""SpectrogramAnalysis schema"""
+type SpectrogramAnalysisNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  createdAt: DateTime!
+  name: String!
+  description: String
+  path: String!
+  legacy: Boolean!
+  start: DateTime
+  end: DateTime
+  owner: UserNode!
+  dataset: DatasetNode!
+
+  """Duration of the segmented data (in s)"""
+  dataDuration: Float
+  fft: FFTNode!
+  colormap: ColormapNode!
+  dynamicMin: Float!
+  dynamicMax: Float!
+  isImportCompleted: Boolean!
+  legacyConfiguration: LegacySpectrogramConfigurationNode
+  spectrograms(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    start: DateTime
+    start_Lt: DateTime
+    start_Lte: DateTime
+    start_Gt: DateTime
+    start_Gte: DateTime
+    end: DateTime
+    end_Lt: DateTime
+    end_Lte: DateTime
+    end_Gt: DateTime
+    end_Gte: DateTime
+    campaignId: ID
+    phaseType: AnnotationPhaseType
+    annotatorId: ID
+    isTaskCompleted: Boolean
+    hasAnnotations: Boolean
+    annotatedByAnnotator: ID
+    annotatedByDetector: ID
+    annotatedWithLabel: String
+    annotatedWithConfidence: String
+    annotatedWithFeatures: Boolean
+
+    """Ordering"""
+    orderBy: String
+  ): SpectrogramNodeNodeConnection
+  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
+  annotationCampaigns(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    phases_AnnotationFileRanges_AnnotatorId: ID
+    ownerId: ID
+    isArchived: Boolean
+    phases_Phase: AnnotationPhaseType
+
+    """search"""
+    search: String
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationCampaignNodeConnection!
+  importTask: ImportAnalysisBackgroundTaskNode
+}
+
+"""FFT schema"""
+type FFTNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  nfft: Int!
+  windowSize: Int!
+  overlap: Decimal!
+  samplingFrequency: Int!
+  scaling: String
+  legacy: Boolean!
+  spectrogramAnalysis(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    dataset: ID
+    annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
+
+    """Ordering"""
+    orderBy: String
+  ): SpectrogramAnalysisNodeConnection!
+}
+
+type SpectrogramAnalysisNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [SpectrogramAnalysisNodeEdge]!
+}
+
+"""A Relay edge containing a `SpectrogramAnalysisNode` and its cursor."""
+type SpectrogramAnalysisNodeEdge {
+  """The item at the end of the edge"""
+  node: SpectrogramAnalysisNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""Colormap schema"""
+type ColormapNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  name: String!
+  spectrogramAnalysis(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    dataset: ID
+    annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
+
+    """Ordering"""
+    orderBy: String
+  ): SpectrogramAnalysisNodeConnection!
+}
+
+"""LegacySpectrogramConfiguration schema"""
+type LegacySpectrogramConfigurationNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  spectrogramAnalysis: SpectrogramAnalysisNode!
+  folder: String!
+  audioFilesSubtypes: [String!]
+  channelCount: Int
+  fileOverlap: Int
+  zoomLevel: Int!
+  hpFilterMinFrequency: Int!
+  dataNormalization: String!
+  frequencyResolution: Float!
+  spectrogramNormalization: String!
+  zscoreDuration: String
+  windowType: String
+  peakVoltage: Float
+  sensitivityDb: Float
+  temporalResolution: Float
+  gainDb: Float
+  linearFrequencyScale: LinearScaleNode
+  multiLinearFrequencyScale: MultiLinearScaleNode
+  scaleName: String
+}
+
+"""LinearScale schema"""
+type LinearScaleNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  name: String
+  ratio: Float!
+  minValue: Float!
+  maxValue: Float!
+  outerScales(offset: Int, before: String, after: String, first: Int, last: Int): MultiLinearScaleNodeConnection!
+  legacyspectrogramconfigurationSet(offset: Int, before: String, after: String, first: Int, last: Int): LegacySpectrogramConfigurationNodeConnection!
+}
+
+type MultiLinearScaleNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [MultiLinearScaleNodeEdge]!
+}
+
+"""A Relay edge containing a `MultiLinearScaleNode` and its cursor."""
+type MultiLinearScaleNodeEdge {
+  """The item at the end of the edge"""
+  node: MultiLinearScaleNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""MultiLinearScale schema"""
+type MultiLinearScaleNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  name: String
+  innerScales: [LinearScaleNode]
+  legacyspectrogramconfigurationSet(offset: Int, before: String, after: String, first: Int, last: Int): LegacySpectrogramConfigurationNodeConnection!
+}
+
+type LegacySpectrogramConfigurationNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [LegacySpectrogramConfigurationNodeEdge]!
+}
+
+"""
+A Relay edge containing a `LegacySpectrogramConfigurationNode` and its cursor.
+"""
+type LegacySpectrogramConfigurationNodeEdge {
+  """The item at the end of the edge"""
+  node: LegacySpectrogramConfigurationNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type SpectrogramNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [SpectrogramNode]!
+  totalCount: Int!
+  start: DateTime
+  end: DateTime
+}
+
+"""Spectrogram schema"""
+type SpectrogramNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  format: FileFormatNode!
+  filename: String!
+  start: DateTime!
+  end: DateTime!
+  analysis(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    dataset: ID
+    annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
+
+    """Ordering"""
+    orderBy: String
+  ): SpectrogramAnalysisNodeConnection!
+  annotationTasks(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    annotator: ID
+    status: AnnotationTaskStatus
+    spectrogram_Filename_Icontains: String
+    spectrogram_Start_Lte: DateTime
+    spectrogram_End_Gte: DateTime
+    annotations_Exists: Boolean
+    annotations_Confidence_Label: String
+    annotations_LabelName: String
+    annotations_AcousticFeatures_Exists: Boolean
+    annotations_Detector: ID
+    annotations_Annotator: ID
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationTaskNodeConnection!
+  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
+  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationCommentNodeConnection!
+  duration: Int!
+}
+
+type AnnotationCommentNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [AnnotationCommentNodeEdge]!
+}
+
+"""A Relay edge containing a `AnnotationCommentNode` and its cursor."""
+type AnnotationCommentNodeEdge {
+  """The item at the end of the edge"""
+  node: AnnotationCommentNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""AnnotationComment schema"""
+type AnnotationCommentNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  comment: String!
+  annotation: AnnotationNode
+  annotationPhase: AnnotationPhaseNode!
+  author: UserNode!
+  spectrogram: AnnotationSpectrogramNode!
+  createdAt: DateTime!
 }
 
 type DeploymentMobilePositionNode implements ExtendedInterface {
@@ -3144,210 +3454,22 @@ type AnnotationSpectrogramNodeEdge {
   cursor: String!
 }
 
-type AnnotationSpectrogramNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  format: FileFormatNode!
-  filename: String!
-  start: DateTime!
-  end: DateTime!
-  analysis(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-    dataset: ID
-    annotationCampaigns_Id: ID
-
-    """Ordering"""
-    orderBy: String
-  ): SpectrogramAnalysisNodeConnection!
-  annotationTasks(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-    annotator: ID
-    status: AnnotationTaskStatus
-    spectrogram_Filename_Icontains: String
-    spectrogram_Start_Lte: DateTime
-    spectrogram_End_Gte: DateTime
-    annotations_Exists: Boolean
-    annotations_Confidence_Label: String
-    annotations_LabelName: String
-    annotations_AcousticFeatures_Exists: Boolean
-    annotations_Detector: ID
-    annotations_Annotator: ID
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationTaskNodeConnection!
-  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
-  annotationComments(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    annotation_Isnull: Boolean
-    author: ID
-    annotationPhase_Phase: AnnotationPhaseType
-  ): AnnotationCommentNodeNodeConnection
-  duration: Int!
-  isAssigned(campaignId: ID!, phase: AnnotationPhaseType!): Boolean!
-  task(campaignId: ID!, phase: AnnotationPhaseType!): AnnotationTaskNode
-}
-
-type AnnotationTaskNodeConnection {
+type AnnotationCommentNodeNodeConnection {
   """Pagination data for this connection."""
-  pageInfo: PageInfo!
+  pageInfo: PageInfoExtra!
 
   """Contains the nodes in this connection."""
-  edges: [AnnotationTaskNodeEdge]!
+  results: [AnnotationCommentNode]!
+  totalCount: Int
 }
 
-"""A Relay edge containing a `AnnotationTaskNode` and its cursor."""
-type AnnotationTaskNodeEdge {
-  """The item at the end of the edge"""
-  node: AnnotationTaskNode
+type AnnotationNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
 
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-"""AnnotationTask schema"""
-type AnnotationTaskNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  status: AnnotationTaskStatus!
-  annotationPhase: AnnotationPhaseNode!
-  annotator: UserNode!
-  spectrogram: AnnotationSpectrogramNode!
-  userAnnotations(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    confidence_Label: String
-    label_Name: String
-    detectorConfiguration_Detector: ID
-    acousticFeatures_Exists: Boolean
-    isValidatedBy: ID
-    isUpdated: Boolean
-    annotator: ID
-  ): AnnotationNodeNodeConnection
-  userComments(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    annotation_Isnull: Boolean
-    author: ID
-    annotationPhase_Phase: AnnotationPhaseType
-  ): AnnotationCommentNodeNodeConnection
-  annotationsToCheck(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    confidence_Label: String
-    label_Name: String
-    detectorConfiguration_Detector: ID
-    acousticFeatures_Exists: Boolean
-    isValidatedBy: ID
-    isUpdated: Boolean
-    annotator: ID
-  ): AnnotationNodeNodeConnection
-}
-
-"""From AnnotationTask.Status"""
-enum AnnotationTaskStatus {
-  Created
-  Finished
-}
-
-"""AnnotationPhase schema"""
-type AnnotationPhaseNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  phase: AnnotationPhaseType!
-  annotationCampaign: AnnotationCampaignNode!
-  createdAt: DateTime!
-  createdBy: UserNode!
-  endedAt: DateTime
-  endedBy: UserNode
-  annotationTasks(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-    annotator: ID
-    status: AnnotationTaskStatus
-    spectrogram_Filename_Icontains: String
-    spectrogram_Start_Lte: DateTime
-    spectrogram_End_Gte: DateTime
-    annotations_Exists: Boolean
-    annotations_Confidence_Label: String
-    annotations_LabelName: String
-    annotations_AcousticFeatures_Exists: Boolean
-    annotations_Detector: ID
-    annotations_Annotator: ID
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationTaskNodeConnection!
-  annotationFileRanges(offset: Int, before: String, after: String, first: Int, last: Int, annotator: ID, annotationPhase_AnnotationCampaign: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationFileRangeNodeConnection!
-  annotations(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
-  annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationCommentNodeConnection!
-  annotationCampaignId: ID!
-  isCompleted: Boolean!
-  isOpen: Boolean!
-  hasAnnotations: Boolean!
-  canManage: Boolean!
-  tasksCount: Int!
-  userTasksCount: Int!
-  completedTasksCount: Int!
-  userCompletedTasksCount: Int!
-}
-
-"""From AnnotationPhase.Type"""
-enum AnnotationPhaseType {
-  Annotation
-  Verification
+  """Contains the nodes in this connection."""
+  results: [AnnotationNode]!
+  totalCount: Int
 }
 
 type AnnotationFileRangeNodeConnection {
@@ -3454,177 +3576,6 @@ type AnnotationTaskNodeNodeConnection {
   totalCount: Int
 }
 
-type AnnotationCommentNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [AnnotationCommentNodeEdge]!
-}
-
-"""A Relay edge containing a `AnnotationCommentNode` and its cursor."""
-type AnnotationCommentNodeEdge {
-  """The item at the end of the edge"""
-  node: AnnotationCommentNode
-
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-"""AnnotationComment schema"""
-type AnnotationCommentNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  comment: String!
-  annotation: AnnotationNode
-  annotationPhase: AnnotationPhaseNode!
-  author: UserNode!
-  spectrogram: AnnotationSpectrogramNode!
-  createdAt: DateTime!
-}
-
-type AnnotationNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [AnnotationNode]!
-  totalCount: Int
-}
-
-type AnnotationCommentNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [AnnotationCommentNode]!
-  totalCount: Int
-}
-
-type AnnotationPhaseNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [AnnotationPhaseNodeEdge]!
-}
-
-"""A Relay edge containing a `AnnotationPhaseNode` and its cursor."""
-type AnnotationPhaseNodeEdge {
-  """The item at the end of the edge"""
-  node: AnnotationPhaseNode
-
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-type AnnotationValidationNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [AnnotationValidationNodeEdge]!
-}
-
-"""A Relay edge containing a `AnnotationValidationNode` and its cursor."""
-type AnnotationValidationNodeEdge {
-  """The item at the end of the edge"""
-  node: AnnotationValidationNode
-
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-"""AnnotationValidation schema"""
-type AnnotationValidationNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  annotation: AnnotationNode!
-  annotator: UserNode!
-  isValid: Boolean!
-  createdAt: DateTime!
-  lastUpdatedAt: DateTime!
-}
-
-"""From ExpertiseLevel"""
-enum ExpertiseLevelType {
-  Expert
-  Average
-  Novice
-}
-
-type SpectrogramAnalysisNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [SpectrogramAnalysisNode]!
-  totalCount: Int
-}
-
-"""ConfidenceSet schema"""
-type ConfidenceSetNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  name: String!
-  desc: String
-  confidenceIndicators: [ConfidenceNode]
-  annotationcampaignSet(
-    offset: Int
-    before: String
-    after: String
-    first: Int
-    last: Int
-    phases_AnnotationFileRanges_AnnotatorId: ID
-    ownerId: ID
-    isArchived: Boolean
-    phases_Phase: AnnotationPhaseType
-
-    """search"""
-    search: String
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationCampaignNodeConnection!
-}
-
-"""Confidence schema"""
-type ConfidenceNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  label: String!
-  level: Int!
-  annotationSet(offset: Int, before: String, after: String, first: Int, last: Int, confidence_Label: String, label_Name: String, detectorConfiguration_Detector: ID, acousticFeatures_Exists: Boolean, isValidatedBy: ID, isUpdated: Boolean, annotator: ID): AnnotationNodeConnection!
-  confidenceIndicatorSets(offset: Int, before: String, after: String, first: Int, last: Int, name: String, desc: String, confidenceIndicators: ID): ConfidenceSetNodeConnection!
-  isDefault: Boolean
-}
-
-type ConfidenceSetNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [ConfidenceSetNodeEdge]!
-}
-
-"""A Relay edge containing a `ConfidenceSetNode` and its cursor."""
-type ConfidenceSetNodeEdge {
-  """The item at the end of the edge"""
-  node: ConfidenceSetNode
-
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-type AnnotationPhaseNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [AnnotationPhaseNode]!
-  totalCount: Int
-}
-
 """An enumeration."""
 enum ApiAnnotationAnnotatorExpertiseLevelChoices {
   """Expert"""
@@ -3687,6 +3638,17 @@ type AnnotationValidationNodeNodeConnection {
   totalCount: Int
 }
 
+"""AnnotationValidation schema"""
+type AnnotationValidationNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  annotation: AnnotationNode!
+  annotator: UserNode!
+  isValid: Boolean!
+  createdAt: DateTime!
+  lastUpdatedAt: DateTime!
+}
+
 type AnnotationLabelNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfo!
@@ -3702,6 +3664,103 @@ type AnnotationLabelNodeEdge {
 
   """A cursor for use in pagination"""
   cursor: String!
+}
+
+type LabelSetNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [LabelSetNodeEdge]!
+}
+
+"""A Relay edge containing a `LabelSetNode` and its cursor."""
+type LabelSetNodeEdge {
+  """The item at the end of the edge"""
+  node: LabelSetNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type AnnotationPhaseNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [AnnotationPhaseNode]!
+  totalCount: Int
+}
+
+type AnnotationPhaseNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [AnnotationPhaseNodeEdge]!
+}
+
+"""A Relay edge containing a `AnnotationPhaseNode` and its cursor."""
+type AnnotationPhaseNodeEdge {
+  """The item at the end of the edge"""
+  node: AnnotationPhaseNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type AnnotationValidationNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [AnnotationValidationNodeEdge]!
+}
+
+"""A Relay edge containing a `AnnotationValidationNode` and its cursor."""
+type AnnotationValidationNodeEdge {
+  """The item at the end of the edge"""
+  node: AnnotationValidationNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""From ExpertiseLevel"""
+enum ExpertiseLevelType {
+  Expert
+  Average
+  Novice
+}
+
+enum TaskTypeEnum {
+  AnalysisImport
+}
+
+"""
+Allows use of a JSON String for input / output from the GraphQL schema.
+
+Use of this type is *not recommended* as you lose the benefits of having a defined, static
+schema (one of the key benefits of GraphQL).
+"""
+scalar JSONString
+
+enum TaskStatusEnum {
+  PENDING
+  STARTED
+  SUCCESS
+  FAILURE
+  REVOKED
+  RETRY
+}
+
+type LabelNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [LabelNode]!
+  totalCount: Int
 }
 
 type SoundNodeNodeConnection {
@@ -4371,22 +4430,15 @@ union StorageUnion = AnalysisStorageNode | DatasetStorageNode | FolderNode
 type AnalysisStorageNode {
   name: String!
   path: String!
-  importStatus: ImportStatus!
   model: SpectrogramAnalysisNode
-}
-
-"""An enumeration."""
-enum ImportStatus {
-  Unavailable
-  Available
-  Partial
-  Imported
+  error: String
+  stack: String
+  importTask: ImportAnalysisBackgroundTaskNode
 }
 
 type DatasetStorageNode {
   name: String!
   path: String!
-  importStatus: ImportStatus!
   model: DatasetNode
   error: String
   stack: String
@@ -4433,8 +4485,8 @@ type Mutation {
   updateAnnotationComments(input: UpdateAnnotationCommentsMutationInput!): UpdateAnnotationCommentsMutationPayload
   submitAnnotationTask(annotations: [AnnotationInput]!, campaignId: ID!, endedAt: DateTime!, phaseType: AnnotationPhaseType!, spectrogramId: ID!, startedAt: DateTime!, taskComments: [AnnotationCommentInput]!): SubmitAnnotationTaskMutation
 
-  """"Import Analysis mutation"""
-  importDataset(analysisPath: String, datasetPath: String!): ImportDatasetMutation
+  """Import data mutation"""
+  importData(path: String!): ImportDataMutation
 }
 
 type PostSourceMutationPayload {
@@ -4677,8 +4729,14 @@ type SubmitAnnotationTaskMutation {
   taskCommentsErrors: [[ErrorType]]
 }
 
-""""Import Analysis mutation"""
-type ImportDatasetMutation {
+"""Import data mutation"""
+type ImportDataMutation {
   dataset: DatasetNode!
-  analysis: SpectrogramAnalysisNode
+  analysisResult: [AnalysisImportReturnType]
+}
+
+type AnalysisImportReturnType {
+  path: String!
+  backgroundTaskId: ID
+  errors: [ErrorType]
 }

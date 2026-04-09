@@ -18,7 +18,7 @@ export const AnalysisItem: React.FC<{
     onUpdated?: () => void,
 }> = ({ item, search, onUpdated }) => {
     const toast = useToast()
-    const [ doImport, { isLoading } ] = API.endpoints.importDatasetFromStorage.useMutation()
+    const [ doImport, { isLoading } ] = API.endpoints.importDataFromStorage.useMutation()
     const canImport = useMemo(() => {
         if (item.error || isLoading) return false
         if (item.model?.isImportCompleted) return false // Already imported

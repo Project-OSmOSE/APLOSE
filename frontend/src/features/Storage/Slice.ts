@@ -7,7 +7,7 @@ import {
     API,
     type BrowseStorageQuery,
     type BrowseStorageQueryVariables,
-    type ImportDatasetFromStorageMutation,
+    type ImportDataFromStorageMutation,
     type SearchStorageQuery,
 } from './api';
 import type { StorageItem } from './types';
@@ -62,9 +62,9 @@ export const Slice = createSlice({
                 state.invalidatedPath = state.invalidatedPath.filter(p => p !== action.payload.search?.path)
             })
 
-        builder.addMatcher(API.endpoints.importDatasetFromStorage.matchFulfilled,
-            (state, action: { payload: ImportDatasetFromStorageMutation }) => {
-                const path = action.payload.importDataset?.dataset.path
+        builder.addMatcher(API.endpoints.importDataFromStorage.matchFulfilled,
+            (state, action: { payload: ImportDataFromStorageMutation }) => {
+                const path = action.payload.importData?.dataset.path
                 if (!path) return
                 state.invalidatedPath = [ ...state.invalidatedPath, path ]
                 state.invalidatedListPaths = [ ...state.invalidatedListPaths, path ]

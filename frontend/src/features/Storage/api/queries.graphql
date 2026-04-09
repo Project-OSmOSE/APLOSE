@@ -98,8 +98,8 @@ query searchStorage($path: String!) {
     }
 }
 
-mutation importDatasetFromStorage($path: String!) {
-    importDataset(path: $path) {
+mutation importDataFromStorage($path: String!) {
+    importData(path: $path) {
         dataset {
             path
         }

@@ -22,7 +22,7 @@ export const useImportAnnotations = () => {
       type: 'AnnotationTask',
     } ]))
     await method({ campaignID, annotations }).unwrap()
-  }, [ method, campaignID ]);
+  }, [ method, campaignID, dispatch ]);
 
   return useMemo(() => ({
     ...info,

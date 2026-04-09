@@ -113,5 +113,19 @@ class ImportAnalysisBackgroundTask(AbstractBackgroundTask):
             return None
         return cls.get(identifier)
 
+    @classmethod
+    def list(cls) -> list["ImportAnalysisBackgroundTask"]:
+        """List all ImportAnalysisBackgroundTask"""
+        tasks = []
+        import_task_identifier_start = (
+            f"{ImportAnalysisBackgroundTask.__name__}:{TaskType.ANALYSIS_IMPORT.label}"
+        )
+        for key in cls._redis.scan_iter():
+            if isinstance(key, bytes):
+                key = key.decode()
+            if import_task_identifier_start in key and "path" not in key:
+                tasks.append(ImportAnalysisBackgroundTask.get(identifier=key))
+        return tasks
+
 
 __all__ = ["ImportAnalysisBackgroundTask"]
