@@ -11,7 +11,13 @@ from backend.storage.types import (
     FailedItem,
     StorageFolder,
 )
-from backend.storage.utils import make_path_relative, is_local_root, listdir, isfile
+from backend.storage.utils import (
+    make_path_relative,
+    is_local_root,
+    listdir,
+    isfile,
+    join,
+)
 
 
 class AbstractResolver:
@@ -108,10 +114,10 @@ class AbstractResolver:
         )
 
     def _get_storage_analysis_from_spectrogram_analysis(
-        self, analysis: SpectrogramAnalysis
+        self, analysis: SpectrogramAnalysis, dataset_path: str
     ) -> StorageAnalysis:
         return StorageAnalysis(
-            path=analysis.path,
+            path=join(dataset_path, analysis.path),
             name=analysis.name,
         )
 
@@ -135,7 +141,7 @@ class AbstractResolver:
                 if isinstance(analysis, FailedItem):
                     return analysis.to_storage_analysis()
                 return self._get_storage_analysis_from_spectrogram_analysis(
-                    analysis=analysis
+                    analysis=analysis, dataset_path=dataset.path
                 )
 
         if isinstance(dataset, FailedItem):
@@ -151,7 +157,9 @@ class AbstractResolver:
 
         if dataset:
             return [
-                self._get_storage_analysis_from_spectrogram_analysis(analysis=analysis)
+                self._get_storage_analysis_from_spectrogram_analysis(
+                    analysis=analysis, dataset_path=dataset.path
+                )
                 if isinstance(analysis, SpectrogramAnalysis)
                 else analysis.to_storage_analysis()
                 for analysis in self.get_all_analysis()

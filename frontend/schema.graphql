@@ -1,35 +1,7 @@
 """Global query"""
 type Query {
-  allImportAnalysisTasks(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    celeryId: String
-    requestedBy: ID
-    status: TaskStatusEnum
-    completionPercentage: Int
-    createdAt: DateTime
-    startedAt: DateTime
-    completedAt: DateTime
-    error: String
-    errorTrace: String
-    dataset: ID
-    analysisPath: String
-    analysis: ID
-    totalSpectrograms: Int
-    completedSpectrograms: Int
-    chunkSize: Int
-  ): ImportAnalysisBackgroundTaskNodeNodeConnection
-  importAnalysisTaskById(id: ID!): ImportAnalysisBackgroundTaskNode
+  importAnalysisTaskByIdentifier(id: ID!): ImportAnalysisBackgroundTaskNode
+  allImportAnalysisTasks: [ImportAnalysisBackgroundTaskNode]
   allLabels(
     """Query limit"""
     limit: Int
@@ -975,6 +947,7 @@ type Query {
     last: Int
     dataset: ID
     annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
 
     """Ordering"""
     orderBy: String
@@ -1100,49 +1073,26 @@ type Query {
   spectrogramPaths(spectrogramId: ID!, analysisId: ID!): SpectrogramPathsNode
 }
 
-type ImportAnalysisBackgroundTaskNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [ImportAnalysisBackgroundTaskNode]!
-  totalCount: Int
-}
-
-type PageInfoExtra {
-  """When paginating forwards, are there more items?"""
-  hasNextPage: Boolean!
-
-  """When paginating backwards, are there more items?"""
-  hasPreviousPage: Boolean!
-}
-
-type ImportAnalysisBackgroundTaskNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  celeryId: String
+type ImportAnalysisBackgroundTaskNode {
+  uuid: String!
+  identifier: String!
   requestedBy: UserNode!
-  status: TaskStatusEnum!
-  completionPercentage: Int!
   createdAt: DateTime!
+  type: TaskTypeEnum!
+  otherInfo: JSONString
   startedAt: DateTime
-  completedAt: DateTime
+  startedAtCompletion: Float
+  completionPercentage: Float
+  status: TaskStatusEnum
   error: String
   errorTrace: String
-  dataset: DatasetNode!
-  analysisPath: String!
-  analysis: SpectrogramAnalysisNode
-  totalSpectrograms: Int
-  completedSpectrograms: Int!
-  chunkSize: Int!
-  type: TaskTypeEnum!
   duration: Int
-}
-
-"""For fetching object id instead of Node id"""
-interface ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
+  datasetId: Int!
+  chunkSize: Int!
+  completedSpectrograms: Int!
+  analysisPath: String!
+  totalSpectrograms: Int
+  analysisId: Int
 }
 
 """User node"""
@@ -1190,6 +1140,7 @@ type UserNode implements ExtendedInterface {
     last: Int
     dataset: ID
     annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
 
     """Ordering"""
     orderBy: String
@@ -1272,10 +1223,15 @@ type UserNode implements ExtendedInterface {
   ): AnnotationCampaignNodeConnection!
   annotationComments(offset: Int, before: String, after: String, first: Int, last: Int, annotation_Isnull: Boolean, author: ID, annotationPhase_Phase: AnnotationPhaseType): AnnotationCommentNodeConnection!
   annotationResultsValidation(offset: Int, before: String, after: String, first: Int, last: Int, annotator: ID): AnnotationValidationNodeConnection!
-  importanalysisbackgroundtaskSet(offset: Int, before: String, after: String, first: Int, last: Int, celeryId: String, requestedBy: ID, status: TaskStatusEnum, completionPercentage: Int, createdAt: DateTime, startedAt: DateTime, completedAt: DateTime, error: String, errorTrace: String, dataset: ID, analysisPath: String, analysis: ID, totalSpectrograms: Int, completedSpectrograms: Int, chunkSize: Int): ImportAnalysisBackgroundTaskNodeConnection!
   expertise: ExpertiseLevelType
   displayName: String!
   isAdmin: Boolean!
+}
+
+"""For fetching object id instead of Node id"""
+interface ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
 }
 
 """
@@ -1374,6 +1330,7 @@ type AnnotationCampaignNode implements ExtendedInterface {
     last: Int
     dataset: ID
     annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
 
     """Ordering"""
     orderBy: String
@@ -1977,6 +1934,7 @@ type AnnotationSpectrogramNode implements ExtendedInterface {
     last: Int
     dataset: ID
     annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
 
     """Ordering"""
     orderBy: String
@@ -2960,6 +2918,7 @@ type DatasetNode implements ExtendedInterface {
     last: Int
     dataset: ID
     annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
 
     """Ordering"""
     orderBy: String
@@ -2981,7 +2940,6 @@ type DatasetNode implements ExtendedInterface {
     """Ordering"""
     orderBy: String
   ): AnnotationCampaignNodeConnection!
-  importAnalysisBackgroundTasks(offset: Int, before: String, after: String, first: Int, last: Int, celeryId: String, requestedBy: ID, status: TaskStatusEnum, completionPercentage: Int, createdAt: DateTime, startedAt: DateTime, completedAt: DateTime, error: String, errorTrace: String, dataset: ID, analysisPath: String, analysis: ID, totalSpectrograms: Int, completedSpectrograms: Int, chunkSize: Int): ImportAnalysisBackgroundTaskNodeConnection!
   analysisCount: Int!
   spectrogramCount: Int!
   start: DateTime
@@ -2995,6 +2953,14 @@ type SpectrogramAnalysisNodeNodeConnection {
   """Contains the nodes in this connection."""
   results: [SpectrogramAnalysisNode]!
   totalCount: Int
+}
+
+type PageInfoExtra {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
 }
 
 """SpectrogramAnalysis schema"""
@@ -3017,6 +2983,7 @@ type SpectrogramAnalysisNode implements ExtendedInterface {
   colormap: ColormapNode!
   dynamicMin: Float!
   dynamicMax: Float!
+  isImportCompleted: Boolean!
   legacyConfiguration: LegacySpectrogramConfigurationNode
   spectrograms(
     """Query limit"""
@@ -3073,7 +3040,7 @@ type SpectrogramAnalysisNode implements ExtendedInterface {
     """Ordering"""
     orderBy: String
   ): AnnotationCampaignNodeConnection!
-  importAnalysisBackgroundTasks(offset: Int, before: String, after: String, first: Int, last: Int, celeryId: String, requestedBy: ID, status: TaskStatusEnum, completionPercentage: Int, createdAt: DateTime, startedAt: DateTime, completedAt: DateTime, error: String, errorTrace: String, dataset: ID, analysisPath: String, analysis: ID, totalSpectrograms: Int, completedSpectrograms: Int, chunkSize: Int): ImportAnalysisBackgroundTaskNodeConnection!
+  importTask: ImportAnalysisBackgroundTaskNode
 }
 
 """FFT schema"""
@@ -3094,6 +3061,7 @@ type FFTNode implements ExtendedInterface {
     last: Int
     dataset: ID
     annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
 
     """Ordering"""
     orderBy: String
@@ -3130,6 +3098,7 @@ type ColormapNode implements ExtendedInterface {
     last: Int
     dataset: ID
     annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
 
     """Ordering"""
     orderBy: String
@@ -3245,6 +3214,7 @@ type SpectrogramNode implements ExtendedInterface {
     last: Int
     dataset: ID
     annotationCampaigns_Id: ID
+    isImportCompleted: Boolean
 
     """Ordering"""
     orderBy: String
@@ -3302,33 +3272,6 @@ type AnnotationCommentNode implements ExtendedInterface {
   author: UserNode!
   spectrogram: AnnotationSpectrogramNode!
   createdAt: DateTime!
-}
-
-type ImportAnalysisBackgroundTaskNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [ImportAnalysisBackgroundTaskNodeEdge]!
-}
-
-"""
-A Relay edge containing a `ImportAnalysisBackgroundTaskNode` and its cursor.
-"""
-type ImportAnalysisBackgroundTaskNodeEdge {
-  """The item at the end of the edge"""
-  node: ImportAnalysisBackgroundTaskNode
-
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-enum TaskStatusEnum {
-  Pending
-  Processing
-  Completed
-  Failed
-  Cancelled
 }
 
 type DeploymentMobilePositionNode implements ExtendedInterface {
@@ -3792,6 +3735,23 @@ enum ExpertiseLevelType {
 
 enum TaskTypeEnum {
   AnalysisImport
+}
+
+"""
+Allows use of a JSON String for input / output from the GraphQL schema.
+
+Use of this type is *not recommended* as you lose the benefits of having a defined, static
+schema (one of the key benefits of GraphQL).
+"""
+scalar JSONString
+
+enum TaskStatusEnum {
+  PENDING
+  STARTED
+  SUCCESS
+  FAILURE
+  REVOKED
+  RETRY
 }
 
 type LabelNodeNodeConnection {
@@ -4473,35 +4433,7 @@ type AnalysisStorageNode {
   model: SpectrogramAnalysisNode
   error: String
   stack: String
-  importTasks(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    celeryId: String
-    requestedBy: ID
-    status: TaskStatusEnum
-    completionPercentage: Int
-    createdAt: DateTime
-    startedAt: DateTime
-    completedAt: DateTime
-    error: String
-    errorTrace: String
-    dataset: ID
-    analysisPath: String
-    analysis: ID
-    totalSpectrograms: Int
-    completedSpectrograms: Int
-    chunkSize: Int
-  ): ImportAnalysisBackgroundTaskNodeNodeConnection
+  importTask: ImportAnalysisBackgroundTaskNode
 }
 
 type DatasetStorageNode {
@@ -4554,7 +4486,7 @@ type Mutation {
   submitAnnotationTask(annotations: [AnnotationInput]!, campaignId: ID!, endedAt: DateTime!, phaseType: AnnotationPhaseType!, spectrogramId: ID!, startedAt: DateTime!, taskComments: [AnnotationCommentInput]!): SubmitAnnotationTaskMutation
 
   """"Import Analysis mutation"""
-  importDataset(analysisPath: String, datasetPath: String!): ImportDatasetMutation
+  importDataset(path: String!): ImportDatasetMutation
 }
 
 type PostSourceMutationPayload {

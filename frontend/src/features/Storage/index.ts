@@ -1,5 +1,5 @@
 import { Slice } from './Slice'
-import { useBrowse, useImportDataset, useSearch } from './hook'
+import { useBrowse, useSearch } from './hook'
 
 // Components
 import { ItemList } from './components/ItemList'
@@ -13,7 +13,7 @@ import { ImportFromPathModal } from './modal/ImportFromPathModal'
 
 const Storage = {
     ...Slice,
-    useImportDataset, useSearch, useBrowse,
+    useSearch, useBrowse,
 
     Item, ItemList, ServerItem,
 

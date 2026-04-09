@@ -60,7 +60,7 @@ export const ListDatasetsAndAnalysisDocument = `
     results {
       id
       name
-      spectrogramAnalysis(orderBy: "name") {
+      spectrogramAnalysis(orderBy: "name", isImportCompleted: true) {
         results {
           id
           name

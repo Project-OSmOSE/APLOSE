@@ -21,4 +21,5 @@ export const spectrogramAnalysis: SpectrogramAnalysis = {
   dynamicMin: 30,
   dynamicMax: 60,
   path: 'analysis',
+  isImportCompleted: true
 }

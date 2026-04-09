@@ -12,6 +12,7 @@ class SpectrogramAnalysisFilterSet(ExtendedFilterSet):
         fields = {
             "dataset": ("exact",),
             "annotation_campaigns__id": ("exact",),
+            "is_import_completed": ("exact",),
         }
 
     order_by = OrderingFilter(

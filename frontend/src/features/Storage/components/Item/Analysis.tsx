@@ -8,38 +8,29 @@ import { useToast } from '@/components/ui';
 
 import { Structure } from './_Structure'
 import { Usages } from './_Usages';
-import type { StorageAnalysis, StorageDataset, } from '../../types';
-import { useImportDataset } from '../../hook';
+import { API } from '../../api';
+import type { StorageAnalysis } from '../../types';
 import styles from '../styles.module.scss';
 
 export const AnalysisItem: React.FC<{
     item: StorageAnalysis,
-    parent: StorageDataset,
     search?: string,
     onUpdated?: () => void,
-}> = ({ item, parent, search, onUpdated }) => {
+}> = ({ item, search, onUpdated }) => {
     const toast = useToast()
-    const { doImport, isLoading } = useImportDataset()
-    const currentTask = useMemo(() => {
-        const allTasks = item.importTasks?.results.filter(t => !!t)
-        return allTasks && allTasks.length > 0 ? allTasks[0] : undefined
-    }, [ item ])
+    const [ doImport, { isLoading } ] = API.endpoints.importDatasetFromStorage.useMutation()
     const canImport = useMemo(() => {
         if (item.error || isLoading) return false
-        if (!parent) return false
-        if (item.model) return false // Already imported
-        return !currentTask || currentTask.status === TaskStatusEnum.Failed || currentTask.status === TaskStatusEnum.Cancelled
-    }, [ item, isLoading, parent ])
+        if (item.model?.isImportCompleted) return false // Already imported
+        return !item.importTask || item.importTask.status === TaskStatusEnum.Failure || item.importTask.status === TaskStatusEnum.Revoked
+    }, [ item, isLoading ])
     const importAnalysis = useCallback((event: MouseEvent) => {
         event.stopPropagation()
         if (!canImport) return;
-        doImport({
-            analysisPath: item.path,
-            datasetPath: parent!.path,
-        }).unwrap()
+        doImport({ path: item.path }).unwrap()
             .catch(error => toast.raiseError({ gqlError: error }))
             .finally(onUpdated)
-    }, [ canImport, item, doImport, onUpdated, parent, toast ])
+    }, [ canImport, item, doImport, onUpdated, toast ])
 
     return useMemo(() =>
             <Structure itemClassName={ styles.analysis }
@@ -55,10 +46,10 @@ export const AnalysisItem: React.FC<{
                                { canImport && <IonButton size="small" fill="outline" onClick={ importAnalysis }
                                                          children="Import"/> }
 
-                               <BackgroundTask.Indicator taskID={ currentTask?.id }
-                                                         forceState={ item.model && !currentTask && TaskStatusEnum.Completed }/>
+                               <BackgroundTask.Indicator identifier={ item.importTask?.identifier }
+                                                         forceState={ item.model?.isImportCompleted && TaskStatusEnum.Success }/>
                            </Fragment>
                        }/>,
-        [ item, search, currentTask, onUpdated, isLoading, canImport, importAnalysis ],
+        [ item, search, onUpdated, isLoading, canImport, importAnalysis ],
     )
 }

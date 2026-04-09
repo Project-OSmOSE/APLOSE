@@ -18,3 +18,8 @@ const BackgroundTask = {
 }
 export default BackgroundTask
 export type * from './types'
+export type {
+    Event as BackgroundTaskEvent,
+    BackgroundTask,
+    ImportAnalysisBackgroundTask
+} from './types'

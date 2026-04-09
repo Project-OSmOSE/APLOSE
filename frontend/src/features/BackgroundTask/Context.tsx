@@ -1,19 +1,18 @@
-import React, { createContext, type ReactNode, useCallback, useMemo, useRef, useState } from 'react';
+import React, { createContext, type ReactNode, useCallback, useMemo, useRef } from 'react';
 import useWebSocket from 'react-use-websocket';
-import { ReadyState } from 'react-use-websocket/src/lib/constants';
 
 import Storage from '@/features/Storage';
-import { gqlAPI } from '@/api/baseGqlApi';
 import { useAppDispatch } from '@/features/App';
 
-import { BackgroundTaskCommand, type BackgroundTaskUpdateEvent } from './types'
+import type { CommandData, Event } from './types'
 import { Slice } from './Slice';
+import { getTokenFromCookie } from '@/api/utils';
 
 
 type ContextType = {
     register(taskID: string): void;
     unregister(taskID: string): void;
-    request(data: BackgroundTaskCommand): void;
+    request(data: Omit<CommandData, 'token'>): void;
 }
 
 export const Context = createContext<ContextType>({
@@ -29,11 +28,11 @@ export const Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const dispatch = useAppDispatch();
 
     const registeredListenerRef = useRef<Map<string, number>>(new Map()); // TaskID, listener count
-    const [ requestStack, setRequestStack ] = useState<BackgroundTaskCommand[]>([])
 
     // WebSocket base handle
     const onMessage = useCallback((event: MessageEvent) => {
         const data = JSON.parse(event.data);
+        data.data.other_info = JSON.parse(data.data.other_info);
         dispatch(Slice.actions.onTaskUpdated(data))
         dispatch(Storage.actions.onTaskUpdated(data))
     }, [ dispatch ])
@@ -42,18 +41,11 @@ export const Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
         const host = window.location.host;
         return `${ protocol }//${ host }/ws/background-task/`;
     }, []);
-    const { sendJsonMessage, readyState } = useWebSocket<BackgroundTaskUpdateEvent>(
+    const { sendJsonMessage } = useWebSocket<Event>(
         websocketURL,
         {
             share: true,
             onMessage,
-            onOpen: () => {
-                for (const taskID of registeredListenerRef.current.keys()) sendJsonMessage({
-                    command: 'add',
-                    task_id: taskID,
-                } satisfies BackgroundTaskCommand);
-                for (const request of requestStack) sendJsonMessage(request)
-            },
             retryOnError: true,
             reconnectInterval: (lastAttemptNumber) => 500 * lastAttemptNumber,
             reconnectAttempts: 3,
@@ -61,37 +53,32 @@ export const Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
     )
 
     // Handle requests
-    const request = useCallback((data: BackgroundTaskCommand) => {
-        if (readyState === ReadyState.OPEN) {
-            sendJsonMessage(data)
-            if (data.command === 'retry') {
-                dispatch(gqlAPI.util.invalidateTags([ 'SpectrogramAnalysis' ]))
-            }
-        } else {
-            setRequestStack(prev => [ ...prev, data ]);
-        }
-    }, [ readyState, sendJsonMessage, dispatch ])
+    const request = useCallback((data: Omit<CommandData, 'token'>) => {
+        const token = getTokenFromCookie()
+        if (!token) return;
+        sendJsonMessage<CommandData>({ ...data, token }, true)
+    }, [ sendJsonMessage, dispatch ])
 
     // Handle task listening
-    const register = useCallback((taskID: string) => {
-        console.debug('register', taskID, readyState)
-        const previousCount = registeredListenerRef.current.get(taskID) ?? 0
-        if (previousCount == 0 && readyState === ReadyState.OPEN) {
-            sendJsonMessage({ command: 'add', task_id: taskID } satisfies BackgroundTaskCommand)
+    const register = useCallback((identifier: string) => {
+        const previousCount = registeredListenerRef.current.get(identifier) ?? 0
+        if (previousCount == 0) {
+            request({ command: 'subscribe', identifier })
         }
-        registeredListenerRef.current.set(taskID, previousCount + 1)
-    }, [ request, readyState, sendJsonMessage ])
-    const unregister = useCallback((taskID: string) => {
-        const previousCount = registeredListenerRef.current.get(taskID) ?? 0
+        registeredListenerRef.current.set(identifier, previousCount + 1)
+    }, [ request ])
+
+    const unregister = useCallback((identifier: string) => {
+        const previousCount = registeredListenerRef.current.get(identifier) ?? 0
         if (previousCount == 0) return
-        if (previousCount == 1 && readyState === ReadyState.OPEN) {
-            sendJsonMessage({ command: 'remove', task_id: taskID } satisfies BackgroundTaskCommand)
-            dispatch(Slice.actions.clearTask(taskID))
-            registeredListenerRef.current.delete(taskID)
+        if (previousCount == 1) {
+            request({ command: 'unsubscribe', identifier })
+            dispatch(Slice.actions.clearTask(identifier))
+            registeredListenerRef.current.delete(identifier)
         } else {
-            registeredListenerRef.current.set(taskID, previousCount - 1)
+            registeredListenerRef.current.set(identifier, previousCount - 1)
         }
-    }, [ request, dispatch, readyState, sendJsonMessage ])
+    }, [ request, dispatch ])
 
     return useMemo(() =>
             <Context.Provider value={ {

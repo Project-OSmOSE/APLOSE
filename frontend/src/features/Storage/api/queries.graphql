@@ -29,6 +29,7 @@ query browseStorage($path: String!) {
             name
             path
             model {
+                isImportCompleted
                 annotationCampaigns {
                     edges {
                         node {
@@ -37,11 +38,9 @@ query browseStorage($path: String!) {
                     }
                 }
             }
-            importTasks(limit: 1) {
-                results {
-                    id
-                    status
-                }
+            importTask {
+                identifier
+                status
             }
             error
             stack
@@ -80,6 +79,7 @@ query searchStorage($path: String!) {
             name
             path
             model {
+                isImportCompleted
                 annotationCampaigns {
                     edges {
                         node {
@@ -88,11 +88,9 @@ query searchStorage($path: String!) {
                     }
                 }
             }
-            importTasks(limit: 1) {
-                results {
-                    id
-                    status
-                }
+            importTask {
+                identifier
+                status
             }
             error
             stack
@@ -100,8 +98,8 @@ query searchStorage($path: String!) {
     }
 }
 
-mutation importDatasetFromStorage($datasetPath: String!, $analysisPath: String) {
-    importDataset(datasetPath: $datasetPath, analysisPath: $analysisPath) {
+mutation importDatasetFromStorage($path: String!) {
+    importDataset(path: $path) {
         dataset {
             path
         }

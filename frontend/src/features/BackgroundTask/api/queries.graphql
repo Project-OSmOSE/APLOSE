@@ -1,0 +1,16 @@
+query allBackgroundTasks {
+    allImportAnalysisTasks {
+        identifier
+        status
+        error
+        errorTrace
+        completionPercentage
+        analysisPath
+    }
+
+    _debug {
+        exceptions {
+            stack
+        }
+    }
+}

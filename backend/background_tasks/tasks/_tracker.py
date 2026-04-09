@@ -1,11 +1,15 @@
-import traceback
+from datetime import datetime
 from types import TracebackType
 
 from asgiref.sync import async_to_sync
+from celery.result import AsyncResult
+from celery.states import FAILURE, SUCCESS, STARTED, PENDING
 from channels.layers import get_channel_layer
-from django.db import transaction
 
-from backend.background_tasks.models import BackgroundTask, TaskStatus
+from backend.background_tasks.types import (
+    AbstractBackgroundTask,
+    ImportAnalysisBackgroundTask,
+)
 
 
 class Tracker:
@@ -17,55 +21,42 @@ class Tracker:
             tracker.process()
     """
 
-    task: BackgroundTask
-    celery_id: str
+    task: AbstractBackgroundTask | ImportAnalysisBackgroundTask
     channel_layer = get_channel_layer()
 
-    def __init__(self, task: BackgroundTask, celery_id: str):
+    def __init__(
+        self,
+        task: AbstractBackgroundTask | ImportAnalysisBackgroundTask,
+        celery_id: str,
+    ):
         self.task = task
-        self.celery_id = celery_id
+        self.task.celery = AsyncResult(celery_id)
+        self.task.status = PENDING
+        self.task.save()
+        self.send_update()
 
     def __enter__(self):
-        self.task.start(celery_id=self.celery_id)
+        self.task.start()
         self.send_update()
         return self
 
     def __exit__(self, exc_type, exc_val: Exception, exc_tb: TracebackType):
-        if exc_type is not None:
-            # Import failed with exception
-            self.task.fail(
-                error=str(exc_val),
-                traceback="\n".join(traceback.format_stack()),
-            )
+        if exc_val:
+            self.task.status = FAILURE
         else:
-            # Import completed successfully
-            self.task.complete()
-
-        self.send_update()
-        return True  # Suppress exceptions
-
-    @transaction.atomic
-    def update(self, percentage: float):
-        """
-        Update background task progress.
-        :param percentage: new completion percentage of the task
-        """
-        self.task.completion_percentage = percentage
+            self.task.status = SUCCESS
         self.task.save()
         self.send_update()
 
-    @transaction.atomic
-    def fail(self, exception: Exception):
-        """
-        Update background task state.
-        :param exception: raised exception
-        """
-        self.task.fail(
-            error=str(exception), traceback="\n".join(traceback.format_stack())
-        )
-        self.send_update()
+        if self.task.status == SUCCESS:
+            self.task.delete()
 
     def send_update(self):
         async_to_sync(self.channel_layer.group_send)(
-            self.task.get_ws_group_name(), self.task.get_ws_update_data()
+            self.task.uuid,
+            {
+                "type": "info",
+                "identifier": self.task.identifier,
+                "data": self.task.to_dict(),
+            },
         )

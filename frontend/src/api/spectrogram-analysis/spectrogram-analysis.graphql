@@ -22,17 +22,9 @@ query listSpectrogramAnalysis(
                 windowSize
                 overlap
             }
-            spectrograms {
-                totalCount
-            }
-            importAnalysisBackgroundTasks(first: 1) {
-                edges {
-                    node {
-                        id
-                        status
-                    }
-                }
-            }
+            spectrograms { totalCount }
+            importTask { identifier, status }
+            isImportCompleted
         }
     }
 }

@@ -1,21 +1,17 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import { type BackgroundTaskUpdateData, type BackgroundTaskUpdateEvent } from './types'
-
-type TaskInfo = BackgroundTaskUpdateData
+import type { BackgroundTask, Event } from './types'
 
 export const Slice = createSlice({
     name: 'BackgroundTasks',
     reducerPath: 'backgroundTasks',
-    initialState: {} as { [key in string]: TaskInfo },
+    initialState: {} as { [key in string]: BackgroundTask },
     reducers: {
-        onTaskUpdated: (state, action: PayloadAction<BackgroundTaskUpdateEvent>) => {
+        onTaskUpdated: (state, action: PayloadAction<Event>) => {
             switch (action.payload.type) {
-                case 'background_task_update':
-                    state[action.payload.data.id.toString()] = action.payload.data
+                case 'info':
+                    state[action.payload.data.identifier] = action.payload.data
                     return;
-                case 'background_task_retry':
-                    break;
             }
         },
         clearTask: (state, action: PayloadAction<string>) => {

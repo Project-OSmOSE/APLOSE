@@ -53,6 +53,7 @@ export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
         <DocumentationButton/>
 
         { user?.isSuperuser && <Link appPath="/admin/ontology/source" color="medium" onClick={ close }>Ontology</Link> }
+        { user?.isSuperuser && <Link appPath="/admin/background-tasks" color="medium" onClick={ close }>Background tasks</Link> }
         { user?.isSuperuser && <Link appPath="/admin/sql" color="medium" onClick={ close }>SQL query</Link> }
 
         <Link appPath="/account" color="medium" onClick={ close }>Account</Link>

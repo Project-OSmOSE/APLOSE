@@ -32,6 +32,13 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
   /** The `Decimal` scalar type represents a python Decimal. */
   Decimal: { input: any; output: any; }
+  /**
+   * Allows use of a JSON String for input / output from the GraphQL schema.
+   *
+   * Use of this type is *not recommended* as you lose the benefits of having a defined, static
+   * schema (one of the key benefits of GraphQL).
+   */
+  JSONString: { input: any; output: any; }
 };
 
 export enum AccessibilityEnum {
@@ -118,37 +125,11 @@ export type AnalysisImportReturnType = {
 export type AnalysisStorageNode = {
   __typename?: 'AnalysisStorageNode';
   error?: Maybe<Scalars['String']['output']>;
-  importTasks?: Maybe<ImportAnalysisBackgroundTaskNodeNodeConnection>;
+  importTask?: Maybe<ImportAnalysisBackgroundTaskNode>;
   model?: Maybe<SpectrogramAnalysisNode>;
   name: Scalars['String']['output'];
   path: Scalars['String']['output'];
   stack?: Maybe<Scalars['String']['output']>;
-};
-
-
-export type AnalysisStorageNodeImportTasksArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  analysis?: InputMaybe<Scalars['ID']['input']>;
-  analysisPath?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  celeryId?: InputMaybe<Scalars['String']['input']>;
-  chunkSize?: InputMaybe<Scalars['Int']['input']>;
-  completedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  completedSpectrograms?: InputMaybe<Scalars['Int']['input']>;
-  completionPercentage?: InputMaybe<Scalars['Int']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dataset?: InputMaybe<Scalars['ID']['input']>;
-  error?: InputMaybe<Scalars['String']['input']>;
-  errorTrace?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  ordering?: InputMaybe<Scalars['String']['input']>;
-  requestedBy?: InputMaybe<Scalars['ID']['input']>;
-  startedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  status?: InputMaybe<TaskStatusEnum>;
-  totalSpectrograms?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type AnnotationAcousticFeaturesSerializerInput = {
@@ -218,6 +199,7 @@ export type AnnotationCampaignNodeAnalysisArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isImportCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
@@ -798,6 +780,7 @@ export type AnnotationSpectrogramNodeAnalysisArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isImportCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
@@ -1737,6 +1720,7 @@ export type ColormapNodeSpectrogramAnalysisArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isImportCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
@@ -2044,7 +2028,6 @@ export type DatasetNode = ExtendedInterface & {
   end?: Maybe<Scalars['DateTime']['output']>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
-  importAnalysisBackgroundTasks: ImportAnalysisBackgroundTaskNodeConnection;
   legacy: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   owner: UserNode;
@@ -2069,31 +2052,6 @@ export type DatasetNodeAnnotationCampaignsArgs = {
   phases_AnnotationFileRanges_AnnotatorId?: InputMaybe<Scalars['ID']['input']>;
   phases_Phase?: InputMaybe<AnnotationPhaseType>;
   search?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** Dataset schema */
-export type DatasetNodeImportAnalysisBackgroundTasksArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  analysis?: InputMaybe<Scalars['ID']['input']>;
-  analysisPath?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  celeryId?: InputMaybe<Scalars['String']['input']>;
-  chunkSize?: InputMaybe<Scalars['Int']['input']>;
-  completedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  completedSpectrograms?: InputMaybe<Scalars['Int']['input']>;
-  completionPercentage?: InputMaybe<Scalars['Int']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dataset?: InputMaybe<Scalars['ID']['input']>;
-  error?: InputMaybe<Scalars['String']['input']>;
-  errorTrace?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  requestedBy?: InputMaybe<Scalars['ID']['input']>;
-  startedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  status?: InputMaybe<TaskStatusEnum>;
-  totalSpectrograms?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -2146,6 +2104,7 @@ export type DatasetNodeSpectrogramAnalysisArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isImportCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -2822,6 +2781,7 @@ export type FftNodeSpectrogramAnalysisArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isImportCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
@@ -2990,53 +2950,27 @@ export type HydrophoneSpecificationNode = ExtendedInterface & {
   operatingMinTemperature?: Maybe<Scalars['Float']['output']>;
 };
 
-export type ImportAnalysisBackgroundTaskNode = ExtendedInterface & {
+export type ImportAnalysisBackgroundTaskNode = {
   __typename?: 'ImportAnalysisBackgroundTaskNode';
-  analysis?: Maybe<SpectrogramAnalysisNode>;
+  analysisId?: Maybe<Scalars['Int']['output']>;
   analysisPath: Scalars['String']['output'];
-  celeryId?: Maybe<Scalars['String']['output']>;
   chunkSize: Scalars['Int']['output'];
-  completedAt?: Maybe<Scalars['DateTime']['output']>;
   completedSpectrograms: Scalars['Int']['output'];
-  completionPercentage: Scalars['Int']['output'];
+  completionPercentage?: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
-  dataset: DatasetNode;
+  datasetId: Scalars['Int']['output'];
   duration?: Maybe<Scalars['Int']['output']>;
   error?: Maybe<Scalars['String']['output']>;
   errorTrace?: Maybe<Scalars['String']['output']>;
-  /** The ID of the object */
-  id: Scalars['ID']['output'];
+  identifier: Scalars['String']['output'];
+  otherInfo?: Maybe<Scalars['JSONString']['output']>;
   requestedBy: UserNode;
   startedAt?: Maybe<Scalars['DateTime']['output']>;
-  status: TaskStatusEnum;
+  startedAtCompletion?: Maybe<Scalars['Float']['output']>;
+  status?: Maybe<TaskStatusEnum>;
   totalSpectrograms?: Maybe<Scalars['Int']['output']>;
   type: TaskTypeEnum;
-};
-
-export type ImportAnalysisBackgroundTaskNodeConnection = {
-  __typename?: 'ImportAnalysisBackgroundTaskNodeConnection';
-  /** Contains the nodes in this connection. */
-  edges: Array<Maybe<ImportAnalysisBackgroundTaskNodeEdge>>;
-  /** Pagination data for this connection. */
-  pageInfo: PageInfo;
-};
-
-/** A Relay edge containing a `ImportAnalysisBackgroundTaskNode` and its cursor. */
-export type ImportAnalysisBackgroundTaskNodeEdge = {
-  __typename?: 'ImportAnalysisBackgroundTaskNodeEdge';
-  /** A cursor for use in pagination */
-  cursor: Scalars['String']['output'];
-  /** The item at the end of the edge */
-  node?: Maybe<ImportAnalysisBackgroundTaskNode>;
-};
-
-export type ImportAnalysisBackgroundTaskNodeNodeConnection = {
-  __typename?: 'ImportAnalysisBackgroundTaskNodeNodeConnection';
-  /** Pagination data for this connection. */
-  pageInfo: PageInfoExtra;
-  /** Contains the nodes in this connection. */
-  results: Array<Maybe<ImportAnalysisBackgroundTaskNode>>;
-  totalCount?: Maybe<Scalars['Int']['output']>;
+  uuid: Scalars['String']['output'];
 };
 
 /** "Import Analysis mutation */
@@ -3690,8 +3624,7 @@ export type MutationEndAnnotationPhaseArgs = {
 
 /** Global mutation */
 export type MutationImportDatasetArgs = {
-  analysisPath?: InputMaybe<Scalars['String']['input']>;
-  datasetPath: Scalars['String']['input'];
+  path: Scalars['String']['input'];
 };
 
 
@@ -4645,7 +4578,7 @@ export type Query = {
   allEquipments?: Maybe<EquipmentNodeNodeConnection>;
   allFileFormats?: Maybe<FileFormatNodeNodeConnection>;
   allFiles?: Maybe<FileUnionConnection>;
-  allImportAnalysisTasks?: Maybe<ImportAnalysisBackgroundTaskNodeNodeConnection>;
+  allImportAnalysisTasks?: Maybe<Array<Maybe<ImportAnalysisBackgroundTaskNode>>>;
   allInstitutions?: Maybe<InstitutionNodeNodeConnection>;
   allLabelSets?: Maybe<LabelSetNodeNodeConnection>;
   allLabels?: Maybe<LabelNodeNodeConnection>;
@@ -4688,7 +4621,7 @@ export type Query = {
   equipmentById?: Maybe<EquipmentNode>;
   fileById?: Maybe<FileUnion>;
   fileFormatById?: Maybe<FileFormatNode>;
-  importAnalysisTaskById?: Maybe<ImportAnalysisBackgroundTaskNode>;
+  importAnalysisTaskByIdentifier?: Maybe<ImportAnalysisBackgroundTaskNode>;
   institutionById?: Maybe<InstitutionNode>;
   labelById?: Maybe<LabelNode>;
   maintenanceById?: Maybe<MaintenanceNode>;
@@ -5176,33 +5109,6 @@ export type QueryAllFilesArgs = {
 
 
 /** Global query */
-export type QueryAllImportAnalysisTasksArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  analysis?: InputMaybe<Scalars['ID']['input']>;
-  analysisPath?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  celeryId?: InputMaybe<Scalars['String']['input']>;
-  chunkSize?: InputMaybe<Scalars['Int']['input']>;
-  completedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  completedSpectrograms?: InputMaybe<Scalars['Int']['input']>;
-  completionPercentage?: InputMaybe<Scalars['Int']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dataset?: InputMaybe<Scalars['ID']['input']>;
-  error?: InputMaybe<Scalars['String']['input']>;
-  errorTrace?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  ordering?: InputMaybe<Scalars['String']['input']>;
-  requestedBy?: InputMaybe<Scalars['ID']['input']>;
-  startedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  status?: InputMaybe<TaskStatusEnum>;
-  totalSpectrograms?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-/** Global query */
 export type QueryAllInstitutionsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -5593,6 +5499,7 @@ export type QueryAllSpectrogramAnalysisArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isImportCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -5787,7 +5694,7 @@ export type QueryFileFormatByIdArgs = {
 
 
 /** Global query */
-export type QueryImportAnalysisTaskByIdArgs = {
+export type QueryImportAnalysisTaskByIdentifierArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -6448,7 +6355,8 @@ export type SpectrogramAnalysisNode = ExtendedInterface & {
   fft: FftNode;
   /** The ID of the object */
   id: Scalars['ID']['output'];
-  importAnalysisBackgroundTasks: ImportAnalysisBackgroundTaskNodeConnection;
+  importTask?: Maybe<ImportAnalysisBackgroundTaskNode>;
+  isImportCompleted: Scalars['Boolean']['output'];
   legacy: Scalars['Boolean']['output'];
   legacyConfiguration?: Maybe<LegacySpectrogramConfigurationNode>;
   name: Scalars['String']['output'];
@@ -6489,31 +6397,6 @@ export type SpectrogramAnalysisNodeAnnotationsArgs = {
   label_Name?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-/** SpectrogramAnalysis schema */
-export type SpectrogramAnalysisNodeImportAnalysisBackgroundTasksArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  analysis?: InputMaybe<Scalars['ID']['input']>;
-  analysisPath?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  celeryId?: InputMaybe<Scalars['String']['input']>;
-  chunkSize?: InputMaybe<Scalars['Int']['input']>;
-  completedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  completedSpectrograms?: InputMaybe<Scalars['Int']['input']>;
-  completionPercentage?: InputMaybe<Scalars['Int']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dataset?: InputMaybe<Scalars['ID']['input']>;
-  error?: InputMaybe<Scalars['String']['input']>;
-  errorTrace?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  requestedBy?: InputMaybe<Scalars['ID']['input']>;
-  startedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  status?: InputMaybe<TaskStatusEnum>;
-  totalSpectrograms?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -6599,6 +6482,7 @@ export type SpectrogramNodeAnalysisArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isImportCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
@@ -6700,11 +6584,12 @@ export type TagNode = ExtendedInterface & {
 };
 
 export enum TaskStatusEnum {
-  Cancelled = 'Cancelled',
-  Completed = 'Completed',
-  Failed = 'Failed',
-  Pending = 'Pending',
-  Processing = 'Processing'
+  Failure = 'FAILURE',
+  Pending = 'PENDING',
+  Retry = 'RETRY',
+  Revoked = 'REVOKED',
+  Started = 'STARTED',
+  Success = 'SUCCESS'
 }
 
 export enum TaskTypeEnum {
@@ -6998,7 +6883,6 @@ export type UserNode = ExtendedInterface & {
   firstName: Scalars['String']['output'];
   /** The ID of the object */
   id: Scalars['ID']['output'];
-  importanalysisbackgroundtaskSet: ImportAnalysisBackgroundTaskNodeConnection;
   /** Designates whether this user should be treated as active. Unselect this instead of deleting accounts. */
   isActive: Scalars['Boolean']['output'];
   isAdmin: Scalars['Boolean']['output'];
@@ -7174,37 +7058,13 @@ export type UserNodeEndedPhasesArgs = {
 
 
 /** User node */
-export type UserNodeImportanalysisbackgroundtaskSetArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  analysis?: InputMaybe<Scalars['ID']['input']>;
-  analysisPath?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  celeryId?: InputMaybe<Scalars['String']['input']>;
-  chunkSize?: InputMaybe<Scalars['Int']['input']>;
-  completedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  completedSpectrograms?: InputMaybe<Scalars['Int']['input']>;
-  completionPercentage?: InputMaybe<Scalars['Int']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dataset?: InputMaybe<Scalars['ID']['input']>;
-  error?: InputMaybe<Scalars['String']['input']>;
-  errorTrace?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  requestedBy?: InputMaybe<Scalars['ID']['input']>;
-  startedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  status?: InputMaybe<TaskStatusEnum>;
-  totalSpectrograms?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-/** User node */
 export type UserNodeSpectrogramAnalysisArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   annotationCampaigns_Id?: InputMaybe<Scalars['ID']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   dataset?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  isImportCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;

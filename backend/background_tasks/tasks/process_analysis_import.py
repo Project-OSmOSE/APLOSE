@@ -1,11 +1,14 @@
-from typing import TypedDict
+from typing import TypedDict, cast
 
-from django.db import close_old_connections
 from django.forms import model_to_dict
 
-from backend.api.models import SpectrogramAnalysis, FFT, Colormap
-from backend.background_tasks.models import ImportAnalysisBackgroundTask, TaskStatus
+from backend.api.models import FFT, Colormap, Dataset
+from backend.background_tasks.types import (
+    ImportAnalysisInfo,
+    ImportAnalysisBackgroundTask,
+)
 from backend.storage.resolvers import Resolver
+from backend.storage.utils import make_path_relative
 from ._tracker import Tracker
 
 
@@ -16,23 +19,25 @@ class AdditionalInfo(TypedDict):
 
 
 def process_analysis_import(task: ImportAnalysisBackgroundTask, tracker: Tracker):
+    info = task.other_info
 
-    if task.status == TaskStatus.COMPLETED:
-        raise Exception("Cannot process completed task")
-    if task.status == TaskStatus.FAILED:
-        raise Exception("Cannot process failed task")
-    if task.status == TaskStatus.CANCELLED:
-        raise Exception("Cannot process cancelled task")
+    def update_info():
+        task.other_info = cast(ImportAnalysisInfo, cast(object, dict(info)))
+        task.save()
+        tracker.send_update()
 
     resolver = Resolver(path=None)
+    dataset = Dataset.objects.get(pk=info["dataset_id"])
     analysis = resolver._get_analysis(
-        dataset=task.dataset, relative_path=task.analysis_path, detailed=True
+        dataset=dataset,
+        relative_path=make_path_relative(info["analysis_path"], to=dataset.path),
+        detailed=True,
     )
 
     if analysis.pk is None:
         # Create analysis object
         analysis.owner = task.requested_by
-        analysis.dataset = task.dataset
+        analysis.dataset = dataset
         analysis.fft, _ = FFT.objects.get_or_create(**model_to_dict(analysis.fft))
         analysis.colormap, _ = Colormap.objects.get_or_create(
             name=analysis.colormap.name
@@ -41,22 +46,23 @@ def process_analysis_import(task: ImportAnalysisBackgroundTask, tracker: Tracker
         resolver.create_legacy_configuration(analysis=analysis)
 
         # Update task
-        task.analysis = analysis
-        task.save()
-        tracker.send_update()
+        info["analysis_id"] = analysis.id
+        update_info()
 
     # Get spectrograms
     spectrograms = Resolver.get_all_spectrograms_for_analysis(analysis=analysis)
-    task.total_spectrograms = len(spectrograms)
-    task.save()
-    tracker.send_update()
+    info["total_spectrograms"] = len(spectrograms)
+    update_info()
 
-    start = task.completed_spectrograms
-    for offset in range(start, len(spectrograms), task.chunk_size):
-        chunk = spectrograms[offset : offset + task.chunk_size]
+    start = info["completed_spectrograms"]
+    for offset in range(start, len(spectrograms), info["chunk_size"]):
+        chunk = spectrograms[offset : offset + info["chunk_size"]]
         analysis.add_spectrograms(spectrograms=chunk)
 
         completed = offset + len(chunk)
-        task.completed_spectrograms = completed
-        task.save()
-        tracker.update(percentage=completed / len(spectrograms))
+        info["completed_spectrograms"] = completed
+        task.completion_percentage = completed / len(spectrograms)
+        update_info()
+
+    analysis.is_import_completed = True
+    analysis.save()

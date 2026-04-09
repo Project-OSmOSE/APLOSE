@@ -36,6 +36,7 @@ const AnnotationCampaignPhaseDetail = lazy(() => import('./view/annotation-campa
 const EditAnnotators = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/edit-annotators'));
 const ImportAnnotations = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/import-annotations'));
 const AnnotatorPage = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/spectrogram/[spectrogramID]'));
+const BackgroundTasksPage = lazy(() => import('./features/BackgroundTask/pages/BackgroundTasksPage'));
 
 const AploseSkeleton = lazy(() => import('./components/layout/Skeleton'));
 
@@ -109,6 +110,7 @@ const AppContent: React.FC = () => {
                 </Route>
 
                 <Route path="admin">
+                    <Route path="background-tasks" element={ <SuspenseSuperUserOnly><BackgroundTasksPage/></SuspenseSuperUserOnly> }/>
                     <Route path="sql" element={ <SuspenseSuperUserOnly><SqlQuery/></SuspenseSuperUserOnly> }/>
                     <Route path="ontology" element={ <SuspenseSuperUserOnly><OntologyPage/></SuspenseSuperUserOnly> }>
                         <Route path=":type" element={ <SuspenseSuperUserOnly><OntologyTab/></SuspenseSuperUserOnly> }>

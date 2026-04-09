@@ -29,9 +29,9 @@ export const GroupIndicator: React.FC<{ taskIDs: string[] }> = ({ taskIDs }) => 
     return useMemo(() => {
         const completion = tasks.reduce((count, task) => {
             switch (task.status) {
-                case TaskStatusEnum.Completed:
+                case TaskStatusEnum.Success:
                     return count + 1
-                case TaskStatusEnum.Processing:
+                case TaskStatusEnum.Started:
                     return count + task.completion_percentage
                 default:
                     return count

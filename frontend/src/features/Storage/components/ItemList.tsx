@@ -7,6 +7,7 @@ import { Item } from './Item';
 import type { StorageItem } from '../types';
 import { useBrowse } from '../hook';
 import styles from './styles.module.scss';
+import { QueryStatus } from '@reduxjs/toolkit/query';
 
 export const ItemList: React.FC<{
     parentNode?: StorageItem,
@@ -15,22 +16,27 @@ export const ItemList: React.FC<{
 }> = ({ parentNode, search, onUpdated }) => {
     const {
         children,
-        isLoading,
+        status,
         error
     } = useBrowse(parentNode?.path)
 
     return useMemo(() => {
-        if (isLoading) return <IonSpinner/>
-        if (error) return <GraphQLErrorText error={ error }/>
-        if (!children) return <WarningText>Cannot recover folders</WarningText>
-        if (children.length === 0) return <IonNote>Empty</IonNote>
-        return <div className={ styles.list }>
-            { children.map((node, index) =>
-                <Item key={ index } onUpdated={ onUpdated }
-                      parent={ parentNode?.__typename === 'DatasetStorageNode' ? parentNode : undefined }
-                      search={ search }
-                      path={ node.path }/>,
-            ) }
-        </div>
-    }, [ isLoading, error, children, onUpdated, parentNode, search ])
+        switch (status) {
+            case QueryStatus.uninitialized:
+            case QueryStatus.pending:
+                return <IonSpinner/>
+            case QueryStatus.rejected:
+                return <GraphQLErrorText error={ error }/>
+            case QueryStatus.fulfilled:
+                if (!children) return <WarningText>Cannot recover folders</WarningText>
+                if (children.length === 0) return <IonNote>Empty</IonNote>
+                return <div className={ styles.list }>
+                    { children.map((node, index) =>
+                        <Item key={ index } onUpdated={ onUpdated }
+                              search={ search }
+                              path={ node.path }/>,
+                    ) }
+                </div>
+        }
+    }, [ error, children, onUpdated, search ])
 }

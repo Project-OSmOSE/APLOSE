@@ -1,8 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import { type CreateCampaignMutation, TaskStatusEnum } from '@/api';
+import { type CreateCampaignMutation } from '@/api';
 import { AnnotationCampaignGqlAPI } from '@/api/annotation-campaign/api';
-import type { BackgroundTaskUpdateEvent } from '@/features/BackgroundTask';
 
 import {
     API,
@@ -12,6 +11,7 @@ import {
     type SearchStorageQuery,
 } from './api';
 import type { StorageItem } from './types';
+import type { BackgroundTaskEvent } from '@/features/BackgroundTask';
 
 export const Slice = createSlice({
     name: 'Storage',
@@ -23,28 +23,14 @@ export const Slice = createSlice({
         invalidatedListPaths: [] as Array<string>,
     },
     reducers: {
-        onTaskUpdated: (state, { payload }: PayloadAction<BackgroundTaskUpdateEvent>) => {
+        onTaskUpdated: (state, { payload }: PayloadAction<BackgroundTaskEvent>) => {
             switch (payload.type) {
-                case 'background_task_update':
+                case 'info':
                     // Update task status
                     for (const item of Object.values(state.record)) {
                         if (item.__typename !== 'AnalysisStorageNode') continue
-                        for (const task of item.importTasks?.results ?? []) {
-                            if (task?.id !== payload.data.id.toString()) continue
-                            task.status = payload.data.status
-                        }
-                    }
-                    return;
-                case 'background_task_retry':
-                    // Replace old task with new task
-                    for (const item of Object.values(state.record)) {
-                        if (item.__typename !== 'AnalysisStorageNode') continue
-                        if (item.importTasks?.results?.find(t => t?.id === payload.data.old_task_id.toString())) {
-                            item.importTasks.results = [ {
-                                __typename: 'ImportAnalysisBackgroundTaskNode',
-                                id: payload.data.new_task_id?.toString(),
-                                status: TaskStatusEnum.Pending,
-                            } ]
+                        if (item.importTask?.identifier == payload.identifier) {
+                            item.importTask!.status = payload.data.status
                         }
                     }
                     return;

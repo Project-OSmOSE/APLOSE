@@ -2,6 +2,7 @@ import traceback
 from pathlib import PureWindowsPath
 
 from backend.api.models import Dataset, SpectrogramAnalysis
+from backend.storage.utils import join
 
 
 class Folder:
@@ -69,7 +70,7 @@ class StorageAnalysis(Folder):
     def from_model(model: SpectrogramAnalysis):
         return StorageAnalysis(
             name=model.name,
-            path=model.path,
+            path=join(model.dataset.path, model.path),
             model=model,
         )
 

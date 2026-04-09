@@ -7,7 +7,7 @@ export type ListSpectrogramAnalysisQueryVariables = Types.Exact<{
 }>;
 
 
-export type ListSpectrogramAnalysisQuery = { __typename?: 'Query', allSpectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', results: Array<{ __typename?: 'SpectrogramAnalysisNode', id: string, name: string, description?: string | null, createdAt: any, legacy: boolean, dataDuration?: number | null, start?: any | null, end?: any | null, fft: { __typename?: 'FFTNode', samplingFrequency: number, nfft: number, windowSize: number, overlap: any }, spectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount: number } | null, importAnalysisBackgroundTasks: { __typename?: 'ImportAnalysisBackgroundTaskNodeConnection', edges: Array<{ __typename?: 'ImportAnalysisBackgroundTaskNodeEdge', node?: { __typename?: 'ImportAnalysisBackgroundTaskNode', id: string, status: Types.TaskStatusEnum } | null } | null> } } | null> } | null };
+export type ListSpectrogramAnalysisQuery = { __typename?: 'Query', allSpectrogramAnalysis?: { __typename?: 'SpectrogramAnalysisNodeNodeConnection', results: Array<{ __typename?: 'SpectrogramAnalysisNode', id: string, name: string, description?: string | null, createdAt: any, legacy: boolean, dataDuration?: number | null, start?: any | null, end?: any | null, isImportCompleted: boolean, fft: { __typename?: 'FFTNode', samplingFrequency: number, nfft: number, windowSize: number, overlap: any }, spectrograms?: { __typename?: 'SpectrogramNodeNodeConnection', totalCount: number } | null, importTask?: { __typename?: 'ImportAnalysisBackgroundTaskNode', identifier: string, status?: Types.TaskStatusEnum | null } | null } | null> } | null };
 
 
 export const ListSpectrogramAnalysisDocument = `
@@ -35,14 +35,11 @@ export const ListSpectrogramAnalysisDocument = `
       spectrograms {
         totalCount
       }
-      importAnalysisBackgroundTasks(first: 1) {
-        edges {
-          node {
-            id
-            status
-          }
-        }
+      importTask {
+        identifier
+        status
       }
+      isImportCompleted
     }
   }
 }

@@ -56,6 +56,12 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
     dynamic_min = models.FloatField()
     dynamic_max = models.FloatField()
 
+    is_import_completed = models.BooleanField(default=False)
+
+    @property
+    def full_path(self) -> str:
+        return join(self.dataset.path, self.path)
+
     @deprecated("Related to legacy OSEkit")  # Legacy
     def legacy_audio_metadatum_csv(self) -> str:
         """Legacy audio metadata CSV export"""

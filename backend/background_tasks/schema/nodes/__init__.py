@@ -1,1 +1,1 @@
-from .import_analysis_task import ImportAnalysisBackgroundTaskNode
+from .import_analysis_background_task import ImportAnalysisBackgroundTaskNode

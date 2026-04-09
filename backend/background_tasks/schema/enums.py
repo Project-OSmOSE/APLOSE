@@ -1,17 +1,17 @@
+import graphene
 from django_extension.schema.types import ExtendedEnumType
 
-from backend.background_tasks.models import TaskStatus, TaskType
+from backend.background_tasks.types import TaskType
 
 
-class TaskStatusEnum(ExtendedEnumType):
-    class Meta:
-        enum = TaskStatus
+class TaskStatusEnum(graphene.Enum):
 
-    Pending = "PENDING"
-    Processing = "PROCESS"
-    Completed = "COMPLETE"
-    Failed = "FAIL"
-    Cancelled = "CANCEL"
+    PENDING = "PENDING"
+    STARTED = "STARTED"
+    SUCCESS = "SUCCESS"
+    FAILURE = "FAILURE"
+    REVOKED = "REVOKED"
+    RETRY = "RETRY"
 
 
 class TaskTypeEnum(ExtendedEnumType):

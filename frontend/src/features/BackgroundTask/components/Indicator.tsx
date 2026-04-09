@@ -12,57 +12,57 @@ import styles from './styles.module.scss'
 import { formatTime } from '@/service/function';
 
 export const Indicator: React.FC<{
-    taskID?: string | null,
+    identifier?: string | null,
     forceState?: TaskStatusEnum | false | null,
     disableRetry?: boolean,
-}> = ({ taskID, forceState, disableRetry = false }) => {
+}> = ({ identifier, forceState, disableRetry = false }) => {
     const { register, unregister, request } = use()
     useEffect(() => {
-        if (!taskID) return;
+        if (!identifier) return;
 
-        register(taskID);
+        register(identifier);
         return () => {
-            unregister(taskID);
+            unregister(identifier);
         }
-    }, [ taskID ]);
+    }, [ identifier ]);
 
     const taskSelector = useCallback((state: AppState) => {
-        if (!taskID) return undefined;
-        return Slice.selectors.selectTask(state, taskID)
-    }, [ taskID ])
+        if (!identifier) return undefined;
+        return Slice.selectors.selectTask(state, identifier)
+    }, [ identifier ])
     const task = useAppSelector(taskSelector)
 
     return useMemo(() => {
         if (!task && !forceState) return <Fragment/>
         switch (task?.status ?? forceState) {
-            case TaskStatusEnum.Cancelled:
+            case TaskStatusEnum.Revoked:
                 return <Fragment/>
             case TaskStatusEnum.Pending:
                 return <IonNote>Pending...</IonNote>
-            case TaskStatusEnum.Completed:
+            case TaskStatusEnum.Success:
                 return <Unread color="success" size={ 24 }/>
         }
 
         if (!task) return <Fragment/>
         switch (task.status) {
-            case TaskStatusEnum.Failed:
+            case TaskStatusEnum.Failure:
                 return <Fragment>
                     <IonNote color="danger" className={ styles.errorNote }>Import failed: { task.error }</IonNote>
                     <CopyErrorStackButton stack={ task.error_trace }/>
                     { !disableRetry && <Button fill="clear" onClick={ () => request({
                         command: 'retry',
-                        task_id: task.id.toString(),
+                        identifier: task.identifier,
                     }) }>
                         Retry
                     </Button> }
                 </Fragment>
-            case TaskStatusEnum.Processing:
+            case TaskStatusEnum.Started:
                 return <Fragment>
                     <IonSpinner/>
                     <Progress label="Importing spectrograms"
-                              value={ task.completed_spectrograms }
-                              total={ task.total_spectrograms ?? 0 }
-                              note={`~${formatTime(task.duration * (1 - task.completion_percentage) / task.completion_percentage)} remaining`}/>
+                              value={ task.other_info.completed_spectrograms }
+                              total={ task.other_info.total_spectrograms ?? 0 }
+                              note={ `~${ formatTime(task.duration * (1 - task.completion_percentage) / (task.completion_percentage - task.started_at_completion)) } remaining` }/>
                 </Fragment>
         }
     }, [ task, forceState, request, disableRetry ])

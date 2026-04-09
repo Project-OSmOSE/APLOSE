@@ -49,7 +49,7 @@ export const DatasetSelect: React.FC<{
         setSelectedDatasetID(value);
         onDatasetSelected(value);
         updateAnalysisSelection(allDatasets?.find(d => d?.id == value)?.spectrogramAnalysis?.results.filter(r => !!r).map(a => a!.id) ?? [])
-    }, [ setSelectedDatasetID, updateAnalysisSelection, allDatasets ]);
+    }, [ setSelectedDatasetID, updateAnalysisSelection, allDatasets, onDatasetSelected ]);
 
     useEffect(() => {
         if (!onAnalysisColormapsChanged) return;

@@ -1,36 +1,23 @@
 import json
 
 from asgiref.sync import async_to_sync
-from celery.worker.control import revoke
 from channels.generic.websocket import WebsocketConsumer
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework_simplejwt.tokens import AccessToken
 
 from backend.aplose.models import User
-from backend.background_tasks.models import ImportAnalysisBackgroundTask
 from backend.background_tasks.tasks import process_background_task
+from backend.background_tasks.types import get_task
 
 
 class BackgroundTaskConsumer(WebsocketConsumer):
 
     # Manage connection
 
-    is_authorized: bool = False
-
     def connect(self):
         """
         Handle websocket connection
         """
-        # User.
-        token = self.scope.get("cookies").get("token")
-        if token:
-            user_id = AccessToken(token).get("user_id")
-            user = User.objects.get(pk=user_id)
-            if not (user.is_staff or user.is_superuser):
-                self.close()
-        else:
-            self.close()
-
         self.accept()
 
     def disconnect(self, code):
@@ -47,137 +34,68 @@ class BackgroundTaskConsumer(WebsocketConsumer):
         Handle messages from WebSocket.
 
         Params:
-            - command: 'add' or 'cancel' or 'retry'
-            - task_id: id of the background task
+            - command: 'subscribe', 'unsubscribe' or 'cancel' or 'retry'
+            - identifier: identifier of the background task
+            - token: identify user
         """
         try:
             data = json.loads(text_data)
+
+            # Check token
+            token = data.get("token")
+            if not token:
+                return self.send_error("Missing token")
+            user_id = AccessToken(token).get("user_id")
+            user = User.objects.get(pk=user_id)
+            if not (user.is_staff or user.is_superuser):
+                return self.send_error("Not allowed")
+
             command = data.get("command")
 
-            if command == "add":
-                self.handle_add(task_id=data.get("task_id"))
-            elif command == "remove":
-                self.handle_remove(task_id=data.get("task_id"))
-            elif command == "cancel":
-                self.handle_cancel(task_id=data.get("task_id"))
-            # elif command == "pause":
-            #     self.handle_pause(task_id=data.get("task_id"))
-            # elif command == "resume":
-            #     self.handle_resume(task_id=data.get("task_id"))
+            # Base subscription commands
+            if command == "subscribe":
+                self.handle_subscribe(identifier=data.get("identifier"))
+            elif command == "unsubscribe":
+                self.handle_unsubscribe(identifier=data.get("identifier"))
+
             elif command == "retry":
-                self.handle_retry(task_id=data.get("task_id"))
+                self.handle_retry(identifier=data.get("identifier"))
 
         except json.JSONDecodeError:
             self.send_error("Invalid JSON")
 
-    # Handle actions
+    # Handle subscription actions
 
-    def handle_add(self, task_id: int | str):
+    def handle_subscribe(self, identifier: str):
         """
         Handle 'add' command from WebSocket.
         """
         try:
-            task = ImportAnalysisBackgroundTask.objects.get(pk=task_id)
-            async_to_sync(self.channel_layer.group_add)(
-                task.get_ws_group_name(), self.channel_name
-            )
+            _, task = get_task(identifier)
+            async_to_sync(self.channel_layer.group_add)(task.uuid, self.channel_name)
             # Send current import status immediately
-            self.send(dict_data=task.get_ws_update_data())
-        except ImportAnalysisBackgroundTask.DoesNotExist:
-            self.send_error(f"Task {task_id} does not exist")
+            self.send_data(type="info", identifier=identifier, data=task.to_dict())
+        except User.DoesNotExist as e:
+            self.send_error(f"Fail recovering task: {e}")
 
-    def handle_remove(self, task_id: int | str):
+    def handle_unsubscribe(self, identifier: str):
         """
         Handle 'remove' command from WebSocket.
         """
-        try:
-            task = ImportAnalysisBackgroundTask.objects.get(pk=task_id)
-            async_to_sync(self.channel_layer.group_discard)(
-                task.get_ws_group_name(), self.channel_name
-            )
-        except ImportAnalysisBackgroundTask.DoesNotExist:
-            self.send_error(f"Task {task_id} does not exist")
+        _, _, uuid = identifier.split(":")
+        async_to_sync(self.channel_layer.group_discard)(uuid, self.channel_name)
 
-    # TODO: cancel celery task as well!!
-    def handle_cancel(self, task_id: int | str):
-        """
-        Handle 'cancel' command from WebSocket.
-        """
-        try:
-            task = ImportAnalysisBackgroundTask.objects.get(pk=task_id)
-            revoke(task_id=task.celery_id)
-            async_to_sync(self.channel_layer.group_discard)(
-                task.get_ws_group_name(), self.channel_name
-            )
-        except ImportAnalysisBackgroundTask.DoesNotExist:
-            self.send_error(f"Task {task_id} does not exist")
+    # Handle other actions
 
-    # # TODO: pause celery task as well!! to check
-    # def handle_pause(self, task_id: int | str):
-    #     """
-    #     Handle 'pause' command from WebSocket.
-    #     """
-    #     try:
-    #         task = BackgroundTask.objects.get(pk=task_id)
-    #         revoke(task_id=task.celery_id)
-    #         task.pause()
-    #         async_to_sync(self.channel_layer.group_discard)(
-    #             task.get_ws_group_name(), self.channel_name
-    #         )
-    #         # Send current import status immediately
-    #         self.send(dict_data=task.get_ws_update_data())
-    #     except BackgroundTask.DoesNotExist:
-    #         self.send_error(f"Task {task_id} does not exist")
-    #
-    # # TODO: resume celery task as well!! to check
-    # def handle_resume(self, task_id: int | str):
-    #     """
-    #     Handle 'resume' command from WebSocket.
-    #     """
-    #     try:
-    #         task = BackgroundTask.objects.get(pk=task_id)
-    #         task.resume()
-    #         async_to_sync(self.channel_layer.group_add)(
-    #             task.get_ws_group_name(), self.channel_name
-    #         )
-    #         # Send current import status immediately
-    #         self.send(dict_data=task.get_ws_update_data())
-    #         process_background_task.delay(task_id=task.pk)
-    #     except BackgroundTask.DoesNotExist:
-    #         self.send_error(f"Task {task_id} does not exist")
-
-    # TODO: retry celery task as well!! to check
-    def handle_retry(self, task_id: int | str):
+    def handle_retry(self, identifier: str):
         """
         Handle 'retry' command from WebSocket.
         """
         try:
-            task = ImportAnalysisBackgroundTask.objects.get(pk=task_id)
-            new_task = task.copy()
-
-            # Transfer listening to the new task
-            async_to_sync(self.channel_layer.group_discard)(
-                task.get_ws_group_name(), self.channel_name
-            )
-            async_to_sync(self.channel_layer.group_add)(
-                new_task.get_ws_group_name(), self.channel_name
-            )
-
-            # Request process of the new task
-            process_background_task.delay(new_task.task_identifier)
-
-            # Send current import status immediately
-            self.send(
-                dict_data={
-                    "type": "background_task_retry",
-                    "data": {
-                        "old_task_id": task_id,
-                        "new_task_id": new_task.pk,
-                    },
-                }
-            )
-        except ImportAnalysisBackgroundTask.DoesNotExist:
-            self.send_error(f"Task {task_id} does not exist")
+            _, task = get_task(identifier)
+            process_background_task.delay(task.identifier)
+        except User.DoesNotExist as e:
+            self.send_error(f"Fail recovering task: {e}")
 
     # Send info
 
@@ -185,15 +103,20 @@ class BackgroundTaskConsumer(WebsocketConsumer):
         """
         Send error message to client.
         """
-        self.send(dict_data={"type": "error", "message": message})
+        self.send(text_data=json.dumps({"type": "error", "message": message}))
 
-    def send(self, text_data=None, bytes_data=None, dict_data=None, close=False):
-        if dict_data is not None:
-            return super().send(text_data=json.dumps(dict_data, cls=DjangoJSONEncoder))
-        return super().send(text_data, bytes_data, close)
+    def send_data(self, type: "info", identifier: str, data: dict):
+        """
+        Send task data message to client.
+        """
+        self.send(
+            text_data=json.dumps({"type": type, "identifier": identifier, "data": data})
+        )
 
-    def background_task_update(self, event):
+    # From task
+    def info(self, event):
         """
         Receive background task update from channel layer and send to WebSocket.
+        type: 'info'
         """
         return self.send(text_data=json.dumps(event, cls=DjangoJSONEncoder))

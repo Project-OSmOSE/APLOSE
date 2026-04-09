@@ -7,7 +7,6 @@ import styles from './styles.module.scss'
 import {
     type ListSpectrogramAnalysisQuery,
     type ListSpectrogramAnalysisQueryVariables,
-    TaskStatusEnum,
     useAllSpectrogramAnalysis,
 } from '@/api';
 import { useDownloadAnalysis } from '@/api/download';
@@ -60,33 +59,26 @@ const SpectrogramAnalysisRow: React.FC<{
         if (downloadError) toast.raiseError({ error: downloadError })
     }, [ downloadError ]);
 
-    const importTasks = useMemo(() => analysis?.importAnalysisBackgroundTasks.edges
-            .map(e => e?.node)
-            .filter(n => !!n) ?? []
-        , [ analysis ])
-
-    const taskID = useMemo(() => {
-        if (importTasks.length === 0) return undefined;
-        return importTasks[0]!.id
-    }, [ importTasks ])
     const taskSelector = useCallback((state: AppState) => {
-        if (!taskID) return undefined;
-        return BackgroundTask.selectors.selectTask(state, taskID)
-    }, [ taskID ])
+        if (!analysis?.importTask) return undefined;
+        return BackgroundTask.selectors.selectTask(state, analysis.importTask.identifier)
+    }, [ analysis ])
     const task = useAppSelector(taskSelector)
 
     return useMemo(() => {
         if (!analysis) return <Fragment/>;
 
         return <Fragment>
-            <TableContent isFirstColumn={ true }>{ analysis.name }</TableContent>
+            <TableContent isFirstColumn={ true }>
+                <div>{ analysis.name } {!analysis.isImportCompleted && <IonNote> - Import in progress</IonNote>}</div>
+            </TableContent>
             <TableContent>Spectrogram</TableContent>
             <TableContent>{ dateToString(analysis.createdAt) }</TableContent>
             <TableContent>
                 <div className={ styles.spectrogramsCell }>
-                    { !taskID || task?.status === TaskStatusEnum.Completed ?
+                    { analysis.isImportCompleted ?
                         analysis.spectrograms!.totalCount :
-                        <BackgroundTask.Indicator taskID={ taskID }/>
+                        <BackgroundTask.Indicator identifier={ analysis.importTask?.identifier }/>
                     }
                 </div>
             </TableContent>
@@ -105,5 +97,5 @@ const SpectrogramAnalysisRow: React.FC<{
             </TableContent>
             <TableDivider/>
         </Fragment>
-    }, [ analysis, downloadAnalysis, task, taskID ])
+    }, [ analysis, downloadAnalysis, task ])
 }

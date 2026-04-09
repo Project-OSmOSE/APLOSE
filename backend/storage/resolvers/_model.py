@@ -52,12 +52,12 @@ class ModelResolver(OSEkitResolver):
         )
 
     def _get_storage_analysis_from_spectrogram_analysis(
-        self, analysis: SpectrogramAnalysis
+        self, analysis: SpectrogramAnalysis, dataset_path: str
     ) -> StorageAnalysis:
-        return StorageAnalysis(
-            path=analysis.path,
-            name=analysis.name,
-            model=analysis if analysis.pk else None,
+        if analysis.pk:
+            return StorageAnalysis.from_model(analysis)
+        return super()._get_storage_analysis_from_spectrogram_analysis(
+            analysis, dataset_path
         )
 
     def _get_storage_dataset_from_dataset(self, dataset: Dataset) -> StorageDataset:

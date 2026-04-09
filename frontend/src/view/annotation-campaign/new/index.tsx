@@ -86,7 +86,7 @@ export const NewAnnotationCampaign: React.FC = () => {
             colormapDefault,
             colormapInvertedDefault,
         })
-    }, [ name, description, instructionsUrl, deadline, datasetID, analysisIDs, allowImageTuning, allowColormapTuning, colormapDefault, colormapInvertedDefault ])
+    }, [ name, description, instructionsUrl, deadline, datasetID, analysisIDs, allowImageTuning, allowColormapTuning, colormapDefault, colormapInvertedDefault, createCampaign ])
 
     useEffect(() => {
         if (errors) toast.raiseError({ error: errors })

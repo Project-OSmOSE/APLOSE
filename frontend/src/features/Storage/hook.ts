@@ -37,8 +37,3 @@ export const useSearch = (path: string = '') => {
 
     return { item, ...info }
 }
-
-export const useImportDataset = () => {
-    const [ method, { isSuccess, ...info } ] = API.endpoints.importDatasetFromStorage.useMutation()
-    return { isSuccess, ...info, doImport: method }
-}
