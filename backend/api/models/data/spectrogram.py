@@ -75,7 +75,7 @@ class SpectrogramAnalysisRelation(models.Model):
     )
     analysis = models.ForeignKey(
         SpectrogramAnalysis,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="spectrogram_relations",
     )
 
