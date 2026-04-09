@@ -7,13 +7,17 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0004_new_spectrogram_analysis_relation'),
+        ("api", "0004_new_spectrogram_analysis_relation"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='spectrogramanalysisrelation',
-            name='analysis',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='spectrogram_relations', to='api.spectrogramanalysis'),
+            model_name="spectrogramanalysisrelation",
+            name="analysis",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="spectrogram_relations",
+                to="api.spectrogramanalysis",
+            ),
         ),
     ]
