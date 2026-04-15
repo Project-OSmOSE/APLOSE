@@ -179,14 +179,14 @@ const TEST = {
 test.describe('/annotation-campaign/:campaignID/phase/:phaseType/import-annotations', () => {
   const as: UserType = 'creator'
 
-  TEST.importAll({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+  TEST.importAll({ as, phase: AnnotationPhaseType.Verification, tag: essentialTag })
 
-  TEST.importFirst({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+  TEST.importFirst({ as, phase: AnnotationPhaseType.Verification, tag: essentialTag })
 
-  TEST.handleMultipleAnalysis({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+  TEST.handleMultipleAnalysis({ as, phase: AnnotationPhaseType.Verification, tag: essentialTag })
 
-  TEST.handleExistingDetectors({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+  TEST.handleExistingDetectors({ as, phase: AnnotationPhaseType.Verification, tag: essentialTag })
 
-  TEST.canResetImport({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+  TEST.canResetImport({ as, phase: AnnotationPhaseType.Verification, tag: essentialTag })
 
 })
