@@ -1,107 +1,81 @@
-import React, { ReactNode, useMemo } from "react";
+import React, { type HTMLAttributes, ReactNode, useMemo } from 'react';
 import styles from './ui.module.scss'
+import { AltArrowDown, AltArrowUp, Filter } from '@solar-icons/react';
 
-interface TableProps {
-  columns: number;
-  children: ReactNode;
-  isFirstColumnSticky?: boolean;
-  className?: string;
-  size?: 'small' | 'medium';
+export const Table: React.FC<Pick<HTMLAttributes<HTMLTableRowElement>, 'children' | 'className'> & {
+    spacing?: 'small' | 'regular'
+}> = ({ children, spacing, className }) => {
+    return useMemo(() => {
+        const classes = [ styles.table ]
+        if (className) classes.push(className)
+        if (spacing == 'small') classes.push(styles.spacingSmall)
+        return <div className={ classes.join(' ') }>
+            <table>
+                { children }
+            </table>
+        </div>
+    }, [ children, spacing, className ])
 }
 
-export const Table: React.FC<TableProps> = ({
-                                              children,
-                                              columns,
-                                              className: _className,
-                                              isFirstColumnSticky,
-                                              size = 'medium',
-                                            }) => {
-  const className = useMemo(() => {
-    const classes = [ styles.table, 'table-aplose' ]; // .table-aplose used for testing purpose
-    if (isFirstColumnSticky) classes.push(styles.firstColumnSticky)
-    if (columns === 1) classes.push(styles.uniqueColumn)
-    if (size === 'small') classes.push(styles.small)
-    if (_className) classes.push(_className)
-    return classes.join(' ')
-  }, [ _className, isFirstColumnSticky, columns, size ])
+export const Thead: React.FC<{ children: ReactNode }> = ({ children }) =>
+    useMemo(() => <thead>{ children }</thead>, [ children ])
 
-  return <div
-    className={ [ className, styles.table, isFirstColumnSticky && 'first-column-sticky', `columns-${ columns }`, size ].join(' ') }
-    style={ {
-      "--content-columns": columns
-    } as React.CSSProperties }>
-    { children }
-  </div>
-}
+export const Tbody: React.FC<{ children?: ReactNode }> = ({ children }) =>
+    useMemo(() => <tbody>{ children }</tbody>, [ children ])
 
-interface CellProps {
-  children?: ReactNode;
-  isFirstColumn?: boolean;
-  onClick?: () => void;
-  className?: string;
-  disabled?: boolean;
-  topSticky?: boolean;
-  leftSticky?: boolean;
-}
+export const Tr: React.FC<Pick<HTMLAttributes<HTMLTableRowElement>, 'children' | 'className' | 'onClick'>> =
+    (props) => useMemo(() => <tr { ...props }/>, [ props ])
 
-export const TableHead: React.FC<CellProps> = ({
-                                                 children,
-                                                 isFirstColumn,
-                                                 onClick,
-                                                 className: _className,
-                                                 disabled,
-                                                 topSticky,
-                                                 leftSticky,
-                                               }) => {
-  const className = useMemo(() => {
-    const classes = [ styles.head ];
-    if (isFirstColumn) classes.push(styles.first)
-    if (disabled) classes.push('disabled')
-    if (_className) classes.push(_className)
-    return classes.join(' ')
-  }, [ _className, isFirstColumn, disabled ])
+export type Order = 'asc' | 'desc';
 
-  return <div className={ className }
-              style={ {
-                position: topSticky || leftSticky ? 'sticky' : undefined,
-                top: topSticky ? '0' : undefined,
-                left: leftSticky ? '0' : undefined,
-                backgroundColor: topSticky || leftSticky ? 'white' : undefined,
-                zIndex: leftSticky ? 2 : undefined,
-              } }
-              onClick={ onClick }>
-    { children }
-  </div>
-}
+export const Th: React.FC<{
+    children?: ReactNode;
+} & Partial<Pick<HTMLTableCellElement, 'scope' | 'colSpan' | 'rowSpan'>> &
+    ({ center?: false, start?: false } | { center: true, start?: false } | { center?: false, start: true }) &
+    ({ sortable?: false, order?: never, setOrder?: never } | {
+        sortable: true,
+        order?: Order | false,
+        setOrder: (order: Order) => void
+    }) & ({ filterable?: false, isFiltered?: never, onFilterClick?: never } | {
+    filterable: true,
+    isFiltered?: boolean,
+    onFilterClick: () => void
+})> =
+    ({ children, center, start, sortable, order, setOrder, filterable, onFilterClick, isFiltered, ...props }) =>
+        useMemo(() => {
+            const classes = []
+            if (center) classes.push(styles.center)
+            if (start) classes.push(styles.start)
+            if (sortable) classes.push(styles.sortable)
+            if (filterable) classes.push(styles.filterable)
 
-export const TableContent: React.FC<CellProps> = ({
-                                                    children,
-                                                    isFirstColumn,
-                                                    onClick,
-                                                    className: _className,
-                                                    disabled,
-                                                    leftSticky
-                                                  }) => {
-  const className = useMemo(() => {
-    const classes = [ styles.content, 'table-content' ]; // table-content needed for test
-    if (isFirstColumn) classes.push(styles.first)
-    if (disabled) classes.push('disabled')
-    if (_className) classes.push(_className)
-    return classes.join(' ')
-  }, [ _className, isFirstColumn, disabled ])
+            return <th { ...props } className={ classes.join(' ') }>
+                <div>
+                    { children }
 
-  return <div className={ className }
-              style={ {
-                position: leftSticky ? 'sticky' : undefined,
-                left: leftSticky ? '0' : undefined,
-                backgroundColor: leftSticky ? 'white' : undefined,
-              } }
-              onClick={ onClick }>
-    { children }
-  </div>
+                    { filterable && <div className={ styles.btn }>
+                        { isFiltered ?
+                            <Filter size={ 16 } weight="Bold" onClick={ onFilterClick }/> :
+                            <Filter size={ 16 } onClick={ onFilterClick }/> }
+                    </div> }
 
-}
+                    { sortable && <div className={ styles.btn }>
+                        <AltArrowUp size={ 16 }
+                                    className={ order === 'asc' ? styles.active : '' }
+                                    onClick={ () => setOrder('asc') }/>
+                        <AltArrowDown size={ 16 }
+                                      className={ order === 'desc' ? styles.active : '' }
+                                      onClick={ () => setOrder('desc') }/>
+                    </div> }
+                </div>
+            </th>
+        }, [ children, center, start, setOrder, order, sortable, filterable, onFilterClick, isFiltered, props ])
 
-
-export const TableDivider: React.FC<{ className?: string }> = ({ className }) => <div
-  className={ [ styles.divider, className ].join(' ') }/>
+export const Td: React.FC<Partial<Pick<HTMLTableDataCellElement, 'colSpan' | 'rowSpan'>> &
+    { children: ReactNode, center?: boolean, className?: string }> = ({
+                                                                                                center,
+                                                                                                className,
+                                                                                                ...props
+                                                                                            }) =>
+    useMemo(() => <td
+        className={ [ className, center ? styles.center : '' ].join(' ') } { ...props }/>, [ props, center, className ])

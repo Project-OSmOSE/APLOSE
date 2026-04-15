@@ -6,17 +6,17 @@ import { crop } from 'ionicons/icons/index.js';
 
 import { dateToString, pluralize } from '@/service/function';
 import { GraphQLErrorText, Progress, SkeletonProgress } from '@/components/ui';
-import { type ListCampaignsQuery, useAllCampaigns, useAllCampaignsFilters } from '@/api';
+import { AllCampaignFilters, type ListCampaignsQuery, useAllCampaigns, useAllCampaignsFilters } from '@/api';
 import styles from './styles.module.scss';
 
 type Campaign = NonNullable<NonNullable<ListCampaignsQuery['allAnnotationCampaigns']>['results'][number]>;
-export const Cards: React.FC = () => {
+export const Cards: React.FC<{ filters?: AllCampaignFilters }> = ({ filters }) => {
     const { params } = useAllCampaignsFilters()
     const {
         allCampaigns,
         isFetching,
         error,
-    } = useAllCampaigns(params);
+    } = useAllCampaigns(filters ?? params);
     const navigate = useNavigate();
 
 
@@ -50,7 +50,7 @@ export const Cards: React.FC = () => {
 
     if (isFetching)
         return <div className={ styles.cards }>
-            { Array.from(new Array(7)).map((_, i) => <SkeletonCard key={ i }/>) }
+            { Array.from(new Array(3)).map((_, i) => <SkeletonCard key={ i }/>) }
         </div>
 
     if (error)

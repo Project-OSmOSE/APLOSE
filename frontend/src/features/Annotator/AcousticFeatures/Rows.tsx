@@ -1,5 +1,5 @@
 import React, { Fragment, MouseEvent, useCallback, useMemo, useState } from 'react';
-import { TableContent } from '@/components/ui';
+import { Td, Th } from '@/components/ui';
 import { Input } from '@/components/form';
 import { IonButton, IonCheckbox, IonIcon, IonNote } from '@ionic/react';
 import styles from './styles.module.scss';
@@ -29,7 +29,7 @@ export const InputRow: React.FC<{
 }
     )> = ({ label, clickable, value, max, columnSpan, onUpdate, annotation, disabled, unit }) => {
     const className = useMemo(() => {
-        const classes = [styles.inputCell]
+        const classes = [ styles.inputCell ]
         if (clickable) classes.push(styles.cellButton)
         if (columnSpan) classes.push(styles.span2ColsEnd)
         return classes.join(' ')
@@ -71,22 +71,24 @@ export const InputRow: React.FC<{
         const position = getFreqTime(event)
         if (position) update(position.frequency)
         unselect()
-    }, [ getFreqTime, clickable, isSelecting, isInAnnotation, isSelectingAnnotationFrequency, update ]);
+    }, [ getFreqTime, clickable, isSelecting, isInAnnotation, isSelectingAnnotationFrequency, update, annotation, unselect ]);
     useEvent(CLICK_EVENT, onClick)
 
     return <Fragment>
-        <TableContent>{ label }</TableContent>
-        <TableContent className={ className }>
-            <Input className={styles.input}
-                   value={ value ?? '' } type="number" min={ 0 } max={ max } disabled={ disabled }
-                   onChange={ e => update(e.target.valueAsNumber) }/>
-            { unit && <IonNote>{ unit }</IonNote> }
-            { clickable && <IonButton size="small" fill="clear"
-                                      className={ isSelecting ? styles.selectedButton : undefined }
-                                      onClick={ toggleSelection }>
-                <IonIcon icon={ createOutline } slot="icon-only"/>
-            </IonButton> }
-        </TableContent>
+        <Th scope="row">{ label }</Th>
+        <Td>
+            <div className={ className }>
+                <Input className={ styles.input }
+                       value={ value ?? '' } type="number" min={ 0 } max={ max } disabled={ disabled }
+                       onChange={ e => update(e.target.valueAsNumber) }/>
+                { unit && <IonNote>{ unit }</IonNote> }
+                { clickable && <IonButton size="small" fill="clear"
+                                          className={ isSelecting ? styles.selectedButton : undefined }
+                                          onClick={ toggleSelection }>
+                    <IonIcon icon={ createOutline } slot="icon-only"/>
+                </IonButton> }
+            </div>
+        </Td>
     </Fragment>
 }
 
@@ -112,13 +114,15 @@ export const BooleanRow: React.FC<{
     }, [ columnSpan, onValueChange ])
 
     return <Fragment>
-        <TableContent>{ label }</TableContent>
-        <TableContent className={ className }>
-            <IonCheckbox checked={ checked ?? undefined } onClick={ toggle }/>
-            { onValueChange && <Input value={ value ?? '' } type="number" min={ 0 }
-                                      className={styles.input} disabled={ !checked }
-                                      onChange={ e => onValueChange(e.target.valueAsNumber) }/> }
-        </TableContent>
+        <Th scope="row">{ label }</Th>
+        <Td>
+            <div className={ className }>
+                <IonCheckbox checked={ checked ?? undefined } onClick={ toggle }/>
+                { onValueChange && <Input value={ value ?? '' } type="number" min={ 0 }
+                                          className={ styles.input } disabled={ !checked }
+                                          onChange={ e => onValueChange(e.target.valueAsNumber) }/> }
+            </div>
+        </Td>
     </Fragment>
 }
 
@@ -127,7 +131,7 @@ export const NoteRow: React.FC<{
     note: string | number;
 }> = ({ label, note }) => {
     return <Fragment>
-        <TableContent>{ label }</TableContent>
-        <TableContent><IonNote>{ note }</IonNote></TableContent>
+        <Th scope="row">{ label }</Th>
+        <Td><IonNote>{ note }</IonNote></Td>
     </Fragment>
 }

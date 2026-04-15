@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { IonButton, IonSpinner } from '@ionic/react';
 import { useToast } from '@/components/ui';
 import { FormBloc, Input, Select, Textarea } from '@/components/form';
@@ -9,6 +9,7 @@ import { useCreateCampaign } from '@/api';
 import { type Colormap, COLORMAPS } from '@/features/Colormap';
 
 export const NewAnnotationCampaign: React.FC = () => {
+    const urlSearchParams = useSearchParams()[0]
 
     const {
         createCampaign,
@@ -41,7 +42,7 @@ export const NewAnnotationCampaign: React.FC = () => {
     }, [])
 
     // Data
-    const [ datasetID, setDatasetID ] = useState<string | undefined>();
+    const [ datasetID, setDatasetID ] = useState<string | undefined>(urlSearchParams?.get('dataset_id') ?? undefined);
     const [ analysisIDs, setAnalysisIDs ] = useState<string[]>([]);
     const [ analysisColormaps, setAnalysisColormaps ] = useState<string[]>([]);
 
@@ -86,7 +87,7 @@ export const NewAnnotationCampaign: React.FC = () => {
             colormapDefault,
             colormapInvertedDefault,
         })
-    }, [ name, description, instructionsUrl, deadline, datasetID, analysisIDs, allowImageTuning, allowColormapTuning, colormapDefault, colormapInvertedDefault ])
+    }, [ name, description, instructionsUrl, createCampaign, deadline, datasetID, analysisIDs, allowImageTuning, allowColormapTuning, colormapDefault, colormapInvertedDefault ])
 
     useEffect(() => {
         if (errors) toast.raiseError({ error: errors })
@@ -123,6 +124,7 @@ export const NewAnnotationCampaign: React.FC = () => {
         {/* Dataset & Spectro config */ }
         <FormBloc label="Data">
             <DatasetSelect selectAnalysis
+                           initialDatasetId={datasetID}
                            datasetError={ formErrors?.find(e => e?.field === 'datasetID')?.messages.join(', ') }
                            analysisError={ formErrors?.find(e => e?.field === 'analysisIDs')?.messages.join(', ') }
                            onDatasetSelected={ setDatasetID }

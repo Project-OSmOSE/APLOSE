@@ -1,7 +1,6 @@
 import React, { Fragment, useCallback } from 'react';
 import { type Annotation, type Features } from '@/features/Annotator/Annotation';
-import { TableContent, TableDivider } from '@/components/ui';
-import styles from '@/features/Annotator/AcousticFeatures/styles.module.scss';
+import { Th, Tr } from '@/components/ui';
 import { BooleanRow } from '@/features/Annotator/AcousticFeatures/Rows';
 import { useUpdateAnnotationFeatures } from '@/features/Annotator/AcousticFeatures/hooks';
 
@@ -18,29 +17,34 @@ export const NonLinearPhenomena: React.FC<{ annotation: Annotation }> = ({ annot
     }, [ updateFeatures, annotation ])
 
     return <Fragment>
-        <TableContent isFirstColumn={ true } className={ styles.phenomenaCell }>Non-linear phenomena</TableContent>
+        <Tr>
+            <Th scope="row" rowSpan={ 8 }>Non-linear phenomena</Th>
 
-        {/* Sidebands */ }
-        <BooleanRow label="Sidebands" checked={ annotation.acousticFeatures!.hasSidebands }
-                    toggle={ () => onFeatureToggle('hasSidebands') }/>
-        <TableDivider className={ styles.span2ColsEnd }/>
+            {/* Sidebands */ }
+            <BooleanRow label="Sidebands" checked={ annotation.acousticFeatures!.hasSidebands }
+                        toggle={ () => onFeatureToggle('hasSidebands') }/>
+        </Tr>
 
         {/* Subharmonics */ }
-        <BooleanRow label="Subharmonics" checked={ annotation.acousticFeatures!.hasSubharmonics }
-                    toggle={ () => onFeatureToggle('hasSubharmonics') }/>
-        <TableDivider className={ styles.span2ColsEnd }/>
+        <Tr>
+            <BooleanRow label="Subharmonics" checked={ annotation.acousticFeatures!.hasSubharmonics }
+                        toggle={ () => onFeatureToggle('hasSubharmonics') }/>
+        </Tr>
 
         {/* Frequency jumps */ }
-        <BooleanRow label="Frequency jumps"
-                    checked={ annotation.acousticFeatures!.hasFrequencyJumps }
-                    toggle={ () => onFeatureToggle('hasFrequencyJumps') }
-                    value={ annotation.acousticFeatures!.frequencyJumpsCount }
-                    onValueChange={ value => onFeatureUpdate('frequencyJumpsCount', value) }/>
-        <TableDivider className={ styles.span2ColsEnd }/>
+        <Tr>
+            <BooleanRow label="Frequency jumps"
+                        checked={ annotation.acousticFeatures!.hasFrequencyJumps }
+                        toggle={ () => onFeatureToggle('hasFrequencyJumps') }
+                        value={ annotation.acousticFeatures!.frequencyJumpsCount }
+                        onValueChange={ value => onFeatureUpdate('frequencyJumpsCount', value) }/>
+        </Tr>
 
         {/* Deterministic chaos */ }
-        <BooleanRow label="Deterministic chaos" checked={ annotation.acousticFeatures!.hasDeterministicChaos }
-                    toggle={ () => onFeatureToggle('hasDeterministicChaos') }/>
+        <Tr>
+            <BooleanRow label="Deterministic chaos" checked={ annotation.acousticFeatures!.hasDeterministicChaos }
+                        toggle={ () => onFeatureToggle('hasDeterministicChaos') }/>
+        </Tr>
 
     </Fragment>
 }

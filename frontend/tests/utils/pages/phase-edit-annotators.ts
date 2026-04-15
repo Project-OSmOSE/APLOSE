@@ -1,5 +1,5 @@
 import { type Locator, Page } from '@playwright/test';
-import { type FileRange } from '../mock/types';
+import { type User } from '../mock/types';
 import { PhaseDetailPage } from './phase-detail';
 import type { Params } from '../types';
 
@@ -19,19 +19,26 @@ export class PhaseEditAnnotatorsPage {
     await this.detail.manageButton.click();
   }
 
-  getfirstIndexInput(range: Pick<FileRange, 'id'>): Locator {
-    return this.page.getByTestId(`firstFileIndex-${ range.id }`)
+  getRows(user: User): Locator {
+    return this.page.locator('tr').filter({hasText: `${user.firstName} ${user.lastName}`})
+  }
+  getRow(user: User): Locator {
+    return this.getRows(user).first()
   }
 
-  getlastIndexInput(range: Pick<FileRange, 'id'>): Locator {
-    return this.page.getByTestId(`lastFileIndex-${ range.id }`)
+  getfirstIndexInput(user: User): Locator {
+    return this.getRow(user).getByTestId('firstFileIndex')
   }
 
-  getUnlockButton(range: Pick<FileRange, 'id'>): Locator {
-    return this.page.getByTestId(`unlock-${ range.id }`)
+  getlastIndexInput(user: User): Locator {
+    return this.getRow(user).getByTestId('lastFileIndex')
   }
 
-  getRemoveButton(range: Pick<FileRange, 'id'>): Locator {
-    return this.page.getByTestId(`remove-${ range.id }`)
+  getUnlockButton(user: User): Locator {
+    return this.getRow(user).getByTestId('unlock')
+  }
+
+  getRemoveButton(user: User): Locator {
+    return this.getRow(user).getByTestId('remove')
   }
 }

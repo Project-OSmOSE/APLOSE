@@ -1,7 +1,6 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { type Annotation, type Features, useUpdateAnnotation } from '@/features/Annotator/Annotation';
-import { TableContent, TableDivider } from '@/components/ui';
-import styles from '@/features/Annotator/AcousticFeatures/styles.module.scss';
+import { Th, Tr } from '@/components/ui';
 import { BooleanRow, InputRow, NoteRow } from '@/features/Annotator/AcousticFeatures/Rows';
 import { useAppSelector } from '@/features/App';
 import { selectAnalysis } from '@/features/Annotator/Analysis';
@@ -36,62 +35,72 @@ export const Frequency: React.FC<{ annotation: Annotation }> = ({ annotation }) 
     }, [ updateFeatures, annotation ])
 
     return <Fragment>
-        <TableContent isFirstColumn={ true } className={ styles.frequencyCell }>Frequency</TableContent>
+        <Tr>
+            <Th scope="row" rowSpan={ 10 }>Frequency</Th>
 
-        {/* Min */ }
-        <InputRow label="Min" value={ annotation.startFrequency! } max={ maxFrequency } unit="Hz"
-                  disabled={ phase?.phase === 'Verification' }
-                  onUpdate={ onMinUpdate }/>
-        <TableDivider className={ styles.span2ColsEnd }/>
+            {/* Min */ }
+            <InputRow label="Min" value={ annotation.startFrequency! } max={ maxFrequency } unit="Hz"
+                      disabled={ phase?.phase === 'Verification' }
+                      onUpdate={ onMinUpdate }/>
+        </Tr>
 
         {/* Max */ }
-        <InputRow label="Max" value={ annotation.endFrequency! } max={ maxFrequency } unit="Hz"
-                  disabled={ phase?.phase === 'Verification' }
-                  onUpdate={ onMaxUpdate }/>
-        <TableDivider className={ styles.span2ColsEnd }/>
+        <Tr>
+            <InputRow label="Max" value={ annotation.endFrequency! } max={ maxFrequency } unit="Hz"
+                      disabled={ phase?.phase === 'Verification' }
+                      onUpdate={ onMaxUpdate }/>
+        </Tr>
 
-        {/* Range */}
-        <NoteRow label="Range" note={ `${(annotation.endFrequency ?? 0)
-            - (annotation.startFrequency ?? 0)}Hz` }/>
-        <TableDivider className={ styles.span2ColsEnd }/>
+        {/* Range */ }
+        <Tr>
+            <NoteRow label="Range"
+                     note={ `${ (annotation.endFrequency ?? 0) - (annotation.startFrequency ?? 0) }Hz` }/>
+        </Tr>
 
         {/* Start */ }
-        <InputRow label="Start" value={ annotation.acousticFeatures?.startFrequency } max={ maxFrequency } unit="Hz"
-                  onUpdate={ value => onFeatureUpdate('startFrequency', value) }
-                  clickable annotation={ annotation }/>
-        <TableDivider className={ styles.span2ColsEnd }/>
+        <Tr>
+            <InputRow label="Start" value={ annotation.acousticFeatures?.startFrequency } max={ maxFrequency } unit="Hz"
+                      onUpdate={ value => onFeatureUpdate('startFrequency', value) }
+                      clickable annotation={ annotation }/>
+        </Tr>
 
         {/* End */ }
-        <InputRow label="End" value={ annotation.acousticFeatures?.endFrequency } max={ maxFrequency } unit="Hz"
-                  onUpdate={ value => onFeatureUpdate('endFrequency', value) }
-                  clickable annotation={ annotation }/>
-        <TableDivider className={ styles.span2ColsEnd }/>
+        <Tr>
+            <InputRow label="End" value={ annotation.acousticFeatures?.endFrequency } max={ maxFrequency } unit="Hz"
+                      onUpdate={ value => onFeatureUpdate('endFrequency', value) }
+                      clickable annotation={ annotation }/>
+        </Tr>
 
         {/* Relative min count */ }
-        <InputRow label="Relative min count" value={ annotation.acousticFeatures?.relativeMinFrequencyCount }
-                  onUpdate={ value => onFeatureUpdate('relativeMinFrequencyCount', value) }/>
-        <TableDivider className={ styles.span2ColsEnd }/>
+        <Tr>
+            <InputRow label="Relative min count" value={ annotation.acousticFeatures?.relativeMinFrequencyCount }
+                      onUpdate={ value => onFeatureUpdate('relativeMinFrequencyCount', value) }/>
+        </Tr>
 
         {/* Relative max count */ }
-        <InputRow label="Relative max count" value={ annotation.acousticFeatures?.relativeMaxFrequencyCount }
-                  onUpdate={ value => onFeatureUpdate('relativeMaxFrequencyCount', value) }/>
-        <TableDivider className={ styles.span2ColsEnd }/>
+        <Tr>
+            <InputRow label="Relative max count" value={ annotation.acousticFeatures?.relativeMaxFrequencyCount }
+                      onUpdate={ value => onFeatureUpdate('relativeMaxFrequencyCount', value) }/>
+        </Tr>
 
         {/* Inflection points */ }
-        <NoteRow label="Inflection points" note={ (annotation.acousticFeatures!.relativeMinFrequencyCount ?? 0)
-            + (annotation.acousticFeatures!.relativeMaxFrequencyCount ?? 0) }/>
-        <TableDivider className={ styles.span2ColsEnd }/>
+        <Tr>
+            <NoteRow label="Inflection points" note={ (annotation.acousticFeatures!.relativeMinFrequencyCount ?? 0)
+                + (annotation.acousticFeatures!.relativeMaxFrequencyCount ?? 0) }/>
+        </Tr>
 
         {/* Step count */ }
-        <InputRow label="Steps count" value={ annotation.acousticFeatures?.stepsCount }
-                  onUpdate={ value => onFeatureUpdate('stepsCount', value) }/>
-        <TableDivider className={ styles.span2ColsEnd }/>
+        <Tr>
+            <InputRow label="Steps count" value={ annotation.acousticFeatures?.stepsCount }
+                      onUpdate={ value => onFeatureUpdate('stepsCount', value) }/>
+        </Tr>
 
         {/* Has harmonics */ }
-        <BooleanRow label="Has harmonics"
-                    checked={ annotation.acousticFeatures?.hasHarmonics }
-                    toggle={ () => onFeatureToggle('hasHarmonics') }/>
-
-        <TableDivider/>
+        <Tr>
+            <BooleanRow
+                label="Has harmonics"
+                checked={ annotation.acousticFeatures?.hasHarmonics }
+                toggle={ () => onFeatureToggle('hasHarmonics') }/>
+        </Tr>
     </Fragment>
 }

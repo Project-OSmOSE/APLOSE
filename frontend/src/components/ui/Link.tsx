@@ -37,7 +37,7 @@ export const Link: React.FC<LinkProps> = ({
         event.stopPropagation()
         if (appPath) navigate(appPath, { replace, state: { from: location.pathname } })
         if (onClick) onClick()
-    }, [ appPath, location, navigate, onClick ])
+    }, [ appPath, location, navigate, onClick, replace ])
 
     const openAux = useCallback(() => window.open(`/app${ appPath }`, '_blank'), [ appPath ])
 

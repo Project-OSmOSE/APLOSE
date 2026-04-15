@@ -4,6 +4,7 @@ query listCampaigns(
     $filter_phase: AnnotationPhaseType
     $filter_ownerID: ID
     $filter_annotatorID: ID
+    $filter_datasetID: ID
 ) {
     allAnnotationCampaigns(
         isArchived: $filter_isArchived
@@ -11,6 +12,7 @@ query listCampaigns(
         ownerId: $filter_ownerID
         phases_AnnotationFileRanges_AnnotatorId: $filter_annotatorID
         search: $search
+        analysis_DatasetId: $filter_datasetID
 
         orderBy: "name"
     ) {

@@ -25,7 +25,7 @@ export class Navbar {
   }
 
   get storageButton(): Locator {
-    return this.page.getByRole('button', { name: 'Storage' })
+    return this.page.getByRole('button', { name: 'Storage', exact: true })
   }
 
   get logoutButton(): Locator {

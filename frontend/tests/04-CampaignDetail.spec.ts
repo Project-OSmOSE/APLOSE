@@ -49,7 +49,7 @@ const TEST = {
             })
 
             await test.step('Can copy owner email', async () => {
-                await page.locator('p').filter({ hasText: 'Created on ' }).getByRole('button').click()
+                await page.locator('span').filter({ hasText: 'Created on ' }).getByRole('button').click()
                 await expect(page.getByText(`${ USERS.creator.displayName } email address`)).toBeVisible();
             })
 
