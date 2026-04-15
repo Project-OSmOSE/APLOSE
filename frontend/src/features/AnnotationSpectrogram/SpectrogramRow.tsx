@@ -7,7 +7,7 @@ import {
     type Maybe,
     useCurrentPhase,
 } from '@/api';
-import React, { useMemo } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import { Button, Td, Th, Tr } from '@/components/ui';
 import { IonIcon } from '@ionic/react';
 import { checkmarkCircle, chevronForwardOutline, ellipseOutline } from 'ionicons/icons/index.js';
@@ -16,7 +16,7 @@ import { formatTime } from '@/service/function';
 import styles from './styles.module.scss'
 
 export const SpectrogramRow: React.FC<{
-    spectrogram: Pick<AnnotationSpectrogramNode, 'id' | 'filename' | 'duration' | 'start'>,
+    spectrogram: Pick<AnnotationSpectrogramNode, 'id' | 'filename' | 'duration' | 'start' | 'isAssigned'>,
     task?: Maybe<Pick<AnnotationTaskNode, 'status'>>,
     userAnnotations?: Maybe<Pick<AnnotationNodeNodeConnection, 'totalCount'>>;
     annotationsToCheck?: Maybe<Pick<AnnotationNodeNodeConnection, 'totalCount'>>;
@@ -44,14 +44,16 @@ export const SpectrogramRow: React.FC<{
     return <Tr className={ submitted ? styles.submitted : ''}>
         <Th scope='row'>{ spectrogram.filename }</Th>
         <Td center>{ start.toUTCString() }</Td>
-        <Td>{ formatTime(spectrogram.duration) }</Td>
-        <Td center>{ allAnnotationsCount }</Td>
-        { phase?.phase == 'Verification' && <Td center>{ validAnnotationsCount }</Td> }
+        <Td center>{ formatTime(spectrogram.duration) }</Td>
+        <Td center>{ spectrogram.isAssigned ?allAnnotationsCount : "-" }</Td>
+        { phase?.phase == 'Verification' && <Td center>{ spectrogram.isAssigned ?validAnnotationsCount : "-" }</Td> }
         <Td center>
-            { submitted &&
-                <IonIcon icon={ checkmarkCircle } color="primary"/> }
-            { !submitted &&
-                <IonIcon icon={ ellipseOutline } color="medium"/> }
+            {spectrogram.isAssigned ? <Fragment>
+                { submitted &&
+                    <IonIcon icon={ checkmarkCircle } color="primary"/> }
+                { !submitted &&
+                    <IonIcon icon={ ellipseOutline } color="medium"/> }
+            </Fragment> : "-" }
         </Td>
         <Td>
             <Button color="dark" fill="clear" size="small"

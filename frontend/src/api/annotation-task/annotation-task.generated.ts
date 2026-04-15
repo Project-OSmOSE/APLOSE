@@ -20,7 +20,7 @@ export type ListAnnotationTaskQueryVariables = Types.Exact<{
 }>;
 
 
-export type ListAnnotationTaskQuery = { __typename?: 'Query', allAnnotationSpectrograms?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', resumeSpectrogramId?: string | null, totalCount: number, results: Array<{ __typename?: 'AnnotationSpectrogramNode', id: string, filename: string, start: any, duration: number, task?: { __typename?: 'AnnotationTaskNode', status: Types.AnnotationTaskStatus, userAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', totalCount?: number | null } | null, annotationsToCheck?: { __typename?: 'AnnotationNodeNodeConnection', totalCount?: number | null } | null, validAnnotationsToCheck?: { __typename?: 'AnnotationNodeNodeConnection', totalCount?: number | null } | null } | null } | null> } | null };
+export type ListAnnotationTaskQuery = { __typename?: 'Query', allAnnotationSpectrograms?: { __typename?: 'AnnotationSpectrogramNodeNodeConnection', resumeSpectrogramId?: string | null, totalCount: number, results: Array<{ __typename?: 'AnnotationSpectrogramNode', id: string, filename: string, start: any, duration: number, isAssigned: boolean, task?: { __typename?: 'AnnotationTaskNode', status: Types.AnnotationTaskStatus, userAnnotations?: { __typename?: 'AnnotationNodeNodeConnection', totalCount?: number | null } | null, annotationsToCheck?: { __typename?: 'AnnotationNodeNodeConnection', totalCount?: number | null } | null, validAnnotationsToCheck?: { __typename?: 'AnnotationNodeNodeConnection', totalCount?: number | null } | null } | null } | null> } | null };
 
 export type GetAnnotationTaskQueryVariables = Types.Exact<{
   spectrogramID: Types.Scalars['ID']['input'];
@@ -83,6 +83,7 @@ export const ListAnnotationTaskDocument = `
       filename
       start
       duration
+      isAssigned(campaignId: $campaignID, phase: $phaseType)
       task(phase: $phaseType, campaignId: $campaignID) {
         status
         userAnnotations(

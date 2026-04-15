@@ -55,6 +55,7 @@ query listAnnotationTask(
             filename
             start
             duration
+            isAssigned(campaignId: $campaignID, phase: $phaseType)
 
             task(
                 phase: $phaseType

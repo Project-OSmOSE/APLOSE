@@ -64,6 +64,7 @@ query (
             filename
             start
             duration
+            isAssigned(campaignId: $campaignID, phase: $phaseType)
 
             task(
                 phase: $phaseType
@@ -93,6 +94,8 @@ query (
         }
         totalCount
     }
+    
+    _debug { exceptions { stack } }
 }
 """
 QUERY_FOR_SPECTROGRAM = """
@@ -170,10 +173,9 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(content), 0)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 11)
+        self.assertFalse(content["results"][0]["isAssigned"])
 
     def test_connected_empty_user(self):
         response = self.gql_query(
@@ -186,10 +188,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(content), 0)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 0)
 
     def test_connected_annotator(self):
         response = self.gql_query(
@@ -204,11 +204,10 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
 
         content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
         results = content["results"]
-        self.assertEqual(len(results), 4)
-
         self.assertEqual(content["totalCount"], 4)
         self.assertEqual(content["resumeSpectrogramId"], "7")
         self.assertEqual(results[0]["id"], "7")
+        self.assertTrue(results[0]["isAssigned"])
         self.assertEqual(results[0]["filename"], "sound007")
         self.assertEqual(results[0]["task"]["annotations"]["totalCount"], 3)
 
@@ -225,13 +224,13 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
 
         content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
         results = content["results"]
-        self.assertEqual(len(results), 6)
-
-        self.assertEqual(content["totalCount"], 6)
+        self.assertEqual(content["totalCount"], 11)
         self.assertEqual(content["resumeSpectrogramId"], "2")
         self.assertEqual(results[0]["id"], "1")
+        self.assertTrue(results[0]["isAssigned"])
         self.assertEqual(results[0]["filename"], "sound001")
         self.assertEqual(results[0]["task"]["annotations"]["totalCount"], 3)
+        self.assertFalse(results[6]["isAssigned"])
 
     def test_connected_admin_for_spectrogram(self):
         response = self.gql_query(
@@ -245,7 +244,7 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         self.assertResponseNoErrors(response)
 
         content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
-        self.assertEqual(content["totalCount"], 6)
+        self.assertEqual(content["totalCount"], 11)
         self.assertEqual(content["currentIndex"], 0)
         self.assertIsNone(content["previousSpectrogramId"])
         self.assertEqual(content["nextSpectrogramId"], "2")
@@ -259,15 +258,13 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
             variables={
                 **VARIABLES,
                 "annotatorID": 1,
-                "search": "sound010",  # This file is not assigned to this user
+                "search": "sound020",  # This file does not exist
             },
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 0)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 0)
 
     def test_connected_admin__search_correct(self):
         response = self.gql_query(
@@ -281,10 +278,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 1)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 1)
 
     def test_connected_admin__status_finished(self):
         response = self.gql_query(
@@ -298,10 +293,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 1)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 1)
 
     def test_connected_admin__status_created(self):
         response = self.gql_query(
@@ -315,10 +308,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 5)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 5)
 
     def test_connected_admin__label_empty(self):
         response = self.gql_query(
@@ -333,10 +324,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 0)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 0)
 
     def test_connected_admin__label(self):
         response = self.gql_query(
@@ -351,10 +340,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 1)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 1)
 
     def test_connected_admin__confidence_empty(self):
         response = self.gql_query(
@@ -369,10 +356,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 0)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 0)
 
     def test_connected_admin__confidence(self):
         response = self.gql_query(
@@ -387,10 +372,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 1)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 1)
 
     def test_connected_admin__acoustic_features_exists(self):
         response = self.gql_query(
@@ -405,10 +388,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 1)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 1)
 
     def test_connected_admin__acoustic_features_not_exists(self):
         response = self.gql_query(
@@ -423,10 +404,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 1)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 1)
 
     def test_connected_admin__with_annotations(self):
         response = self.gql_query(
@@ -440,10 +419,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 1)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 1)
 
     def test_connected_admin__without_annotations(self):
         response = self.gql_query(
@@ -457,10 +434,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 5)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 5)
 
     def test_connected_admin__detector_empty(self):
         response = self.gql_query(
@@ -475,10 +450,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 0)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 0)
 
     def test_connected_admin__detector(self):
         response = self.gql_query(
@@ -495,10 +468,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 1)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 1)
 
     def test_connected_admin__from(self):
         response = self.gql_query(
@@ -512,10 +483,8 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 5)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 10)
 
     def test_connected_admin__to(self):
         response = self.gql_query(
@@ -529,7 +498,5 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         )
         self.assertResponseNoErrors(response)
 
-        results = json.loads(response.content)["data"]["allAnnotationSpectrograms"][
-            "results"
-        ]
-        self.assertEqual(len(results), 2)
+        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
+        self.assertEqual(content["totalCount"], 2)

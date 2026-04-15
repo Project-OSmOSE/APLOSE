@@ -862,36 +862,6 @@ type Query {
     first: Int
     last: Int
   ): UserNodeNodeConnection
-  allAnnotationSpectrograms(
-    """Query limit"""
-    limit: Int
-
-    """Query offset"""
-    offset: Int
-
-    """Query order"""
-    ordering: String
-    before: String
-    after: String
-    first: Int
-    last: Int
-    start_Lte: DateTime
-    end_Gte: DateTime
-    filename_Icontains: String
-    phase: AnnotationPhaseType
-    annotationCampaign: ID
-    annotator: ID
-    annotationTasks_Status: AnnotationTaskStatus
-    annotations_Exists: Boolean
-    annotations_Confidence_Label: String
-    annotations_LabelName: String
-    annotations_AcousticFeatures_Exists: Boolean
-    annotations_Detector: ID
-    annotations_Annotator: ID
-
-    """Ordering"""
-    orderBy: String
-  ): AnnotationSpectrogramNodeNodeConnection
   annotationLabelsForDeploymentId(
     deploymentId: ID!
 
@@ -1065,6 +1035,36 @@ type Query {
     annotationPhase_AnnotationCampaign: ID
     annotationPhase_Phase: AnnotationPhaseType
   ): AnnotationFileRangeNodeNodeConnection
+  allAnnotationSpectrograms(
+    """Query limit"""
+    limit: Int
+
+    """Query offset"""
+    offset: Int
+
+    """Query order"""
+    ordering: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+    start_Lte: DateTime
+    end_Gte: DateTime
+    filename_Icontains: String
+    phase: AnnotationPhaseType
+    annotationCampaign: ID
+    annotator: ID
+    annotationTasks_Status: AnnotationTaskStatus
+    annotations_Exists: Boolean
+    annotations_Confidence_Label: String
+    annotations_LabelName: String
+    annotations_AcousticFeatures_Exists: Boolean
+    annotations_Detector: ID
+    annotations_Annotator: ID
+
+    """Ordering"""
+    orderBy: String
+  ): AnnotationSpectrogramNodeNodeConnection
   annotationSpectrogramById(id: ID!): AnnotationSpectrogramNode
   browse(path: String): [StorageUnion]
   search(path: String!): StorageUnion
@@ -4298,20 +4298,6 @@ type UserNodeNodeConnection {
   totalCount: Int
 }
 
-"""Annotation spectrogram node connection"""
-type AnnotationSpectrogramNodeNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfoExtra!
-
-  """Contains the nodes in this connection."""
-  results: [AnnotationSpectrogramNode]!
-  totalCount: Int!
-  resumeSpectrogramId(campaignId: ID!, phase: AnnotationPhaseType!): ID
-  previousSpectrogramId(spectrogramId: ID): ID
-  nextSpectrogramId(spectrogramId: ID): ID
-  currentIndex(spectrogramId: ID): Int
-}
-
 type AnnotationLabelNodeNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfoExtra!
@@ -4373,6 +4359,20 @@ type AnnotationFileRangeNodeNodeConnection {
   """Contains the nodes in this connection."""
   results: [AnnotationFileRangeNode]!
   totalCount: Int
+}
+
+"""Annotation spectrogram node connection"""
+type AnnotationSpectrogramNodeNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfoExtra!
+
+  """Contains the nodes in this connection."""
+  results: [AnnotationSpectrogramNode]!
+  totalCount: Int!
+  resumeSpectrogramId(campaignId: ID!, phase: AnnotationPhaseType!): ID
+  previousSpectrogramId(spectrogramId: ID): ID
+  nextSpectrogramId(spectrogramId: ID): ID
+  currentIndex(spectrogramId: ID): Int
 }
 
 union StorageUnion = AnalysisStorageNode | DatasetStorageNode | FolderNode

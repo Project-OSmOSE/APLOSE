@@ -9,8 +9,10 @@ from backend.api.models import (
     AnnotationTask,
     Annotation,
     AnnotationPhase,
+    AnnotationCampaign,
 )
 from backend.api.schema.enums import AnnotationPhaseType, AnnotationTaskStatus
+from backend.aplose.models import User
 
 
 class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
@@ -48,19 +50,18 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
             queryset
         )
 
-        # Filter through existing file range
-        queryset = queryset.filter(
-            Exists(
-                file_ranges.filter(
-                    from_datetime__lte=OuterRef("start"),
-                    to_datetime__gte=OuterRef("end"),
-                )
-            )
-        )
-
         # Filter on task status
         status = self.data.get("annotation_tasks__status")
         if status:
+            # Filter through existing file range - only assigned tasks have status
+            queryset = queryset.filter(
+                Exists(
+                    file_ranges.filter(
+                        from_datetime__lte=OuterRef("start"),
+                        to_datetime__gte=OuterRef("end"),
+                    )
+                )
+            )
             q = Exists(
                 tasks.filter(
                     status=AnnotationTask.Status.FINISHED, spectrogram_id=OuterRef("id")
@@ -73,6 +74,15 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
 
         # Filter on annotations status
         if self.data.get("annotations__exists") is not None:
+            # Filter through existing file range - only assigned tasks can have annotations - or not
+            queryset = queryset.filter(
+                Exists(
+                    file_ranges.filter(
+                        from_datetime__lte=OuterRef("start"),
+                        to_datetime__gte=OuterRef("end"),
+                    )
+                )
+            )
 
             label = self.data.get("annotations__label_name")
             if label:
@@ -114,12 +124,13 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
 
     def _get_querysets_for_filter(
         self, queryset: QuerySet[Spectrogram]
-    ) -> (
+    ) -> tuple[
         QuerySet[Spectrogram],
         QuerySet[AnnotationFileRange],
         QuerySet[AnnotationTask],
         QuerySet[Annotation],
-    ):
+    ]:
+        can_see_unassigned = False
 
         spectrograms = queryset
         file_ranges = AnnotationFileRange.objects.all()
@@ -153,9 +164,32 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
 
         annotator_id = self.data.get("annotator")
         if annotator_id:
-            file_ranges = file_ranges.filter(annotator_id=annotator_id)
-            tasks = tasks.filter(annotator_id=annotator_id)
+            user = User.objects.get(pk=annotator_id)
+            file_ranges = file_ranges.filter(annotator=user)
+            tasks = tasks.filter(annotator=user)
             if phase_type == AnnotationPhase.Type.ANNOTATION:
-                annotations = annotations.filter(annotator_id=annotator_id)
+                annotations = annotations.filter(annotator=user)
+            if user.is_superuser or user.is_staff:
+                can_see_unassigned = True
+            if campaign_id:
+                campaign = AnnotationCampaign.objects.get(pk=campaign_id)
+                if campaign.owner_id == user.id:
+                    can_see_unassigned = True
+                if (
+                    phase_type
+                    and campaign.phases.get(phase=phase_type).created_by_id == user.id
+                ):
+                    can_see_unassigned = True
+
+        if not can_see_unassigned:
+            # Filter through existing file range
+            spectrograms = spectrograms.filter(
+                Exists(
+                    file_ranges.filter(
+                        from_datetime__lte=OuterRef("start"),
+                        to_datetime__gte=OuterRef("end"),
+                    )
+                )
+            )
 
         return spectrograms, file_ranges, tasks, annotations
