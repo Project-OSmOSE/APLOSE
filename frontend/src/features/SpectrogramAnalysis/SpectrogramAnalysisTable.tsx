@@ -29,7 +29,7 @@ export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVari
     return <Table>
         <Thead>
             <Tr>
-                <Th scope="col">Analysis</Th>
+                <Th scope="col">Name</Th>
                 <Th scope="col">Type</Th>
                 <Th scope="col">Created at</Th>
                 <Th scope="col">Number of files</Th>
