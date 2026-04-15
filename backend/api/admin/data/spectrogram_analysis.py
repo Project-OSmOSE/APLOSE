@@ -13,8 +13,11 @@ def store_paths(analysis: SpectrogramAnalysis):
     # pylint: disable=broad-exception-raised
     # Only process one analysis
 
+    relations_to_fill = analysis.spectrogram_relations.filter(
+        spectrogram_path__isnull=False,
+    )
     if analysis.legacy:
-        for relation in analysis.spectrogram_relations.all():
+        for relation in relations_to_fill.all():
             paths = relation.get_legacy_paths()
             relation.audio_path = paths["audio"]
             relation.spectrogram_path = paths["spectrogram"]
@@ -26,9 +29,6 @@ def store_paths(analysis: SpectrogramAnalysis):
     if not spectro_dataset:
         raise Exception(f"Cannot found spectro_dataset for analysis: {analysis}")
 
-    relations_to_fill = analysis.spectrogram_relations.filter(
-        spectrogram_path__isnull=False,
-    )
     for spectro_data in spectro_dataset.data:
         spectrogram_relation = relations_to_fill.filter(
             spectrogram__filename=spectro_data.name,
