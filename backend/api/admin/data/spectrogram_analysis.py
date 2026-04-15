@@ -26,9 +26,12 @@ def store_paths(analysis: SpectrogramAnalysis):
     if not spectro_dataset:
         raise Exception(f"Cannot found spectro_dataset for analysis: {analysis}")
 
+    relations_to_fill = analysis.spectrogram_relations.filter(
+        spectrogram_path__isnull=False,
+    )
     for spectro_data in spectro_dataset.data:
-        spectrogram_relation = analysis.spectrogram_relations.filter(
-            spectrogram__filename=spectro_data.name
+        spectrogram_relation = relations_to_fill.filter(
+            spectrogram__filename=spectro_data.name,
         ).first()
         if not spectrogram_relation:
             continue
