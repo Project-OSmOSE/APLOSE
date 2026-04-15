@@ -9,6 +9,7 @@ import { convertCommentsToPost, selectTaskComments } from '@/features/Annotator/
 import { type AploseNavParams } from '@/features/UX';
 import { useAppSelector } from '@/features/App';
 import { selectAllFileIsSeen, selectStart } from '@/features/Annotator/UX';
+import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 
 export const useAnnotatorSubmit = () => {
   const openAnnotator = useOpenAnnotator()
@@ -17,6 +18,7 @@ export const useAnnotatorSubmit = () => {
   const allAnnotations = useAppSelector(selectAllAnnotations)
   const taskComments = useAppSelector(selectTaskComments)
   const { submitTask, isSuccess, error, ...info } = useSubmitTask()
+  const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
 
   const { campaignID, phaseType } = useParams<AploseNavParams>();
   const allFileIsSeen = useAppSelector(selectAllFileIsSeen)
@@ -24,6 +26,7 @@ export const useAnnotatorSubmit = () => {
   const { navigationInfo } = useAnnotationTask()
 
   const submit = useCallback(async () => {
+    if (!isEditionAuthorized) return;
     if (!allFileIsSeen) {
       const force = await toast.raiseError({
         message: 'Be careful, you haven\' see all of the file yet. Try scrolling to the end or changing the zoom level',
@@ -36,7 +39,7 @@ export const useAnnotatorSubmit = () => {
       convertCommentsToPost(taskComments),
       start,
     )
-  }, [ openAnnotator, toast, navigate, allAnnotations, submitTask, allFileIsSeen, start, navigationInfo, campaignID, phaseType, taskComments ])
+  }, [ openAnnotator, toast, navigate, allAnnotations,isEditionAuthorized, submitTask, allFileIsSeen, start, navigationInfo, campaignID, phaseType, taskComments ])
   useKeyDownEvent([ 'Enter', 'NumpadEnter' ], submit)
 
   useEffect(() => {
