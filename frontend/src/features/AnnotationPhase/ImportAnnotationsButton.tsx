@@ -2,7 +2,7 @@ import React, { Fragment, useMemo } from 'react';
 import { Link, TooltipOverlay } from '@/components/ui';
 import { IonIcon } from '@ionic/react';
 import { cloudUploadOutline } from 'ionicons/icons/index.js';
-import { useCurrentCampaign } from '@/api';
+import { AnnotationPhaseType, useCurrentCampaign } from '@/api';
 import { type AploseNavParams } from '@/features/UX';
 import { useParams } from 'react-router-dom';
 
@@ -12,10 +12,10 @@ export const ImportAnnotationsButton: React.FC = () => {
   const { verificationPhase } = useCurrentCampaign()
 
   const path = useMemo(() => {
-    return `/annotation-campaign/${ campaignID }/phase/Annotation/import-annotations`
+    return `/annotation-campaign/${ campaignID }/phase/Verification/import-annotations`
   }, [ campaignID ])
 
-  if (phaseType !== 'Annotation') return <Fragment/>
+  if (phaseType !== AnnotationPhaseType.Verification) return <Fragment/>
   if (!verificationPhase) return <Fragment/>
   return <TooltipOverlay tooltipContent={ <p>Import annotations for verification</p> } anchor="right">
     <Link appPath={ path } fill="outline" color="medium" data-testid="import">
