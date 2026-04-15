@@ -1,8 +1,8 @@
 """OSEkit resolver"""
 from pathlib import PureWindowsPath, Path
 
-from osekit import setup_logging
 from metadatax.data.models import FileFormat
+from osekit import setup_logging
 from osekit.core.spectro_dataset import SpectroDataset
 from osekit.public.project import Project
 
