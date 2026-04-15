@@ -6,6 +6,7 @@ from django_extension.schema.fields import (
 )
 from django_extension.schema.permissions import GraphQLPermissions
 
+from .connections import AnnotationSpectrogramConnectionField
 from .nodes import (
     AnnotationCampaignNode,
     AnnotationSpectrogramNode,
@@ -16,9 +17,9 @@ from .nodes import (
     AnnotationPhaseNode,
     DetectorNode,
     SpectrogramAnalysisNode,
+    SpectrogramNode,
 )
 from .queries import (
-    AllAnnotationSpectrogramsField,
     AnnotationPhaseByCampaignPhase,
     AnnotationLabelsForDeploymentIdField,
 )
@@ -96,7 +97,9 @@ class APIQuery(graphene.ObjectType):
     all_annotation_file_ranges = AuthenticatedPaginationConnectionField(
         AnnotationFileRangeNode
     )
-    all_annotation_spectrograms = AllAnnotationSpectrogramsField
+    all_annotation_spectrograms = AnnotationSpectrogramConnectionField(
+        AnnotationSpectrogramNode
+    )
     annotation_spectrogram_by_id = ByIdField(
         AnnotationSpectrogramNode,
         permission=GraphQLPermissions.AUTHENTICATED,

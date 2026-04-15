@@ -11,6 +11,7 @@ from backend.api.models import (
     AnnotationPhase,
 )
 from backend.api.schema.enums import AnnotationPhaseType, AnnotationTaskStatus
+from backend.aplose.models import User
 
 
 class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
@@ -46,16 +47,6 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
 
         queryset, file_ranges, tasks, annotations = self._get_querysets_for_filter(
             queryset
-        )
-
-        # Filter through existing file range
-        queryset = queryset.filter(
-            Exists(
-                file_ranges.filter(
-                    from_datetime__lte=OuterRef("start"),
-                    to_datetime__gte=OuterRef("end"),
-                )
-            )
         )
 
         # Filter on task status
@@ -114,12 +105,12 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
 
     def _get_querysets_for_filter(
         self, queryset: QuerySet[Spectrogram]
-    ) -> (
+    ) -> tuple[
         QuerySet[Spectrogram],
         QuerySet[AnnotationFileRange],
         QuerySet[AnnotationTask],
         QuerySet[Annotation],
-    ):
+    ]:
 
         spectrograms = queryset
         file_ranges = AnnotationFileRange.objects.all()
@@ -153,9 +144,20 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
 
         annotator_id = self.data.get("annotator")
         if annotator_id:
-            file_ranges = file_ranges.filter(annotator_id=annotator_id)
-            tasks = tasks.filter(annotator_id=annotator_id)
+            user = User.objects.get(pk=annotator_id)
+            file_ranges = file_ranges.filter(annotator=user)
+            tasks = tasks.filter(annotator=user)
             if phase_type == AnnotationPhase.Type.ANNOTATION:
-                annotations = annotations.filter(annotator_id=annotator_id)
+                annotations = annotations.filter(annotator=user)
+            if not (user.is_superuser or user.is_staff):
+                # Filter through existing file range
+                spectrograms = spectrograms.filter(
+                    Exists(
+                        file_ranges.filter(
+                            from_datetime__lte=OuterRef("start"),
+                            to_datetime__gte=OuterRef("end"),
+                        )
+                    )
+                )
 
         return spectrograms, file_ranges, tasks, annotations
