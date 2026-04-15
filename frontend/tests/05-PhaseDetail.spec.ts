@@ -151,7 +151,7 @@ const TEST = {
 
             await test.step('Access import annotation', async () => {
                 await Promise.all([
-                    page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Annotation }/import-annotations`),
+                    page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ AnnotationPhaseType.Verification }/import-annotations`),
                     await page.phaseDetail.importAnnotationsButton.click(),
                 ])
                 await expect(page.phaseImport.title).toBeVisible()
@@ -220,14 +220,14 @@ test.describe('/annotation-campaign/:campaignID/phase/:phaseType', () => {
     TEST.cannotUpdatePhase({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
 
     test.describe('Can handle annotation import', () => {
-        TEST.cannotImportAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
-        TEST.cannotImportAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Verification })
-        TEST.canImportAnnotation({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
-        TEST.cannotImportAnnotation({ as: 'creator', phase: AnnotationPhaseType.Verification, tag: essentialTag })
-        TEST.canImportAnnotation({ as: 'staff', phase: AnnotationPhaseType.Annotation })
-        TEST.cannotImportAnnotation({ as: 'staff', phase: AnnotationPhaseType.Verification })
-        TEST.canImportAnnotation({ as: 'superuser', phase: AnnotationPhaseType.Annotation })
-        TEST.cannotImportAnnotation({ as: 'superuser', phase: AnnotationPhaseType.Verification })
+        TEST.cannotImportAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Annotation })
+        TEST.cannotImportAnnotation({ as: 'annotator', phase: AnnotationPhaseType.Verification, tag: essentialTag })
+        TEST.cannotImportAnnotation({ as: 'creator', phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+        TEST.canImportAnnotation({ as: 'creator', phase: AnnotationPhaseType.Verification, tag: essentialTag })
+        TEST.cannotImportAnnotation({ as: 'staff', phase: AnnotationPhaseType.Annotation })
+        TEST.canImportAnnotation({ as: 'staff', phase: AnnotationPhaseType.Verification })
+        TEST.cannotImportAnnotation({ as: 'superuser', phase: AnnotationPhaseType.Annotation })
+        TEST.canImportAnnotation({ as: 'superuser', phase: AnnotationPhaseType.Verification })
     })
 
     test.describe('Can handle annotators management', () => {
