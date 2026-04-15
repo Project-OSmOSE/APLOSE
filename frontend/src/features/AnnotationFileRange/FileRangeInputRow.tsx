@@ -48,7 +48,7 @@ export const FileRangeInputRow: React.FC<{
         </Th>
         <Td>
             <Input type="number"
-                   data-testid={ `firstFileIndex-${ range.id }` }
+                   data-testid="firstFileIndex"
                    value={ range.firstFileIndex ?? '' }
                    error={ errors?.find(e => e.field === 'firstFileIndex')?.messages.join(' ') }
                    onChange={ (e: ChangeEvent<HTMLInputElement>) => onUpdate({ firstFileIndex: e.target.valueAsNumber }) }
@@ -58,7 +58,7 @@ export const FileRangeInputRow: React.FC<{
         </Td>
         <Td>
             <Input type="number"
-                   data-testid={ `lastFileIndex-${ range.id }` }
+                   data-testid="lastFileIndex"
                    value={ range.lastFileIndex ?? '' }
                    error={ errors?.find(e => e.field === 'lastFileIndex')?.messages.join(' ') }
                    onChange={ (e: ChangeEvent<HTMLInputElement>) => onUpdate({ lastFileIndex: e.target.valueAsNumber }) }
@@ -69,13 +69,13 @@ export const FileRangeInputRow: React.FC<{
         </Td>
         <Td>
             { isLocked ? <IonButton color="medium" fill="outline"
-                                    data-testid={ `unlock-${ range.id }` }
+                                    data-testid="unlock"
                                     data-tooltip={ 'This user has already started to annotate' }
                                     className={ [ styles.annotatorButton, 'tooltip-right' ].join(' ') }
                                     onClick={ unlock }>
                 <IonIcon icon={ lockClosedOutline }/>
             </IonButton> : <IonButton color="danger"
-                                      data-testid={ `remove-${ range.id }` }
+                                      data-testid="remove"
                                       className={ styles.annotatorButton }
                                       onClick={ () => onDelete(range) }>
                 <IonIcon icon={ trashBinOutline }/>

@@ -34,12 +34,13 @@ const TEST = {
             await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase }))
 
             await test.step('Display existing ranges', async () => {
-                await expect(page.getByText(USERS.annotator.displayName)).toBeVisible()
-                await expect(page.phaseEdit.getfirstIndexInput(fileRange)).toHaveValue((fileRange.firstFileIndex + 1).toString())
-                await expect(page.phaseEdit.getlastIndexInput(fileRange)).toHaveValue((fileRange.lastFileIndex + 1).toString())
-                await expect(page.getByText(USERS.creator.displayName)).not.toBeVisible()
-                await expect(page.getByText(USERS.staff.displayName)).not.toBeVisible()
-                await expect(page.getByText(USERS.superuser.displayName)).not.toBeVisible()
+                await expect(page.phaseEdit.getRow(USERS.annotator)).toBeVisible()
+                await expect(page.phaseEdit.getfirstIndexInput(USERS.annotator)).toHaveValue((fileRange.firstFileIndex + 1).toString())
+                await expect(page.phaseEdit.getlastIndexInput(USERS.annotator)).toHaveValue((fileRange.lastFileIndex + 1).toString())
+
+                await expect(page.phaseEdit.getRow(USERS.creator)).not.toBeVisible()
+                await expect(page.phaseEdit.getRow(USERS.staff)).not.toBeVisible()
+                await expect(page.phaseEdit.getRow(USERS.superuser)).not.toBeVisible()
             })
         }),
 
@@ -51,38 +52,37 @@ const TEST = {
             })
             await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase }))
 
+            const newUser = USERS.superuser
+
             await test.step('Add new annotator', async () => {
-                await page.getByPlaceholder('Search annotator').locator('input').fill(USERS.superuser.firstName);
-                await page.locator('#searchbar-results').getByText(USERS.superuser.firstName).click();
-                await expect(page.getByText(USERS.superuser.displayName)).toBeVisible()
-                await expect(page.phaseEdit.getfirstIndexInput({ id: '-1' })).toBeVisible()
-                await expect(page.phaseEdit.getlastIndexInput({ id: '-1' })).toBeVisible()
+                await page.getByPlaceholder('Search annotator').locator('input').fill(newUser.firstName);
+                await page.locator('#searchbar-results').getByText(newUser.firstName).click();
+                await expect(page.phaseEdit.getRow(newUser)).toBeVisible()
             })
 
             await test.step('Edit new annotator range', async () => {
-                await page.phaseEdit.getfirstIndexInput({ id: '-1' }).fill('5')
-                await page.phaseEdit.getlastIndexInput({ id: '-1' }).fill('15')
-                const button = page.locator('.table-content button').last()
-                await expect(button).toBeEnabled()
+                await page.phaseEdit.getfirstIndexInput(newUser).fill('5')
+                await page.phaseEdit.getlastIndexInput(newUser).fill('15')
+                await expect(page.phaseEdit.getRemoveButton(newUser)).toBeEnabled()
             })
 
             await test.step('Can add known annotator with some files', async () => {
-                await page.getByPlaceholder('Search annotator').locator('input').fill(USERS.superuser.firstName);
-                await page.locator('#searchbar-results').getByText(USERS.superuser.firstName).click()
-                expect(await page.locator('.table-aplose').getByText(USERS.superuser.firstName).count()).toEqual(2)
+                await page.getByPlaceholder('Search annotator').locator('input').fill(newUser.firstName);
+                await page.locator('#searchbar-results').getByText(newUser.firstName).click()
+                expect(await page.phaseEdit.getRows(newUser).count()).toEqual(2)
             })
 
             await test.step('Cannot add known annotator with all files', async () => {
-                await page.getByPlaceholder('Search annotator').locator('input').fill(USERS.superuser.firstName);
-                await expect(page.locator('#searchbar-results').getByText(USERS.superuser.firstName)).not.toBeVisible();
+                await page.getByPlaceholder('Search annotator').locator('input').fill(newUser.firstName);
+                await expect(page.locator('#searchbar-results').getByText(newUser.firstName)).not.toBeVisible();
             })
 
             await test.step('Add annotator group', async () => {
                 await page.getByPlaceholder('Search annotator').locator('input').fill(userGroup.name);
                 await page.locator('#searchbar-results').getByText(userGroup.name).click();
-                await expect(page.getByText(USERS.staff.displayName)).toBeVisible()
-                await expect(page.phaseEdit.getfirstIndexInput({ id: '-3' })).toBeVisible()
-                await expect(page.phaseEdit.getlastIndexInput({ id: '-3' })).toBeVisible()
+                await expect(page.phaseEdit.getRow(USERS.staff)).toBeVisible()
+                await expect(page.phaseEdit.getfirstIndexInput(USERS.staff)).toBeVisible()
+                await expect(page.phaseEdit.getlastIndexInput(USERS.staff)).toBeVisible()
             })
 
             await test.step('Can submit', async () => {
@@ -126,20 +126,20 @@ const TEST = {
             await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase }))
 
             await test.step('Cannot edit or remove annotator with finished tasks', async () => {
-                await expect(page.phaseEdit.getfirstIndexInput(fileRange)).toBeDisabled()
-                await expect(page.phaseEdit.getlastIndexInput(fileRange)).toBeDisabled()
+                await expect(page.phaseEdit.getfirstIndexInput(USERS.annotator)).toBeDisabled()
+                await expect(page.phaseEdit.getlastIndexInput(USERS.annotator)).toBeDisabled()
             })
 
             await test.step('Unlock range with finished tasks', async () => {
-                await page.phaseEdit.getUnlockButton(fileRange).click()
+                await page.phaseEdit.getUnlockButton(USERS.annotator).click()
                 await page.getByRole('dialog').first().getByRole('button', { name: 'Update file range' }).click()
 
-                await expect(page.phaseEdit.getfirstIndexInput(fileRange)).toBeEnabled()
-                await expect(page.phaseEdit.getlastIndexInput(fileRange)).toBeEnabled()
+                await expect(page.phaseEdit.getfirstIndexInput(USERS.annotator)).toBeEnabled()
+                await expect(page.phaseEdit.getlastIndexInput(USERS.annotator)).toBeEnabled()
             })
 
             await test.step('Remove range with finished tasks', async () => {
-                await page.phaseEdit.getRemoveButton(fileRange).click()
+                await page.phaseEdit.getRemoveButton(USERS.annotator).click()
             })
 
             await test.step('Can submit', async () => {

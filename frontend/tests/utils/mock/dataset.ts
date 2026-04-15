@@ -29,6 +29,9 @@ export const DATASET_QUERIES: {
             spectrogramCount: dataset.spectrogramCount,
             start: dataset.start,
             end: dataset.end,
+            annotationCampaigns: {
+              edges: [],
+            },
           },
         ],
       },
