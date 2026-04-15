@@ -54,8 +54,6 @@ export const DatasetTable: React.FC = () => {
 
                         const openCompare = bCampaigns.filter(c => !c.isArchived).length - aCampaigns.filter(c => !c.isArchived).length
                         const archiveCompare = bCampaigns.filter(c => c.isArchived).length - aCampaigns.filter(c => c.isArchived).length
-                        const totalCompare = bCampaigns.length - aCampaigns.length
-                        if (totalCompare !== 0) return totalCompare
                         if (openCompare !== 0) return openCompare
                         return archiveCompare
                     }
