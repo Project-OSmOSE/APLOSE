@@ -1,9 +1,8 @@
-import React, { ChangeEvent, Fragment, useCallback, useMemo, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo } from 'react';
 import { Button, Modal, type ModalProps } from '@/components/ui';
 import { Input } from '@/components/form';
 import { IonIcon } from '@ionic/react';
-import { closeOutline, funnel, funnelOutline } from 'ionicons/icons/index.js';
-import { createPortal } from 'react-dom';
+import { closeOutline } from 'ionicons/icons/index.js';
 import { useAllTasksFilters } from '@/api';
 import styles from './styles.module.scss'
 

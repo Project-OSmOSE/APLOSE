@@ -11,7 +11,7 @@ import {
     ModalHeader,
     type ModalProps,
 } from '@/components/ui';
-import { Item } from '@/features/storage';
+import { Item } from '@/features/Storage';
 import { Searchbar } from '@/components/form';
 import { IonNote, IonSpinner } from '@ionic/react';
 import { useKeyDownEvent } from '@/features/UX';

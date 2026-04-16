@@ -9,7 +9,7 @@ import { useDataset } from '@/api';
 import { type DataNavParams } from '@/features/UX';
 import { useParams } from 'react-router-dom';
 import { downloadOutline } from 'ionicons/icons';
-import { ImportDatasetAnalysisModal } from '@/features/storage';
+import { ImportDatasetAnalysisModal } from '@/features/Storage';
 import { Cards } from '@/features/AnnotationCampaign';
 import { addOutline } from 'ionicons/icons/index.js';
 

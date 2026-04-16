@@ -6,7 +6,7 @@ import { useAppDispatch } from '@/features/App';
 import { gqlAPI } from '@/api/baseGqlApi';
 import { listSpectrogramAnalysisTag } from '@/api/spectrogram-analysis/api';
 import { HelpButton, Modal, ModalFooter, ModalHeader, type ModalProps } from '@/components/ui';
-import { Item } from '@/features/storage';
+import { Item } from '@/features/Storage';
 
 export const ImportDatasetAnalysisModal: React.FC<ModalProps> = ({ onClose }) => {
     const { datasetID } = useParams<DataNavParams>();

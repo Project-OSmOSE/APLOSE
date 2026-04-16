@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Button, Head, HelpButton, useModal } from '@/components/ui';
-import { ImportFromPath, ServerItem } from '@/features/storage';
+import { ImportFromPath, ServerItem } from '@/features/Storage';
 import styles from './styles.module.scss'
 import { IonNote } from '@ionic/react';
 

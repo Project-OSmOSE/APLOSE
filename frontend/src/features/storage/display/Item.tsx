@@ -1,7 +1,7 @@
 import React, { Fragment, type MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { ImportStatusEnum, type StorageItem, useImportDatasetFromStorage, useStorageSearch } from '@/api';
 import styles from './styles.module.scss';
-import { ItemList } from '@/features/storage';
+import { ItemList } from '@/features/Storage';
 import { IonButton, IonNote, IonSpinner } from '@ionic/react';
 import {
     AltArrowDown,
