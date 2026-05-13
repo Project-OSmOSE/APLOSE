@@ -1,17 +1,21 @@
-import React, { Fragment, useCallback, useEffect, useRef } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useRef } from 'react';
+import { createLazyFileRoute } from '@tanstack/react-router'
 import { basicSetup, EditorView } from 'codemirror';
 import { PostgreSQL, sql } from '@codemirror/lang-sql';
-import { defaultKeymap, indentWithTab } from '@codemirror/commands';
 import { keymap } from '@codemirror/view';
-import { Button, Kbd, Table, Pagination, Tbody, Td, Th, Thead, Tr, WarningText } from '@/components/ui';
+import { defaultKeymap, indentWithTab } from '@codemirror/commands';
 import { Prec } from '@codemirror/state';
-import styles from './styles.module.scss'
+
+import { Button, Kbd, Pagination, Table, Tbody, Td, Th, Thead, Tr, WarningText } from '@/components/ui';
+
 import { useCurrentUser } from '@/api';
 import { SQLRestAPI } from '@/api/sql';
+
 import { NBSP } from '@/service/type';
 
+import styles from './sql.module.scss';
 
-export const SqlQuery: React.FC = () => {
+const SqlQuery: React.FC = () => {
     const { user } = useCurrentUser();
     const { data: schema } = SQLRestAPI.endpoints.sqlSchema.useQuery();
     const [ run, { data: results, error } ] = SQLRestAPI.endpoints.postSQL.useMutation();
@@ -70,46 +74,51 @@ export const SqlQuery: React.FC = () => {
         downloadLink.click();
     }, [ results ])
 
-    if (!user || !user.isSuperuser) return <Fragment/>
-    return <div className={ styles.page }>
+    return useMemo(() => {
+        if (!user || !user.isSuperuser) return <Fragment/>
+        return <div className={ styles.page }>
 
-        <h2>SQL Query</h2>
+            <h2>SQL Query</h2>
 
-        <div className={ styles.sql }
-             ref={ ref => {
-                 if (!ref || editorRef.current) return;
-                 editorContainerRef.current = ref;
-                 setupEditor();
-             } }/>
+            <div className={ styles.sql }
+                 ref={ ref => {
+                     if (!ref || editorRef.current) return;
+                     editorContainerRef.current = ref;
+                     setupEditor();
+                 } }/>
 
-        <Button fill="outline" className={ styles.run } onClick={ () => runQuery(1) }>Run query{ NBSP }<Kbd
-            keys={ [ 'ctrl', 'enter' ] }/></Button>
+            <Button fill="outline" className={ styles.run } onClick={ () => runQuery(1) }>Run query{ NBSP }<Kbd
+                keys={ [ 'ctrl', 'enter' ] }/></Button>
 
-        <Button fill="outline" className={ styles.download }
-                onClick={ download } disabled={ !results }>Download</Button>
+            <Button fill="outline" className={ styles.download }
+                    onClick={ download } disabled={ !results }>Download</Button>
 
-        { error && <WarningText className={ styles.error } error={ error }/> }
+            { error && <WarningText className={ styles.error } error={ error }/> }
 
-        { results && <Table className={ styles.results }>
-            <Thead>
-                <Tr>
-                    { results.columns.map((c, i) => <Th scope="col" key={ i }>{ c }</Th>) }
-                </Tr>
-            </Thead>
-            <Tbody>
-                { results.results.map((row, k) => <Tr key={ k }>
-                    { row.map((cell, i) => i === 0 ? <Th scope="row" key={ i }>{ cell }</Th> :
-                        <Td key={ i }>{ cell }</Td>) }
-                </Tr>) }
-            </Tbody>
-        </Table> }
+            { results && <Table className={ styles.results }>
+                <Thead>
+                    <Tr>
+                        { results.columns.map((c, i) => <Th scope="col" key={ i }>{ c }</Th>) }
+                    </Tr>
+                </Thead>
+                <Tbody>
+                    { results.results.map((row, k) => <Tr key={ k }>
+                        { row.map((cell, i) => i === 0 ? <Th scope="row" key={ i }>{ cell }</Th> :
+                            <Td key={ i }>{ cell }</Td>) }
+                    </Tr>) }
+                </Tbody>
+            </Table> }
 
-        { results &&
-            <Pagination className={ styles.pagination }
-                        currentPage={ pageRef.current }
-                        totalPages={ results.pageCount }
-                        setCurrentPage={ runQuery }/> }
-    </div>
+            { results &&
+                <Pagination className={ styles.pagination }
+                            currentPage={ pageRef.current }
+                            totalPages={ results.pageCount }
+                            setCurrentPage={ runQuery }/> }
+        </div>
+    }, [ user ])
 }
 
-export default SqlQuery
+export const Route = createLazyFileRoute('/_superuser/sql')({
+    component: SqlQuery,
+})
+
