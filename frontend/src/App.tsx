@@ -22,7 +22,6 @@ const OntologyPage = lazy(() => import('./view/admin/ontology'));
 const OntologyTab = lazy(() => import('./view/admin/ontology/[type]'));
 const OntologyPanel = lazy(() => import('./view/admin/ontology/[type]/[id]'));
 const StorageBrowser = lazy(() => import('./view/storage'));
-const DatasetDetail = lazy(() => import('./view/dataset/[datasetID]'));
 
 
 setupIonicReact({
@@ -57,10 +56,6 @@ const AppContent: React.FC = () => {
         <Routes>
 
             {/*{ isConnected && <Route element={ <Suspense><AploseSkeleton/></Suspense> }>*/}
-
-                <Route path="dataset">
-                    <Route path=":datasetID" element={ <SuspenseAdminOnly><DatasetDetail/></SuspenseAdminOnly> }/>
-                </Route>
 
                 <Route path="storage">
                     <Route index element={ <SuspenseAdminOnly><StorageBrowser/></SuspenseAdminOnly> }/>
