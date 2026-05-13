@@ -24,7 +24,6 @@ const OntologyPanel = lazy(() => import('./view/admin/ontology/[type]/[id]'));
 const StorageBrowser = lazy(() => import('./view/storage'));
 const DatasetList = lazy(() => import('./view/dataset'));
 const DatasetDetail = lazy(() => import('./view/dataset/[datasetID]'));
-const NewAnnotationCampaign = lazy(() => import('./view/annotation-campaign/new'));
 
 
 setupIonicReact({
@@ -59,11 +58,6 @@ const AppContent: React.FC = () => {
         <Routes>
 
             {/*{ isConnected && <Route element={ <Suspense><AploseSkeleton/></Suspense> }>*/}
-
-                <Route path="annotation-campaign">
-
-                    <Route path="new" element={ <SuspenseAdminOnly><NewAnnotationCampaign/></SuspenseAdminOnly> }/>
-                </Route>
 
                 <Route path="dataset">
                     <Route index element={ <SuspenseAdminOnly><DatasetList/></SuspenseAdminOnly> }/>
