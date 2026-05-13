@@ -21,7 +21,6 @@ const SqlQuery = lazy(() => import('./view/admin/sql'));
 const OntologyPage = lazy(() => import('./view/admin/ontology'));
 const OntologyTab = lazy(() => import('./view/admin/ontology/[type]'));
 const OntologyPanel = lazy(() => import('./view/admin/ontology/[type]/[id]'));
-const StorageBrowser = lazy(() => import('./view/storage'));
 
 
 setupIonicReact({
@@ -56,10 +55,6 @@ const AppContent: React.FC = () => {
         <Routes>
 
             {/*{ isConnected && <Route element={ <Suspense><AploseSkeleton/></Suspense> }>*/}
-
-                <Route path="storage">
-                    <Route index element={ <SuspenseAdminOnly><StorageBrowser/></SuspenseAdminOnly> }/>
-                </Route>
 
                 <Route path="admin">
                     <Route path="sql" element={ <SuspenseSuperUserOnly><SqlQuery/></SuspenseSuperUserOnly> }/>
