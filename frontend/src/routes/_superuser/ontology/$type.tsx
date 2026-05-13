@@ -120,7 +120,7 @@ export const Route = createFileRoute('/_superuser/ontology/$type')({
     beforeLoad: ({ params }) => {
         const { type } = params
         if (type !== 'source' && type !== 'sound') throw notFound()
-        return { type }
+        return { type: type as 'source' | 'sound' }
     },
     component: OntologyTab,
 })
