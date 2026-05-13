@@ -17,8 +17,6 @@ import { ReactFlowProvider } from '@xyflow/react';
 import { AudioProvider } from '@/features/Audio';
 import { SuspenseAdminOnly, SuspenseSuperUserOnly } from '@/components/layout';
 
-const OntologyPage = lazy(() => import('./view/admin/ontology'));
-const OntologyTab = lazy(() => import('./view/admin/ontology/[type]'));
 const OntologyPanel = lazy(() => import('./view/admin/ontology/[type]/[id]'));
 
 
@@ -56,8 +54,8 @@ const AppContent: React.FC = () => {
             {/*{ isConnected && <Route element={ <Suspense><AploseSkeleton/></Suspense> }>*/}
 
                 <Route path="admin">
-                    <Route path="ontology" element={ <SuspenseSuperUserOnly><OntologyPage/></SuspenseSuperUserOnly> }>
-                        <Route path=":type" element={ <SuspenseSuperUserOnly><OntologyTab/></SuspenseSuperUserOnly> }>
+                    <Route path="ontology">
+                        <Route path=":type">
                             <Route path=":id"
                                    element={ <SuspenseSuperUserOnly><OntologyPanel/></SuspenseSuperUserOnly> }/>
                         </Route>
