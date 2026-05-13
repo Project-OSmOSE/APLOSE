@@ -25,7 +25,6 @@ const StorageBrowser = lazy(() => import('./view/storage'));
 const DatasetList = lazy(() => import('./view/dataset'));
 const DatasetDetail = lazy(() => import('./view/dataset/[datasetID]'));
 const NewAnnotationCampaign = lazy(() => import('./view/annotation-campaign/new'));
-const AnnotationCampaignPhaseDetail = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]'));
 const EditAnnotators = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/edit-annotators'));
 const ImportAnnotations = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/import-annotations'));
 const AnnotatorPage = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/spectrogram/[spectrogramID]'));
@@ -69,10 +68,6 @@ const AppContent: React.FC = () => {
                     <Route path="new" element={ <SuspenseAdminOnly><NewAnnotationCampaign/></SuspenseAdminOnly> }/>
 
                     <Route path=":campaignID">
-                        {/*<Route element={ <Suspense><AnnotationCampaignDetail/></Suspense> }>*/}
-                            <Route path="phase/:phaseType"
-                                   element={ <Suspense><AnnotationCampaignPhaseDetail/></Suspense> }/>
-                        {/*</Route>*/}
                         <Route path="phase/:phaseType">
                             <Route path="edit-annotators" element={ <Suspense><EditAnnotators/></Suspense> }/>
                             <Route path="import-annotations" element={ <Suspense><ImportAnnotations/></Suspense> }/>
