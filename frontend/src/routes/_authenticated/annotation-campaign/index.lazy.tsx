@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createLazyFileRoute } from '@tanstack/react-router';
 import React, { Fragment } from 'react';
 
 import { Head } from '@/components/ui';
@@ -25,6 +25,6 @@ const AnnotationCampaignList: React.FC = React.memo(() =>
     </Fragment>
 )
 
-export const Route = createFileRoute('/_authenticated/annotation-campaign')({
+export const Route = createLazyFileRoute('/_authenticated/annotation-campaign/')({
     component: AnnotationCampaignList,
 })

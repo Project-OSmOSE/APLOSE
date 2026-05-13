@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { createLazyFileRoute, useRouter } from '@tanstack/react-router';
 import Markdown from 'react-markdown';
 
 import { Footer, Header } from '@/components/layout';
@@ -52,6 +52,6 @@ const TermsOfUse: React.FC = () => {
     }, [ isConnected, accessAplose, content ])
 }
 
-export const Route = createFileRoute('/terms')({
+export const Route = createLazyFileRoute('/terms')({
     component: TermsOfUse,
 })

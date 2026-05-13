@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
+import { createLazyFileRoute } from '@tanstack/react-router';
 import { IonSpinner } from '@ionic/react';
 
 import { FadedText, GraphQLErrorText } from '@/components/ui';
@@ -37,6 +37,6 @@ const Account: React.FC = () => {
         [ user, isLoading, error ])
 }
 
-export const Route = createFileRoute('/_authenticated/account')({
+export const Route = createLazyFileRoute('/_authenticated/account')({
     component: Account,
 })

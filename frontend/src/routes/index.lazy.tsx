@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createLazyFileRoute, useRouter } from '@tanstack/react-router'
 import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import { IonButton, IonIcon } from '@ionic/react';
 
@@ -246,6 +246,6 @@ const Collaborators: React.FC = () => {
     )
 }
 
-export const Route = createFileRoute('/')({
+export const Route = createLazyFileRoute('/')({
     component: Home,
 })

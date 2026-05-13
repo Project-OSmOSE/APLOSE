@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
+import { createLazyFileRoute } from '@tanstack/react-router';
 import { IonSpinner } from '@ionic/react';
 
 import { GraphQLErrorText, Pagination, Table, Tbody, Th, Thead, Tr, useModal, WarningText } from '@/components/ui';
@@ -113,6 +113,6 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
         statusFilterModal, allSpectrograms, pageCount, updatePage, error, isFetching ]);
 }
 
-export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/phase/$phaseType')({
+export const Route = createLazyFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType')({
     component: AnnotationCampaignPhaseDetail,
 })

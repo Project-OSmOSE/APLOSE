@@ -1,5 +1,5 @@
 import React, { Fragment, useMemo } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
+import { createLazyFileRoute } from '@tanstack/react-router';
 import { IonButton } from '@ionic/react';
 
 import { FadedText, Progress, useModal } from '@/components/ui';
@@ -12,7 +12,7 @@ import { AnnotationCampaignArchiveButton, AnnotationCampaignInstructionsButton }
 import { DatasetName } from '@/features/Dataset';
 import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 
-import styles from './index.module.scss';
+import styles from '../_detailLayout.module.scss';
 
 const AnnotationCampaignInfo: React.FC = () => {
     const { campaign, phases } = useCurrentCampaign()
@@ -90,6 +90,6 @@ const AnnotationCampaignInfo: React.FC = () => {
     }, [campaign, phases, labelSetModal])
 }
 
-export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/info')({
+export const Route = createLazyFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout/')({
     component: AnnotationCampaignInfo,
 })

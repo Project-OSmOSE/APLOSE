@@ -1,5 +1,5 @@
 import React, { Fragment, useMemo } from 'react';
-import { createFileRoute, Outlet } from '@tanstack/react-router';
+import { createLazyFileRoute, Outlet, useParams } from '@tanstack/react-router';
 import { IonSkeletonText, IonSpinner } from '@ionic/react';
 
 import { FadedText, GraphQLErrorText, Head, Link } from '@/components/ui';
@@ -14,7 +14,7 @@ import { AnnotationPhaseTab } from '@/features/AnnotationPhase';
 import styles from './$campaignID.module.scss';
 
 const AnnotationCampaignDetail: React.FC = () => {
-    const { campaignID, phaseType } = Route.useParams();
+    const { campaignID, phaseType } = useParams({ strict: false });
     const {
         campaign,
         isFetching,
@@ -56,9 +56,9 @@ const AnnotationCampaignDetail: React.FC = () => {
                     <Outlet/>
                 </div> }
             </Fragment>,
-        [campaign, campaignID, phaseType, isFetching, error])
+        [ campaign, campaignID, phaseType, isFetching, error ])
 }
 
-export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID')({
+export const Route = createLazyFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout')({
     component: AnnotationCampaignDetail,
 })
