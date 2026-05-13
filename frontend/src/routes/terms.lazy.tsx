@@ -1,21 +1,24 @@
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { createFileRoute, useRouter } from '@tanstack/react-router';
+import Markdown from 'react-markdown';
+
 import { Footer, Header } from '@/components/layout';
 import { Button, Link } from '@/components/ui';
+
 import { useAppSelector } from '@/features/App';
 import { selectIsConnected } from '@/features/Auth';
-import { useNavigate } from 'react-router-dom';
-import homeStyles from '../home/home.module.scss'
-import styles from './styles.module.scss'
-import Markdown from 'react-markdown';
+
+import homeStyles from './index.module.scss';
+import styles from './terms.module.scss';
 
 const TermsOfUse: React.FC = () => {
     const isConnected = useAppSelector(selectIsConnected)
-    const navigate = useNavigate();
+    const router = useRouter();
 
-    function accessAplose() {
-        if (isConnected) navigate('/annotation-campaign');
-        else navigate('/login')
-    }
+    const accessAplose = useCallback(() => {
+        if (isConnected) router.navigate({ to: '/annotation-campaign' });
+        else router.navigate({ to: '/login' })
+    }, [ router, isConnected ])
 
     const [ content, setContent ] = useState<string>();
 
@@ -48,4 +51,7 @@ const TermsOfUse: React.FC = () => {
         </div>
     }, [ isConnected, accessAplose, content ])
 }
-export default TermsOfUse;
+
+export const Route = createFileRoute('/terms')({
+    component: TermsOfUse,
+})
