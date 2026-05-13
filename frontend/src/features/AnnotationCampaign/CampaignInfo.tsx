@@ -7,6 +7,8 @@ export const CampaignName: React.FC<{
     id?: string
     link?: true
 }> = ({ children, id, link }) => useMemo(() => {
-    if (link && id) return <Link appPath={ `/annotation-campaign/${ id }/` } color="primary">{ children }</Link>
+    if (link && id) return <Link to="/annotation-campaign/$campaignID"
+                                 params={ { campaignID: id } }
+                                 color="primary">{ children }</Link>
     return <p>{ children }</p>
 }, [ children, id, link ])

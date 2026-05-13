@@ -50,7 +50,8 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                             <Link color="medium" fill="outline"
                                   size="small"
                                   onClick={ onBack }
-                                  appPath={ `/annotation-campaign/${ campaignID }/phase/${ phaseType }` }>
+                                  to="/annotation-campaign/$campaignID/phase/$phaseType"
+                                  params={ { campaignID, phaseType } }>
                                 Back to campaign
                             </Link>
                         </Fragment> }>

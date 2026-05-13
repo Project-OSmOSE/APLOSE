@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { createLazyFileRoute, useRouter } from '@tanstack/react-router'
+import { createLazyFileRoute, useNavigate } from '@tanstack/react-router'
 import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import { IonButton, IonIcon } from '@ionic/react';
 
@@ -17,12 +17,12 @@ import styles from './index.module.scss';
 
 const Home: React.FC = () => {
     const isConnected = useAppSelector(selectIsConnected)
-    const router = useRouter();
+    const navigate = useNavigate();
 
     const accessAplose = useCallback(() => {
-        if (isConnected) router.navigate({ to: '/annotation-campaign' });
-        else router.navigate({ to: '/login' })
-    }, [ router, isConnected ])
+        if (isConnected) navigate({ to: '/annotation-campaign' });
+        else navigate({ to: '/login' })
+    }, [ navigate, isConnected ])
 
     return useMemo(() =>
             <div className={ styles.page }>

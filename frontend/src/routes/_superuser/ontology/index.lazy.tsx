@@ -14,11 +14,11 @@ const OntologyPage: React.FC = () => {
 
             <div className={ styles.page }>
                 <Tabs>
-                    <Tab appPath="/admin/ontology/source"
+                    <Tab to="/ontology/$type" params={ { type: 'source' } }
                          active={ type === 'source' }>
                         Sources
                     </Tab>
-                    <Tab appPath="/admin/ontology/sound"
+                    <Tab to="/ontology/$type" params={ { type: 'sound' } }
                          active={ type === 'sound' }>
                         Sounds
                     </Tab>

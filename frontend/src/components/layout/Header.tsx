@@ -1,10 +1,14 @@
 import React, { ReactNode, useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router'
 import { IonButton, IonIcon } from '@ionic/react';
 import { closeOutline, menuOutline } from 'ionicons/icons/index.js';
+
 import { DocumentationButton } from '@/components/ui';
-import { useAppSelector } from '@/features/App';
+
 import { selectCurrentUser } from '@/api';
+
+import { useAppSelector } from '@/features/App';
+
 import logo from '/images/ode_logo_192x192.png';
 import styles from './layout.module.scss'
 
@@ -24,12 +28,12 @@ export const Header: React.FC<{
     const onAPLOSEClick = useCallback(async () => {
         if (currentUser) {
             if (!canNavigate || await canNavigate()) {
-                navigate(`/annotation-campaign/`);
+                await navigate({ to: `/annotation-campaign` });
             }
         } else {
-            navigate(`/`);
+            await navigate({ to: `/` });
         }
-    }, [])
+    }, [ currentUser, navigate, canNavigate ])
 
     const onAPLOSEAuxClick = useCallback(() => {
         window.open('/', '_blank');

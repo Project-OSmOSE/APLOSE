@@ -1,61 +1,61 @@
 import { useCallback, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import { AppState, useAppDispatch, useAppSelector } from '@/features/App';
 import { AnnotationPhaseType } from '@/api';
+import { useSearch } from '@tanstack/react-router';
 
 type BaseType = string | number | boolean | null
 type QueryParams = { [key in string]: BaseType | Array<BaseType> }
 
 export const useQueryParams = <T extends QueryParams>(
-  selector: (state: AppState) => T,
-  update: ActionCreatorWithPayload<T>,
+    selector: (state: AppState) => T,
+    update: ActionCreatorWithPayload<T>,
 ) => {
-  const [ searchParams, setSearchParams ] = useSearchParams();
-  const params = useAppSelector(selector)
-  const dispatch = useAppDispatch()
+    const [ searchParams, setSearchParams ] = useSearch({ strict: false });
+    const params = useAppSelector(selector)
+    const dispatch = useAppDispatch()
 
-  useEffect(() => {
-    dispatch(update(toJSON(searchParams)))
-  }, [ searchParams ]);
+    useEffect(() => {
+        dispatch(update(toJSON(searchParams)))
+    }, [ searchParams ]);
 
-  const toJSON = useCallback((urlSearchParams: URLSearchParams): T => {
-    const params = {} as any
-    for (const [ key, value ] of urlSearchParams.entries()) {
-      try {
-        params[key] = JSON.parse(value);
-      } catch {
-        params[key] = value;
-      }
-    }
-    return params
-  }, [])
+    const toJSON = useCallback((urlSearchParams: URLSearchParams): T => {
+        const params = {} as any
+        for (const [ key, value ] of urlSearchParams.entries()) {
+            try {
+                params[key] = JSON.parse(value);
+            } catch {
+                params[key] = value;
+            }
+        }
+        return params
+    }, [])
 
-  const updateParams = useCallback((newParams: Partial<T>) => {
-    const params = new URLSearchParams(window.location.search)
-    for (const [ key, value ] of Object.entries(newParams)) {
-      if (value !== undefined) params.set(key, value);
-      else params.delete(key);
-    }
-    setSearchParams(params)
-  }, [ setSearchParams ])
+    const updateParams = useCallback((newParams: Partial<T>) => {
+        const params = new URLSearchParams(window.location.search)
+        for (const [ key, value ] of Object.entries(newParams)) {
+            if (value !== undefined) params.set(key, value);
+            else params.delete(key);
+        }
+        setSearchParams(params)
+    }, [ setSearchParams ])
 
-  const clearParams = useCallback(() => {
-    setSearchParams(new URLSearchParams())
-  }, [ setSearchParams ])
+    const clearParams = useCallback(() => {
+        setSearchParams(new URLSearchParams())
+    }, [ setSearchParams ])
 
-  return { params, updateParams, clearParams }
+    return { params, updateParams, clearParams }
 }
 
 export type OntologyNavParams = {
-  type?: 'source' | 'sound',
-  id?: string;
+    type?: 'source' | 'sound',
+    id?: string;
 }
 export type DataNavParams = {
-  datasetID?: string;
+    datasetID?: string;
 }
 export type AploseNavParams = {
-  campaignID?: string;
-  spectrogramID?: string;
-  phaseType?: AnnotationPhaseType;
+    campaignID?: string;
+    spectrogramID?: string;
+    phaseType?: AnnotationPhaseType;
 }

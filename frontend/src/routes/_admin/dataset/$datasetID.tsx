@@ -53,7 +53,8 @@ const DatasetDetail: React.FC = () => {
 
                     <Link color="primary" fill="clear"
                           style={ { zIndex: 2, justifySelf: 'center' } }
-                          appPath={ `/annotation-campaign/new?dataset_id=${ dataset.id }` }>
+                          to="/annotation-campaign/new"
+                          search={ { dataset_id: dataset.id } }>
                         <IonIcon icon={ addOutline } slot="start"/>
                         Create campaign
                     </Link>
@@ -64,7 +65,7 @@ const DatasetDetail: React.FC = () => {
 
             { importAnalysisModal.element }
         </Fragment>
-    }, [id, isLoading, error, dataset, importAnalysisModal])
+    }, [ id, isLoading, error, dataset, importAnalysisModal ])
 }
 
 export const Route = createFileRoute('/_admin/dataset/$datasetID')({

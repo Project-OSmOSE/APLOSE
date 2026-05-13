@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { createLazyFileRoute, useRouter } from '@tanstack/react-router';
+import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import Markdown from 'react-markdown';
 
 import { Footer, Header } from '@/components/layout';
@@ -13,12 +13,12 @@ import styles from './terms.module.scss';
 
 const TermsOfUse: React.FC = () => {
     const isConnected = useAppSelector(selectIsConnected)
-    const router = useRouter();
+    const navigate = useNavigate();
 
     const accessAplose = useCallback(() => {
-        if (isConnected) router.navigate({ to: '/annotation-campaign' });
-        else router.navigate({ to: '/login' })
-    }, [ router, isConnected ])
+        if (isConnected) navigate({ to: '/annotation-campaign' });
+        else navigate({ to: '/login' })
+    }, [ navigate, isConnected ])
 
     const [ content, setContent ] = useState<string>();
 

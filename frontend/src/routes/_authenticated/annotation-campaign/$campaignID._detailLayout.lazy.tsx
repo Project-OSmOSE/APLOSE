@@ -44,7 +44,7 @@ const AnnotationCampaignDetail: React.FC = () => {
                 } }>
 
                     <div className={ styles.tabs }>
-                        <Link appPath={ `/annotation-campaign/${ campaignID }/info` } replace
+                        <Link to="/annotation-campaign/$campaignID" params={ { campaignID } } replace
                               className={ !phaseType ? styles.active : undefined }>
                             Information
                         </Link>

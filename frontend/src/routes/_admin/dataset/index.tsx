@@ -7,7 +7,7 @@ import { DatasetTable } from '@/features/Dataset';
 
 const DatasetList: React.FC = () => (<Fragment>
         <Head title="Datasets"
-              buttons={ <Link appPath="/storage" color="primary">Import datasets from storage</Link> }/>
+              buttons={ <Link to="/storage" color="primary">Import datasets from storage</Link> }/>
 
         <DatasetTable/>
 

@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useToast } from '@/components/ui';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
+import { useParams } from 'react-router-dom';
 import { useAnnotationTask, useSubmitTask } from '@/api';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 import { useKeyDownEvent } from '@/features/UX/Events';
@@ -14,7 +15,7 @@ import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 export const useAnnotatorSubmit = () => {
   const openAnnotator = useOpenAnnotator()
   const toast = useToast()
-  const navigate = useNavigate();
+    const navigate = useNavigate()
   const allAnnotations = useAppSelector(selectAllAnnotations)
   const taskComments = useAppSelector(selectTaskComments)
   const { submitTask, isSuccess, error, ...info } = useSubmitTask()
@@ -39,7 +40,7 @@ export const useAnnotatorSubmit = () => {
       convertCommentsToPost(taskComments),
       start,
     )
-  }, [ openAnnotator, toast, navigate, allAnnotations,isEditionAuthorized, submitTask, allFileIsSeen, start, navigationInfo, campaignID, phaseType, taskComments ])
+  }, [ openAnnotator, toast, allAnnotations,isEditionAuthorized, submitTask, allFileIsSeen, start, navigationInfo, campaignID, phaseType, taskComments ])
   useKeyDownEvent([ 'Enter', 'NumpadEnter' ], submit)
 
   useEffect(() => {
@@ -47,9 +48,12 @@ export const useAnnotatorSubmit = () => {
     if (navigationInfo?.nextSpectrogramId) {
       openAnnotator(navigationInfo.nextSpectrogramId);
     } else {
-      navigate(`/annotation-campaign/${ campaignID }/phase/${ phaseType }`)
+     navigate({
+       to: '/annotation-campaign/$campaignID/phase/$phaseType',
+       params: {campaignID, phaseType}
+     })
     }
-  }, [ isSuccess ]);
+  }, [ isSuccess, navigate ]);
 
   useEffect(() => {
     if (error) toast.raiseError({ error })

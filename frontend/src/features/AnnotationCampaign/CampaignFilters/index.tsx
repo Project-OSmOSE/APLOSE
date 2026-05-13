@@ -20,8 +20,8 @@ export const AnnotationCampaignListFilterActionBar: React.FC = () => {
                       searchPlaceholder="Search campaign name"
                       onSearchChange={ search => updateParams({ search }) }
                       actionButton={ user?.isAdmin && <Link color="primary"
-                                           fill="outline"
-                                           appPath="/annotation-campaign/new">
+                                                            fill="outline"
+                                                            to="/annotation-campaign/new">
                           <IonIcon icon={ addOutline } slot="start"/>
                           New annotation campaign
                       </Link> }>

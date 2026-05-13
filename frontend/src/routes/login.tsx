@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { IonButton } from '@ionic/react';
 
 import { Button, Link, useToast } from '@/components/ui';
@@ -25,9 +25,9 @@ export const Login: React.FC = () => {
     const [ errors, setErrors ] = useState<{ global?: string, username?: string, password?: string }>({});
 
     // Service
-    const router = useRouter();
-    const { redirect } = Route.useSearch()
-    const to = useMemo(() => redirect || '/annotation-campaign', [ redirect ]);
+    const navigate = useNavigate();
+    const search = Route.useSearch()
+    const to = useMemo(() => search?.redirect || '/annotation-campaign', [ search ]);
     const [ login, { isLoading, error: loginError } ] = useLogin();
     const toast = useToast()
 
@@ -42,7 +42,7 @@ export const Login: React.FC = () => {
     }, [ loginError ]);
 
     useEffect(() => {
-        if (isConnected) router.navigate({ to, replace: true });
+        if (isConnected) navigate({ to, replace: true });
     }, [ isConnected ]);
 
     const submit = useCallback(async () => {
@@ -52,13 +52,13 @@ export const Login: React.FC = () => {
         if (!username || !password) return;
 
         await login({ username, password }).unwrap()
-            .then(() => router.navigate({ to, replace: true }))
+            .then(() => navigate({ to, replace: true }))
             .catch(error => setErrors({ global: getErrorMessage(error) }));
-    }, [ setErrors, username, password, router, to, login ])
+    }, [ setErrors, username, password, navigate, to, login ])
 
     const goHome = useCallback(() => {
-        router.navigate({ to: '/' });
-    }, [ router ])
+        navigate({ to: '/' });
+    }, [ navigate ])
 
     const onKbdEvent = useCallback((event: KeyboardEvent) => {
         switch (event.code) {
@@ -110,9 +110,7 @@ export const Login: React.FC = () => {
 }
 
 export const Route = createFileRoute('/login')({
-    validateSearch: (search: Record<string, unknown>) => ({
-        redirect: search['redirect'] as string,
-    }),
+    validateSearch: (search: Record<string, unknown>) => search as { redirect?: string } | undefined,
     component: Login,
 })
 

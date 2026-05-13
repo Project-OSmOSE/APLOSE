@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { IonButton, IonSpinner } from '@ionic/react';
 
 import { useToast } from '@/components/ui';
@@ -23,7 +23,7 @@ const NewAnnotationCampaign: React.FC = () => {
         formErrors,
     } = useCreateCampaign()
     const toast = useToast();
-    const router = useRouter();
+    const navigate = useNavigate();
 
     const page = useRef<HTMLDivElement | null>(null);
 
@@ -98,8 +98,12 @@ const NewAnnotationCampaign: React.FC = () => {
     }, [ errors ]);
     useEffect(() => {
         if (!campaign) return;
-        router.navigate({ to: `/annotation-campaign/${ campaign.id }/`, replace: true })
-    }, [ campaign, router ]);
+        navigate({
+            to: '/annotation-campaign/$campaignID',
+            params: { campaignID: campaign.id },
+            replace: true,
+        })
+    }, [ campaign, navigate ]);
 
     return useMemo(() => <div className={ styles.page } ref={ page }>
 
@@ -178,7 +182,7 @@ const NewAnnotationCampaign: React.FC = () => {
         [
             name, description, deadline, instructionsUrl,
             datasetID, analysisIDs,
-            isColormapEditable, allowColormapTuning, allowImageTuning, colormapInvertedDefault,colormapDefault,
+            isColormapEditable, allowColormapTuning, allowImageTuning, colormapInvertedDefault, colormapDefault,
             isSubmittingCampaign, submit, formErrors,
         ])
 }

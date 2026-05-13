@@ -21,7 +21,7 @@ export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
     <div className={ [ styles.navbar, isOpen ? styles.opened : styles.closed, className ].join(' ') }>
 
       <div className={ styles.title }>
-        <Link appPath="/annotation-campaign" onClick={ close }>
+        <Link to="/annotation-campaign" onClick={ close }>
           <img src={ logo } alt="APLOSE"/>
           <h1>APLOSE</h1>
         </Link>
@@ -35,14 +35,14 @@ export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
       <div className={ styles.navContent }>
 
         <div className={ styles.links }>
-          <Link appPath="/annotation-campaign" onClick={ close }>
+          <Link to="/annotation-campaign" onClick={ close }>
             Annotation campaigns
           </Link>
           { user?.isAdmin && <Fragment>
-              <Link appPath="/dataset" onClick={ close }>Datasets</Link>
+              <Link to="/dataset" onClick={ close }>Datasets</Link>
           </Fragment> }
           { user?.isAdmin && <Fragment>
-              <Link appPath="/storage" onClick={ close }>Storage</Link>
+              <Link to="/storage" onClick={ close }>Storage</Link>
           </Fragment> }
         </div>
 
@@ -52,10 +52,10 @@ export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
 
         <DocumentationButton/>
 
-        { user?.isSuperuser && <Link appPath="/admin/ontology/source" color="medium" onClick={ close }>Ontology</Link> }
-        { user?.isSuperuser && <Link appPath="/admin/sql" color="medium" onClick={ close }>SQL query</Link> }
+        { user?.isSuperuser && <Link to='/ontology/$type' params={{type: 'source'}} color="medium" onClick={ close }>Ontology</Link> }
+        { user?.isSuperuser && <Link to='/sql' color="medium" onClick={ close }>SQL query</Link> }
 
-        <Link appPath="/account" color="medium" onClick={ close }>Account</Link>
+        <Link to='/account' color="medium" onClick={ close }>Account</Link>
 
         <IonButton className={ styles.logoutButton }
                    color={ 'medium' }

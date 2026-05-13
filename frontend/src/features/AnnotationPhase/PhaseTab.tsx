@@ -60,12 +60,14 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
 
     if (!campaign) return <Fragment/>
     if (isFetching)
-        return <Link appPath={ `/annotation-campaign/${ campaignID }/phase/${ phaseType }` } replace
+        return <Link to='/annotation-campaign/$campaignID/phase/$phaseType'
+                     params={{campaignID, phaseType}} replace
                      className={ [ styles.tab, currentPhaseType === phaseType ? styles.active : undefined ].join(' ') }>
             <IonSkeletonText animated style={ { width: 96 } }/>
         </Link>
     if (phase)
-        return <Link appPath={ `/annotation-campaign/${ campaignID }/phase/${ phaseType }` } replace
+        return <Link to='/annotation-campaign/$campaignID/phase/$phaseType'
+                     params={{campaignID, phaseType}} replace
                      className={ [ styles.tab, currentPhaseType === phaseType ? styles.active : undefined ].join(' ') }>
             { phaseType }
 

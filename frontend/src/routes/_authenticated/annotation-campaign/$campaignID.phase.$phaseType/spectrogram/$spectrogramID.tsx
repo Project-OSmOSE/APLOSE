@@ -4,7 +4,7 @@ import { IonSpinner } from '@ionic/react';
 
 import { GraphQLErrorText } from '@/components/ui';
 
-import { useAnnotationTask } from '@/api';
+import { type AllTasksFilters, useAnnotationTask } from '@/api';
 import { useAppSelector } from '@/features/App';
 import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 import { AudioDownloadButton, CurrentTime, PlaybackRateSelect, PlayPauseButton, useAudio } from '@/features/Audio';
@@ -130,5 +130,6 @@ const AnnotatorPage: React.FC = () => {
 export const Route = createFileRoute(
   '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID',
 )({
+validateSearch: (search: Record<string, unknown>) => search as AllTasksFilters,
   component: AnnotatorPage,
 })

@@ -60,7 +60,8 @@ export const FileRangeActionBar: React.FC = () => {
                                          total={ phase.tasksCount }/> : <Fragment/> }
 
                            <TooltipOverlay tooltipContent={ <p>Annotators progression</p> } anchor="right">
-                               <IonButton fill="clear" color="medium" onClick={ progressModal.toggle } data-testid="progress">
+                               <IonButton fill="clear" color="medium" onClick={ progressModal.toggle }
+                                          data-testid="progress">
                                    <IonIcon icon={ analytics } slot="icon-only"/>
                                </IonButton>
                            </TooltipOverlay>
@@ -70,7 +71,8 @@ export const FileRangeActionBar: React.FC = () => {
                            {/* Manage annotators */ }
                            <TooltipOverlay tooltipContent={ <p>Manage annotators</p> } anchor="right">
                                <Link fill="outline" color="medium" data-testid="manage"
-                                     appPath={ `/annotation-campaign/${ campaignID }/phase/${ phaseType }/edit-annotators` }>
+                                     to="/annotation-campaign/$campaignID/phase/$phaseType/edit-annotators"
+                                     params={ { campaignID, phaseType } }>
                                    <IonIcon icon={ peopleOutline } slot="icon-only"/>
                                </Link>
                            </TooltipOverlay>

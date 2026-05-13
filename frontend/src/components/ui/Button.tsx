@@ -1,11 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useCallback, useMemo } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useCanGoBack, useRouter } from '@tanstack/react-router'
 import { chevronBackOutline } from 'ionicons/icons/index.js';
+import { copyOutline, helpBuoyOutline } from 'ionicons/icons';
+
+import { useToast } from '@/components/ui/toast.hook';
 import { TooltipOverlay } from './Tooltip';
 import { Link } from './Link';
-import { copyOutline, helpBuoyOutline } from 'ionicons/icons';
-import { useToast } from '@/components/ui/toast.hook';
+
 
 type Props = {
     disabledExplanation?: string;
@@ -27,33 +29,24 @@ export const DocumentationButton: React.FC<{
 )
 
 export const BackButton: React.FC = () => {
-    const navigate = useNavigate()
-    const location = useLocation()
+    const router = useRouter()
+    const canGoBack = useCanGoBack()
 
-    const [ isBackAsked, setIsBackAsked ] = useState<boolean>(false);
-
-    useEffect(() => {
-        if (isBackAsked && location.state?.from !== location.pathname) {
-            navigate(-1)
-        }
-    }, [ location, isBackAsked ])
-
-    const onBack = useCallback(() => {
-        setIsBackAsked(true)
-    }, [ navigate ])
-
-    return <IonButton fill="clear"
-                      color="medium"
-                      style={ {
-                          position: 'absolute',
-                          left: '1rem',
-                          top: '50%',
-                          transform: 'translateY(-50%)',
-                      } }
-                      onClick={ onBack }>
-        <IonIcon icon={ chevronBackOutline } slot="start"/>
-        Back
-    </IonButton>
+    return useMemo(() => {
+        if (!canGoBack) return <Fragment/>
+        return <IonButton fill="clear"
+                   color="medium"
+                   style={ {
+                       position: 'absolute',
+                       left: '1rem',
+                       top: '50%',
+                       transform: 'translateY(-50%)',
+                   } }
+                   onClick={ () => router.history.back() }>
+            <IonIcon icon={ chevronBackOutline } slot="start"/>
+            Back
+        </IonButton>
+    }, [canGoBack, router])
 }
 
 export const HelpButton: React.FC<{ url: string, label?: string }> = ({ url, label }) => {

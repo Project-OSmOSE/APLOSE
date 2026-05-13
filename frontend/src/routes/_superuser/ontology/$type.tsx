@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { createFileRoute, notFound, Outlet, useRouter } from '@tanstack/react-router'
+import { createFileRoute, notFound, Outlet, useNavigate } from '@tanstack/react-router'
 import { Background, Controls, Node, ReactFlow, useOnSelectionChange } from '@xyflow/react';
 
 import { SoundNode, SourceNode, useAllSounds, useAllSources, useSoundCRUD, useSourceCRUD } from '@/api';
@@ -30,7 +30,7 @@ const OntologyTab: React.FC = () => {
     } = useSoundCRUD()
 
     const getInitialNodes = useGetInitialNodes((type === 'source' ? initialSources : type === 'sound' ? initialSounds : undefined) ?? undefined);
-    const router = useRouter()
+    const navigate = useNavigate()
 
     const onNewNode = useCallback(async (info: NewNode<DataType>) => {
         const englishName = prompt('Node english name');
@@ -41,7 +41,11 @@ const OntologyTab: React.FC = () => {
                 parent_id: info.parentNode.data.id !== '-1' ? info.parentNode.data.id.toString() : undefined,
             }).unwrap()
             const id = data.postSource?.source?.id
-            if (id) router.navigate({ to: `/ontology/source/${ id }`, replace: true })
+            if (id) navigate({
+                to: '/ontology/$type/$id',
+                params: { type: 'source', id },
+                replace: true,
+            })
         }
         if (type === 'sound') {
             const data = await createSound({
@@ -49,14 +53,22 @@ const OntologyTab: React.FC = () => {
                 parent_id: info.parentNode.data.id !== '-1' ? info.parentNode.data.id.toString() : undefined,
             }).unwrap()
             const id = data.postSound?.sound?.id
-            if (id) router.navigate({ to: `/ontology/sound/${ id }`, replace: true })
+            if (id) navigate({
+                to: '/ontology/$type/$id',
+                params: { type: 'sound', id },
+                replace: true,
+            })
         }
-    }, [ createSource, createSound, type, router ])
+    }, [ createSource, createSound, type, navigate ])
 
     const onSelectionChange = useCallback(({ nodes }: { nodes: Node<{ id: string }>[] }) => {
-        if (nodes.length > 0) router.navigate({ to: `/admin/ontology/${ type }/${ nodes[0].data.id }`, replace: true })
-        else router.navigate({ to: `/admin/ontology/${ type }`, replace: true })
-    }, [ type, router ])
+        if (nodes.length > 0) navigate({
+            to: '/ontology/$type',
+            params: { type, id: nodes[0].data.id },
+            replace: true,
+        })
+        else navigate({ to: '/ontology/$type', params: { type }, replace: true })
+    }, [ type, navigate ])
     useOnSelectionChange({ onChange: onSelectionChange })
 
     const update = useCallback((data: DataType) => {

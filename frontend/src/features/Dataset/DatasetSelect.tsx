@@ -70,7 +70,7 @@ export const DatasetSelect: React.FC<{
         return <GraphQLErrorText error={ error }/>
     if (!allDatasets || allDatasets.length === 0)
         return <WarningText message="You should first import dataset from Storage"
-                            children={ <Link appPath="/storage">Storage</Link> }/>
+                            children={ <Link to="/storage">Storage</Link> }/>
 
     return <Fragment>
         <Select label="Dataset"
@@ -94,7 +94,7 @@ export const DatasetSelect: React.FC<{
             { selectedDatasetID && analysisItems.length === 0 &&
                 <WarningText
                     message="This dataset does't contain any analysis. You should first import analysis from Storage"
-                    children={ <Link appPath="/storage">Storage</Link> }/> }
+                    children={ <Link to="/storage">Storage</Link> }/> }
         </Fragment> }
     </Fragment>
 }
