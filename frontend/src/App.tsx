@@ -22,7 +22,6 @@ const OntologyPage = lazy(() => import('./view/admin/ontology'));
 const OntologyTab = lazy(() => import('./view/admin/ontology/[type]'));
 const OntologyPanel = lazy(() => import('./view/admin/ontology/[type]/[id]'));
 const StorageBrowser = lazy(() => import('./view/storage'));
-const DatasetList = lazy(() => import('./view/dataset'));
 const DatasetDetail = lazy(() => import('./view/dataset/[datasetID]'));
 
 
@@ -60,7 +59,6 @@ const AppContent: React.FC = () => {
             {/*{ isConnected && <Route element={ <Suspense><AploseSkeleton/></Suspense> }>*/}
 
                 <Route path="dataset">
-                    <Route index element={ <SuspenseAdminOnly><DatasetList/></SuspenseAdminOnly> }/>
                     <Route path=":datasetID" element={ <SuspenseAdminOnly><DatasetDetail/></SuspenseAdminOnly> }/>
                 </Route>
 

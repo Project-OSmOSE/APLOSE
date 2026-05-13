@@ -1,11 +1,11 @@
 import React, { Fragment } from 'react';
+import { createFileRoute } from '@tanstack/react-router'
 
 import { Head, Link } from '@/components/ui';
 
 import { DatasetTable } from '@/features/Dataset';
 
-
-export const DatasetList: React.FC = () => (<Fragment>
+const DatasetList: React.FC = () => (<Fragment>
         <Head title="Datasets"
               buttons={ <Link appPath="/storage" color="primary">Import datasets from storage</Link> }/>
 
@@ -14,4 +14,6 @@ export const DatasetList: React.FC = () => (<Fragment>
     </Fragment>
 )
 
-export default DatasetList
+export const Route = createFileRoute('/_admin/dataset/')({
+    component: DatasetList,
+})
