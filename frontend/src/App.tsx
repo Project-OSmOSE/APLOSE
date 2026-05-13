@@ -17,7 +17,6 @@ import { ReactFlowProvider } from '@xyflow/react';
 import { AudioProvider } from '@/features/Audio';
 import { SuspenseAdminOnly, SuspenseSuperUserOnly } from '@/components/layout';
 
-const Login = lazy(() => import('./view/auth/Login'));
 const Account = lazy(() => import('./view/account'));
 const SqlQuery = lazy(() => import('./view/admin/sql'));
 const OntologyPage = lazy(() => import('./view/admin/ontology'));
@@ -69,8 +68,6 @@ const AppContent: React.FC = () => {
 
     return (
         <Routes>
-
-            <Route path="login" element={ <Suspense><Login/></Suspense> }/>
 
             <Route path="terms" element={ <Suspense><TermsOfUse/></Suspense> }/>
 
