@@ -13,9 +13,17 @@
 #card-member h5 {
     color: var(--ion-color-primary);
 }
-#card-member > img {
+#card-member > object {
     height: 8rem;
     width: 8rem;
     object-fit: cover;
     border-radius: 4rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#card-member > object svg {
+    color: var(--ion-color-secondary);
+    opacity: .8;
 }
