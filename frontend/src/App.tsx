@@ -25,7 +25,6 @@ const StorageBrowser = lazy(() => import('./view/storage'));
 const DatasetList = lazy(() => import('./view/dataset'));
 const DatasetDetail = lazy(() => import('./view/dataset/[datasetID]'));
 const NewAnnotationCampaign = lazy(() => import('./view/annotation-campaign/new'));
-const AnnotationCampaignInfo = lazy(() => import('./view/annotation-campaign/[campaignID]/InfoTab'));
 const AnnotationCampaignPhaseDetail = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]'));
 const EditAnnotators = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/edit-annotators'));
 const ImportAnnotations = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/import-annotations'));
@@ -71,7 +70,6 @@ const AppContent: React.FC = () => {
 
                     <Route path=":campaignID">
                         {/*<Route element={ <Suspense><AnnotationCampaignDetail/></Suspense> }>*/}
-                            <Route index element={ <Suspense><AnnotationCampaignInfo/></Suspense> }/>
                             <Route path="phase/:phaseType"
                                    element={ <Suspense><AnnotationCampaignPhaseDetail/></Suspense> }/>
                         {/*</Route>*/}

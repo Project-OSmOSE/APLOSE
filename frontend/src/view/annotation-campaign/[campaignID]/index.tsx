@@ -1,2 +1,0 @@
-export { AnnotationCampaignInfo } from './InfoTab'
-
