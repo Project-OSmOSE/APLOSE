@@ -4,6 +4,12 @@ import { LightTeamMember } from '../../api';
 import './CardMember.css';
 import { TeamMemberTypeEnum } from '../../api/types.gql-generated';
 
+export const PeopleIcon = React.memo(() =>
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" color="#0f4159" fill="none" viewBox="0 0 24 24">
+        <circle cx="12" cy="6" r="4" fill="currentColor"></circle>
+        <ellipse opacity="0.5" cx="12" cy="17" rx="7" ry="4" fill="currentColor"></ellipse>
+    </svg>
+)
 
 export const CardMember: React.FC<{ member: LightTeamMember }> = ({ member }) => {
 
@@ -17,9 +23,9 @@ export const CardMember: React.FC<{ member: LightTeamMember }> = ({ member }) =>
     }, [ member ])
 
     const content = (<React.Fragment>
-        <img src={ member.picture }
-             alt={ `${ member.person.initialNames }'s Portrait` }
-             title={ `${ member.person.initialNames }'s Portrait` }/>
+        <object data={member.picture} title={ `${ member.person.initialNames }'s Portrait` }>
+            <PeopleIcon/>
+        </object>
         <h5>{ member.person.lastName } { member.person.firstName }</h5>
         <p><small className="text-muted">{ description }</small></p>
     </React.Fragment>)
