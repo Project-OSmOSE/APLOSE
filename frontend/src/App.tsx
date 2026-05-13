@@ -17,7 +17,6 @@ import { ReactFlowProvider } from '@xyflow/react';
 import { AudioProvider } from '@/features/Audio';
 import { SuspenseAdminOnly, SuspenseSuperUserOnly } from '@/components/layout';
 
-const Account = lazy(() => import('./view/account'));
 const SqlQuery = lazy(() => import('./view/admin/sql'));
 const OntologyPage = lazy(() => import('./view/admin/ontology'));
 const OntologyTab = lazy(() => import('./view/admin/ontology/[type]'));
@@ -70,6 +69,7 @@ const AppContent: React.FC = () => {
                 <Route path="annotation-campaign">
 
                     <Route path="new" element={ <SuspenseAdminOnly><NewAnnotationCampaign/></SuspenseAdminOnly> }/>
+
                     <Route path=":campaignID">
                         <Route element={ <Suspense><AnnotationCampaignDetail/></Suspense> }>
                             <Route index element={ <Suspense><AnnotationCampaignInfo/></Suspense> }/>
@@ -84,8 +84,6 @@ const AppContent: React.FC = () => {
                         </Route>
                     </Route>
                 </Route>
-
-                <Route path="account" element={ <Suspense><Account/></Suspense> }/>
 
                 <Route path="dataset">
                     <Route index element={ <SuspenseAdminOnly><DatasetList/></SuspenseAdminOnly> }/>
