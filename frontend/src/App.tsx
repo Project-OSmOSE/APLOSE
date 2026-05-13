@@ -25,7 +25,6 @@ const StorageBrowser = lazy(() => import('./view/storage'));
 const DatasetList = lazy(() => import('./view/dataset'));
 const DatasetDetail = lazy(() => import('./view/dataset/[datasetID]'));
 const NewAnnotationCampaign = lazy(() => import('./view/annotation-campaign/new'));
-const AnnotatorPage = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/spectrogram/[spectrogramID]'));
 
 
 setupIonicReact({
@@ -64,13 +63,6 @@ const AppContent: React.FC = () => {
                 <Route path="annotation-campaign">
 
                     <Route path="new" element={ <SuspenseAdminOnly><NewAnnotationCampaign/></SuspenseAdminOnly> }/>
-
-                    <Route path=":campaignID">
-                        <Route path="phase/:phaseType">
-
-                            <Route path="spectrogram/:spectrogramID" element={ <Suspense><AnnotatorPage/></Suspense> }/>
-                        </Route>
-                    </Route>
                 </Route>
 
                 <Route path="dataset">
