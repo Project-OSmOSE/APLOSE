@@ -1,19 +1,19 @@
 import { AnnotationTaskGqlAPI } from './api';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
   AnnotationCommentInput,
   AnnotationInput,
   AnnotationPhaseType,
+  type ListAnnotationTaskQueryVariables,
   useCurrentCampaign,
   useCurrentPhase,
   useCurrentUser,
 } from '@/api';
-import { AllAnnotationTaskFilterSlice, AllTasksFilters, selectAllTaskFilters } from './all-tasks-filters';
-import { type AploseNavParams, useQueryParams } from '@/features/UX';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
 import { useAppSelector } from '@/features/App';
 import { selectAnalysisID } from '@/features/Annotator/Analysis';
 import { GetAnnotationTaskQueryVariables } from './annotation-task.generated'
+import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID._detailLayout/phase.$phaseType';
 
 const PAGE_SIZE = 20;
 
@@ -25,10 +25,16 @@ const {
   submitTask,
 } = AnnotationTaskGqlAPI.endpoints
 
+export type AllTasksFilters =
+    Pick<ListAnnotationTaskQueryVariables, 'search' | 'status' | 'from' | 'to' | 'withAnnotations' | 'annotationLabel' | 'annotationConfidence' | 'annotationDetector' | 'annotationAnnotator' | 'withAcousticFeatures'>
+    & {
+  page: number
+}
+
 export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
   refetchOnMountOrArgChange?: boolean
 } = {}) => {
-  const { campaignID, phaseType } = useParams<AploseNavParams>();
+  const { campaignID, phaseType } = useParams({ strict: false });
   const { campaign } = useCurrentCampaign()
   const { user } = useCurrentUser();
 
@@ -53,10 +59,10 @@ export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
 }
 
 export const useGetAnnotationTaskParams = (): GetAnnotationTaskQueryVariables => {
-  const { campaignID, phaseType, spectrogramID } = useParams<AploseNavParams>();
+  const { campaignID, phaseType, spectrogramID } = useParams({ strict: false });
   const analysisID = useAppSelector(selectAnalysisID)
   const { user } = useCurrentUser();
-  const { params } = useAllTasksFilters()
+  const params = Route.useSearch();
 
   return useMemo(() => ({
     ...params,
@@ -91,7 +97,7 @@ export const useAnnotationTask = (options: {
 }
 
 export const useSubmitTask = () => {
-  const { campaignID, phaseType, spectrogramID } = useParams<AploseNavParams>();
+  const { campaignID, phaseType, spectrogramID } = useParams({ strict: false });
   const { phase } = useCurrentPhase()
   const [ method, info ] = submitTask.useMutation()
 
@@ -120,33 +126,4 @@ export const useSubmitTask = () => {
       error
     }
   }, [ submit, info ])
-}
-
-
-// Filters
-
-export const useAllTasksFilters = ({ clearOnLoad }: { clearOnLoad: boolean } = { clearOnLoad: false }) => {
-  const { params, updateParams, clearParams } = useQueryParams<AllTasksFilters>(
-    selectAllTaskFilters,
-    AllAnnotationTaskFilterSlice.actions.updateTaskFilters,
-  )
-
-  useEffect(() => {
-    if (!clearOnLoad) return;
-    updateParams(params)
-  }, []);
-
-  return {
-    params,
-    updateParams: useCallback((p: Omit<AllTasksFilters, 'page'>) => {
-      updateParams({ ...p, page: 1 })
-    }, [ updateParams ]),
-    updatePage: useCallback((page: number) => {
-      updateParams({ page })
-    }, [ updateParams ]),
-    clearParams: useCallback(() => {
-      clearParams()
-      updateParams({ page: 1 })
-    }, [ clearParams ]),
-  }
 }

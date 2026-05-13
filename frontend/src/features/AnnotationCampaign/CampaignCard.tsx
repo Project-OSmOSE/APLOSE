@@ -6,19 +6,21 @@ import { crop } from 'ionicons/icons/index.js';
 
 import { GraphQLErrorText, Progress, SkeletonProgress } from '@/components/ui';
 
-import { AllCampaignFilters, type ListCampaignsQuery, useAllCampaigns, useAllCampaignsFilters } from '@/api';
+import { AllCampaignFilters, type ListCampaignsQuery, useAllCampaigns } from '@/api';
 import { dateToString, pluralize } from '@/service/function';
+
+import { Route } from '@/routes/_authenticated/annotation-campaign'
 
 import styles from './styles.module.scss';
 
 type Campaign = NonNullable<NonNullable<ListCampaignsQuery['allAnnotationCampaigns']>['results'][number]>;
 export const Cards: React.FC<{ filters?: AllCampaignFilters }> = ({ filters }) => {
-    const { params } = useAllCampaignsFilters()
+    const searchParams = Route.useSearch();
     const {
         allCampaigns,
         isFetching,
         error,
-    } = useAllCampaigns(filters ?? params);
+    } = useAllCampaigns({ ...searchParams, ...filters });
 
     return useMemo(() => {
         if (isFetching)

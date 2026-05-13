@@ -1,10 +1,16 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { createLazyFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { IonSpinner } from '@ionic/react';
 
 import { GraphQLErrorText, Pagination, Table, Tbody, Th, Thead, Tr, useModal, WarningText } from '@/components/ui';
 
-import { useAllAnnotationTasks, useAllTasksFilters, useCurrentCampaign, useCurrentPhase } from '@/api';
+import {
+    type AllTasksFilters,
+    AnnotationPhaseType,
+    useAllAnnotationTasks,
+    useCurrentCampaign,
+    useCurrentPhase,
+} from '@/api';
 
 import { AnnotationsFilterModal, DateFilterModal, StatusFilterModal } from '@/features/AnnotationTask';
 import { FileRangeActionBar } from '@/features/AnnotationFileRange';
@@ -17,32 +23,42 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
     const { campaign, verificationPhase } = useCurrentCampaign()
     const { phase } = useCurrentPhase()
 
-    const { params, updatePage } = useAllTasksFilters({ clearOnLoad: true })
+    const search = Route.useSearch();
+    const routeParams = Route.useParams()
+    const navigate = useNavigate();
 
     const {
         allSpectrograms,
         pageCount,
         isFetching,
         error,
-    } = useAllAnnotationTasks(params, { refetchOnMountOrArgChange: true })
+    } = useAllAnnotationTasks(search, { refetchOnMountOrArgChange: true })
 
     const isEmpty = useMemo(() => error || !allSpectrograms || allSpectrograms.length === 0 || campaign?.isArchived, [ error, allSpectrograms, campaign ])
 
-    const onFilterUpdated = useCallback(() => {
-        updatePage(1)
-    }, [ updatePage ])
+    const updatePage = useCallback((page?: number) => {
+        navigate({
+            to: Route.to,
+            params: routeParams,
+            search: (prev) => ({
+                ...prev,
+                page: page ?? 1,
+            }),
+            replace: true,
+        })
+    }, [ navigate, routeParams ])
 
     const annotationFilterModal = useModal(AnnotationsFilterModal, {
-        onUpdate: onFilterUpdated,
+        onUpdate: updatePage,
     })
 
-    const hasDateFilter = useMemo(() => !!params.to || !!params.from, [ params ]);
+    const hasDateFilter = useMemo(() => !!search.to || !!search.from, [ search ]);
     const dateFilterModal = useModal(DateFilterModal, {
-        onUpdate: onFilterUpdated,
+        onUpdate: updatePage,
     })
 
     const statusFilterModal = useModal(StatusFilterModal, {
-        onUpdate: onFilterUpdated,
+        onUpdate: updatePage,
     })
 
     return useMemo(() => {
@@ -68,13 +84,13 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
                             </Th>
                             <Th scope="col" center>Duration</Th>
                             <Th scope="col" center filterable
-                                isFiltered={ params.withAnnotations ?? false }
+                                isFiltered={ search.withAnnotations ?? false }
                                 onFilterClick={ annotationFilterModal.open }>
                                 Annotations{ phase.phase === 'Verification' && <Fragment><br/>to check</Fragment> }
                             </Th>
                             { phase.phase === 'Verification' && <Th scope="col" center>Validated<br/>annotations</Th> }
                             <Th scope="col" center filterable
-                                isFiltered={ params.status !== undefined }
+                                isFiltered={ search.status !== undefined }
                                 onFilterClick={ statusFilterModal.open }>
                                 Status
                             </Th>
@@ -94,7 +110,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
                 </Table>
 
                 { allSpectrograms && allSpectrograms.length > 0 &&
-                    <Pagination currentPage={ params.page ?? 1 } totalPages={ pageCount }
+                    <Pagination currentPage={ search.page ?? 1 } totalPages={ pageCount }
                                 setCurrentPage={ updatePage }/> }
 
                 { error && <GraphQLErrorText error={ error }/> }
@@ -109,10 +125,14 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
             { dateFilterModal.element }
             { statusFilterModal.element }
         </div>
-    }, [ campaign, phase, isEmpty, verificationPhase, hasDateFilter, dateFilterModal, params,  annotationFilterModal,
+    }, [ campaign, phase, isEmpty, verificationPhase, hasDateFilter, dateFilterModal, search, annotationFilterModal,
         statusFilterModal, allSpectrograms, pageCount, updatePage, error, isFetching ]);
 }
 
-export const Route = createLazyFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType')({
+export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType')({
+    validateSearch: (search: Record<string, unknown>) => search as AllTasksFilters,
+    params: {
+        parse: rawParams => rawParams as { campaignID: string, phaseType: AnnotationPhaseType },
+    },
     component: AnnotationCampaignPhaseDetail,
 })

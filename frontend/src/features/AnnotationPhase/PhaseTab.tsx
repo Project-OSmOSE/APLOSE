@@ -5,11 +5,10 @@ import { Button, Link, useAlert, useModal } from '@/components/ui';
 import { AnnotationPhaseType, useCurrentCampaign, useEndPhase } from '@/api';
 import { AnnotationPhaseCreateAnnotationModal, AnnotationPhaseCreateVerificationModal } from './PhaseCreateModal'
 import styles from './styles.module.scss';
-import { type AploseNavParams } from '@/features/UX';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
 
 export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: phaseType }) => {
-    const { campaignID, phaseType: currentPhaseType } = useParams<AploseNavParams>();
+    const { campaignID, phaseType: currentPhaseType } = useParams({ strict: false });
     const { campaign, phases, isFetching } = useCurrentCampaign()
     const phase = useMemo(() => phases?.find(p => p.phase === phaseType), [ phases, phaseType ])
 

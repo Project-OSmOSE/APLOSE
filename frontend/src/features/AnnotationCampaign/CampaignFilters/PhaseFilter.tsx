@@ -1,20 +1,29 @@
 import React, { useCallback } from 'react';
-import { AnnotationPhaseType, useAllCampaignsFilters } from '@/api';
+import { AnnotationPhaseType } from '@/api';
 import { IonChip, IonIcon } from '@ionic/react';
 import { closeCircle } from 'ionicons/icons';
+import { Route } from '@/routes/_authenticated/annotation-campaign';
+import { useNavigate } from '@tanstack/react-router';
 
 export const AnnotationCampaignPhaseTypeFilter: React.FC = () => {
-  const { params, updateParams } = useAllCampaignsFilters()
+  const { filter_phase } = Route.useSearch();
+  const navigate = useNavigate();
 
   const toggle = useCallback(() => {
-    if (!params.filter_phase) updateParams({ filter_phase: AnnotationPhaseType.Verification })
-    else updateParams({ filter_phase: null })
-  }, [ params ])
+    navigate({
+      to: Route.to,
+      search: (prev) => ({
+        ...prev,
+        filter_phase: !prev?.filter_phase ? AnnotationPhaseType.Verification : null,
+      }),
+      replace: true,
+    })
+  }, [ navigate ])
 
-  return <IonChip outline={ !params.filter_phase }
+  return <IonChip outline={ !filter_phase }
                   onClick={ toggle }
-                  color={ params.filter_phase === AnnotationPhaseType.Verification ? 'primary' : 'medium' }>
+                  color={ filter_phase === AnnotationPhaseType.Verification ? 'primary' : 'medium' }>
     Has verification
-    { params.filter_phase === AnnotationPhaseType.Verification && <IonIcon icon={ closeCircle } color="primary"/> }
+    { filter_phase === AnnotationPhaseType.Verification && <IonIcon icon={ closeCircle } color="primary"/> }
   </IonChip>
 }

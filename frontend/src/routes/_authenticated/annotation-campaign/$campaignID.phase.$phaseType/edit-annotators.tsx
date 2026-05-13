@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { createLazyFileRoute, useRouter } from '@tanstack/react-router';
+import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { IonButton, IonNote, IonSkeletonText, IonSpinner } from '@ionic/react';
 import { QueryStatus } from '@reduxjs/toolkit/query';
 
@@ -7,7 +7,7 @@ import { GraphQLErrorText, Head, Table, Tbody, Th, Thead, Tr, useToast } from '@
 import { FormBloc, type Item, ListSearchbar, type SearchItem } from '@/components/form';
 
 import {
-    AnnotationFileRangeInput,
+    AnnotationFileRangeInput, AnnotationPhaseType,
     useAllFileRanges,
     useAllUsers,
     useCurrentCampaign,
@@ -228,6 +228,9 @@ const EditAnnotators: React.FC = () => {
     )
 }
 
-export const Route = createLazyFileRoute('/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/edit-annotators')({
+export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/edit-annotators')({
+    params: {
+        parse: rawParams => rawParams as { campaignID: string, phaseType: AnnotationPhaseType },
+    },
     component: EditAnnotators,
 })

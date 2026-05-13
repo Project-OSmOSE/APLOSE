@@ -1,10 +1,9 @@
 import { AnnotationRestAPI } from './api';
 import { useCallback, useMemo } from 'react';
-import { type AploseNavParams } from '@/features/UX';
 import { ImportAnnotation } from './types';
 import { gqlAPI } from '@/api/baseGqlApi.ts';
 import { useAppDispatch } from '@/features/App';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
 
 const {
   importAnnotations,
@@ -12,7 +11,7 @@ const {
 
 
 export const useImportAnnotations = () => {
-  const { campaignID } = useParams<AploseNavParams>();
+  const { campaignID } = useParams({ strict: false });
   const [ method, info ] = importAnnotations.useMutation()
   const dispatch = useAppDispatch()
 

@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo } from 'react';
-import { createLazyFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { IonSkeletonText } from '@ionic/react';
 
 import { Head } from '@/components/ui';
 
-import { useCurrentCampaign } from '@/api';
+import { AnnotationPhaseType, useCurrentCampaign } from '@/api';
 import {
     DetectorConfigurationsFormBloc,
     DetectorsFormBloc,
@@ -66,6 +66,9 @@ const ImportAnnotations: React.FC = () => {
     )
 }
 
-export const Route = createLazyFileRoute('/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/import-annotations')({
+export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/import-annotations')({
+    params: {
+        parse: rawParams => rawParams as { campaignID: string, phaseType: AnnotationPhaseType },
+    },
     component: ImportAnnotations,
 })

@@ -1,24 +1,31 @@
 import React, { useCallback } from 'react';
-import { useAllCampaignsFilters, useCurrentUser } from '@/api';
+import { useCurrentUser } from '@/api';
 import { IonChip, IonIcon } from '@ionic/react';
 import { closeCircle } from 'ionicons/icons';
+import { Route } from '@/routes/_authenticated/annotation-campaign';
+import { useNavigate } from '@tanstack/react-router';
 
 export const AnnotationCampaignOwnerFilter: React.FC = () => {
-  const { params, updateParams } = useAllCampaignsFilters()
+  const { filter_ownerID } = Route.useSearch();
+  const navigate = useNavigate();
+
   const { user } = useCurrentUser();
 
   const toggle = useCallback(() => {
-    if (params.filter_ownerID) {
-      updateParams({ filter_ownerID: null })
-    } else {
-      updateParams({ filter_ownerID: user?.id })
-    }
-  }, [ params, user ])
+    navigate({
+      to: Route.to,
+      search: (prev) => ({
+        ...prev,
+        filter_ownerID: prev?.filter_ownerID ? null : user?.id,
+      }),
+      replace: true,
+    })
+  }, [ navigate, user ])
 
-  return <IonChip outline={ !params.filter_ownerID }
+  return <IonChip outline={ !filter_ownerID }
                   onClick={ toggle }
-                  color={ params.filter_ownerID ? 'primary' : 'medium' }>
+                  color={ filter_ownerID ? 'primary' : 'medium' }>
     Owned campaigns
-    { params.filter_ownerID && <IonIcon icon={ closeCircle } color="primary"/> }
+    { filter_ownerID && <IonIcon icon={ closeCircle } color="primary"/> }
   </IonChip>
 }

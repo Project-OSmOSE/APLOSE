@@ -63,7 +63,7 @@ const OntologyTab: React.FC = () => {
 
     const onSelectionChange = useCallback(({ nodes }: { nodes: Node<{ id: string }>[] }) => {
         if (nodes.length > 0) navigate({
-            to: '/ontology/$type',
+            to: '/ontology/$type/$id',
             params: { type, id: nodes[0].data.id },
             replace: true,
         })

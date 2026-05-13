@@ -1,12 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { EventSlice } from '@/features/UX/Events';
-import {
-  AllAnnotationCampaignFilterSlice,
-  AllAnnotationTaskFilterSlice,
-  getUserOnLoginMiddleware,
-  logoutOn401Listener,
-  StorageSlice,
-} from '@/api';
+import { getUserOnLoginMiddleware, logoutOn401Listener, StorageSlice } from '@/api';
 import { AuthSlice } from '@/features/Auth';
 import { gqlAPI } from '@/api/baseGqlApi';
 import { AnnotatorReducer } from '@/features/Annotator/reducer';
@@ -20,9 +14,6 @@ export const AppStore = configureStore({
     [StorageSlice.reducerPath]: StorageSlice.reducer,
     [gqlAPI.reducerPath]: gqlAPI.reducer,
     [restAPI.reducerPath]: restAPI.reducer,
-
-    [AllAnnotationCampaignFilterSlice.reducerPath]: AllAnnotationCampaignFilterSlice.reducer,
-    [AllAnnotationTaskFilterSlice.reducerPath]: AllAnnotationTaskFilterSlice.reducer,
 
     annotator: AnnotatorReducer,
   },

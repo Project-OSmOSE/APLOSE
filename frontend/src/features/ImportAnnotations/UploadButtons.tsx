@@ -1,26 +1,27 @@
 import React, { useCallback, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { useParams } from 'react-router-dom';
 import { IonButton, IonSpinner } from '@ionic/react';
 import { AnnotationPhaseType } from '@/api';
-import { type AploseNavParams } from '@/features/UX';
 import { useImportAnnotationsContext } from './context';
 import styles from './styles.module.scss';
+import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID._detailLayout/phase.$phaseType'
 
 export const UploadButtons: React.FC = () => {
-    const { campaignID, phaseType } = useParams<AploseNavParams>();
+    const { campaignID } = Route.useParams();
+    const search = Route.useSearch();
     const { canImport, upload, ...state } = useImportAnnotationsContext()
     const navigate = useNavigate()
 
     const back = useCallback(() => {
-        navigate({ 
+        navigate({
             to: '/annotation-campaign/$campaignID/phase/$phaseType',
             params: {
                 campaignID,
-                phaseType: AnnotationPhaseType.Verification
-            }
+                phaseType: AnnotationPhaseType.Verification,
+            },
+            search,
         })
-    }, [ campaignID, phaseType, navigate ])
+    }, [ campaignID, navigate, search ])
 
     useEffect(() => {
         if (state.uploadState === 'uploaded') back()

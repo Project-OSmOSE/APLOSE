@@ -11,6 +11,5 @@ export type {
   ArchiveCampaignMutationVariables,
 } from './annotation-campaign.generated'
 export * from './hooks'
-export * from './all-campaign-filters'
 export * from './matchers'
 export * from './selector'

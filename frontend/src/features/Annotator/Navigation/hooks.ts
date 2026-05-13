@@ -1,11 +1,9 @@
 import { useCallback } from 'react';
 import { useAlert } from '@/components/ui';
 import { useNavigate } from '@tanstack/react-router';
-import { useParams } from 'react-router-dom';
-import { useAllTasksFilters } from '@/api';
-import { type AploseNavParams } from '@/features/UX';
 import { useAppSelector } from '@/features/App';
 import { selectUpdated } from '@/features/Annotator/UX';
+import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID._detailLayout/phase.$phaseType';
 
 export const useAnnotatorCanNavigate = () => {
     const isUpdated = useAppSelector(selectUpdated);
@@ -30,15 +28,15 @@ export const useAnnotatorCanNavigate = () => {
 }
 
 export const useOpenAnnotator = () => {
-    const { campaignID, phaseType } = useParams<AploseNavParams>();
-    const { params } = useAllTasksFilters()
+    const routeParams = Route.useParams()
+    const search = Route.useSearch();
     const navigate = useNavigate()
 
     return useCallback((spectrogramID: string) => {
         navigate({
             to: '/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID',
-            params: { campaignID, phaseType, spectrogramID },
-            search: params
+            params: { ...routeParams, spectrogramID },
+            search,
         });
-    }, [ campaignID, phaseType, params, navigate ])
+    }, [ routeParams, search, navigate ])
 }
