@@ -34,8 +34,6 @@ const EditAnnotators = lazy(() => import('./view/annotation-campaign/[campaignID
 const ImportAnnotations = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/import-annotations'));
 const AnnotatorPage = lazy(() => import('./view/annotation-campaign/[campaignID]/phase/[phaseType]/spectrogram/[spectrogramID]'));
 
-const AploseSkeleton = lazy(() => import('./components/layout/Skeleton'));
-
 
 setupIonicReact({
     mode: 'md',
@@ -68,7 +66,7 @@ const AppContent: React.FC = () => {
     return (
         <Routes>
 
-            { isConnected && <Route element={ <Suspense><AploseSkeleton/></Suspense> }>
+            {/*{ isConnected && <Route element={ <Suspense><AploseSkeleton/></Suspense> }>*/}
 
                 <Route path="annotation-campaign">
                     <Route index element={ <Suspense><AnnotationCampaignList/></Suspense> }/>
@@ -110,7 +108,7 @@ const AppContent: React.FC = () => {
                 </Route>
 
                 <Route path="" element={ <Navigate to="/annotation-campaign" replace/> }/>
-            </Route> }
+            {/*</Route> }*/}
 
             { isConnected ?
                 <Route path="*" element={ <Navigate to="/annotation-campaign" replace/> }/> :
