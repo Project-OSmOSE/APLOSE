@@ -13,7 +13,7 @@ import { useParams } from '@tanstack/react-router';
 import { useAppSelector } from '@/features/App';
 import { selectAnalysisID } from '@/features/Annotator/Analysis';
 import { GetAnnotationTaskQueryVariables } from './annotation-task.generated'
-import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID._detailLayout/phase.$phaseType';
+import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 
 const PAGE_SIZE = 20;
 

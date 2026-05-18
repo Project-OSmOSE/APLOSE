@@ -14,6 +14,6 @@ const DatasetList: React.FC = () => (<Fragment>
     </Fragment>
 )
 
-export const Route = createFileRoute('/_admin/dataset/')({
+export const Route = createFileRoute('/_authenticated/_admin/dataset')({
     component: DatasetList,
 })

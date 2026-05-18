@@ -1,15 +1,18 @@
 import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
+
+import './css/bootstrap-4.1.3.min.css';
+import '@ionic/react/css/core.css';
+import './css/ionic-override.css';
+import './css/annotation-colors.css';
+import './css/app.css';
+
 import { IonApp, setupIonicReact } from '@ionic/react';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
-import { ReactFlowProvider } from '@xyflow/react';
-
-import { AlertProvider } from '@/components/ui';
 
 import { useCurrentUser } from '@/api';
 
 import { StoreProvider, useAppSelector } from '@/features/App';
-import { AudioProvider } from '@/features/Audio';
 import { useLoadEventService } from '@/features/UX';
 import { selectIsConnected } from '@/features/Auth';
 
@@ -68,17 +71,11 @@ const App: React.FC = () => {
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-      <StoreProvider>
-          <IonApp>
-              <AudioProvider>
-                  <AlertProvider>
-                      <ReactFlowProvider>
-                          <App/>
-                      </ReactFlowProvider>
-                  </AlertProvider>
-              </AudioProvider>
-          </IonApp>
-      </StoreProvider>
-  </StrictMode>
+    <StrictMode>
+        <IonApp>
+            <StoreProvider>
+                <App/>
+            </StoreProvider>
+        </IonApp>
+    </StrictMode>,
 )

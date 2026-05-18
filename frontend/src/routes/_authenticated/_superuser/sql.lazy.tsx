@@ -118,7 +118,7 @@ const SqlQuery: React.FC = () => {
     }, [ user ])
 }
 
-export const Route = createLazyFileRoute('/_superuser/sql')({
+export const Route = createLazyFileRoute('/_authenticated/_superuser/sql')({
     component: SqlQuery,
 })
 

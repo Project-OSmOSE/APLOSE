@@ -3,7 +3,7 @@ import { createLazyFileRoute, Outlet, useParams } from '@tanstack/react-router'
 
 import { Head, Tab, Tabs } from '@/components/ui';
 
-import styles from './index.module.scss';
+import styles from './ontology.module.scss';
 
 const OntologyPage: React.FC = () => {
 
@@ -30,6 +30,6 @@ const OntologyPage: React.FC = () => {
         [ type ])
 }
 
-export const Route = createLazyFileRoute('/_superuser/ontology/')({
+export const Route = createLazyFileRoute('/_authenticated/_superuser/ontology')({
     component: OntologyPage,
 })

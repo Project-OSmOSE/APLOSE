@@ -12,7 +12,7 @@ import { AnnotationCampaignArchiveButton, AnnotationCampaignInstructionsButton }
 import { DatasetName } from '@/features/Dataset';
 import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 
-import styles from '../_detailLayout.module.scss';
+import styles from '../$campaignID._detailLayout.module.scss';
 
 const AnnotationCampaignInfo: React.FC = () => {
     const { campaign, phases } = useCurrentCampaign()
@@ -90,6 +90,6 @@ const AnnotationCampaignInfo: React.FC = () => {
     }, [campaign, phases, labelSetModal])
 }
 
-export const Route = createLazyFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout/')({
+export const Route = createLazyFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailedLayout')({
     component: AnnotationCampaignInfo,
 })

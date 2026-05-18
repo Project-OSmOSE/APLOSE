@@ -1,14 +1,15 @@
 import React, { useMemo } from 'react';
 import { Handle, NodeProps, Position } from '@xyflow/react';
-import styles from './styles.module.scss'
+import { useParams } from '@tanstack/react-router';
 import { IonNote } from '@ionic/react';
+
+import styles from './styles.module.scss'
 import { OntologyItem } from './type';
-import { Route } from '@/routes/_superuser/ontology/$type.$id'
 
 type Props = NodeProps & { data: OntologyItem; type: any }
 
 export const OntologyNode: React.FC<Props> = ({ data }) => {
-    const { id } = Route.useParams();
+    const { id } = useParams({ strict: false });
 
     const selected = useMemo(() => data.id.toString() === id, [ data.id, id ])
 

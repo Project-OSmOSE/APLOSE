@@ -15,6 +15,7 @@ const Component: React.FC = () => {
         if (!isConnected) navigate({
             to: '/login',
             search: { redirect: router.latestLocation.href },
+            replace: true
         });
     }, [ isConnected ]);
 
@@ -26,6 +27,7 @@ export const Route = createFileRoute('/_authenticated')({
             throw redirect({
                 to: '/login',
                 search: { redirect: location.href },
+                replace: true
             })
         }
     },

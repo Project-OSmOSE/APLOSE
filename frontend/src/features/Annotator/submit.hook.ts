@@ -11,7 +11,7 @@ import { selectAllFileIsSeen, selectStart } from '@/features/Annotator/UX';
 import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 import {
     Route,
-} from '@/routes/_authenticated/annotation-campaign/$campaignID.phase.$phaseType/spectrogram/$spectrogramID'
+} from '@/routes/_authenticated/annotation-campaign/$campaignID/phase.$phaseType/spectrogram/$spectrogramID'
 
 export const useAnnotatorSubmit = () => {
     const openAnnotator = useOpenAnnotator()

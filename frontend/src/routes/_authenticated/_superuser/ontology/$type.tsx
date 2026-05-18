@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { createFileRoute, notFound, Outlet, useNavigate } from '@tanstack/react-router'
-import { Background, Controls, Node, ReactFlow, useOnSelectionChange } from '@xyflow/react';
+import { Background, Controls, Node, ReactFlow, useOnSelectionChange, useReactFlow } from '@xyflow/react';
 
 import { SoundNode, SourceNode, useAllSounds, useAllSources, useSoundCRUD, useSourceCRUD } from '@/api';
 import { NewNode, NODE_ORIGIN, NODE_TYPES, useGetInitialNodes, useOntologyTreeFlow } from '@/features/Ontology';
@@ -98,10 +98,12 @@ const OntologyTab: React.FC = () => {
         del: deleteNode,
     })
 
+    const { fitView } = useReactFlow()
     useEffect(() => {
         const { nodes, edges } = getInitialNodes()
         setNodes(nodes)
         setEdges(edges)
+        fitView()
     }, [ initialSources, initialSounds, type ]);
 
     return useMemo(() => <div className={ styles.tabContent }>
@@ -128,7 +130,7 @@ const OntologyTab: React.FC = () => {
         [ nodes, edges, onNodesChange, onNodesDelete, onConnect, onConnectEnd, onEdgesChange, onEdgesDelete ])
 }
 
-export const Route = createFileRoute('/_superuser/ontology/$type')({
+export const Route = createFileRoute('/_authenticated/_superuser/ontology/$type')({
     beforeLoad: ({ params }) => {
         const { type } = params
         if (type !== 'source' && type !== 'sound') throw notFound()

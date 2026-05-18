@@ -5,7 +5,7 @@ import { IonIcon } from '@ionic/react';
 import { closeOutline } from 'ionicons/icons/index.js';
 import { AllTasksFilters } from '@/api';
 import styles from './styles.module.scss'
-import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID._detailLayout/phase.$phaseType';
+import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 import { useNavigate } from '@tanstack/react-router';
 
 

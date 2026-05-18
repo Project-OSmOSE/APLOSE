@@ -3,7 +3,7 @@ import styles from './styles.module.scss'
 import { Modal, type ModalProps } from '@/components/ui';
 import { Switch } from '@/components/form';
 import { AnnotationTaskStatus } from '@/api';
-import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID._detailLayout/phase.$phaseType';
+import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 import { useNavigate } from '@tanstack/react-router';
 
 export const StatusFilterModal: React.FC<ModalProps & {

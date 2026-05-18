@@ -1,23 +1,26 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { selectAnnotator } from '@/features/Annotator/selectors';
 import { AnnotatorAnnotationSlice } from './slice'
+import type { AppState } from '@/features/App';
 
 
 export const selectAnnotationID = createSelector(
-  selectAnnotator, AnnotatorAnnotationSlice.selectors.selectID,
+    (state: AppState) => state.annotator,
+    AnnotatorAnnotationSlice.selectors.selectID,
 )
 
 export const selectAllAnnotations = createSelector(
-  selectAnnotator, AnnotatorAnnotationSlice.selectors.selectAllAnnotations,
+    (state: AppState) => state.annotator,
+    AnnotatorAnnotationSlice.selectors.selectAllAnnotations,
 )
 
 export const selectTempAnnotation = createSelector(
-  selectAnnotator, AnnotatorAnnotationSlice.selectors.selectTempAnnotation,
+    (state: AppState) => state.annotator,
+    AnnotatorAnnotationSlice.selectors.selectTempAnnotation,
 )
 
 export const selectAnnotation = createSelector(
-  [
-    selectAllAnnotations,
-    selectAnnotationID,
-  ], (allAnnotations, id) => allAnnotations?.find(a => a.id === id),
+    [
+        selectAllAnnotations,
+        selectAnnotationID,
+    ], (allAnnotations, id) => allAnnotations?.find(a => a.id === id),
 )

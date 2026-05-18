@@ -8,7 +8,7 @@ import { useAllAnnotationTasks, useCurrentPhase } from '@/api';
 import { FileRangeProgressModal } from '@/features/AnnotationFileRange';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 import { analytics } from 'ionicons/icons';
-import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID._detailLayout/phase.$phaseType';
+import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 import { useNavigate } from '@tanstack/react-router';
 
 export const FileRangeActionBar: React.FC = () => {

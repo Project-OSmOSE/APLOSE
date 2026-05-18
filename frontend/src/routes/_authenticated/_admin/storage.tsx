@@ -6,7 +6,7 @@ import { Button, Head, HelpButton, useModal } from '@/components/ui';
 
 import { ImportFromPath, ServerItem } from '@/features/Storage';
 
-import styles from './index.module.scss'
+import styles from './storage.module.scss'
 
 const StorageBrowser: React.FC = () => {
     const searchModal = useModal(ImportFromPath);
@@ -41,6 +41,6 @@ const StorageBrowser: React.FC = () => {
         </Fragment>,
         [ searchModal ])
 }
-export const Route = createFileRoute('/_admin/storage/')({
+export const Route = createFileRoute('/_authenticated/_admin/storage')({
     component: StorageBrowser,
 })

@@ -1,6 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { EventSlice } from '@/features/UX/Events';
-import { getUserOnLoginMiddleware, logoutOn401Listener, StorageSlice } from '@/api';
+import { logoutOn401Listener } from '@/api/auth';
+import { getUserOnLoginMiddleware } from '@/api/user';
+import { StorageSlice } from '@/api/storage';
 import { AuthSlice } from '@/features/Auth';
 import { gqlAPI } from '@/api/baseGqlApi';
 import { AnnotatorReducer } from '@/features/Annotator/reducer';

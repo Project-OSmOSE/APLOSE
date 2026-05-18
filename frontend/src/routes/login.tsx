@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'reac
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { IonButton } from '@ionic/react';
 
-import { Button, Link, useToast } from '@/components/ui';
+import { Link, useToast } from '@/components/ui';
 import { Footer, Header } from '@/components/layout';
 import { Input } from '@/components/form';
 import { getErrorMessage } from '@/service/function';
@@ -16,7 +16,7 @@ import { NON_FILTERED_KEY_DOWN_EVENT, useEvent } from '@/features/UX';
 import styles from './login.module.scss';
 
 
-export const Login: React.FC = () => {
+const Login: React.FC = () => {
 
     // State
     const isConnected = useAppSelector(selectIsConnected)
@@ -56,10 +56,6 @@ export const Login: React.FC = () => {
             .catch(error => setErrors({ global: getErrorMessage(error) }));
     }, [ setErrors, username, password, navigate, to, login ])
 
-    const goHome = useCallback(() => {
-        navigate({ to: '/' });
-    }, [ navigate ])
-
     const onKbdEvent = useCallback((event: KeyboardEvent) => {
         switch (event.code) {
             case 'Enter':
@@ -72,7 +68,7 @@ export const Login: React.FC = () => {
 
     return <div className={ styles.page }>
         <Header buttons={ <Fragment>
-            <Button color="dark" size="large" fill="clear" onClick={ goHome }>Home</Button>
+            <Link to="/" size="large">Home</Link>
             <Link href="/" size="large">OSmOSE</Link>
         </Fragment> }/>
         <div className={ styles.content }>
@@ -97,7 +93,7 @@ export const Login: React.FC = () => {
             </form>
             <div className={ styles.buttons }>
 
-                <Button color="dark" fill="clear" onClick={ goHome }>Back to Home</Button>
+                <Link to="/">Back to Home</Link>
 
                 <IonButton color="primary" onClick={ submit }
                            disabled={ isLoading }>

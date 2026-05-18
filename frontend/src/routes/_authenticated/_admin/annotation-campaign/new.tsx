@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
 import { IonButton, IonSpinner } from '@ionic/react';
 
 import { useToast } from '@/components/ui';
@@ -14,6 +14,7 @@ import styles from './new.module.scss';
 
 const NewAnnotationCampaign: React.FC = () => {
     const { dataset_id } = Route.useSearch()
+    const router = useRouter()
 
     const {
         createCampaign,
@@ -173,6 +174,7 @@ const NewAnnotationCampaign: React.FC = () => {
             </FormBloc>
 
             <div className={ styles.buttons }>
+                <IonButton color='dark' fill='clear' onClick={() => router.history.back()}>Back</IonButton>
                 { isSubmittingCampaign && <IonSpinner/> }
                 <IonButton disabled={ isSubmittingCampaign } onClick={ submit }>
                     Create campaign
@@ -183,11 +185,11 @@ const NewAnnotationCampaign: React.FC = () => {
             name, description, deadline, instructionsUrl,
             datasetID, analysisIDs,
             isColormapEditable, allowColormapTuning, allowImageTuning, colormapInvertedDefault, colormapDefault,
-            isSubmittingCampaign, submit, formErrors,
+            isSubmittingCampaign, submit, formErrors, router,
         ])
 }
 
-export const Route = createFileRoute('/_admin/annotation-campaign/new')({
+export const Route = createFileRoute('/_authenticated/_admin/annotation-campaign/new')({
     validateSearch: (search: Record<string, unknown>) => ({
         dataset_id: search['dataset_id'] as string,
     }),

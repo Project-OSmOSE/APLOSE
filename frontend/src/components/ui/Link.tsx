@@ -22,7 +22,7 @@ export const Link: React.FC<LinkProps> = ({
                                               ...props
                                           }) => {
 
-    const button = useMemo(() => <Button { ...props }>
+    const button = useMemo(() => <Button { ...{ color: 'dark', fill: 'clear', ...props } }>
         { children }
         { target === '_blank' && <IonIcon icon={ openOutline } slot="end"/> }
     </Button>, [ props, target, children ])
@@ -35,11 +35,12 @@ export const Link: React.FC<LinkProps> = ({
                                           href={ href }
                                           onClick={ onClick }
                                           children={ button }/>
-        if (to !== undefined) return <RouterLink to={ to } params={ params } search={search}
+        if (to !== undefined) return <RouterLink to={ to } params={ params } search={ search }
+                                                 className={ className }
                                                  replace={ replace }
                                                  target={ target }
                                                  onClick={ onClick }
                                                  children={ button }/>
         return <Fragment/>
-    }, [ button, className, target, href, onClick, to, replace, params ])
+    }, [ button, className, target, href, onClick, to, replace, params, search ])
 }

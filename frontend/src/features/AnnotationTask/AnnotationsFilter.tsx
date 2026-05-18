@@ -7,7 +7,7 @@ import styles from './styles.module.scss';
 import { Modal, type ModalProps } from '@/components/ui';
 import { DetectorSelect } from '@/features/Detector';
 import { UserSelect } from '@/features/User';
-import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID._detailLayout/phase.$phaseType';
+import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 import { useNavigate } from '@tanstack/react-router';
 
 

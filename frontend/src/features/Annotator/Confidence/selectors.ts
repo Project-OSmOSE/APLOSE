@@ -1,22 +1,25 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { selectAnnotator, selectAnnotatorCampaign } from '@/features/Annotator/selectors';
+import { selectAnnotatorCampaign } from '@/features/Annotator/selectors';
 import { AnnotatorConfidenceSlice } from './slice';
+import type { AppState } from '@/features/App';
 
 
 export const selectFocusConfidence = createSelector(
-  selectAnnotator, AnnotatorConfidenceSlice.selectors.selectFocus,
+    (state: AppState) => state.annotator,
+    AnnotatorConfidenceSlice.selectors.selectFocus,
 )
 
 export const selectDefaultConfidence = createSelector(
-  selectAnnotator, AnnotatorConfidenceSlice.selectors.selectDefault,
+    (state: AppState) => state.annotator,
+    AnnotatorConfidenceSlice.selectors.selectDefault,
 )
 
 export const selectConfidenceSet = createSelector(
-  selectAnnotatorCampaign,
-  (campaignQuery) => campaignQuery.data?.annotationCampaignById?.confidenceSet,
+    selectAnnotatorCampaign,
+    (campaignQuery) => campaignQuery.data?.annotationCampaignById?.confidenceSet,
 )
 
 export const selectAllConfidences = createSelector(
-  selectConfidenceSet,
-  (confidenceSet) => confidenceSet?.confidenceIndicators?.filter(c => c !== null).map(c => c!) ?? [],
+    selectConfidenceSet,
+    (confidenceSet) => confidenceSet?.confidenceIndicators?.filter(c => c !== null).map(c => c!) ?? [],
 )

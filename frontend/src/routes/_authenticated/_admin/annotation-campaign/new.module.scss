@@ -41,17 +41,8 @@
 
   .buttons {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    grid-template-areas: "empty spinner create";
+    grid-auto-flow: column;
+    justify-content: space-between;
     align-items: center;
-
-    ion-spinner {
-      grid-area: spinner;
-    }
-
-    ion-button {
-      grid-area: create;
-      justify-self: end;
-    }
   }
 }

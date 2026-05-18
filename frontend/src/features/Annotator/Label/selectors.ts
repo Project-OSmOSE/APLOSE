@@ -1,17 +1,20 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { selectAnnotator, selectAnnotatorCampaign } from '@/features/Annotator/selectors';
+import { selectAnnotatorCampaign } from '@/features/Annotator/selectors';
 import { AnnotatorLabelSlice } from './slice';
+import type { AppState } from '@/features/App';
 
 
 export const selectHiddenLabels = createSelector(
-  selectAnnotator, AnnotatorLabelSlice.selectors.selectHiddenLabels,
+    (state: AppState) => state.annotator,
+    AnnotatorLabelSlice.selectors.selectHiddenLabels,
 )
 
 export const selectFocusLabel = createSelector(
-  selectAnnotator, AnnotatorLabelSlice.selectors.selectFocus,
+    (state: AppState) => state.annotator,
+    AnnotatorLabelSlice.selectors.selectFocus,
 )
 
 export const selectAllLabels = createSelector(
-  selectAnnotatorCampaign,
-  (campaignQuery) => campaignQuery.data?.annotationCampaignById?.labelSet?.labels.filter(l => !!l).map(l => l!.name) ?? [],
+    selectAnnotatorCampaign,
+    (campaignQuery) => campaignQuery.data?.annotationCampaignById?.labelSet?.labels.filter(l => !!l).map(l => l!.name) ?? [],
 )

@@ -101,7 +101,7 @@ const OntologyPanel: React.FC = () => {
   </div>
 }
 
-export const Route = createFileRoute('/_superuser/ontology/$type/$id')({
+export const Route = createFileRoute('/_authenticated/_superuser/ontology/$type/$id')({
   beforeLoad: ({ params }) => {
     const { type, id } = params
     if (!id) throw notFound()

@@ -8,14 +8,14 @@ const Component: React.FC = () => {
 
     const navigate = useNavigate();
     useEffect(() => {
-        if (!user?.isSuperuser) navigate({ to: '/annotation-campaign' });
+        if (!user?.isAdmin) navigate({ to: '/annotation-campaign' });
     }, [ user ]);
 
     return <Outlet/>
 }
-export const Route = createFileRoute('/_superuser')({
+export const Route = createFileRoute('/_authenticated/_admin')({
     beforeLoad: ({ context }) => {
-        if (!context.isSuperuser) {
+        if (!context.isAdmin) {
             throw redirect({ to: '/annotation-campaign' })
         }
     },

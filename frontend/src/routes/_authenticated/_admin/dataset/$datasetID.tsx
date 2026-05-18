@@ -68,6 +68,6 @@ const DatasetDetail: React.FC = () => {
     }, [ id, isLoading, error, dataset, importAnalysisModal ])
 }
 
-export const Route = createFileRoute('/_admin/dataset/$datasetID')({
+export const Route = createFileRoute('/_authenticated/_admin/dataset/$datasetID')({
     component: DatasetDetail,
 })
