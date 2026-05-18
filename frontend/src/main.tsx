@@ -44,20 +44,6 @@ const App: React.FC = () => {
     useLoadEventService();
 
     return <RouterProvider router={ router }/>
-
-    // return (
-    //     <Routes>
-    //
-    //         {/*{ isConnected && <Route element={ <Suspense><AploseSkeleton/></Suspense> }>*/ }
-    //
-    //         <Route path="" element={ <Navigate to="/annotation-campaign" replace/> }/>
-    //         {/*</Route> }*/ }
-    //
-    //         { isConnected ?
-    //             <Route path="*" element={ <Navigate to="/annotation-campaign" replace/> }/> :
-    //             <Route path="*" element={ <Navigate to="/login" replace state={ { from } }/> }/> }
-    //     </Routes>
-    // )
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
