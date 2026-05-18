@@ -1,11 +1,8 @@
 import { useCallback } from 'react';
 import { useAlert } from '@/components/ui';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
 import { useAppSelector } from '@/features/App';
 import { selectUpdated } from '@/features/Annotator/UX';
-import {
-    Route,
-} from '@/routes/_authenticated/annotation-campaign/$campaignID/phase.$phaseType/spectrogram/$spectrogramID';
 
 export const useAnnotatorCanNavigate = () => {
     const isUpdated = useAppSelector(selectUpdated);
@@ -30,8 +27,8 @@ export const useAnnotatorCanNavigate = () => {
 }
 
 export const useOpenAnnotator = () => {
-    const routeParams = Route.useParams()
-    const search = Route.useSearch();
+    const routeParams: any = useParams({ strict: false })
+    const search: any = useSearch({ strict: false });
     const navigate = useNavigate()
 
     return useCallback((spectrogramID: string) => {
