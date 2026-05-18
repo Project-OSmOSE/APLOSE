@@ -3,7 +3,9 @@ import { useAlert } from '@/components/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { useAppSelector } from '@/features/App';
 import { selectUpdated } from '@/features/Annotator/UX';
-import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
+import {
+    Route,
+} from '@/routes/_authenticated/annotation-campaign/$campaignID/phase.$phaseType/spectrogram/$spectrogramID';
 
 export const useAnnotatorCanNavigate = () => {
     const isUpdated = useAppSelector(selectUpdated);

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Link as RouterLink, type LinkComponentProps } from '@tanstack/react-router'
+import { Link as RouterLink, type LinkComponentProps, useSearch } from '@tanstack/react-router'
 import { IonBadge, IonIcon, IonNote, IonSkeletonText } from '@ionic/react';
 import { Color } from '@ionic/core';
 import { crop } from 'ionicons/icons/index.js';
@@ -9,13 +9,11 @@ import { GraphQLErrorText, Progress, SkeletonProgress } from '@/components/ui';
 import { AllCampaignFilters, type ListCampaignsQuery, useAllCampaigns } from '@/api';
 import { dateToString, pluralize } from '@/service/function';
 
-import { Route } from '@/routes/_authenticated/annotation-campaign'
-
 import styles from './styles.module.scss';
 
 type Campaign = NonNullable<NonNullable<ListCampaignsQuery['allAnnotationCampaigns']>['results'][number]>;
 export const Cards: React.FC<{ filters?: AllCampaignFilters }> = ({ filters }) => {
-    const searchParams = Route.useSearch();
+    const searchParams = useSearch({ strict: false });
     const {
         allCampaigns,
         isFetching,

@@ -61,7 +61,7 @@ const AnnotationCampaignList: React.FC = () => {
 }
 
 
-export const Route = createFileRoute('/_authenticated/annotation-campaign')({
+export const Route = createFileRoute('/_authenticated/annotation-campaign/')({
     validateSearch: (search: Record<string, unknown>) => search as AllCampaignFilters,
     component: AnnotationCampaignList,
 })

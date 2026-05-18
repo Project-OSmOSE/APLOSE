@@ -12,10 +12,11 @@ import { useAnnotatorCanNavigate } from '@/features/Annotator/Navigation';
 import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
 import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 import { PointerProvider } from '@/features/Annotator/Pointer/context';
-import { useParams } from '@tanstack/react-router';
+import { useParams, useSearch } from '@tanstack/react-router';
 
 export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
     const { campaignID, phaseType } = useParams({ strict: false });
+    const search = useSearch({ strict: false });
     const { campaign } = useCurrentCampaign()
     const { phase } = useCurrentPhase()
     const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
@@ -50,7 +51,8 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                                   size="small"
                                   onClick={ onBack }
                                   to="/annotation-campaign/$campaignID/phase/$phaseType"
-                                  params={ { campaignID, phaseType } }>
+                                  params={ { campaignID, phaseType } }
+                                  search={ search }>
                                 Back to campaign
                             </Link>
                         </Fragment> }>

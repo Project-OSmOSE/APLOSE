@@ -1,5 +1,5 @@
 import React, { type ReactNode, useMemo } from 'react';
-import { useSearch } from '@tanstack/react-router';
+import { useParams } from '@tanstack/react-router';
 
 import { Footer } from './Footer';
 import { Navbar } from './Navbar';
@@ -9,10 +9,10 @@ import styles from './layout.module.scss';
 export const AploseSkeleton: React.FC<{
     children: ReactNode
 }> = ({ children }) => {
-    const looseSearch = useSearch({ strict: false })
+    const looseParams = useParams({ strict: false })
 
     return useMemo(() => {
-        if (looseSearch.spectrogramID) return children
+        if (looseParams.spectrogramID) return children
         return (
             <div className={ styles.skeleton }>
 
@@ -23,5 +23,5 @@ export const AploseSkeleton: React.FC<{
                 <Footer/>
             </div>
         )
-    }, [ children, looseSearch ])
+    }, [ children, looseParams ])
 }

@@ -7,6 +7,7 @@ import { AuthSlice } from '@/features/Auth';
 import { gqlAPI } from '@/api/baseGqlApi';
 import { AnnotatorReducer } from '@/features/Annotator/reducer';
 import { restAPI } from '@/api/baseRestApi';
+import { setupListeners } from '@reduxjs/toolkit/query';
 
 export const AppStore = configureStore({
   reducer: {
@@ -14,7 +15,7 @@ export const AppStore = configureStore({
 
     auth: AuthSlice.reducer,
     [StorageSlice.reducerPath]: StorageSlice.reducer,
-    [gqlAPI.reducerPath]: gqlAPI.reducer,
+    gql: gqlAPI.reducer,
     [restAPI.reducerPath]: restAPI.reducer,
 
     annotator: AnnotatorReducer,
@@ -31,3 +32,5 @@ export const AppStore = configureStore({
 export type AppState = ReturnType<typeof AppStore.getState>;
 
 export type AppDispatch = typeof AppStore.dispatch;
+
+setupListeners(AppStore.dispatch);

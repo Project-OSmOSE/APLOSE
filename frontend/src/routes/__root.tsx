@@ -4,13 +4,8 @@ import { ReactFlowProvider } from '@xyflow/react';
 import { AlertProvider } from '@/components/ui';
 import { AudioProvider } from '@/features/Audio';
 
-type RouterContext = {
-    isConnected: boolean;
-    isAdmin?: boolean;
-    isSuperuser?: boolean;
-}
 
-export const Route = createRootRouteWithContext<RouterContext>()({
+export const Route = createRootRouteWithContext()({
     component: () =>
         <AudioProvider>
             <AlertProvider>

@@ -10,11 +10,8 @@ import './css/app.css';
 import { IonApp, setupIonicReact } from '@ionic/react';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
-import { useCurrentUser } from '@/api';
-
-import { StoreProvider, useAppSelector } from '@/features/App';
+import { StoreProvider } from '@/features/App';
 import { useLoadEventService } from '@/features/UX';
-import { selectIsConnected } from '@/features/Auth';
 
 import { routeTree } from '@/routeTree.gen';
 
@@ -46,14 +43,7 @@ declare module '@tanstack/react-router' {
 const App: React.FC = () => {
     useLoadEventService();
 
-    const isConnected = useAppSelector(selectIsConnected)
-    const { user } = useCurrentUser()
-
-    return <RouterProvider router={ router } context={ {
-        isConnected,
-        isAdmin: user?.isAdmin,
-        isSuperuser: user?.isSuperuser,
-    } }/>
+    return <RouterProvider router={ router }/>
 
     // return (
     //     <Routes>
