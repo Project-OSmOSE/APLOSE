@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { IonNote } from '@ionic/react';
-import { useDataset } from '@/api';
+import { useCurrentUser, useDataset } from '@/api';
 
 import { dateToString } from '@/service/function';
 import { FadedText, Link } from '@/components/ui';
@@ -22,7 +22,9 @@ export const DatasetName: React.FC<{
     labeled?: true
     link?: true
 }> = ({ name, id, labeled, link }) => {
-    if (link && id) return <Fragment>
+    const { user } = useCurrentUser()
+
+    if (link && id && user?.isAdmin) return <Fragment>
         { labeled && <FadedText>Dataset</FadedText> }
         <Link to="/dataset/$datasetID" params={ { datasetID: id } } color="primary">{ name }</Link>
     </Fragment>

@@ -85,7 +85,7 @@ const TEST = {
 
             await test.step('Access dataset', async () => {
                 await page.getByRole('button', { name: dataset.name }).click()
-                await page.waitForURL(`/app/dataset/${ dataset.id }/`)
+                await page.waitForURL(`/app/dataset/${ dataset.id }`)
             })
         }),
 
@@ -171,7 +171,7 @@ test.describe('/annotation-campaign/:campaignID', () => {
 
     TEST.displayCampaign({ as: 'annotator', tag: essentialTag })
 
-    TEST.canAccessDataset({ as: 'annotator', tag: essentialTag })
+    TEST.canAccessDataset({ as: 'staff', tag: essentialTag })
 
     TEST.cannotUpdateCampaign({ as: 'annotator', tag: essentialTag })
 

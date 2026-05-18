@@ -1,34 +1,20 @@
-import React, { useCallback, useEffect } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import React, { useEffect } from 'react';
+import { useCanGoBack, useRouter } from '@tanstack/react-router';
 import { IonButton, IonSpinner } from '@ionic/react';
-import { AnnotationPhaseType } from '@/api';
 import { useImportAnnotationsContext } from './context';
 import styles from './styles.module.scss';
-import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID._detailLayout/phase.$phaseType'
 
 export const UploadButtons: React.FC = () => {
-    const { campaignID } = Route.useParams();
-    const search = Route.useSearch();
     const { canImport, upload, ...state } = useImportAnnotationsContext()
-    const navigate = useNavigate()
-
-    const back = useCallback(() => {
-        navigate({
-            to: '/annotation-campaign/$campaignID/phase/$phaseType',
-            params: {
-                campaignID,
-                phaseType: AnnotationPhaseType.Verification,
-            },
-            search,
-        })
-    }, [ campaignID, navigate, search ])
+    const canGoBack = useCanGoBack();
+    const router = useRouter()
 
     useEffect(() => {
-        if (state.uploadState === 'uploaded') back()
+        if (state.uploadState === 'uploaded') router.history.back()
     }, [ state.uploadState ]);
 
     return <div className={ styles.uploadButtons }>
-        <IonButton color="medium" fill="outline" onClick={ back }>
+        <IonButton color="medium" fill="outline" disabled={ !canGoBack } onClick={ () => router.history.back() }>
             Back to campaign
         </IonButton>
 
