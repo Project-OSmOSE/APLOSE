@@ -10,7 +10,7 @@
     "dev": "vite",
     "wait:all": "wait-on http://localhost:8000/backend/admin && wait-on http://localhost:5173/app",
     "wait:server": "wait-on http://localhost:8000/backend/admin",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test:components": "vitest",
@@ -87,6 +87,7 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3",
     "vite": "7.1.11",
+    "vite-plugin-dts": "^5.0.1",
     "vitepress": "^1.5.0",
     "vitest": "^3.2.4",
     "wait-on": "^8.0.1"

@@ -2,6 +2,7 @@ import { ConfigEnv, type UserConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
+import dts from 'vite-plugin-dts'
 
 // https://vitejs.dev/config/
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -27,6 +28,12 @@ export default (_: ConfigEnv): UserConfig => {
                 quoteStyle: 'single'
             }),
             react(),
+            dts({
+                tsconfigPath: 'tsconfig.json',
+                exclude: [
+                    'node_modules',
+                ],
+            })
         ],
         resolve: {
             alias: [
