@@ -32,7 +32,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
         pageCount,
         isFetching,
         error,
-    } = useAllAnnotationTasks(search, { refetchOnMountOrArgChange: true })
+    } = useAllAnnotationTasks(search, { refetchOnMountOrArgChange : true })
 
     const isEmpty = useMemo(() => error || !allSpectrograms || allSpectrograms.length === 0 || campaign?.isArchived, [ error, allSpectrograms, campaign ])
 
@@ -73,7 +73,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
                     <WarningText message="Your campaign doesn't have any annotations to check"
                                  children={ <ImportAnnotationsButton/> }/> }
 
-                <Table spacing="small">
+                { isFetching ? <IonSpinner/> : <Table spacing="small">
                     <Thead>
                         <Tr>
                             <Th scope="col">Filename</Th>
@@ -107,7 +107,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
                                                                     validAnnotationsToCheck={ s!.task?.validAnnotationsToCheck }
                                                                     annotationsToCheck={ s!.task?.annotationsToCheck }/>) }
                     </Tbody>
-                </Table>
+                </Table> }
 
                 { allSpectrograms && allSpectrograms.length > 0 &&
                     <Pagination currentPage={ search.page ?? 1 } totalPages={ pageCount }
