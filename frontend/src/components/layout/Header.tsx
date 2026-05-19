@@ -1,11 +1,11 @@
-import React, { ReactNode, useCallback, useState } from 'react';
+import React, { Fragment, ReactNode, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router'
 import { IonButton, IonIcon } from '@ionic/react';
 import { closeOutline, menuOutline } from 'ionicons/icons/index.js';
 
-import { DocumentationButton } from '@/components/ui';
+import { DocumentationButton, Link } from '@/components/ui';
 
-import { selectCurrentUser } from '@/api';
+import { selectCurrentUser, useCurrentUser } from '@/api';
 
 import { useAppSelector } from '@/features/App';
 
@@ -61,5 +61,20 @@ export const Header: React.FC<{
 
             </div>
         </header>
+    )
+}
+
+export const PublicHeader: React.FC = () => {
+    const { user } = useCurrentUser()
+
+    return useMemo(() =>
+            <Header buttons={ <Fragment>
+                <Link size="large" to={ user ? '/annotation-campaign' : '/login' }>
+                    { user ? 'APLOSE' : 'Login' }
+                </Link>
+                <Link href="/" size="large">OSmOSE</Link>
+            </Fragment>
+            }/>,
+        [ user ],
     )
 }

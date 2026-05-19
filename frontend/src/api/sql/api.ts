@@ -7,7 +7,7 @@ const DEFAULT_PAGE_SIZE = 20;
 export const SQLRestAPI = restAPI.injectEndpoints({
   endpoints: (builder) => ({
     sqlSchema: builder.query<{ [key in string]: string[] }, void>({
-      query: () => 'sql/schema/',
+      query: () => '/api/sql/schema/',
       providesTags: [ { type: 'SQL', id: 'schema' } ],
     }),
     postSQL: builder.mutation<Paginated<Row> & { columns: string[] }, {
@@ -16,7 +16,7 @@ export const SQLRestAPI = restAPI.injectEndpoints({
       page_size?: number
     }>({
       query: ({ query, page, page_size = DEFAULT_PAGE_SIZE }) => ({
-        url: `sql/post/`,
+        url: `/api/sql/post/`,
         params: { page, page_size },
         method: 'POST',
         body: { query },

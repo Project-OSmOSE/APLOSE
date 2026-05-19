@@ -1,9 +1,8 @@
-import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { IonButton } from '@ionic/react';
 
 import { Link, useToast } from '@/components/ui';
-import { Footer, Header } from '@/components/layout';
 import { Input } from '@/components/form';
 import { getErrorMessage } from '@/service/function';
 
@@ -13,7 +12,7 @@ import { useAppSelector } from '@/features/App';
 import { selectIsConnected } from '@/features/Auth';
 import { NON_FILTERED_KEY_DOWN_EVENT, useEvent } from '@/features/UX';
 
-import styles from './login.module.scss';
+import styles from './public.module.scss';
 
 
 const Login: React.FC = () => {
@@ -66,46 +65,39 @@ const Login: React.FC = () => {
     }, [ submit ])
     useEvent(NON_FILTERED_KEY_DOWN_EVENT, onKbdEvent);
 
-    return <div className={ styles.page }>
-        <Header buttons={ <Fragment>
-            <Link to="/" size="large">Home</Link>
-            <Link href="/" size="large">OSmOSE</Link>
-        </Fragment> }/>
-        <div className={ styles.content }>
-            <h2>Login</h2>
+    return <div className={ styles.loginContent }>
+        <h2>Login</h2>
 
-            <form className={ styles.inputs }>
-                <Input id="loginInput"
-                       className="form-control"
-                       value={ username }
-                       onChange={ (e) => setUsername(e.target.value) }
-                       error={ errors.username }
-                       placeholder="username" label="Username" autoComplete="username"/>
-                <Input id="passwordInput"
-                       className="form-control"
-                       value={ password }
-                       onChange={ e => setPassword(e.target.value) }
-                       error={ errors.password }
-                       placeholder="password"
-                       label="Password"
-                       type="password"
-                       autoComplete="current-password"/>
-            </form>
-            <div className={ styles.buttons }>
+        <form className={ styles.inputs }>
+            <Input id="loginInput"
+                   className="form-control"
+                   value={ username }
+                   onChange={ (e) => setUsername(e.target.value) }
+                   error={ errors.username }
+                   placeholder="username" label="Username" autoComplete="username"/>
+            <Input id="passwordInput"
+                   className="form-control"
+                   value={ password }
+                   onChange={ e => setPassword(e.target.value) }
+                   error={ errors.password }
+                   placeholder="password"
+                   label="Password"
+                   type="password"
+                   autoComplete="current-password"/>
+        </form>
+        <div className={ styles.buttons }>
 
-                <Link to="/">Back to Home</Link>
+            <Link to="/">Back to Home</Link>
 
-                <IonButton color="primary" onClick={ submit }
-                           disabled={ isLoading }>
-                    Login
-                </IonButton>
-            </div>
+            <IonButton color="primary" onClick={ submit }
+                       disabled={ isLoading }>
+                Login
+            </IonButton>
         </div>
-        <Footer/>
     </div>
 }
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute('/(public)/login')({
     validateSearch: (search: Record<string, unknown>) => search as { redirect?: string } | undefined,
     component: Login,
 })

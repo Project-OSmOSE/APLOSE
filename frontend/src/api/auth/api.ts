@@ -5,25 +5,34 @@ export type Token = string | undefined;
 type LoginResponse = { access: Token, refresh: Token }
 
 export const AuthRestAPI = restAPI.injectEndpoints({
-  endpoints: (builder) => ({
-    login: builder.mutation<LoginResponse, { username: string, password: string }>({
-      query: (credentials) => ({
-        url: 'token/',
-        method: 'POST',
-        body: credentials,
-      }),
-      transformResponse: (response: LoginResponse) => {
-        document.cookie = `token=${ response.access };max-age=28000;path=/`;
-        return response;
-      },
+    endpoints: (builder) => ({
+        login: builder.mutation<LoginResponse, { username: string, password: string }>({
+            query: (credentials) => ({
+                url: '/api/token/',
+                method: 'POST',
+                body: credentials,
+            }),
+            transformResponse: (response: LoginResponse) => {
+                document.cookie = `token=${ response.access };max-age=28000;path=/`;
+                return response;
+            },
+        }),
+        logout: builder.mutation<undefined, void>({
+            queryFn: async () => {
+                document.cookie = 'token=;max-age=0;path=/';
+                return {
+                    data: undefined,
+                }
+            },
+        }),
+        terms: builder.query<string, void>({
+            query: () => ({
+                url: '/backend/static/datawork/WEB/fr-terms.md',
+                headers: {
+                    'Content-Type': 'text/markdown',
+                },
+                responseHandler: 'text'
+            })
+        }),
     }),
-    logout: builder.mutation<undefined, void>({
-      queryFn: async () => {
-        document.cookie = 'token=;max-age=0;path=/';
-        return {
-          data: undefined,
-        }
-      },
-    }),
-  }),
 })

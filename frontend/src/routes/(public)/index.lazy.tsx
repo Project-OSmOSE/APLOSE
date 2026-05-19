@@ -1,63 +1,35 @@
-import React, { Fragment, useCallback, useMemo, useState } from 'react';
+import { createLazyFileRoute } from '@tanstack/react-router'
+import React, { Fragment, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { createLazyFileRoute, useNavigate } from '@tanstack/react-router'
-import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import { IonButton, IonIcon } from '@ionic/react';
-
-import { Footer, Header } from '@/components/layout';
-import { Button, DocumentationButton, Link } from '@/components/ui';
-
+import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
+import { DocumentationButton, Link } from '@/components/ui';
 import { useHomeCollaborators } from '@/api/collaborator';
-
-import { useAppSelector } from '@/features/App';
-import { selectIsConnected } from '@/features/Auth';
-
-import styles from './index.module.scss';
+import styles from './public.module.scss';
 
 
-const Home: React.FC = () => {
-    const isConnected = useAppSelector(selectIsConnected)
-    const navigate = useNavigate();
+const Home = React.memo(() => <Fragment>
+    <img src="images/home/banner.jpg" loading="lazy"
+         alt="Aplose Page Banner"
+         className={ styles.banner }/>
 
-    const accessAplose = useCallback(() => {
-        if (isConnected) navigate({ to: '/annotation-campaign' });
-        else navigate({ to: '/login' })
-    }, [ navigate, isConnected ])
+    <div className={ styles.content }>
+        <Intro/>
 
-    return useMemo(() =>
-            <div className={ styles.page }>
-                <Header buttons={ <Fragment>
-                    <Button color="dark" fill="clear" size="large" onClick={ accessAplose }>
-                        { isConnected ? 'APLOSE' : 'Login' }
-                    </Button>
-                    <Link href="/" size="large">OSmOSE</Link>
-                </Fragment>
-                }/>
-                <img src="images/home/banner.jpg" loading="lazy"
-                     alt="Aplose Page Banner"
-                     className={ styles.banner }/>
-                <div className={ styles.content }>
+        <ManualAnnotation/>
 
-                    <Intro/>
+        <PlatformFeatures/>
 
-                    <ManualAnnotation/>
+        <Resources/>
 
-                    <PlatformFeatures/>
+        <Collaboration/>
 
-                    <Resources/>
+        <Join/>
 
-                    <Collaboration/>
+        <Collaborators/>
+    </div>
 
-                    <Join/>
-
-                    <Collaborators/>
-
-                </div>
-                <Footer/>
-            </div>,
-        [ accessAplose, isConnected ],
-    )
-}
+</Fragment>)
 
 const Intro: React.FC = React.memo(() => (
     <div className={ styles.bloc }>
@@ -246,6 +218,7 @@ const Collaborators: React.FC = () => {
     )
 }
 
-export const Route = createLazyFileRoute('/')({
+
+export const Route = createLazyFileRoute('/(public)/')({
     component: Home,
 })

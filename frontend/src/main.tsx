@@ -7,13 +7,14 @@ import './css/ionic-override.css';
 import './css/annotation-colors.css';
 import './css/app.css';
 
-import { IonApp, setupIonicReact } from '@ionic/react';
+import { IonApp, IonSpinner, setupIonicReact } from '@ionic/react';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
 import { StoreProvider } from '@/features/App';
 import { useLoadEventService } from '@/features/UX';
 
 import { routeTree } from '@/routeTree.gen';
+import { WarningText } from '@/components/ui';
 
 setupIonicReact({
     mode: 'md',
@@ -31,6 +32,8 @@ const router = createRouter({
         isAdmin: undefined!,
         isSuperuser: undefined!,
     },
+    defaultPendingComponent: IonSpinner,
+    defaultErrorComponent: ({ error }) => <WarningText error={ error }/>,
 })
 
 // Register things for typesafety
