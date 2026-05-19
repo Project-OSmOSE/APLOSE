@@ -5,12 +5,13 @@ import { closeOutline, menuOutline } from 'ionicons/icons/index.js';
 
 import { DocumentationButton, Link } from '@/components/ui';
 
-import { selectCurrentUser, useCurrentUser } from '@/api';
+import { selectCurrentUser } from '@/api';
 
 import { useAppSelector } from '@/features/App';
 
 import logo from '/images/ode_logo_192x192.png';
 import styles from './layout.module.scss'
+import { selectIsConnected } from '@/features/Auth';
 
 export const Header: React.FC<{
     buttons?: ReactNode;
@@ -65,16 +66,16 @@ export const Header: React.FC<{
 }
 
 export const PublicHeader: React.FC = () => {
-    const { user } = useCurrentUser()
+    const isConnected = useAppSelector(selectIsConnected);
 
     return useMemo(() =>
             <Header buttons={ <Fragment>
-                <Link size="large" to={ user ? '/annotation-campaign' : '/login' }>
-                    { user ? 'APLOSE' : 'Login' }
+                <Link size="large" to={ isConnected ? '/annotation-campaign' : '/login' }>
+                    { isConnected ? 'APLOSE' : 'Login' }
                 </Link>
                 <Link href="/" size="large">OSmOSE</Link>
             </Fragment>
             }/>,
-        [ user ],
+        [ isConnected ],
     )
 }

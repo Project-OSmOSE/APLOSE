@@ -31,7 +31,7 @@ export class LoginPage {
   async submit({ method }: Pick<Params, 'method'>): Promise<Request> {
     const [ request ] = await Promise.all([
       this.page.waitForRequest(REST_MOCK.token.url),
-      method === 'mouse' ? this.page.getByRole('button', { name: 'Login' }).click() : this.page.keyboard.press('Enter'),
+      method === 'mouse' ? this.page.getByRole('button', { name: 'Login' }).last().click() : this.page.keyboard.press('Enter'),
     ])
     return request;
   }

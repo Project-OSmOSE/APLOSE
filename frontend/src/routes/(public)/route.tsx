@@ -13,9 +13,5 @@ export const Route = createFileRoute('/(public)')({
         </div>
     ),
     notFoundComponent: () =>
-        <div className={ styles.page }>
-            <PublicHeader/>
             <IonNote>Page not found</IonNote>
-            <Footer/>
-        </div>,
 })
