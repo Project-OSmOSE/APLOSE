@@ -1,4 +1,4 @@
-import React, { MouseEvent, UIEvent, useCallback, useEffect, useRef, WheelEvent } from 'react';
+import React, { MouseEvent, UIEvent, useCallback, useEffect, useRef, useState, WheelEvent } from 'react';
 import styles from './styles.module.scss';
 import { FrequencyAxis, TimeAxis } from '@/features/Annotator/Axis';
 import { TimeBar } from './TimeBar';
@@ -48,11 +48,13 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         pointer.clearPosition()
     }, [ pointer ]);
 
+    const [ scrollLeft, setScrollLeft ] = useState<number>(0);
     const onFileScrolled = useCallback((event: UIEvent<HTMLDivElement>) => {
         if (event.type !== 'scroll') return;
         const div = event.currentTarget;
         const left = div.scrollWidth - div.scrollLeft - div.clientWidth;
         if (left <= 0) dispatch(setAllFileAsSeen())
+        setScrollLeft(div.scrollLeft)
     }, [dispatch])
 
     const onWheel = useCallback((event: WheelEvent) => {
@@ -175,7 +177,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
             { allAnnotations.map(annotation => <StrongAnnotation key={ annotation.id } annotation={ annotation }/>) }
         </div>
 
-        <AcousticFeatures/>
+        <AcousticFeatures scrollLeft={scrollLeft}/>
 
     </div>
 }
