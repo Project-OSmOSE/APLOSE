@@ -66,7 +66,7 @@ class AnnotationCampaignNode(ExtendedNode):
     def resolve_detectors(self: AnnotationCampaign, info):
         return Detector.objects.filter(
             configurations__annotations__annotation_phase__in=self.phases.all()
-        )
+        ).distinct()
 
     annotators = graphene.List(UserNode)
 

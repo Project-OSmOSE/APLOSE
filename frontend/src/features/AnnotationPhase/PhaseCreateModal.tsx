@@ -1,12 +1,12 @@
 import React, { Fragment, useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { IonSpinner } from '@ionic/react';
 import { Button, GraphQLErrorText, Modal, ModalHeader } from '@/components/ui';
 import { FormBloc, Input } from '@/components/form';
 import { LabelSetSelect } from '@/features/Labels';
 import { ConfidenceSetSelect } from '@/features/Confidence';
 import {
-    AnnotationLabelNode,
+    AnnotationLabelNode, AnnotationPhaseType,
     LabelSetNode,
     Maybe,
     useCreateAnnotationPhase,
@@ -75,9 +75,15 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
             await createVerificationPhase({ campaignID: campaign.id }).unwrap()
         }
         await refetch().unwrap()
-        navigate(`/annotation-campaign/${ campaign.id }/phase/Annotation`)
+        navigate({
+            to: '/annotation-campaign/$campaignID/phase/$phaseType',
+            params: {
+                campaignID: campaign.id,
+                phaseType: AnnotationPhaseType.Annotation
+            }
+        })
         onClose()
-    }, [ campaign, onClose, labelSet, alsoCreateVerification, confidenceSetID, labelsWithAcousticFeatures, allowPointAnnotation, createAnnotationPhase, createVerificationPhase, refetch, navigate ])
+    }, [ navigate, campaign, onClose, labelSet, alsoCreateVerification, confidenceSetID, labelsWithAcousticFeatures, allowPointAnnotation, createAnnotationPhase, createVerificationPhase, refetch ])
 
     if (campaign?.isArchived) return <Fragment/>
     return <Modal onClose={ onClose } className={ styles.modal }>
@@ -139,14 +145,26 @@ export const AnnotationPhaseCreateVerificationModal: React.FC<{
         if (!campaign) return;
         await createVerificationPhase({ campaignID: campaign.id }).unwrap()
         await refetch().unwrap()
-        navigate(`/annotation-campaign/${ campaign.id }/phase/Verification`)
+        navigate({
+            to: '/annotation-campaign/$campaignID/phase/$phaseType',
+            params: {
+                campaignID: campaign.id,
+                phaseType: AnnotationPhaseType.Verification
+            }
+        })
         onClose()
     }, [ campaign, createVerificationPhase, navigate, onClose, refetch ])
 
     const createAndImport = useCallback(async () => {
         if (!campaign) return;
         await createVerificationPhase({ campaignID: campaign.id }).unwrap()
-        navigate(`/annotation-campaign/${ campaign.id }/phase/Annotation/import-annotations`)
+        navigate({
+            to: '/annotation-campaign/$campaignID/phase/$phaseType/import-annotations',
+            params: {
+                campaignID: campaign.id,
+                phaseType: AnnotationPhaseType.Annotation
+            }
+        })
         onClose()
     }, [ campaign, createVerificationPhase, navigate, onClose ])
 

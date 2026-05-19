@@ -2,32 +2,37 @@ import { createSelector } from '@reduxjs/toolkit';
 import { selectAnalysis } from '@/features/Annotator/Analysis';
 import { Colormap } from '@/features/Annotator/VisualConfiguration/colormaps';
 import { AnnotatorVisualConfigurationSlice } from './slice';
-import { selectAnnotator, selectAnnotatorCampaign } from '@/features/Annotator/selectors';
+import { selectAnnotatorCampaign } from '@/features/Annotator/selectors';
+import type { AppState } from '@/features/App';
 
 export const selectContrast = createSelector(
-  selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectContrast,
+    (state: AppState) => state.annotator,
+    AnnotatorVisualConfigurationSlice.selectors.selectContrast,
 )
 
 export const selectBrightness = createSelector(
-  selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectBrightness,
+    (state: AppState) => state.annotator,
+    AnnotatorVisualConfigurationSlice.selectors.selectBrightness,
 )
 
 export const selectColormap = createSelector(
-  selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectColormap,
+    (state: AppState) => state.annotator,
+    AnnotatorVisualConfigurationSlice.selectors.selectColormap,
 )
 
 export const selectIsColormapReversed = createSelector(
-  selectAnnotator, AnnotatorVisualConfigurationSlice.selectors.selectIsColormapReversed,
+    (state: AppState) => state.annotator,
+    AnnotatorVisualConfigurationSlice.selectors.selectIsColormapReversed,
 )
 
 
 export const selectCanChangeColormap = createSelector(
-  [
-    selectAnnotatorCampaign,
-    selectAnalysis,
-  ],
-  (campaignQuery, analysis) => {
-    if (!campaignQuery.data?.annotationCampaignById?.allowColormapTuning) return false;
-    return analysis?.colormap.name === 'Greys' as Colormap
-  },
+    [
+        selectAnnotatorCampaign,
+        selectAnalysis,
+    ],
+    (campaignQuery, analysis) => {
+        if (!campaignQuery.data?.annotationCampaignById?.allowColormapTuning) return false;
+        return analysis?.colormap.name === 'Greys' as Colormap
+    },
 )

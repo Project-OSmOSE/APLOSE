@@ -1,26 +1,27 @@
-import React from 'react';
-import { Outlet, useParams } from 'react-router-dom';
-import { type AploseNavParams } from '@/features/UX';
+import React, { type ReactNode, useMemo } from 'react';
+import { useParams } from '@tanstack/react-router';
+
 import { Footer } from './Footer';
 import { Navbar } from './Navbar';
+
 import styles from './layout.module.scss';
 
-export const AploseSkeleton: React.FC = () => {
-  const { spectrogramID } = useParams<AploseNavParams>();
+export const AploseSkeleton: React.FC<{
+    children: ReactNode
+}> = ({ children }) => {
+    const looseParams = useParams({ strict: false })
 
-  if (spectrogramID) return <Outlet/>
-  return (
-    <div className={ styles.skeleton }>
+    return useMemo(() => {
+        if (looseParams.spectrogramID) return children
+        return (
+            <div className={ styles.skeleton }>
 
-      <Navbar className={ styles.navbar }/>
+                <Navbar className={ styles.navbar }/>
 
-      <div className={ styles.content }>
-        <Outlet/>
-      </div>
+                <div className={ styles.content }>{ children }</div>
 
-      <Footer/>
-    </div>
-  )
+                <Footer/>
+            </div>
+        )
+    }, [ children, looseParams ])
 }
-
-export default AploseSkeleton

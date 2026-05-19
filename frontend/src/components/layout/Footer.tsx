@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
             </div>
 
             <div>
-                <Link appPath='/terms' color="medium">Terms of use</Link>
+                <Link to='/terms' color="medium">Terms of use</Link>
                 <IonNote color="medium">|</IonNote>
                 <Link href={ CONTACT_URI } color="medium">
                     <IonIcon icon={ mailOutline } slot="end"/>

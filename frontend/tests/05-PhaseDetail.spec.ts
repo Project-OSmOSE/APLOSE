@@ -34,13 +34,16 @@ const TEST = {
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
             })
             await test.step(`Navigate`, async () => {
-                await page.phaseDetail.go({ as, phase })
-                await page.waitForResponse(response => {
-                    const request = response.request()
-                    const isGraphql = new RegExp(gqlRegex).test(request.url())
-                    const isListTasks = request.postDataJSON()?.operationName == 'listAnnotationTask'
-                    return isGraphql && isListTasks
-                })
+                await Promise.all([
+                    page.phaseDetail.go({ as, phase }),
+                    page.waitForResponse(response => {
+                        const request = response.request()
+                        const isGraphql = new RegExp(gqlRegex).test(request.url())
+                        const isListTasks = request.postDataJSON()?.operationName == 'listAnnotationTask'
+                        console.debug(isGraphql, isListTasks, request.url(), request.postDataJSON())
+                        return isGraphql && isListTasks
+                    }),
+                ])
             })
 
             await test.step('Display files', async () => {

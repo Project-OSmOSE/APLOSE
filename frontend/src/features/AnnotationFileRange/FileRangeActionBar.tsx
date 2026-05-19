@@ -4,25 +4,44 @@ import { IonButton, IonIcon } from '@ionic/react';
 import { peopleOutline, playOutline, refreshOutline } from 'ionicons/icons/index.js';
 import { ActionBar, Button, Link, Progress, TooltipOverlay, useModal } from '@/components/ui';
 import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
-import { useAllAnnotationTasks, useAllTasksFilters, useCurrentPhase } from '@/api';
+import { useAllAnnotationTasks, useCurrentPhase } from '@/api';
 import { FileRangeProgressModal } from '@/features/AnnotationFileRange';
-import { type AploseNavParams } from '@/features/UX';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
-import { useParams } from 'react-router-dom';
 import { analytics } from 'ionicons/icons';
+import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
+import { useNavigate } from '@tanstack/react-router';
 
 export const FileRangeActionBar: React.FC = () => {
-    const { campaignID, phaseType } = useParams<AploseNavParams>();
-    const { params, updateParams, clearParams } = useAllTasksFilters({ clearOnLoad: true })
+    const searchParams = Route.useSearch();
+    const routeParams = Route.useParams()
+    const navigate = useNavigate();
     const { phase } = useCurrentPhase()
-    const { allSpectrograms, resumeSpectrogramID } = useAllAnnotationTasks(params)
+    const { allSpectrograms, resumeSpectrogramID } = useAllAnnotationTasks(searchParams)
     const openAnnotator = useOpenAnnotator()
 
-    const updateSearch = useCallback((search: string) => {
-        updateParams({ search })
-    }, [ updateParams ])
+    const updateSearch = useCallback((input: string) => {
+        navigate({
+            to: Route.to,
+            params: routeParams,
+            search: (prev) => ({
+                ...prev,
+                search: input,
+                page: 1
+            }),
+            replace: true,
+        })
+    }, [ navigate, routeParams ])
 
-    const hasFilters = useMemo(() => Object.entries(params).filter(([ k, v ]) => k !== 'page' && v !== undefined).length > 0, [ params ]);
+    const clear = useCallback(() => {
+        navigate({
+            to: Route.to,
+            params: routeParams,
+            search: { page: 1 },
+            replace: true,
+        })
+    }, [ navigate, routeParams ])
+
+    const hasFilters = useMemo(() => Object.entries(searchParams).filter(([ k, v ]) => k !== 'page' && v !== undefined).length > 0, [ searchParams ]);
 
     const resumeBtnTooltip: string = useMemo(() => {
         if (hasFilters) return 'Cannot resume if filters are activated'
@@ -38,12 +57,12 @@ export const FileRangeActionBar: React.FC = () => {
     const progressModal = useModal(FileRangeProgressModal)
 
     return <Fragment>
-        <ActionBar search={ params.search ?? undefined }
+        <ActionBar search={ searchParams.search ?? undefined }
                    searchPlaceholder="Search filename"
                    onSearchChange={ updateSearch }
                    actionButton={ <div className={ styles.filterButtons }>
 
-                       { hasFilters && <IonButton fill="clear" color="medium" size="small" onClick={ clearParams }>
+                       { hasFilters && <IonButton fill="clear" color="medium" size="small" onClick={ clear }>
                            <IonIcon icon={ refreshOutline } slot="start"/>
                            Reset
                        </IonButton> }
@@ -60,7 +79,8 @@ export const FileRangeActionBar: React.FC = () => {
                                          total={ phase.tasksCount }/> : <Fragment/> }
 
                            <TooltipOverlay tooltipContent={ <p>Annotators progression</p> } anchor="right">
-                               <IonButton fill="clear" color="medium" onClick={ progressModal.toggle } data-testid="progress">
+                               <IonButton fill="clear" color="medium" onClick={ progressModal.toggle }
+                                          data-testid="progress">
                                    <IonIcon icon={ analytics } slot="icon-only"/>
                                </IonButton>
                            </TooltipOverlay>
@@ -70,7 +90,8 @@ export const FileRangeActionBar: React.FC = () => {
                            {/* Manage annotators */ }
                            <TooltipOverlay tooltipContent={ <p>Manage annotators</p> } anchor="right">
                                <Link fill="outline" color="medium" data-testid="manage"
-                                     appPath={ `/annotation-campaign/${ campaignID }/phase/${ phaseType }/edit-annotators` }>
+                                     to="/annotation-campaign/$campaignID/phase/$phaseType/edit-annotators"
+                                     params={ routeParams }>
                                    <IonIcon icon={ peopleOutline } slot="icon-only"/>
                                </Link>
                            </TooltipOverlay>

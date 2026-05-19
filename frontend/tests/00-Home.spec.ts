@@ -11,8 +11,10 @@ const TEST = {
                 homeCollaborators: 'filled',
             })
 
-            await test.step(`Navigate`, () => page.home.go())
-            await page.waitForRequest(gqlURL) // Wait for homeCollaborators
+            await Promise.all([
+                test.step(`Navigate`, () => page.home.go()),
+                page.waitForRequest(gqlURL), // Wait for homeCollaborators
+            ])
 
             await test.step('Has OSmOSE website link', async () => {
                 const url = await page.home.osmoseLink.getAttribute('href')

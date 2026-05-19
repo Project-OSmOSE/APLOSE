@@ -1,12 +1,17 @@
-import React, { ReactNode, useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { Fragment, ReactNode, useCallback, useMemo, useState } from 'react';
+import { useNavigate } from '@tanstack/react-router'
 import { IonButton, IonIcon } from '@ionic/react';
 import { closeOutline, menuOutline } from 'ionicons/icons/index.js';
-import { DocumentationButton } from '@/components/ui';
-import { useAppSelector } from '@/features/App';
+
+import { DocumentationButton, Link } from '@/components/ui';
+
 import { selectCurrentUser } from '@/api';
+
+import { useAppSelector } from '@/features/App';
+
 import logo from '/images/ode_logo_192x192.png';
 import styles from './layout.module.scss'
+import { selectIsConnected } from '@/features/Auth';
 
 export const Header: React.FC<{
     buttons?: ReactNode;
@@ -24,12 +29,12 @@ export const Header: React.FC<{
     const onAPLOSEClick = useCallback(async () => {
         if (currentUser) {
             if (!canNavigate || await canNavigate()) {
-                navigate(`/annotation-campaign/`);
+                await navigate({ to: `/annotation-campaign` });
             }
         } else {
-            navigate(`/`);
+            await navigate({ to: `/` });
         }
-    }, [])
+    }, [ currentUser, navigate, canNavigate ])
 
     const onAPLOSEAuxClick = useCallback(() => {
         window.open('/', '_blank');
@@ -57,5 +62,20 @@ export const Header: React.FC<{
 
             </div>
         </header>
+    )
+}
+
+export const PublicHeader: React.FC = () => {
+    const isConnected = useAppSelector(selectIsConnected);
+
+    return useMemo(() =>
+            <Header buttons={ <Fragment>
+                <Link size="large" to={ isConnected ? '/annotation-campaign' : '/login' }>
+                    { isConnected ? 'APLOSE' : 'Login' }
+                </Link>
+                <Link href="/" size="large">OSmOSE</Link>
+            </Fragment>
+            }/>,
+        [ isConnected ],
     )
 }

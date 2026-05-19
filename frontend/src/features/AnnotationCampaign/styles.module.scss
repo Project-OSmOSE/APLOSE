@@ -9,7 +9,7 @@
   max-height: 100%;
 }
 
-.card {
+a.card, .card {
   padding: 1rem;
   gap: 1rem;
   display: grid;
@@ -25,6 +25,8 @@
                         "buttons";
   grid-template-rows: auto auto 1fr auto auto;
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
 
   &:hover {
     box-shadow: var(--aplose-box-shadow);

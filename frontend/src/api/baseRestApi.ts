@@ -3,7 +3,6 @@ import { FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { prepareHeaders } from './utils';
 
 const baseQueryWithHeaders = fetchBaseQuery({
-  baseUrl: '/api/',
   prepareHeaders: prepareHeaders,
 })
 

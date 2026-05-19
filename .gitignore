@@ -91,3 +91,7 @@ dist-ssr
 .tool-versions
 
 venv
+
+
+# Generated
+*.gen.ts

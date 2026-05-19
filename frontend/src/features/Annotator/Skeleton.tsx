@@ -10,13 +10,13 @@ import { gqlAPI } from '@/api/baseGqlApi';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { useAnnotatorCanNavigate } from '@/features/Annotator/Navigation';
 import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
-import { type AploseNavParams } from '@/features/UX';
-import { useParams } from 'react-router-dom';
 import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 import { PointerProvider } from '@/features/Annotator/Pointer/context';
+import { useParams, useSearch } from '@tanstack/react-router';
 
 export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
-    const { campaignID, phaseType } = useParams<AploseNavParams>();
+    const { campaignID, phaseType } = useParams({ strict: false });
+    const search = useSearch({ strict: false });
     const { campaign } = useCurrentCampaign()
     const { phase } = useCurrentPhase()
     const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
@@ -50,7 +50,9 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                             <Link color="medium" fill="outline"
                                   size="small"
                                   onClick={ onBack }
-                                  appPath={ `/annotation-campaign/${ campaignID }/phase/${ phaseType }` }>
+                                  to="/annotation-campaign/$campaignID/phase/$phaseType"
+                                  params={ { campaignID, phaseType } }
+                                  search={ search }>
                                 Back to campaign
                             </Link>
                         </Fragment> }>

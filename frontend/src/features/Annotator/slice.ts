@@ -1,10 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import {
-  getAnnotationTaskFulfilled,
-  type GetAnnotationTaskQueryVariables,
-  getCampaignFulfilled,
-  type GetCampaignQuery,
-} from '@/api';
+import { getAnnotationTaskFulfilled, type GetAnnotationTaskQueryVariables } from '@/api/annotation-task';
+import { getCampaignFulfilled, type GetCampaignQuery } from '@/api/annotation-campaign';
 
 type AnnotatorState = {
   campaignID?: string;

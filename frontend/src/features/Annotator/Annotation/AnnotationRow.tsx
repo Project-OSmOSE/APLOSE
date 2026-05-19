@@ -28,18 +28,18 @@ import { IoChatbubbleEllipses, IoChatbubbleOutline } from 'react-icons/io5';
 import { InvalidateAnnotationModal } from '@/features/Annotator/Annotation/InvalidateAnnotationModal';
 import { IonButton, IonIcon } from '@ionic/react';
 import { checkmarkOutline, closeOutline } from 'ionicons/icons/index.js';
-import { type AploseNavParams, useKeyDownEvent } from '@/features/UX';
-import { useParams } from 'react-router-dom';
+import { useKeyDownEvent } from '@/features/UX';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 import { UpdateLabelModal } from '@/features/Annotator/Label/UpdateLabelModal';
+import { useParams } from '@tanstack/react-router';
 
 type Spectro = NonNullable<GetAnnotationTaskQuery['annotationSpectrogramById']>
 type Task = NonNullable<Spectro['task']>
 type CompleteInfo = Pick<NonNullable<NonNullable<Task['userAnnotations']>['results'][number]>, 'detectorConfiguration' | 'annotator'>
 
 export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
-    const { phaseType } = useParams<AploseNavParams>();
+    const { phaseType } = useParams({ strict: false });
     const { campaign } = useCurrentCampaign()
     const { phase } = useCurrentPhase()
     const focusedAnnotation = useAppSelector(selectAnnotation)

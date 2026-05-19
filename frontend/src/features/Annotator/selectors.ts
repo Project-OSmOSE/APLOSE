@@ -3,13 +3,13 @@ import type { AppState } from '@/features/App';
 import { selectCampaign, selectTask } from '@/api';
 import { AnnotatorSlice } from './slice'
 
-export const selectAnnotator = (state: AppState) => state.annotator
-
 export const selectCampaignID = createSelector(
-    selectAnnotator, AnnotatorSlice.selectors.selectCampaignID,
+    (state: AppState) => state.annotator,
+    AnnotatorSlice.selectors.selectCampaignID,
 )
 export const selectTaskVariables = createSelector(
-    selectAnnotator, AnnotatorSlice.selectors.selectTaskVariables,
+    (state: AppState) => state.annotator,
+    AnnotatorSlice.selectors.selectTaskVariables,
 )
 
 export const selectAnnotatorCampaign = createSelector(

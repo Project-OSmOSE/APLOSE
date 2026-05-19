@@ -1,15 +1,13 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { IonIcon, IonSkeletonText } from '@ionic/react';
 import { addOutline, closeOutline } from 'ionicons/icons/index.js';
-import { Button, Link, useAlert, useModal } from '@/components/ui';
+import { Button, Tab, useAlert, useModal } from '@/components/ui';
 import { AnnotationPhaseType, useCurrentCampaign, useEndPhase } from '@/api';
 import { AnnotationPhaseCreateAnnotationModal, AnnotationPhaseCreateVerificationModal } from './PhaseCreateModal'
-import styles from './styles.module.scss';
-import { type AploseNavParams } from '@/features/UX';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
 
 export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: phaseType }) => {
-    const { campaignID, phaseType: currentPhaseType } = useParams<AploseNavParams>();
+    const { campaignID, phaseType: currentPhaseType } = useParams({ strict: false });
     const { campaign, phases, isFetching } = useCurrentCampaign()
     const phase = useMemo(() => phases?.find(p => p.phase === phaseType), [ phases, phaseType ])
 
@@ -60,18 +58,18 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
 
     if (!campaign) return <Fragment/>
     if (isFetching)
-        return <Link appPath={ `/annotation-campaign/${ campaignID }/phase/${ phaseType }` } replace
-                     className={ [ styles.tab, currentPhaseType === phaseType ? styles.active : undefined ].join(' ') }>
+        return <Tab to="/annotation-campaign/$campaignID/phase/$phaseType"
+                    params={ { campaignID, phaseType } } active={ currentPhaseType === phaseType }>
             <IonSkeletonText animated style={ { width: 96 } }/>
-        </Link>
+        </Tab>
     if (phase)
-        return <Link appPath={ `/annotation-campaign/${ campaignID }/phase/${ phaseType }` } replace
-                     className={ [ styles.tab, currentPhaseType === phaseType ? styles.active : undefined ].join(' ') }>
+        return <Tab to="/annotation-campaign/$campaignID/phase/$phaseType"
+                    params={ { campaignID, phaseType } } active={ currentPhaseType === phaseType }>
             { phaseType }
 
             { campaign.isEditable && campaign.isUserAllowedToManage && currentPhaseType === phaseType && phase?.isOpen &&
                 <IonIcon icon={ closeOutline } slot="end" onClick={ end }/> }
-        </Link>
+        </Tab>
     if (!campaign.isEditable || !campaign.isUserAllowedToManage) return <Fragment/>
 
     return <Fragment>

@@ -1,24 +1,31 @@
 import React, { useCallback } from 'react';
-import { useAllCampaignsFilters, useCurrentUser } from '@/api';
+import { useCurrentUser } from '@/api';
+import { useNavigate } from '@tanstack/react-router'
 import { IonChip, IonIcon } from '@ionic/react';
 import { closeCircle } from 'ionicons/icons';
+import { Route } from '@/routes/_authenticated/annotation-campaign';
 
 export const AnnotationCampaignAnnotatorFilter: React.FC = () => {
-  const { params, updateParams } = useAllCampaignsFilters()
-  const { user } = useCurrentUser();
+    const filter_annotatorID = Route.useSearch({select: ({filter_annotatorID}) => filter_annotatorID});
+    const navigate = useNavigate();
 
-  const toggle = useCallback(() => {
-    if (params.filter_annotatorID) {
-      updateParams({ filter_annotatorID: null })
-    } else {
-      updateParams({ filter_annotatorID: user?.id })
-    }
-  }, [ params, user ])
+    const { user } = useCurrentUser();
 
-  return <IonChip outline={ !params.filter_annotatorID }
-                  onClick={ toggle }
-                  color={ params.filter_annotatorID ? 'primary' : 'medium' }>
-    My work
-    { params.filter_annotatorID && <IonIcon icon={ closeCircle } color="primary"/> }
-  </IonChip>
+    const toggle = useCallback(() => {
+        navigate({
+            to: Route.to,
+            search: (prev) => ({
+                ...prev,
+                filter_annotatorID: prev?.filter_annotatorID ? null : user?.id
+            }),
+            replace: true,
+        })
+    }, [ user, navigate ])
+
+    return <IonChip outline={ !filter_annotatorID }
+                    onClick={ toggle }
+                    color={ filter_annotatorID ? 'primary' : 'medium' }>
+        My work
+        { filter_annotatorID && <IonIcon icon={ closeCircle } color="primary"/> }
+    </IonChip>
 }

@@ -2,7 +2,7 @@ import { useIonToast } from '@ionic/react';
 import { closeCircle } from 'ionicons/icons/index.js';
 import { ToastButton } from '@ionic/core/dist/types/components/toast/toast-interface';
 import { getErrorMessage } from '@/service/function';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@tanstack/react-router';
 import { useCallback, useEffect } from 'react';
 import type { Color } from '@ionic/core';
 import type { GqlError } from '@/api/baseGqlApi';

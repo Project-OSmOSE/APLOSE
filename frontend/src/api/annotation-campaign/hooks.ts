@@ -1,15 +1,13 @@
 import { AnnotationCampaignGqlAPI } from './api'
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
     AnnotationPhaseType,
     type CreateCampaignMutationVariables,
+    type ListCampaignsQueryVariables,
     type UpdateCampaignFeaturedLabelsMutationVariables,
-    useCurrentUser,
 } from '@/api';
-import { AllAnnotationCampaignFilterSlice, AllCampaignFilters } from './all-campaign-filters';
-import { type AploseNavParams, useQueryParams } from '@/features/UX';
 import type { GqlError } from '@/api/utils';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
 
 //  API
 
@@ -21,6 +19,8 @@ const {
     archiveCampaign,
 } = AnnotationCampaignGqlAPI.endpoints
 
+export type AllCampaignFilters = ListCampaignsQueryVariables
+
 export const useAllCampaigns = (filters: AllCampaignFilters) => {
     const info = listCampaigns.useQuery(filters)
     return useMemo(() => ({
@@ -30,10 +30,10 @@ export const useAllCampaigns = (filters: AllCampaignFilters) => {
 }
 
 export const useCurrentCampaign = () => {
-    const { campaignID: id } = useParams<AploseNavParams>();
+    const { campaignID } = useParams({ strict: false })
     const info = getCampaign.useQuery({
-        id: id ?? '',
-    }, { skip: !id })
+        id: campaignID ?? '',
+    }, { skip: !campaignID })
     const phases = useMemo(() => info.data?.annotationCampaignById?.phases?.results.map(p => p!), [ info ])
     return useMemo(() => ({
         ...info,
@@ -63,7 +63,7 @@ export const useCreateCampaign = () => {
 }
 
 export const useUpdateCampaignFeaturedLabels = () => {
-    const { campaignID } = useParams<AploseNavParams>();
+    const { campaignID } = useParams({ strict: false })
     const { campaign } = useCurrentCampaign()
     const [ method, info ] = updateCampaignFeaturedLabels.useMutation();
 
@@ -94,40 +94,4 @@ export const useUpdateCampaignFeaturedLabels = () => {
 export const useArchiveCampaign = () => {
     const [ method, info ] = archiveCampaign.useMutation();
     return { archiveCampaign: method, ...info }
-}
-
-// Filters
-
-export const useAllCampaignsFilters = () => {
-    const { user } = useCurrentUser();
-    const { params, updateParams, clearParams } = useQueryParams<AllCampaignFilters>(
-        AllAnnotationCampaignFilterSlice.selectors.selectFilters,
-        AllAnnotationCampaignFilterSlice.actions.updateCampaignFilters,
-    )
-
-    const init = useCallback(() => {
-        if (!user) return;
-        const updatedFilters: AllCampaignFilters = {
-            filter_annotatorID: user.id,
-            filter_isArchived: false,
-            ...params,
-        }
-        if (updatedFilters.filter_annotatorID !== user.id) {
-            updatedFilters.filter_annotatorID = user.id
-        }
-        if (updatedFilters.filter_ownerID && updatedFilters.filter_ownerID !== user.id) {
-            updatedFilters.filter_ownerID = user.id
-        }
-        updateParams(updatedFilters)
-    }, [ params, user, updateParams ])
-
-    useEffect(() => {
-        init()
-    }, [ user ]);
-
-    useEffect(() => {
-        init()
-    }, []);
-
-    return { params, updateParams, clearParams }
 }

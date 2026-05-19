@@ -1,7 +1,7 @@
 import React from 'react';
 import { IonIcon } from '@ionic/react';
 import { addOutline } from 'ionicons/icons/index.js';
-import { useAllCampaignsFilters, useCurrentUser } from '@/api';
+import { useCurrentUser } from '@/api';
 import { ActionBar, Link } from '@/components/ui';
 
 import { AnnotationCampaignResetFiltersButton } from './ResetButton';
@@ -9,19 +9,29 @@ import { AnnotationCampaignArchiveFilter } from './ArchiveFilter';
 import { AnnotationCampaignOwnerFilter } from './OwnerFilter';
 import { AnnotationCampaignPhaseTypeFilter } from './PhaseFilter';
 import { AnnotationCampaignAnnotatorFilter } from './AnnotatorFilter';
+import { Route } from '@/routes/_authenticated/annotation-campaign';
+import { useNavigate } from '@tanstack/react-router';
 
 
 export const AnnotationCampaignListFilterActionBar: React.FC = () => {
-    const { params, updateParams } = useAllCampaignsFilters()
+    const search = Route.useSearch({ select: ({search}) => search });
+    const navigate = useNavigate();
 
     const { user } = useCurrentUser();
 
-    return <ActionBar search={ params.search ?? undefined }
+    return <ActionBar search={ search ?? undefined }
                       searchPlaceholder="Search campaign name"
-                      onSearchChange={ search => updateParams({ search }) }
+                      onSearchChange={ search => navigate({
+                          to: Route.to,
+                          search: (prev) => ({
+                              ...prev,
+                              search,
+                          }),
+                          replace: true,
+                      }) }
                       actionButton={ user?.isAdmin && <Link color="primary"
-                                           fill="outline"
-                                           appPath="/annotation-campaign/new">
+                                                            fill="outline"
+                                                            to="/annotation-campaign/new">
                           <IonIcon icon={ addOutline } slot="start"/>
                           New annotation campaign
                       </Link> }>
