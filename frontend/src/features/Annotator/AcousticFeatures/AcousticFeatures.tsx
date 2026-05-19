@@ -16,7 +16,7 @@ import { NonLinearPhenomena } from '@/features/Annotator/AcousticFeatures/NonLin
 import { Checks } from '@/features/Annotator/AcousticFeatures/Checks';
 import { useWindowWidth } from '@/features/Annotator/Canvas';
 
-export const AcousticFeatures: React.FC = () => {
+export const AcousticFeatures: React.FC<{ scrollLeft: number }> = ({ scrollLeft }) => {
     const focusedAnnotation = useAppSelector(selectAnnotation)
     const getAnnotation = useGetAnnotation()
     const { campaign } = useCurrentCampaign()
@@ -41,13 +41,14 @@ export const AcousticFeatures: React.FC = () => {
             y: 128,
         }
         if (!focusedAnnotation?.endTime) return position
-        position.x = timeScale.valueToPosition(focusedAnnotation.endTime) + 80;
+        position.x = timeScale.valueToPosition(focusedAnnotation.endTime) + 80 - scrollLeft;
         if (position.x > initialLeft) {
-            const otherSideLeft = timeScale.valueToPosition(focusedAnnotation.endTime) - 80 - 500;
+            const otherSideLeft = timeScale.valueToPosition(focusedAnnotation.endTime) - 80 - 500 - scrollLeft;
             if (otherSideLeft > 0) position.x = otherSideLeft
+            if (otherSideLeft > initialLeft) position.x = initialLeft;
         }
         return position
-    }, [ focusedAnnotation, timeScale ])
+    }, [ focusedAnnotation, timeScale, scrollLeft ])
 
     const {
         className: extendedClassName,
