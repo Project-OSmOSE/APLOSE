@@ -55,11 +55,10 @@ export const LabelChip: React.FC<{
     const weakProperties = {
       type: AnnotationType.Weak,
       label,
-      confidence: defaultConfidence,
     }
     const weak = getAnnotation(weakProperties)
     if (weak) return dispatch(focusAnnotation(weak))
-    addAnnotation(weakProperties)
+    addAnnotation({ ...weakProperties, confidence: defaultConfidence })
   }, [ focusedAnnotation, updateAnnotation, label, getAnnotation, dispatch, addAnnotation, defaultConfidence ])
   useKeyDownEvent([ number, key ], select)
 
