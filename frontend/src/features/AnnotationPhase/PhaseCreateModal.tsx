@@ -79,8 +79,9 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
             to: '/annotation-campaign/$campaignID/phase/$phaseType',
             params: {
                 campaignID: campaign.id,
-                phaseType: AnnotationPhaseType.Annotation
-            }
+                phaseType: AnnotationPhaseType.Annotation,
+            },
+            search: { page: 1 },
         })
         onClose()
     }, [ navigate, campaign, onClose, labelSet, alsoCreateVerification, confidenceSetID, labelsWithAcousticFeatures, allowPointAnnotation, createAnnotationPhase, createVerificationPhase, refetch ])
@@ -149,8 +150,9 @@ export const AnnotationPhaseCreateVerificationModal: React.FC<{
             to: '/annotation-campaign/$campaignID/phase/$phaseType',
             params: {
                 campaignID: campaign.id,
-                phaseType: AnnotationPhaseType.Verification
-            }
+                phaseType: AnnotationPhaseType.Verification,
+            },
+            search: { page: 1 },
         })
         onClose()
     }, [ campaign, createVerificationPhase, navigate, onClose, refetch ])
@@ -162,8 +164,8 @@ export const AnnotationPhaseCreateVerificationModal: React.FC<{
             to: '/annotation-campaign/$campaignID/phase/$phaseType/import-annotations',
             params: {
                 campaignID: campaign.id,
-                phaseType: AnnotationPhaseType.Annotation
-            }
+                phaseType: AnnotationPhaseType.Annotation,
+            },
         })
         onClose()
     }, [ campaign, createVerificationPhase, navigate, onClose ])
