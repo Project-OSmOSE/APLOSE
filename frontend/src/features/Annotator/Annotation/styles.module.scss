@@ -59,7 +59,7 @@ $handle-thick: 0.75rem;
   }
 
   &.pointerSelect {
-    pointer-events: auto;
+    pointer-events: auto !important;
     cursor: crosshair;
   }
 
