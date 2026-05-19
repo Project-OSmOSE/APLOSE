@@ -26,7 +26,7 @@ function getDateString(event: ChangeEvent<HTMLInputElement>): string | undefined
 export const DateFilterModal: React.FC<ModalProps & {
     onUpdate: () => void
 }> = ({ onUpdate, onClose }) => {
-    const { from, to } = Route.useSearch();
+    const { from, to } = Route.useSearch({ select: ({ from, to }) => ({ from, to }) });
     const routeParams = Route.useParams()
     const navigate = useNavigate();
 

@@ -21,7 +21,23 @@ export const AnnotationsFilterModal: React.FC<ModalProps & {
         annotationDetector,
         annotationConfidence,
         withAcousticFeatures,
-    } = Route.useSearch();
+    } = Route.useSearch({
+        select: ({
+                     withAnnotations,
+                     annotationLabel,
+                     annotationAnnotator,
+                     annotationDetector,
+                     annotationConfidence,
+                     withAcousticFeatures,
+                 }) => ({
+            withAnnotations,
+            annotationLabel,
+            annotationAnnotator,
+            annotationDetector,
+            annotationConfidence,
+            withAcousticFeatures,
+        }),
+    });
     const routeParams = Route.useParams()
     const navigate = useNavigate();
     const { campaign, isFetching } = useCurrentCampaign()

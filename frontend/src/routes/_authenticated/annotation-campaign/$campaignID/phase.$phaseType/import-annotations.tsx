@@ -19,7 +19,7 @@ import styles from './import-annotations.module.scss';
 
 const ImportAnnotations: React.FC = () => {
     const { campaign } = useCurrentCampaign();
-    const { phaseType } = Route.useParams();
+    const phaseType = Route.useParams({select: ({phaseType}) => phaseType});
     const {
         selectedDetectorsForImport,
         reset,

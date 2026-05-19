@@ -14,7 +14,7 @@ import { useNavigate } from '@tanstack/react-router';
 
 
 export const AnnotationCampaignListFilterActionBar: React.FC = () => {
-    const { search } = Route.useSearch();
+    const search = Route.useSearch({ select: ({search}) => search });
     const navigate = useNavigate();
 
     const { user } = useCurrentUser();

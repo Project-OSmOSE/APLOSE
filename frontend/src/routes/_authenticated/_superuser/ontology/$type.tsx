@@ -13,7 +13,7 @@ type DataType = Pick<SoundNode | SourceNode, 'id' | 'englishName'> & {
 }
 
 const OntologyTab: React.FC = () => {
-    const { type } = Route.useParams()
+    const type = Route.useParams({select: ({type}) => type})
 
     const { allSources: initialSources } = useAllSources({ skip: type !== 'source' })
     const {

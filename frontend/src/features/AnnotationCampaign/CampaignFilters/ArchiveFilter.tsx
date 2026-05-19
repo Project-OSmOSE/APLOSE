@@ -5,7 +5,7 @@ import { Route } from '@/routes/_authenticated/annotation-campaign';
 import { useNavigate } from '@tanstack/react-router';
 
 export const AnnotationCampaignArchiveFilter: React.FC = () => {
-    const { filter_isArchived } = Route.useSearch();
+    const filter_isArchived = Route.useSearch({ select: ({ filter_isArchived }) => filter_isArchived });
     const navigate = useNavigate();
 
     const exists = useMemo(() => filter_isArchived !== undefined && filter_isArchived !== null, [ filter_isArchived ])

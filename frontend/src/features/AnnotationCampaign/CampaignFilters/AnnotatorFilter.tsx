@@ -6,7 +6,7 @@ import { closeCircle } from 'ionicons/icons';
 import { Route } from '@/routes/_authenticated/annotation-campaign';
 
 export const AnnotationCampaignAnnotatorFilter: React.FC = () => {
-    const { filter_annotatorID } = Route.useSearch();
+    const filter_annotatorID = Route.useSearch({select: ({filter_annotatorID}) => filter_annotatorID});
     const navigate = useNavigate();
 
     const { user } = useCurrentUser();

@@ -10,7 +10,7 @@ import { useSound, useSoundCRUD, useSource, useSourceCRUD } from '@/api';
 import styles from './$type.$id.module.scss';
 
 const OntologyPanel: React.FC = () => {
-  const { type, id } = Route.useParams();
+  const { type, id } = Route.useParams({select: ({type, id}) => ({type, id})});
 
   const { source, isFetching: isFetchingSource } = useSource({ id, skip: type !== 'source' });
   const { sound, isFetching: isFetchingSound } = useSound({ id, skip: type !== 'sound' });

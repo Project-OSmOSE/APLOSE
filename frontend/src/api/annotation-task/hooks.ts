@@ -58,10 +58,15 @@ export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
 }
 
 export const useGetAnnotationTaskParams = (): GetAnnotationTaskQueryVariables => {
-    const { campaignID, phaseType, spectrogramID } = useParams({ strict: false });
+    const { campaignID, phaseType, spectrogramID } = useParams({
+        strict: false,
+        select: ({ campaignID, phaseType, spectrogramID }) => ({ campaignID, phaseType, spectrogramID })
+    });
     const analysisID = useAppSelector(selectAnalysisID)
     const { user } = useCurrentUser();
-    const params = useSearch({ strict: false });
+    const params = useSearch({
+        strict: false,
+    });
 
     return useMemo(() => ({
         ...params,

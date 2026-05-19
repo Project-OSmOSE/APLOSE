@@ -13,7 +13,7 @@ import { DatasetSelect } from '@/features/Dataset';
 import styles from './new.module.scss';
 
 const NewAnnotationCampaign: React.FC = () => {
-    const { dataset_id } = Route.useSearch()
+    const dataset_id = Route.useSearch({ select: ({ dataset_id }) => dataset_id });
     const router = useRouter()
 
     const {
@@ -174,7 +174,7 @@ const NewAnnotationCampaign: React.FC = () => {
             </FormBloc>
 
             <div className={ styles.buttons }>
-                <IonButton color='dark' fill='clear' onClick={() => router.history.back()}>Back</IonButton>
+                <IonButton color="dark" fill="clear" onClick={ () => router.history.back() }>Back</IonButton>
                 { isSubmittingCampaign && <IonSpinner/> }
                 <IonButton disabled={ isSubmittingCampaign } onClick={ submit }>
                     Create campaign

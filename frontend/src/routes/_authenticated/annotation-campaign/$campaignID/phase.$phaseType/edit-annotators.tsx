@@ -26,7 +26,7 @@ type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
 }
 
 const EditAnnotators: React.FC = () => {
-    const { phaseType } = Route.useParams();
+    const phaseType = Route.useParams({select: ({phaseType}) => phaseType});
     const {
         campaign,
         isFetching: isFetchingCampaign,

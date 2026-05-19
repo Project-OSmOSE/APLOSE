@@ -30,7 +30,7 @@ import { AnnotationsBloc } from '@/features/Annotator/Annotation/AnnotationsBloc
 import styles from './$spectrogramID.module.scss';
 
 const AnnotatorPage: React.FC = () => {
-    const { campaignID } = Route.useParams();
+    const campaignID = Route.useParams({select: ({campaignID}) => campaignID});
 
     const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
     const {

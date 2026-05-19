@@ -6,7 +6,7 @@ import { Route } from '@/routes/_authenticated/annotation-campaign';
 import { useNavigate } from '@tanstack/react-router';
 
 export const AnnotationCampaignPhaseTypeFilter: React.FC = () => {
-  const { filter_phase } = Route.useSearch();
+  const filter_phase  = Route.useSearch({select: ({ filter_phase }) => filter_phase });
   const navigate = useNavigate();
 
   const toggle = useCallback(() => {

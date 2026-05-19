@@ -14,7 +14,7 @@ import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 import { Cards } from '@/features/AnnotationCampaign';
 
 const DatasetDetail: React.FC = () => {
-    const { datasetID: id } = Route.useParams();
+    const id = Route.useParams({select: ({datasetID}) => datasetID});
 
     const { dataset, isLoading, error } = useDataset({ id })
 

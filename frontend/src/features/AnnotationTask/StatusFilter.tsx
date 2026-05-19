@@ -9,7 +9,7 @@ import { useNavigate } from '@tanstack/react-router';
 export const StatusFilterModal: React.FC<ModalProps & {
     onUpdate: () => void
 }> = ({ onUpdate, onClose }) => {
-    const { status } = Route.useSearch();
+    const status = Route.useSearch({select: ({status}) => status});
     const routeParams = Route.useParams()
     const navigate = useNavigate();
 
