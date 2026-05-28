@@ -26,7 +26,7 @@ export const FileRangeActionBar: React.FC = () => {
             search: (prev) => ({
                 ...prev,
                 search: input,
-                page: 1
+                page: 1,
             }),
             replace: true,
         })
@@ -41,7 +41,7 @@ export const FileRangeActionBar: React.FC = () => {
         })
     }, [ navigate, routeParams ])
 
-    const hasFilters = useMemo(() => Object.entries(searchParams).filter(([ k, v ]) => k !== 'page' && v !== undefined).length > 0, [ searchParams ]);
+    const hasFilters = useMemo(() => Object.entries(searchParams).filter(([ k, v ]) => k !== 'page' && k !== 'onlyAssigned' && v !== undefined).length > 0, [ searchParams ]);
 
     const resumeBtnTooltip: string = useMemo(() => {
         if (hasFilters) return 'Cannot resume if filters are activated'
@@ -51,7 +51,7 @@ export const FileRangeActionBar: React.FC = () => {
 
     const resume = useCallback(() => {
         if (!resumeSpectrogramID) return;
-        openAnnotator(resumeSpectrogramID)
+        openAnnotator(resumeSpectrogramID, { resume: true })
     }, [ resumeSpectrogramID, openAnnotator ])
 
     const progressModal = useModal(FileRangeProgressModal)
@@ -62,7 +62,7 @@ export const FileRangeActionBar: React.FC = () => {
                    onSearchChange={ updateSearch }
                    actionButton={ <div className={ styles.filterButtons }>
 
-                       { hasFilters && <IonButton fill="clear" color="medium" size="small" onClick={ clear }>
+                       { (hasFilters || searchParams.onlyAssigned) && <IonButton fill="clear" color="medium" size="small" onClick={ clear }>
                            <IonIcon icon={ refreshOutline } slot="start"/>
                            Reset
                        </IonButton> }
