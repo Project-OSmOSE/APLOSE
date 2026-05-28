@@ -12,6 +12,7 @@ from backend.api.models import (
     FFT,
     Spectrogram,
     SpectrogramAnalysisRelation,
+    LinearScale,
 )
 from backend.storage.types import (
     FailedItem,
@@ -167,3 +168,20 @@ class OSEkitResolver(LegacyOSEkitResolver):
                 return paths["audio"], paths["spectrogram"]
 
         return None, None
+
+    def get_frequency_scale_parts_for_analysis(
+        self, analysis: SpectrogramAnalysis
+    ) -> list[LinearScale]:
+        if analysis.legacy:
+            return super().get_frequency_scale_parts_for_analysis(analysis=analysis)
+        sd = self._get_spectro_dataset(analysis=analysis)
+        if not sd.scale:
+            return []
+        return [
+            LinearScale.objects.get_or_create(
+                ratio=scale.p_max,
+                min_value=scale.f_min,
+                max_value=scale.f_max,
+            )[0]
+            for scale in sd.scale.parts
+        ]

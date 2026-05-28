@@ -9,6 +9,7 @@ from backend.api.admin.data.spectrogram_analysis import store_paths
 from backend.api.models import (
     FFT,
     Colormap,
+    SpectrogramAnalysis,
 )
 from backend.api.schema import DatasetNode
 from backend.api.schema.nodes import SpectrogramAnalysisNode
@@ -58,6 +59,7 @@ class ImportDatasetMutation(Mutation):
                     continue
                 analysis.append(a)
 
+        sa: SpectrogramAnalysis
         for sa in analysis:
             if sa.pk is not None:
                 continue
@@ -69,6 +71,8 @@ class ImportDatasetMutation(Mutation):
             sa.save()
 
             resolver.create_legacy_configuration(sa)
+            for scale in resolver.get_frequency_scale_parts_for_analysis(sa):
+                sa.frequency_scale_parts.add(scale)
 
             spectrograms = resolver.get_all_spectrograms_for_analysis(analysis=sa)
             sa.add_spectrograms(spectrograms=spectrograms)

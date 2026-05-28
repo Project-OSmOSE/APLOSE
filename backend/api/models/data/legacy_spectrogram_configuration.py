@@ -2,8 +2,6 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
-from .linear_scale import LinearScale, MultiLinearScale
-
 
 class LegacySpectrogramConfiguration(models.Model):
     """
