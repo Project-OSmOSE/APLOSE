@@ -126,7 +126,7 @@ const TEST = {
 
             await test.step('Access annotation', async () => {
                 await Promise.all([
-                    page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ phase }/spectrogram/${ TASKS.unsubmitted.id }`),
+                    page.waitForURL(new RegExp(`/annotation-campaign/${ campaign.id }/phase/${ phase }/spectrogram/${ TASKS.unsubmitted.id }`)),
                     page.phaseDetail.resumeButton.click(),
                 ])
             })
