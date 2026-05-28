@@ -115,7 +115,7 @@ const SqlQuery: React.FC = () => {
                             totalPages={ results.pageCount }
                             setCurrentPage={ runQuery }/> }
         </div>
-    }, [ user ])
+    }, [ user, results ])
 }
 
 export const Route = createLazyFileRoute('/_authenticated/_superuser/sql')({
