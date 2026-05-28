@@ -2851,6 +2851,7 @@ export type FileFormatNodeSpectrogramSetArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  onlyAssigned?: InputMaybe<Scalars['Boolean']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
   phase?: InputMaybe<AnnotationPhaseType>;
   start_Lte?: InputMaybe<Scalars['DateTime']['input']>;
@@ -4680,6 +4681,7 @@ export type QueryAllAnnotationSpectrogramsArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  onlyAssigned?: InputMaybe<Scalars['Boolean']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
   ordering?: InputMaybe<Scalars['String']['input']>;
   phase?: InputMaybe<AnnotationPhaseType>;

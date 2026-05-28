@@ -8,7 +8,7 @@ export const useAnnotatorCanNavigate = () => {
     const isUpdated = useAppSelector(selectUpdated);
     const alert = useAlert();
 
-    const canNavigate = useCallback(async (): Promise<boolean> => {
+    return useCallback(async (): Promise<boolean> => {
         if (!isUpdated) return true;
         return new Promise<boolean>((resolve) => {
             alert.showAlert({
@@ -22,8 +22,6 @@ export const useAnnotatorCanNavigate = () => {
             })
         })
     }, [ alert, isUpdated ])
-
-    return canNavigate
 }
 
 export const useOpenAnnotator = () => {
@@ -31,11 +29,13 @@ export const useOpenAnnotator = () => {
     const search: any = useSearch({ strict: false });
     const navigate = useNavigate()
 
-    return useCallback((spectrogramID: string) => {
+    return useCallback((spectrogramID: string, options?: { resume?: boolean}) => {
+        const _search = {...search}
+        if (options?.resume) _search.onlyAssigned = true
         navigate({
             to: '/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID',
             params: { ...routeParams, spectrogramID },
-            search,
+            search: _search,
         });
     }, [ routeParams, search, navigate ])
 }

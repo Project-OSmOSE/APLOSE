@@ -14,7 +14,7 @@ import { useAppSelector } from '@/features/App';
 import { selectAnalysisID } from '@/features/Annotator/Analysis';
 import { GetAnnotationTaskQueryVariables } from './annotation-task.generated'
 
-const PAGE_SIZE = 20;
+export const PAGE_SIZE = 20;
 
 // API
 
@@ -25,7 +25,7 @@ const {
 } = AnnotationTaskGqlAPI.endpoints
 
 export type AllTasksFilters =
-    Pick<ListAnnotationTaskQueryVariables, 'search' | 'status' | 'from' | 'to' | 'withAnnotations' | 'annotationLabel' | 'annotationConfidence' | 'annotationDetector' | 'annotationAnnotator' | 'withAcousticFeatures'>
+    Pick<ListAnnotationTaskQueryVariables, 'search' | 'status' | 'from' | 'to' | 'withAnnotations' | 'annotationLabel' | 'annotationConfidence' | 'annotationDetector' | 'annotationAnnotator' | 'withAcousticFeatures' | 'onlyAssigned'>
     & {
     page: number
 }

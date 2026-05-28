@@ -32,7 +32,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
         pageCount,
         isFetching,
         error,
-    } = useAllAnnotationTasks(search, { refetchOnMountOrArgChange : true })
+    } = useAllAnnotationTasks(search, { refetchOnMountOrArgChange: true })
 
     const isEmpty = useMemo(() => error || !allSpectrograms || allSpectrograms.length === 0 || campaign?.isArchived, [ error, allSpectrograms, campaign ])
 
@@ -90,7 +90,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
                             </Th>
                             { phase.phase === 'Verification' && <Th scope="col" center>Validated<br/>annotations</Th> }
                             <Th scope="col" center filterable
-                                isFiltered={ search.status !== undefined }
+                                isFiltered={ search.status !== undefined || search.onlyAssigned !== undefined }
                                 onFilterClick={ statusFilterModal.open }>
                                 Status
                             </Th>

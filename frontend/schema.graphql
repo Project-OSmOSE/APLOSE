@@ -1061,6 +1061,7 @@ type Query {
     annotations_AcousticFeatures_Exists: Boolean
     annotations_Detector: ID
     annotations_Annotator: ID
+    onlyAssigned: Boolean
 
     """Ordering"""
     orderBy: String
@@ -2113,6 +2114,7 @@ type FileFormatNode implements ExtendedInterface {
     annotations_AcousticFeatures_Exists: Boolean
     annotations_Detector: ID
     annotations_Annotator: ID
+    onlyAssigned: Boolean
 
     """Ordering"""
     orderBy: String

@@ -17,7 +17,7 @@ const TEST = {
 
             await test.step('Back to campaign', () =>
                 Promise.all([
-                    page.waitForURL(`/app/annotation-campaign/${ campaign.id }/phase/${ phase }`),
+                    page.waitForURL(new RegExp(`/annotation-campaign/${ campaign.id }/phase/${ phase }`)),
                     page.annotator.backToCampaignButton.click(),
                 ]))
         }),

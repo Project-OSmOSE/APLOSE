@@ -30,6 +30,8 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
     annotations__detector = IDFilter(method="fake")
     annotations__annotator = IDFilter(method="fake")
 
+    only_assigned = filters.BooleanFilter(method="fake")
+
     class Meta:
         model = Spectrogram
         fields = {
@@ -47,7 +49,7 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
         queryset = super().filter_queryset(queryset)
 
         queryset, file_ranges, tasks, annotations = self._get_querysets_for_filter(
-            queryset
+            queryset, only_assigned=self.data.get("only_assigned", False)
         )
 
         # Filter on task status
@@ -123,7 +125,7 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
         return queryset.distinct()
 
     def _get_querysets_for_filter(
-        self, queryset: QuerySet[Spectrogram]
+        self, queryset: QuerySet[Spectrogram], only_assigned=False
     ) -> tuple[
         QuerySet[Spectrogram],
         QuerySet[AnnotationFileRange],
@@ -181,7 +183,7 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
                 ):
                     can_see_unassigned = True
 
-        if not can_see_unassigned:
+        if only_assigned or not can_see_unassigned:
             # Filter through existing file range
             spectrograms = spectrograms.filter(
                 Exists(

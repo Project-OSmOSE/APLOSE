@@ -13,6 +13,7 @@ query listAnnotationTask(
     $from: DateTime
     $to: DateTime
 
+    $onlyAssigned: Boolean
     $withAnnotations: Boolean
     $annotationLabel: String
     $annotationConfidence: String
@@ -30,6 +31,7 @@ query listAnnotationTask(
         annotator: $annotatorID
         annotationCampaign: $campaignID
         phase: $phaseType
+        onlyAssigned: $onlyAssigned
 
         # Search
         filename_Icontains: $search
@@ -112,6 +114,7 @@ query getAnnotationTask(
     $from: DateTime
     $to: DateTime
 
+    $onlyAssigned: Boolean
     $withAnnotations: Boolean
     $annotationLabel: String
     $annotationConfidence: String
@@ -288,6 +291,7 @@ query getAnnotationTask(
         annotator: $annotatorID
         annotationCampaign: $campaignID
         phase: $phaseType
+        onlyAssigned: $onlyAssigned
 
         # Search
         filename_Icontains: $search

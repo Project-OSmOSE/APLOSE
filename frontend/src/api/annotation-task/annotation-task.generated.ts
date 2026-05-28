@@ -11,6 +11,7 @@ export type ListAnnotationTaskQueryVariables = Types.Exact<{
   status?: Types.InputMaybe<Types.AnnotationTaskStatus>;
   from?: Types.InputMaybe<Types.Scalars['DateTime']['input']>;
   to?: Types.InputMaybe<Types.Scalars['DateTime']['input']>;
+  onlyAssigned?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
   withAnnotations?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
   annotationLabel?: Types.InputMaybe<Types.Scalars['String']['input']>;
   annotationConfidence?: Types.InputMaybe<Types.Scalars['String']['input']>;
@@ -32,6 +33,7 @@ export type GetAnnotationTaskQueryVariables = Types.Exact<{
   status?: Types.InputMaybe<Types.AnnotationTaskStatus>;
   from?: Types.InputMaybe<Types.Scalars['DateTime']['input']>;
   to?: Types.InputMaybe<Types.Scalars['DateTime']['input']>;
+  onlyAssigned?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
   withAnnotations?: Types.InputMaybe<Types.Scalars['Boolean']['input']>;
   annotationLabel?: Types.InputMaybe<Types.Scalars['String']['input']>;
   annotationConfidence?: Types.InputMaybe<Types.Scalars['String']['input']>;
@@ -58,7 +60,7 @@ export type SubmitTaskMutation = { __typename?: 'Mutation', submitAnnotationTask
 
 
 export const ListAnnotationTaskDocument = `
-    query listAnnotationTask($annotatorID: ID!, $campaignID: ID!, $phaseType: AnnotationPhaseType!, $limit: Int!, $offset: Int!, $search: String, $status: AnnotationTaskStatus, $from: DateTime, $to: DateTime, $withAnnotations: Boolean, $annotationLabel: String, $annotationConfidence: String, $annotationDetector: ID, $annotationAnnotator: ID, $withAcousticFeatures: Boolean) {
+    query listAnnotationTask($annotatorID: ID!, $campaignID: ID!, $phaseType: AnnotationPhaseType!, $limit: Int!, $offset: Int!, $search: String, $status: AnnotationTaskStatus, $from: DateTime, $to: DateTime, $onlyAssigned: Boolean, $withAnnotations: Boolean, $annotationLabel: String, $annotationConfidence: String, $annotationDetector: ID, $annotationAnnotator: ID, $withAcousticFeatures: Boolean) {
   allAnnotationSpectrograms(
     limit: $limit
     offset: $offset
@@ -66,6 +68,7 @@ export const ListAnnotationTaskDocument = `
     annotator: $annotatorID
     annotationCampaign: $campaignID
     phase: $phaseType
+    onlyAssigned: $onlyAssigned
     filename_Icontains: $search
     end_Gte: $from
     start_Lte: $to
@@ -122,7 +125,7 @@ export const ListAnnotationTaskDocument = `
 }
     `;
 export const GetAnnotationTaskDocument = `
-    query getAnnotationTask($spectrogramID: ID!, $annotatorID: ID!, $campaignID: ID!, $analysisID: ID!, $phaseType: AnnotationPhaseType!, $search: String, $status: AnnotationTaskStatus, $from: DateTime, $to: DateTime, $withAnnotations: Boolean, $annotationLabel: String, $annotationConfidence: String, $annotationDetector: ID, $annotationAnnotator: ID, $withAcousticFeatures: Boolean) {
+    query getAnnotationTask($spectrogramID: ID!, $annotatorID: ID!, $campaignID: ID!, $analysisID: ID!, $phaseType: AnnotationPhaseType!, $search: String, $status: AnnotationTaskStatus, $from: DateTime, $to: DateTime, $onlyAssigned: Boolean, $withAnnotations: Boolean, $annotationLabel: String, $annotationConfidence: String, $annotationDetector: ID, $annotationAnnotator: ID, $withAcousticFeatures: Boolean) {
   spectrogramPaths(spectrogramId: $spectrogramID, analysisId: $analysisID) {
     audioPath
     spectrogramPath
@@ -278,6 +281,7 @@ export const GetAnnotationTaskDocument = `
     annotator: $annotatorID
     annotationCampaign: $campaignID
     phase: $phaseType
+    onlyAssigned: $onlyAssigned
     filename_Icontains: $search
     end_Gte: $from
     start_Lte: $to
