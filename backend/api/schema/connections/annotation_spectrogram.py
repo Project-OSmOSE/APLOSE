@@ -5,7 +5,7 @@ from django_extension.schema.fields import AuthenticatedPaginationConnectionFiel
 from graphene_django_pagination import PaginationConnection
 from graphql import GraphQLResolveInfo
 
-from backend.api.models import Spectrogram, AnnotationTask
+from backend.api.models import Spectrogram, AnnotationTask, AnnotationFileRange
 from backend.api.schema.enums import AnnotationPhaseType
 
 
@@ -44,6 +44,7 @@ class AnnotationSpectrogramConnectionField(AuthenticatedPaginationConnectionFiel
                 """Get spectrograms resume id"""
                 # pylint: disable=no-member
                 resume = self.iterable.filter(
+                    # Keep only not finished tasks
                     ~Exists(
                         AnnotationTask.objects.filter(
                             spectrogram_id=OuterRef("id"),
@@ -51,6 +52,16 @@ class AnnotationSpectrogramConnectionField(AuthenticatedPaginationConnectionFiel
                             annotation_phase__annotation_campaign_id=campaign_id,
                             annotation_phase__phase=phase.value,
                             status=AnnotationTask.Status.FINISHED,
+                        )
+                    )
+                    &
+                    # Keep assigned task (especially for admin who can see all spectrograms)
+                    Exists(
+                        AnnotationFileRange.objects.filter(
+                            annotator_id=info.context.user.id,
+                            annotation_phase__annotation_campaign_id=campaign_id,
+                            from_datetime__lte=OuterRef("start"),
+                            to_datetime__gte=OuterRef("end"),
                         )
                     )
                 ).first()
