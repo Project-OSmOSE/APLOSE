@@ -23,8 +23,6 @@ class LegacySpectrogramConfigurationAdmin(ExtendedModelAdmin):
         "temporal_resolution",
         "sensitivity_dB",
         "peak_voltage",
-        "linear_frequency_scale",
-        "multi_linear_frequency_scale",
     )
     search_fields = [
         "spectrogram_analysis__dataset__name",

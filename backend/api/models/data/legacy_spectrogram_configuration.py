@@ -2,34 +2,13 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
-from .scales import LinearScale, MultiLinearScale
+from .linear_scale import LinearScale, MultiLinearScale
 
 
 class LegacySpectrogramConfiguration(models.Model):
     """
     Table containing spectrogram configuration used for datasets and annotation campaigns.
     """
-
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                name="legacy_spectrogram_configuration_max_one_scale",
-                check=(
-                    models.Q(
-                        linear_frequency_scale__isnull=True,
-                        multi_linear_frequency_scale__isnull=False,
-                    )
-                    | models.Q(
-                        linear_frequency_scale__isnull=False,
-                        multi_linear_frequency_scale__isnull=True,
-                    )
-                    | models.Q(
-                        linear_frequency_scale__isnull=True,
-                        multi_linear_frequency_scale__isnull=True,
-                    )
-                ),
-            ),
-        ]
 
     def __str__(self):
         return self.folder
@@ -56,13 +35,6 @@ class LegacySpectrogramConfiguration(models.Model):
     sensitivity_dB = models.FloatField(null=True, blank=True)
     temporal_resolution = models.FloatField(null=True, blank=True)
     gain_dB = models.FloatField(null=True, blank=True)
-
-    linear_frequency_scale = models.ForeignKey(
-        LinearScale, on_delete=models.SET_NULL, blank=True, null=True
-    )
-    multi_linear_frequency_scale = models.ForeignKey(
-        MultiLinearScale, on_delete=models.SET_NULL, blank=True, null=True
-    )
 
     # TODO:
     #  def zoom_tiles(self, tile_name):

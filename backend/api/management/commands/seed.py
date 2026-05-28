@@ -28,7 +28,7 @@ from backend.api.models import (
     Annotation,
 )
 from backend.api.models.annotation.annotation_campaign import AnnotationCampaignAnalysis
-from backend.api.models.data.scales import get_frequency_scales
+from backend.api.models.data.linear_scale import get_frequency_scales
 from backend.api.schema.enums import AnnotationType
 from backend.aplose.models import AploseUser
 from backend.aplose.models.user import ExpertiseLevel, User
