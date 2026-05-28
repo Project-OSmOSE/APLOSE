@@ -15,7 +15,7 @@ const Component: React.FC = () => {
     useEffect(() => {
         if (!isConnected) navigate({
             to: '/login',
-            search: { redirect: router.latestLocation.href },
+            search: { redirect: router.latestLocation.pathname.replace('/app', '') },
             replace: true,
         });
     }, [ isConnected ]);
@@ -27,7 +27,7 @@ export const Route = createFileRoute('/_authenticated')({
         const user = await loadUser()
         if (!user) throw redirect({
             to: '/login',
-            search: { redirect: location.href },
+            search: { redirect: location.pathname.replace('/app', '') },
             replace: true,
         })
     },
