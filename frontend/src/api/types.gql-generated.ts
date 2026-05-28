@@ -3328,10 +3328,7 @@ export type LegacySpectrogramConfigurationNode = ExtendedInterface & {
   hpFilterMinFrequency: Scalars['Int']['output'];
   /** The ID of the object */
   id: Scalars['ID']['output'];
-  linearFrequencyScale?: Maybe<LinearScaleNode>;
-  multiLinearFrequencyScale?: Maybe<MultiLinearScaleNode>;
   peakVoltage?: Maybe<Scalars['Float']['output']>;
-  scaleName?: Maybe<Scalars['String']['output']>;
   sensitivityDb?: Maybe<Scalars['Float']['output']>;
   spectrogramAnalysis: SpectrogramAnalysisNode;
   spectrogramNormalization: Scalars['String']['output'];
@@ -3341,44 +3338,17 @@ export type LegacySpectrogramConfigurationNode = ExtendedInterface & {
   zscoreDuration?: Maybe<Scalars['String']['output']>;
 };
 
-export type LegacySpectrogramConfigurationNodeConnection = {
-  __typename?: 'LegacySpectrogramConfigurationNodeConnection';
-  /** Contains the nodes in this connection. */
-  edges: Array<Maybe<LegacySpectrogramConfigurationNodeEdge>>;
-  /** Pagination data for this connection. */
-  pageInfo: PageInfo;
-};
-
-/** A Relay edge containing a `LegacySpectrogramConfigurationNode` and its cursor. */
-export type LegacySpectrogramConfigurationNodeEdge = {
-  __typename?: 'LegacySpectrogramConfigurationNodeEdge';
-  /** A cursor for use in pagination */
-  cursor: Scalars['String']['output'];
-  /** The item at the end of the edge */
-  node?: Maybe<LegacySpectrogramConfigurationNode>;
-};
-
 /** LinearScale schema */
 export type LinearScaleNode = ExtendedInterface & {
   __typename?: 'LinearScaleNode';
   /** The ID of the object */
   id: Scalars['ID']['output'];
-  legacyspectrogramconfigurationSet: LegacySpectrogramConfigurationNodeConnection;
   maxValue: Scalars['Float']['output'];
   minValue: Scalars['Float']['output'];
   name?: Maybe<Scalars['String']['output']>;
   outerScales: MultiLinearScaleNodeConnection;
   ratio: Scalars['Float']['output'];
-};
-
-
-/** LinearScale schema */
-export type LinearScaleNodeLegacyspectrogramconfigurationSetArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
+  spectrogramAnalysis: SpectrogramAnalysisNodeConnection;
 };
 
 
@@ -3389,6 +3359,19 @@ export type LinearScaleNodeOuterScalesArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+/** LinearScale schema */
+export type LinearScaleNodeSpectrogramAnalysisArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  annotationCampaigns_Id?: InputMaybe<Scalars['ID']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  dataset?: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type MaintenanceNode = ExtendedInterface & {
@@ -3486,18 +3469,7 @@ export type MultiLinearScaleNode = ExtendedInterface & {
   /** The ID of the object */
   id: Scalars['ID']['output'];
   innerScales?: Maybe<Array<Maybe<LinearScaleNode>>>;
-  legacyspectrogramconfigurationSet: LegacySpectrogramConfigurationNodeConnection;
   name?: Maybe<Scalars['String']['output']>;
-};
-
-
-/** MultiLinearScale schema */
-export type MultiLinearScaleNodeLegacyspectrogramconfigurationSetArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type MultiLinearScaleNodeConnection = {
@@ -6313,6 +6285,7 @@ export type SpectrogramAnalysisNode = ExtendedInterface & {
   dynamicMin: Scalars['Float']['output'];
   end?: Maybe<Scalars['DateTime']['output']>;
   fft: FftNode;
+  frequencyScaleParts?: Maybe<Array<Maybe<LinearScaleNode>>>;
   /** The ID of the object */
   id: Scalars['ID']['output'];
   legacy: Scalars['Boolean']['output'];

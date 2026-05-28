@@ -3,7 +3,6 @@ import type { LegacySpectrogramConfigurationNode } from '../../../../src/api/typ
 export type LegacyConfiguration = Omit<LegacySpectrogramConfigurationNode, 'audioFilesSubtypes' | 'spectrogramAnalysis'>
 export const legacyConfiguration: LegacyConfiguration = {
   id: '1',
-  scaleName: 'Default',
   channelCount: 1,
   dataNormalization: 'instrument',
   spectrogramNormalization: 'density',
@@ -14,7 +13,5 @@ export const legacyConfiguration: LegacyConfiguration = {
   hpFilterMinFrequency: 1000,
   zscoreDuration: 'original',
   windowType: null,
-  linearFrequencyScale: null,
-  multiLinearFrequencyScale: null,
   zoomLevel: 2,
 }

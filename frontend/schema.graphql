@@ -1842,6 +1842,7 @@ type SpectrogramAnalysisNode implements ExtendedInterface {
   colormap: ColormapNode!
   dynamicMin: Float!
   dynamicMax: Float!
+  frequencyScaleParts: [LinearScaleNode]
   legacyConfiguration: LegacySpectrogramConfigurationNode
   spectrograms(
     """Query limit"""
@@ -1947,31 +1948,6 @@ type ColormapNode implements ExtendedInterface {
   ): SpectrogramAnalysisNodeConnection!
 }
 
-"""LegacySpectrogramConfiguration schema"""
-type LegacySpectrogramConfigurationNode implements ExtendedInterface {
-  """The ID of the object"""
-  id: ID!
-  spectrogramAnalysis: SpectrogramAnalysisNode!
-  folder: String!
-  audioFilesSubtypes: [String!]
-  channelCount: Int
-  fileOverlap: Int
-  zoomLevel: Int!
-  hpFilterMinFrequency: Int!
-  dataNormalization: String!
-  frequencyResolution: Float!
-  spectrogramNormalization: String!
-  zscoreDuration: String
-  windowType: String
-  peakVoltage: Float
-  sensitivityDb: Float
-  temporalResolution: Float
-  gainDb: Float
-  linearFrequencyScale: LinearScaleNode
-  multiLinearFrequencyScale: MultiLinearScaleNode
-  scaleName: String
-}
-
 """LinearScale schema"""
 type LinearScaleNode implements ExtendedInterface {
   """The ID of the object"""
@@ -1981,7 +1957,18 @@ type LinearScaleNode implements ExtendedInterface {
   minValue: Float!
   maxValue: Float!
   outerScales(offset: Int, before: String, after: String, first: Int, last: Int): MultiLinearScaleNodeConnection!
-  legacyspectrogramconfigurationSet(offset: Int, before: String, after: String, first: Int, last: Int): LegacySpectrogramConfigurationNodeConnection!
+  spectrogramAnalysis(
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+    dataset: ID
+    annotationCampaigns_Id: ID
+
+    """Ordering"""
+    orderBy: String
+  ): SpectrogramAnalysisNodeConnection!
 }
 
 type MultiLinearScaleNodeConnection {
@@ -2007,26 +1994,28 @@ type MultiLinearScaleNode implements ExtendedInterface {
   id: ID!
   name: String
   innerScales: [LinearScaleNode]
-  legacyspectrogramconfigurationSet(offset: Int, before: String, after: String, first: Int, last: Int): LegacySpectrogramConfigurationNodeConnection!
 }
 
-type LegacySpectrogramConfigurationNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [LegacySpectrogramConfigurationNodeEdge]!
-}
-
-"""
-A Relay edge containing a `LegacySpectrogramConfigurationNode` and its cursor.
-"""
-type LegacySpectrogramConfigurationNodeEdge {
-  """The item at the end of the edge"""
-  node: LegacySpectrogramConfigurationNode
-
-  """A cursor for use in pagination"""
-  cursor: String!
+"""LegacySpectrogramConfiguration schema"""
+type LegacySpectrogramConfigurationNode implements ExtendedInterface {
+  """The ID of the object"""
+  id: ID!
+  spectrogramAnalysis: SpectrogramAnalysisNode!
+  folder: String!
+  audioFilesSubtypes: [String!]
+  channelCount: Int
+  fileOverlap: Int
+  zoomLevel: Int!
+  hpFilterMinFrequency: Int!
+  dataNormalization: String!
+  frequencyResolution: Float!
+  spectrogramNormalization: String!
+  zscoreDuration: String
+  windowType: String
+  peakVoltage: Float
+  sensitivityDb: Float
+  temporalResolution: Float
+  gainDb: Float
 }
 
 type SpectrogramNodeNodeConnection {

@@ -29,17 +29,10 @@ export const useFrequencyScale = () => {
       disableValueFloats: true,
       revert: true,
     }
-    if (analysis?.legacyConfiguration?.linearFrequencyScale) {
-      return new LinearScaleService(
-        height,
-        analysis.legacyConfiguration.linearFrequencyScale,
-        options,
-      )
-    }
-    if (analysis?.legacyConfiguration?.multiLinearFrequencyScale) {
+    if (analysis?.frequencyScaleParts) {
       return new MultiScaleService(
         height,
-        analysis.legacyConfiguration.multiLinearFrequencyScale.innerScales?.filter(s => s !== null).map(s => s!) ?? [],
+        analysis.frequencyScaleParts?.filter(s => s !== null).map(s => s!) ?? [],
         options,
       )
     }
