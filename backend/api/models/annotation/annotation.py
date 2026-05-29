@@ -176,11 +176,6 @@ class Annotation(models.Model):
         on_delete=models.CASCADE,
         related_name="annotations",
     )
-    analysis = models.ForeignKey(
-        SpectrogramAnalysis,
-        on_delete=models.CASCADE,
-        related_name="annotations",
-    )
 
     detector_configuration = models.ForeignKey(
         DetectorConfiguration,
