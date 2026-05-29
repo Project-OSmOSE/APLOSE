@@ -7,12 +7,9 @@ import {
   AnnotationValidationSerializerInput,
   getAnnotationTaskFulfilled,
   GetAnnotationTaskQuery,
-  getCampaignFulfilled,
-  type GetCampaignQuery,
   getCurrentUserFulfilled,
   type GetCurrentUserQuery,
 } from '@/api';
-import { type Analysis, getDefaultAnalysisID, setAnalysis } from '@/features/Annotator/Analysis/slice';
 import type { GetAnnotationTaskQueryVariables } from '@/api/annotation-task/annotation-task.generated';
 import { convertGqlToAnnotations } from '@/features/Annotator/Annotation/conversions';
 
@@ -38,7 +35,6 @@ type AnnotationState = {
   id?: number;
   tempAnnotation?: TempAnnotation;
 
-  _analysisID?: string;
   _campaignID?: string
   _userID?: string
 }
@@ -48,8 +44,8 @@ const initialState: AnnotationState = {
   id: undefined,
   tempAnnotation: undefined,
 
-  _analysisID: undefined,
   _campaignID: undefined,
+  _userID: undefined,
 }
 
 export const AnnotatorAnnotationSlice = createSlice({
@@ -63,13 +59,8 @@ export const AnnotatorAnnotationSlice = createSlice({
       state.id = undefined
     },
     addAnnotation: (state, action: { payload: Omit<Annotation, 'analysis'> }) => {
-      if (!state._analysisID || state.allAnnotations.some(a => a.id === action.payload.id)) return;
-      const annotation: Annotation = {
-        ...action.payload,
-        analysis: state._analysisID,
-      }
-      state.allAnnotations = [ ...state.allAnnotations, annotation ];
-      action.payload = annotation;
+      if (state.allAnnotations.some(a => a.id === action.payload.id)) return;
+      state.allAnnotations = [ ...state.allAnnotations, action.payload ];
     },
     updateAnnotation: (state, action: { payload: Partial<Annotation> & Pick<Annotation, 'id'> }) => {
       const annotation: Annotation | undefined = state.allAnnotations.find(a => a.id === action.payload.id);
@@ -77,9 +68,6 @@ export const AnnotatorAnnotationSlice = createSlice({
       action.payload = {
         ...annotation,
         ...action.payload,
-      }
-      if (state._analysisID) {
-        action.payload = { ...action.payload, analysis: state._analysisID }
       }
       state.allAnnotations = state.allAnnotations.map(a => a.id === action.payload.id ? action.payload as Annotation : a)
     },
@@ -94,14 +82,6 @@ export const AnnotatorAnnotationSlice = createSlice({
     },
   },
   extraReducers: builder => {
-    builder.addCase(setAnalysis, (state: AnnotationState, action: { payload: Analysis }) => {
-      state._analysisID = action.payload?.id;
-    })
-    builder.addMatcher(getCampaignFulfilled, (state: AnnotationState, action: {
-      payload: GetCampaignQuery
-    }) => {
-      state._analysisID = getDefaultAnalysisID({ data: action.payload, id: state._analysisID })
-    })
     builder.addMatcher(getCurrentUserFulfilled, (state: AnnotationState, action: {
       payload: GetCurrentUserQuery
     }) => {
