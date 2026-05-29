@@ -21,11 +21,15 @@ export const AnalysisSelect: React.FC = () => {
             label += ` | winsize: ${ a!.fft.windowSize }`
             label += ` | overlap: ${ a!.fft.overlap }`
             const parts = a?.frequencyScaleParts ?? []
-            const min = Math.min(0, ...parts.map(a => a?.minValue ?? 0))
             const defaultMax = a!.fft.samplingFrequency / 2
-            const max = Math.max(defaultMax, ...parts.map(a => a?.maxValue ?? defaultMax))
+            let min = 0
+            let max = defaultMax
+            if (parts.length) {
+                min = Math.min(...parts.map(a => a?.minValue ?? 0))
+                max = Math.max(...parts.map(a => a?.maxValue ?? defaultMax))
+            }
             const range = `[${ frequencyToString(min) }Hz-${ frequencyToString(max) }Hz]`
-            label += ` | scale: ${ parts.length ?? 1 } ${ range }`
+            label += ` | scale: ${ parts.length > 0 ? parts.length : 1 } ${ range }`
             return { value: a!.id, label }
         }) ?? []
     }, [ allAnalysis ]);

@@ -17,7 +17,7 @@ import { useAnnotatorCanvasContext } from '@/features/Annotator/Canvas/context';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { setAllFileAsSeen } from '@/features/Annotator/UX/slice';
 import { useDrawCanvas } from '@/features/Annotator/Canvas/hooks';
-import { useAnnotationTask } from '@/api';
+import { AnnotationType, useAnnotationTask } from '@/api';
 import {
     selectBrightness,
     selectColormap,
@@ -174,7 +174,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
             <TimeBar/>
 
-            { allAnnotations.map(annotation => <StrongAnnotation key={ annotation.id } annotation={ annotation }/>) }
+            { allAnnotations.filter(a => a.type !== AnnotationType.Weak).map(annotation => <StrongAnnotation key={ annotation.id } annotation={ annotation }/>) }
         </div>
 
         <AcousticFeatures scrollLeft={scrollLeft}/>

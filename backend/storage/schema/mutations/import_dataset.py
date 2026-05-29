@@ -66,6 +66,7 @@ class ImportDatasetMutation(Mutation):
             sa.owner = info.context.user
             sa.dataset = resolver.dataset
 
+            print(model_to_dict(sa.fft))
             sa.fft, _ = FFT.objects.get_or_create(**model_to_dict(sa.fft))
             sa.colormap, _ = Colormap.objects.get_or_create(name=sa.colormap.name)
             sa.save()

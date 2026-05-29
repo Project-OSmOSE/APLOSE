@@ -10,10 +10,6 @@ export const useAxis = ({ canvas, steps, orientation, pixelSize, valueToString, 
   displaySmallStepValue: boolean;
 }) => {
 
-  useEffect(() => {
-    draw()
-  }, [ canvas, pixelSize, valueToString, orientation, steps ]);
-
   const draw = useCallback(() => {
     const context = canvas?.getContext('2d');
     if (!canvas || !context || !pixelSize) return;
@@ -22,19 +18,10 @@ export const useAxis = ({ canvas, steps, orientation, pixelSize, valueToString, 
     context.fillStyle = 'rgba(0, 0, 0)';
     context.font = '500 10px \'Exo 2\'';
 
-    let previousRatio = 0;
-    let offset = 0;
     const scaleSteps = steps.sort((a: Step, b: Step) => (a.correspondingRatio ?? 0) - (b.correspondingRatio ?? 0));
-    const maxRatio = Math.max(...scaleSteps.map(s => s.correspondingRatio ?? 0));
     const realSteps = new Array<Step>();
     for (const step of scaleSteps) {
-      if (step.correspondingRatio) {
-        if (step.correspondingRatio !== previousRatio) {
-          offset = previousRatio / maxRatio * pixelSize;
-          previousRatio = step.correspondingRatio
-        }
-      }
-      const position = Math.round(pixelSize - (offset + step.position));
+      const position = Math.round(pixelSize - step.position);
       const existingStep = realSteps.find(s => s.position === position)
       if (existingStep) {
         existingStep.additionalValue = step.value;
@@ -52,7 +39,6 @@ export const useAxis = ({ canvas, steps, orientation, pixelSize, valueToString, 
           position = canvas.height - position
           break;
       }
-
 
       // Tick
       let tickLength = 10;
@@ -130,5 +116,9 @@ export const useAxis = ({ canvas, steps, orientation, pixelSize, valueToString, 
       }
     }
   }, [ canvas, steps, orientation, pixelSize, valueToString, displaySmallStepValue ])
+
+  useEffect(() => {
+    draw()
+  }, [ canvas, pixelSize, valueToString, orientation, steps ]);
 
 }

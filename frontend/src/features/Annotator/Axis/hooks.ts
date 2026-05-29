@@ -29,7 +29,7 @@ export const useFrequencyScale = () => {
       disableValueFloats: true,
       revert: true,
     }
-    if (analysis?.frequencyScaleParts) {
+    if (analysis?.frequencyScaleParts && analysis?.frequencyScaleParts.length) {
       return new MultiScaleService(
         height,
         analysis.frequencyScaleParts?.filter(s => s !== null).map(s => s!) ?? [],
