@@ -7,7 +7,6 @@ import { ACCEPT_CSV_MIME_TYPE, ACCEPT_CSV_SEPARATOR, IMPORT_ANNOTATIONS_COLUMNS 
 import { useCurrentCampaign } from '@/api';
 import { WarningText } from '@/components/ui';
 import { cloudUploadOutline, refreshOutline } from 'ionicons/icons/index.js';
-import { AnalysisSelect } from './AnalysisSelect';
 
 export const ImportAnnotationsFormBloc: React.FC = () => {
   const { campaign } = useCurrentCampaign()
@@ -33,7 +32,7 @@ export const ImportAnnotationsFormBloc: React.FC = () => {
     input.accept = ACCEPT_CSV_MIME_TYPE;
     input.click();
     input.oninput = () => handleInput(input.files ?? undefined)
-  }, [ state ])
+  }, [ state.fileState, handleInput ])
 
   const onDragZoneDrop = useCallback((event: DragEvent) => {
     event.preventDefault();
@@ -41,7 +40,7 @@ export const ImportAnnotationsFormBloc: React.FC = () => {
     if (state.fileState !== 'initial') return;
     setIsDraggingHover(false);
     handleInput(event.dataTransfer.files)
-  }, [ handleInput ])
+  }, [ state.fileState, handleInput ])
 
   const onDragStart = useCallback((event: DragEvent) => {
     setIsDraggingHover(true)
@@ -58,7 +57,6 @@ export const ImportAnnotationsFormBloc: React.FC = () => {
     {/* Information */ }
     <IonNote color="medium"
              children={ `The imported CSV should only contain annotations related to this campaign dataset: ${ campaign?.dataset?.name }` }/>
-    <AnalysisSelect/>
 
     {/* Drag N Drop zone */ }
     <div className={ dragNDropClassName }

@@ -10,7 +10,6 @@ const keys: (keyof ImportAnnotation)[] = [
   'label__name',
   'confidence__label',
   'confidence__level',
-  'analysis',
   'detector__name',
   'detector_configuration__configuration',
 ];
