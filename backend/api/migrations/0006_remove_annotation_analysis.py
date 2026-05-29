@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0005_alter_spectrogramanalysisrelation_analysis'),
+        ("api", "0005_alter_spectrogramanalysisrelation_analysis"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='annotation',
-            name='analysis',
+            model_name="annotation",
+            name="analysis",
         ),
     ]
