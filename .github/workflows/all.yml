@@ -91,7 +91,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           name: poetry-report
-          path: poetry-report/
           retention-days: "90"
 
       # ── Generate GraphQL schema ────────────────────────
@@ -109,16 +108,16 @@ jobs:
           path: schema.graphql
 
   # ── Deploy backend coverage ────────────────────────────────────────────────
-#  deploy-coverage:
-#    environment:
-#      name: github-pages
-#      url: ${{ steps.deployment.outputs.page_url }}
-#    runs-on: ubuntu-latest
-#    needs: backend
-#    steps:
-#      - name: Deploy to GitHub Pages
-#        id: deployment
-#        uses: actions/deploy-pages@v4
+  deploy-coverage:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: backend
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
   # ── APLOSE Frontend ────────────────────────────────────────────────────────
   frontend:
