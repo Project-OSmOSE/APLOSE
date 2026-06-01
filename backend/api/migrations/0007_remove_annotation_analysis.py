@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("api", "0005_alter_spectrogramanalysisrelation_analysis"),
+        ("api", "0006_spectrogramanalysis_frequency_scale_parts"),
     ]
 
     operations = [
