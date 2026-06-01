@@ -11,7 +11,7 @@ export const fileRange: FileRange = {
   firstFileIndex: 0,
   lastFileIndex: 1,
   filesCount: 2,
-  fromDatetime: start,
-  toDatetime: end,
+  fromDatetime: start.toISOString(),
+  toDatetime: end.toISOString(),
 }
 

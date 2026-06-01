@@ -1,7 +1,6 @@
 import React from 'react';
 import { IonIcon } from '@ionic/react';
 import { addOutline } from 'ionicons/icons/index.js';
-import { useCurrentUser } from '@/api';
 import { ActionBar, Link } from '@/components/ui';
 
 import { AnnotationCampaignResetFiltersButton } from './ResetButton';
@@ -10,14 +9,14 @@ import { AnnotationCampaignOwnerFilter } from './OwnerFilter';
 import { AnnotationCampaignPhaseTypeFilter } from './PhaseFilter';
 import { AnnotationCampaignAnnotatorFilter } from './AnnotatorFilter';
 import { Route } from '@/routes/_authenticated/annotation-campaign';
-import { useNavigate } from '@tanstack/react-router';
+import { useLoaderData, useNavigate } from '@tanstack/react-router';
 
 
 export const AnnotationCampaignListFilterActionBar: React.FC = () => {
     const search = Route.useSearch({ select: ({search}) => search });
     const navigate = useNavigate();
 
-    const { user } = useCurrentUser();
+    const { user } = useLoaderData({ from: '/_authenticated' })
 
     return <ActionBar search={ search ?? undefined }
                       searchPlaceholder="Search campaign name"
@@ -29,7 +28,7 @@ export const AnnotationCampaignListFilterActionBar: React.FC = () => {
                           }),
                           replace: true,
                       }) }
-                      actionButton={ user?.isAdmin && <Link color="primary"
+                      actionButton={ user.isAdmin && <Link color="primary"
                                                             fill="outline"
                                                             to="/annotation-campaign/new">
                           <IonIcon icon={ addOutline } slot="start"/>

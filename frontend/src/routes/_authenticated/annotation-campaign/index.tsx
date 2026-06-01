@@ -1,18 +1,17 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useLoaderData, useNavigate } from '@tanstack/react-router';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 
 import { Head } from '@/components/ui';
 
-import { type AllCampaignFilters, useCurrentUser } from '@/api';
+import { type AllCampaignFilters } from '@/api';
 
 import { AnnotationCampaignListFilterActionBar, Cards } from '@/features/AnnotationCampaign';
 
 const AnnotationCampaignList: React.FC = () => {
     const navigate = useNavigate();
-    const { user } = useCurrentUser();
+    const { user } = useLoaderData({ from: '/_authenticated' })
 
     const init = useCallback(() => {
-        if (!user) return;
         navigate({
             to: Route.to,
             search: (prev) => {

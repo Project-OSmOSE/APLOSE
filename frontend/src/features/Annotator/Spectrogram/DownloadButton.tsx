@@ -1,15 +1,16 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { IonButton, IonIcon, IonSpinner } from '@ionic/react';
 import { downloadOutline } from 'ionicons/icons/index.js';
-import { useAnnotationTask, useCurrentUser } from '@/api';
+import { useAnnotationTask } from '@/api';
 import { useDownloadCanvas } from '@/features/Annotator/Canvas';
 import { selectZoom } from '@/features/Annotator/Zoom';
 import { useAppSelector } from '@/features/App';
+import { useLoaderData } from '@tanstack/react-router';
 
 export const SpectrogramDownloadButton: React.FC = () => {
   const zoom = useAppSelector(selectZoom)
   const { spectrogram } = useAnnotationTask()
-  const { user } = useCurrentUser();
+  const { user } = useLoaderData({ from: '/_authenticated' })
   const download = useDownloadCanvas();
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
 
@@ -23,7 +24,7 @@ export const SpectrogramDownloadButton: React.FC = () => {
     }
   }, [ download, spectrogram, zoom ])
 
-  if (!spectrogram || !user?.isAdmin) return <Fragment/>
+  if (!spectrogram || !user.isAdmin) return <Fragment/>
   return <IonButton color="medium" size="small" fill="outline"
                     onClick={ downloadSpectrogram }>
     <IonIcon icon={ downloadOutline } slot="start"/>

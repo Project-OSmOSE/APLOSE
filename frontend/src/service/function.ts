@@ -55,7 +55,7 @@ export function searchFilter(values: Array<SearchItem>, search: string | undefin
     })
 }
 
-export function dateToString(date?: Date | string): string | undefined {
+export function dateToString(date?: Date | string | null): string | undefined {
   if (!date) return undefined;
   if (typeof date === 'string') date = new Date(date);
   return date.toLocaleDateString('en', {
@@ -66,7 +66,7 @@ export function dateToString(date?: Date | string): string | undefined {
   })
 }
 
-export function datetimeToString(date?: Date | string): string | undefined {
+export function datetimeToString(date?: Date | string | null): string | undefined {
   if (!date) return undefined;
   if (typeof date === 'string') date = new Date(date);
   return date.toLocaleDateString('en', {

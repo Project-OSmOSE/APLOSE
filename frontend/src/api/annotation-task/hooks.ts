@@ -7,9 +7,8 @@ import {
     type ListAnnotationTaskQueryVariables,
     useCurrentCampaign,
     useCurrentPhase,
-    useCurrentUser,
 } from '@/api';
-import { useParams, useSearch } from '@tanstack/react-router';
+import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
 import { useAppSelector } from '@/features/App';
 import { selectAnalysisID } from '@/features/Annotator/Analysis';
 import { GetAnnotationTaskQueryVariables } from './annotation-task.generated'
@@ -35,17 +34,17 @@ export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
 } = {}) => {
     const { campaignID, phaseType } = useParams({ strict: false });
     const { campaign } = useCurrentCampaign()
-    const { user } = useCurrentUser();
+    const { user } = useLoaderData({ from: '/_authenticated' })
 
     const info = listAnnotationTask.useQuery({
         ...filters,
         campaignID: campaignID ?? '',
         phaseType: phaseType ?? AnnotationPhaseType.Annotation,
-        annotatorID: user?.id ?? '',
+        annotatorID: user.id,
         limit: PAGE_SIZE,
         offset: PAGE_SIZE * ((filters.page ?? 1) - 1),
     }, {
-        skip: !user || !campaignID || !phaseType || campaign?.isArchived,
+        skip: !campaignID || !phaseType || campaign?.isArchived,
         ...options,
     })
     return useMemo(() => ({
@@ -63,7 +62,7 @@ export const useGetAnnotationTaskParams = (): GetAnnotationTaskQueryVariables =>
         select: ({ campaignID, phaseType, spectrogramID }) => ({ campaignID, phaseType, spectrogramID })
     });
     const analysisID = useAppSelector(selectAnalysisID)
-    const { user } = useCurrentUser();
+    const { user } = useLoaderData({ from: '/_authenticated' })
     const params = useSearch({
         strict: false,
     });
@@ -73,7 +72,7 @@ export const useGetAnnotationTaskParams = (): GetAnnotationTaskQueryVariables =>
         spectrogramID: spectrogramID ?? '',
         campaignID: campaignID ?? '',
         phaseType: phaseType ?? AnnotationPhaseType.Annotation,
-        annotatorID: user?.id ?? '',
+        annotatorID: user.id,
         analysisID: analysisID ?? '',
     }), [ params, campaignID, phaseType, spectrogramID, user, analysisID ])
 }

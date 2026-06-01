@@ -1,14 +1,14 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { type AllCampaignFilters, useCurrentUser } from '@/api';
+import { type AllCampaignFilters } from '@/api';
 import { IonButton, IonIcon } from '@ionic/react';
 import { refreshOutline } from 'ionicons/icons';
 import { Route } from '@/routes/_authenticated/annotation-campaign';
-import { useNavigate } from '@tanstack/react-router';
+import { useLoaderData, useNavigate } from '@tanstack/react-router';
 
 export const AnnotationCampaignResetFiltersButton: React.FC = () => {
   const searchParams = Route.useSearch();
   const navigate = useNavigate();
-  const { user } = useCurrentUser();
+  const { user } = useLoaderData({ from: '/_authenticated' })
 
   const canReset = useMemo(() => {
     return !(!searchParams.search && searchParams.filter_isArchived == false && !searchParams.filter_phase && !!searchParams.filter_annotatorID && !searchParams.filter_ownerID)
@@ -20,7 +20,7 @@ export const AnnotationCampaignResetFiltersButton: React.FC = () => {
         search: null,
         filter_isArchived: false,
         filter_phase: null,
-        filter_annotatorID: user?.id,
+        filter_annotatorID: user.id,
         filter_ownerID: null,
         filter_datasetID: null,
       } as AllCampaignFilters,

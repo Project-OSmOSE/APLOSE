@@ -1,27 +1,22 @@
 import React, { useMemo } from 'react';
-import { createLazyFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 import { IonSpinner } from '@ionic/react';
 
-import { FadedText, GraphQLErrorText } from '@/components/ui';
+import { FadedText, WarningText } from '@/components/ui';
 import { FormBloc } from '@/components/form';
-
-import { useCurrentUser } from '@/api';
 
 import { UpdateEmail, UpdatePassword } from '@/features/User';
 
 import styles from './account.module.scss';
 
 const Account: React.FC = () => {
-    const { user, isLoading, error } = useCurrentUser();
+    const { user } = useLoaderData({ from: '/_authenticated' })
 
     return useMemo(() =>
             <div className={ styles.page }>
                 <h2>Account</h2>
 
-                { isLoading && <IonSpinner/> }
-                { error && <GraphQLErrorText error={ error }/> }
-
-                { user && <div className={ styles.content }>
+                <div className={ styles.content }>
                     <FormBloc>
                         <div>
                             <FadedText>Username</FadedText>
@@ -32,11 +27,13 @@ const Account: React.FC = () => {
                     <UpdateEmail/>
 
                     <UpdatePassword/>
-                </div> }
+                </div>
             </div>,
-        [ user, isLoading, error ])
+        [ user ])
 }
 
-export const Route = createLazyFileRoute('/_authenticated/account')({
+export const Route = createFileRoute('/_authenticated/account')({
     component: Account,
+    pendingComponent: IonSpinner,
+    errorComponent: WarningText,
 })

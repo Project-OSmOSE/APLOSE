@@ -5,72 +5,74 @@ import styles from './styles.module.scss';
 import { useToast } from '@/components/ui';
 import { getErrorMessage } from '@/service/function';
 
-import { useCurrentUser, useUpdateCurrentUserEmail } from '@/api';
+import { useUpdateCurrentUserEmail } from '@/api';
+import { useQuery } from '@tanstack/react-query';
+import { currentQuery } from './api'
 
 export const UpdateEmail: React.FC = () => {
-  const { user } = useCurrentUser();
-  const {
-    updateEmail,
-    isLoading: isSubmitting,
-    error: patchError,
-    formErrors,
-    isSuccess: isPatchSuccessful,
-  } = useUpdateCurrentUserEmail();
+    const { data: user } = useQuery(currentQuery)
+    const {
+        updateEmail,
+        isLoading: isSubmitting,
+        error: patchError,
+        formErrors,
+        isSuccess: isPatchSuccessful,
+    } = useUpdateCurrentUserEmail();
 
-  const toast = useToast();
+    const toast = useToast();
 
-  const [ email, setEmail ] = useState<string>(user?.email ?? '');
-  const [ errors, setErrors ] = useState<{ email?: string[] }>({});
+    const [ email, setEmail ] = useState<string>(user?.email ?? '');
+    const [ errors, setErrors ] = useState<{ email?: string[] }>({});
 
-  useEffect(() => {
-    setEmail(user?.email ?? '')
-  }, [ user ]);
+    useEffect(() => {
+        setEmail(user?.email ?? '')
+    }, [ user ]);
 
-  useEffect(() => {
-    if (patchError) {
-      const error = getErrorMessage(patchError);
-      if (!error) return;
-      try {
-        toast.raiseError({ error: patchError })
-        setErrors(JSON.parse(error))
-      } catch { /* empty */
-      }
+    useEffect(() => {
+        if (patchError) {
+            const error = getErrorMessage(patchError);
+            if (!error) return;
+            try {
+                toast.raiseError({ error: patchError })
+                setErrors(JSON.parse(error))
+            } catch { /* empty */
+            }
+        }
+    }, [ patchError ]);
+
+    useEffect(() => {
+        if (formErrors) {
+            setErrors({
+                email: formErrors.find(e => e.field === 'email')?.messages,
+            })
+        }
+    }, [ formErrors ]);
+
+    useEffect(() => {
+        if (isPatchSuccessful) {
+            toast.present('You email have been changed', 'success')
+        }
+    }, [ isPatchSuccessful ]);
+
+    function submit() {
+        setErrors({})
+        updateEmail({ email })
     }
-  }, [ patchError ]);
 
-  useEffect(() => {
-    if (formErrors) {
-      setErrors({
-        email: formErrors.find(e => e.field === 'email')?.messages,
-      })
-    }
-  }, [ formErrors ]);
+    return <FormBloc label="Update email">
+        <Input value={ email }
+               onChange={ e => setEmail(e.target.value) }
+               error={ errors?.email?.join(' ') }
+               placeholder="email"
+               label="Email"
+               type="email"
+               autoComplete="email"/>
 
-  useEffect(() => {
-    if (isPatchSuccessful) {
-      toast.present('You email have been changed', 'success')
-    }
-  }, [ isPatchSuccessful ]);
-
-  function submit() {
-    setErrors({})
-    updateEmail({ email })
-  }
-
-  return <FormBloc label="Update email">
-    <Input value={ email }
-           onChange={ e => setEmail(e.target.value) }
-           error={ errors?.email?.join(' ') }
-           placeholder="email"
-           label="Email"
-           type="email"
-           autoComplete="email"/>
-
-    <IonButton className={ styles.submit }
-               disabled={ !email || isSubmitting }
-               onClick={ submit }>
-      Update
-      { isSubmitting && <IonSpinner slot="end"/> }
-    </IonButton>
-  </FormBloc>
+        <IonButton className={ styles.submit }
+                   disabled={ !email || isSubmitting }
+                   onClick={ submit }>
+            Update
+            { isSubmitting && <IonSpinner slot="end"/> }
+        </IonButton>
+    </FormBloc>
 }

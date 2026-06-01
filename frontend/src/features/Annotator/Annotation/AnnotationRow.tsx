@@ -10,7 +10,6 @@ import {
     useAnnotationTask,
     useCurrentCampaign,
     useCurrentPhase,
-    useCurrentUser,
 } from '@/api';
 import {
     useGetAnnotations,
@@ -32,7 +31,7 @@ import { useKeyDownEvent } from '@/features/UX';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 import { UpdateLabelModal } from '@/features/Annotator/Label/UpdateLabelModal';
-import { useParams } from '@tanstack/react-router';
+import { useLoaderData, useParams } from '@tanstack/react-router';
 
 type Spectro = NonNullable<GetAnnotationTaskQuery['annotationSpectrogramById']>
 type Task = NonNullable<Spectro['task']>
@@ -49,7 +48,7 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
     const removeAnnotation = useRemoveAnnotation()
     const { annotations } = useAnnotationTask()
     const focusTime = useFocusCanvasOnTime()
-    const { user } = useCurrentUser()
+    const { user } = useLoaderData({ from: '/_authenticated' })
 
     const updateAnnotation = useUpdateAnnotation()
     const updateLabel = useCallback((label: string) => {
@@ -87,7 +86,7 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
     const onValidate = useCallback((event: MouseEvent) => {
         event.stopPropagation()
         validate(annotation);
-    }, [ annotation ]);
+    }, [ annotation, validate ]);
 
     const onInvalidate = useCallback((event: MouseEvent) => {
         event.stopPropagation()
@@ -126,9 +125,9 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
                     <p>{ completeInfo?.detectorConfiguration.detector.name }</p>
                 </Td>
                 :
-                <Td className={ completeInfo?.annotator?.id === user?.id ? 'disabled' : '' }>
+                <Td className={ completeInfo?.annotator?.id === user.id ? 'disabled' : '' }>
                     <RiUser3Fill/>
-                    <p>{ completeInfo?.annotator?.displayName } { completeInfo?.annotator?.id === user?.id ? '(self)' : '' }</p>
+                    <p>{ completeInfo?.annotator?.displayName } { completeInfo?.annotator?.id === user.id ? '(self)' : '' }</p>
                 </Td>
         ) }
 
@@ -140,7 +139,7 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
         {/* Validation */ }
         { phaseType === AnnotationPhaseType.Verification &&
             <Td>
-                { completeInfo?.annotator?.id !== user?.id ? <Fragment>
+                { completeInfo?.annotator?.id !== user.id ? <Fragment>
                     <IonButton className="validate"
                                data-testid="validate"
                                color={ annotation.validation?.isValid ? 'success' : 'medium' }

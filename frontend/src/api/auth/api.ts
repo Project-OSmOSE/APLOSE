@@ -1,4 +1,6 @@
 import { restAPI } from '../baseRestApi';
+import { invalidateEntity, queryKeys } from '@/api/queryKeys';
+import { queryClient } from '@/api/queryClient';
 
 export type Token = string | undefined;
 
@@ -14,15 +16,15 @@ export const AuthRestAPI = restAPI.injectEndpoints({
             }),
             transformResponse: (response: LoginResponse) => {
                 document.cookie = `token=${ response.access };max-age=28000;path=/`;
+                invalidateEntity(queryKeys.user.current)
                 return response;
             },
         }),
-        logout: builder.mutation<undefined, void>({
+        logout: builder.mutation<null, void>({
             queryFn: async () => {
                 document.cookie = 'token=;max-age=0;path=/';
-                return {
-                    data: undefined,
-                }
+                queryClient.invalidateQueries()
+                return { data: null }
             },
         }),
         terms: builder.query<string, void>({

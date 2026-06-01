@@ -1,11 +1,11 @@
 import React, { Fragment } from 'react';
 import { IonNote } from '@ionic/react';
-import { useCurrentUser, useDataset } from '@/api';
+import { useDataset } from '@/api';
 
 import { dateToString } from '@/service/function';
 import { FadedText, Link } from '@/components/ui';
 import styles from './styles.module.scss';
-import { useParams } from '@tanstack/react-router';
+import { useLoaderData, useParams } from '@tanstack/react-router';
 
 export const DatasetInfoCreation: React.FC = () => {
     const { datasetID: id } = useParams({ strict: false });
@@ -22,9 +22,9 @@ export const DatasetName: React.FC<{
     labeled?: true
     link?: true
 }> = ({ name, id, labeled, link }) => {
-    const { user } = useCurrentUser()
+    const { user } = useLoaderData({ from: '/_authenticated' })
 
-    if (link && id && user?.isAdmin) return <Fragment>
+    if (link && id && user.isAdmin) return <Fragment>
         { labeled && <FadedText>Dataset</FadedText> }
         <Link to="/dataset/$datasetID" params={ { datasetID: id } } color="primary">{ name }</Link>
     </Fragment>

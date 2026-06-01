@@ -7,16 +7,16 @@ import { defaultKeymap, indentWithTab } from '@codemirror/commands';
 import { Prec } from '@codemirror/state';
 
 import { Button, Kbd, Pagination, Table, Tbody, Td, Th, Thead, Tr, WarningText } from '@/components/ui';
-
-import { useCurrentUser } from '@/api';
 import { SQLRestAPI } from '@/api/sql';
 
 import { NBSP } from '@/service/type';
 
 import styles from './sql.module.scss';
+import { User } from '@/features';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 const SqlQuery: React.FC = () => {
-    const { user } = useCurrentUser();
+    const { data: user } = useSuspenseQuery(User.API.currentQuery)
     const { data: schema } = SQLRestAPI.endpoints.sqlSchema.useQuery();
     const [ run, { data: results, error } ] = SQLRestAPI.endpoints.postSQL.useMutation();
 

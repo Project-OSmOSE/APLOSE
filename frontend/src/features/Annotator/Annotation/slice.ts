@@ -7,11 +7,10 @@ import {
   AnnotationValidationSerializerInput,
   getAnnotationTaskFulfilled,
   GetAnnotationTaskQuery,
-  getCurrentUserFulfilled,
-  type GetCurrentUserQuery,
 } from '@/api';
 import type { GetAnnotationTaskQueryVariables } from '@/api/annotation-task/annotation-task.generated';
 import { convertGqlToAnnotations } from '@/features/Annotator/Annotation/conversions';
+import { User } from '@/features';
 
 
 export type Comment = Omit<AnnotationCommentSerializerInput, 'id'> & { id: number }
@@ -36,7 +35,6 @@ type AnnotationState = {
   tempAnnotation?: TempAnnotation;
 
   _campaignID?: string
-  _userID?: string
 }
 
 const initialState: AnnotationState = {
@@ -45,7 +43,6 @@ const initialState: AnnotationState = {
   tempAnnotation: undefined,
 
   _campaignID: undefined,
-  _userID: undefined,
 }
 
 export const AnnotatorAnnotationSlice = createSlice({
@@ -82,11 +79,6 @@ export const AnnotatorAnnotationSlice = createSlice({
     },
   },
   extraReducers: builder => {
-    builder.addMatcher(getCurrentUserFulfilled, (state: AnnotationState, action: {
-      payload: GetCurrentUserQuery
-    }) => {
-      state._userID = action.payload.currentUser?.id
-    })
     builder.addMatcher(getAnnotationTaskFulfilled, (state: AnnotationState, action: {
       payload: GetAnnotationTaskQuery,
       meta: { arg: { originalArgs: GetAnnotationTaskQueryVariables } }
@@ -99,7 +91,8 @@ export const AnnotatorAnnotationSlice = createSlice({
           ...action.payload.annotationSpectrogramById?.task?.userAnnotations?.results ?? [],
         ...action.payload.annotationSpectrogramById?.task?.annotationsToCheck?.results ?? [],
       ].filter(a => a !== null).map(a => a!) ?? []
-      state.allAnnotations = convertGqlToAnnotations(annotations, action.meta.arg.originalArgs.phaseType, state._userID)
+      const user = User.API.currentQueryCache()?.state.data
+      state.allAnnotations = convertGqlToAnnotations(annotations, action.meta.arg.originalArgs.phaseType, user?.id)
       const defaultAnnotation = [ ...state.allAnnotations ].reverse().pop();
       state.id = defaultAnnotation?.id
     })
