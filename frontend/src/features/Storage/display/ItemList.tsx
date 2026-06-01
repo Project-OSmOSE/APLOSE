@@ -5,7 +5,7 @@ import styles from './styles.module.scss';
 import { Item } from './Item';
 import { useQuery } from '@tanstack/react-query';
 import { browseQuery, type StorageItemFragment } from '../api';
-import { useStorageBrowse } from '@/api';
+import { useStorageBrowse } from '../slice';
 
 export const ItemList: React.FC<{
     parentNode?: StorageItemFragment,

@@ -1,7 +1,12 @@
-import React, { Fragment, type MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { ImportStatusEnum, useImportDatasetFromStorage, useStorageSearch } from '@/api';
+import React, { Fragment, type MouseEvent, useCallback, useMemo, useState } from 'react';
+import { ImportStatusEnum, } from '@/api';
 import styles from './styles.module.scss';
-import { ItemList, type StorageAnalysisFragment } from '@/features/Storage';
+import {
+    type ImportDatasetFromStorageMutation,
+    ItemList,
+    type StorageAnalysisFragment,
+    type StorageItemFragment,
+} from '@/features/Storage';
 import { IonButton, IonNote, IonSpinner } from '@ionic/react';
 import {
     AltArrowDown,
@@ -16,7 +21,10 @@ import {
 } from '@solar-icons/react';
 import { CopyErrorStackButton, TooltipOverlay, useToast } from '@/components/ui';
 import { DatasetName } from '@/features/Dataset';
-import type { StorageItemFragment } from '../api'
+import { importMutation } from '../api'
+import { useMutation } from '@tanstack/react-query';
+import { useAppDispatch } from '@/features/App';
+import { Storage } from '@/features';
 
 type Props = {
     parentItem?: StorageItemFragment,
@@ -35,7 +43,7 @@ export const Item: React.FC<Props> = ({
                                           forceOpen,
                                           disableImport,
                                       }) => {
-    const item = useStorageSearch(path)
+    const item = Storage.useStorageSearch(path)
 
     // Open
     const [ _isOpen, _setIsOpen ] = useState<boolean>(forceOpen || false);
@@ -51,10 +59,23 @@ export const Item: React.FC<Props> = ({
     }, [ _setIsOpen, canToggle ])
 
     // Import
-    const { importDataset, isLoading } = useImportDatasetFromStorage()
     const toast = useToast()
+    const dispatch = useAppDispatch()
+    const onError = useCallback((error: Error) => {
+        toast.raiseError({ error })
+    }, [ toast ])
+    const onSuccess = useCallback((data: ImportDatasetFromStorageMutation) => {
+        const path = data.importDataset?.dataset.path
+        if (!path) return
+        dispatch(Storage.Slice.actions.invalidatePath(path))
+    }, [ onUpdated, dispatch ])
+    const { mutate, isPending } = useMutation({
+        ...importMutation,
+        onError,
+        onSuccess,
+    })
     const canImport = useMemo(() => {
-        if (!item || item.error || isLoading || disableImport) return false
+        if (!item || item.error || isPending || disableImport) return false
         switch (item.__typename) {
             case 'FolderNode':
                 return false
@@ -62,19 +83,18 @@ export const Item: React.FC<Props> = ({
             case 'AnalysisStorageNode':
                 return parentItem && item.importStatus === ImportStatusEnum.Partial || item.importStatus === ImportStatusEnum.Available
         }
-    }, [ item, isLoading, disableImport ])
+    }, [ item, isPending, disableImport ])
     const download = useCallback((event: MouseEvent) => {
         event.stopPropagation()
         if (!canImport || !item) return;
-        let importCall;
         switch (item.__typename) {
             case 'DatasetStorageNode':
-                importCall = importDataset({
+                mutate({
                     datasetPath: item.path,
                 })
                 break;
             case 'AnalysisStorageNode':
-                importCall = importDataset({
+                mutate({
                     analysisPath: item.path,
                     datasetPath: parentItem!.path,
                 })
@@ -82,13 +102,7 @@ export const Item: React.FC<Props> = ({
             default:
                 return;
         }
-        importCall.unwrap().catch(error => toast.raiseError({ gqlError: error })).finally(onUpdated)
-    }, [ canImport, item, importDataset, onUpdated, parentItem, toast ])
-    useEffect(() => {
-        return () => {
-            toast.dismiss();
-        }
-    }, []);
+    }, [ canImport, item, mutate, parentItem ])
 
     return useMemo(() => {
         let rowIcon;
@@ -132,7 +146,7 @@ export const Item: React.FC<Props> = ({
                     : <p>{ item.name }</p> }
 
                 {/* Import Icon */ }
-                { isLoading ? <IonSpinner/> : importIcon }
+                { isPending ? <IonSpinner/> : importIcon }
 
                 {/* Use Icon */ }
                 { usages > 0 && <TooltipOverlay tooltipContent={ `Currently used in ${ usages } campaigns.` }>
@@ -156,5 +170,5 @@ export const Item: React.FC<Props> = ({
 
             { isOpen && <ItemList search={ search } parentNode={ item } onUpdated={ onUpdated }/> }
         </div>
-    }, [ item, isOpen, isLoading, search, onUpdated, toggleOpen, canToggle, canImport, download ])
+    }, [ item, isOpen, isPending, search, onUpdated, toggleOpen, canToggle, canImport, download ])
 }

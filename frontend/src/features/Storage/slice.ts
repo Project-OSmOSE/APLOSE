@@ -1,6 +1,4 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
-import { StorageGqlAPI } from './api';
-import type { ImportDatasetFromStorageMutation } from './storage.generated';
 import { useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { AnnotationCampaignGqlAPI } from '@/api/annotation-campaign/api';
@@ -9,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Storage } from '@/features'
 import type { StorageItemFragment } from '@/features/Storage';
 
-export const StorageSlice = createSlice({
+export const Slice = createSlice({
     name: 'storage',
     initialState: {
         record: {} as Record<string, StorageItemFragment>,
@@ -27,16 +25,12 @@ export const StorageSlice = createSlice({
         validatePath: (state, action: { payload: string }) => {
             state.invalidatedListPaths = state.invalidatedListPaths.filter(p => p !== action.payload);
         },
+        invalidatePath: (state, action: { payload: string }) => {
+            state.invalidatedPath = [...state.invalidatedPath, action.payload];
+            state.invalidatedListPaths = [...state.invalidatedListPaths, action.payload];
+        },
     },
     extraReducers: builder => {
-
-        builder.addMatcher(StorageGqlAPI.endpoints.importDatasetFromStorage.matchFulfilled,
-            (state, action: { payload: ImportDatasetFromStorageMutation }) => {
-                const path = action.payload.importDataset?.dataset.path
-                if (!path) return
-                state.invalidatedPath = [ ...state.invalidatedPath, path ]
-                state.invalidatedListPaths = [ ...state.invalidatedListPaths, path ]
-            })
 
         builder.addMatcher(AnnotationCampaignGqlAPI.endpoints.createCampaign.matchFulfilled,
             (state, action: { payload: CreateCampaignMutation }) => {
@@ -55,10 +49,10 @@ export const StorageSlice = createSlice({
     },
 })
 
-const selectRecord = createSelector(state => state, StorageSlice.selectors.selectRecord)
-const selectParents = createSelector(state => state, StorageSlice.selectors.selectParents)
-const selectInvalidatedPath = createSelector(state => state, StorageSlice.selectors.selectInvalidatedPath)
-const selectInvalidatedListPath = createSelector(state => state, StorageSlice.selectors.selectInvalidatedListPath)
+const selectRecord = createSelector(state => state, Slice.selectors.selectRecord)
+const selectParents = createSelector(state => state, Slice.selectors.selectParents)
+const selectInvalidatedPath = createSelector(state => state, Slice.selectors.selectInvalidatedPath)
+const selectInvalidatedListPath = createSelector(state => state, Slice.selectors.selectInvalidatedListPath)
 
 export const useStorageSearch = (path: string): StorageItemFragment | undefined => {
     const record = useAppSelector(selectRecord)
@@ -81,8 +75,8 @@ export const useStorageSearch = (path: string): StorageItemFragment | undefined 
 
     useEffect(() => {
         if (!item) return
-        dispatch(StorageSlice.actions.setRecord(item))
-        dispatch(StorageSlice.actions.validatePath(item?.path))
+        dispatch(Slice.actions.setRecord(item))
+        dispatch(Slice.actions.validatePath(item?.path))
     }, [ item ]);
 
     return useMemo(() => record[path], [ record, path ]);
@@ -117,13 +111,13 @@ export const useStorageBrowse = (path: string = '') => {
         if (!data) return
         for (const item of data) {
             if (!item) continue
-            dispatch(StorageSlice.actions.setRecord(item))
+            dispatch(Slice.actions.setRecord(item))
         }
-        dispatch(StorageSlice.actions.setParents({
+        dispatch(Slice.actions.setParents({
             parent: path,
             children: data.map(d => d.path),
         }))
-        dispatch(StorageSlice.actions.validatePath(path))
+        dispatch(Slice.actions.validatePath(path))
     }, [ data ]);
 
     return children

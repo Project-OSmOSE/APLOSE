@@ -54,3 +54,11 @@ query browseStorage($path: String!) {
 query searchStorage($path: String!) {
     search(path: $path) { ...StorageItem }
 }
+
+mutation importDatasetFromStorage($datasetPath: String!, $analysisPath: String) {
+    importDataset(datasetPath: $datasetPath, analysisPath: $analysisPath) {
+        dataset {
+            path
+        }
+    }
+}

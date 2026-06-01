@@ -15,8 +15,8 @@ export const queryKeys = {
         current: [ 'user', 'current' ] as const,
     },
     storage: {
-        browse: (variables: BrowseStorageQueryVariables) => ['storage', 'browse', variables] as const,
-        search: (variables: SearchStorageQueryVariables) => ['storage', 'search', variables] as const,
+        browse: (variables: BrowseStorageQueryVariables) => ['storage', 'browse', variables.path.split('/')] as const,
+        search: (variables: SearchStorageQueryVariables) => ['storage', 'search', variables.path.split('/')] as const,
     }
 };
 
