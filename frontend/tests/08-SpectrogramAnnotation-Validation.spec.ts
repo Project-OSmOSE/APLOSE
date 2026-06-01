@@ -7,7 +7,6 @@ import {
     LABELS,
     otherPhase,
     phase as phaseObj,
-    spectrogramAnalysis,
     taskComment,
     TASKS,
     USERS,
@@ -49,7 +48,6 @@ const STEP = {
                     label: LABELS.classic.name,
                     annotator: USERS.creator.id,
                     confidence: CONFIDENCES.sure.label,
-                    analysis: spectrogramAnalysis.id,
                     validations: [
                         {
                             isValid: validations.weak,
@@ -66,7 +64,6 @@ const STEP = {
                     label: LABELS.classic.name,
                     annotator: USERS.creator.id,
                     confidence: CONFIDENCES.notSure.label,
-                    analysis: spectrogramAnalysis.id,
                     validations: [
                         {
                             isValid: validations.box,
@@ -214,7 +211,6 @@ const TEST = {
                 label: LABELS.featured.name,
                 annotator: USERS.annotator.id,
                 confidence: CONFIDENCES.sure.label,
-                analysis: spectrogramAnalysis.id,
             }, {
                 annotationPhase: phaseObj.id,
                 isUpdateOf: boxAnnotation.id,
@@ -226,7 +222,6 @@ const TEST = {
                 label: LABELS.featured.name,
                 annotator: USERS.annotator.id,
                 confidence: CONFIDENCES.notSure.label,
-                analysis: spectrogramAnalysis.id,
             })
         }),
 
@@ -261,7 +256,6 @@ const TEST = {
                 label: LABELS.featured.name,
                 annotator: USERS.annotator.id,
                 confidence: CONFIDENCES.sure.label,
-                analysis: spectrogramAnalysis.id,
             })
         }),
 

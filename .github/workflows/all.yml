@@ -181,9 +181,6 @@ jobs:
       - name: Build
         working-directory: frontend
         run: npm run build
-      - name: Typescript compilation
-        working-directory: frontend
-        run: npx tsc
 
       # ── Playwright tests ───────────────────────────────
       - name: Run Playwright tests

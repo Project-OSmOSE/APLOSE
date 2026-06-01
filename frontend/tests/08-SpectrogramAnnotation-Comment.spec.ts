@@ -5,7 +5,6 @@ import {
     CONFIDENCES,
     LABELS,
     phase as phaseObj,
-    spectrogramAnalysis,
     taskComment,
     TASKS,
     USERS,
@@ -76,7 +75,6 @@ const TEST = {
                     annotationPhase: phaseObj.id,
                     label: LABELS.classic.name,
                     confidence: CONFIDENCES.sure.label,
-                    analysis: spectrogramAnalysis.id,
                     annotator: USERS[as].id,
                     comments: [ {
                         comment: weakAnnotationComment.comment,
@@ -129,7 +127,6 @@ const TEST = {
                         id: +weakAnnotation.id,
                         label: LABELS.classic.name,
                         confidence: CONFIDENCES.sure.label,
-                        analysis: spectrogramAnalysis.id,
                         annotator: USERS.annotator.id,
                         comments: [],
                     } as AnnotationInput,
@@ -142,7 +139,6 @@ const TEST = {
                         endFrequency: boxAnnotation.endFrequency,
                         label: LABELS.classic.name,
                         confidence: CONFIDENCES.notSure.label,
-                        analysis: spectrogramAnalysis.id,
                         annotator: USERS.annotator.id,
                         comments: [],
                     } as AnnotationInput ]);

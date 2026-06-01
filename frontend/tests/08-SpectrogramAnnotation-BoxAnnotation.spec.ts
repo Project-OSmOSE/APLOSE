@@ -4,7 +4,6 @@ import {
     CONFIDENCES,
     LABELS,
     phase as phaseObj,
-    spectrogramAnalysis,
     taskComment,
     TASKS,
     USERS,
@@ -65,7 +64,6 @@ const TEST = {
                     annotationPhase: phaseObj.id,
                     label: LABELS.classic.name,
                     confidence: CONFIDENCES.sure.label,
-                    analysis: spectrogramAnalysis.id,
                     annotator: USERS[as].id,
                     comments: [],
                 } as AnnotationInput, {
@@ -73,7 +71,6 @@ const TEST = {
                     annotationPhase: phaseObj.id,
                     label: LABELS.classic.name,
                     confidence: CONFIDENCES.sure.label,
-                    analysis: spectrogramAnalysis.id,
                     annotator: USERS[as].id,
                     comments: [],
                 } as AnnotationInput ]);
@@ -116,7 +113,6 @@ const TEST = {
                         label: LABELS.classic.name,
                         annotator: USERS.annotator.id,
                         confidence: CONFIDENCES.sure.label,
-                        analysis: spectrogramAnalysis.id,
                     } as AnnotationInput ]);
                 expect(variables.taskComments).toEqual([ {
                     comment: taskComment.comment,
