@@ -40,7 +40,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "graphql:generate": "npx graphql-codegen --config codegen.ts",
-    "graphql:generat:dev": "npx graphql-codegen --config codegen.ts -w"
+    "graphql:generate:dev": "npx graphql-codegen --config codegen.ts -w"
   },
   "engines": {
     "node": "16.x"

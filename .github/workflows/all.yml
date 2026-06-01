@@ -51,6 +51,7 @@ jobs:
               - 'website/package.json'
               - 'website/src/**'
 
+
   # ── Generate graphql.schema ────────────────────────────────────────────────
   generate-graphql-schema:
     runs-on: ubuntu-latest
@@ -143,6 +144,7 @@ jobs:
         run: |
           poetry run ./manage.py test
 
+
   # ── APLOSE Frontend ────────────────────────────────────────────────────────
   frontend:
     runs-on: ubuntu-latest
@@ -176,9 +178,12 @@ jobs:
         run: npm run graphql:generate
 
       # ── Check compilation ──────────────────────────────
+      - name: Build
+        working-directory: frontend
+        run: npm run build
       - name: Typescript compilation
         working-directory: frontend
-        run: npx tsc && npm run build
+        run: npx tsc
 
       # ── Playwright tests ───────────────────────────────
       - name: Run Playwright tests
@@ -227,4 +232,7 @@ jobs:
       # ── Check compilation ──────────────────────────────
       - name: Typescript compilation
         working-directory: website
-        run: npx tsc && npm run build
+        run: npx tsc
+#      - name: Build
+#        working-directory: website
+#        run: npm run build
