@@ -16,7 +16,10 @@ export function getDefaultAnalysisID({ data, id }: { data: GetCampaignQuery, id?
   const allAnalysis = data?.annotationCampaignById?.analysis.edges.filter(e => !!e?.node).map(e => e!.node!)
   // Select default analysis when none existing is selected
   if (!allAnalysis || allAnalysis.length === 0 || allAnalysis.find(a => a.id === id)) return id;
-  const baseScaleAnalysis = allAnalysis.find(a => !a!.legacyConfiguration?.scaleName);
+  const baseScaleAnalysis = allAnalysis.find(a =>
+    !a.frequencyScaleParts || a.frequencyScaleParts.length == 0 ||
+      (a.frequencyScaleParts.length == 1 && a.frequencyScaleParts[0]!.minValue == 0 && a.frequencyScaleParts[0]!.maxValue == a.fft.samplingFrequency / 2)
+  );
   const minID = Math.min(...allAnalysis.map(a => +a!.id))?.toString();
   if (minID) return baseScaleAnalysis?.id ?? minID
   return id

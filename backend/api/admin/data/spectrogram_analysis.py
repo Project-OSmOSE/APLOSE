@@ -62,12 +62,18 @@ class SpectrogramAnalysisAdmin(ExtendedModelAdmin):
         "start",
         "end",
         "legacy",
+        "list_frequency_scale_parts",
     )
     search_fields = ["id", "name", "dataset__name"]
 
     def dynamic(self, obj: SpectrogramAnalysis) -> str:
         """Get dynamic min and max in one field"""
         return f"{obj.dynamic_min} - {obj.dynamic_max}"
+
+    @admin.display(description="Frequency scale parts")
+    def list_frequency_scale_parts(self, obj: SpectrogramAnalysis):
+        """show_labels"""
+        return self.list_queryset(obj.frequency_scale_parts.all())
 
     actions = [
         "store_paths",

@@ -5,6 +5,7 @@ from django_extension.schema.types import ExtendedNode
 from backend.api.models import SpectrogramAnalysis
 from backend.api.schema.connections import SpectrogramConnection
 from backend.api.schema.filter_sets import SpectrogramAnalysisFilterSet
+from .linear_scale import LinearScaleNode
 from .colormap import ColormapNode
 from .fft import FFTNode
 from .legacy_spectrogram_configuration import LegacySpectrogramConfigurationNode
@@ -28,3 +29,9 @@ class SpectrogramAnalysisNode(ExtendedNode):
     @graphene_django_optimizer.resolver_hints()
     def resolve_spectrograms(self: SpectrogramAnalysis, info, **kwargs):
         return self.spectrograms.distinct()
+
+    frequency_scale_parts = graphene.List(LinearScaleNode)
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_frequency_scale_parts(self: SpectrogramAnalysis, info, **kwargs):
+        return self.frequency_scale_parts.distinct()

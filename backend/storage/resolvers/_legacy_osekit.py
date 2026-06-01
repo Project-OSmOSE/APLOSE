@@ -15,7 +15,6 @@ from backend.api.models import (
     Colormap,
     LegacySpectrogramConfiguration,
     LinearScale,
-    MultiLinearScale,
     Spectrogram,
     SpectrogramAnalysisRelation,
 )
@@ -30,6 +29,7 @@ from backend.storage.utils import (
     make_path_relative,
 )
 from ._storage import StorageResolver
+from ...api.models.data.linear_scale import get_frequency_scale_parts
 
 
 class LegacyCSVDataset(TypedDict):
@@ -256,6 +256,15 @@ class LegacyOSEkitResolver(StorageResolver):
             dynamic_max=float(metadata["dynamic_max"]),
         )
 
+    def get_frequency_scale_parts_for_analysis(
+        self, analysis: SpectrogramAnalysis
+    ) -> list[LinearScale]:
+        metadata = self._get_spectro_metadata(analysis.dataset.path, analysis.path)
+        return get_frequency_scale_parts(
+            name=metadata.get("custom_frequency_scale", None),
+            sample_rate=analysis.fft.sampling_frequency,
+        )
+
     def get_all_spectrograms_for_analysis(
         self, analysis: SpectrogramAnalysis
     ) -> list[Spectrogram]:
@@ -287,56 +296,6 @@ class LegacyOSEkitResolver(StorageResolver):
             sampling_frequency=analysis.fft.sampling_frequency,
         )
 
-        linear_scale: LinearScale | None = None
-        multilinear_scale: MultiLinearScale | None = None
-        if "custom_frequency_scale" in metadata:
-            scale_name = metadata["custom_frequency_scale"]
-            if scale_name.lower() == "porp_delph":
-                (
-                    multilinear_scale,
-                    is_created,
-                ) = MultiLinearScale.objects.get_or_create(name="porp_delph")
-                if is_created:
-                    multilinear_scale.inner_scales.add(
-                        LinearScale.objects.get_or_create(
-                            ratio=0.5, min_value=0, max_value=30_000
-                        )[0]
-                    )
-                    multilinear_scale.inner_scales.add(
-                        LinearScale.objects.get_or_create(
-                            ratio=0.7, min_value=30_000, max_value=80_000
-                        )[0]
-                    )
-                    multilinear_scale.inner_scales.add(
-                        LinearScale.objects.get_or_create(
-                            ratio=1,
-                            min_value=80_000,
-                            max_value=analysis.fft.sampling_frequency / 2,
-                        )[0]
-                    )
-            elif scale_name.lower() == "dual_lf_hf":
-                (
-                    multilinear_scale,
-                    is_created,
-                ) = MultiLinearScale.objects.get_or_create(name="dual_lf_hf")
-                if is_created:
-                    multilinear_scale.inner_scales.add(
-                        LinearScale.objects.get_or_create(
-                            ratio=0.5, min_value=0, max_value=22_000
-                        )[0]
-                    )
-                    multilinear_scale.inner_scales.add(
-                        LinearScale.objects.get_or_create(
-                            ratio=1,
-                            min_value=100_000,
-                            max_value=analysis.fft.sampling_frequency / 2,
-                        )[0]
-                    )
-            elif scale_name.lower() == "audible":
-                linear_scale = LinearScale(
-                    name="audible", min_value=0, max_value=22_000
-                )
-
         LegacySpectrogramConfiguration.objects.create(
             spectrogram_analysis=analysis,
             folder=PureWindowsPath(analysis.path).parts[-1],
@@ -362,8 +321,6 @@ class LegacyOSEkitResolver(StorageResolver):
             temporal_resolution=metadata["temporal_resolution"]
             if "temporal_resolution" in metadata
             else None,
-            linear_frequency_scale=linear_scale,
-            multi_linear_frequency_scale=multilinear_scale,
             audio_files_subtypes=literal_eval(audio["sample_bits"]),
             channel_count=int(audio["channel_count"]),
         )

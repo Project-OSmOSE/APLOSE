@@ -12,6 +12,7 @@ from .__abstract_analysis import AbstractAnalysis
 from .colormap import Colormap
 from .dataset import Dataset
 from .fft import FFT
+from .linear_scale import LinearScale
 
 
 class SpectrogramAnalysis(AbstractAnalysis, models.Model):
@@ -55,6 +56,10 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
 
     dynamic_min = models.FloatField()
     dynamic_max = models.FloatField()
+
+    frequency_scale_parts = models.ManyToManyField(
+        LinearScale, related_name="spectrogram_analysis"
+    )
 
     @deprecated("Related to legacy OSEkit")  # Legacy
     def legacy_audio_metadatum_csv(self) -> str:

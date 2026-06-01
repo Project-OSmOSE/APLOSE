@@ -77,21 +77,13 @@ query ($id: ID!) {
                         overlap
                         samplingFrequency
                     }
+                    frequencyScaleParts {
+                        ratio
+                        minValue
+                        maxValue
+                    }
                     legacyConfiguration {
-                        scaleName
                         zoomLevel
-                        linearFrequencyScale {
-                            ratio
-                            minValue
-                            maxValue
-                        }
-                        multiLinearFrequencyScale {
-                            innerScales {
-                                ratio
-                                minValue
-                                maxValue
-                            }
-                        }
                     }
                     legacy
                 }

@@ -7,26 +7,34 @@ on:
 
 jobs:
   playwright-test:
-    timeout-minutes: 60
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
     steps:
+
       - uses: actions/checkout@v4
+
       # Setup frontend
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
       - name: Install dependencies
         working-directory: frontend
         run: npm ci
-      - name: Install Playwright Browsers
-        working-directory: frontend
-        run: npx playwright install --with-deps
+
       - name: Run Playwright tests
         working-directory: frontend
         env:
           CI: true
+          # Required when running as root inside the Docker container
+          HOME: /root
         run: npm run test:e2e
+
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:

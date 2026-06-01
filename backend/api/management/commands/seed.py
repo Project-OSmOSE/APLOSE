@@ -28,8 +28,9 @@ from backend.api.models import (
     Annotation,
 )
 from backend.api.models.annotation.annotation_campaign import AnnotationCampaignAnalysis
-from backend.api.models.data.scales import get_frequency_scales
-from backend.api.schema.enums import AnnotationType
+from backend.api.models.data.linear_scale import (
+    get_frequency_scale_parts,
+)
 from backend.aplose.models import AploseUser
 from backend.aplose.models.user import ExpertiseLevel, User
 from backend.osmosewebsite.management.commands.seed import Command as WebsiteCommand
@@ -170,7 +171,12 @@ class Command(management.BaseCommand):
 
     def __get_analysis(
         self, dataset: Dataset
-    ) -> ([SpectrogramAnalysis], [LegacySpectrogramConfiguration]):
+    ) -> tuple[
+        list[SpectrogramAnalysis],
+        list[LegacySpectrogramConfiguration],
+        list[SpectrogramAnalysis.frequency_scale_parts.through],
+    ]:
+        scales_rel = []
         analysis = [
             SpectrogramAnalysis(
                 # AbstractDataset
@@ -194,9 +200,15 @@ class Command(management.BaseCommand):
                 dynamic_max=0,
             )
         ]
-        linear_scale, multi_linear_scale = get_frequency_scales(
+
+        for scale in get_frequency_scale_parts(
             name=dataset.name, sample_rate=self.legacy_fft.sampling_frequency
-        )
+        ):
+            scales_rel.append(
+                SpectrogramAnalysis.frequency_scale_parts.through(
+                    spectrogramanalysis=analysis[0], linearscale=scale
+                )
+            )
         legacy_configurations = [
             LegacySpectrogramConfiguration(
                 spectrogram_analysis=analysis[0],
@@ -208,20 +220,15 @@ class Command(management.BaseCommand):
                 hp_filter_min_frequency=0,
                 window_type="Hamming",
                 frequency_resolution=0,
-                linear_frequency_scale=linear_scale,
-                multi_linear_frequency_scale=multi_linear_scale,
             )
         ]
 
         if dataset.name == "Test Dataset":
-            for scale in ["porp_delph", "dual_lf_hf", "audible"]:
-                linear_scale, multi_linear_scale = get_frequency_scales(
-                    name=scale, sample_rate=self.legacy_fft.sampling_frequency
-                )
+            for scale_name in ["porp_delph", "dual_lf_hf", "audible"]:
                 a = SpectrogramAnalysis(
                     # AbstractDataset
-                    name=f"4096_4096_90_{scale}",
-                    path=f"processed/spectrogram/4096_4096_90_{scale}",
+                    name=f"4096_4096_90_{scale_name}",
+                    path=f"processed/spectrogram/4096_4096_90_{scale_name}",
                     owner=self.admin,
                     legacy=True,
                     # AbstractAnalysis
@@ -239,11 +246,19 @@ class Command(management.BaseCommand):
                     dynamic_min=0,
                     dynamic_max=0,
                 )
+                for scale in get_frequency_scale_parts(
+                    name=scale_name, sample_rate=self.legacy_fft.sampling_frequency
+                ):
+                    scales_rel.append(
+                        SpectrogramAnalysis.frequency_scale_parts.through(
+                            spectrogramanalysis=analysis[0], linearscale=scale
+                        )
+                    )
                 analysis.append(a)
                 legacy_configurations.append(
                     LegacySpectrogramConfiguration(
                         spectrogram_analysis=a,
-                        folder=f"4096_4096_90_{scale}",
+                        folder=f"4096_4096_90_{scale_name}",
                         zoom_level=3,
                         spectrogram_normalization="density",
                         data_normalization="0",
@@ -251,15 +266,13 @@ class Command(management.BaseCommand):
                         hp_filter_min_frequency=0,
                         window_type="Hamming",
                         frequency_resolution=0,
-                        linear_frequency_scale=linear_scale,
-                        multi_linear_frequency_scale=multi_linear_scale,
                     )
                 )
-        return analysis, legacy_configurations
+        return analysis, legacy_configurations, scales_rel
 
     def __get_spectrograms(
-        self, analysis: [SpectrogramAnalysis]
-    ) -> ([Spectrogram], [Spectrogram.analysis.through]):
+        self, analysis: list[SpectrogramAnalysis]
+    ) -> tuple[list[Spectrogram], list[Spectrogram.analysis.through]]:
         spectrograms = []
         rels = []
         for k in range(1, self.files_nb):
@@ -290,6 +303,7 @@ class Command(management.BaseCommand):
         spectrograms = []
         spectrogram_rels = []
         analysis = []
+        analysis_scales_relations = []
         legacy_configurations = []
         for name in self.dataset_names:
 
@@ -304,8 +318,11 @@ class Command(management.BaseCommand):
             datasets.append(dataset)
 
             # Create analysis
-            dataset_analysis, dataset_legacy_conf = self.__get_analysis(dataset)
+            dataset_analysis, dataset_legacy_conf, scales_rel = self.__get_analysis(
+                dataset
+            )
             analysis += dataset_analysis
+            analysis_scales_relations += scales_rel
             legacy_configurations += dataset_legacy_conf
 
             # Create spectrograms
@@ -315,6 +332,9 @@ class Command(management.BaseCommand):
 
         Dataset.objects.bulk_create(datasets)
         SpectrogramAnalysis.objects.bulk_create(analysis)
+        SpectrogramAnalysis.frequency_scale_parts.through.objects.bulk_create(
+            analysis_scales_relations
+        )
         LegacySpectrogramConfiguration.objects.bulk_create(legacy_configurations)
         Spectrogram.objects.bulk_create(spectrograms)
         Spectrogram.analysis.through.objects.bulk_create(spectrogram_rels)

@@ -232,10 +232,6 @@ class ImportDatasetTestCase(ExtendedTestCase):
         ).last()
         self.assertEqual(content["analysis"]["id"], str(analysis.id))
         self.assertEqual(
-            analysis.legacy_configuration.multi_linear_frequency_scale.name,
-            "dual_lf_hf",
-        )
-        self.assertEqual(
-            analysis.legacy_configuration.multi_linear_frequency_scale.inner_scales.count(),
+            analysis.frequency_scale_parts.count(),
             2,
         )
