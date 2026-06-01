@@ -1,0 +1,238 @@
+name: all.yml
+on:
+  push:
+    paths:
+      - '.github/**'
+      - 'backend/**'
+      - 'pyproject.toml'
+      - 'poetry.lock'
+      - 'frontend/package.json'
+      - 'frontend/src/**'
+      - 'website/package.json'
+      - 'website/src/**'
+    branches: [ master ]
+  pull_request:
+    paths:
+      - '.github/**'
+      - 'backend/**'
+      - 'pyproject.toml'
+      - 'poetry.lock'
+      - 'frontend/package.json'
+      - 'frontend/src/**'
+      - 'website/package.json'
+      - 'website/src/**'
+    types: [ ready_for_review, opened, reopened, synchronize ]
+
+
+jobs:
+  # ── Detect changes ─────────────────────────────────────────────────────────
+  changes:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    outputs:
+      backend:  ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      website:  ${{ steps.filter.outputs.website }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - '.github/**'
+              - 'backend/**'
+              - 'pyproject.toml'
+              - 'poetry.lock'
+            frontend:
+              - 'frontend/package.json'
+              - 'frontend/src/**'
+            website:
+              - 'website/package.json'
+              - 'website/src/**'
+
+
+  # ── Generate graphql.schema ────────────────────────────────────────────────
+  generate-graphql-schema:
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend == 'true' || needs.changes.outputs.website == 'true'
+    steps:
+      # ── Setup poetry environment ───────────────────────
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up poetry cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry/
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+          restore-keys: ${{ runner.os }}-poetry-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+
+      # ── Generate GraphQL schema ────────────────────────
+      - name: Generate GraphQL schema
+        env:
+          ENV: build
+        run: |
+          poetry run python ./manage.py graphql_schema \
+            --schema backend.schema.schema \
+            --out schema.graphql
+      - name: Upload schema.graphql
+        uses: actions/upload-artifact@v4
+        with:
+          name: graphql_schema
+          path: schema.graphql
+
+  # ── Backend ────────────────────────────────────────────────────────────────
+  backend:
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: "postgres"
+          POSTGRES_PASSWORD: "postgres"
+          POSTGRES_DB: "postgres"
+        ports:
+          - 5432:5432
+    steps:
+
+      # ── Setup poetry environment ───────────────────────
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up poetry cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry/
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+          restore-keys: ${{ runner.os }}-poetry-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+
+      # ── Check commited code ────────────────────────────
+      - name: Check for missed migrations (don't forget to run makemigrations)
+        run: |
+          if [ "$(poetry run ./manage.py makemigrations --dry-run)" != "No changes detected" ]; then exit 1; fi
+      - name: Check for missed black (don't forget to run black)
+        run: |
+          poetry run black --check backend
+      - name: Check for missed pylint warnings (don't forget to run pylint)
+        run: |
+          poetry run pylint --disable=fixme --disable=too-few-public-methods --ignore migrations --ignore tests backend
+      - name: Check whether seeding still works
+        run: |
+          poetry run ./manage.py migrate
+          poetry run ./manage.py seed
+
+      # ── Tests ──────────────────────────────────────────
+      - name: Run Django tests
+        run: |
+          poetry run ./manage.py test
+
+
+  # ── APLOSE Frontend ────────────────────────────────────────────────────────
+  frontend:
+    runs-on: ubuntu-latest
+    needs: [changes, generate-graphql-schema]
+    if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend == 'true'
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    steps:
+
+      - uses: actions/checkout@v4
+
+      # ── Setup node environment ─────────────────────────
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install Node dependencies
+        working-directory: frontend
+        run: npm ci
+
+      # ── Generate GraphQL ───────────────────────────────
+      - name: Download schema
+        uses: actions/download-artifact@v5
+        with:
+          name: graphql_schema
+          path: frontend/schema.graphql
+      - name: Run GraphQL codegen
+        working-directory: frontend
+        run: npm run graphql:generate
+
+      # ── Check compilation ──────────────────────────────
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+      - name: Typescript compilation
+        working-directory: frontend
+        run: npx tsc
+
+      # ── Playwright tests ───────────────────────────────
+      - name: Run Playwright tests
+        working-directory: frontend
+        env:
+          CI: true
+          HOME: /root
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 30
+
+  # ── OSmOSE Website ─────────────────────────────────────────────────────────
+  website:
+    runs-on: ubuntu-latest
+    needs: [changes, generate-graphql-schema]
+    if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.website == 'true'
+    steps:
+
+      - uses: actions/checkout@v4
+
+      # ── Setup node environment ─────────────────────────
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - name: Install Node dependencies
+        working-directory: website
+        run: npm ci
+
+      # ── Generate GraphQL ───────────────────────────────
+      - name: Download schema
+        uses: actions/download-artifact@v5
+        with:
+          name: graphql_schema
+          path: website/schema.graphql
+      - name: Run GraphQL codegen
+        working-directory: website
+        run: npm run graphql:generate
+
+      # ── Check compilation ──────────────────────────────
+      - name: Typescript compilation
+        working-directory: website
+        run: npx tsc
+#      - name: Build
+#        working-directory: website
+#        run: npm run build

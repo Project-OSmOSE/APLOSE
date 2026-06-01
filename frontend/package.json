@@ -18,7 +18,8 @@
     "docs:dev": "vitepress dev docs --base \"/doc/\"",
     "docs:build": "vitepress build docs --base \"/doc/\"",
     "docs:preview": "vitepress preview docs --base \"/doc/\"",
-    "graphql:generate": "npx graphql-codegen --config codegen.ts"
+    "graphql:generate": "npx graphql-codegen --config codegen.ts",
+    "graphql:generate:dev": "npx graphql-codegen --config codegen.ts -w"
   },
   "dependencies": {
     "@codemirror/commands": "^6.8.1",

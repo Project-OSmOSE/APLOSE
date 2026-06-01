@@ -93,5 +93,12 @@ dist-ssr
 venv
 
 
+# Graphql
+*/schema.graphql
+*/graphql.config.yml
+*/.introspection.json
+
 # Generated
 *.gen.ts
+*.generated.ts
+*.gql-generated.ts
