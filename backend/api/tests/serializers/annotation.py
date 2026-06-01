@@ -7,7 +7,6 @@ from backend.api.models import (
     AnnotationPhase,
     Annotation,
     AcousticFeatures,
-    SpectrogramAnalysis,
 )
 from backend.api.serializers import AnnotationSerializer
 from backend.aplose.models import User
@@ -33,7 +32,6 @@ presence_result = {
     "validations": [],
     "comments": [],
     "acoustic_features": None,
-    "analysis": 1,
 }
 box_result = {
     "label": "Boat",
@@ -46,7 +44,6 @@ box_result = {
     "validations": [],
     "comments": [],
     "acoustic_features": features,
-    "analysis": 1,
 }
 
 USER_ID = 4
@@ -86,7 +83,7 @@ class CreateTestCase(TestCase):
         self.assertEqual(instance.type, Annotation.Type.WEAK)
         self.assertEqual(instance.label.name, "Boat")
         self.assertEqual(instance.confidence.label, "confident")
-        self.assertEqual(instance.analysis_id, PHASE_ID)
+        self.assertEqual(instance.annotation_phase_id, PHASE_ID)
         self.assertEqual(instance.spectrogram_id, SPECTROGRAM_ID)
         self.assertEqual(instance.annotator_id, USER_ID)
         self.assertIsNone(instance.acoustic_features)
@@ -103,7 +100,7 @@ class CreateTestCase(TestCase):
         self.assertEqual(instance.start_time, 0.0)
         self.assertEqual(instance.label.name, "Boat")
         self.assertEqual(instance.confidence.label, "confident")
-        self.assertEqual(instance.analysis_id, PHASE_ID)
+        self.assertEqual(instance.annotation_phase_id, PHASE_ID)
         self.assertEqual(instance.spectrogram_id, SPECTROGRAM_ID)
         self.assertEqual(instance.annotator_id, USER_ID)
         self.assertEqual(instance.acoustic_features.start_frequency, 10.0)
@@ -131,7 +128,6 @@ class CreateTestCase(TestCase):
         self.assertFalse(serializer.is_valid(raise_exception=False))
         self.assertEqual(serializer.errors["label"][0].code, "required")
         self.assertEqual(serializer.errors["confidence"][0].code, "required")
-        self.assertEqual(serializer.errors["analysis"][0].code, "required")
 
     def test_null(self):
         serializer = self._get_serializer(
@@ -143,7 +139,6 @@ class CreateTestCase(TestCase):
                 "annotator": None,
                 "detector_configuration": None,
                 "label": None,
-                "analysis": None,
                 "confidence": None,  # Cannot be null since campaign has a confidence indicator set
                 "comments": [],
                 "validations": [],
@@ -155,12 +150,10 @@ class CreateTestCase(TestCase):
             [
                 "label",
                 "confidence",
-                "analysis",
             ],
         )
         self.assertEqual(serializer.errors["label"][0].code, "null")
         self.assertEqual(serializer.errors["confidence"][0].code, "null")
-        self.assertEqual(serializer.errors["analysis"][0].code, "null")
 
     def test_null_confidence_in_campaign_without_confidence(self):
         serializer = self._get_serializer(
@@ -177,13 +170,11 @@ class CreateTestCase(TestCase):
             {
                 "label": "DCall",  # label exist in different label set
                 "confidence": "test",
-                "analysis": -1,
             }
         )
         self.assertFalse(serializer.is_valid(raise_exception=False))
         self.assertEqual(serializer.errors["label"][0].code, "does_not_exist")
         self.assertEqual(serializer.errors["confidence"][0].code, "does_not_exist")
-        self.assertEqual(serializer.errors["analysis"][0].code, "does_not_exist")
 
     def test_min_value(self):
         serializer = self._get_serializer(
@@ -227,12 +218,10 @@ class UpdateTestCase(CreateTestCase):
         annotator = (
             AnnotationFileRange.objects.filter(annotation_phase=phase).first().annotator
         )
-        analysis: SpectrogramAnalysis = phase.annotation_campaign.analysis.first()
         features_instance = AcousticFeatures.objects.create(**features)
         self.instance = Annotation.objects.create(
             annotation_phase=phase,
-            analysis=analysis,
-            spectrogram=analysis.spectrograms.first(),
+            spectrogram=phase.annotation_campaign.spectrograms.first(),
             annotator=annotator,
             label=phase.annotation_campaign.label_set.labels.first(),
             confidence=phase.annotation_campaign.confidence_set.confidence_indicators.first(),
@@ -271,7 +260,7 @@ class UpdateTestCase(CreateTestCase):
         self.assertEqual(instance.type, Annotation.Type.WEAK)
         self.assertEqual(instance.label.name, "Boat")
         self.assertEqual(instance.confidence.label, "confident")
-        self.assertEqual(instance.analysis_id, PHASE_ID)
+        self.assertEqual(instance.annotation_phase_id, PHASE_ID)
         self.assertEqual(instance.spectrogram_id, SPECTROGRAM_ID)
         self.assertEqual(instance.annotator_id, USER_ID)
         self.assertIsNone(instance.acoustic_features)
@@ -288,7 +277,7 @@ class UpdateTestCase(CreateTestCase):
         self.assertEqual(instance.start_time, 0.0)
         self.assertEqual(instance.label.name, "Boat")
         self.assertEqual(instance.confidence.label, "confident")
-        self.assertEqual(instance.analysis_id, PHASE_ID)
+        self.assertEqual(instance.annotation_phase_id, PHASE_ID)
         self.assertEqual(instance.spectrogram_id, SPECTROGRAM_ID)
         self.assertEqual(instance.annotator_id, USER_ID)
         self.assertEqual(instance.acoustic_features.start_frequency, 10.0)
@@ -321,7 +310,6 @@ class CreateUpdateOfResultTestCase(TestCase):
         serializer = AnnotationSerializer(
             data={
                 "is_update_of": 1,
-                "analysis": 1,
                 "label": "Mysticetes",
                 "confidence": "confident",
                 "start_time": 0.0,
