@@ -25,10 +25,75 @@ on:
 
 
 jobs:
+  # ── Detect changes ─────────────────────────────────────────────────────────
+  changes:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    outputs:
+      backend:  ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      website:  ${{ steps.filter.outputs.website }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - '.github/**'
+              - 'backend/**'
+              - 'pyproject.toml'
+              - 'poetry.lock'
+            frontend:
+              - 'frontend/package.json'
+              - 'frontend/src/**'
+            website:
+              - 'website/package.json'
+              - 'website/src/**'
+
+  # ── Generate graphql.schema ────────────────────────────────────────────────
+  generate-graphql-schema:
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend == 'true' || needs.changes.outputs.website == 'true'
+    steps:
+      # ── Setup poetry environment ───────────────────────
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up poetry cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry/
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+          restore-keys: ${{ runner.os }}-poetry-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+
+      # ── Generate GraphQL schema ────────────────────────
+      - name: Generate GraphQL schema
+        env:
+          ENV: build
+        run: |
+          poetry run python ./manage.py graphql_schema \
+            --schema backend.schema.schema \
+            --out schema.graphql
+      - name: Upload schema.graphql
+        uses: actions/upload-artifact@v4
+        with:
+          name: graphql_schema
+          path: schema.graphql
+
   # ── Backend ────────────────────────────────────────────────────────────────
   backend:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     services:
       postgres:
         image: postgres
@@ -78,71 +143,11 @@ jobs:
         run: |
           poetry run ./manage.py test
 
-      # ── Generate GraphQL schema ────────────────────────
-      - name: Generate GraphQL schema
-        env:
-          ENV: build
-        run: |
-          poetry run python ./manage.py graphql_schema \
-            --schema backend.schema.schema \
-            --out schema.graphql
-      - name: Upload schema.graphql
-        uses: actions/upload-artifact@v4
-        with:
-          name: graphql_schema
-          path: schema.graphql
-
-  # ── Deploy backend coverage (master only, non-blocking) ────────────────────
-  deploy-coverage:
-    runs-on: ubuntu-latest
-    needs: backend
-    if: github.ref == 'refs/heads/master' && github.event.pull_request.draft == false
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Set up poetry cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pypoetry/
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
-          restore-keys: ${{ runner.os }}-poetry-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install poetry
-          poetry install
-      - name: Run coverage
-        run: |
-          poetry run coverage run ./manage.py test &> /dev/null
-          mkdir -p ./_site/coverage
-          poetry run coverage html -d ./_site/coverage
-      - name: Get badge
-        run: |
-          PCT=`poetry run coverage report | tail -n1 | tr -s ' ' | cut -d ' ' -f 6 | tr -d '%'`
-          COLOR="success"; if (( $PCT < 95)); then COLOR=yellow; fi
-          curl https://img.shields.io/badge/coverage-${PCT}%25-${COLOR} > ./_site/coverage/badge.svg
-      - name: Upload coverage artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          name: poetry-report
-          retention-days: "90"
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
   # ── APLOSE Frontend ────────────────────────────────────────────────────────
   frontend:
     runs-on: ubuntu-latest
-    needs: backend
+    needs: [changes, generate-graphql-schema]
+    if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend == 'true'
     container:
       image: mcr.microsoft.com/playwright:v1.56.1-noble
     steps:
@@ -192,7 +197,8 @@ jobs:
   # ── OSmOSE Website ─────────────────────────────────────────────────────────
   website:
     runs-on: ubuntu-latest
-    needs: backend
+    needs: [changes, generate-graphql-schema]
+    if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.website == 'true'
     steps:
 
       - uses: actions/checkout@v4
