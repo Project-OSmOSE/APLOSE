@@ -1,24 +1,4 @@
 
-query listUsers {
-    allUsers {
-        results {
-            id
-            displayName
-            username
-            expertise
-        }
-    }
-    allUserGroups {
-        results {
-            id
-            name
-            users {
-                id
-            }
-        }
-    }
-}
-
 mutation updateCurrentUserPassword(
     $oldPassword: String!
     $newPassword: String!

@@ -7,15 +7,16 @@ import {
     ModalFooter,
     ModalHeader,
     type ModalProps,
-    Table,
     type Order,
     Progress,
+    Table,
     Tbody,
     Td,
     Th,
     Thead,
     Tr,
     useToast,
+    WarningText,
 } from '@/components/ui';
 import { IonIcon, IonNote, IonSpinner } from '@ionic/react';
 import { downloadOutline } from 'ionicons/icons/index.js';
@@ -24,12 +25,13 @@ import {
     AnnotationTaskNodeNodeConnection,
     Maybe,
     useAllFileRanges,
-    useAllUsers,
     useCurrentPhase,
     UserNode,
 } from '@/api';
 import { useDownloadAnnotations, useDownloadProgress } from '@/api/download';
 import { NBSP } from '@/service/type';
+import { useQuery } from '@tanstack/react-query';
+import { User } from '@/features';
 
 type Progression = {
     user: Pick<UserNode, 'id' | 'displayName' | 'expertise' | 'username'>;
@@ -47,7 +49,7 @@ type Sort = {
 
 export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
     const { phase } = useCurrentPhase()
-    const { users, isFetching: isLoadingUsers, error: userError } = useAllUsers();
+    const { data: { users }, isLoading: isLoadingUsers, error: userError } = useQuery(User.API.allQuery)
     const { allFileRanges, isFetching: isLoadingFileRanges, error: fileRangeError } = useAllFileRanges();
     const { downloadAnnotations, error: downloadAnnotationsError } = useDownloadAnnotations()
     const { downloadProgress, error: downloadProgressError } = useDownloadProgress()
@@ -85,7 +87,7 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
             const total = p.ranges.reduce((v, r) => v + (r.filesCount ?? 0), 0);
             return { ...p, progress: total > 0 ? Math.trunc(100 * totalFinished / total) : 0 }
         })
-    }, [allFileRanges, users]);
+    }, [ allFileRanges, users ]);
 
     const sortedProgress = useMemo(() => {
         const collator = new Intl.Collator(undefined, {
@@ -112,7 +114,7 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
 
             { (isLoadingUsers || isLoadingFileRanges) && <IonSpinner/> }
 
-            { userError && <GraphQLErrorText error={ userError }/> }
+            { userError && <WarningText error={ userError }/> }
             { fileRangeError && <GraphQLErrorText error={ fileRangeError }/> }
 
             { (!isLoadingUsers && !isLoadingFileRanges) && progress.length === 0 && <IonNote>No annotators</IonNote> }
@@ -133,9 +135,10 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    { sortedProgress.map(p => <Tr key={p.user.id}>
+                    { sortedProgress.map(p => <Tr key={ p.user.id }>
                         <Th scope="row">
-                            { p.user.displayName || p.user.username }{ NBSP }{ p.user.expertise && <Fragment>({ p.user.expertise })</Fragment> }
+                            { p.user.displayName || p.user.username }{ NBSP }{ p.user.expertise &&
+                            <Fragment>({ p.user.expertise })</Fragment> }
                         </Th>
                         <Td>
                             <div className={ styles.progressContent }>
@@ -155,7 +158,7 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
                 </Tbody>
             </Table> }
 
-      { phase?.isUserAllowedToManage && users && allFileRanges && (
+            { phase?.isUserAllowedToManage && users && allFileRanges && (
                 <ModalFooter className={ styles.footer }>
                     <div className={ styles.buttons }>
                         { progress.length > 0 && <Fragment>

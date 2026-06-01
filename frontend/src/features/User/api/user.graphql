@@ -1,3 +1,5 @@
+# Current user
+
 fragment CurrentUser on UserNode {
     id
     displayName
@@ -9,4 +11,27 @@ fragment CurrentUser on UserNode {
 
 query getCurrentUser {
     currentUser { ...CurrentUser }
+}
+
+
+# List users
+
+fragment User on UserNode {
+    id
+    displayName
+    username
+    expertise
+}
+
+fragment UserGroup on UserGroupNode {
+    id
+    name
+    users {
+        id
+    }
+}
+
+query allUsers {
+    allUsers { results { ...User } }
+    allUserGroups { results { ...UserGroup } }
 }

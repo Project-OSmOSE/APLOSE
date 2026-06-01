@@ -7,9 +7,9 @@ import { GraphQLErrorText, Head, Table, Tbody, Th, Thead, Tr, useToast } from '@
 import { FormBloc, type Item, ListSearchbar, type SearchItem } from '@/components/form';
 
 import {
-    AnnotationFileRangeInput, AnnotationPhaseType,
+    AnnotationFileRangeInput,
+    AnnotationPhaseType,
     useAllFileRanges,
-    useAllUsers,
     useCurrentCampaign,
     useCurrentPhase,
     useUpdateFileRanges,
@@ -19,6 +19,8 @@ import { getNewItemID } from '@/service/function';
 import { FileRangeInputRow } from '@/features/AnnotationFileRange';
 
 import styles from './edit-annotators.module.scss';
+import { queryClient } from '@/api/queryClient';
+import { User } from '@/features';
 
 type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
     id: string;
@@ -26,7 +28,7 @@ type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
 }
 
 const EditAnnotators: React.FC = () => {
-    const phaseType = Route.useParams({select: ({phaseType}) => phaseType});
+    const phaseType = Route.useParams({ select: ({ phaseType }) => phaseType });
     const {
         campaign,
         isFetching: isFetchingCampaign,
@@ -35,11 +37,9 @@ const EditAnnotators: React.FC = () => {
     const { phase } = useCurrentPhase()
     const router = useRouter();
     const toast = useToast();
-    const {
-        users, groups,
-        isFetching: isFetchingUsers,
-        error: errorLoadingUsers,
-    } = useAllUsers()
+    const [
+        { users, groups },
+    ] = Route.useLoaderData()
     const {
         allFileRanges,
         isFetching: isFetchingFileRanges,
@@ -151,20 +151,18 @@ const EditAnnotators: React.FC = () => {
                 <FormBloc className={ styles.annotators }>
 
                     <ListSearchbar placeholder="Search annotator..."
-                                   disabled={ isFetchingCampaign || isFetchingUsers || isFetchingFileRanges }
+                                   disabled={ isFetchingCampaign || isFetchingFileRanges }
                                    values={ availableUsers }
                                    onValueSelected={ addFileRange }/>
 
                     {/* Loading */ }
-                    { (isFetchingCampaign || isFetchingUsers || isFetchingFileRanges) && <IonSpinner/> }
+                    { (isFetchingCampaign || isFetchingFileRanges) && <IonSpinner/> }
                     { errorLoadingCampaign &&
                         <GraphQLErrorText error={ errorLoadingCampaign }/> }
-                    { errorLoadingUsers &&
-                        <GraphQLErrorText error={ errorLoadingUsers }/> }
                     { errorLoadingFileRanges &&
                         <GraphQLErrorText error={ errorLoadingFileRanges }/> }
 
-                    { !(isFetchingCampaign || isFetchingUsers || isFetchingFileRanges) &&
+                    { !(isFetchingCampaign || isFetchingFileRanges) &&
                         <Table>
                             <Thead>
                                 <Tr>
@@ -222,7 +220,7 @@ const EditAnnotators: React.FC = () => {
 
                 </FormBloc>
             </Fragment>,
-        [ campaign, phaseType, addFileRange, errorLoadingCampaign, isFetchingUsers, formErrors, errorLoadingUsers,
+        [ campaign, phaseType, addFileRange, errorLoadingCampaign, formErrors,
             submit, isSubmitting, isFetchingCampaign, fileRanges, phase, users, isFetchingFileRanges, availableUsers,
             back, errorLoadingFileRanges ],
     )
@@ -232,5 +230,8 @@ export const Route = createFileRoute('/_authenticated/annotation-campaign/$campa
     params: {
         parse: rawParams => rawParams as { campaignID: string, phaseType: AnnotationPhaseType },
     },
+    loader: () => Promise.all([
+        queryClient.ensureQueryData(User.API.allQuery),
+    ]),
     component: EditAnnotators,
 })

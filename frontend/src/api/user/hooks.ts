@@ -2,19 +2,10 @@ import { useMemo } from 'react';
 import { UserGqlAPI } from './api';
 
 const {
-    listUsers,
     updateCurrentUserEmail,
     updateCurrentUserPassword,
 } = UserGqlAPI.endpoints
 
-export const useAllUsers = () => {
-    const info = listUsers.useQuery()
-    return useMemo(() => ({
-        ...info,
-        users: info?.data?.allUsers?.results.filter(r => r !== null) ?? [],
-        groups: info?.data?.allUserGroups?.results.filter(r => r !== null) ?? [],
-    }), [ info ])
-}
 
 export const useUpdateCurrentUserEmail = () => {
     const [ updateEmail, info ] = updateCurrentUserEmail.useMutation();

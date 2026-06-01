@@ -38,3 +38,7 @@ export async function getLoader<Arguments = any, Result = any>(
     promise.unsubscribe()
     return info
 }
+
+export function cleanGqlList<T>(data?: Array<T | null>): Array<T> {
+    return data?.filter(d => !!d).map(d => d!) ?? []
+}
