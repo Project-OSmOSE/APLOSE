@@ -1,18 +1,22 @@
 import { ImportStatusEnum } from '../../../../src/api/types.gql-generated';
-import { type StorageAnalysis, type StorageDataset, type StorageFolder } from '../../../../src/api/storage';
+import {
+    type StorageAnalysisFragment,
+    type StorageDatasetFragment,
+    type StorageFolderFragment,
+} from '../../../../src/features/Storage';
 
-export const storageFolder: StorageFolder = {
+export const storageFolder: StorageFolderFragment = {
     __typename: 'FolderNode',
     name: 'Storage folder',
     path: 'test',
 }
-export const storageDataset: StorageDataset = {
+export const storageDataset: StorageDatasetFragment = {
     __typename: 'DatasetStorageNode',
     name: 'Storage dataset',
     path: 'test/dataset',
     importStatus: ImportStatusEnum.Available,
 }
-export const storageAnalysis: StorageAnalysis = {
+export const storageAnalysis: StorageAnalysisFragment = {
     __typename: 'AnalysisStorageNode',
     name: 'Storage analysis',
     path: 'test/dataset/processed/test_analysis',

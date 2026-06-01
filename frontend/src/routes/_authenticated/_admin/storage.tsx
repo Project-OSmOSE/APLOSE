@@ -1,10 +1,12 @@
 import React, { Fragment, useMemo } from 'react';
 import { createFileRoute } from '@tanstack/react-router'
-import { IonNote } from '@ionic/react';
+import { IonNote, IonSpinner } from '@ionic/react';
 
 import { Button, Head, HelpButton, useModal } from '@/components/ui';
 
 import { ImportFromPath, ServerItem } from '@/features/Storage';
+import { Storage } from '@/features';
+import { queryClient } from '@/api/queryClient';
 
 import styles from './storage.module.scss'
 
@@ -42,5 +44,10 @@ const StorageBrowser: React.FC = () => {
         [ searchModal ])
 }
 export const Route = createFileRoute('/_authenticated/_admin/storage')({
+    loader: () => queryClient.ensureQueryData(Storage.API.browseQuery({ path: '' })),
     component: StorageBrowser,
+    pendingComponent: () => <Fragment>
+        <Head title="Storage"/>
+        <IonSpinner/>
+    </Fragment>
 })

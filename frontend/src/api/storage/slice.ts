@@ -1,43 +1,34 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { StorageGqlAPI } from './api';
-import type {
-    BrowseStorageQuery,
-    BrowseStorageQueryVariables,
-    ImportDatasetFromStorageMutation,
-    SearchStorageQuery,
-} from './storage.generated';
-import type { StorageItem } from './types';
+import type { ImportDatasetFromStorageMutation, SearchStorageQuery } from './storage.generated';
 import { useEffect, useMemo } from 'react';
-import { useAppSelector } from '@/features/App';
+import { useAppDispatch, useAppSelector } from '@/features/App';
 import { AnnotationCampaignGqlAPI } from '@/api/annotation-campaign/api';
 import type { CreateCampaignMutation } from '@/api';
+import { useQuery } from '@tanstack/react-query';
+import { Storage } from '@/features'
+import type { StorageItemFragment } from '@/features/Storage';
 
 export const StorageSlice = createSlice({
     name: 'storage',
     initialState: {
-        record: {} as Record<string, StorageItem>,
+        record: {} as Record<string, StorageItemFragment>,
         parents: {} as Record<string, Array<string>>,
         invalidatedPath: [] as Array<string>,
         invalidatedListPaths: [] as Array<string>,
     },
-    reducers: {},
+    reducers: {
+        setRecord: (state, action: { payload: StorageItemFragment }) => {
+            state.record[action.payload.path] = action.payload;
+        },
+        setParents: (state, action: { payload: { parent: string, children: string[] } }) => {
+            state.parents[action.payload.parent] = action.payload.children;
+        },
+        validatePath: (state, action: { payload: string }) => {
+            state.invalidatedListPaths = state.invalidatedListPaths.filter(p => p !== action.payload);
+        },
+    },
     extraReducers: builder => {
-
-        builder.addMatcher(StorageGqlAPI.endpoints.browseStorage.matchFulfilled,
-            (state, action: {
-                payload: BrowseStorageQuery,
-                meta: { arg: { originalArgs: void | BrowseStorageQueryVariables } }
-            }) => {
-                for (const item of action.payload.browse ?? []) {
-                    if (!item) continue
-                    state.record[item.path] = item
-                }
-                let parentPath = ''
-                if (action.meta.arg.originalArgs)
-                    parentPath = action.meta.arg.originalArgs.path ?? ''
-                state.parents[parentPath] = action.payload.browse?.filter(r => !!r).map(r => r?.path) ?? []
-                state.invalidatedListPaths = state.invalidatedListPaths.filter(p => p !== parentPath)
-            })
 
         builder.addMatcher(StorageGqlAPI.endpoints.searchStorage.matchFulfilled,
             (state, action: { payload: SearchStorageQuery }) => {
@@ -76,7 +67,7 @@ const selectParents = createSelector(state => state, StorageSlice.selectors.sele
 const selectInvalidatedPath = createSelector(state => state, StorageSlice.selectors.selectInvalidatedPath)
 const selectInvalidatedListPath = createSelector(state => state, StorageSlice.selectors.selectInvalidatedListPath)
 
-export const useStorageSearch = (path: string): StorageItem | undefined => {
+export const useStorageSearch = (path: string): StorageItemFragment | undefined => {
     const record = useAppSelector(selectRecord)
     const invalidatedPath = useAppSelector(selectInvalidatedPath)
 
@@ -99,11 +90,33 @@ export const useStorageBrowse = (path: string = '') => {
         return Object.values(record).filter(r => children?.includes(r.path))
     }, [ record, path, parents ]);
 
-    const [ browse ] = StorageGqlAPI.endpoints.browseStorage.useLazyQuery()
+    const dispatch = useAppDispatch()
+
+    const {
+        refetch: browse,
+        data,
+    } = useQuery({
+        ...Storage.API.browseQuery({ path }),
+        enabled: false,
+    })
+
     useEffect(() => {
-        if (invalidatedListPaths.includes(path)) browse({ path })
-        if (children === undefined) browse({ path })
+        if (invalidatedListPaths.includes(path)) browse()
+        if (children === undefined) browse()
     }, [ invalidatedListPaths, path, children ]);
+
+    useEffect(() => {
+        if (!data) return
+        for (const item of data) {
+            if (!item) continue
+            dispatch(StorageSlice.actions.setRecord(item))
+        }
+        dispatch(StorageSlice.actions.setParents({
+            parent: path,
+            children: data.map(d => d.path),
+        }))
+        dispatch(StorageSlice.actions.validatePath(path))
+    }, [ data ]);
 
     return children
 }

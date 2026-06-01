@@ -1,7 +1,7 @@
 import React, { Fragment, type MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { ImportStatusEnum, type StorageItem, useImportDatasetFromStorage, useStorageSearch } from '@/api';
+import { ImportStatusEnum, useImportDatasetFromStorage, useStorageSearch } from '@/api';
 import styles from './styles.module.scss';
-import { ItemList } from '@/features/Storage';
+import { ItemList, type StorageAnalysisFragment } from '@/features/Storage';
 import { IonButton, IonNote, IonSpinner } from '@ionic/react';
 import {
     AltArrowDown,
@@ -16,9 +16,10 @@ import {
 } from '@solar-icons/react';
 import { CopyErrorStackButton, TooltipOverlay, useToast } from '@/components/ui';
 import { DatasetName } from '@/features/Dataset';
+import type { StorageItemFragment } from '../api'
 
 type Props = {
-    parentItem?: StorageItem,
+    parentItem?: StorageItemFragment,
     path: string,
     search?: string,
     onUpdated?: () => void,
@@ -118,7 +119,7 @@ export const Item: React.FC<Props> = ({
                     importIcon = <Unread color="success" size={ 24 }/>
                     break;
             }
-            usages = item.model?.annotationCampaigns.edges
+            usages = (item as StorageAnalysisFragment).model?.annotationCampaigns.edges
                 .map(e => e?.node)
                 .filter(n => !!n && !n.isArchived).length ?? 0
         }

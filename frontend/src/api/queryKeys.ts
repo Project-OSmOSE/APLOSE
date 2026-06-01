@@ -1,5 +1,6 @@
 import { queryClient } from './queryClient';
 import type { QueryKey } from '@tanstack/react-query';
+import type { BrowseStorageQueryVariables } from '@/features/Storage/api/storage.generated';
 
 /**
  * Keys factory pour les requêtes GraphQL
@@ -10,6 +11,9 @@ export const queryKeys = {
         all: [ 'user' ] as const,
         current: [ 'user', 'current' ] as const,
     },
+    storage: {
+        browse: (variables: BrowseStorageQueryVariables) => ['storage', 'browse', variables] as const,
+    }
 };
 
 /**
