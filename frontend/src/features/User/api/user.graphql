@@ -35,3 +35,17 @@ query allUsers {
     allUsers { results { ...User } }
     allUserGroups { results { ...UserGroup } }
 }
+
+# Update email
+mutation updateCurrentUserEmail(
+    $email: String!
+) {
+    currentUserUpdate(input: {
+        email: $email
+    }) {
+        errors {
+            field
+            messages
+        }
+    }
+}

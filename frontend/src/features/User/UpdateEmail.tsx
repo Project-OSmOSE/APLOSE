@@ -1,34 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FormBloc, Input } from '@/components/form';
 import { IonButton, IonSpinner } from '@ionic/react';
 import styles from './styles.module.scss';
 import { useToast } from '@/components/ui';
 import { getErrorMessage } from '@/service/function';
-
-import { useUpdateCurrentUserEmail } from '@/api';
-import { useQuery } from '@tanstack/react-query';
-import { currentQuery } from './api'
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { currentQuery, type UpdateCurrentUserEmailMutation, updateEmailMutation } from './api'
+import { queryClient } from '@/api/queryClient';
+import { queryKeys } from '@/api/queryKeys';
 
 export const UpdateEmail: React.FC = () => {
     const { data: user } = useQuery(currentQuery)
-    const {
-        updateEmail,
-        isLoading: isSubmitting,
-        error: patchError,
-        formErrors,
-        isSuccess: isPatchSuccessful,
-    } = useUpdateCurrentUserEmail();
-
     const toast = useToast();
-
-    const [ email, setEmail ] = useState<string>(user?.email ?? '');
     const [ errors, setErrors ] = useState<{ email?: string[] }>({});
 
-    useEffect(() => {
-        setEmail(user?.email ?? '')
-    }, [ user ]);
-
-    useEffect(() => {
+    const onError = useCallback((patchError: Error) => {
         if (patchError) {
             const error = getErrorMessage(patchError);
             if (!error) return;
@@ -38,32 +24,40 @@ export const UpdateEmail: React.FC = () => {
             } catch { /* empty */
             }
         }
-    }, [ patchError ]);
-
-    useEffect(() => {
-        if (formErrors) {
+    }, [ toast ]);
+    const onSuccess = useCallback((data: UpdateCurrentUserEmailMutation) => {
+        const formErrors = data?.currentUserUpdate?.errors ?? []
+        if (formErrors && formErrors.length) {
             setErrors({
                 email: formErrors.find(e => e.field === 'email')?.messages,
             })
+            return
         }
-    }, [ formErrors ]);
+        queryClient.invalidateQueries({ queryKey: queryKeys.user.current })
+        toast.present('You email have been changed', 'success')
+    }, [ toast ]);
 
-    useEffect(() => {
-        if (isPatchSuccessful) {
-            toast.present('You email have been changed', 'success')
-        }
-    }, [ isPatchSuccessful ]);
+    const {
+        mutate,
+        isPending: isSubmitting,
+    } = useMutation({
+        ...updateEmailMutation,
+        onError,
+        onSuccess,
+    })
 
-    function submit() {
+    const [ email, setEmail ] = useState<string>(user?.email ?? '');
+
+    const submit = useCallback(() => {
         setErrors({})
-        updateEmail({ email })
-    }
+        mutate({ email })
+    }, [ mutate, setErrors, email ])
 
     return <FormBloc label="Update email">
         <Input value={ email }
                onChange={ e => setEmail(e.target.value) }
                error={ errors?.email?.join(' ') }
-               placeholder="email"
+               placeholder={ user?.email ?? 'email' }
                label="Email"
                type="email"
                autoComplete="email"/>

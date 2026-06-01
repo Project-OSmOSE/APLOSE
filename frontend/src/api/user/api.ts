@@ -1,9 +1,1 @@
-import { api } from './user.generated';
-
-export const UserGqlAPI = api.enhanceEndpoints({
-  endpoints: {
-    updateCurrentUserEmail: {
-      invalidatesTags: [ 'CurrentUser' ]
-    }
-  }
-})
+export { api as UserGqlAPI } from './user.generated';

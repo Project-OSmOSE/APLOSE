@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-query';
+import { mutationOptions, queryOptions } from '@tanstack/react-query';
 import { queryKeys } from '@/api/queryKeys';
 import { graphqlClient } from '@/api/graphqlClient';
 import {
@@ -7,6 +7,9 @@ import {
     type CurrentUserFragment,
     GetCurrentUserDocument,
     GetCurrentUserQuery,
+    UpdateCurrentUserEmailDocument,
+    type UpdateCurrentUserEmailMutation,
+    type UpdateCurrentUserEmailMutationVariables,
 } from './user.generated'
 import { queryClient } from '@/api/queryClient';
 import { cleanGqlList } from '@/api/utils';
@@ -30,6 +33,11 @@ export const allQuery = queryOptions({
             groups: cleanGqlList(data.allUserGroups?.results),
         })),
     initialData: { users: [], groups: [] },
+})
+
+export const updateEmailMutation = mutationOptions({
+    mutationFn: (variables: UpdateCurrentUserEmailMutationVariables) => graphqlClient.request<UpdateCurrentUserEmailMutation>(UpdateCurrentUserEmailDocument, variables),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.user.current }),
 })
 
 
