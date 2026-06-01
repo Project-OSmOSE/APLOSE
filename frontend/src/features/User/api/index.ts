@@ -10,6 +10,9 @@ import {
     UpdateCurrentUserEmailDocument,
     type UpdateCurrentUserEmailMutation,
     type UpdateCurrentUserEmailMutationVariables,
+    UpdateCurrentUserPasswordDocument,
+    type UpdateCurrentUserPasswordMutation,
+    type UpdateCurrentUserPasswordMutationVariables,
 } from './user.generated'
 import { queryClient } from '@/api/queryClient';
 import { cleanGqlList } from '@/api/utils';
@@ -38,6 +41,10 @@ export const allQuery = queryOptions({
 export const updateEmailMutation = mutationOptions({
     mutationFn: (variables: UpdateCurrentUserEmailMutationVariables) => graphqlClient.request<UpdateCurrentUserEmailMutation>(UpdateCurrentUserEmailDocument, variables),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.user.current }),
+})
+
+export const updatePasswordMutation = mutationOptions({
+    mutationFn: (variables: UpdateCurrentUserPasswordMutationVariables) => graphqlClient.request<UpdateCurrentUserPasswordMutation>(UpdateCurrentUserPasswordDocument, variables),
 })
 
 
