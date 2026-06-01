@@ -210,9 +210,6 @@ query getAnnotationTask(
                         frequencyJumpsCount
                         hasDeterministicChaos
                     }
-                    analysis {
-                        id
-                    }
                 }
             }
             annotationsToCheck {
@@ -274,9 +271,6 @@ query getAnnotationTask(
                         hasFrequencyJumps
                         frequencyJumpsCount
                         hasDeterministicChaos
-                    }
-                    analysis {
-                        id
                     }
                 }
             }

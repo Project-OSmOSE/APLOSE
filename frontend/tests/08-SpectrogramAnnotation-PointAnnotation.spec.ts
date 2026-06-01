@@ -1,14 +1,5 @@
 import { annotatorTag, essentialTag, expect, test } from './utils';
-import {
-    campaign,
-    CONFIDENCES,
-    LABELS,
-    phase as phaseObj,
-    spectrogramAnalysis,
-    TASKS,
-    USERS,
-    type UserType,
-} from './utils/mock/types';
+import { campaign, CONFIDENCES, LABELS, phase as phaseObj, TASKS, USERS, type UserType } from './utils/mock/types';
 import { type AnnotationInput, AnnotationPhaseType, AnnotationType } from '../src/api/types.gql-generated';
 import { gqlURL, interceptRequests } from './utils/mock';
 import type { SubmitTaskMutationVariables } from '../src/api/annotation-task/annotation-task.generated';
@@ -72,7 +63,6 @@ const TEST = {
                     annotationPhase: phaseObj.id,
                     label: LABELS.classic.name,
                     confidence: CONFIDENCES.sure.label,
-                    analysis: spectrogramAnalysis.id,
                     annotator: USERS[as].id,
                     comments: [],
                 } as AnnotationInput, {
@@ -80,7 +70,6 @@ const TEST = {
                     ...bounds,
                     label: LABELS.classic.name,
                     confidence: CONFIDENCES.sure.label,
-                    analysis: spectrogramAnalysis.id,
                     annotator: USERS[as].id,
                     comments: [],
                 } as AnnotationInput ]);
@@ -121,7 +110,6 @@ const TEST = {
                         annotationPhase: phaseObj.id,
                         label: LABELS.classic.name,
                         confidence: CONFIDENCES.sure.label,
-                        analysis: spectrogramAnalysis.id,
                         annotator: USERS[as].id,
                         comments: [],
                     } as AnnotationInput ]);

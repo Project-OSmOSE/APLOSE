@@ -41,7 +41,6 @@ presence_annotation = {
     "startFrequency": None,
     "endFrequency": None,
     "acousticFeatures": None,
-    "analysis": "1",
     "annotationPhase": "1",
 }
 box_annotation = {
@@ -60,7 +59,6 @@ box_annotation = {
         "hasHarmonics": True,
         "trend": "Modulated",
     },
-    "analysis": "1",
     "annotationPhase": "1",
 }
 
@@ -112,7 +110,6 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
         self.assertEqual(new_annotation.type, Annotation.Type.WEAK)
         self.assertEqual(new_annotation.label.name, "Boat")
         self.assertEqual(new_annotation.confidence.label, "confident")
-        self.assertEqual(new_annotation.analysis_id, 1)
         self.assertEqual(new_annotation.spectrogram_id, 9)
         self.assertEqual(new_annotation.annotator_id, 4)
         self.assertIsNone(new_annotation.acoustic_features)
@@ -132,7 +129,6 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
         self.assertEqual(new_annotation.start_time, 0.0)
         self.assertEqual(new_annotation.label.name, "Boat")
         self.assertEqual(new_annotation.confidence.label, "confident")
-        self.assertEqual(new_annotation.analysis_id, 1)
         self.assertEqual(new_annotation.spectrogram_id, 9)
         self.assertEqual(new_annotation.annotator_id, 4)
         self.assertEqual(new_annotation.acoustic_features.start_frequency, 10.0)
@@ -163,7 +159,6 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
         self.assertEqual(new_annotation.start_time, 0.0)
         self.assertEqual(new_annotation.label.name, "Boat")
         self.assertEqual(new_annotation.confidence.label, "confident")
-        self.assertEqual(new_annotation.analysis_id, 1)
         self.assertEqual(new_annotation.spectrogram_id, 9)
         self.assertEqual(new_annotation.annotator_id, 4)
         self.assertEqual(new_annotation.acoustic_features.start_frequency, 10.0)
@@ -275,7 +270,6 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
                         **presence_annotation,
                         "label": "DCall",  # label exist in different label set
                         "confidence": "test",
-                        "analysis": "-1",
                     }
                 ],
             },
@@ -285,7 +279,6 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
         errors = json.loads(response.content)["data"]["updateAnnotations"]["errors"]
         self.assertEqual(errors[0][0]["field"], "label")
         self.assertEqual(errors[0][1]["field"], "confidence")
-        self.assertEqual(errors[0][2]["field"], "analysis")
 
     def test_connected_annotator_min_value(self):
         previous_count = Annotation.objects.count()

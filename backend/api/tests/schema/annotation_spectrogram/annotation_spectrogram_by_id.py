@@ -92,9 +92,6 @@ query (
                         relativeMaxFrequencyCount
                         hasHarmonics
                     }
-                    analysis {
-                        id
-                    }
                 }
             }
         }

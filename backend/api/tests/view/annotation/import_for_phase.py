@@ -391,10 +391,12 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.log_client(User.objects.get(username="user1"))
         url, phase_id, task_id = self._get_url()
         old_count = Annotation.objects.count()
+        print("before", Annotation.objects.all())
         response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/box_one_file_annotation.csv",
         )
+        print("after", Annotation.objects.all())
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Annotation.objects.count(), old_count + 1)
         self.assertEqual(

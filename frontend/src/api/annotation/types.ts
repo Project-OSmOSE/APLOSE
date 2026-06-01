@@ -9,9 +9,6 @@ export type ImportAnnotation = {
   /** [0 ; samplingFrequency/2] */
   end_frequency?: number;
 
-  /** SpectrogramAnalysisNode.id */
-  analysis: string | number;
-
   label__name: string
   confidence__label?: string
   confidence__level?: number

@@ -4,6 +4,7 @@ from io import StringIO
 from typing import Optional
 
 from django.db import transaction
+from django.db.models import Max
 from django_extension.filters import get_boolean_query_param
 from django_extension.schema.errors import ForbiddenError, NotFoundError
 from rest_framework import viewsets, permissions, status, serializers
@@ -15,7 +16,6 @@ from backend.api.models import (
     Annotation,
     AnnotationPhase,
     Spectrogram,
-    SpectrogramAnalysis,
     DetectorConfiguration,
     Detector,
     AnnotationCampaign,
@@ -72,19 +72,21 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+        max_fft = phase.annotation_campaign.analysis.aggregate(
+            Max("fft__sampling_frequency")
+        )["fft__sampling_frequency__max"]
         reader = csv.DictReader(StringIO(request.data["data"]))
         annotations = []
         for row in reader:
-            analysis: Optional[SpectrogramAnalysis] = SpectrogramAnalysis.objects.get(
-                pk=row["analysis"]
-            )
-
-            spectrograms = Spectrogram.objects.filter_matches_time_range(
-                start=datetime.fromisoformat(row["start_datetime"]),
-                end=datetime.fromisoformat(row["end_datetime"]),
-            ).filter(
-                analysis__dataset_id=phase.annotation_campaign.dataset_id,
-                analysis=analysis,
+            spectrograms = (
+                Spectrogram.objects.filter_matches_time_range(
+                    start=datetime.fromisoformat(row["start_datetime"]),
+                    end=datetime.fromisoformat(row["end_datetime"]),
+                )
+                .filter(
+                    analysis__dataset_id=phase.annotation_campaign.dataset_id,
+                )
+                .distinct()
             )
 
             if not spectrograms.exists():
@@ -97,7 +99,7 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
 
             for s in spectrograms:
                 annotation = self._get_annotation_for_spectrogram(
-                    phase, analysis, s, row
+                    phase, s, row, max_fft
                 )
                 if annotation is not None:
                     annotations.append(annotation)
@@ -128,11 +130,7 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(status=status.HTTP_201_CREATED)
 
     def _get_annotation_for_spectrogram(
-        self,
-        phase: AnnotationPhase,
-        analysis: SpectrogramAnalysis,
-        s: Spectrogram,
-        row: str,
+        self, phase: AnnotationPhase, s: Spectrogram, row: str, max_fft: int
     ) -> Optional[dict]:
         campaign: AnnotationCampaign = phase.annotation_campaign
         confidence = None
@@ -148,7 +146,6 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
             "confidence": confidence,
             "annotation_phase": phase.id,
             "annotator": None,
-            "analysis": analysis,
             "annotator_expertise_level": None,
             "is_update_of": None,
             "detector_configuration": DetectorConfiguration.objects.get_or_create(
@@ -168,7 +165,7 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
         )
         none_end_frequency = (
             annotation["end_frequency"] is None
-            or float(row["end_frequency"]) == analysis.fft.sampling_frequency / 2
+            or float(row["end_frequency"]) == max_fft / 2
         )
 
         if (
@@ -199,7 +196,6 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
         return {
             **annotation,
             "spectrogram": annotation["spectrogram"].id,
-            "analysis": annotation["analysis"].id,
             "detector_configuration": annotation["detector_configuration"].id,
         }
 

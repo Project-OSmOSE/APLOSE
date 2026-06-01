@@ -14,7 +14,6 @@ from backend.api.models import (
     Label,
     Confidence,
     AnnotationValidation,
-    SpectrogramAnalysis,
     AnnotationComment,
 )
 from backend.aplose.models import ExpertiseLevel
@@ -80,9 +79,6 @@ class AnnotationSerializer(serializers.ModelSerializer):
             fields["spectrogram"].queryset = Spectrogram.objects.filter(
                 analysis__in=campaign.analysis.all()
             ).distinct()
-            fields["analysis"].queryset = SpectrogramAnalysis.objects.filter(
-                id__in=campaign.analysis.values_list("id", flat=True)
-            )
             if campaign.confidence_set is not None:
                 fields["confidence"] = serializers.SlugRelatedField(
                     queryset=campaign.confidence_set.confidence_indicators.all(),

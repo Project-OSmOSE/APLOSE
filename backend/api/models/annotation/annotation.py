@@ -12,7 +12,7 @@ from .annotation_phase import AnnotationPhase
 from .confidence import Confidence
 from .detector_configuration import DetectorConfiguration
 from .label import Label
-from ..data import Spectrogram, SpectrogramAnalysis
+from ..data import Spectrogram
 
 
 class AnnotationQuerySet(ExtendedQuerySet):
@@ -173,11 +173,6 @@ class Annotation(models.Model):
 
     spectrogram = models.ForeignKey(
         Spectrogram,
-        on_delete=models.CASCADE,
-        related_name="annotations",
-    )
-    analysis = models.ForeignKey(
-        SpectrogramAnalysis,
         on_delete=models.CASCADE,
         related_name="annotations",
     )

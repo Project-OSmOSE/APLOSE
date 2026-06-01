@@ -13,7 +13,6 @@ import {
   type DetectorConfigurationNode,
   type DetectorNode,
   type Maybe,
-  type SpectrogramAnalysisNode,
   type UserNode,
 } from '@/api';
 import { type Annotation, type Features, type Validation } from './slice';
@@ -88,7 +87,6 @@ type Node =
     results: Maybe<Pick<AnnotationValidationNode, 'id' | 'isValid'>>[],
   }>,
   label: Pick<AnnotationLabelNode, 'name'>,
-  analysis: Pick<SpectrogramAnalysisNode, 'id'>,
   annotationPhase: Pick<AnnotationPhaseNode, 'id'>
 }
 
@@ -111,7 +109,6 @@ export function convertGqlToAnnotation(annotation: Node,
     startTime: annotation.startTime === null ? undefined : annotation.startTime,
     confidence: annotation.confidence?.label,
     detectorConfiguration: annotation.detectorConfiguration?.id,
-    analysis: annotation.analysis.id,
   } as Annotation
 }
 
