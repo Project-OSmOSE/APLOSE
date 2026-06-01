@@ -10,6 +10,8 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
     steps:
 
       - uses: actions/checkout@v4
@@ -25,34 +27,12 @@ jobs:
         working-directory: frontend
         run: npm ci
 
-      # Cache Playwright browsers by their version to avoid re-downloading
-      - name: Get Playwright version
-        id: playwright-version
-        working-directory: frontend
-        run: echo "version=$(npx playwright --version | awk '{print $2}')" >> $GITHUB_OUTPUT
-
-      - name: Cache Playwright browsers
-        id: playwright-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
-
-      - name: Install Playwright Browsers
-        working-directory: frontend
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install firefox --with-deps
-
-      # Install system deps only (browsers already cached)
-      - name: Install Playwright system dependencies
-        working-directory: frontend
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps
-
       - name: Run Playwright tests
         working-directory: frontend
         env:
           CI: true
+          # Required when running as root inside the Docker container
+          HOME: /root
         run: npm run test:e2e
 
       - uses: actions/upload-artifact@v4
