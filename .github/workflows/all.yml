@@ -2,15 +2,25 @@ name: all.yml
 on:
   push:
     paths:
+      - '.github/**'
       - 'backend/**'
       - 'pyproject.toml'
       - 'poetry.lock'
+      - 'frontend/package.json'
+      - 'frontend/src/**'
+      - 'website/package.json'
+      - 'website/src/**'
     branches: [ master ]
   pull_request:
     paths:
+      - '.github/**'
       - 'backend/**'
       - 'pyproject.toml'
       - 'poetry.lock'
+      - 'frontend/package.json'
+      - 'frontend/src/**'
+      - 'website/package.json'
+      - 'website/src/**'
     types: [ ready_for_review, opened, reopened, synchronize ]
 
 
