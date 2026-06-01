@@ -40,7 +40,6 @@ const TEST = {
                         const request = response.request()
                         const isGraphql = new RegExp(gqlRegex).test(request.url())
                         const isListTasks = request.postDataJSON()?.operationName == 'listAnnotationTask'
-                        console.debug(isGraphql, isListTasks, request.url(), request.postDataJSON())
                         return isGraphql && isListTasks
                     }),
                 ])
