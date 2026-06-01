@@ -50,3 +50,7 @@ fragment StorageItem on StorageUnion {
 query browseStorage($path: String!) {
     browse(path: $path) { ...StorageItem }
 }
+
+query searchStorage($path: String!) {
+    search(path: $path) { ...StorageItem }
+}

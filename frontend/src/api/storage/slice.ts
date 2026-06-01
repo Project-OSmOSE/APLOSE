@@ -1,6 +1,6 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { StorageGqlAPI } from './api';
-import type { ImportDatasetFromStorageMutation, SearchStorageQuery } from './storage.generated';
+import type { ImportDatasetFromStorageMutation } from './storage.generated';
 import { useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { AnnotationCampaignGqlAPI } from '@/api/annotation-campaign/api';
@@ -29,13 +29,6 @@ export const StorageSlice = createSlice({
         },
     },
     extraReducers: builder => {
-
-        builder.addMatcher(StorageGqlAPI.endpoints.searchStorage.matchFulfilled,
-            (state, action: { payload: SearchStorageQuery }) => {
-                if (!action.payload.search) return
-                state.record[action.payload.search.path] = action.payload.search
-                state.invalidatedPath = state.invalidatedPath.filter(p => p !== action.payload.search?.path)
-            })
 
         builder.addMatcher(StorageGqlAPI.endpoints.importDatasetFromStorage.matchFulfilled,
             (state, action: { payload: ImportDatasetFromStorageMutation }) => {
@@ -71,11 +64,26 @@ export const useStorageSearch = (path: string): StorageItemFragment | undefined 
     const record = useAppSelector(selectRecord)
     const invalidatedPath = useAppSelector(selectInvalidatedPath)
 
-    const [ search ] = StorageGqlAPI.endpoints.searchStorage.useLazyQuery()
+    const dispatch = useAppDispatch()
+
+    const {
+        refetch: search,
+        data: item,
+    } = useQuery({
+        ...Storage.API.searchQuery({ path }),
+        enabled: false,
+    })
+
     useEffect(() => {
-        if (invalidatedPath.includes(path)) search({ path })
-        if (!record[path]) search({ path })
+        if (invalidatedPath.includes(path)) search()
+        if (!record[path]) search()
     }, [ invalidatedPath, path, record ]);
+
+    useEffect(() => {
+        if (!item) return
+        dispatch(StorageSlice.actions.setRecord(item))
+        dispatch(StorageSlice.actions.validatePath(item?.path))
+    }, [ item ]);
 
     return useMemo(() => record[path], [ record, path ]);
 }
