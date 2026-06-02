@@ -12,18 +12,18 @@ export const NavigationButtons: React.FC = () => {
     const { info, isEditionAuthorized } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const canNavigate = useAnnotatorCanNavigate()
     const openAnnotator = useOpenAnnotator()
-    const { submit, isLoading } = useAnnotatorSubmit()
+    const { submit, isPending } = useAnnotatorSubmit()
 
     const navPrevious = useCallback(async () => {
-        if (isLoading) return;
+        if (isPending) return;
         if (!info?.previousSpectrogramId) return;
         if (await canNavigate()) openAnnotator(info.previousSpectrogramId)
-    }, [ openAnnotator, isLoading, info, canNavigate ])
+    }, [ openAnnotator, isPending, info, canNavigate ])
     const navNext = useCallback(async () => {
-        if (isLoading) return;
+        if (isPending) return;
         if (!info?.nextSpectrogramId) return;
         if (await canNavigate()) openAnnotator(info.nextSpectrogramId)
-    }, [ canNavigate, openAnnotator, isLoading, info ])
+    }, [ canNavigate, openAnnotator, isPending, info ])
 
     useKeyDownEvent([ 'ArrowLeft' ], navPrevious)
     useKeyDownEvent([ 'ArrowRight' ], navNext)
@@ -32,7 +32,7 @@ export const NavigationButtons: React.FC = () => {
         <div className={ styles.navigation }>
             <TooltipOverlay title="Shortcut" tooltipContent={ <p><Kbd keys="left"/> : Load previous recording</p> }>
                 <IonButton color="medium" fill="clear" size="small"
-                           disabled={ isLoading || !info?.previousSpectrogramId }
+                           disabled={ isPending || !info?.previousSpectrogramId }
                            onClick={ navPrevious }>
                     <IonIcon icon={ caretBack } slot="icon-only"/>
                 </IonButton>
@@ -42,7 +42,7 @@ export const NavigationButtons: React.FC = () => {
                 <TooltipOverlay title="Shortcut"
                                 tooltipContent={ <p><Kbd keys="enter"/> : Submit & load next recording</p> }>
                     <IonButton color="medium" fill="outline"
-                               disabled={ isLoading }
+                               disabled={ isPending }
                                onClick={ submit }>
                         Submit &amp; load next recording
                     </IonButton>
@@ -50,7 +50,7 @@ export const NavigationButtons: React.FC = () => {
 
             <TooltipOverlay title="Shortcut" tooltipContent={ <p><Kbd keys="right"/> : Load next recording</p> }>
                 <IonButton color="medium" fill="clear" size="small"
-                           disabled={ isLoading || !info?.nextSpectrogramId }
+                           disabled={ isPending || !info?.nextSpectrogramId }
                            onClick={ navNext }>
                     <IonIcon icon={ caretForward } slot="icon-only"/>
                 </IonButton>

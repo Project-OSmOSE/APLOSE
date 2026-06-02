@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from 'react';
 import { useToast } from '@/components/ui';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
-import { useSubmitTask } from '@/api';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 import { useKeyDownEvent } from '@/features/UX/Events';
+import { AnnotationTask } from '@/features';
 import { convertAnnotationsToPost, selectAllAnnotations } from '@/features/Annotator/Annotation';
 import { convertCommentsToPost, selectTaskComments } from '@/features/Annotator/Comment';
 import { useAppSelector } from '@/features/App';
@@ -11,9 +11,17 @@ import { selectAllFileIsSeen, selectStart } from '@/features/Annotator/UX';
 import {
     Route,
 } from '@/routes/_authenticated/annotation-campaign/$campaignID/phase.$phaseType/spectrogram/$spectrogramID'
+import { useMutation } from '@tanstack/react-query';
 
 export const useAnnotatorSubmit = () => {
     const {
+        campaign,
+    } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const {
+        phase,
+    } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
+    const {
+        spectrogram,
         info,
         isEditionAuthorized,
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
@@ -22,7 +30,9 @@ export const useAnnotatorSubmit = () => {
     const navigate = useNavigate()
     const allAnnotations = useAppSelector(selectAllAnnotations)
     const taskComments = useAppSelector(selectTaskComments)
-    const { submitTask, isSuccess, error, ...submitInfo } = useSubmitTask()
+    const { mutate: submitTask, isSuccess, error, ...submitInfo } = useMutation(
+        AnnotationTask.API.submitMutation,
+    )
 
     const params = Route.useParams();
     const search = Route.useSearch();
@@ -38,12 +48,16 @@ export const useAnnotatorSubmit = () => {
             });
             if (!force) return;
         }
-        submitTask(
-            convertAnnotationsToPost(allAnnotations),
-            convertCommentsToPost(taskComments),
-            start,
-        )
-    }, [ openAnnotator, toast, allAnnotations, isEditionAuthorized, submitTask, allFileIsSeen, start, taskComments ])
+        submitTask({
+            campaignID: campaign.id,
+            spectrogramID: spectrogram.id,
+            phase: phase.phase,
+            annotations: convertAnnotationsToPost(allAnnotations),
+            taskComments: convertCommentsToPost(taskComments),
+            startedAt: start.toISOString(),
+            endedAt: new Date().toISOString(),
+        })
+    }, [ openAnnotator, toast, allAnnotations, isEditionAuthorized, submitTask, allFileIsSeen, start, taskComments, campaign, phase, spectrogram ])
     useKeyDownEvent([ 'Enter', 'NumpadEnter' ], submit)
 
     useEffect(() => {
