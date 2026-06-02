@@ -24,3 +24,33 @@ mutation endPhase($id: ID!) {
         ok
     }
 }
+
+mutation createAnnotationPhase(
+    $campaignID: ID!
+    $labelsWithAcousticFeatures: [ID]!
+    $labelSetID: ID!
+    $confidenceSetID: ID
+    $allowPointAnnotation: Boolean!
+) {
+    createAnnotationPhase(campaignId: $campaignID, type: Annotation) {
+        id
+    }
+    updateAnnotationCampaign(input: {
+        id: $campaignID
+        allowPointAnnotation: $allowPointAnnotation
+        labelsWithAcousticFeatures: $labelsWithAcousticFeatures
+        labelSet: $labelSetID
+        confidenceSet: $confidenceSetID
+    }) {
+        errors {
+            field
+            messages
+        }
+    }
+}
+
+mutation createVerificationPhase($campaignID: ID!) {
+    createAnnotationPhase(campaignId: $campaignID, type: Verification) {
+        id
+    }
+}

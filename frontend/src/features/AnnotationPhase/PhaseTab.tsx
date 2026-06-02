@@ -47,13 +47,19 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
     const onSuccess = useCallback(() => {
         queryClient.invalidateQueries({ queryKey: queryKeys.campaign.byId({ id: campaign.id }) })
         queryClient.invalidateQueries({ queryKey: queryKeys.campaign.base })
-    }, [campaign])
+        queryClient.invalidateQueries({
+            queryKey: queryKeys.phase.get({
+                campaignID: campaign.id,
+                phase: phaseType,
+            }),
+        })
+    }, [ campaign, phaseType ])
     const { mutate: endPhase } = useMutation({
         ...endMutation,
-        onSuccess
+        onSuccess,
     })
     const end = useCallback(async () => {
-        if (!phase ) return;
+        if (!phase) return;
         if (phase.completedTasksCount < phase.tasksCount) {
             // If annotators haven't finished yet, ask for confirmation
             return alert.showAlert({
