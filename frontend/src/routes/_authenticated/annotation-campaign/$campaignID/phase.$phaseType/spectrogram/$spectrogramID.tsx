@@ -1,16 +1,12 @@
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
-import { createFileRoute } from '@tanstack/react-router'
-import { IonSpinner } from '@ionic/react';
+import { createFileRoute, notFound } from '@tanstack/react-router'
 
-import { GraphQLErrorText } from '@/components/ui';
-
-import { AnnotationPhaseType, useAnnotationTask } from '@/api';
+import { AnnotationPhaseType } from '@/api';
 import { useAppSelector } from '@/features/App';
-import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 import { AudioDownloadButton, CurrentTime, PlaybackRateSelect, PlayPauseButton, useAudio } from '@/features/Audio';
 import { PointerInfo, usePointer } from '@/features/Annotator/Pointer';
 import { AnnotatorSkeleton } from '@/features/Annotator/Skeleton';
-import { AnalysisSelect } from '@/features/Annotator/Analysis';
+import { AnalysisSelect, selectAnalysisID } from '@/features/Annotator/Analysis';
 import {
     BrightnessSelect,
     ColormapReverseButton,
@@ -28,18 +24,19 @@ import { CommentBloc } from '@/features/Annotator/Comment';
 import { AnnotationsBloc } from '@/features/Annotator/Annotation/AnnotationsBloc';
 
 import styles from './$spectrogramID.module.scss';
-import type { AllSpectrogramsFilters } from '@/features/AnnotationSpectrogram';
+import { type AllSpectrogramsFilters } from '@/features/AnnotationSpectrogram';
+import { queryClient } from '@/api/queryClient';
+import { AnnotationSpectrogram, User } from '@/features';
+import { useQuery } from '@tanstack/react-query';
 
 const AnnotatorPage: React.FC = () => {
-    const campaignID = Route.useParams({select: ({campaignID}) => campaignID});
+    const campaignID = Route.useParams({ select: ({ campaignID }) => campaignID });
+    const { spectrogram, isEditionAuthorized } = Route.useLoaderData()
 
-    const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
+    const analysisID = useAppSelector(selectAnalysisID)
     const {
-        spectrogram,
-        paths,
-        isFetching,
-        error,
-    } = useAnnotationTask({ refetchOnMountOrArgChange: true });
+        data: paths,
+    } = useQuery({ ...AnnotationSpectrogram.API.getPathQuery({ spectrogramID: spectrogram.id, analysisID: analysisID ?? '' }), enabled: !!analysisID, refetchOnMount: true });
     const audio = useAudio()
 
     useEffect(() => {
@@ -69,12 +66,6 @@ const AnnotatorPage: React.FC = () => {
     }, [ pointer.position ]);
 
     return useMemo(() => {
-        if (isFetching) return <AnnotatorSkeleton children={ <IonSpinner/> }/>
-        if (error) return <AnnotatorSkeleton children={ <GraphQLErrorText error={ error }/> }/>
-        if (!spectrogram) return <AnnotatorSkeleton>
-            <div></div>
-        </AnnotatorSkeleton>
-
         return <AnnotatorSkeleton>
             <div className={ styles.annotator }>
 
@@ -125,7 +116,7 @@ const AnnotatorPage: React.FC = () => {
                 </div>
             </div>
         </AnnotatorSkeleton>
-    }, [ isFetching, error, spectrogram, isEditionAuthorized ])
+    }, [ spectrogram, isEditionAuthorized ])
 }
 
 export const Route = createFileRoute(
@@ -134,6 +125,15 @@ export const Route = createFileRoute(
     validateSearch: (search: Record<string, unknown>) => search as AllSpectrogramsFilters,
     params: {
         parse: rawParams => rawParams as { campaignID: string, spectrogramID: string, phaseType: AnnotationPhaseType },
+    },
+    loaderDeps: ({ search }) => search as AllSpectrogramsFilters,
+    loader: async ({ params: { campaignID, phaseType, spectrogramID }, deps }) => {
+        const user = await queryClient.ensureQueryData(User.API.currentQuery)
+        const { spectrogram, ...data } = await queryClient.ensureQueryData(AnnotationSpectrogram.API.getQuery({
+            campaignID, phaseType, spectrogramID, ...deps, annotatorID: user.id,
+        }))
+        if (!spectrogram) throw notFound()
+        return { spectrogram, ...data }
     },
     component: AnnotatorPage,
 })

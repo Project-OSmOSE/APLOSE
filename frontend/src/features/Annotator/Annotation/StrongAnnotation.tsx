@@ -1,11 +1,10 @@
 import React, { Fragment, type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Annotation, focusAnnotation } from './slice';
-import { AnnotationType, useAnnotationTask } from '@/api';
+import { AnnotationType } from '@/api';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectHiddenLabels } from '@/features/Annotator/Label';
-import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
-import { selectIsDrawingEnabled, selectIsSelectingPositionForAnnotation } from '@/features/Annotator/UX';
+import { selectIsSelectingPositionForAnnotation } from '@/features/Annotator/UX';
 import { type ExtendedDivPosition, useExtendedDiv } from '@/components/ui/ExtendedDiv';
 import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
 
@@ -16,19 +15,20 @@ import { AnnotationHeadContent } from '@/features/Annotator/Annotation/Head';
 import { MOUSE_DOWN_EVENT } from '@/features/UX';
 import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
 import { useLoaderData } from '@tanstack/react-router';
+import { useIsDrawingEnabled } from '@/features/Annotator/UX/hooks';
 
 const POINT_RADIUS = 16; // px
 
 export const StrongAnnotation: React.FC<{
     annotation: Annotation
 }> = ({ annotation }) => {
+    const { spectrogram, isEditionAuthorized } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const { labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const dispatch = useAppDispatch();
-    const { spectrogram } = useAnnotationTask()
     const windowWidth = useWindowWidth()
     const windowHeight = useWindowHeight()
 
-    const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
-    const isDrawingEnabled = useAppSelector(selectIsDrawingEnabled)
+    const isDrawingEnabled = useIsDrawingEnabled()
     const isSelectingAnnotationFrequency = useAppSelector(selectIsSelectingPositionForAnnotation)
 
     const focusedAnnotation = useAppSelector(selectAnnotation)
@@ -39,7 +39,6 @@ export const StrongAnnotation: React.FC<{
         dispatch(focusAnnotation(annotation))
     }, [ annotation, dispatch ])
 
-    const { labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const hiddenLabels = useAppSelector(selectHiddenLabels)
 
     const [ isMouseHover, setIsMouseHover ] = useState<boolean>(false);

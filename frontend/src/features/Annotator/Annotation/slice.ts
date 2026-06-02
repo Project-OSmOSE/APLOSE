@@ -5,12 +5,7 @@ import {
   AnnotationInput,
   AnnotationType,
   AnnotationValidationSerializerInput,
-  getAnnotationTaskFulfilled,
-  GetAnnotationTaskQuery,
 } from '@/api';
-import type { GetAnnotationTaskQueryVariables } from '@/api/annotation-task/annotation-task.generated';
-import { convertGqlToAnnotations } from '@/features/Annotator/Annotation/conversions';
-import { User } from '@/features';
 
 
 export type Comment = Omit<AnnotationCommentSerializerInput, 'id'> & { id: number }
@@ -33,16 +28,12 @@ type AnnotationState = {
   allAnnotations: Annotation[];
   id?: number;
   tempAnnotation?: TempAnnotation;
-
-  _campaignID?: string
 }
 
 const initialState: AnnotationState = {
   allAnnotations: [],
   id: undefined,
   tempAnnotation: undefined,
-
-  _campaignID: undefined,
 }
 
 export const AnnotatorAnnotationSlice = createSlice({
@@ -77,25 +68,14 @@ export const AnnotatorAnnotationSlice = createSlice({
     clearTempAnnotation: (state) => {
       state.tempAnnotation = undefined
     },
-  },
-  extraReducers: builder => {
-    builder.addMatcher(getAnnotationTaskFulfilled, (state: AnnotationState, action: {
-      payload: GetAnnotationTaskQuery,
-      meta: { arg: { originalArgs: GetAnnotationTaskQueryVariables } }
-    }) => {
-      if (state._campaignID !== action.meta.arg.originalArgs.campaignID) {
-        state._campaignID = action.meta.arg.originalArgs.campaignID
-        state.id = initialState.id
-      }
-      const annotations = [
-          ...action.payload.annotationSpectrogramById?.task?.userAnnotations?.results ?? [],
-        ...action.payload.annotationSpectrogramById?.task?.annotationsToCheck?.results ?? [],
-      ].filter(a => a !== null).map(a => a!) ?? []
-      const user = User.API.currentQueryCache()?.state.data
-      state.allAnnotations = convertGqlToAnnotations(annotations, action.meta.arg.originalArgs.phaseType, user?.id)
-      const defaultAnnotation = [ ...state.allAnnotations ].reverse().pop();
-      state.id = defaultAnnotation?.id
-    })
+
+    initCampaign: (state) => {
+      state.id = initialState.id
+    },
+    initSpectrogram: (state, action: {payload: {all: Annotation[], default?: Annotation}}) => {
+      state.allAnnotations = action.payload.all
+      state.id = action.payload.default?.id
+    },
   },
   selectors: {
     selectAllAnnotations: state => state.allAnnotations,

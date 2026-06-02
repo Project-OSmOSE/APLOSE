@@ -2,12 +2,12 @@ import React from 'react';
 import styles from './styles.module.scss';
 import { FadedText } from '@/components/ui';
 import { formatTime } from '@/service/function';
-import { useAnnotationTask } from '@/api';
 import { usePointer } from '@/features/Annotator/Pointer';
+import { useLoaderData } from '@tanstack/react-router';
 
 export const PointerInfo: React.FC = () => {
+  const { spectrogram } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
   const pointer = usePointer()
-  const { spectrogram } = useAnnotationTask()
 
   return <div className={ [ styles.pointerInfo, pointer.position ? '' : styles.hidden ].join(' ') }>
     <FadedText>Pointer</FadedText>

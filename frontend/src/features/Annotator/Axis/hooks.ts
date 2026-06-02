@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { LinearScaleService, MultiScaleService } from '@/components/ui';
-import { useAnnotationTask } from '@/api';
 import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
+import { useLoaderData } from '@tanstack/react-router';
 
 export const useTimeScale = () => {
-    const { spectrogram } = useAnnotationTask()
+    const { spectrogram } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const width = useWindowWidth()
 
     return useMemo(() => new LinearScaleService(

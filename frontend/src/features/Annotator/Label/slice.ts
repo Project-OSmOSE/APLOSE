@@ -1,12 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { type Annotation, blur, focusAnnotation } from '@/features/Annotator/Annotation/slice';
-import type {
-    GetAnnotationTaskQuery,
-    GetAnnotationTaskQueryVariables,
-} from '@/api/annotation-task/annotation-task.generated';
-import { getAnnotationTaskFulfilled } from '@/api';
-import { convertGqlToAnnotations } from '@/features/Annotator/Annotation';
-import { User } from '@/features';
 
 type LabelState = {
     hiddenLabels: string[];
@@ -29,6 +22,14 @@ export const AnnotatorLabelSlice = createSlice({
         setHiddenLabels: (state, action: { payload: string[] }) => {
             state.hiddenLabels = action.payload;
         },
+        initCampaign: (state) => {
+            state.focus = initialState.focus
+            state.hiddenLabels = initialState.hiddenLabels
+        },
+        initSpectrogram: (state, action: { payload: { focus: string | undefined } }) => {
+            state.focus = action.payload.focus
+            state.hiddenLabels = initialState.hiddenLabels
+        },
     },
     extraReducers: builder => {
         builder.addCase(focusAnnotation, (state: LabelState, action: { payload: Annotation }) => {
@@ -36,25 +37,6 @@ export const AnnotatorLabelSlice = createSlice({
         })
         builder.addCase(blur, (state: LabelState) => {
             state.focus = undefined
-        })
-
-        builder.addMatcher(getAnnotationTaskFulfilled, (state: LabelState, action: {
-            payload: GetAnnotationTaskQuery
-            meta: { arg: { originalArgs: GetAnnotationTaskQueryVariables } }
-        }) => {
-            if (state._campaignID !== action.meta.arg.originalArgs.campaignID) {
-                state._campaignID = action.meta.arg.originalArgs.campaignID
-                state.focus = initialState.focus
-            } else {
-                const annotations = [
-                    ...action.payload.annotationSpectrogramById?.task?.userAnnotations?.results ?? [],
-                    ...action.payload.annotationSpectrogramById?.task?.annotationsToCheck?.results ?? [],
-                ].filter(a => a !== null).map(a => a!) ?? []
-                const user = User.API.currentQueryCache()?.state.data
-                const defaultAnnotation = [ ...convertGqlToAnnotations(annotations, action.meta.arg.originalArgs.phaseType, user?.id) ].reverse().pop();
-                state.focus = defaultAnnotation?.update?.label ?? defaultAnnotation?.label
-            }
-            state.hiddenLabels = initialState.hiddenLabels
         })
     },
     selectors: {

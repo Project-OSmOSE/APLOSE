@@ -1,9 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { type Annotation, blur, focusAnnotation } from '@/features/Annotator/Annotation/slice';
-import { ConfidenceNode, getAnnotationTaskFulfilled, type GetAnnotationTaskQuery } from '@/api';
-import type { GetAnnotationTaskQueryVariables } from '@/api/annotation-task/annotation-task.generated';
-import { convertGqlToAnnotations } from '@/features/Annotator/Annotation';
-import { User } from '@/features';
+import { ConfidenceNode } from '@/api';
 
 export type Confidence = Pick<ConfidenceNode, 'isDefault' | 'label'>
 
@@ -26,9 +23,12 @@ export const AnnotatorConfidenceSlice = createSlice({
         focus: (state, action: { payload: string }) => {
             state.focus = action.payload;
         },
-        init: (state, action: { payload: { default: string | undefined } }) => {
+        initCampaign: (state, action: { payload: { default: string | undefined } }) => {
             state._defaultConfidence = action.payload.default
             state.focus = state._defaultConfidence ?? initialState.focus
+        },
+        initSpectrogram: (state, action: { payload: { focus: string | undefined } }) => {
+            state.focus = action.payload.focus ?? state._defaultConfidence
         },
     },
     extraReducers: builder => {
@@ -37,18 +37,6 @@ export const AnnotatorConfidenceSlice = createSlice({
         })
         builder.addCase(blur, (state: ConfidenceState) => {
             state.focus = state._defaultConfidence
-        })
-        builder.addMatcher(getAnnotationTaskFulfilled, (state: ConfidenceState, action: {
-            payload: GetAnnotationTaskQuery
-            meta: { arg: { originalArgs: GetAnnotationTaskQueryVariables } }
-        }) => {
-            const annotations = [
-                ...action.payload.annotationSpectrogramById?.task?.userAnnotations?.results ?? [],
-                ...action.payload.annotationSpectrogramById?.task?.annotationsToCheck?.results ?? [],
-            ].filter(a => a !== null).map(a => a!) ?? []
-            const user = User.API.currentQueryCache()?.state.data
-            const defaultAnnotation = [ ...convertGqlToAnnotations(annotations, action.meta.arg.originalArgs.phaseType, user?.id) ].reverse().pop();
-            state.focus = defaultAnnotation?.update?.confidence ?? defaultAnnotation?.confidence ?? state._defaultConfidence ?? initialState.focus
         })
     },
     selectors: {

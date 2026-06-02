@@ -1,3 +1,8 @@
+fragment Comment on AnnotationCommentNode {
+    id
+    comment
+}
+
 query allAnnotationSpectrograms(
     $annotatorID: ID!
     $campaignID: ID!
@@ -100,3 +105,211 @@ query allAnnotationSpectrograms(
         totalCount
     }
 }
+
+query getAnnotationSpectrogram(
+    $spectrogramID: ID!
+    $annotatorID: ID!
+    $campaignID: ID!
+    $phaseType: AnnotationPhaseType!
+
+    # Filtering
+    $search: String
+    $status: AnnotationTaskStatus
+    $from: DateTime
+    $to: DateTime
+
+    $onlyAssigned: Boolean
+    $withAnnotations: Boolean
+    $annotationLabel: String
+    $annotationConfidence: String
+    $annotationDetector: ID
+    $annotationAnnotator: ID
+    $withAcousticFeatures: Boolean
+) {
+    annotationSpectrogramById(id: $spectrogramID) {
+        id
+        filename
+        start
+        duration
+
+        isAssigned(phase: $phaseType, campaignId: $campaignID)
+
+        task(
+            phase: $phaseType
+            campaignId: $campaignID
+        ) {
+            status
+
+            userComments(
+                author: $annotatorID,
+                annotationPhase_Phase: $phaseType
+            ) {
+                results { ... Comment }
+            }
+
+            userAnnotations {
+                results {
+                    id
+                    annotationPhase {
+                        id
+                    }
+                    type
+                    startTime
+                    endTime
+                    startFrequency
+                    endFrequency
+                    label {
+                        name
+                    }
+                    confidence {
+                        label
+                    }
+                    detectorConfiguration {
+                        id
+                        detector {
+                            id
+                            name
+                        }
+                    }
+                    annotator {
+                        id,
+                        displayName
+                    }
+                    comments(author: $annotatorID) {
+                        results { ... Comment }
+                    }
+                    validations(annotator: $annotatorID) {
+                        results {
+                            id
+                            isValid
+                        }
+                    }
+                    isUpdateOf {
+                        id
+                    }
+                    acousticFeatures {
+                        id
+                        isIntensityTooLow
+                        doesOverlapOtherSignals
+                        startFrequency
+                        endFrequency
+                        relativeMinFrequencyCount
+                        relativeMaxFrequencyCount
+                        stepsCount
+                        hasHarmonics
+                        trend
+                        hasSidebands
+                        hasSubharmonics
+                        hasFrequencyJumps
+                        frequencyJumpsCount
+                        hasDeterministicChaos
+                    }
+                }
+            }
+            annotationsToCheck {
+                results {
+                    id
+                    annotationPhase {
+                        id
+                    }
+                    type
+                    startTime
+                    endTime
+                    startFrequency
+                    endFrequency
+                    label {
+                        name
+                    }
+                    confidence {
+                        label
+                    }
+                    detectorConfiguration {
+                        id
+                        detector {
+                            id
+                            name
+                        }
+                    }
+                    annotator {
+                        id,
+                        displayName
+                    }
+                    comments(author: $annotatorID) {
+                        results { ... Comment }
+                    }
+                    validations(annotator: $annotatorID) {
+                        results {
+                            id
+                            isValid
+                        }
+                    }
+                    isUpdateOf {
+                        id
+                    }
+                    acousticFeatures {
+                        id
+                        isIntensityTooLow
+                        doesOverlapOtherSignals
+                        startFrequency
+                        endFrequency
+                        relativeMinFrequencyCount
+                        relativeMaxFrequencyCount
+                        stepsCount
+                        hasHarmonics
+                        trend
+                        hasSidebands
+                        hasSubharmonics
+                        hasFrequencyJumps
+                        frequencyJumpsCount
+                        hasDeterministicChaos
+                    }
+                }
+            }
+        }
+    }
+
+    allAnnotationSpectrograms(
+        # Sort
+        orderBy: "start"
+
+        # Only assigned
+        annotator: $annotatorID
+        annotationCampaign: $campaignID
+        phase: $phaseType
+        onlyAssigned: $onlyAssigned
+
+        # Search
+        filename_Icontains: $search
+
+        # Dates filters
+        end_Gte: $from
+        start_Lte: $to
+
+        # Task filters
+        annotationTasks_Status: $status
+
+        # Annotation filters
+        annotations_Exists: $withAnnotations
+        annotations_LabelName: $annotationLabel
+        annotations_Confidence_Label: $annotationConfidence
+        annotations_Detector: $annotationDetector
+        annotations_Annotator: $annotationAnnotator
+        annotations_AcousticFeatures_Exists: $withAcousticFeatures
+    ) {
+        currentIndex(spectrogramId: $spectrogramID)
+        totalCount
+        previousSpectrogramId(spectrogramId: $spectrogramID)
+        nextSpectrogramId(spectrogramId: $spectrogramID)
+    }
+}
+
+query getAnnotationSpectrogramPaths(
+    $spectrogramID: ID!
+    $analysisID: ID!
+) {
+    spectrogramPaths(spectrogramId: $spectrogramID, analysisId: $analysisID) {
+        audioPath
+        spectrogramPath
+    }
+}
+

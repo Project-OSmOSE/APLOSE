@@ -3,12 +3,7 @@ import { type Annotation, focusAnnotation } from './slice';
 import { Td, Th, Tr, useModal } from '@/components/ui';
 import styles from './styles.module.scss';
 import { AnnotationLabelInfo } from './AnnotationLabelInfo';
-import {
-    AnnotationPhaseType,
-    AnnotationType,
-    type GetAnnotationTaskQuery,
-    useAnnotationTask,
-} from '@/api';
+import { AnnotationPhaseType, AnnotationType } from '@/api';
 import {
     useGetAnnotations,
     useInvalidateAnnotation,
@@ -29,22 +24,17 @@ import { useKeyDownEvent } from '@/features/UX';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 import { UpdateLabelModal } from '@/features/Annotator/Label/UpdateLabelModal';
-import { useLoaderData, useParams } from '@tanstack/react-router';
-
-type Spectro = NonNullable<GetAnnotationTaskQuery['annotationSpectrogramById']>
-type Task = NonNullable<Spectro['task']>
-type CompleteInfo = Pick<NonNullable<NonNullable<Task['userAnnotations']>['results'][number]>, 'detectorConfiguration' | 'annotator'>
+import { useLoaderData } from '@tanstack/react-router';
 
 export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
-    const { phaseType } = useParams({ strict: false });
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
+    const { annotations } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const focusedAnnotation = useAppSelector(selectAnnotation)
     const getAnnotations = useGetAnnotations()
     const validate = useValidateAnnotation()
     const invalidate = useInvalidateAnnotation()
     const removeAnnotation = useRemoveAnnotation()
-    const { annotations } = useAnnotationTask()
     const focusTime = useFocusCanvasOnTime()
     const { user } = useLoaderData({ from: '/_authenticated' })
 
@@ -63,9 +53,9 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
     })
     const dispatch = useAppDispatch();
 
-    const completeInfo: CompleteInfo | undefined = useMemo(() => {
+    const completeInfo = useMemo(() => {
         if (annotation.annotationPhase == phase?.id) {
-            return { annotator: user }
+            return { annotator: user, detectorConfiguration: undefined }
         }
         return annotations?.find(a => a.id === annotation.id.toString())
     }, [ annotations, annotation, user, phase ])
@@ -116,7 +106,7 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
         { campaign.confidenceSet && <Td><AnnotationConfidenceInfo annotation={ annotation }/></Td> }
 
         {/* Detector | Annotator */ }
-        { phaseType === AnnotationPhaseType.Verification && (
+        { phase.phase === AnnotationPhaseType.Verification && (
             completeInfo?.detectorConfiguration ?
                 <Td>
                     <RiRobot2Fill/>
@@ -135,7 +125,7 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
         </Td>
 
         {/* Validation */ }
-        { phaseType === AnnotationPhaseType.Verification &&
+        { phase.phase === AnnotationPhaseType.Verification &&
             <Td>
                 { completeInfo?.annotator?.id !== user.id ? <Fragment>
                     <IonButton className="validate"

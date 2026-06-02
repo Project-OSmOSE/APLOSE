@@ -8,7 +8,11 @@ import type { AllCampaignsQueryVariables, GetCampaignQueryVariables } from '@/fe
 import type { AllSpectrogramAnalysisQueryVariables } from '@/features/SpectrogramAnalysis';
 import type { GetDetailedSoundByIdQueryVariables, GetDetailedSourceByIdQueryVariables } from '@/features/Ontology';
 import type { GetAnnotationPhaseQueryVariables } from '@/features/AnnotationPhase';
-import type { AllAnnotationSpectrogramsQueryVariables } from '@/features/AnnotationSpectrogram';
+import type {
+    AllAnnotationSpectrogramsQueryVariables,
+    GetAnnotationSpectrogramPathsQueryVariables,
+    GetAnnotationSpectrogramQueryVariables,
+} from '@/features/AnnotationSpectrogram';
 
 /**
  * Keys factory pour les requêtes GraphQL
@@ -26,7 +30,21 @@ export const queryKeys = {
         forPhase: (variables: FileRangesForPhaseQueryVariables) => [ 'file-range', 'for phase', variables.campaignID, variables.phaseType ] as const,
     },
     spectrogram: {
-        all: ({ campaignID, phaseType, ...variables }: AllAnnotationSpectrogramsQueryVariables) => [ 'spectrogram', campaignID, phaseType, variables ] as const,
+        all: ({
+                  campaignID,
+                  phaseType,
+                  ...variables
+              }: AllAnnotationSpectrogramsQueryVariables) => [ 'spectrogram', campaignID, phaseType, variables ] as const,
+        get: ({
+                  campaignID,
+                  phaseType,
+                  spectrogramID,
+                  ...variables
+              }: GetAnnotationSpectrogramQueryVariables) => [ 'spectrogram', campaignID, phaseType, spectrogramID, variables ] as const,
+        getPath: ({
+                      spectrogramID,
+                      analysisID,
+                  }: GetAnnotationSpectrogramPathsQueryVariables) => [ 'spectrogram', 'path', spectrogramID, analysisID ] as const,
     },
     channelConfiguration: {
         forDataset: (variables: ChannelConfigurationsForDatasetQueryVariables) => [ 'channel-configuration', 'for dataset', variables.datasetID ] as const,

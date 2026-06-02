@@ -5,50 +5,56 @@ import { IonIcon, IonNote } from '@ionic/react';
 import { helpBuoyOutline } from 'ionicons/icons/index.js';
 import styles from './styles.module.scss';
 import { IoCheckmarkCircleOutline, IoChevronForwardOutline } from 'react-icons/io5';
-import { AnnotationTaskStatus, useAnnotationTask } from '@/api';
+import { AnnotationTaskStatus } from '@/api';
 import { gqlAPI } from '@/api/baseGqlApi';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { useAnnotatorCanNavigate } from '@/features/Annotator/Navigation';
 import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
-import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 import { PointerProvider } from '@/features/Annotator/Pointer/context';
-import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
+import { useLoaderData, useSearch } from '@tanstack/react-router';
 import { AnnotatorVisualConfigurationSlice } from '@/features/Annotator/VisualConfiguration';
 import type { Colormap } from '@/features/Colormap';
 import { AnnotatorConfidenceSlice } from '@/features/Annotator/Confidence';
 import { AnnotatorAnalysisSlice, selectAnalysisID } from '@/features/Annotator/Analysis';
+import { AnnotatorLabelSlice } from '@/features/Annotator/Label';
+import { AnnotatorUXSlice } from '@/features/Annotator/UX';
+import { AnnotatorCommentSlice } from '@/features/Annotator/Comment';
+import { cleanGqlList } from '@/api/utils';
+import { AnnotatorAnnotationSlice, convertGqlToAnnotations } from '@/features/Annotator/Annotation';
 
 export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
-    const { phaseType } = useParams({ strict: false });
     const search = useSearch({ strict: false });
+    const { user } = useLoaderData({ from: '/_authenticated' })
     const {
         campaign,
         confidences,
         analysis,
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
-    const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
+    const { spectrogram, annotations, info, isEditionAuthorized } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const analysisID = useAppSelector(selectAnalysisID)
-    const { spectrogram, navigationInfo } = useAnnotationTask();
     const canNavigate = useAnnotatorCanNavigate()
     const dispatch = useAppDispatch()
 
     const onBack = useCallback(() => {
         dispatch(gqlAPI.util.invalidateTags([ {
             type: 'AnnotationPhase',
-            id: phase?.id,
+            id: phase.id,
         } ]))
     }, [ phase, dispatch ])
 
     useEffect(() => {
-        dispatch(AnnotatorVisualConfigurationSlice.actions.init({
+        dispatch(AnnotatorVisualConfigurationSlice.actions.initCampaign({
             campaignDefaultColormap: campaign.colormapDefault as Colormap | undefined,
             campaignDefaultReversedColormap: campaign.colormapInvertedDefault ?? undefined,
             allowConfiguration: campaign.allowColormapTuning,
         }))
-        dispatch(AnnotatorConfidenceSlice.actions.init({
+        dispatch(AnnotatorUXSlice.actions.initCampaign())
+        dispatch(AnnotatorAnnotationSlice.actions.initCampaign())
+        dispatch(AnnotatorConfidenceSlice.actions.initCampaign({
             default: confidences?.find(c => c?.isDefault) ?? confidences.length ? confidences[0].label : undefined,
         }))
+        dispatch(AnnotatorLabelSlice.actions.initCampaign())
 
         // Select default analysis when none existing is selected
         if (analysis.length && !analysis.find(a => a.id === analysisID)) {
@@ -62,6 +68,27 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
             }
         }
     }, [ campaign ]);
+
+    useEffect(() => {
+        dispatch(AnnotatorVisualConfigurationSlice.actions.initSpectrogram())
+        dispatch(AnnotatorUXSlice.actions.initSpectrogram())
+
+        const allAnnotations = convertGqlToAnnotations(annotations, phase.phase, user.id)
+        const defaultAnnotation = [...allAnnotations].pop()
+        dispatch(AnnotatorConfidenceSlice.actions.initSpectrogram({
+            focus: defaultAnnotation?.confidence ?? undefined,
+        }))
+        dispatch(AnnotatorLabelSlice.actions.initSpectrogram({
+            focus: defaultAnnotation?.label ?? undefined,
+        }))
+        dispatch(AnnotatorCommentSlice.actions.initSpectrogram({
+            taskComments: cleanGqlList(spectrogram.task?.userComments?.results),
+        }))
+        dispatch(AnnotatorAnnotationSlice.actions.initSpectrogram({
+            all: allAnnotations,
+            default: defaultAnnotation
+        }))
+    }, [ spectrogram ]);
 
     return <PointerProvider>
         <AnnotatorCanvasContextProvider>
@@ -83,7 +110,7 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                                   size="small"
                                   onClick={ onBack }
                                   to="/annotation-campaign/$campaignID/phase/$phaseType"
-                                  params={ { campaignID: campaign.id, phaseType } }
+                                  params={ { campaignID: campaign.id, phaseType: phase.phase } }
                                   search={ search }>
                                 Back to campaign
                             </Link>
@@ -95,11 +122,11 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                             <IoChevronForwardOutline/> { spectrogram.filename } { spectrogram.task?.status === AnnotationTaskStatus.Finished &&
                             <IoCheckmarkCircleOutline/> }
                         </p>
-                        { isEditionAuthorized && navigationInfo?.totalCount &&
+                        { isEditionAuthorized && info?.totalCount &&
                             <Progress label="Position"
                                       className={ styles.progress }
-                                      value={ (navigationInfo.currentIndex ?? 0) + 1 }
-                                      total={ navigationInfo.totalCount }/> }
+                                      value={ (info.currentIndex ?? 0) + 1 }
+                                      total={ info.totalCount }/> }
                         { campaign.archive ? <IonNote>You cannot annotate an archived campaign.</IonNote> :
                             phase?.endedAt ? <IonNote>You cannot annotate an ended phase.</IonNote> :
                                 !spectrogram.isAssigned ?

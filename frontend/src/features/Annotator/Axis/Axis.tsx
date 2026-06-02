@@ -10,10 +10,10 @@ import {
 import { useAxis } from '@/components/ui';
 import { formatTime, frequencyToString } from '@/service/function';
 import { useFrequencyScale, useTimeScale } from './hooks'
-import { useAnnotationTask } from '@/api';
+import { useLoaderData } from '@tanstack/react-router';
 
 export const TimeAxis: React.FC = () => {
-  const { spectrogram } = useAnnotationTask()
+  const { spectrogram } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
   const timeScale = useTimeScale()
   const width = useWindowWidth()
   const { xAxisCanvasRef } = useAnnotatorCanvasContext()

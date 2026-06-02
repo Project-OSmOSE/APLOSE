@@ -1,16 +1,27 @@
 import { useCallback, useRef } from 'react';
 import { selectZoom } from '@/features/Annotator/Zoom';
-import { useAnnotationTask } from '@/api';
 import { useToast } from '@/components/ui';
 import { useWindowHeight } from '@/features/Annotator/Canvas';
 import { useTimeScale } from '@/features/Annotator/Axis';
 import { useAppSelector } from '@/features/App';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
+import { useLoaderData } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
+import { AnnotationSpectrogram } from '@/features';
 
 export const useDrawSpectrogram = () => {
+    const { spectrogram } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const analysis = useAnnotatorAnalysis()
     const zoom = useAppSelector(selectZoom)
-    const { spectrogram, paths } = useAnnotationTask()
+
+    const {
+        data: paths,
+    } = useQuery({
+        ...AnnotationSpectrogram.API.getPathQuery({
+            spectrogramID: spectrogram.id,
+            analysisID: analysis?.id ?? '',
+        }), enabled: !!analysis,
+    });
     const height = useWindowHeight()
     const timeScale = useTimeScale()
     const toast = useToast()

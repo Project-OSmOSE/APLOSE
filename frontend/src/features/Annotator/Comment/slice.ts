@@ -1,47 +1,45 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { AnnotationCommentInput, getAnnotationTaskFulfilled, type GetAnnotationTaskQuery } from '@/api';
+import { AnnotationCommentInput } from '@/api';
+import { CommentFragment } from '@/features/AnnotationSpectrogram';
 
 
 export type Comment = Omit<AnnotationCommentInput, 'id'> & { id: number }
 type AnnotationCommentState = {
-  taskComments: Comment[];
+    taskComments: Comment[];
 }
 
 const initialState: AnnotationCommentState = {
-  taskComments: [],
+    taskComments: [],
 }
 
 export const AnnotatorCommentSlice = createSlice({
-  name: 'AnnotatorComment',
-  initialState,
-  reducers: {
-    addTaskComment: (state, action: { payload: Comment }) => {
-      state.taskComments = [ ...state.taskComments, action.payload ];
+    name: 'AnnotatorComment',
+    initialState,
+    reducers: {
+        addTaskComment: (state, action: { payload: Comment }) => {
+            state.taskComments = [ ...state.taskComments, action.payload ];
+        },
+        updateTaskComment: (state, action: { payload: Comment }) => {
+            state.taskComments = state.taskComments.map(c => c.id === action.payload.id ? action.payload : c)
+        },
+        removeTaskComment: (state, action: { payload: Comment }) => {
+            state.taskComments = state.taskComments.filter(c => c.id !== action.payload.id)
+        },
+
+        initSpectrogram: (state, action: { payload: { taskComments: CommentFragment[] } }) => {
+            state.taskComments = action.payload.taskComments.map(c => ({
+                id: +c.id,
+                comment: c.comment,
+            } as Comment));
+        },
     },
-    updateTaskComment: (state, action: { payload: Comment }) => {
-      state.taskComments = state.taskComments.map(c => c.id === action.payload.id ? action.payload : c)
+    selectors: {
+        selectTaskComments: state => state.taskComments,
     },
-    removeTaskComment: (state, action: { payload: Comment }) => {
-      state.taskComments = state.taskComments.filter(c => c.id !== action.payload.id)
-    },
-  },
-  extraReducers: builder => {
-    builder.addMatcher(getAnnotationTaskFulfilled, (state: AnnotationCommentState, action: {
-      payload: GetAnnotationTaskQuery
-    }) => {
-      state.taskComments = action.payload.annotationSpectrogramById?.task?.userComments?.results.filter(r => !!r).map(r => ({
-        id: +r!.id,
-        comment: r!.comment,
-      } as Comment)) ?? initialState.taskComments
-    })
-  },
-  selectors: {
-    selectTaskComments: state => state.taskComments,
-  },
 })
 
 export const {
-  addTaskComment,
-  updateTaskComment,
-  removeTaskComment,
+    addTaskComment,
+    updateTaskComment,
+    removeTaskComment,
 } = AnnotatorCommentSlice.actions

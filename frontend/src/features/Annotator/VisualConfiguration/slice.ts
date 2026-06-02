@@ -1,8 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Colormap } from './colormaps';
-import { getAnnotationTaskFulfilled, type GetAnnotationTaskQuery } from '@/api';
 import { Analysis, setAnalysis } from '@/features/Annotator/Analysis/slice';
-import type { GetAnnotationTaskQueryVariables } from '@/api/annotation-task/annotation-task.generated';
 
 
 type VisualConfigurationState = {
@@ -14,7 +12,6 @@ type VisualConfigurationState = {
     _campaignDefaultColormap?: Colormap
     _campaignDefaultReversedColormap?: boolean
     _allowConfiguration?: boolean
-    _campaignID?: string
 }
 const initialState: VisualConfigurationState = {
     brightness: 50,
@@ -25,7 +22,6 @@ const initialState: VisualConfigurationState = {
     _campaignDefaultColormap: undefined,
     _campaignDefaultReversedColormap: undefined,
     _allowConfiguration: undefined,
-    _campaignID: undefined,
 }
 
 export const AnnotatorVisualConfigurationSlice = createSlice({
@@ -51,7 +47,7 @@ export const AnnotatorVisualConfigurationSlice = createSlice({
             state.isColormapReversed = !state.isColormapReversed;
         },
 
-        init: (state, action: {
+        initCampaign: (state, action: {
             payload: {
                 campaignDefaultColormap: Colormap | undefined,
                 campaignDefaultReversedColormap: boolean | undefined,
@@ -61,7 +57,14 @@ export const AnnotatorVisualConfigurationSlice = createSlice({
             state._campaignDefaultColormap = action.payload.campaignDefaultColormap
             state._campaignDefaultReversedColormap = action.payload.campaignDefaultReversedColormap
             state._allowConfiguration = action.payload.allowConfiguration
+            state.colormap = initialState.colormap
+            state.isColormapReversed = initialState.isColormapReversed
         },
+        initSpectrogram: (state) => {
+            state.brightness = initialState.brightness
+            state.contrast = initialState.contrast
+        },
+
     },
     extraReducers: builder => {
         builder.addCase(setAnalysis, (state: VisualConfigurationState, action: { payload: Analysis }) => {
@@ -69,18 +72,6 @@ export const AnnotatorVisualConfigurationSlice = createSlice({
             if (action.payload?.colormap.name !== 'Greys' as Colormap) return;
             state.colormap = state.colormap ?? state._campaignDefaultColormap ?? 'Greys'
             state.isColormapReversed = state.isColormapReversed ?? state._campaignDefaultReversedColormap ?? false
-        })
-        builder.addMatcher(getAnnotationTaskFulfilled, (state: VisualConfigurationState, action: {
-            payload: GetAnnotationTaskQuery,
-            meta: { arg: { originalArgs: GetAnnotationTaskQueryVariables } }
-        }) => {
-            if (state._campaignID !== action.meta.arg.originalArgs.campaignID) {
-                state._campaignID = action.meta.arg.originalArgs.campaignID
-                state.colormap = initialState.colormap
-                state.isColormapReversed = initialState.isColormapReversed
-            }
-            state.brightness = initialState.brightness
-            state.contrast = initialState.contrast
         })
     },
     selectors: {

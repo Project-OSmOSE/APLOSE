@@ -3,30 +3,27 @@ import styles from './styles.module.scss';
 import { Kbd, TooltipOverlay } from '@/components/ui';
 import { IonButton, IonIcon } from '@ionic/react';
 import { caretBack, caretForward } from 'ionicons/icons/index.js';
-import { useAnnotationTask } from '@/api';
 import { useAnnotatorCanNavigate, useOpenAnnotator } from './hooks';
 import { useKeyDownEvent } from '@/features/UX/Events';
 import { useAnnotatorSubmit } from '@/features/Annotator';
-import { useAppSelector } from '@/features/App';
-import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
+import { useLoaderData } from '@tanstack/react-router';
 
 export const NavigationButtons: React.FC = () => {
-    const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
-    const { navigationInfo } = useAnnotationTask()
+    const { info, isEditionAuthorized } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const canNavigate = useAnnotatorCanNavigate()
     const openAnnotator = useOpenAnnotator()
     const { submit, isLoading } = useAnnotatorSubmit()
 
     const navPrevious = useCallback(async () => {
         if (isLoading) return;
-        if (!navigationInfo?.previousSpectrogramId) return;
-        if (await canNavigate()) openAnnotator(navigationInfo.previousSpectrogramId)
-    }, [ openAnnotator, isLoading, navigationInfo, canNavigate ])
+        if (!info?.previousSpectrogramId) return;
+        if (await canNavigate()) openAnnotator(info.previousSpectrogramId)
+    }, [ openAnnotator, isLoading, info, canNavigate ])
     const navNext = useCallback(async () => {
         if (isLoading) return;
-        if (!navigationInfo?.nextSpectrogramId) return;
-        if (await canNavigate()) openAnnotator(navigationInfo.nextSpectrogramId)
-    }, [ canNavigate, openAnnotator, isLoading, navigationInfo ])
+        if (!info?.nextSpectrogramId) return;
+        if (await canNavigate()) openAnnotator(info.nextSpectrogramId)
+    }, [ canNavigate, openAnnotator, isLoading, info ])
 
     useKeyDownEvent([ 'ArrowLeft' ], navPrevious)
     useKeyDownEvent([ 'ArrowRight' ], navNext)
@@ -35,7 +32,7 @@ export const NavigationButtons: React.FC = () => {
         <div className={ styles.navigation }>
             <TooltipOverlay title="Shortcut" tooltipContent={ <p><Kbd keys="left"/> : Load previous recording</p> }>
                 <IonButton color="medium" fill="clear" size="small"
-                           disabled={ isLoading || !navigationInfo?.previousSpectrogramId }
+                           disabled={ isLoading || !info?.previousSpectrogramId }
                            onClick={ navPrevious }>
                     <IonIcon icon={ caretBack } slot="icon-only"/>
                 </IonButton>
@@ -53,7 +50,7 @@ export const NavigationButtons: React.FC = () => {
 
             <TooltipOverlay title="Shortcut" tooltipContent={ <p><Kbd keys="right"/> : Load next recording</p> }>
                 <IonButton color="medium" fill="clear" size="small"
-                           disabled={ isLoading || !navigationInfo?.nextSpectrogramId }
+                           disabled={ isLoading || !info?.nextSpectrogramId }
                            onClick={ navNext }>
                     <IonIcon icon={ caretForward } slot="icon-only"/>
                 </IonButton>
