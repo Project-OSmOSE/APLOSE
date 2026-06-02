@@ -6,6 +6,7 @@ import { ChannelConfigurationsForDatasetQueryVariables } from '@/features/Channe
 import type { FileRangesForPhaseQueryVariables } from '@/features/AnnotationFileRange';
 import type { AllCampaignsQueryVariables } from '@/features/AnnotationCampaign';
 import type { AllSpectrogramAnalysisQueryVariables } from '@/features/SpectrogramAnalysis';
+import type { GetDetailedSoundByIdQueryVariables, GetDetailedSourceByIdQueryVariables } from '@/features/Ontology';
 
 /**
  * Keys factory pour les requêtes GraphQL
@@ -13,25 +14,35 @@ import type { AllSpectrogramAnalysisQueryVariables } from '@/features/Spectrogra
  */
 export const queryKeys = {
     campaign: {
-        all: (variables: AllCampaignsQueryVariables) => ['campaign', variables] as const,
+        all: (variables: AllCampaignsQueryVariables) => [ 'campaign', variables ] as const,
     },
     fileRange: {
-        forPhase: (variables: FileRangesForPhaseQueryVariables) => ['file-range', 'for phase', variables.campaignID, variables.phaseType] as const,
+        forPhase: (variables: FileRangesForPhaseQueryVariables) => [ 'file-range', 'for phase', variables.campaignID, variables.phaseType ] as const,
     },
     channelConfiguration: {
-        forDataset: (variables: ChannelConfigurationsForDatasetQueryVariables) => ['channel-configuration', 'for dataset', variables.datasetID] as const,
+        forDataset: (variables: ChannelConfigurationsForDatasetQueryVariables) => [ 'channel-configuration', 'for dataset', variables.datasetID ] as const,
     },
     dataset: {
         all: [ 'dataset' ] as const,
-        byId: (variables: GetDatasetByIdQueryVariables) => ['dataset', variables.id] as const,
+        byId: (variables: GetDatasetByIdQueryVariables) => [ 'dataset', variables.id ] as const,
         listWithAnalysis: [ 'dataset', 'analysis' ] as const,
     },
     analysis: {
-        all: (variables: AllSpectrogramAnalysisQueryVariables) => ['analysis', variables] as const,
+        all: (variables: AllSpectrogramAnalysisQueryVariables) => [ 'analysis', variables ] as const,
+    },
+    ontology: {
+        sound: {
+            all: [ 'ontology', 'sound' ] as const,
+            byId: (variables: GetDetailedSoundByIdQueryVariables) => [ 'ontology', 'sound', variables.id ] as const,
+        },
+        source: {
+            all: [ 'ontology', 'source' ] as const,
+            byId: (variables: GetDetailedSourceByIdQueryVariables) => [ 'ontology', 'source', variables.id ] as const,
+        },
     },
     storage: {
-        browse: (variables: BrowseStorageQueryVariables) => ['storage', 'browse', variables.path.split('/')] as const,
-        search: (variables: SearchStorageQueryVariables) => ['storage', 'search', variables.path.split('/')] as const,
+        browse: (variables: BrowseStorageQueryVariables) => [ 'storage', 'browse', variables.path.split('/') ] as const,
+        search: (variables: SearchStorageQueryVariables) => [ 'storage', 'search', variables.path.split('/') ] as const,
     },
     user: {
         all: [ 'user' ] as const,
