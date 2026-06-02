@@ -6,6 +6,9 @@ import {
     AllCampaignsDocument,
     type AllCampaignsQuery,
     type AllCampaignsQueryVariables,
+    ArchiveCampaignDocument,
+    type ArchiveCampaignMutation,
+    type ArchiveCampaignMutationVariables,
     CreateCampaignDocument,
     type CreateCampaignMutation,
     type CreateCampaignMutationVariables,
@@ -37,6 +40,15 @@ export const createMutation = mutationOptions({
     mutationFn: (variables: CreateCampaignMutationVariables) => graphqlClient.request<CreateCampaignMutation>(CreateCampaignDocument, variables)
         .then(data => data.createAnnotationCampaign?.annotationCampaign),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.campaign.base }),
+})
+
+
+export const archiveMutation = mutationOptions({
+    mutationFn: (variables: ArchiveCampaignMutationVariables) => graphqlClient.request<ArchiveCampaignMutation>(ArchiveCampaignDocument, variables),
+    onSuccess: (_data, variables) => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.campaign.byId({ id: variables.id }) })
+        queryClient.invalidateQueries({ queryKey: queryKeys.campaign.base })
+    },
 })
 
 

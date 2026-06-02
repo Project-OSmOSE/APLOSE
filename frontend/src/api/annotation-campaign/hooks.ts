@@ -8,7 +8,6 @@ import { useLoaderData } from '@tanstack/react-router';
 
 const {
     updateCampaignFeaturedLabels,
-    archiveCampaign,
 } = AnnotationCampaignGqlAPI.endpoints
 
 export const useUpdateCampaignFeaturedLabels = () => {
@@ -36,9 +35,4 @@ export const useUpdateCampaignFeaturedLabels = () => {
             }
         }, [ info ]),
     }
-}
-
-export const useArchiveCampaign = () => {
-    const [ method, info ] = archiveCampaign.useMutation();
-    return { archiveCampaign: method, ...info }
 }

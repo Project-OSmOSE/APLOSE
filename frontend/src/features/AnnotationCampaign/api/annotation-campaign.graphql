@@ -171,3 +171,9 @@ mutation createCampaign(
         }
     }
 }
+
+mutation archiveCampaign($id: ID!) {
+    archiveAnnotationCampaign(id: $id) {
+        ok
+    }
+}

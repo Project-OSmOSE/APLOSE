@@ -1,10 +1,4 @@
 
-mutation archiveCampaign($id: ID!) {
-    archiveAnnotationCampaign(id: $id) {
-        ok
-    }
-}
-
 mutation updateCampaignFeaturedLabels(
     $id: ID!
     $labelsWithAcousticFeatures: [ID]!

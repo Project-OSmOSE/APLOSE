@@ -1,7 +1,5 @@
 export type {
-  UpdateCampaignFeaturedLabelsMutation,
-  UpdateCampaignFeaturedLabelsMutationVariables,
-  ArchiveCampaignMutation,
-  ArchiveCampaignMutationVariables,
+    UpdateCampaignFeaturedLabelsMutation,
+    UpdateCampaignFeaturedLabelsMutationVariables,
 } from './annotation-campaign.generated'
 export * from './hooks'

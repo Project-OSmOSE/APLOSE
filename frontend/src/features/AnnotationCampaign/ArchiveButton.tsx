@@ -2,12 +2,13 @@ import React, { Fragment, useCallback } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
 import { archiveOutline } from 'ionicons/icons/index.js';
 import { useAlert } from '@/components/ui';
-import { useArchiveCampaign } from '@/api';
+import { archiveMutation } from './api';
 import { useLoaderData } from '@tanstack/react-router';
+import { useMutation } from '@tanstack/react-query';
 
 export const AnnotationCampaignArchiveButton: React.FC = () => {
     const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const { archiveCampaign } = useArchiveCampaign()
+    const { mutate: archiveCampaign } = useMutation(archiveMutation)
     const alert = useAlert();
 
     const archive = useCallback(async () => {
