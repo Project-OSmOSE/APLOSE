@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 import { useAppDispatch } from '@/features/App';
-import { gqlAPI } from '@/api/baseGqlApi';
-import { listSpectrogramAnalysisTag } from '@/api/spectrogram-analysis/api';
 import { HelpButton, Modal, ModalFooter, ModalHeader, type ModalProps } from '@/components/ui';
 import { Item } from '@/features/Storage';
 import { useLoaderData } from '@tanstack/react-router';
+import { queryClient } from '@/api/queryClient';
+import { queryKeys } from '@/api/queryKeys';
 
 export const ImportDatasetAnalysisModal: React.FC<ModalProps> = ({ onClose }) => {
     const { dataset } = useLoaderData({
@@ -15,9 +15,7 @@ export const ImportDatasetAnalysisModal: React.FC<ModalProps> = ({ onClose }) =>
 
     const invalidateSpectrogramList = useCallback(() => {
         if (!dataset) return
-        dispatch(gqlAPI.util.invalidateTags([ listSpectrogramAnalysisTag({
-            datasetID: dataset.id,
-        }) ]))
+        queryClient.invalidateQueries({ queryKey: queryKeys.analysis.all({ datasetID: dataset.id }) })
     }, [ dataset, dispatch ])
 
     return (

@@ -14,7 +14,7 @@ export const DatasetSelect: React.FC<{
 }> = ({
           datasetError,
           analysisError,
-                                      initialDatasetId,
+          initialDatasetId,
           onDatasetSelected,
           selectAnalysis,
           onAnalysisSelected,

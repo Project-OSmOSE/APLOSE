@@ -1,5 +1,5 @@
 import React, { Fragment, useMemo } from 'react';
-import { createLazyFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { IonButton } from '@ionic/react';
 
 import { FadedText, Progress, useModal } from '@/components/ui';
@@ -13,8 +13,11 @@ import { DatasetName } from '@/features/Dataset';
 import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 
 import styles from './index.module.scss';
+import { queryClient } from '@/api/queryClient';
+import { SpectrogramAnalysis } from '@/features';
 
 const AnnotationCampaignInfo: React.FC = () => {
+    const { analysis } = Route.useLoaderData()
     const { campaign, phases } = useCurrentCampaign()
 
     const labelSetModal = useModal(LabelSetModal)
@@ -42,7 +45,7 @@ const AnnotationCampaignInfo: React.FC = () => {
                 <DatasetName name={ campaign.dataset.name } id={ campaign.dataset.id } labeled link/>
                 {/*<AnnotationCampaignAcquisitionModalButton/>*/ }
                 <FadedText>Analysis</FadedText>
-                <SpectrogramAnalysisTable annotationCampaignID={ campaign.id }/>
+                <SpectrogramAnalysisTable analysis={ analysis }/>
             </div>
 
             {/* ANNOTATION */ }
@@ -86,9 +89,17 @@ const AnnotationCampaignInfo: React.FC = () => {
 
             { labelSetModal.element }
         </div>
-    }, [campaign, phases, labelSetModal])
+    }, [ campaign, phases, labelSetModal, analysis ])
 }
 
-export const Route = createLazyFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout/')({
+export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout/')({
+    loader: async ({ params: { campaignID } }) => {
+        const [
+            analysis,
+        ] = await Promise.all([
+            queryClient.ensureQueryData(SpectrogramAnalysis.API.allQuery({ annotationCampaignID: campaignID })),
+        ])
+        return { analysis }
+    },
     component: AnnotationCampaignInfo,
 })

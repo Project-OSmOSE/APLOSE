@@ -1,4 +1,4 @@
-query listSpectrogramAnalysis(
+query allSpectrogramAnalysis(
     $datasetID: ID
     $annotationCampaignID: ID
 ) {

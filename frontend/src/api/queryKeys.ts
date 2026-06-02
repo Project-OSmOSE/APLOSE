@@ -5,6 +5,7 @@ import type { GetDatasetByIdQueryVariables } from '@/features/Dataset';
 import { ChannelConfigurationsForDatasetQueryVariables } from '@/features/ChannelConfiguration';
 import type { FileRangesForPhaseQueryVariables } from '@/features/AnnotationFileRange';
 import type { AllCampaignsQueryVariables } from '@/features/AnnotationCampaign';
+import type { AllSpectrogramAnalysisQueryVariables } from '@/features/SpectrogramAnalysis';
 
 /**
  * Keys factory pour les requêtes GraphQL
@@ -12,7 +13,7 @@ import type { AllCampaignsQueryVariables } from '@/features/AnnotationCampaign';
  */
 export const queryKeys = {
     campaign: {
-        all: (variables: AllCampaignsQueryVariables) => ['campaign', JSON.stringify(variables)] as const,
+        all: (variables: AllCampaignsQueryVariables) => ['campaign', variables] as const,
     },
     fileRange: {
         forPhase: (variables: FileRangesForPhaseQueryVariables) => ['file-range', 'for phase', variables.campaignID, variables.phaseType] as const,
@@ -24,6 +25,9 @@ export const queryKeys = {
         all: [ 'dataset' ] as const,
         byId: (variables: GetDatasetByIdQueryVariables) => ['dataset', variables.id] as const,
         listWithAnalysis: [ 'dataset', 'analysis' ] as const,
+    },
+    analysis: {
+        all: (variables: AllSpectrogramAnalysisQueryVariables) => ['analysis', variables] as const,
     },
     storage: {
         browse: (variables: BrowseStorageQueryVariables) => ['storage', 'browse', variables.path.split('/')] as const,

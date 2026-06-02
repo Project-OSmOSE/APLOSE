@@ -11,10 +11,10 @@ import { ChannelConfigurationTable } from '@/features/ChannelConfiguration';
 import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 import { Cards } from '@/features/AnnotationCampaign';
 import { queryClient } from '@/api/queryClient';
-import { AnnotationCampaign, ChannelConfiguration, Dataset } from '@/features';
+import { AnnotationCampaign, ChannelConfiguration, Dataset, SpectrogramAnalysis } from '@/features';
 
 const DatasetDetail: React.FC = () => {
-    const { dataset, campaigns } = Route.useLoaderData({ select: ({ dataset, campaigns }) => ({ dataset, campaigns }) })
+    const { dataset, campaigns, analysis } = Route.useLoaderData()
 
     const importAnalysisModal = useModal(ImportDatasetAnalysisModal);
 
@@ -32,7 +32,7 @@ const DatasetDetail: React.FC = () => {
                 <div style={ { overflowX: 'hidden', display: 'grid', gap: '1rem' } }>
                     <h5>Analysis</h5>
 
-                    <SpectrogramAnalysisTable datasetID={ dataset.id }/>
+                    <SpectrogramAnalysisTable analysis={ analysis }/>
 
                     <IonButton color="primary" fill="clear"
                                style={ { zIndex: 2, justifySelf: 'center' } }
@@ -60,7 +60,7 @@ const DatasetDetail: React.FC = () => {
 
             { importAnalysisModal.element }
         </Fragment>
-    }, [ dataset, importAnalysisModal, campaigns ])
+    }, [ dataset, importAnalysisModal, campaigns, analysis ])
 }
 
 export const Route = createFileRoute('/_authenticated/_admin/dataset/$datasetID')({
@@ -69,16 +69,19 @@ export const Route = createFileRoute('/_authenticated/_admin/dataset/$datasetID'
             dataset,
             allChannelConfigurations,
             campaigns,
+            analysis,
         ] = await Promise.all([
             queryClient.ensureQueryData(Dataset.API.byIdQuery({ id: datasetID })),
             queryClient.ensureQueryData(ChannelConfiguration.API.forDatasetQuery({ datasetID })),
             queryClient.ensureQueryData(AnnotationCampaign.API.allQuery({ filter_datasetID: datasetID })),
+            queryClient.ensureQueryData(SpectrogramAnalysis.API.allQuery({ datasetID })),
         ])
         if (!dataset) throw notFound()
         return {
             dataset,
             allChannelConfigurations,
             campaigns,
+            analysis,
         }
     },
     component: DatasetDetail,
