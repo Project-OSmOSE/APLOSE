@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { IonSpinner } from '@ionic/react';
 
@@ -64,6 +64,9 @@ const OntologyPanel: React.FC = () => {
         setCodeName(data?.codeName ?? undefined);
         setTaxon(data?.taxon ?? undefined);
     }, [ data ])
+    useEffect(() => {
+        reset()
+    }, [id]);
 
     if (!id) return <div className={ styles.panel }/>
     return <div className={ styles.panel }>

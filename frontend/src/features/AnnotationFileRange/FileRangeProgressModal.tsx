@@ -43,7 +43,7 @@ type Sort = {
 export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
-    const { data: { users }, isLoading: isLoadingUsers, error: userError } = useQuery(User.API.allQuery)
+    const { data, isLoading: isLoadingUsers, error: userError } = useQuery(User.API.allQuery)
     const {
         data: allFileRanges,
         isFetching: isLoadingFileRanges,
@@ -66,14 +66,14 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
     const [ sort, setSort ] = useState<Sort>({ entry: 'Progress', sort: 'desc' });
 
     const progress = useMemo(() => {
-        if (!allFileRanges || !users || users.length === 0) return [];
+        if (!allFileRanges || !data || data.users.length === 0) return [];
         const progression = new Array<Progression>();
         for (const range of allFileRanges) {
             let progress: Progression | undefined = progression.find(p => p.user?.id === range!.annotator?.id);
             if (progress) {
                 progress.ranges.push(range!);
             } else {
-                const user = users.find(u => u!.id == range!.annotator?.id)!
+                const user = data.users.find(u => u!.id == range!.annotator?.id)!
                 progress = {
                     user,
                     ranges: [ range! ],
@@ -87,7 +87,7 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
             const total = p.ranges.reduce((v, r) => v + (r.filesCount ?? 0), 0);
             return { ...p, progress: total > 0 ? Math.trunc(100 * totalFinished / total) : 0 }
         })
-    }, [ allFileRanges, users ]);
+    }, [ allFileRanges, data ]);
 
     const sortedProgress = useMemo(() => {
         const collator = new Intl.Collator(undefined, {
@@ -158,7 +158,7 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
                 </Tbody>
             </Table> }
 
-            { phase?.isUserAllowedToManage && users && allFileRanges && (
+            { phase?.isUserAllowedToManage && data && allFileRanges && (
                 <ModalFooter className={ styles.footer }>
                     <div className={ styles.buttons }>
                         { progress.length > 0 && <Fragment>

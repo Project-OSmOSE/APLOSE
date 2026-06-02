@@ -27,7 +27,7 @@ export const allSourcesQuery = queryOptions({
 })
 export const sourceByIdQuery = (variables: GetDetailedSourceByIdQueryVariables) => queryOptions({
     queryKey: queryKeys.ontology.source.byId(variables),
-    queryFn: () => graphqlClient.request<GetDetailedSourceByIdQuery>(GetDetailedSourceByIdDocument, {})
+    queryFn: () => graphqlClient.request<GetDetailedSourceByIdQuery>(GetDetailedSourceByIdDocument, variables)
         .then(data => data.sourceById),
 })
 

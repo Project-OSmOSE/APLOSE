@@ -23,7 +23,7 @@ import {
 
 export const soundByIdQuery = (variables: GetDetailedSoundByIdQueryVariables) => queryOptions({
     queryKey: queryKeys.ontology.sound.byId(variables),
-    queryFn: () => graphqlClient.request<GetDetailedSoundByIdQuery>(GetDetailedSoundByIdDocument, {})
+    queryFn: () => graphqlClient.request<GetDetailedSoundByIdQuery>(GetDetailedSoundByIdDocument, variables)
         .then(data => data.soundById),
 })
 

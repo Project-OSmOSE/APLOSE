@@ -9,6 +9,7 @@ export const CampaignName: React.FC<{
 }> = ({ children, id, link }) => useMemo(() => {
     if (link && id) return <Link to="/annotation-campaign/$campaignID"
                                  params={ { campaignID: id } }
+                                 preload={ false }
                                  color="primary">{ children }</Link>
     return <p>{ children }</p>
 }, [ children, id, link ])

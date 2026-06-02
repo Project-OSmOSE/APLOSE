@@ -48,7 +48,8 @@ const Card: React.FC<{ campaign: Campaign }> = React.memo(({ campaign }) => {
     }
 
 
-    return <RouterLink to={ to } params={ params } data-testid="campaign-card" className={ styles.card }>
+    return <RouterLink to={ to } preload={ false } params={ params } data-testid="campaign-card"
+                       className={ styles.card }>
         {/*<div data-testid="campaign-card" className={ styles.card }>*/ }
 
         <div className={ styles.head }>

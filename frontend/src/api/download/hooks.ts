@@ -13,7 +13,7 @@ export const useDownloadAnalysis = downloadAnalysis.useMutation
 
 export const useDownloadAnnotations = () => {
   const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-  const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
+  const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
   const [ method, info ] = downloadAnnotations.useMutation()
 
   return {
@@ -29,7 +29,7 @@ export const useDownloadAnnotations = () => {
 
 export const useDownloadProgress = () => {
   const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-  const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
+  const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
   const [ method, info ] = downloadProgress.useMutation()
 
   return {

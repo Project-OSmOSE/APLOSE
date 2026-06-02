@@ -10,12 +10,12 @@ export type LinkProps = {
     replace?: boolean;
     target?: HTMLAttributeAnchorTarget | undefined;
     onClick?: () => void; // Override to avoir param type mismatch
-} & React.ComponentProps<typeof IonButton> & Partial<Pick<LinkComponentProps, 'to' | 'params' | 'search'>>
+} & React.ComponentProps<typeof IonButton> & Partial<Pick<LinkComponentProps, 'to' | 'params' | 'search' | 'preload'>>
 export const Link: React.FC<LinkProps> = ({
                                               children,
                                               href,
                                               target,
-                                              to, params, search,
+                                              to, params, search, preload,
                                               className,
                                               onClick,
                                               replace = false,
@@ -35,12 +35,12 @@ export const Link: React.FC<LinkProps> = ({
                                           href={ href }
                                           onClick={ onClick }
                                           children={ button }/>
-        if (to !== undefined) return <RouterLink to={ to } params={ params } search={ search }
+        if (to !== undefined) return <RouterLink to={ to } params={ params } search={ search } preload={ preload }
                                                  className={ className }
                                                  replace={ replace }
                                                  target={ target }
                                                  onClick={ onClick }
                                                  children={ button }/>
         return <Fragment/>
-    }, [ button, className, target, href, onClick, to, replace, params, search ])
+    }, [ button, className, target, href, onClick, to, replace, params, search, preload ])
 }

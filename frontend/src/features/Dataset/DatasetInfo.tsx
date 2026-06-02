@@ -27,7 +27,7 @@ export const DatasetName: React.FC<{
 
     if (link && id && user.isAdmin) return <Fragment>
         { labeled && <FadedText>Dataset</FadedText> }
-        <Link to="/dataset/$datasetID" params={ { datasetID: id } } color="primary">{ name }</Link>
+        <Link to="/dataset/$datasetID" preload={ false } params={ { datasetID: id } } color="primary">{ name }</Link>
     </Fragment>
 
     return <div>

@@ -30,7 +30,6 @@ export const allQuery = queryOptions({
             users: cleanGqlList(data.allUsers?.results),
             groups: cleanGqlList(data.allUserGroups?.results),
         })),
-    initialData: { users: [], groups: [] },
 })
 
 export const updateEmailMutation = mutationOptions({
