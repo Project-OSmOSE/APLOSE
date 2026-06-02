@@ -2,12 +2,13 @@ import { queryClient } from './queryClient';
 import type { QueryKey } from '@tanstack/react-query';
 import type { BrowseStorageQueryVariables, SearchStorageQueryVariables } from '@/features/Storage';
 import type { GetDatasetByIdQueryVariables } from '@/features/Dataset';
-import { ChannelConfigurationsForDatasetQueryVariables } from '@/features/ChannelConfiguration';
+import type { ChannelConfigurationsForDatasetQueryVariables } from '@/features/ChannelConfiguration';
 import type { FileRangesForPhaseQueryVariables } from '@/features/AnnotationFileRange';
 import type { AllCampaignsQueryVariables, GetCampaignQueryVariables } from '@/features/AnnotationCampaign';
 import type { AllSpectrogramAnalysisQueryVariables } from '@/features/SpectrogramAnalysis';
 import type { GetDetailedSoundByIdQueryVariables, GetDetailedSourceByIdQueryVariables } from '@/features/Ontology';
 import type { GetAnnotationPhaseQueryVariables } from '@/features/AnnotationPhase';
+import type { AllAnnotationSpectrogramsQueryVariables } from '@/features/AnnotationSpectrogram';
 
 /**
  * Keys factory pour les requêtes GraphQL
@@ -23,6 +24,9 @@ export const queryKeys = {
     },
     fileRange: {
         forPhase: (variables: FileRangesForPhaseQueryVariables) => [ 'file-range', 'for phase', variables.campaignID, variables.phaseType ] as const,
+    },
+    spectrogram: {
+        all: ({ campaignID, phaseType, ...variables }: AllAnnotationSpectrogramsQueryVariables) => [ 'spectrogram', campaignID, phaseType, variables ] as const,
     },
     channelConfiguration: {
         forDataset: (variables: ChannelConfigurationsForDatasetQueryVariables) => [ 'channel-configuration', 'for dataset', variables.datasetID ] as const,

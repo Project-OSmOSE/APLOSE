@@ -1,6 +1,8 @@
 export * as AnnotationCampaign from './AnnotationCampaign'
 export * as AnnotationFileRange from './AnnotationFileRange'
 export * as AnnotationPhase from './AnnotationPhase'
+export * as AnnotationTask from './AnnotationTask'
+export * as AnnotationSpectrogram from './AnnotationSpectrogram'
 export * as ChannelConfiguration from './ChannelConfiguration'
 export * as Dataset from './Dataset'
 export * as Ontology from './Ontology'

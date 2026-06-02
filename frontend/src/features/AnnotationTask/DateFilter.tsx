@@ -3,10 +3,10 @@ import { Button, Modal, type ModalProps } from '@/components/ui';
 import { Input } from '@/components/form';
 import { IonIcon } from '@ionic/react';
 import { closeOutline } from 'ionicons/icons/index.js';
-import { AllTasksFilters } from '@/api';
 import styles from './styles.module.scss'
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 import { useNavigate } from '@tanstack/react-router';
+import type { AllSpectrogramsFilters } from '@/features/AnnotationSpectrogram';
 
 
 function getDateString(event: ChangeEvent<HTMLInputElement>): string | undefined {
@@ -43,7 +43,7 @@ export const DateFilterModal: React.FC<ModalProps & {
         return date.join('');
     }, [ to ]);
 
-    const update = useCallback((update: Partial<AllTasksFilters>) => {
+    const update = useCallback((update: Partial<AllSpectrogramsFilters>) => {
         navigate({
             to: Route.to,
             params: routeParams,

@@ -1,58 +1,17 @@
 import { AnnotationTaskGqlAPI } from './api';
 import { useCallback, useMemo } from 'react';
-import {
-    AnnotationCommentInput,
-    AnnotationInput,
-    AnnotationPhaseType,
-    type ListAnnotationTaskQueryVariables,
-} from '@/api';
+import { AnnotationCommentInput, AnnotationInput, AnnotationPhaseType } from '@/api';
 import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
 import { useAppSelector } from '@/features/App';
 import { selectAnalysisID } from '@/features/Annotator/Analysis';
 import { GetAnnotationTaskQueryVariables } from './annotation-task.generated'
 
-export const PAGE_SIZE = 20;
-
 // API
 
 const {
-    listAnnotationTask,
     getAnnotationTask,
     submitTask,
 } = AnnotationTaskGqlAPI.endpoints
-
-export type AllTasksFilters =
-    Pick<ListAnnotationTaskQueryVariables, 'search' | 'status' | 'from' | 'to' | 'withAnnotations' | 'annotationLabel' | 'annotationConfidence' | 'annotationDetector' | 'annotationAnnotator' | 'withAcousticFeatures' | 'onlyAssigned'>
-    & {
-    page: number
-}
-
-export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
-    refetchOnMountOrArgChange?: boolean
-} = {}) => {
-    const { phaseType } = useParams({ strict: false });
-    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const { user } = useLoaderData({ from: '/_authenticated' })
-
-    const info = listAnnotationTask.useQuery({
-        ...filters,
-        campaignID: campaign.id,
-        phaseType: phaseType ?? AnnotationPhaseType.Annotation,
-        annotatorID: user.id,
-        limit: PAGE_SIZE,
-        offset: PAGE_SIZE * ((filters.page ?? 1) - 1),
-    }, {
-        skip: !phaseType || campaign.isArchived,
-        ...options,
-    })
-    return useMemo(() => ({
-        ...info,
-        allSpectrograms: info.data?.allAnnotationSpectrograms?.results.filter(r => r !== null),
-        resumeSpectrogramID: info.data?.allAnnotationSpectrograms?.resumeSpectrogramId,
-        page: filters.page,
-        pageCount: Math.ceil((info.data?.allAnnotationSpectrograms?.totalCount ?? 0) / PAGE_SIZE),
-    }), [ info, filters.page ])
-}
 
 export const useGetAnnotationTaskParams = (): GetAnnotationTaskQueryVariables => {
     const { campaignID, phaseType, spectrogramID } = useParams({

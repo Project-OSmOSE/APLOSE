@@ -4,7 +4,6 @@ import { IonButton, IonIcon } from '@ionic/react';
 import { peopleOutline, playOutline, refreshOutline } from 'ionicons/icons/index.js';
 import { ActionBar, Button, Link, Progress, TooltipOverlay, useModal } from '@/components/ui';
 import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
-import { useAllAnnotationTasks } from '@/api';
 import { FileRangeProgressModal } from '@/features/AnnotationFileRange';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 import { analytics } from 'ionicons/icons';
@@ -15,8 +14,7 @@ export const FileRangeActionBar: React.FC = () => {
     const searchParams = Route.useSearch();
     const routeParams = Route.useParams()
     const navigate = useNavigate();
-    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
-    const { allSpectrograms, resumeSpectrogramID } = useAllAnnotationTasks(searchParams)
+    const { phase, spectrograms, resumeSpectrogramId } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
     const openAnnotator = useOpenAnnotator()
 
     const updateSearch = useCallback((input: string) => {
@@ -45,14 +43,14 @@ export const FileRangeActionBar: React.FC = () => {
 
     const resumeBtnTooltip: string = useMemo(() => {
         if (hasFilters) return 'Cannot resume if filters are activated'
-        if (!allSpectrograms || allSpectrograms.length === 0) return 'No files to annotate'
+        if (!spectrograms || spectrograms.length === 0) return 'No files to annotate'
         return 'Resume annotation'
-    }, [ hasFilters, allSpectrograms ])
+    }, [ hasFilters, spectrograms ])
 
     const resume = useCallback(() => {
-        if (!resumeSpectrogramID) return;
-        openAnnotator(resumeSpectrogramID, { resume: true })
-    }, [ resumeSpectrogramID, openAnnotator ])
+        if (!resumeSpectrogramId) return;
+        openAnnotator(resumeSpectrogramId, { resume: true })
+    }, [ resumeSpectrogramId, openAnnotator ])
 
     const progressModal = useModal(FileRangeProgressModal)
 
@@ -104,7 +102,7 @@ export const FileRangeActionBar: React.FC = () => {
                        {/* Resume */ }
                        <TooltipOverlay tooltipContent={ <p>{ resumeBtnTooltip }</p> } anchor="right">
                            <Button color="primary" fill="outline" data-testid="resume"
-                                   disabled={ hasFilters || !(allSpectrograms && allSpectrograms.length > 0) || !resumeSpectrogramID }
+                                   disabled={ hasFilters || !(spectrograms && spectrograms.length > 0) || !resumeSpectrogramId }
                                    style={ { pointerEvents: 'unset' } }
                                    onClick={ resume }>
                                <IonIcon icon={ playOutline } slot="icon-only"/>

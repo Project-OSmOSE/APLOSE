@@ -4,7 +4,7 @@ import { IonSpinner } from '@ionic/react';
 
 import { GraphQLErrorText } from '@/components/ui';
 
-import { type AllTasksFilters, AnnotationPhaseType, useAnnotationTask } from '@/api';
+import { AnnotationPhaseType, useAnnotationTask } from '@/api';
 import { useAppSelector } from '@/features/App';
 import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 import { AudioDownloadButton, CurrentTime, PlaybackRateSelect, PlayPauseButton, useAudio } from '@/features/Audio';
@@ -28,6 +28,7 @@ import { CommentBloc } from '@/features/Annotator/Comment';
 import { AnnotationsBloc } from '@/features/Annotator/Annotation/AnnotationsBloc';
 
 import styles from './$spectrogramID.module.scss';
+import type { AllSpectrogramsFilters } from '@/features/AnnotationSpectrogram';
 
 const AnnotatorPage: React.FC = () => {
     const campaignID = Route.useParams({select: ({campaignID}) => campaignID});
@@ -130,7 +131,7 @@ const AnnotatorPage: React.FC = () => {
 export const Route = createFileRoute(
     '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID',
 )({
-    validateSearch: (search: Record<string, unknown>) => search as AllTasksFilters,
+    validateSearch: (search: Record<string, unknown>) => search as AllSpectrogramsFilters,
     params: {
         parse: rawParams => rawParams as { campaignID: string, spectrogramID: string, phaseType: AnnotationPhaseType },
     },
