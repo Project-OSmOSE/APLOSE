@@ -134,3 +134,40 @@ query getCampaign($id: ID!) {
         }
     }
 }
+
+mutation createCampaign(
+    $name: String!
+    $description: String
+    $instructionsUrl: String
+    $deadline: Date
+    $allowImageTuning: Boolean
+    $allowColormapTuning: Boolean
+    $colormapDefault: String
+    $colormapInvertedDefault: Boolean
+    $datasetID: ID!
+    $analysisIDs: [ID]!
+) {
+    createAnnotationCampaign(input: {
+        name: $name
+        description: $description
+        instructionsUrl: $instructionsUrl
+        deadline: $deadline
+        allowImageTuning: $allowImageTuning
+        allowColormapTuning: $allowColormapTuning
+        colormapDefault: $colormapDefault
+        colormapInvertedDefault: $colormapInvertedDefault
+        dataset: $datasetID
+        analysis: $analysisIDs
+    }) {
+        annotationCampaign {
+            id
+            dataset {
+                path
+            }
+        }
+        errors {
+            field
+            messages
+        }
+    }
+}

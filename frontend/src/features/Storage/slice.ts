@@ -1,8 +1,6 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '@/features/App';
-import { AnnotationCampaignGqlAPI } from '@/api/annotation-campaign/api';
-import type { CreateCampaignMutation } from '@/api';
 import { useQuery } from '@tanstack/react-query';
 import { Storage } from '@/features'
 import type { StorageItemFragment } from '@/features/Storage';
@@ -29,17 +27,6 @@ export const Slice = createSlice({
             state.invalidatedPath = [...state.invalidatedPath, action.payload];
             state.invalidatedListPaths = [...state.invalidatedListPaths, action.payload];
         },
-    },
-    extraReducers: builder => {
-
-        builder.addMatcher(AnnotationCampaignGqlAPI.endpoints.createCampaign.matchFulfilled,
-            (state, action: { payload: CreateCampaignMutation }) => {
-                const path = action.payload.createAnnotationCampaign?.annotationCampaign?.dataset.path
-                if (!path) return
-                state.invalidatedPath = [ ...state.invalidatedPath, path ]
-                state.invalidatedListPaths = [ ...state.invalidatedListPaths, path ]
-            })
-
     },
     selectors: {
         selectRecord: state => state.record,

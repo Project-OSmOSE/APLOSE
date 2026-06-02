@@ -1,6 +1,4 @@
 export type {
-  CreateCampaignMutation,
-  CreateCampaignMutationVariables,
   UpdateCampaignFeaturedLabelsMutation,
   UpdateCampaignFeaturedLabelsMutationVariables,
   ArchiveCampaignMutation,

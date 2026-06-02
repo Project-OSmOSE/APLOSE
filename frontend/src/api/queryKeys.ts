@@ -20,6 +20,7 @@ import type {
  */
 export const queryKeys = {
     campaign: {
+        base: [ 'campaign' ],
         all: (variables: AllCampaignsQueryVariables) => [ 'campaign', variables ] as const,
         byId: (variables: GetCampaignQueryVariables) => [ 'campaign', variables.id ] as const,
     },

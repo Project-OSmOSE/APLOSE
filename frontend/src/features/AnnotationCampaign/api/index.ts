@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-query';
+import { mutationOptions, queryOptions } from '@tanstack/react-query';
 import { queryKeys } from '@/api/queryKeys';
 import { graphqlClient } from '@/api/graphqlClient';
 import { cleanGqlList } from '@/api/utils';
@@ -6,10 +6,14 @@ import {
     AllCampaignsDocument,
     type AllCampaignsQuery,
     type AllCampaignsQueryVariables,
+    CreateCampaignDocument,
+    type CreateCampaignMutation,
+    type CreateCampaignMutationVariables,
     GetCampaignDocument,
     type GetCampaignQuery,
     type GetCampaignQueryVariables,
 } from './annotation-campaign.generated'
+import { queryClient } from '@/api/queryClient';
 
 export const allQuery = (variables: AllCampaignsQueryVariables) => queryOptions({
     queryKey: queryKeys.campaign.all(variables),
@@ -27,6 +31,12 @@ export const byIdQuery = (variables: GetCampaignQueryVariables) => queryOptions(
             confidences: cleanGqlList(data.annotationCampaignById?.confidenceSet?.confidenceIndicators),
             labels: cleanGqlList(data.annotationCampaignById?.labelSet?.labels),
         })),
+})
+
+export const createMutation = mutationOptions({
+    mutationFn: (variables: CreateCampaignMutationVariables) => graphqlClient.request<CreateCampaignMutation>(CreateCampaignDocument, variables)
+        .then(data => data.createAnnotationCampaign?.annotationCampaign),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.campaign.base }),
 })
 
 

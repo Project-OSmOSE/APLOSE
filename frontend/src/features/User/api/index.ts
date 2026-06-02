@@ -4,7 +4,6 @@ import { graphqlClient } from '@/api/graphqlClient';
 import {
     AllUsersDocument,
     type AllUsersQuery,
-    type CurrentUserFragment,
     GetCurrentUserDocument,
     GetCurrentUserQuery,
     UpdateCurrentUserEmailDocument,
@@ -23,10 +22,6 @@ export const currentQuery = queryOptions({
     queryFn: () => graphqlClient.request<GetCurrentUserQuery>(GetCurrentUserDocument, {})
         .then(data => data.currentUser!),
 })
-
-export const currentQueryCache = () => {
-    return queryClient.getQueryCache().find<CurrentUserFragment>({ queryKey: queryKeys.user.current })
-}
 
 export const allQuery = queryOptions({
     queryKey: queryKeys.user.all,

@@ -5,30 +5,34 @@ import { IonButton, IonSpinner } from '@ionic/react';
 import { useToast } from '@/components/ui';
 import { FormBloc, Input, Select, Textarea } from '@/components/form';
 
-import { useCreateCampaign } from '@/api';
-
 import { type Colormap, COLORMAPS } from '@/features/Colormap';
 import { DatasetSelect } from '@/features/Dataset';
 
 import styles from './new.module.scss';
-import { Dataset } from '@/features';
+import { AnnotationCampaign, Dataset, Storage } from '@/features';
 import { queryClient } from '@/api/queryClient';
+import { useMutation } from '@tanstack/react-query';
+import type { GqlError } from '@/api/utils';
+import type { CreateCampaignMutationVariables } from '@/features/AnnotationCampaign';
+import { useAppDispatch } from '@/features/App';
 
 const NewAnnotationCampaign: React.FC = () => {
     const dataset_id = Route.useSearch({ select: ({ dataset_id }) => dataset_id });
     const router = useRouter()
 
     const {
-        createCampaign,
-        campaign,
-        isLoading: isSubmittingCampaign,
+        mutateAsync: createCampaign,
+        data: campaign,
+        isPending: isSubmittingCampaign,
         error: errors,
-        formErrors,
-    } = useCreateCampaign()
+    } = useMutation(AnnotationCampaign.API.createMutation)
+    const formErrors = useMemo(() => (errors ?? []) as GqlError<CreateCampaignMutationVariables>[], [ errors ],)
+
     const toast = useToast();
     const navigate = useNavigate();
 
     const page = useRef<HTMLDivElement | null>(null);
+    const dispatch = useAppDispatch();
 
     // Global information
     const [ name, setName ] = useState<string>('');
@@ -93,8 +97,11 @@ const NewAnnotationCampaign: React.FC = () => {
             allowColormapTuning,
             colormapDefault,
             colormapInvertedDefault,
+        }).then(campaign => {
+            if (!campaign) return;
+            dispatch(Storage.Slice.actions.invalidatePath(campaign.dataset.path))
         })
-    }, [ name, description, instructionsUrl, createCampaign, deadline, datasetID, analysisIDs, allowImageTuning, allowColormapTuning, colormapDefault, colormapInvertedDefault ])
+    }, [ name, description, instructionsUrl, createCampaign, deadline, datasetID, analysisIDs, allowImageTuning, allowColormapTuning, colormapDefault, colormapInvertedDefault, dispatch ])
 
     useEffect(() => {
         if (errors) toast.raiseError({ error: errors })
