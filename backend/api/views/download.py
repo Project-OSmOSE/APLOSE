@@ -13,6 +13,7 @@ from django.db.models import (
     QuerySet,
     F,
     Value,
+    Max,
 )
 from django.db.models.functions import Lower, Concat, Extract
 from django.http import HttpResponse
@@ -37,7 +38,6 @@ from backend.aplose.models import ExpertiseLevel
 
 REPORT_HEADERS = [  # headers
     "dataset",
-    "analysis",
     "filename",
     "annotation_id",
     "is_update_of_id",
@@ -78,6 +78,9 @@ REPORT_HEADERS = [  # headers
 def _get_annotations_for_report(
     phase: AnnotationPhase,
 ) -> QuerySet[Annotation]:
+    max_fft = phase.annotation_campaign.analysis.aggregate(
+        Max("fft__sampling_frequency")
+    )["fft__sampling_frequency__max"]
 
     expertise_query = Case(
         When(
@@ -196,7 +199,6 @@ def _get_annotations_for_report(
             "acoustic_features",
             "detector_configuration__detector",
             "annotation_phase",
-            "analysis__fft",
         )
         .prefetch_related(
             "annotation_comments",
@@ -244,14 +246,13 @@ def _get_annotations_for_report(
                 When(type=Annotation.Type.POINT, then=F("start_frequency")),
                 When(
                     type=Annotation.Type.WEAK,
-                    then=F("analysis__fft__sampling_frequency") / 2,
+                    then=max_fft / 2,
                 ),
                 default=F("end_frequency"),
                 output_field=models.FloatField(),
             ),
             annotation_id=F("id"),
             created_at_phase=phase_type_query,
-            analysis_name=F("analysis__name"),
         )
         .extra(
             select={
@@ -289,7 +290,6 @@ def _get_annotations_for_report(
                     "start_frequency",
                     "end_frequency",
                     "type",
-                    "analysis",
                 )
             ],
             "annotator__username",
@@ -298,7 +298,6 @@ def _get_annotations_for_report(
             "_start_time",
             "_end_time",
             "type_label",
-            "analysis_name",
         )
         .annotate(
             annotator=Case(
@@ -329,7 +328,6 @@ def _get_annotations_for_report(
             start_frequency=F("min_frequency"),
             end_frequency=F("max_frequency"),
             type=F("type_label"),
-            analysis=F("analysis_name"),
         )
     )
 
