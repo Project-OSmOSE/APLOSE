@@ -1,14 +1,15 @@
 import React, { useCallback, useMemo } from 'react';
 import { type Annotation, useUpdateAnnotation } from '@/features/Annotator/Annotation';
 import { Td, Th, Tr } from '@/components/ui';
-import { useAnnotationTask, useCurrentPhase } from '@/api';
+import { useAnnotationTask } from '@/api';
 import { Input } from '@/components/form';
 import styles from './styles.module.scss';
 import { IonNote } from '@ionic/react';
+import { useLoaderData } from '@tanstack/react-router';
 
 export const Duration: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
+    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const { spectrogram } = useAnnotationTask()
-    const { phase } = useCurrentPhase()
 
     const updateAnnotation = useUpdateAnnotation()
     const onDurationUpdate = useCallback((value: number) => {
@@ -26,8 +27,8 @@ export const Duration: React.FC<{ annotation: Annotation }> = ({ annotation }) =
     return <Tr>
         <Th scope="col">Duration</Th>
         <Td colSpan={ 2 }>
-            <div className={ [styles.inputCell, styles.duration].join(' ') }>
-                <Input className={styles.input} value={ duration } type="number"
+            <div className={ [ styles.inputCell, styles.duration ].join(' ') }>
+                <Input className={ styles.input } value={ duration } type="number"
                        step={ 0.001 }
                        min={ 0.01 } max={ spectrogram?.duration ?? 0 }
                        disabled={ phase?.phase === 'Verification' }

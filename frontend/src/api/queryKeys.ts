@@ -7,6 +7,7 @@ import type { FileRangesForPhaseQueryVariables } from '@/features/AnnotationFile
 import type { AllCampaignsQueryVariables, GetCampaignQueryVariables } from '@/features/AnnotationCampaign';
 import type { AllSpectrogramAnalysisQueryVariables } from '@/features/SpectrogramAnalysis';
 import type { GetDetailedSoundByIdQueryVariables, GetDetailedSourceByIdQueryVariables } from '@/features/Ontology';
+import type { GetAnnotationPhaseQueryVariables } from '@/features/AnnotationPhase';
 
 /**
  * Keys factory pour les requêtes GraphQL
@@ -16,6 +17,9 @@ export const queryKeys = {
     campaign: {
         all: (variables: AllCampaignsQueryVariables) => [ 'campaign', variables ] as const,
         byId: (variables: GetCampaignQueryVariables) => [ 'campaign', variables.id ] as const,
+    },
+    phase: {
+        get: (variables: GetAnnotationPhaseQueryVariables) => [ 'phase', variables.campaignID, variables.phase ] as const,
     },
     fileRange: {
         forPhase: (variables: FileRangesForPhaseQueryVariables) => [ 'file-range', 'for phase', variables.campaignID, variables.phaseType ] as const,

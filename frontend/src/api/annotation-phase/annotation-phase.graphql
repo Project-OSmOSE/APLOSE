@@ -35,24 +35,3 @@ mutation createVerificationPhase($campaignID: ID!) {
         id
     }
 }
-
-query getAnnotationPhase(
-    $campaignID: ID!
-    $phase: AnnotationPhaseType!
-) {
-    annotationPhaseByCampaignPhase(
-        campaignId: $campaignID
-        phaseType: $phase
-    ) {
-        id
-        phase
-        isEditable
-        isUserAllowedToManage
-        endedAt
-        hasAnnotations
-        tasksCount
-        completedTasksCount
-        userTasksCount
-        userCompletedTasksCount
-    }
-}

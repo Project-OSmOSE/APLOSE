@@ -5,7 +5,6 @@ import {
     AnnotationTaskNode,
     AnnotationTaskStatus,
     type Maybe,
-    useCurrentPhase,
 } from '@/api';
 import React, { Fragment, useMemo } from 'react';
 import { Button, Td, Th, Tr } from '@/components/ui';
@@ -14,6 +13,7 @@ import { checkmarkCircle, chevronForwardOutline, ellipseOutline } from 'ionicons
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 import { formatTime } from '@/service/function';
 import styles from './styles.module.scss'
+import { useLoaderData } from '@tanstack/react-router';
 
 export const SpectrogramRow: React.FC<{
     spectrogram: Pick<AnnotationSpectrogramNode, 'id' | 'filename' | 'duration' | 'start' | 'isAssigned'>,
@@ -22,7 +22,7 @@ export const SpectrogramRow: React.FC<{
     annotationsToCheck?: Maybe<Pick<AnnotationNodeNodeConnection, 'totalCount'>>;
     validAnnotationsToCheck?: Maybe<Pick<AnnotationNodeNodeConnection, 'totalCount'>>;
 }> = ({ spectrogram, task, userAnnotations, annotationsToCheck, validAnnotationsToCheck }) => {
-    const { phase } = useCurrentPhase()
+    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
     const openAnnotator = useOpenAnnotator()
 
     const submitted = useMemo(() => task?.status === AnnotationTaskStatus.Finished, [ task ])

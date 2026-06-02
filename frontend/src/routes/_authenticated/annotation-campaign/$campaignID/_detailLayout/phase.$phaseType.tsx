@@ -1,10 +1,10 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { createFileRoute, useLoaderData, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, notFound, useLoaderData, useNavigate } from '@tanstack/react-router';
 import { IonSpinner } from '@ionic/react';
 
 import { GraphQLErrorText, Pagination, Table, Tbody, Th, Thead, Tr, useModal, WarningText } from '@/components/ui';
 
-import { type AllTasksFilters, AnnotationPhaseType, useAllAnnotationTasks, useCurrentPhase } from '@/api';
+import { type AllTasksFilters, AnnotationPhaseType, useAllAnnotationTasks } from '@/api';
 
 import { AnnotationsFilterModal, DateFilterModal, StatusFilterModal } from '@/features/AnnotationTask';
 import { FileRangeActionBar } from '@/features/AnnotationFileRange';
@@ -12,10 +12,12 @@ import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
 import { SpectrogramRow } from '@/features/AnnotationSpectrogram';
 
 import styles from './phase.$phaseType.module.scss';
+import { queryClient } from '@/api/queryClient';
+import { AnnotationPhase } from '@/features';
 
 const AnnotationCampaignPhaseDetail: React.FC = () => {
     const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const { phase } = useCurrentPhase()
+    const { phase } = Route.useLoaderData()
 
     const search = Route.useSearch();
     const routeParams = Route.useParams()
@@ -56,7 +58,6 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
     })
 
     return useMemo(() => {
-        if (!phase) return <IonSpinner/>
         return <div className={ styles.phase }>
 
             <div className={ [ styles.tasks, isEmpty ? styles.empty : '' ].join(' ') }>
@@ -127,6 +128,14 @@ export const Route = createFileRoute('/_authenticated/annotation-campaign/$campa
     validateSearch: (search: Record<string, unknown>) => search as AllTasksFilters,
     params: {
         parse: rawParams => rawParams as { campaignID: string, phaseType: AnnotationPhaseType },
+    },
+    loader: async ({ params: { campaignID, phaseType } }) => {
+        const phase = await queryClient.ensureQueryData(AnnotationPhase.API.getQuery({
+            campaignID,
+            phase: phaseType,
+        }))
+        if (!phase) throw notFound()
+        return { phase }
     },
     component: AnnotationCampaignPhaseDetail,
 })

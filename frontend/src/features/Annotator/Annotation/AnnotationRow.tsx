@@ -8,7 +8,6 @@ import {
     AnnotationType,
     type GetAnnotationTaskQuery,
     useAnnotationTask,
-    useCurrentPhase,
 } from '@/api';
 import {
     useGetAnnotations,
@@ -39,7 +38,7 @@ type CompleteInfo = Pick<NonNullable<NonNullable<Task['userAnnotations']>['resul
 export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
     const { phaseType } = useParams({ strict: false });
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const { phase } = useCurrentPhase()
+    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const focusedAnnotation = useAppSelector(selectAnnotation)
     const getAnnotations = useGetAnnotations()
     const validate = useValidateAnnotation()

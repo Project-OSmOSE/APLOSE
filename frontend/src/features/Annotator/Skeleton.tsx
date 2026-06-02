@@ -5,7 +5,7 @@ import { IonIcon, IonNote } from '@ionic/react';
 import { helpBuoyOutline } from 'ionicons/icons/index.js';
 import styles from './styles.module.scss';
 import { IoCheckmarkCircleOutline, IoChevronForwardOutline } from 'react-icons/io5';
-import { AnnotationTaskStatus, useAnnotationTask, useCurrentPhase } from '@/api';
+import { AnnotationTaskStatus, useAnnotationTask } from '@/api';
 import { gqlAPI } from '@/api/baseGqlApi';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { useAnnotatorCanNavigate } from '@/features/Annotator/Navigation';
@@ -21,8 +21,12 @@ import { AnnotatorAnalysisSlice, selectAnalysisID } from '@/features/Annotator/A
 export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
     const { phaseType } = useParams({ strict: false });
     const search = useSearch({ strict: false });
-    const { campaign, confidences, analysis } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const { phase } = useCurrentPhase()
+    const {
+        campaign,
+        confidences,
+        analysis,
+    } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const isEditionAuthorized = useAppSelector(selectTaskIsEditionAuthorized)
     const analysisID = useAppSelector(selectAnalysisID)
     const { spectrogram, navigationInfo } = useAnnotationTask();
@@ -43,7 +47,7 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
             allowConfiguration: campaign.allowColormapTuning,
         }))
         dispatch(AnnotatorConfidenceSlice.actions.init({
-            default:  confidences?.find(c => c?.isDefault) ?? confidences.length ? confidences[0].label : undefined
+            default: confidences?.find(c => c?.isDefault) ?? confidences.length ? confidences[0].label : undefined,
         }))
 
         // Select default analysis when none existing is selected

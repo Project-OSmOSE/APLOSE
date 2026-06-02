@@ -6,7 +6,7 @@ import { QueryStatus } from '@reduxjs/toolkit/query';
 import { Head, Table, Tbody, Th, Thead, Tr, useToast } from '@/components/ui';
 import { FormBloc, type Item, ListSearchbar, type SearchItem } from '@/components/form';
 
-import { AnnotationFileRangeInput, AnnotationPhaseType, useCurrentPhase, useUpdateFileRanges } from '@/api';
+import { AnnotationFileRangeInput, AnnotationPhaseType, useUpdateFileRanges } from '@/api';
 import { getNewItemID } from '@/service/function';
 
 import { FileRangeInputRow } from '@/features/AnnotationFileRange';
@@ -23,7 +23,7 @@ type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
 const EditAnnotators: React.FC = () => {
     const phaseType = Route.useParams({ select: ({ phaseType }) => phaseType });
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const { phase } = useCurrentPhase()
+    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const router = useRouter();
     const toast = useToast();
     const { users, groups, allFileRanges } = Route.useLoaderData()

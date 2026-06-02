@@ -4,18 +4,18 @@ import { IonButton, IonIcon } from '@ionic/react';
 import { peopleOutline, playOutline, refreshOutline } from 'ionicons/icons/index.js';
 import { ActionBar, Button, Link, Progress, TooltipOverlay, useModal } from '@/components/ui';
 import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
-import { useAllAnnotationTasks, useCurrentPhase } from '@/api';
+import { useAllAnnotationTasks } from '@/api';
 import { FileRangeProgressModal } from '@/features/AnnotationFileRange';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 import { analytics } from 'ionicons/icons';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
-import { useNavigate } from '@tanstack/react-router';
+import { useLoaderData, useNavigate } from '@tanstack/react-router';
 
 export const FileRangeActionBar: React.FC = () => {
     const searchParams = Route.useSearch();
     const routeParams = Route.useParams()
     const navigate = useNavigate();
-    const { phase } = useCurrentPhase()
+    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
     const { allSpectrograms, resumeSpectrogramID } = useAllAnnotationTasks(searchParams)
     const openAnnotator = useOpenAnnotator()
 
@@ -62,10 +62,11 @@ export const FileRangeActionBar: React.FC = () => {
                    onSearchChange={ updateSearch }
                    actionButton={ <div className={ styles.filterButtons }>
 
-                       { (hasFilters || searchParams.onlyAssigned) && <IonButton fill="clear" color="medium" size="small" onClick={ clear }>
-                           <IonIcon icon={ refreshOutline } slot="start"/>
-                           Reset
-                       </IonButton> }
+                       { (hasFilters || searchParams.onlyAssigned) &&
+                           <IonButton fill="clear" color="medium" size="small" onClick={ clear }>
+                               <IonIcon icon={ refreshOutline } slot="start"/>
+                               Reset
+                           </IonButton> }
 
                        <div className={ styles.progress }>
                            { phase && phase.userTasksCount && phase.userTasksCount > 0 ?

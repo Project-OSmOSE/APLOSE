@@ -27,7 +27,7 @@ const AnnotationCampaignInfo: React.FC = () => {
 
             {/* GLOBAL */ }
             <AnnotationCampaignArchiveButton/>
-            <AnnotationCampaignInstructionsButton/>
+            <AnnotationCampaignInstructionsButton instructionsUrl={ campaign.instructionsUrl }/>
             { campaign.archive && <FadedText>
                 Archived
                 on { dateToString(campaign.archive.date) } by { campaign.archive.byUser?.displayName }
@@ -51,8 +51,8 @@ const AnnotationCampaignInfo: React.FC = () => {
                     <div>
                         <FadedText>Label set</FadedText>
                         { campaign.labelSet && <IonButton fill="outline" color="medium" className="ion-text-wrap"
-                                                           disabled={ !campaign.labelSet?.name }
-                                                           onClick={ labelSetModal.toggle }>
+                                                          disabled={ !campaign.labelSet?.name }
+                                                          onClick={ labelSetModal.toggle }>
                             { campaign.labelSet?.name ?? 'No label set' }
                         </IonButton> }
                     </div>

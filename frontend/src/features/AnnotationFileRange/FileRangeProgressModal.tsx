@@ -19,12 +19,12 @@ import {
 } from '@/components/ui';
 import { IonIcon, IonNote, IonSpinner } from '@ionic/react';
 import { downloadOutline } from 'ionicons/icons/index.js';
-import { AnnotationFileRangeNode, AnnotationTaskNodeNodeConnection, Maybe, useCurrentPhase, UserNode } from '@/api';
+import { AnnotationFileRangeNode, AnnotationTaskNodeNodeConnection, Maybe, UserNode } from '@/api';
 import { useDownloadAnnotations, useDownloadProgress } from '@/api/download';
 import { NBSP } from '@/service/type';
 import { useQuery } from '@tanstack/react-query';
 import { AnnotationFileRange, User } from '@/features';
-import { useParams } from '@tanstack/react-router';
+import { useLoaderData } from '@tanstack/react-router';
 
 type Progression = {
     user: Pick<UserNode, 'id' | 'displayName' | 'expertise' | 'username'>;
@@ -41,18 +41,15 @@ type Sort = {
 }
 
 export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
-    const {
-        campaignID,
-        phaseType,
-    } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
-    const { phase } = useCurrentPhase()
+    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
     const { data: { users }, isLoading: isLoadingUsers, error: userError } = useQuery(User.API.allQuery)
     const {
         data: allFileRanges,
         isFetching: isLoadingFileRanges,
         error: fileRangeError,
     } = useQuery(AnnotationFileRange.API.forPhaseQuery({
-        campaignID, phaseType,
+        campaignID: campaign.id, phaseType: phase.phase,
     }));
     const { downloadAnnotations, error: downloadAnnotationsError } = useDownloadAnnotations()
     const { downloadProgress, error: downloadProgressError } = useDownloadProgress()

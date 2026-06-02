@@ -1,6 +1,5 @@
 import { DownloadRestAPI } from '@/api/download/api';
 import { useCallback } from 'react';
-import { useCurrentPhase } from '@/api';
 import { useLoaderData } from '@tanstack/react-router';
 
 const {
@@ -14,12 +13,11 @@ export const useDownloadAnalysis = downloadAnalysis.useMutation
 
 export const useDownloadAnnotations = () => {
   const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-  const { phase } = useCurrentPhase();
+  const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
   const [ method, info ] = downloadAnnotations.useMutation()
 
   return {
     downloadAnnotations: useCallback(() => {
-      if (!phase) return;
       return method({
         phaseID: phase.id,
         campaignName: campaign.name,
@@ -31,12 +29,11 @@ export const useDownloadAnnotations = () => {
 
 export const useDownloadProgress = () => {
   const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-  const { phase } = useCurrentPhase();
+  const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
   const [ method, info ] = downloadProgress.useMutation()
 
   return {
     downloadProgress: useCallback(() => {
-      if (!phase) return;
       return method({
         phaseID: phase.id,
         campaignName: campaign.name,

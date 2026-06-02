@@ -3,11 +3,11 @@ import { type Annotation, type Features, useUpdateAnnotation } from '@/features/
 import { Th, Tr } from '@/components/ui';
 import { BooleanRow, InputRow, NoteRow } from '@/features/Annotator/AcousticFeatures/Rows';
 import { useUpdateAnnotationFeatures } from '@/features/Annotator/AcousticFeatures/hooks';
-import { useCurrentPhase } from '@/api';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
+import { useLoaderData } from '@tanstack/react-router';
 
 export const Frequency: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
-    const { phase } = useCurrentPhase()
+    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const analysis = useAnnotatorAnalysis()
     const maxFrequency = useMemo(() => (analysis?.fft.samplingFrequency ?? 0) / 2, [ analysis ])
 

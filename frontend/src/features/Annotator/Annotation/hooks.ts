@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { addAnnotation, type Annotation, blur, focusAnnotation, removeAnnotation, updateAnnotation } from './slice';
 import { selectAllAnnotations } from './selectors'
 import { getNewItemID } from '@/service/function';
-import { AnnotationType, useCurrentPhase } from '@/api';
+import { AnnotationType } from '@/api';
 import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
 import { useAlert } from '@/components/ui';
 import { useLoaderData, useParams } from '@tanstack/react-router';
@@ -69,7 +69,7 @@ export const useGetAnnotation = () => {
 export const useAddAnnotation = () => {
     const getNewID = useGetNewAnnotationID()
     const { user } = useLoaderData({ from: '/_authenticated' })
-    const { phase } = useCurrentPhase()
+    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const dispatch = useAppDispatch();
 
     return useCallback((annotation: Omit<Annotation, 'id' | 'analysis' | 'annotationPhase'>) => {
@@ -140,7 +140,7 @@ export const useInvalidateAnnotation = () => {
 export const useUpdateAnnotation = () => {
     const { phaseType } = useParams({ strict: false });
     const { user } = useLoaderData({ from: '/_authenticated' })
-    const { phase } = useCurrentPhase()
+    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const allAnnotations = useAppSelector(selectAllAnnotations);
     const defaultConfidence = useAppSelector(selectDefaultConfidence);
     const getNewID = useGetNewAnnotationID()

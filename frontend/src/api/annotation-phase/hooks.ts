@@ -1,26 +1,11 @@
 import { AnnotationPhaseGqlAPI } from './api';
 import { useMemo } from 'react';
-import { AnnotationPhaseType } from '@/api';
-import { useParams } from '@tanstack/react-router';
 
 const {
-    getAnnotationPhase,
     endPhase,
     createAnnotationPhase,
     createVerificationPhase,
 } = AnnotationPhaseGqlAPI.endpoints
-
-export const useCurrentPhase = () => {
-    const { campaignID, phaseType } = useParams({ strict: false });
-    const info = getAnnotationPhase.useQuery({
-        campaignID: campaignID ?? '',
-        phase: phaseType ?? AnnotationPhaseType.Annotation,
-    }, { skip: !campaignID || !phaseType })
-    return useMemo(() => ({
-        ...info,
-        phase: info.data?.annotationPhaseByCampaignPhase,
-    }), [ info ])
-}
 
 export const useEndPhase = () => {
     const [ method, info ] = endPhase.useMutation()

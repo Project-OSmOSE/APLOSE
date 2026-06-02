@@ -5,7 +5,6 @@ import {
     AnnotationInput,
     AnnotationPhaseType,
     type ListAnnotationTaskQueryVariables,
-    useCurrentPhase,
 } from '@/api';
 import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
 import { useAppSelector } from '@/features/App';
@@ -79,7 +78,6 @@ export const useGetAnnotationTaskParams = (): GetAnnotationTaskQueryVariables =>
 export const useAnnotationTask = (options: {
     refetchOnMountOrArgChange?: boolean,
 } = {}) => {
-    const { phase } = useCurrentPhase()
     const params = useGetAnnotationTaskParams()
 
     const info = getAnnotationTask.useQuery(params, {
@@ -95,28 +93,28 @@ export const useAnnotationTask = (options: {
             ...info.data?.annotationSpectrogramById?.task?.userAnnotations?.results ?? [],
             ...info.data?.annotationSpectrogramById?.task?.annotationsToCheck?.results ?? [],
         ].filter(r => !!r).map(r => r!),
-    }), [ info, phase ])
+    }), [ info ])
 }
 
 export const useSubmitTask = () => {
-    const { campaignID, phaseType, spectrogramID } = useParams({ strict: false });
-    const { phase } = useCurrentPhase()
+    const { campaignID, spectrogramID } = useParams({ strict: false });
+    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const [ method, info ] = submitTask.useMutation()
 
     const submit = useCallback(async (annotations: AnnotationInput[],
                                       taskComments: AnnotationCommentInput[],
                                       start: Date) => {
-        if (!campaignID || !phaseType || !spectrogramID) return;
+        if (!campaignID || !spectrogramID) return;
         await method({
             campaignID,
-            phase: phaseType,
+            phase: phase.phase,
             spectrogramID,
             annotations,
             taskComments,
             startedAt: start.toISOString(),
             endedAt: new Date().toISOString(),
         }).unwrap()
-    }, [ method, campaignID, phaseType, spectrogramID, phase ]);
+    }, [ method, campaignID, spectrogramID, phase ]);
 
     return useMemo(() => {
         const error = info.error ?? info.data?.submitAnnotationTask?.annotationErrors ?? info.data?.submitAnnotationTask?.taskCommentsErrors;

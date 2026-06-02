@@ -1,5 +1,4 @@
 export type {
-  GetAnnotationPhaseQuery, GetAnnotationPhaseQueryVariables,
   CreateAnnotationPhaseMutation, CreateAnnotationPhaseMutationVariables,
   CreateVerificationPhaseMutation, CreateVerificationPhaseMutationVariables,
   EndPhaseMutation, EndPhaseMutationVariables,
