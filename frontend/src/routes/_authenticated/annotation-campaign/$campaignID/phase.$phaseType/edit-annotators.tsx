@@ -1,12 +1,11 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { createFileRoute, useLoaderData, useRouter } from '@tanstack/react-router';
 import { IonButton, IonNote, IonSpinner } from '@ionic/react';
-import { QueryStatus } from '@reduxjs/toolkit/query';
 
 import { Head, Table, Tbody, Th, Thead, Tr, useToast } from '@/components/ui';
 import { FormBloc, type Item, ListSearchbar, type SearchItem } from '@/components/form';
 
-import { AnnotationFileRangeInput, AnnotationPhaseType, useUpdateFileRanges } from '@/api';
+import { AnnotationFileRangeInput, AnnotationPhaseType } from '@/api';
 import { getNewItemID } from '@/service/function';
 
 import { FileRangeInputRow } from '@/features/AnnotationFileRange';
@@ -14,6 +13,7 @@ import { FileRangeInputRow } from '@/features/AnnotationFileRange';
 import styles from './edit-annotators.module.scss';
 import { queryClient } from '@/api/queryClient';
 import { AnnotationFileRange, User } from '@/features';
+import { useMutation } from '@tanstack/react-query';
 
 type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
     id: string;
@@ -21,19 +21,17 @@ type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
 }
 
 const EditAnnotators: React.FC = () => {
-    const phaseType = Route.useParams({ select: ({ phaseType }) => phaseType });
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const router = useRouter();
     const toast = useToast();
     const { users, groups, allFileRanges } = Route.useLoaderData()
     const {
-        updateFileRanges,
-        isLoading: isSubmitting,
+        mutate: updateFileRanges,
+        isPending: isSubmitting,
         error: errorSubmitting,
-        formErrors,
         status: submissionStatus,
-    } = useUpdateFileRanges()
+    } = useMutation(AnnotationFileRange.API.updateMutation)
     const [ force, setForce ] = useState<boolean>()
 
     // File ranges
@@ -111,20 +109,20 @@ const EditAnnotators: React.FC = () => {
 
     // Submit
     const submit = useCallback(() => {
-        updateFileRanges({ fileRanges, force })
-    }, [ fileRanges, updateFileRanges, force ])
+        updateFileRanges({ campaignID: campaign.id, phaseType: phase.phase, fileRanges, force })
+    }, [ fileRanges, updateFileRanges, force, campaign, phase ])
     useEffect(() => {
         if (errorSubmitting) toast.raiseError({ error: errorSubmitting })
     }, [ errorSubmitting ]);
     useEffect(() => {
-        if (submissionStatus === QueryStatus.fulfilled) back()
+        if (submissionStatus === 'success') back()
     }, [ submissionStatus ]);
 
     return useMemo(() =>
             <Fragment>
 
                 <Head title="Manage annotators"
-                      subtitle={ `${ campaign.name } - ${ phaseType }` }/>
+                      subtitle={ `${ campaign.name } - ${ phase.phase }` }/>
 
                 <FormBloc className={ styles.annotators }>
 
@@ -154,7 +152,6 @@ const EditAnnotators: React.FC = () => {
                                     if (!user) return <Fragment/>
                                     return <FileRangeInputRow key={ k }
                                                               range={ range }
-                                                              errors={ formErrors[k] ?? undefined }
                                                               annotator={ user }
                                                               onUpdate={ change => {
                                                                   updateFileRange({
@@ -190,8 +187,7 @@ const EditAnnotators: React.FC = () => {
 
                 </FormBloc>
             </Fragment>,
-        [ campaign, phaseType, addFileRange, formErrors,
-            submit, isSubmitting, fileRanges, phase, users, availableUsers, back ],
+        [ campaign, addFileRange, submit, isSubmitting, fileRanges, phase, users, availableUsers, back ],
     )
 }
 

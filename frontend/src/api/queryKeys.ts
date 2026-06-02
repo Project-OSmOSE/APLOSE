@@ -13,6 +13,7 @@ import type {
     GetAnnotationSpectrogramPathsQueryVariables,
     GetAnnotationSpectrogramQueryVariables,
 } from '@/features/AnnotationSpectrogram';
+import type { AnnotationPhaseType } from '@/api/types.gql-generated';
 
 /**
  * Keys factory pour les requêtes GraphQL
@@ -31,6 +32,13 @@ export const queryKeys = {
         forPhase: (variables: FileRangesForPhaseQueryVariables) => [ 'file-range', 'for phase', variables.campaignID, variables.phaseType ] as const,
     },
     spectrogram: {
+        base: [ 'spectrogram' ],
+        baseForPhase: ({
+                           campaignID,
+                           phaseType,
+                       }: {
+            campaignID: string, phaseType: AnnotationPhaseType
+        }) => [ 'spectrogram', campaignID, phaseType ] as const,
         all: ({
                   campaignID,
                   phaseType,
