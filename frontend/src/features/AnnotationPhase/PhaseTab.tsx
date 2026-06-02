@@ -2,9 +2,13 @@ import React, { Fragment, useCallback, useMemo } from 'react';
 import { IonIcon } from '@ionic/react';
 import { addOutline, closeOutline } from 'ionicons/icons/index.js';
 import { Button, Tab, useAlert, useModal } from '@/components/ui';
-import { AnnotationPhaseType, useEndPhase } from '@/api';
+import { AnnotationPhaseType } from '@/api';
 import { AnnotationPhaseCreateAnnotationModal, AnnotationPhaseCreateVerificationModal } from './PhaseCreateModal'
 import { useLoaderData, useParams } from '@tanstack/react-router';
+import { useMutation } from '@tanstack/react-query';
+import { endMutation } from './api'
+import { queryClient } from '@/api/queryClient';
+import { queryKeys } from '@/api/queryKeys';
 
 export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: phaseType }) => {
     const { phaseType: currentPhaseType } = useParams({ strict: false });
@@ -40,7 +44,14 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
         }
     }, [ phases, annotationModal, verificationModal, alert, phaseType ])
 
-    const { endPhase } = useEndPhase()
+    const onSuccess = useCallback(() => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.campaign.byId({ id: campaign.id }) })
+        queryClient.invalidateQueries({ queryKey: queryKeys.campaign.base })
+    }, [campaign])
+    const { mutate: endPhase } = useMutation({
+        ...endMutation,
+        onSuccess
+    })
     const end = useCallback(async () => {
         if (!phase ) return;
         if (phase.completedTasksCount < phase.tasksCount) {
@@ -50,10 +61,10 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
                 message: 'There is still unprocessed files.\nAre you sure you want to end this phase?',
                 actions: [ {
                     label: 'End',
-                    callback: () => endPhase({ id: phase.id, campaignID: campaign.id }),
+                    callback: () => endPhase({ id: phase.id }),
                 } ],
             });
-        } else endPhase({ id: phase.id, campaignID: campaign.id })
+        } else endPhase({ id: phase.id })
     }, [ endPhase, phase, campaign, alert ]);
 
     if (phase)

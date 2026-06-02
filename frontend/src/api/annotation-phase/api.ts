@@ -2,13 +2,6 @@ import { api } from './annotation-phase.generated'
 
 export const AnnotationPhaseGqlAPI = api.enhanceEndpoints({
   endpoints: {
-    endPhase: {
-      // @ts-expect-error: result and error are unused
-      invalidatesTags: (result, error, { campaignID }) => [ {
-        type: 'Campaign',
-        id: campaignID
-      } ]
-    },
     createAnnotationPhase: {
       // @ts-expect-error: result and error are unused
       invalidatesTags: (result, error, { campaignID }) => [ {

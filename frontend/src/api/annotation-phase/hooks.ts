@@ -2,18 +2,9 @@ import { AnnotationPhaseGqlAPI } from './api';
 import { useMemo } from 'react';
 
 const {
-    endPhase,
     createAnnotationPhase,
     createVerificationPhase,
 } = AnnotationPhaseGqlAPI.endpoints
-
-export const useEndPhase = () => {
-    const [ method, info ] = endPhase.useMutation()
-    return {
-        endPhase: method,
-        ...info,
-    }
-}
 
 export const useCreateAnnotationPhase = () => {
     const [ method, info ] = createAnnotationPhase.useMutation()

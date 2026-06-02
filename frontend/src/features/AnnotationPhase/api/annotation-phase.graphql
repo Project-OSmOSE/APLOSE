@@ -18,3 +18,9 @@ query getAnnotationPhase(
         userCompletedTasksCount
     }
 }
+
+mutation endPhase($id: ID!) {
+    endAnnotationPhase(id: $id) {
+        ok
+    }
+}

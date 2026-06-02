@@ -22,9 +22,9 @@ export const updateMutation = mutationOptions({
     mutationFn: (variables: UpdateFileRangesMutationVariables) => graphqlClient.request<UpdateFileRangesMutation>(UpdateFileRangesDocument, variables),
     onSuccess: (_data, { campaignID, phaseType }) => {
         queryClient.invalidateQueries({ queryKey: queryKeys.fileRange.forPhase({ campaignID, phaseType }) })
-        queryClient.invalidateQueries({ queryKey: queryKeys.campaign.base })
         queryClient.invalidateQueries({ queryKey: queryKeys.campaign.byId({ id: campaignID }) })
         queryClient.invalidateQueries({ queryKey: queryKeys.phase.get({ campaignID, phase: phaseType }) })
+        queryClient.invalidateQueries({ queryKey: queryKeys.campaign.base })
         queryClient.invalidateQueries({ queryKey: queryKeys.spectrogram.baseForPhase({ campaignID, phaseType }) })
     },
 })
