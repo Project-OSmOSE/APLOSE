@@ -15,6 +15,9 @@ import {
     GetCampaignDocument,
     type GetCampaignQuery,
     type GetCampaignQueryVariables,
+    UpdateCampaignFeaturedLabelsDocument,
+    type UpdateCampaignFeaturedLabelsMutation,
+    type UpdateCampaignFeaturedLabelsMutationVariables,
 } from './annotation-campaign.generated'
 import { queryClient } from '@/api/queryClient';
 
@@ -48,6 +51,13 @@ export const archiveMutation = mutationOptions({
     onSuccess: (_data, variables) => {
         queryClient.invalidateQueries({ queryKey: queryKeys.campaign.byId({ id: variables.id }) })
         queryClient.invalidateQueries({ queryKey: queryKeys.campaign.base })
+    },
+})
+
+export const updateFeaturedLabelsMutation = mutationOptions({
+    mutationFn: (variables: UpdateCampaignFeaturedLabelsMutationVariables) => graphqlClient.request<UpdateCampaignFeaturedLabelsMutation>(UpdateCampaignFeaturedLabelsDocument, variables),
+    onSuccess: (_data, variables) => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.campaign.byId({ id: variables.id }) })
     },
 })
 

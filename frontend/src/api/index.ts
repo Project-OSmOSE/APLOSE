@@ -1,7 +1,6 @@
 export * from './types.gql-generated'
 
 export * from './annotation'
-export * from './annotation-campaign'
 export * from './annotation-file-range'
 export * from './annotation-phase'
 export * from './annotation-task'

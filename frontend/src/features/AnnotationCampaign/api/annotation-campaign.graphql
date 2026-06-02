@@ -177,3 +177,24 @@ mutation archiveCampaign($id: ID!) {
         ok
     }
 }
+
+mutation updateCampaignFeaturedLabels(
+    $id: ID!
+    $labelsWithAcousticFeatures: [ID]!
+    $labelSetID: ID!
+    $confidenceSetID: ID
+    $allowPointAnnotation: Boolean!
+) {
+    updateAnnotationCampaign(input: {
+        id: $id
+        allowPointAnnotation: $allowPointAnnotation
+        labelsWithAcousticFeatures: $labelsWithAcousticFeatures
+        labelSet: $labelSetID
+        confidenceSet: $confidenceSetID
+    }) {
+        errors {
+            field
+            messages
+        }
+    }
+}

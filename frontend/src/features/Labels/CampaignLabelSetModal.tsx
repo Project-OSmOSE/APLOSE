@@ -1,11 +1,13 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { Modal, ModalFooter, ModalHeader, type ModalProps, useToast, WarningText } from '@/components/ui';
+import { Modal, ModalFooter, ModalHeader, type ModalProps, useToast } from '@/components/ui';
 import { IonButton, IonSpinner } from '@ionic/react';
-import { AnnotationLabelNode, ErrorType, useUpdateCampaignFeaturedLabels } from '@/api';
+import { AnnotationLabelNode } from '@/api';
 import { LabelSetFeaturesSelect } from '@/features/Labels';
+import { AnnotationCampaign } from '@/features';
 import styles from './styles.module.scss';
 import { useLoaderData } from '@tanstack/react-router';
 import { cleanGqlList } from '@/api/utils';
+import { useMutation } from '@tanstack/react-query';
 
 
 type Label = Pick<AnnotationLabelNode, 'id' | 'name'>
@@ -14,12 +16,11 @@ export const LabelSetModal: React.FC<ModalProps> = ({ onClose }) => {
   const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
   const toast = useToast();
   const {
-    updateCampaignFeaturedLabels,
-    isLoading: isSubmitting,
+    mutateAsync: updateCampaignFeaturedLabels,
+    isPending: isSubmitting,
     error: patchError,
-    formErrors,
     isSuccess: isPatchSuccessful,
-  } = useUpdateCampaignFeaturedLabels();
+  } = useMutation(AnnotationCampaign.API.updateFeaturedLabelsMutation);
 
   const [ labelsWithAcousticFeatures, setLabelsWithAcousticFeatures ] = useState<Label[]>(cleanGqlList(campaign.labelsWithAcousticFeatures));
   const [ disabled, setDisabled ] = useState<boolean>(true);
@@ -39,11 +40,14 @@ export const LabelSetModal: React.FC<ModalProps> = ({ onClose }) => {
     try {
       await updateCampaignFeaturedLabels({
         labelsWithAcousticFeatures: labelsWithAcousticFeatures.map(l => l.id),
+        id: campaign.id,
+        labelSetID: campaign.labelSet?.id ?? '',
+        allowPointAnnotation: campaign.allowPointAnnotation,
       });
     } finally {
       toggleDisabled()
     }
-  }, [ updateCampaignFeaturedLabels, labelsWithAcousticFeatures, toggleDisabled ])
+  }, [ updateCampaignFeaturedLabels, labelsWithAcousticFeatures, toggleDisabled, campaign ])
 
   return (
     <Modal onClose={ onClose } className={ [ styles.modal ].join(' ') }>
@@ -51,11 +55,8 @@ export const LabelSetModal: React.FC<ModalProps> = ({ onClose }) => {
                    title={ campaign.labelSet?.name }
                    subtitle="Label set"/>
 
-      { formErrors.length > 0 && <WarningText error={ formErrors }/> }
-
       { campaign.labelSet && <Fragment>
           <LabelSetFeaturesSelect description={ campaign.labelSet.description ?? undefined }
-                                  error={ formErrors.find((e: ErrorType) => e.field === 'labelsWithAcousticFeatures')?.messages.join(' ') }
                                   labels={ (campaign.labelSet.labels ?? []).filter(l => l !== null) as Label[] }
                                   labelsWithAcousticFeatures={ labelsWithAcousticFeatures }
                                   disabled={ disabled }
