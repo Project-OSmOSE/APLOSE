@@ -1,30 +1,11 @@
 import { AnnotationFileRangeGqlAPI } from './api'
-import { type AnnotationFileRangeInput, AnnotationPhaseType } from '@/api';
+import { type AnnotationFileRangeInput } from '@/api';
 import { useCallback, useMemo } from 'react';
 import { useParams } from '@tanstack/react-router';
 
 const {
-    listFileRanges,
     updateFileRanges,
 } = AnnotationFileRangeGqlAPI.endpoints
-
-export const useAllFileRanges = () => {
-    const { campaignID, phaseType } = useParams({ strict: false });
-    const info = listFileRanges.useQuery({
-        campaignID: campaignID ?? '',
-        phaseType: phaseType ?? AnnotationPhaseType.Annotation,
-    }, {
-        skip: !campaignID || !phaseType,
-    })
-    return useMemo(() => ({
-        ...info,
-        allFileRanges: info.data?.allAnnotationFileRanges?.results.filter(r => r !== null).map(r => ({
-            ...r!,
-            firstFileIndex: r.firstFileIndex + 1,
-            lastFileIndex: r.lastFileIndex + 1,
-        })),
-    }), [ info ])
-}
 
 export const useUpdateFileRanges = () => {
     const { campaignID, phaseType } = useParams({ strict: false });

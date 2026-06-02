@@ -1,5 +1,4 @@
 export type {
-  ListFileRangesQuery, ListFileRangesQueryVariables,
-  UpdateFileRangesMutation, UpdateFileRangesMutationVariables,
+    UpdateFileRangesMutation, UpdateFileRangesMutationVariables,
 } from './annotation-file-range.generated'
 export * from './hooks'

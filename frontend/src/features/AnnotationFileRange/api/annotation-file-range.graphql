@@ -1,0 +1,25 @@
+query fileRangesForPhase(
+    $campaignID: ID!
+    $phaseType: AnnotationPhaseType!
+) {
+    allAnnotationFileRanges(
+        annotationPhase_AnnotationCampaign: $campaignID
+        annotationPhase_Phase: $phaseType
+    ) {
+        results {
+            id
+            firstFileIndex
+            lastFileIndex
+            filesCount
+
+            annotator {
+                id
+                displayName
+            }
+
+            completedAnnotationTasks: annotationTasks(status: Finished) {
+                totalCount
+            }
+        }
+    }
+}

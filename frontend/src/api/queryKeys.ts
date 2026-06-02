@@ -3,12 +3,16 @@ import type { QueryKey } from '@tanstack/react-query';
 import type { BrowseStorageQueryVariables, SearchStorageQueryVariables } from '@/features/Storage';
 import type { GetDatasetByIdQueryVariables } from '@/features/Dataset';
 import { ChannelConfigurationsForDatasetQueryVariables } from '@/features/ChannelConfiguration';
+import type { FileRangesForPhaseQueryVariables } from '@/features/AnnotationFileRange';
 
 /**
  * Keys factory pour les requêtes GraphQL
  * Permet d'invalider les requêtes de manière prévisible
  */
 export const queryKeys = {
+    fileRanges: {
+        forPhase: (variables: FileRangesForPhaseQueryVariables) => ['file-range', 'for phase', variables.campaignID, variables.phaseType] as const,
+    },
     channelConfigurations: {
         forDataset: (variables: ChannelConfigurationsForDatasetQueryVariables) => ['channel-configuration', 'for dataset', variables.datasetID] as const,
     },

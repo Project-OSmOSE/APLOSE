@@ -9,7 +9,6 @@ import { FormBloc, type Item, ListSearchbar, type SearchItem } from '@/component
 import {
     AnnotationFileRangeInput,
     AnnotationPhaseType,
-    useAllFileRanges,
     useCurrentCampaign,
     useCurrentPhase,
     useUpdateFileRanges,
@@ -20,7 +19,7 @@ import { FileRangeInputRow } from '@/features/AnnotationFileRange';
 
 import styles from './edit-annotators.module.scss';
 import { queryClient } from '@/api/queryClient';
-import { User } from '@/features';
+import { AnnotationFileRange, User } from '@/features';
 
 type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
     id: string;
@@ -37,14 +36,7 @@ const EditAnnotators: React.FC = () => {
     const { phase } = useCurrentPhase()
     const router = useRouter();
     const toast = useToast();
-    const [
-        { users, groups },
-    ] = Route.useLoaderData()
-    const {
-        allFileRanges,
-        isFetching: isFetchingFileRanges,
-        error: errorLoadingFileRanges,
-    } = useAllFileRanges()
+    const { users, groups, allFileRanges } = Route.useLoaderData()
     const {
         updateFileRanges,
         isLoading: isSubmitting,
@@ -55,7 +47,13 @@ const EditAnnotators: React.FC = () => {
     const [ force, setForce ] = useState<boolean>()
 
     // File ranges
-    const [ fileRanges, setFileRanges ] = useState<FileRange[]>([]);
+    const [ fileRanges, setFileRanges ] = useState<FileRange[]>(allFileRanges.map(r => ({
+        id: r!.id,
+        annotatorId: r!.annotator.id,
+        firstFileIndex: r!.firstFileIndex,
+        lastFileIndex: r!.lastFileIndex,
+        started: !!r!.completedAnnotationTasks?.totalCount,
+    })));
     const availableUsers: SearchItem[] = useMemo(() => {
         const items: SearchItem[] = [];
         if (users) {
@@ -84,15 +82,6 @@ const EditAnnotators: React.FC = () => {
         }
         return items;
     }, [ users, campaign, fileRanges, groups ]);
-    useEffect(() => {
-        if (allFileRanges) setFileRanges(allFileRanges.map(r => ({
-            id: r!.id,
-            annotatorId: r!.annotator.id,
-            firstFileIndex: r!.firstFileIndex,
-            lastFileIndex: r!.lastFileIndex,
-            started: !!r!.completedAnnotationTasks?.totalCount,
-        })));
-    }, [ allFileRanges ]);
     const addFileRange = useCallback((item: Item) => {
         if (!groups || !campaign?.spectrogramsCount) return;
         const [ type, id ] = (item.value as string).split('-');
@@ -151,18 +140,16 @@ const EditAnnotators: React.FC = () => {
                 <FormBloc className={ styles.annotators }>
 
                     <ListSearchbar placeholder="Search annotator..."
-                                   disabled={ isFetchingCampaign || isFetchingFileRanges }
+                                   disabled={ isFetchingCampaign }
                                    values={ availableUsers }
                                    onValueSelected={ addFileRange }/>
 
                     {/* Loading */ }
-                    { (isFetchingCampaign || isFetchingFileRanges) && <IonSpinner/> }
+                    { (isFetchingCampaign) && <IonSpinner/> }
                     { errorLoadingCampaign &&
                         <GraphQLErrorText error={ errorLoadingCampaign }/> }
-                    { errorLoadingFileRanges &&
-                        <GraphQLErrorText error={ errorLoadingFileRanges }/> }
 
-                    { !(isFetchingCampaign || isFetchingFileRanges) &&
+                    { !(isFetchingCampaign) &&
                         <Table>
                             <Thead>
                                 <Tr>
@@ -221,8 +208,7 @@ const EditAnnotators: React.FC = () => {
                 </FormBloc>
             </Fragment>,
         [ campaign, phaseType, addFileRange, errorLoadingCampaign, formErrors,
-            submit, isSubmitting, isFetchingCampaign, fileRanges, phase, users, isFetchingFileRanges, availableUsers,
-            back, errorLoadingFileRanges ],
+            submit, isSubmitting, isFetchingCampaign, fileRanges, phase, users, availableUsers, back, ],
     )
 }
 
@@ -230,8 +216,15 @@ export const Route = createFileRoute('/_authenticated/annotation-campaign/$campa
     params: {
         parse: rawParams => rawParams as { campaignID: string, phaseType: AnnotationPhaseType },
     },
-    loader: () => Promise.all([
-        queryClient.ensureQueryData(User.API.allQuery),
-    ]),
+    loader: async ({ params }) => {
+        const [
+            { users, groups },
+            allFileRanges,
+        ] = await Promise.all([
+            queryClient.ensureQueryData(User.API.allQuery),
+            queryClient.ensureQueryData(AnnotationFileRange.API.forPhaseQuery(params)),
+        ])
+        return { users, groups, allFileRanges }
+    },
     component: EditAnnotators,
 })
