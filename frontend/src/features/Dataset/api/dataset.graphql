@@ -27,3 +27,12 @@ query allDatasets {
         }
     }
 }
+
+query getDatasetByID($id: ID!) {
+    datasetById(id: $id) {
+        ...Dataset
+        owner {
+            displayName
+        }
+    }
+}

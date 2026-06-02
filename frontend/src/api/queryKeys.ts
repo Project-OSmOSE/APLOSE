@@ -1,9 +1,7 @@
 import { queryClient } from './queryClient';
 import type { QueryKey } from '@tanstack/react-query';
-import type {
-    BrowseStorageQueryVariables,
-    SearchStorageQueryVariables,
-} from '@/features/Storage/api/storage.generated';
+import type { BrowseStorageQueryVariables, SearchStorageQueryVariables } from '@/features/Storage';
+import type { GetDatasetByIdQueryVariables } from '@/features/Dataset';
 
 /**
  * Keys factory pour les requêtes GraphQL
@@ -12,6 +10,7 @@ import type {
 export const queryKeys = {
     dataset: {
         all: [ 'dataset' ] as const,
+        byId: (variables: GetDatasetByIdQueryVariables) => ['dataset', variables.id] as const,
     },
     storage: {
         browse: (variables: BrowseStorageQueryVariables) => ['storage', 'browse', variables.path.split('/')] as const,

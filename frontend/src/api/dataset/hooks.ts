@@ -2,21 +2,13 @@ import { DatasetGqlAPI } from './api'
 import { useMemo } from 'react';
 
 const {
-  listDatasetsAndAnalysis,
-  getDatasetByID,
+    listDatasetsAndAnalysis,
 } = DatasetGqlAPI.endpoints
 
-export const useDataset = ({ id }: { id?: string }) => {
-  const info = getDatasetByID.useQuery({
-    id: id ?? '',
-  }, { skip: !id })
-  return useMemo(() => ({ ...info, dataset: info.data?.datasetById }), [info])
-}
-
 export const useAllDatasetsAndAnalysis = () => {
-  const info = listDatasetsAndAnalysis.useQuery()
-  return useMemo(() => ({
-    ...info,
-    allDatasets: info.data?.allDatasets?.results.filter(d => d !== null).map(d => d!),
-  }), [info])
+    const info = listDatasetsAndAnalysis.useQuery()
+    return useMemo(() => ({
+        ...info,
+        allDatasets: info.data?.allDatasets?.results.filter(d => d !== null).map(d => d!),
+    }), [ info ])
 }

@@ -1,20 +1,3 @@
-
-query getDatasetByID($id: ID!) {
-    datasetById(id: $id) {
-        id
-        name
-        path
-        description
-        start
-        end
-        createdAt
-        legacy
-        owner {
-            displayName
-        }
-    }
-}
-
 query listDatasetsAndAnalysis {
     allDatasets(orderBy: "name") {
         results {

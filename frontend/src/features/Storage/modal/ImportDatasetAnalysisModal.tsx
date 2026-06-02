@@ -1,15 +1,16 @@
 import React, { useCallback } from 'react';
-import { useDataset } from '@/api';
 import { useAppDispatch } from '@/features/App';
 import { gqlAPI } from '@/api/baseGqlApi';
 import { listSpectrogramAnalysisTag } from '@/api/spectrogram-analysis/api';
 import { HelpButton, Modal, ModalFooter, ModalHeader, type ModalProps } from '@/components/ui';
 import { Item } from '@/features/Storage';
-import { useParams } from '@tanstack/react-router';
+import { useLoaderData } from '@tanstack/react-router';
 
 export const ImportDatasetAnalysisModal: React.FC<ModalProps> = ({ onClose }) => {
-    const { datasetID } = useParams({ strict: false });
-    const { dataset } = useDataset({ id: datasetID })
+    const { dataset } = useLoaderData({
+        from: '/_authenticated/_admin/dataset/$datasetID',
+        select: ({ dataset }) => ({ dataset }),
+    })
     const dispatch = useAppDispatch();
 
     const invalidateSpectrogramList = useCallback(() => {

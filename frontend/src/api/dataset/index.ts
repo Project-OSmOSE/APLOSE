@@ -1,6 +1,4 @@
 export type {
-  GetDatasetByIdQuery,
-  GetDatasetByIdQueryVariables,
   ListDatasetsAndAnalysisQuery,
   ListDatasetsAndAnalysisQueryVariables,
 } from './dataset.generated'

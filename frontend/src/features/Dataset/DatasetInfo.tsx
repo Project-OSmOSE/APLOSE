@@ -1,16 +1,17 @@
 import React, { Fragment } from 'react';
 import { IonNote } from '@ionic/react';
-import { useDataset } from '@/api';
 
 import { dateToString } from '@/service/function';
 import { FadedText, Link } from '@/components/ui';
 import styles from './styles.module.scss';
-import { useLoaderData, useParams } from '@tanstack/react-router';
+import { useLoaderData } from '@tanstack/react-router';
 
 export const DatasetInfoCreation: React.FC = () => {
-    const { datasetID: id } = useParams({ strict: false });
-    const { dataset } = useDataset({ id })
-    if (!dataset) return <Fragment/>
+    const { dataset } = useLoaderData({
+        from: '/_authenticated/_admin/dataset/$datasetID',
+        select: ({ dataset }) => ({ dataset }),
+    })
+
     return <IonNote className={ styles.importNote } color="medium">
         Dataset imported on { dateToString(new Date(dataset.createdAt)) } by { dataset.owner.displayName }
     </IonNote>
