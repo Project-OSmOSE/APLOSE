@@ -22,11 +22,11 @@ const NewAnnotationCampaign: React.FC = () => {
 
     const {
         mutateAsync: createCampaign,
-        data: campaign,
+        data,
         isPending: isSubmittingCampaign,
         error: errors,
     } = useMutation(AnnotationCampaign.API.createMutation)
-    const formErrors = useMemo(() => (errors ?? []) as GqlError<CreateCampaignMutationVariables>[], [ errors ],)
+    const formErrors = useMemo(() => (data?.errors ?? []) as GqlError<CreateCampaignMutationVariables>[], [ data ])
 
     const toast = useToast();
     const navigate = useNavigate();
@@ -97,9 +97,9 @@ const NewAnnotationCampaign: React.FC = () => {
             allowColormapTuning,
             colormapDefault,
             colormapInvertedDefault,
-        }).then(campaign => {
-            if (!campaign) return;
-            dispatch(Storage.Slice.actions.invalidatePath(campaign.dataset.path))
+        }).then(data => {
+            if (!data?.annotationCampaign) return;
+            dispatch(Storage.Slice.actions.invalidatePath(data.annotationCampaign.dataset.path))
         })
     }, [ name, description, instructionsUrl, createCampaign, deadline, datasetID, analysisIDs, allowImageTuning, allowColormapTuning, colormapDefault, colormapInvertedDefault, dispatch ])
 
@@ -107,13 +107,13 @@ const NewAnnotationCampaign: React.FC = () => {
         if (errors) toast.raiseError({ error: errors })
     }, [ errors ]);
     useEffect(() => {
-        if (!campaign) return;
+        if (!data?.annotationCampaign) return;
         navigate({
             to: '/annotation-campaign/$campaignID',
-            params: { campaignID: campaign.id },
+            params: { campaignID: data.annotationCampaign.id },
             replace: true,
         })
-    }, [ campaign, navigate ]);
+    }, [ data, navigate ]);
 
     return useMemo(() => <div className={ styles.page } ref={ page }>
 

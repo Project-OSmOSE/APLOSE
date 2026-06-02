@@ -13,6 +13,7 @@ import { type AllSpectrogramsFilters, SpectrogramRow } from '@/features/Annotati
 import styles from './phase.$phaseType.module.scss';
 import { queryClient } from '@/api/queryClient';
 import { AnnotationPhase, AnnotationSpectrogram, User } from '@/features';
+import { IonNote, IonSpinner } from '@ionic/react';
 
 const AnnotationCampaignPhaseDetail: React.FC = () => {
     const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
@@ -100,6 +101,8 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
                     <Pagination currentPage={ search.page ?? 1 } totalPages={ spectrogramsPageCount }
                                 setCurrentPage={ updatePage }/> }
 
+                { spectrograms.length === 0 &&
+                    <p>You have no files to annotate.</p> }
                 { campaign.isArchived ? <p>The campaign is archived. No more annotation can be done.</p> :
                     (phase?.endedAt && <p>The phase is ended. No more annotation can be done.</p>) }
 
@@ -143,4 +146,6 @@ export const Route = createFileRoute('/_authenticated/annotation-campaign/$campa
         return { phase, spectrograms, spectrogramsPageCount: Math.ceil((totalCount ?? 0) / PAGE_SIZE), resumeSpectrogramId: resumeId }
     },
     component: AnnotationCampaignPhaseDetail,
+    pendingComponent: IonSpinner,
+    notFoundComponent: () => <IonNote color='medium'>Phase not found</IonNote>
 })

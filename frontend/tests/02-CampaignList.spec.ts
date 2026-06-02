@@ -13,7 +13,7 @@ const TEST = {
         test(`Handle empty states as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
-                listCampaigns: 'empty',
+                allCampaigns: 'empty',
             })
             await test.step(`Navigate`, () => page.campaigns.go({ as }));
 

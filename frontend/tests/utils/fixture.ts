@@ -17,6 +17,7 @@ import {
   StoragePage,
 } from './pages';
 import { gqlRegex } from './mock';
+import type { GqlOperations } from './mock/_gql';
 
 interface PageExtension {
   readonly home: HomePage;
@@ -39,7 +40,7 @@ interface PageExtension {
 
   readonly annotator: AnnotatorPage;
 
-  waitForGqlRequest(operationName: string): Promise<Request>;
+  waitForGqlRequest(operationName: keyof GqlOperations): Promise<Request>;
 }
 
 export interface Page extends PageBase, PageExtension {
@@ -76,7 +77,7 @@ export const test = testBase.extend<Fixture>({
       phaseEdit: new PhaseEditAnnotatorsPage(page),
       annotator: new AnnotatorPage(page),
 
-      waitForGqlRequest: (operationName: string): Promise<Request> => {
+      waitForGqlRequest: (operationName: keyof GqlOperations): Promise<Request> => {
         return page.waitForRequest((request: Request) => {
           if (!new RegExp(gqlRegex).test(request.url())) return false;
           return request.postDataJSON().operationName === operationName

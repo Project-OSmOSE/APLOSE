@@ -4,7 +4,7 @@ import type {
   CreateVerificationPhaseMutation,
   EndPhaseMutation,
   GetAnnotationPhaseQuery,
-} from '../../../src/api/annotation-phase';
+} from '../../../src/features/AnnotationPhase';
 import type { GqlQuery, RestQuery } from './_types';
 import { DOWNLOAD_ANNOTATIONS_URL, DOWNLOAD_PROGRESS_URL } from '../../../src/consts/links';
 import { completedTasksCount, phase, tasksCount, userCompletedTasksCount, userTasksCount } from './types';

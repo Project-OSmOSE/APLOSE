@@ -1,7 +1,7 @@
 import { essentialTag, expect, test } from './utils';
 import { gqlRegex, interceptRequests } from './utils/mock';
 import { campaign, spectrogram, TASKS } from './utils/mock/types';
-import type { ListAnnotationTaskQueryVariables } from '../src/api/annotation-task';
+import type { AllAnnotationSpectrogramsQueryVariables } from '../src/features/AnnotationSpectrogram';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
 import type { Params } from './utils/types';
 
@@ -14,9 +14,9 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
-                listFileRanges: 'empty',
-                listSpectrogramAnalysis: 'empty',
-                listAnnotationTask: 'empty',
+                fileRangesForPhase: 'empty',
+                allSpectrogramAnalysis: 'empty',
+                allAnnotationSpectrograms: 'empty',
             })
             await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
@@ -59,14 +59,14 @@ const TEST = {
             })
             await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
-            await page.waitForGqlRequest('listAnnotationTask')
+            await page.waitForGqlRequest('allAnnotationSpectrograms')
 
             await test.step('Search file', async () => {
                 const [ request ] = await Promise.all([
-                    page.waitForGqlRequest('listAnnotationTask'),
+                    page.waitForGqlRequest('allAnnotationSpectrograms'),
                     page.phaseDetail.searchFile(spectrogram.filename),
                 ])
-                const variables = request.postDataJSON().variables as ListAnnotationTaskQueryVariables
+                const variables = request.postDataJSON().variables as AllAnnotationSpectrogramsQueryVariables
                 expect(variables.search).toEqual(spectrogram.filename)
             })
         }),

@@ -16,7 +16,7 @@ import {
     AnnotationPhaseType,
     AnnotationType,
 } from '../src/api/types.gql-generated';
-import type { SubmitTaskMutationVariables } from '../src/api/annotation-task/annotation-task.generated';
+import type { SubmitTaskMutationVariables } from '../src/features/AnnotationTask';
 import type { Params } from './utils/types';
 
 // Utils
@@ -28,7 +28,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: 'annotator',
                 getAnnotationPhase: phase,
-                getAnnotationTask: 'unsubmitted',
+                getAnnotationSpectrogram: 'unsubmitted',
             })
             await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
 
@@ -66,7 +66,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: 'annotator',
                 getAnnotationPhase: phase,
-                getAnnotationTask: 'submitted',
+                getAnnotationSpectrogram: 'submitted',
             })
             await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
 
@@ -103,7 +103,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: 'annotator',
                 getAnnotationPhase: phase,
-                getAnnotationTask: 'unsubmitted',
+                getAnnotationSpectrogram: 'unsubmitted',
             })
             await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
 

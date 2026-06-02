@@ -41,8 +41,6 @@ const TEST = {
                 // @ts-expect-error
                 const fileLines = page.phaseImport.fileData.replaceAll('\r', '').split('\n')
                 expect(expectedLines.length).toEqual(fileLines.length)
-                const header: string[] = (expectedLines.reverse().pop()).split(',')
-                const row: string[] = expectedLines.pop().split(',')
             })
         }),
 

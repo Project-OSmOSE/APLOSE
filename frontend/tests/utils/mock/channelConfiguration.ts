@@ -1,12 +1,12 @@
-import type { ListChannelConfigurationsQuery } from '../../../src/api/channel-configuration';
+import type { ChannelConfigurationsForDatasetQuery } from '../../../src/features/ChannelConfiguration';
 import type { GqlQuery } from './_types';
 import { deployment } from './types';
 
 
 export const CHANNEL_CONFIGURATION_QUERIES: {
-  listChannelConfigurations: GqlQuery<ListChannelConfigurationsQuery>,
+  channelConfigurationsForDataset: GqlQuery<ChannelConfigurationsForDatasetQuery>,
 } = {
-  listChannelConfigurations: {
+  channelConfigurationsForDataset: {
     defaultType: 'filled',
     empty: {
       allChannelConfigurations: null,

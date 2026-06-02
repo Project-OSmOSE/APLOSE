@@ -1,12 +1,12 @@
 import { type GqlQuery } from './_types';
-import type { ListFileRangesQuery, UpdateFileRangesMutation } from '../../../src/api/annotation-file-range/';
+import type { FileRangesForPhaseQuery, UpdateFileRangesMutation } from '../../../src/features/AnnotationFileRange/';
 import { fileRange, USERS } from './types';
 
 
 export const FILE_RANGE_QUERIES: {
-  listFileRanges: GqlQuery<ListFileRangesQuery>,
+  fileRangesForPhase: GqlQuery<FileRangesForPhaseQuery>,
 } = {
-  listFileRanges: {
+  fileRangesForPhase: {
     defaultType: 'filled',
     empty: {
       allAnnotationFileRanges: null,

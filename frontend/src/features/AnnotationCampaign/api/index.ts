@@ -41,7 +41,7 @@ export const byIdQuery = (variables: GetCampaignQueryVariables) => queryOptions(
 
 export const createMutation = mutationOptions({
     mutationFn: (variables: CreateCampaignMutationVariables) => graphqlClient.request<CreateCampaignMutation>(CreateCampaignDocument, variables)
-        .then(data => data.createAnnotationCampaign?.annotationCampaign),
+        .then(data => data.createAnnotationCampaign),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.campaign.base }),
 })
 

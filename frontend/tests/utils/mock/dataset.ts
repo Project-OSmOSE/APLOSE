@@ -1,14 +1,14 @@
 import type { GqlQuery } from './_types';
-import { GetDatasetByIdQuery, ListDatasetsAndAnalysisQuery, ListDatasetsQuery } from '../../../src/api/dataset';
+import { AllDatasetsQuery, GetDatasetByIdQuery, ListDatasetsWithAnalysisQuery } from '../../../src/features/Dataset';
 import type { Colormap } from '../../../src/features/Colormap';
 import { dataset, spectrogramAnalysis, USERS } from './types';
 
 export const DATASET_QUERIES: {
-  listDatasets: GqlQuery<ListDatasetsQuery>,
+  allDatasets: GqlQuery<AllDatasetsQuery>,
   getDatasetByID: GqlQuery<GetDatasetByIdQuery>,
-  listDatasetsAndAnalysis: GqlQuery<ListDatasetsAndAnalysisQuery>,
+  listDatasetsWithAnalysis: GqlQuery<ListDatasetsWithAnalysisQuery>,
 } = {
-  listDatasets: {
+  allDatasets: {
     defaultType: 'filled',
     empty: {
       allDatasets: {
@@ -53,10 +53,12 @@ export const DATASET_QUERIES: {
         },
         start: dataset.start,
         end: dataset.end,
+        analysisCount: dataset.analysisCount,
+        spectrogramCount: dataset.spectrogramCount,
       },
     },
   },
-  listDatasetsAndAnalysis: {
+  listDatasetsWithAnalysis: {
     defaultType: 'filled',
     empty: {
       allDatasets: { results: [] },

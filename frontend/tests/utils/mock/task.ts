@@ -1,9 +1,10 @@
 import type { GqlQuery } from './_types';
+import type { SubmitTaskMutation } from '../../../src/features/AnnotationTask';
 import type {
-    GetAnnotationTaskQuery,
-    ListAnnotationTaskQuery,
-    SubmitTaskMutation,
-} from '../../../src/api/annotation-task/annotation-task.generated';
+    AllAnnotationSpectrogramsQuery,
+    GetAnnotationSpectrogramPathsQuery,
+    GetAnnotationSpectrogramQuery,
+} from '../../../src/features/AnnotationSpectrogram';
 import {
     AUDIO_PATH,
     boxAnnotation,
@@ -14,7 +15,6 @@ import {
     phase,
     spectrogram,
     SPECTROGRAM_PATH,
-    spectrogramAnalysis,
     taskComment,
     TASKS,
     USERS,
@@ -24,10 +24,11 @@ import {
 
 
 export const TASK_QUERIES: {
-    listAnnotationTask: GqlQuery<ListAnnotationTaskQuery>,
-    getAnnotationTask: GqlQuery<GetAnnotationTaskQuery, 'submitted' | 'submittedAsOwner' | 'unsubmitted'>,
+    allAnnotationSpectrograms: GqlQuery<AllAnnotationSpectrogramsQuery>,
+    getAnnotationSpectrogram: GqlQuery<GetAnnotationSpectrogramQuery, 'submitted' | 'submittedAsOwner' | 'unsubmitted'>,
+    getAnnotationSpectrogramPaths: GqlQuery<GetAnnotationSpectrogramPathsQuery>,
 } = {
-    listAnnotationTask: {
+    allAnnotationSpectrograms: {
         defaultType: 'filled',
         empty: {
             allAnnotationSpectrograms: null,
@@ -39,6 +40,7 @@ export const TASK_QUERIES: {
                     start: spectrogram.start,
                     filename: spectrogram.filename,
                     duration: spectrogram.duration,
+                    isAssigned: true,
                     task: {
                         status: t.status,
                         annotations: {
@@ -54,7 +56,7 @@ export const TASK_QUERIES: {
             },
         },
     },
-    getAnnotationTask: {
+    getAnnotationSpectrogram: {
         defaultType: 'unsubmitted',
         empty: {
             allAnnotationSpectrograms: null,
@@ -90,9 +92,6 @@ export const TASK_QUERIES: {
                                 confidence: {
                                     label: CONFIDENCES.sure.label,
                                 },
-                                analysis: {
-                                    id: spectrogramAnalysis.id,
-                                },
                                 comments: {
                                     results: [ weakAnnotationComment ],
                                 },
@@ -110,9 +109,6 @@ export const TASK_QUERIES: {
                                 confidence: {
                                     label: CONFIDENCES.notSure.label,
                                 },
-                                analysis: {
-                                    id: spectrogramAnalysis.id,
-                                },
                                 comments: null,
                             },
                         ],
@@ -121,10 +117,6 @@ export const TASK_QUERIES: {
                         results: [ taskComment ],
                     },
                 },
-            },
-            spectrogramPaths: {
-                spectrogramPath: SPECTROGRAM_PATH,
-                audioPath: AUDIO_PATH,
             },
         },
         submittedAsOwner: {
@@ -157,9 +149,6 @@ export const TASK_QUERIES: {
                                 confidence: {
                                     label: CONFIDENCES.sure.label,
                                 },
-                                analysis: {
-                                    id: spectrogramAnalysis.id,
-                                },
                                 comments: {
                                     results: [ weakAnnotationComment ],
                                 },
@@ -177,9 +166,6 @@ export const TASK_QUERIES: {
                                 confidence: {
                                     label: CONFIDENCES.notSure.label,
                                 },
-                                analysis: {
-                                    id: spectrogramAnalysis.id,
-                                },
                                 comments: null,
                             },
                         ],
@@ -188,10 +174,6 @@ export const TASK_QUERIES: {
                         results: [ taskComment ],
                     },
                 },
-            },
-            spectrogramPaths: {
-                spectrogramPath: SPECTROGRAM_PATH,
-                audioPath: AUDIO_PATH,
             },
         },
         unsubmitted: {
@@ -213,6 +195,14 @@ export const TASK_QUERIES: {
                     userComments: null,
                 },
             },
+        },
+    },
+    getAnnotationSpectrogramPaths: {
+        defaultType: 'filled',
+        empty: {
+            spectrogramPaths: null,
+        },
+        filled: {
             spectrogramPaths: {
                 spectrogramPath: SPECTROGRAM_PATH,
                 audioPath: AUDIO_PATH,

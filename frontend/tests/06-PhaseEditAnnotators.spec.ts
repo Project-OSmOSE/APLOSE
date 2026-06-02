@@ -2,7 +2,7 @@ import { essentialTag, expect, test } from './utils';
 import { gqlURL, interceptRequests } from './utils/mock';
 import { campaign, dataset, fileRange, userGroup, USERS, type UserType } from './utils/mock/types';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
-import { type UpdateFileRangesMutationVariables } from '../src/api/annotation-file-range';
+import type { UpdateFileRangesMutationVariables } from '../src/features/AnnotationFileRange';
 import type { Params } from './utils/types';
 
 // Utils
@@ -14,10 +14,10 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
-                listSpectrogramAnalysis: 'empty',
-                listFileRanges: 'empty',
-                listAnnotationTask: 'empty',
-                listUsers: 'empty',
+                allSpectrogramAnalysis: 'empty',
+                fileRangesForPhase: 'empty',
+                allAnnotationSpectrograms: 'empty',
+                allUsers: 'empty',
             })
             await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase }))
 
