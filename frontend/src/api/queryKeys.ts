@@ -10,14 +10,17 @@ import type {
  * Permet d'invalider les requêtes de manière prévisible
  */
 export const queryKeys = {
-    user: {
-        all: [ 'user' ] as const,
-        current: [ 'user', 'current' ] as const,
+    dataset: {
+        all: [ 'dataset' ] as const,
     },
     storage: {
         browse: (variables: BrowseStorageQueryVariables) => ['storage', 'browse', variables.path.split('/')] as const,
         search: (variables: SearchStorageQueryVariables) => ['storage', 'search', variables.path.split('/')] as const,
-    }
+    },
+    user: {
+        all: [ 'user' ] as const,
+        current: [ 'user', 'current' ] as const,
+    },
 };
 
 /**

@@ -1,14 +1,15 @@
 import React, { useMemo, useState } from 'react';
-import { IonBadge, IonNote, IonSpinner } from '@ionic/react';
+import { IonBadge, IonNote } from '@ionic/react';
 
-import { GraphQLErrorText, Table, type Order, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
+import { type Order, Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
 import { dateToString } from '@/service/function';
 
 import { DatasetName } from './DatasetInfo';
-import { type DatasetNode, useAllDatasets } from '@/api';
 import { CampaignName } from '@/features/AnnotationCampaign/CampaignInfo';
 
 import styles from './styles.module.scss'
+import { useLoaderData } from '@tanstack/react-router';
+import type { DatasetFragment } from '@/features/Dataset/api';
 
 
 type Sort = {
@@ -16,7 +17,7 @@ type Sort = {
     order: Order
 }
 
-type Dataset = Pick<DatasetNode, 'name' | 'createdAt'> & {
+type Dataset = DatasetFragment & {
     annotationCampaigns: {
         edges: Array<{
             node?: {
@@ -27,7 +28,7 @@ type Dataset = Pick<DatasetNode, 'name' | 'createdAt'> & {
 }
 
 export const DatasetTable: React.FC = () => {
-    const { allDatasets, error, isFetching } = useAllDatasets();
+    const allDatasets = useLoaderData({ from: '/_authenticated/_admin/dataset/' })
 
     const [ sorting, setSorting ] = useState<Sort>({ column: 'createdAt', order: 'desc' });
 
@@ -35,7 +36,7 @@ export const DatasetTable: React.FC = () => {
         if (!allDatasets) return allDatasets
         const collator = new Intl.Collator(undefined, {
             usage: 'sort',
-            sensitivity: 'base'
+            sensitivity: 'base',
         })
         return allDatasets.sort((a: Dataset, b: Dataset) => {
             let compareFunc;
@@ -63,8 +64,6 @@ export const DatasetTable: React.FC = () => {
         })
     }, [ allDatasets, sorting ]);
 
-    if (error) return <GraphQLErrorText error={ error }/>
-    if (isFetching) return <IonSpinner/>
     if (!sortedDatasets || sortedDatasets.length === 0) return <IonNote color="medium"
                                                                         style={ { textAlign: 'center' } }>
         No datasets
@@ -108,8 +107,8 @@ export const DatasetTable: React.FC = () => {
                 </Th>
                 <Td>{ dateToString(d.createdAt) }</Td>
                 <Td>
-                    <p className={styles.dates}>{ d.start && dateToString(d.start) }</p>
-                    <p className={styles.dates}>{ d.end && dateToString(d.end) }</p>
+                    <p className={ styles.dates }>{ d.start && dateToString(d.start) }</p>
+                    <p className={ styles.dates }>{ d.end && dateToString(d.end) }</p>
                 </Td>
                 <Td>{ d.analysisCount }</Td>
                 <Td>{ d.spectrogramCount ?? 0 }</Td>

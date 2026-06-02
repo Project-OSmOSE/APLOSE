@@ -1,0 +1,29 @@
+fragment Dataset on DatasetNode {
+    id
+    name
+    path
+    description
+    createdAt
+    legacy
+    analysisCount
+    spectrogramCount
+    start
+    end
+}
+
+query allDatasets {
+    allDatasets(orderBy: "-createdAt") {
+        results {
+            ...Dataset
+            annotationCampaigns {
+                edges {
+                    node {
+                        id
+                        name
+                        isArchived
+                    }
+                }
+            }
+        }
+    }
+}

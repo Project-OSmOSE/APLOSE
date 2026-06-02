@@ -13,6 +13,7 @@ import {
     type SearchStorageQueryVariables,
 } from './storage.generated';
 import { cleanGqlList } from '@/api/utils';
+import { queryClient } from '@/api/queryClient';
 
 export const browseQuery = (variables: BrowseStorageQueryVariables) => queryOptions({
     queryKey: queryKeys.storage.browse(variables),
@@ -28,11 +29,9 @@ export const searchQuery = (variables: SearchStorageQueryVariables) => queryOpti
 
 export const importMutation = mutationOptions({
     mutationFn: (variables: ImportDatasetFromStorageMutationVariables) => graphqlClient.request<ImportDatasetFromStorageMutation>(ImportDatasetFromStorageDocument, variables),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.dataset.all }),
 
-    // TODO: invalidate datasets and analysis queries:
-    //  invalidatesTags: [ 'Dataset', 'DatasetsAndAnalysis' ],
-
-    // TODO: try to invalidate browse and search keys with given path
+    // TODO: try to invalidate browse and search keys with given path?
 })
 
 export type * from './storage.generated'
