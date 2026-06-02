@@ -11,6 +11,8 @@ import { type Colormap, COLORMAPS } from '@/features/Colormap';
 import { DatasetSelect } from '@/features/Dataset';
 
 import styles from './new.module.scss';
+import { Dataset } from '@/features';
+import { queryClient } from '@/api/queryClient';
 
 const NewAnnotationCampaign: React.FC = () => {
     const dataset_id = Route.useSearch({ select: ({ dataset_id }) => dataset_id });
@@ -193,5 +195,13 @@ export const Route = createFileRoute('/_authenticated/_admin/annotation-campaign
     validateSearch: (search: Record<string, unknown>) => ({
         dataset_id: search['dataset_id'] as string,
     }),
+    loader: async () => {
+        const [
+            allDatasets,
+        ] = await Promise.all([
+            queryClient.ensureQueryData(Dataset.API.listWithAnalysisQuery),
+        ])
+        return { allDatasets }
+    },
     component: NewAnnotationCampaign,
 })

@@ -1,4 +1,4 @@
-query listChannelConfigurations($datasetID: ID) {
+query channelConfigurationsForDataset($datasetID: ID) {
     allChannelConfigurations(datasetId: $datasetID) {
         results {
             deployment {

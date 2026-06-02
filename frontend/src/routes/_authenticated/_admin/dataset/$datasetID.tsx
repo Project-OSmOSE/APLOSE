@@ -11,7 +11,7 @@ import { ChannelConfigurationTable } from '@/features/ChannelConfiguration';
 import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 import { Cards } from '@/features/AnnotationCampaign';
 import { queryClient } from '@/api/queryClient';
-import { Dataset } from '@/features';
+import { ChannelConfiguration, Dataset } from '@/features';
 
 const DatasetDetail: React.FC = () => {
     const { dataset } = Route.useLoaderData()
@@ -27,7 +27,7 @@ const DatasetDetail: React.FC = () => {
 
                 <div>
                     <h5>Channel configurations</h5>
-                    <ChannelConfigurationTable datasetID={ dataset.id }/>
+                    <ChannelConfigurationTable/>
                 </div>
 
                 <div style={ { overflowX: 'hidden', display: 'grid', gap: '1rem' } }>
@@ -65,12 +65,19 @@ const DatasetDetail: React.FC = () => {
 }
 
 export const Route = createFileRoute('/_authenticated/_admin/dataset/$datasetID')({
-    loader: async ({ params }) => {
-        const [ dataset ] = await Promise.all([
-            queryClient.ensureQueryData(Dataset.API.byIdQuery({ id: params.datasetID })),
+    loader: async ({ params: { datasetID } }) => {
+        const [
+            dataset,
+            allChannelConfigurations
+        ] = await Promise.all([
+            queryClient.ensureQueryData(Dataset.API.byIdQuery({ id: datasetID })),
+            queryClient.ensureQueryData(ChannelConfiguration.API.forDatasetQuery({ datasetID })),
         ])
         if (!dataset) throw notFound()
-        return { dataset }
+        return {
+            dataset,
+            allChannelConfigurations
+        }
     },
     component: DatasetDetail,
 })

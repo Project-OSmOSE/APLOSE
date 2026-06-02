@@ -36,3 +36,21 @@ query getDatasetByID($id: ID!) {
         }
     }
 }
+
+query listDatasetsWithAnalysis {
+    allDatasets(orderBy: "name") {
+        results {
+            id
+            name
+            spectrogramAnalysis(orderBy: "name") {
+                results {
+                    id
+                    name
+                    colormap {
+                        name
+                    }
+                }
+            }
+        }
+    }
+}
