@@ -8,12 +8,14 @@ import { AnnotationCampaignArchiveFilter } from './ArchiveFilter';
 import { AnnotationCampaignOwnerFilter } from './OwnerFilter';
 import { AnnotationCampaignPhaseTypeFilter } from './PhaseFilter';
 import { AnnotationCampaignAnnotatorFilter } from './AnnotatorFilter';
-import { Route } from '@/routes/_authenticated/annotation-campaign';
-import { useLoaderData, useNavigate } from '@tanstack/react-router';
+import { useLoaderData, useNavigate, useSearch } from '@tanstack/react-router';
 
 
 export const AnnotationCampaignListFilterActionBar: React.FC = () => {
-    const search = Route.useSearch({ select: ({search}) => search });
+    const search = useSearch({
+        from: '/_authenticated/annotation-campaign/',
+        select: ({ search }) => search,
+    });
     const navigate = useNavigate();
 
     const { user } = useLoaderData({ from: '/_authenticated' })
@@ -21,7 +23,7 @@ export const AnnotationCampaignListFilterActionBar: React.FC = () => {
     return <ActionBar search={ search ?? undefined }
                       searchPlaceholder="Search campaign name"
                       onSearchChange={ search => navigate({
-                          to: Route.to,
+                          to: '/annotation-campaign',
                           search: (prev) => ({
                               ...prev,
                               search,
@@ -29,8 +31,8 @@ export const AnnotationCampaignListFilterActionBar: React.FC = () => {
                           replace: true,
                       }) }
                       actionButton={ user.isAdmin && <Link color="primary"
-                                                            fill="outline"
-                                                            to="/annotation-campaign/new">
+                                                           fill="outline"
+                                                           to="/annotation-campaign/new">
                           <IonIcon icon={ addOutline } slot="start"/>
                           New annotation campaign
                       </Link> }>

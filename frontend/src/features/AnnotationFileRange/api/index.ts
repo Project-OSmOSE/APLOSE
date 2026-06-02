@@ -9,7 +9,7 @@ import {
 } from './annotation-file-range.generated'
 
 export const forPhaseQuery = (variables: FileRangesForPhaseQueryVariables) => queryOptions({
-    queryKey: queryKeys.fileRanges.forPhase(variables),
+    queryKey: queryKeys.fileRange.forPhase(variables),
     queryFn: () => graphqlClient.request<FileRangesForPhaseQuery>(FileRangesForPhaseDocument, variables)
         .then(data => cleanGqlList(data.allAnnotationFileRanges?.results)),
 })

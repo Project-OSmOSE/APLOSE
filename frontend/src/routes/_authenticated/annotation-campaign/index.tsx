@@ -3,19 +3,24 @@ import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 
 import { Head } from '@/components/ui';
 
-import { type AllCampaignFilters } from '@/api';
-
-import { AnnotationCampaignListFilterActionBar, Cards } from '@/features/AnnotationCampaign';
+import {
+    type AllCampaignsQueryVariables,
+    AnnotationCampaignListFilterActionBar,
+    Cards,
+} from '@/features/AnnotationCampaign';
+import { queryClient } from '@/api/queryClient';
+import { AnnotationCampaign } from '@/features';
 
 const AnnotationCampaignList: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useLoaderData({ from: '/_authenticated' })
+    const campaigns = Route.useLoaderData()
 
     const init = useCallback(() => {
         navigate({
             to: Route.to,
             search: (prev) => {
-                const updatedFilters: AllCampaignFilters = {
+                const updatedFilters: AllCampaignsQueryVariables = {
                     filter_annotatorID: user.id,
                     filter_isArchived: false,
                     ...prev,
@@ -53,14 +58,19 @@ const AnnotationCampaignList: React.FC = () => {
 
             <AnnotationCampaignListFilterActionBar/>
 
-            <Cards/>
+            <Cards campaigns={ campaigns }/>
 
         </div>
-    </Fragment>, [])
+    </Fragment>, [ campaigns ])
 }
 
 
 export const Route = createFileRoute('/_authenticated/annotation-campaign/')({
-    validateSearch: (search: Record<string, unknown>) => search as AllCampaignFilters,
+    validateSearch: (search: Record<string, unknown>) => search as AllCampaignsQueryVariables,
+    loaderDeps: ({ search }) => search as AllCampaignsQueryVariables,
+    loader: ({ params, deps }) => queryClient.ensureQueryData(AnnotationCampaign.API.allQuery({
+        ...deps,
+        ...params,
+    })),
     component: AnnotationCampaignList,
 })

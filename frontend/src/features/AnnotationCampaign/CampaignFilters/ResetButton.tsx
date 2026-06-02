@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { type AllCampaignFilters } from '@/api';
+import { type AllCampaignsQueryVariables } from '../api';
 import { IonButton, IonIcon } from '@ionic/react';
 import { refreshOutline } from 'ionicons/icons';
 import { Route } from '@/routes/_authenticated/annotation-campaign';
@@ -23,7 +23,7 @@ export const AnnotationCampaignResetFiltersButton: React.FC = () => {
         filter_annotatorID: user.id,
         filter_ownerID: null,
         filter_datasetID: null,
-      } as AllCampaignFilters,
+      } as AllCampaignsQueryVariables,
     })
   }, [ navigate, user ])
 

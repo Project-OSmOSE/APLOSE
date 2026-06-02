@@ -3,7 +3,7 @@ import { AnnotationPhaseType } from '../src/api/types.gql-generated';
 import { gqlURL, interceptRequests } from './utils/mock';
 import { campaign, USERS, type UserType } from './utils/mock/types';
 import type { Params } from './utils/types';
-import { AllCampaignFilters } from '../src/api';
+import type { AllCampaignsQueryVariables } from '../src/features/AnnotationCampaign';
 
 
 // Utils
@@ -51,7 +51,7 @@ const TEST = {
                     page.waitForRequest(gqlURL),
                     page.campaigns.search('Test campaign'),
                 ])
-                const variables: AllCampaignFilters = request.postDataJSON().variables
+                const variables: AllCampaignsQueryVariables = request.postDataJSON().variables
                 expect(variables.filter_isArchived).toBeFalsy()
                 expect(variables.filter_phase).toBeFalsy()
                 expect(variables.filter_ownerID).toBeFalsy()
@@ -70,7 +70,7 @@ const TEST = {
                     page.waitForRequest(gqlURL),
                     page.getByText('Archived: False', { exact: true }).click(),
                 ])
-                const variables: AllCampaignFilters = request.postDataJSON().variables
+                const variables: AllCampaignsQueryVariables = request.postDataJSON().variables
                 expect(variables.filter_isArchived).toBeTruthy() // Updated
                 expect(variables.filter_phase).toBeFalsy()
                 expect(variables.filter_ownerID).toBeFalsy()

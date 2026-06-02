@@ -1,21 +1,23 @@
 import React, { useCallback } from 'react';
-import { useLoaderData, useNavigate } from '@tanstack/react-router'
+import { useLoaderData, useNavigate, useSearch } from '@tanstack/react-router'
 import { IonChip, IonIcon } from '@ionic/react';
 import { closeCircle } from 'ionicons/icons';
-import { Route } from '@/routes/_authenticated/annotation-campaign';
 
 export const AnnotationCampaignAnnotatorFilter: React.FC = () => {
-    const filter_annotatorID = Route.useSearch({select: ({filter_annotatorID}) => filter_annotatorID});
+    const filter_annotatorID = useSearch({
+        from: '/_authenticated/annotation-campaign/',
+        select: ({ filter_annotatorID }) => filter_annotatorID,
+    });
     const navigate = useNavigate();
 
     const { user } = useLoaderData({ from: '/_authenticated' })
 
     const toggle = useCallback(() => {
         navigate({
-            to: Route.to,
+            to: '/annotation-campaign',
             search: (prev) => ({
                 ...prev,
-                filter_annotatorID: prev?.filter_annotatorID ? null : user.id
+                filter_annotatorID: prev?.filter_annotatorID ? null : user.id,
             }),
             replace: true,
         })

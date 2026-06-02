@@ -9,7 +9,7 @@ import {
 } from './channel-configuration.generated'
 
 export const forDatasetQuery = (variables: ChannelConfigurationsForDatasetQueryVariables) => queryOptions({
-    queryKey: queryKeys.channelConfigurations.forDataset(variables),
+    queryKey: queryKeys.channelConfiguration.forDataset(variables),
     queryFn: () => graphqlClient.request<ChannelConfigurationsForDatasetQuery>(ChannelConfigurationsForDatasetDocument, variables)
         .then(data => cleanGqlList(data.allChannelConfigurations?.results)),
 })

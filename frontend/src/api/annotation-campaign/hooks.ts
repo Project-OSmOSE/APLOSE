@@ -3,7 +3,6 @@ import { useCallback, useMemo } from 'react';
 import {
     AnnotationPhaseType,
     type CreateCampaignMutationVariables,
-    type ListCampaignsQueryVariables,
     type UpdateCampaignFeaturedLabelsMutationVariables,
 } from '@/api';
 import type { GqlError } from '@/api/utils';
@@ -12,22 +11,12 @@ import { useParams } from '@tanstack/react-router';
 //  API
 
 const {
-    listCampaigns,
     getCampaign,
     createCampaign,
     updateCampaignFeaturedLabels,
     archiveCampaign,
 } = AnnotationCampaignGqlAPI.endpoints
 
-export type AllCampaignFilters = ListCampaignsQueryVariables
-
-export const useAllCampaigns = (filters: AllCampaignFilters) => {
-    const info = listCampaigns.useQuery(filters)
-    return useMemo(() => ({
-        ...info,
-        allCampaigns: info.data?.allAnnotationCampaigns?.results.filter(r => r !== null).map(c => c!),
-    }), [ info ]);
-}
 
 export const useCurrentCampaign = () => {
     const { campaignID } = useParams({ strict: false })

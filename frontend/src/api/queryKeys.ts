@@ -4,16 +4,20 @@ import type { BrowseStorageQueryVariables, SearchStorageQueryVariables } from '@
 import type { GetDatasetByIdQueryVariables } from '@/features/Dataset';
 import { ChannelConfigurationsForDatasetQueryVariables } from '@/features/ChannelConfiguration';
 import type { FileRangesForPhaseQueryVariables } from '@/features/AnnotationFileRange';
+import type { AllCampaignsQueryVariables } from '@/features/AnnotationCampaign';
 
 /**
  * Keys factory pour les requêtes GraphQL
  * Permet d'invalider les requêtes de manière prévisible
  */
 export const queryKeys = {
-    fileRanges: {
+    campaign: {
+        all: (variables: AllCampaignsQueryVariables) => ['campaign', JSON.stringify(variables)] as const,
+    },
+    fileRange: {
         forPhase: (variables: FileRangesForPhaseQueryVariables) => ['file-range', 'for phase', variables.campaignID, variables.phaseType] as const,
     },
-    channelConfigurations: {
+    channelConfiguration: {
         forDataset: (variables: ChannelConfigurationsForDatasetQueryVariables) => ['channel-configuration', 'for dataset', variables.datasetID] as const,
     },
     dataset: {

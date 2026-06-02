@@ -1,8 +1,6 @@
 export type {
   GetCampaignQuery,
   GetCampaignQueryVariables,
-  ListCampaignsQuery,
-  ListCampaignsQueryVariables,
   CreateCampaignMutation,
   CreateCampaignMutationVariables,
   UpdateCampaignFeaturedLabelsMutation,
