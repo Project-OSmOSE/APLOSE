@@ -1,11 +1,9 @@
-import React, { Fragment, useCallback, useMemo, useRef, useState, type MouseEvent, useEffect } from 'react';
+import React, { Fragment, type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Annotation, focusAnnotation } from './slice';
 import { AnnotationType, useAnnotationTask } from '@/api';
 import { useAppDispatch, useAppSelector } from '@/features/App';
-import { selectAllLabels, selectHiddenLabels } from '@/features/Annotator/Label';
-import {
-    selectTaskIsEditionAuthorized,
-} from '@/features/Annotator/selectors';
+import { selectHiddenLabels } from '@/features/Annotator/Label';
+import { selectTaskIsEditionAuthorized } from '@/features/Annotator/selectors';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 import { selectIsDrawingEnabled, selectIsSelectingPositionForAnnotation } from '@/features/Annotator/UX';
 import { type ExtendedDivPosition, useExtendedDiv } from '@/components/ui/ExtendedDiv';
@@ -17,6 +15,7 @@ import { useUpdateAnnotation } from '@/features/Annotator/Annotation/hooks';
 import { AnnotationHeadContent } from '@/features/Annotator/Annotation/Head';
 import { MOUSE_DOWN_EVENT } from '@/features/UX';
 import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
+import { useLoaderData } from '@tanstack/react-router';
 
 const POINT_RADIUS = 16; // px
 
@@ -40,7 +39,7 @@ export const StrongAnnotation: React.FC<{
         dispatch(focusAnnotation(annotation))
     }, [ annotation, dispatch ])
 
-    const allLabels = useAppSelector(selectAllLabels)
+    const { labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const hiddenLabels = useAppSelector(selectHiddenLabels)
 
     const [ isMouseHover, setIsMouseHover ] = useState<boolean>(false);
@@ -127,7 +126,7 @@ export const StrongAnnotation: React.FC<{
         const isActive = isEditionAuthorized && annotation.id === focusedAnnotation?.id
 
         // Style
-        const colorClass = `ion-color-${ allLabels.indexOf(annotation.update?.label ?? annotation.label) % 10 }`
+        const colorClass = `ion-color-${ labels.map(l => l.name).indexOf(annotation.update?.label ?? annotation.label) % 10 }`
         const classes = [ styles.strongAnnotation, colorClass, extendedClassName ]
         if (!isActive) classes.push(styles.disabled)
         if (!isDrawingEnabled) classes.push(styles.editDisabled)
@@ -173,7 +172,7 @@ export const StrongAnnotation: React.FC<{
     }, [
         isEditionAuthorized, isDrawingEnabled, isSelectingAnnotationFrequency, isMouseHover,
         extendedClassName, annotationPosition,
-        annotation, hiddenLabels, allLabels, focusedAnnotation, spectrogram,
+        annotation, hiddenLabels, labels, focusedAnnotation, spectrogram,
         focus, handleMouseDown,
     ])
 }

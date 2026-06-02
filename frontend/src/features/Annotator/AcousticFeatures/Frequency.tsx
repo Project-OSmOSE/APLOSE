@@ -2,14 +2,13 @@ import React, { Fragment, useCallback, useMemo } from 'react';
 import { type Annotation, type Features, useUpdateAnnotation } from '@/features/Annotator/Annotation';
 import { Th, Tr } from '@/components/ui';
 import { BooleanRow, InputRow, NoteRow } from '@/features/Annotator/AcousticFeatures/Rows';
-import { useAppSelector } from '@/features/App';
-import { selectAnalysis } from '@/features/Annotator/Analysis';
 import { useUpdateAnnotationFeatures } from '@/features/Annotator/AcousticFeatures/hooks';
 import { useCurrentPhase } from '@/api';
+import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
 
 export const Frequency: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
     const { phase } = useCurrentPhase()
-    const analysis = useAppSelector(selectAnalysis)
+    const analysis = useAnnotatorAnalysis()
     const maxFrequency = useMemo(() => (analysis?.fft.samplingFrequency ?? 0) / 2, [ analysis ])
 
     const updateAnnotation = useUpdateAnnotation()

@@ -1,36 +1,27 @@
-import { createFileRoute, Outlet, useParams } from '@tanstack/react-router'
-import { AnnotationPhaseType, useCurrentCampaign } from '@/api';
+import { createFileRoute, Outlet, useLoaderData, useParams } from '@tanstack/react-router'
+import { AnnotationPhaseType } from '@/api';
 import React, { Fragment, useMemo } from 'react';
-import { FadedText, GraphQLErrorText, Head, Tab, Tabs } from '@/components/ui';
+import { FadedText, Head, Tab, Tabs } from '@/components/ui';
 import { dateToString } from '@/service/function';
 import { NBSP } from '@/service/type';
 import { MailButton } from '@/features/User';
-import { IonSkeletonText, IonSpinner } from '@ionic/react';
 import { AnnotationPhaseTab } from '@/features/AnnotationPhase';
 
 const AnnotationCampaignDetail: React.FC = () => {
-    const { campaignID, phaseType } = useParams({ strict: false });
-    const {
-        campaign,
-        isFetching,
-        error,
-    } = useCurrentCampaign();
+    const { phaseType } = useParams({ strict: false });
+    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
 
     return useMemo(() =>
             <Fragment>
 
-                <Head title={ campaign?.name } canGoBack
-                      subtitle={ campaign ? <FadedText>
-                              Created on { dateToString(campaign.createdAt) } by { campaign.owner.displayName }
-                              { campaign.owner.email && <Fragment>{ NBSP }<MailButton user={ campaign.owner }/>
-                              </Fragment> }
-                          </FadedText> :
-                          <IonSkeletonText animated style={ { width: 512, height: '1ch', justifySelf: 'center' } }/> }/>
+                <Head title={ campaign.name } canGoBack
+                      subtitle={ <FadedText>
+                          Created on { dateToString(campaign.createdAt) } by { campaign.owner.displayName }
+                          { campaign.owner.email && <Fragment>{ NBSP }<MailButton user={ campaign.owner }/>
+                          </Fragment> }
+                      </FadedText> }/>
 
-                { isFetching && <IonSpinner/> }
-                { error && <GraphQLErrorText error={ error }/> }
-
-                { campaign && <div style={ {
+                <div style={ {
                     height: '100%',
                     display: 'grid',
                     gap: '1rem',
@@ -39,8 +30,8 @@ const AnnotationCampaignDetail: React.FC = () => {
                 } }>
 
                     <Tabs>
-                        <Tab to="/annotation-campaign/$campaignID" params={ { campaignID } }
-                             active={!phaseType}>
+                        <Tab to="/annotation-campaign/$campaignID" params={ { campaignID: campaign.id } }
+                             active={ !phaseType }>
                             Information
                         </Tab>
 
@@ -49,9 +40,9 @@ const AnnotationCampaignDetail: React.FC = () => {
                     </Tabs>
 
                     <Outlet/>
-                </div> }
+                </div>
             </Fragment>,
-        [ campaign, campaignID, phaseType, isFetching, error ])
+        [ campaign, phaseType ])
 }
 
 export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout')({

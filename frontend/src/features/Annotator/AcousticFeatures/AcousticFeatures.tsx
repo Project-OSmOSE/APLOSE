@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useEffect, useMemo, useRef } from 'react'
 import styles from './styles.module.scss';
 import { type ExtendedDivPosition, Table, Tbody, useExtendedDiv } from '@/components/ui';
 import { IoRemoveCircleOutline } from 'react-icons/io5';
-import { AnnotationType, useCurrentCampaign } from '@/api';
+import { AnnotationType } from '@/api';
 import { useTimeScale } from '@/features/Annotator/Axis';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
@@ -15,11 +15,12 @@ import { Duration } from '@/features/Annotator/AcousticFeatures/Duration';
 import { NonLinearPhenomena } from '@/features/Annotator/AcousticFeatures/NonLinearPhenomena';
 import { Checks } from '@/features/Annotator/AcousticFeatures/Checks';
 import { useWindowWidth } from '@/features/Annotator/Canvas';
+import { useLoaderData } from '@tanstack/react-router';
 
 export const AcousticFeatures: React.FC<{ scrollLeft: number }> = ({ scrollLeft }) => {
     const focusedAnnotation = useAppSelector(selectAnnotation)
     const getAnnotation = useGetAnnotation()
-    const { campaign } = useCurrentCampaign()
+    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const timeScale = useTimeScale()
     const dispatch = useAppDispatch();
 
@@ -70,7 +71,7 @@ export const AcousticFeatures: React.FC<{ scrollLeft: number }> = ({ scrollLeft 
 
     return useMemo(() => {
         if (!focusedAnnotation) return <Fragment/>;
-        if (!campaign?.labelsWithAcousticFeatures?.find(l => l?.name === focusedAnnotation.label)) return <Fragment/>;
+        if (!campaign.labelsWithAcousticFeatures?.find(l => l?.name === focusedAnnotation.label)) return <Fragment/>;
         if (focusedAnnotation.type !== AnnotationType.Box) return <Fragment/>;
         return <div ref={ divRef }
                     className={ styles.features }

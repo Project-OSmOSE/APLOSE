@@ -8,7 +8,6 @@ import {
     AnnotationType,
     type GetAnnotationTaskQuery,
     useAnnotationTask,
-    useCurrentCampaign,
     useCurrentPhase,
 } from '@/api';
 import {
@@ -39,7 +38,7 @@ type CompleteInfo = Pick<NonNullable<NonNullable<Task['userAnnotations']>['resul
 
 export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
     const { phaseType } = useParams({ strict: false });
-    const { campaign } = useCurrentCampaign()
+    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useCurrentPhase()
     const focusedAnnotation = useAppSelector(selectAnnotation)
     const getAnnotations = useGetAnnotations()
@@ -115,7 +114,7 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
         </Fragment> }
 
         {/* Confidence */ }
-        { campaign?.confidenceSet && <Td><AnnotationConfidenceInfo annotation={ annotation }/></Td> }
+        { campaign.confidenceSet && <Td><AnnotationConfidenceInfo annotation={ annotation }/></Td> }
 
         {/* Detector | Annotator */ }
         { phaseType === AnnotationPhaseType.Verification && (

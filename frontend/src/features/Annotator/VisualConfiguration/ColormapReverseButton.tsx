@@ -4,16 +4,16 @@ import { invertModeSharp } from 'ionicons/icons/index.js';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import {
   revertColormap,
-  selectCanChangeColormap,
   selectIsColormapReversed,
+  useCanChangeColormap,
 } from '@/features/Annotator/VisualConfiguration';
 
 export const ColormapReverseButton: React.FC = () => {
-  const canChangeColormap = useAppSelector(selectCanChangeColormap);
+  const canChangeColormap = useCanChangeColormap();
   const isColormapReversed = useAppSelector(selectIsColormapReversed);
   const dispatch = useAppDispatch();
 
-  const revert = useCallback(() => dispatch(revertColormap()), [])
+  const revert = useCallback(() => dispatch(revertColormap()), [dispatch])
 
   if (!canChangeColormap) return <Fragment/>
   return <IonButton color="primary"

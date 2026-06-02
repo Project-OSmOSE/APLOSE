@@ -1,6 +1,4 @@
 export type {
-  GetCampaignQuery,
-  GetCampaignQueryVariables,
   CreateCampaignMutation,
   CreateCampaignMutationVariables,
   UpdateCampaignFeaturedLabelsMutation,
@@ -9,5 +7,3 @@ export type {
   ArchiveCampaignMutationVariables,
 } from './annotation-campaign.generated'
 export * from './hooks'
-export * from './matchers'
-export * from './selector'

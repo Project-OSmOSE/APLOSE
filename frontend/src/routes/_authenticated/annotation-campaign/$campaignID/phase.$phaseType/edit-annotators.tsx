@@ -1,18 +1,12 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { createFileRoute, useRouter } from '@tanstack/react-router';
-import { IonButton, IonNote, IonSkeletonText, IonSpinner } from '@ionic/react';
+import { createFileRoute, useLoaderData, useRouter } from '@tanstack/react-router';
+import { IonButton, IonNote, IonSpinner } from '@ionic/react';
 import { QueryStatus } from '@reduxjs/toolkit/query';
 
-import { GraphQLErrorText, Head, Table, Tbody, Th, Thead, Tr, useToast } from '@/components/ui';
+import { Head, Table, Tbody, Th, Thead, Tr, useToast } from '@/components/ui';
 import { FormBloc, type Item, ListSearchbar, type SearchItem } from '@/components/form';
 
-import {
-    AnnotationFileRangeInput,
-    AnnotationPhaseType,
-    useCurrentCampaign,
-    useCurrentPhase,
-    useUpdateFileRanges,
-} from '@/api';
+import { AnnotationFileRangeInput, AnnotationPhaseType, useCurrentPhase, useUpdateFileRanges } from '@/api';
 import { getNewItemID } from '@/service/function';
 
 import { FileRangeInputRow } from '@/features/AnnotationFileRange';
@@ -28,11 +22,7 @@ type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
 
 const EditAnnotators: React.FC = () => {
     const phaseType = Route.useParams({ select: ({ phaseType }) => phaseType });
-    const {
-        campaign,
-        isFetching: isFetchingCampaign,
-        error: errorLoadingCampaign,
-    } = useCurrentCampaign();
+    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useCurrentPhase()
     const router = useRouter();
     const toast = useToast();
@@ -134,59 +124,52 @@ const EditAnnotators: React.FC = () => {
             <Fragment>
 
                 <Head title="Manage annotators"
-                      subtitle={ campaign ? `${ campaign.name } - ${ phaseType }` :
-                          <IonSkeletonText animated style={ { width: 128 } }/> }/>
+                      subtitle={ `${ campaign.name } - ${ phaseType }` }/>
 
                 <FormBloc className={ styles.annotators }>
 
                     <ListSearchbar placeholder="Search annotator..."
-                                   disabled={ isFetchingCampaign }
                                    values={ availableUsers }
                                    onValueSelected={ addFileRange }/>
 
                     {/* Loading */ }
-                    { (isFetchingCampaign) && <IonSpinner/> }
-                    { errorLoadingCampaign &&
-                        <GraphQLErrorText error={ errorLoadingCampaign }/> }
 
-                    { !(isFetchingCampaign) &&
-                        <Table>
-                            <Thead>
-                                <Tr>
-                                    <Th scope="col">Annotator</Th>
-                                    <Th scope="col" colSpan={ 2 }>
-                                        File range
-                                        <br/>
-                                        <small>(between 1 and { campaign?.spectrogramsCount })</small>
-                                        <br/>
-                                        <small className="disabled"><i>Start and end limits are included</i></small>
-                                    </Th>
-                                    <Th scope="col"/>
-                                </Tr>
-                            </Thead>
-                            <Tbody>
-                                { fileRanges.map((range, k) => {
-                                        const user = users.find(u => u?.id == range.annotatorId)
-                                        if (!user) return <Fragment/>
-                                        return <FileRangeInputRow key={ k }
-                                                                  range={ range }
-                                                                  errors={ formErrors[k] ?? undefined }
-                                                                  annotator={ user }
-                                                                  onUpdate={ change => {
-                                                                      updateFileRange({
-                                                                          ...range,
-                                                                          ...change,
-                                                                      })
-                                                                  } }
-                                                                  setForced={ () => setForce(true) }
-                                                                  onDelete={ removeFileRange }/>
-                                    },
-                                ) }
-                            </Tbody>
+                    <Table>
+                        <Thead>
+                            <Tr>
+                                <Th scope="col">Annotator</Th>
+                                <Th scope="col" colSpan={ 2 }>
+                                    File range
+                                    <br/>
+                                    <small>(between 1 and { campaign?.spectrogramsCount })</small>
+                                    <br/>
+                                    <small className="disabled"><i>Start and end limits are included</i></small>
+                                </Th>
+                                <Th scope="col"/>
+                            </Tr>
+                        </Thead>
+                        <Tbody>
+                            { fileRanges.map((range, k) => {
+                                    const user = users.find(u => u?.id == range.annotatorId)
+                                    if (!user) return <Fragment/>
+                                    return <FileRangeInputRow key={ k }
+                                                              range={ range }
+                                                              errors={ formErrors[k] ?? undefined }
+                                                              annotator={ user }
+                                                              onUpdate={ change => {
+                                                                  updateFileRange({
+                                                                      ...range,
+                                                                      ...change,
+                                                                  })
+                                                              } }
+                                                              setForced={ () => setForce(true) }
+                                                              onDelete={ removeFileRange }/>
+                                },
+                            ) }
+                        </Tbody>
 
-                            { fileRanges.length === 0 && <IonNote color="medium">No annotators</IonNote> }
-                        </Table>
-                    }
+                        { fileRanges.length === 0 && <IonNote color="medium">No annotators</IonNote> }
+                    </Table>
 
                     { phase?.phase === 'Verification' &&
                         <IonNote>To fully verify your annotations, you should have a verification user that is not an
@@ -207,8 +190,8 @@ const EditAnnotators: React.FC = () => {
 
                 </FormBloc>
             </Fragment>,
-        [ campaign, phaseType, addFileRange, errorLoadingCampaign, formErrors,
-            submit, isSubmitting, isFetchingCampaign, fileRanges, phase, users, availableUsers, back, ],
+        [ campaign, phaseType, addFileRange, formErrors,
+            submit, isSubmitting, fileRanges, phase, users, availableUsers, back ],
     )
 }
 

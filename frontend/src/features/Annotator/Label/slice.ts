@@ -4,12 +4,11 @@ import type {
     GetAnnotationTaskQuery,
     GetAnnotationTaskQueryVariables,
 } from '@/api/annotation-task/annotation-task.generated';
-import { getAnnotationTaskFulfilled, getCampaignFulfilled, type GetCampaignQuery } from '@/api';
+import { getAnnotationTaskFulfilled } from '@/api';
 import { convertGqlToAnnotations } from '@/features/Annotator/Annotation';
 import { User } from '@/features';
 
 type LabelState = {
-    allLabels: string[];
     hiddenLabels: string[];
     focus?: string;
 
@@ -17,7 +16,6 @@ type LabelState = {
 }
 
 const initialState: LabelState = {
-    allLabels: [],
     hiddenLabels: [],
     focus: undefined,
 
@@ -39,9 +37,7 @@ export const AnnotatorLabelSlice = createSlice({
         builder.addCase(blur, (state: LabelState) => {
             state.focus = undefined
         })
-        builder.addMatcher(getCampaignFulfilled, (state: LabelState, action: { payload: GetCampaignQuery }) => {
-            state.allLabels = action.payload.annotationCampaignById?.labelSet?.labels?.filter(l => l !== null).map(l => l!.name) ?? []
-        })
+
         builder.addMatcher(getAnnotationTaskFulfilled, (state: LabelState, action: {
             payload: GetAnnotationTaskQuery
             meta: { arg: { originalArgs: GetAnnotationTaskQueryVariables } }

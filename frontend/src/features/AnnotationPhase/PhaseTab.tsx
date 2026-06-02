@@ -1,14 +1,14 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { IonIcon, IonSkeletonText } from '@ionic/react';
+import { IonIcon } from '@ionic/react';
 import { addOutline, closeOutline } from 'ionicons/icons/index.js';
 import { Button, Tab, useAlert, useModal } from '@/components/ui';
-import { AnnotationPhaseType, useCurrentCampaign, useEndPhase } from '@/api';
+import { AnnotationPhaseType, useEndPhase } from '@/api';
 import { AnnotationPhaseCreateAnnotationModal, AnnotationPhaseCreateVerificationModal } from './PhaseCreateModal'
-import { useParams } from '@tanstack/react-router';
+import { useLoaderData, useParams } from '@tanstack/react-router';
 
 export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: phaseType }) => {
-    const { campaignID, phaseType: currentPhaseType } = useParams({ strict: false });
-    const { campaign, phases, isFetching } = useCurrentCampaign()
+    const { phaseType: currentPhaseType } = useParams({ strict: false });
+    const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const phase = useMemo(() => phases?.find(p => p.phase === phaseType), [ phases, phaseType ])
 
     const alert = useAlert();
@@ -42,7 +42,7 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
 
     const { endPhase } = useEndPhase()
     const end = useCallback(async () => {
-        if (!phase || !campaignID) return;
+        if (!phase ) return;
         if (phase.completedTasksCount < phase.tasksCount) {
             // If annotators haven't finished yet, ask for confirmation
             return alert.showAlert({
@@ -50,21 +50,15 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
                 message: 'There is still unprocessed files.\nAre you sure you want to end this phase?',
                 actions: [ {
                     label: 'End',
-                    callback: () => endPhase({ id: phase.id, campaignID }),
+                    callback: () => endPhase({ id: phase.id, campaignID: campaign.id }),
                 } ],
             });
-        } else endPhase({ id: phase.id, campaignID })
-    }, [ endPhase, phase, campaignID, alert ]);
+        } else endPhase({ id: phase.id, campaignID: campaign.id })
+    }, [ endPhase, phase, campaign, alert ]);
 
-    if (!campaign) return <Fragment/>
-    if (isFetching)
-        return <Tab to="/annotation-campaign/$campaignID/phase/$phaseType"
-                    params={ { campaignID, phaseType } } active={ currentPhaseType === phaseType }>
-            <IonSkeletonText animated style={ { width: 96 } }/>
-        </Tab>
     if (phase)
         return <Tab to="/annotation-campaign/$campaignID/phase/$phaseType"
-                    params={ { campaignID, phaseType } } active={ currentPhaseType === phaseType }>
+                    params={ { campaignID: campaign.id, phaseType } } active={ currentPhaseType === phaseType }>
             { phaseType }
 
             { campaign.isEditable && campaign.isUserAllowedToManage && currentPhaseType === phaseType && phase?.isOpen &&

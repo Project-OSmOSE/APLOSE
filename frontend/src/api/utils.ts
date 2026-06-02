@@ -39,6 +39,6 @@ export async function getLoader<Arguments = any, Result = any>(
     return info
 }
 
-export function cleanGqlList<T>(data?: Array<T | null> | null): Array<T> {
+export function cleanGqlList<T>(data?: Array<T | undefined | null> | null): Array<T> {
     return data?.filter(d => !!d).map(d => d!) ?? []
 }

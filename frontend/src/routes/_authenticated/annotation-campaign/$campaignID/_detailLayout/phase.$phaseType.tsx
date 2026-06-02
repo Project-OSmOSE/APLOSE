@@ -1,16 +1,10 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useLoaderData, useNavigate } from '@tanstack/react-router';
 import { IonSpinner } from '@ionic/react';
 
 import { GraphQLErrorText, Pagination, Table, Tbody, Th, Thead, Tr, useModal, WarningText } from '@/components/ui';
 
-import {
-    type AllTasksFilters,
-    AnnotationPhaseType,
-    useAllAnnotationTasks,
-    useCurrentCampaign,
-    useCurrentPhase,
-} from '@/api';
+import { type AllTasksFilters, AnnotationPhaseType, useAllAnnotationTasks, useCurrentPhase } from '@/api';
 
 import { AnnotationsFilterModal, DateFilterModal, StatusFilterModal } from '@/features/AnnotationTask';
 import { FileRangeActionBar } from '@/features/AnnotationFileRange';
@@ -20,7 +14,7 @@ import { SpectrogramRow } from '@/features/AnnotationSpectrogram';
 import styles from './phase.$phaseType.module.scss';
 
 const AnnotationCampaignPhaseDetail: React.FC = () => {
-    const { campaign, verificationPhase } = useCurrentCampaign()
+    const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useCurrentPhase()
 
     const search = Route.useSearch();
@@ -62,14 +56,14 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
     })
 
     return useMemo(() => {
-        if (!campaign || !phase) return <IonSpinner/>
+        if (!phase) return <IonSpinner/>
         return <div className={ styles.phase }>
 
             <div className={ [ styles.tasks, isEmpty ? styles.empty : '' ].join(' ') }>
 
                 <FileRangeActionBar/>
 
-                { phase.phase === 'Verification' && !phase.hasAnnotations && verificationPhase &&
+                { phase.phase === 'Verification' && !phase.hasAnnotations && phases.find(p => p.phase === AnnotationPhaseType.Verification) &&
                     <WarningText message="Your campaign doesn't have any annotations to check"
                                  children={ <ImportAnnotationsButton/> }/> }
 
@@ -116,7 +110,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
                 { error && <GraphQLErrorText error={ error }/> }
                 { !isFetching && !error && (!allSpectrograms || allSpectrograms.length === 0) &&
                     <p>You have no files to annotate.</p> }
-                { campaign?.isArchived ? <p>The campaign is archived. No more annotation can be done.</p> :
+                { campaign.isArchived ? <p>The campaign is archived. No more annotation can be done.</p> :
                     (phase?.endedAt && <p>The phase is ended. No more annotation can be done.</p>) }
 
             </div>
@@ -125,7 +119,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
             { dateFilterModal.element }
             { statusFilterModal.element }
         </div>
-    }, [ campaign, phase, isEmpty, verificationPhase, hasDateFilter, dateFilterModal, search, annotationFilterModal,
+    }, [ campaign, phase, isEmpty, phases, hasDateFilter, dateFilterModal, search, annotationFilterModal,
         statusFilterModal, allSpectrograms, pageCount, updatePage, error, isFetching ]);
 }
 

@@ -1,10 +1,8 @@
 import React, { Fragment, useMemo } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 import { IonButton } from '@ionic/react';
 
 import { FadedText, Progress, useModal } from '@/components/ui';
-
-import { useCurrentCampaign } from '@/api';
 import { dateToString, pluralize } from '@/service/function';
 
 import { LabelSetModal } from '@/features/Labels';
@@ -18,12 +16,11 @@ import { SpectrogramAnalysis } from '@/features';
 
 const AnnotationCampaignInfo: React.FC = () => {
     const { analysis } = Route.useLoaderData()
-    const { campaign, phases } = useCurrentCampaign()
+    const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
 
     const labelSetModal = useModal(LabelSetModal)
 
     return useMemo(() => {
-        if (!campaign) return <Fragment/>
         return <div className={ styles.info }>
 
             { campaign.description && <div><FadedText>Description</FadedText><p>{ campaign.description }</p></div> }
@@ -49,14 +46,14 @@ const AnnotationCampaignInfo: React.FC = () => {
             </div>
 
             {/* ANNOTATION */ }
-            { phases && phases.length > 0 && campaign && <Fragment>
+            { phases.length > 0 && <Fragment>
                 <div className={ styles.bloc }>
                     <div>
                         <FadedText>Label set</FadedText>
-                        { campaign?.labelSet && <IonButton fill="outline" color="medium" className="ion-text-wrap"
-                                                           disabled={ !campaign?.labelSet?.name }
+                        { campaign.labelSet && <IonButton fill="outline" color="medium" className="ion-text-wrap"
+                                                           disabled={ !campaign.labelSet?.name }
                                                            onClick={ labelSetModal.toggle }>
-                            { campaign?.labelSet?.name ?? 'No label set' }
+                            { campaign.labelSet?.name ?? 'No label set' }
                         </IonButton> }
                     </div>
                 </div>
@@ -80,7 +77,7 @@ const AnnotationCampaignInfo: React.FC = () => {
             </Fragment> }
 
             {/* PROGRESS */ }
-            { phases && phases.map(p => <div key={ p!.id } className={ styles.bloc }>
+            { phases.map(p => <div key={ p!.id } className={ styles.bloc }>
                 <FadedText>{ p!.phase } progress</FadedText>
                 <Progress className={ styles.progress }
                           value={ p.completedTasksCount }

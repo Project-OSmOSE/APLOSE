@@ -4,7 +4,7 @@ import type { BrowseStorageQueryVariables, SearchStorageQueryVariables } from '@
 import type { GetDatasetByIdQueryVariables } from '@/features/Dataset';
 import { ChannelConfigurationsForDatasetQueryVariables } from '@/features/ChannelConfiguration';
 import type { FileRangesForPhaseQueryVariables } from '@/features/AnnotationFileRange';
-import type { AllCampaignsQueryVariables } from '@/features/AnnotationCampaign';
+import type { AllCampaignsQueryVariables, GetCampaignQueryVariables } from '@/features/AnnotationCampaign';
 import type { AllSpectrogramAnalysisQueryVariables } from '@/features/SpectrogramAnalysis';
 import type { GetDetailedSoundByIdQueryVariables, GetDetailedSourceByIdQueryVariables } from '@/features/Ontology';
 
@@ -15,6 +15,7 @@ import type { GetDetailedSoundByIdQueryVariables, GetDetailedSourceByIdQueryVari
 export const queryKeys = {
     campaign: {
         all: (variables: AllCampaignsQueryVariables) => [ 'campaign', variables ] as const,
+        byId: (variables: GetCampaignQueryVariables) => [ 'campaign', variables.id ] as const,
     },
     fileRange: {
         forPhase: (variables: FileRangesForPhaseQueryVariables) => [ 'file-range', 'for phase', variables.campaignID, variables.phaseType ] as const,

@@ -5,7 +5,6 @@ import {
     AnnotationInput,
     AnnotationPhaseType,
     type ListAnnotationTaskQueryVariables,
-    useCurrentCampaign,
     useCurrentPhase,
 } from '@/api';
 import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
@@ -32,19 +31,19 @@ export type AllTasksFilters =
 export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
     refetchOnMountOrArgChange?: boolean
 } = {}) => {
-    const { campaignID, phaseType } = useParams({ strict: false });
-    const { campaign } = useCurrentCampaign()
+    const { phaseType } = useParams({ strict: false });
+    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { user } = useLoaderData({ from: '/_authenticated' })
 
     const info = listAnnotationTask.useQuery({
         ...filters,
-        campaignID: campaignID ?? '',
+        campaignID: campaign.id,
         phaseType: phaseType ?? AnnotationPhaseType.Annotation,
         annotatorID: user.id,
         limit: PAGE_SIZE,
         offset: PAGE_SIZE * ((filters.page ?? 1) - 1),
     }, {
-        skip: !campaignID || !phaseType || campaign?.isArchived,
+        skip: !phaseType || campaign.isArchived,
         ...options,
     })
     return useMemo(() => ({
@@ -59,7 +58,7 @@ export const useAllAnnotationTasks = (filters: AllTasksFilters, options: {
 export const useGetAnnotationTaskParams = (): GetAnnotationTaskQueryVariables => {
     const { campaignID, phaseType, spectrogramID } = useParams({
         strict: false,
-        select: ({ campaignID, phaseType, spectrogramID }) => ({ campaignID, phaseType, spectrogramID })
+        select: ({ campaignID, phaseType, spectrogramID }) => ({ campaignID, phaseType, spectrogramID }),
     });
     const analysisID = useAppSelector(selectAnalysisID)
     const { user } = useLoaderData({ from: '/_authenticated' })

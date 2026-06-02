@@ -24,8 +24,8 @@ import {
     selectContrast,
     selectIsColormapReversed,
 } from '@/features/Annotator/VisualConfiguration';
-import { selectAnalysis } from '@/features/Annotator/Analysis';
 import { AcousticFeatures } from '@/features/Annotator/AcousticFeatures';
+import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
 
 export const AnnotatorCanvasWindow: React.FC = () => {
     const width = useWindowWidth()
@@ -55,7 +55,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         const left = div.scrollWidth - div.scrollLeft - div.clientWidth;
         if (left <= 0) dispatch(setAllFileAsSeen())
         setScrollLeft(div.scrollLeft)
-    }, [dispatch])
+    }, [ dispatch ])
 
     const onWheel = useCallback((event: WheelEvent) => {
         // Disable zoom if the user wants horizontal scroll
@@ -75,7 +75,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
     // Global updates
     const tempAnnotation = useAppSelector(selectTempAnnotation)
-    const analysis = useAppSelector(selectAnalysis)
+    const analysis = useAnnotatorAnalysis()
     const { spectrogram } = useAnnotationTask()
     const brightness = useAppSelector(selectBrightness);
     const contrast = useAppSelector(selectContrast);
@@ -174,10 +174,11 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
             <TimeBar/>
 
-            { allAnnotations.filter(a => a.type !== AnnotationType.Weak).map(annotation => <StrongAnnotation key={ annotation.id } annotation={ annotation }/>) }
+            { allAnnotations.filter(a => a.type !== AnnotationType.Weak).map(annotation => <StrongAnnotation
+                key={ annotation.id } annotation={ annotation }/>) }
         </div>
 
-        <AcousticFeatures scrollLeft={scrollLeft}/>
+        <AcousticFeatures scrollLeft={ scrollLeft }/>
 
     </div>
 }

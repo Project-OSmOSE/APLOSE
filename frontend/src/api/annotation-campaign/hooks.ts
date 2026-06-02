@@ -1,38 +1,16 @@
 import { AnnotationCampaignGqlAPI } from './api'
 import { useCallback, useMemo } from 'react';
-import {
-    AnnotationPhaseType,
-    type CreateCampaignMutationVariables,
-    type UpdateCampaignFeaturedLabelsMutationVariables,
-} from '@/api';
+import { type CreateCampaignMutationVariables, type UpdateCampaignFeaturedLabelsMutationVariables } from '@/api';
 import type { GqlError } from '@/api/utils';
-import { useParams } from '@tanstack/react-router';
+import { useLoaderData } from '@tanstack/react-router';
 
 //  API
 
 const {
-    getCampaign,
     createCampaign,
     updateCampaignFeaturedLabels,
     archiveCampaign,
 } = AnnotationCampaignGqlAPI.endpoints
-
-
-export const useCurrentCampaign = () => {
-    const { campaignID } = useParams({ strict: false })
-    const info = getCampaign.useQuery({
-        id: campaignID ?? '',
-    }, { skip: !campaignID })
-    const phases = useMemo(() => info.data?.annotationCampaignById?.phases?.results.map(p => p!), [ info ])
-    return useMemo(() => ({
-        ...info,
-        campaign: info?.data?.annotationCampaignById,
-        phases,
-        annotationPhase: phases?.find(p => p!.phase === AnnotationPhaseType.Annotation),
-        verificationPhase: phases?.find(p => p!.phase === AnnotationPhaseType.Verification),
-        allAnalysis: info?.data?.annotationCampaignById?.analysis.edges.map(e => e?.node).filter(n => !!n),
-    }), [ info, phases ])
-}
 
 export const useCreateCampaign = () => {
     const [ method, info ] = createCampaign.useMutation();
@@ -52,20 +30,18 @@ export const useCreateCampaign = () => {
 }
 
 export const useUpdateCampaignFeaturedLabels = () => {
-    const { campaignID } = useParams({ strict: false })
-    const { campaign } = useCurrentCampaign()
+    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const [ method, info ] = updateCampaignFeaturedLabels.useMutation();
 
     const update = useCallback(async (variables: Pick<UpdateCampaignFeaturedLabelsMutationVariables, 'labelsWithAcousticFeatures'>) => {
-        if (!campaignID || !campaign) return;
         await method({
             ...variables,
-            id: campaignID,
+            id: campaign.id,
             labelSetID: campaign.labelSet!.id,
             confidenceSetID: campaign.confidenceSet?.id,
             allowPointAnnotation: campaign.allowPointAnnotation,
         }).unwrap()
-    }, [ method, campaignID, campaign ])
+    }, [ method, campaign ])
 
     return {
         updateCampaignFeaturedLabels: update,

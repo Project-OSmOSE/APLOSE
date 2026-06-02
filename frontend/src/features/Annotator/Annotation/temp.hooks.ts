@@ -3,7 +3,7 @@ import { MouseEvent, PointerEvent, useCallback } from 'react';
 import { clearTempAnnotation, setTempAnnotation } from './slice';
 import { selectTempAnnotation } from './selectors';
 import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
-import { AnnotationType, useCurrentCampaign } from '@/api';
+import { AnnotationType } from '@/api';
 import { MOUSE_DOWN_EVENT, MOUSE_MOVE_EVENT, MOUSE_UP_EVENT, useEvent } from '@/features/UX/Events';
 import { useGetFreqTime, useIsHoverCanvas } from '@/features/Annotator/Pointer';
 import { formatTime } from '@/service/function';
@@ -13,6 +13,7 @@ import { useToast } from '@/components/ui';
 import { useAddAnnotation } from '@/features/Annotator/Annotation';
 import { selectIsDrawingEnabled } from '@/features/Annotator/UX';
 import { usePointer } from '@/features/Annotator/Pointer/context';
+import { useLoaderData } from '@tanstack/react-router';
 
 
 export const useDrawTempAnnotation = () => {
@@ -40,7 +41,7 @@ export const useTempAnnotationsEvents = () => {
   const focusedLabel = useAppSelector(selectFocusLabel)
   const defaultConfidence = useAppSelector(selectDefaultConfidence);
   const focusedConfidence = useAppSelector(selectFocusConfidence)
-  const { campaign } = useCurrentCampaign()
+  const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
   const pointer = usePointer()
 
   const addAnnotation = useAddAnnotation()
@@ -124,7 +125,7 @@ export const useTempAnnotationsEvents = () => {
           label: focusedLabel,
           confidence: defaultConfidence ?? focusedConfidence ?? undefined,
         })
-      } else if (campaign?.allowPointAnnotation) {
+      } else if (campaign.allowPointAnnotation) {
         addAnnotation({
           type: AnnotationType.Point,
           startTime: annotation.startTime,

@@ -1,25 +1,12 @@
 import { createSelector } from '@reduxjs/toolkit';
 import type { AppState } from '@/features/App';
-import { selectCampaign, selectTask } from '@/api';
+import { selectTask } from '@/api';
 import { AnnotatorSlice } from './slice'
 
-export const selectCampaignID = createSelector(
-    (state: AppState) => state.annotator,
-    AnnotatorSlice.selectors.selectCampaignID,
-)
 export const selectTaskVariables = createSelector(
     (state: AppState) => state.annotator,
     AnnotatorSlice.selectors.selectTaskVariables,
 )
-
-export const selectAnnotatorCampaign = createSelector(
-    [
-        (state: AppState) => state,
-        selectCampaignID,
-    ],
-    (state, campaignID) => selectCampaign(state, campaignID ?? ''),
-)
-
 
 export const selectAnnotationTask = createSelector(
     [
