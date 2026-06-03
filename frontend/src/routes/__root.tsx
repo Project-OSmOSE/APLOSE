@@ -18,7 +18,7 @@ export const Route = createRootRouteWithContext()({
 
                     {/* Dev tools */}
                     <TanStackRouterDevtools/>
-                    <ReactQueryDevtools initialIsOpen={false} />
+                    <ReactQueryDevtools initialIsOpen={false} position='right' />
                 </ReactFlowProvider>
             </AlertProvider>
         </AudioProvider>,

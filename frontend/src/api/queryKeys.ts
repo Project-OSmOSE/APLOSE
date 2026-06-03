@@ -48,7 +48,9 @@ export const queryKeys = {
                   phaseType,
                   spectrogramID,
                   ...variables
-              }: GetAnnotationSpectrogramQueryVariables) => [ 'spectrogram', campaignID, phaseType, spectrogramID, variables ] as const,
+              }: Pick<GetAnnotationSpectrogramQueryVariables, 'campaignID' | 'phaseType' | 'spectrogramID'>
+            & Partial<Omit<GetAnnotationSpectrogramQueryVariables, 'campaignID' | 'phaseType' | 'spectrogramID'>>) =>
+            [ 'spectrogram', campaignID, phaseType, spectrogramID, variables ] as const,
         getPath: ({
                       spectrogramID,
                       analysisID,

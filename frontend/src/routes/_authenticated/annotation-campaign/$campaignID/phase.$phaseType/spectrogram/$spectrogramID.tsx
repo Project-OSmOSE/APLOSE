@@ -36,7 +36,12 @@ const AnnotatorPage: React.FC = () => {
     const analysisID = useAppSelector(selectAnalysisID)
     const {
         data: paths,
-    } = useQuery({ ...AnnotationSpectrogram.API.getPathQuery({ spectrogramID: spectrogram.id, analysisID: analysisID ?? '' }), enabled: !!analysisID, refetchOnMount: true });
+    } = useQuery({
+        ...AnnotationSpectrogram.API.getPathQuery({
+            spectrogramID: spectrogram.id,
+            analysisID: analysisID ?? '',
+        }), enabled: !!analysisID, refetchOnMount: true,
+    });
     const audio = useAudio()
 
     useEffect(() => {
