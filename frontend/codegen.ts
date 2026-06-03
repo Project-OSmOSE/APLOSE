@@ -10,7 +10,6 @@ const scalars = {
 const config: CodegenConfig = {
     schema: 'schema.graphql',
     ignoreNoDocuments: true,
-    watch: true,
     generates: {
         // 1️⃣ Generic TypeScript types (unique source)
         'src/api/types.gql-generated.ts': {
