@@ -36,7 +36,7 @@ const STEP = {
             const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;
             expect(variables.campaignID).toEqual(campaign.id);
             expect(variables.phase).toEqual(phase);
-            expect(variables.spectrogramID).toEqual(TASKS.unsubmitted.id);
+            expect(variables.spectrogramID).toEqual(TASKS.submitted.id);
             const expectedAnnotations: AnnotationInput[] = [
                 {
                     annotationPhase: otherPhase.id,
