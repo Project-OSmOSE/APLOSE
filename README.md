@@ -10,15 +10,12 @@
 ![Open Source Love](https://img.shields.io/badge/open%20source-♡-lightgrey)
 
 
-[![Backend Tests][backend-badge]][backend-link]
-[![Frontend Tests][frontend-badge]][frontend-link]
+[![CI][ci-badge]][ci-link]
 
 [doi-badge]: https://zenodo.org/badge/DOI/10.5281/zenodo.10467999.svg
 [doi-link]: https://doi.org/10.5281/zenodo.10467999
-[backend-badge]: https://github.com/Project-OSmOSE/APLOSE/actions/workflows/backend.yml/badge.svg
-[backend-link]: https://github.com/Project-OSmOSE/APLOSE/actions/workflows/backend.yml
-[frontend-badge]: https://github.com/Project-OSmOSE/APLOSE/actions/workflows/frontend.yml/badge.svg
-[frontend-link]: https://github.com/Project-OSmOSE/APLOSE/actions/workflows/frontend.yml
+[ci-badge]: https://github.com/Project-OSmOSE/APLOSE/actions/workflows/all.yml/badge.svg
+[ci-link]: https://github.com/Project-OSmOSE/APLOSE/actions/workflows/all.yml
 
 **APLOSE**, a scalable web-based annotation tool for marine bioacoustics.
 
