@@ -64,6 +64,7 @@ const config: CodegenConfig = {
                 documentMode: 'documentNode',
                 skipTypename: false,
                 dedupeOperationSuffix: true,
+                arrayInputCoercion: false,
                 scalars,
             },
         },
