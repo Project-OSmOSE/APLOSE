@@ -89,7 +89,7 @@ const TEST = {
                 const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;
                 expect(variables.campaignID).toEqual(campaign.id);
                 expect(variables.phase).toEqual(phase);
-                expect(variables.spectrogramID).toEqual(TASKS.unsubmitted.id);
+                expect(variables.spectrogramID).toEqual(TASKS.submitted.id);
                 expect(variables.annotations).toEqual([]);
                 expect(variables.taskComments).toEqual([ {
                     comment: taskComment.comment,
