@@ -11,23 +11,25 @@ import {
 import { useWindowContainerWidth, useWindowHeight, useWindowWidth, Y_AXIS_WIDTH } from './window.hooks';
 import { useGetCoords, useGetFreqTime, useIsHoverCanvas, usePointer } from '@/features/Annotator/Pointer';
 import { selectZoom, selectZoomOrigin, useZoomIn, useZoomOut } from '@/features/Annotator/Zoom';
-import { selectCanDraw } from '@/features/Annotator/UX';
 import { useAudio } from '@/features/Audio';
 import { useAnnotatorCanvasContext } from '@/features/Annotator/Canvas/context';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { setAllFileAsSeen } from '@/features/Annotator/UX/slice';
 import { useDrawCanvas } from '@/features/Annotator/Canvas/hooks';
-import { AnnotationType, useAnnotationTask } from '@/api';
+import { AnnotationType } from '@/api';
 import {
     selectBrightness,
     selectColormap,
     selectContrast,
     selectIsColormapReversed,
 } from '@/features/Annotator/VisualConfiguration';
-import { selectAnalysis } from '@/features/Annotator/Analysis';
 import { AcousticFeatures } from '@/features/Annotator/AcousticFeatures';
+import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
+import { useLoaderData } from '@tanstack/react-router';
+import { useCanDraw } from '@/features/Annotator/UX/hooks';
 
 export const AnnotatorCanvasWindow: React.FC = () => {
+    const { spectrogram } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const width = useWindowWidth()
     const height = useWindowHeight()
     const containerWidth = useWindowContainerWidth()
@@ -37,7 +39,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     const getCoords = useGetCoords()
     const zoomIn = useZoomIn()
     const zoomOut = useZoomOut()
-    const canDraw = useAppSelector(selectCanDraw)
+    const canDraw = useCanDraw()
     const { seek } = useAudio()
     const allAnnotations = useAppSelector(selectAllAnnotations)
     const draw = useDrawCanvas()
@@ -55,7 +57,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         const left = div.scrollWidth - div.scrollLeft - div.clientWidth;
         if (left <= 0) dispatch(setAllFileAsSeen())
         setScrollLeft(div.scrollLeft)
-    }, [dispatch])
+    }, [ dispatch ])
 
     const onWheel = useCallback((event: WheelEvent) => {
         // Disable zoom if the user wants horizontal scroll
@@ -75,8 +77,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
     // Global updates
     const tempAnnotation = useAppSelector(selectTempAnnotation)
-    const analysis = useAppSelector(selectAnalysis)
-    const { spectrogram } = useAnnotationTask()
+    const analysis = useAnnotatorAnalysis()
     const brightness = useAppSelector(selectBrightness);
     const contrast = useAppSelector(selectContrast);
     const colormap = useAppSelector(selectColormap);
@@ -174,10 +175,11 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
             <TimeBar/>
 
-            { allAnnotations.filter(a => a.type !== AnnotationType.Weak).map(annotation => <StrongAnnotation key={ annotation.id } annotation={ annotation }/>) }
+            { allAnnotations.filter(a => a.type !== AnnotationType.Weak).map(annotation => <StrongAnnotation
+                key={ annotation.id } annotation={ annotation }/>) }
         </div>
 
-        <AcousticFeatures scrollLeft={scrollLeft}/>
+        <AcousticFeatures scrollLeft={ scrollLeft }/>
 
     </div>
 }

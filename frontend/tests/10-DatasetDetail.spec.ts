@@ -13,8 +13,8 @@ const TEST = {
         test(`as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
-                listSpectrogramAnalysis: 'empty',
-                listChannelConfigurations: 'empty',
+                allSpectrogramAnalysis: 'empty',
+                getDatasetByID: 'dataEmpty',
                 browseStorage: 'empty',
             })
             await test.step(`Navigate`, () => page.datasetDetail.go({ as }));

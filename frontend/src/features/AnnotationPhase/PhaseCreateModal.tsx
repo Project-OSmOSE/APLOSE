@@ -1,19 +1,14 @@
 import React, { Fragment, useCallback, useMemo, useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { IonSpinner } from '@ionic/react';
-import { Button, GraphQLErrorText, Modal, ModalHeader } from '@/components/ui';
+import { Button, Modal, ModalHeader, WarningText } from '@/components/ui';
 import { FormBloc, Input } from '@/components/form';
 import { LabelSetSelect } from '@/features/Labels';
 import { ConfidenceSetSelect } from '@/features/Confidence';
-import {
-    AnnotationLabelNode, AnnotationPhaseType,
-    LabelSetNode,
-    Maybe,
-    useCreateAnnotationPhase,
-    useCreateVerificationPhase,
-    useCurrentCampaign,
-} from '@/api';
+import { AnnotationLabelNode, AnnotationPhaseType, LabelSetNode, Maybe } from '@/api';
 import styles from './styles.module.scss';
+import { useMutation } from '@tanstack/react-query';
+import { createAnnotationMutation, createVerificationMutation } from './api'
 
 type Label = Pick<AnnotationLabelNode, 'id' | 'name'>
 type LabelSet = Pick<LabelSetNode, 'id' | 'description'> & {
@@ -24,18 +19,17 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
     onClose: () => void;
     alsoCreateVerification?: boolean
 }> = ({ onClose, alsoCreateVerification }) => {
-    const { campaign, isFetching: isFetchingCampaign, refetch } = useCurrentCampaign()
+    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const {
-        isLoading: isPostingAnnotationPhase,
+        isPending: isPostingAnnotationPhase,
         error: errorPostingAnnotationPhase,
-        createAnnotationPhase,
-        formErrors,
-    } = useCreateAnnotationPhase()
+        mutateAsync: createAnnotationPhase,
+    } = useMutation(createAnnotationMutation)
     const {
-        isLoading: isPostingVerificationPhase,
+        isPending: isPostingVerificationPhase,
         error: errorPostingVerificationPhase,
-        createVerificationPhase,
-    } = useCreateVerificationPhase()
+        mutateAsync: createVerificationPhase,
+    } = useMutation(createVerificationMutation)
     const isPostingPhase = useMemo(() => isPostingAnnotationPhase || isPostingVerificationPhase, [ isPostingAnnotationPhase, isPostingVerificationPhase ])
     const error = useMemo(() => errorPostingAnnotationPhase ?? errorPostingVerificationPhase, [ errorPostingAnnotationPhase, errorPostingVerificationPhase ])
     const navigate = useNavigate()
@@ -62,7 +56,6 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
 
 
     const create = useCallback(async () => {
-        if (!campaign) return;
         if (!labelSet) return;
         await createAnnotationPhase({
             campaignID: campaign.id,
@@ -70,11 +63,10 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
             confidenceSetID,
             labelsWithAcousticFeatures: labelsWithAcousticFeatures.map(l => l.id),
             allowPointAnnotation,
-        }).unwrap()
+        })
         if (alsoCreateVerification) {
-            await createVerificationPhase({ campaignID: campaign.id }).unwrap()
+            await createVerificationPhase({ campaignID: campaign.id })
         }
-        await refetch().unwrap()
         navigate({
             to: '/annotation-campaign/$campaignID/phase/$phaseType',
             params: {
@@ -84,9 +76,9 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
             search: { page: 1 },
         })
         onClose()
-    }, [ navigate, campaign, onClose, labelSet, alsoCreateVerification, confidenceSetID, labelsWithAcousticFeatures, allowPointAnnotation, createAnnotationPhase, createVerificationPhase, refetch ])
+    }, [ navigate, campaign, onClose, labelSet, alsoCreateVerification, confidenceSetID, labelsWithAcousticFeatures, allowPointAnnotation, createAnnotationPhase, createVerificationPhase ])
 
-    if (campaign?.isArchived) return <Fragment/>
+    if (campaign.isArchived) return <Fragment/>
     return <Modal onClose={ onClose } className={ styles.modal }>
         <ModalHeader title="New annotation phase" onClose={ onClose }/>
 
@@ -97,26 +89,22 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
             <FormBloc>
 
                 <LabelSetSelect placeholder="Select a label set"
-                                labelSetError={ formErrors.find(e => e.field === 'labelSet')?.messages.join(', ') }
-                                labelsWithFeaturesError={ formErrors.find(e => e.field === 'labelsWithAcousticFeatures')?.messages.join(', ') }
                                 selected={ labelSet }
                                 onSelected={ selectLabelSet }
                                 labelsWithAcousticFeatures={ labelsWithAcousticFeatures }
                                 setLabelsWithAcousticFeatures={ onLabelsWithFeaturesChange }/>
 
                 <ConfidenceSetSelect placeholder="Select a confidence set"
-                                     error={ formErrors.find(e => e.field === 'confidenceSet')?.messages.join(', ') }
                                      selected={ confidenceSetID }
                                      onSelected={ selectConfidenceSetID }/>
 
                 <Input type="checkbox"
                        label='Allow annotations of type "Point"'
-                       error={ formErrors.find(e => e.field === 'allowPointAnnotation')?.messages.join(', ') }
                        checked={ allowPointAnnotation } onChange={ onAllowPointAnnotationChange }/>
 
             </FormBloc>
 
-            { error && <GraphQLErrorText error={ error }/> }
+            { error && <WarningText error={ error }/> }
         </div>
         <div className={ styles.buttons }>
             <Button color="medium" fill="clear" onClick={ onClose }>
@@ -124,9 +112,9 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
             </Button>
 
             <div className={ styles.buttons }>
-                { (isPostingPhase || isFetchingCampaign) && <IonSpinner/> }
+                { (isPostingPhase) && <IonSpinner/> }
                 <Button color="primary" fill="solid"
-                        disabled={ !campaign || !labelSet }
+                        disabled={ !labelSet }
                         onClick={ create }>
                     Create
                 </Button>
@@ -138,14 +126,16 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
 export const AnnotationPhaseCreateVerificationModal: React.FC<{
     onClose: () => void;
 }> = ({ onClose }) => {
-    const { campaign, phases, isFetching, refetch } = useCurrentCampaign()
-    const { isLoading: isPostingPhase, error, createVerificationPhase } = useCreateVerificationPhase()
+    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const {
+        isPending: isPostingPhase,
+        error,
+        mutateAsync: createVerificationPhase,
+    } = useMutation(createVerificationMutation)
     const navigate = useNavigate()
 
     const create = useCallback(async () => {
-        if (!campaign) return;
-        await createVerificationPhase({ campaignID: campaign.id }).unwrap()
-        await refetch().unwrap()
+        await createVerificationPhase({ campaignID: campaign.id })
         navigate({
             to: '/annotation-campaign/$campaignID/phase/$phaseType',
             params: {
@@ -155,11 +145,10 @@ export const AnnotationPhaseCreateVerificationModal: React.FC<{
             search: { page: 1 },
         })
         onClose()
-    }, [ campaign, createVerificationPhase, navigate, onClose, refetch ])
+    }, [ campaign, createVerificationPhase, navigate, onClose ])
 
     const createAndImport = useCallback(async () => {
-        if (!campaign) return;
-        await createVerificationPhase({ campaignID: campaign.id }).unwrap()
+        await createVerificationPhase({ campaignID: campaign.id })
         navigate({
             to: '/annotation-campaign/$campaignID/phase/$phaseType/import-annotations',
             params: {
@@ -170,7 +159,7 @@ export const AnnotationPhaseCreateVerificationModal: React.FC<{
         onClose()
     }, [ campaign, createVerificationPhase, navigate, onClose ])
 
-    if (campaign?.isArchived || !phases) return <Fragment/>
+    if (campaign.isArchived) return <Fragment/>
     return <Modal onClose={ onClose } className={ styles.modal }>
         <ModalHeader title="New verification phase" onClose={ onClose }/>
 
@@ -179,7 +168,7 @@ export const AnnotationPhaseCreateVerificationModal: React.FC<{
             <p>Annotations come from the "Annotation" phase and may be created manually or imported (e.g., from an
                 automatic
                 detector).</p>
-            { error && <GraphQLErrorText error={ error }/> }
+            { error && <WarningText error={ error }/> }
         </div>
 
         <div className={ styles.buttons }>
@@ -188,12 +177,11 @@ export const AnnotationPhaseCreateVerificationModal: React.FC<{
             </Button>
 
             <div className={ styles.buttons }>
-                { (isPostingPhase || isFetching) && <IonSpinner/> }
+                { isPostingPhase && <IonSpinner/> }
                 <Button color="primary" fill="clear" onClick={ createAndImport }>
                     Create and import annotations
                 </Button>
                 <Button color="primary" fill="solid"
-                        disabled={ !campaign }
                         onClick={ create }>
                     Create
                 </Button>

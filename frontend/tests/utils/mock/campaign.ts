@@ -1,13 +1,13 @@
 import { type GqlQuery, mockGqlError } from './_types';
 import { AnnotationPhaseType } from '../../../src/api/types.gql-generated';
 import type {
+  AllCampaignsQuery,
   ArchiveCampaignMutation,
   CreateCampaignMutation,
   CreateCampaignMutationVariables,
   GetCampaignQuery,
-  ListCampaignsQuery,
   UpdateCampaignFeaturedLabelsMutation,
-} from '../../../src/api/annotation-campaign';
+} from '../../../src/features/AnnotationCampaign';
 import {
   campaign,
   colormap,
@@ -83,9 +83,6 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
             name: colormap.name,
           },
           legacyConfiguration: {
-            scaleName: legacyConfiguration.scaleName,
-            linearFrequencyScale: legacyConfiguration.linearFrequencyScale,
-            multiLinearFrequencyScale: legacyConfiguration.multiLinearFrequencyScale,
             zoomLevel: legacyConfiguration.zoomLevel,
           },
         },
@@ -115,10 +112,10 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
   },
 }
 export const CAMPAIGN_QUERIES: {
-  listCampaigns: GqlQuery<ListCampaignsQuery>,
+  allCampaigns: GqlQuery<AllCampaignsQuery>,
   getCampaign: GqlQuery<GetCampaignQuery, 'default' | 'manager' | 'withoutConfidence' | 'allowPoint' | 'multipleAnalysis'>,
 } = {
-  listCampaigns: {
+  allCampaigns: {
     defaultType: 'filled',
     empty: {
       allAnnotationCampaigns: null,

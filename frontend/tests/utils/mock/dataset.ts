@@ -1,14 +1,16 @@
 import type { GqlQuery } from './_types';
-import { GetDatasetByIdQuery, ListDatasetsAndAnalysisQuery, ListDatasetsQuery } from '../../../src/api/dataset';
+import { AllDatasetsQuery, GetDatasetByIdQuery, ListDatasetsWithAnalysisQuery } from '../../../src/features/Dataset';
 import type { Colormap } from '../../../src/features/Colormap';
-import { dataset, spectrogramAnalysis, USERS } from './types';
+import { dataset, deployment, spectrogramAnalysis, USERS } from './types';
+import { ANALYSIS_QUERIES } from './spectrogramAnalysis';
+import { CAMPAIGN_QUERIES } from './campaign';
 
 export const DATASET_QUERIES: {
-  listDatasets: GqlQuery<ListDatasetsQuery>,
-  getDatasetByID: GqlQuery<GetDatasetByIdQuery>,
-  listDatasetsAndAnalysis: GqlQuery<ListDatasetsAndAnalysisQuery>,
+  allDatasets: GqlQuery<AllDatasetsQuery>,
+  getDatasetByID: GqlQuery<GetDatasetByIdQuery, 'filled' |'dataEmpty'>,
+  listDatasetsWithAnalysis: GqlQuery<ListDatasetsWithAnalysisQuery>,
 } = {
-  listDatasets: {
+  allDatasets: {
     defaultType: 'filled',
     empty: {
       allDatasets: {
@@ -39,7 +41,32 @@ export const DATASET_QUERIES: {
   },
   getDatasetByID: {
     defaultType: 'filled',
-    empty: { datasetById: undefined },
+    empty: {
+      datasetById: undefined,
+      allSpectrogramAnalysis: undefined,
+      allAnnotationCampaigns: undefined,
+      allChannelConfigurations: undefined,
+    },
+    dataEmpty: {
+      datasetById: {
+        id: dataset.id,
+        name: dataset.name,
+        legacy: dataset.legacy,
+        createdAt: dataset.createdAt,
+        description: dataset.description,
+        path: dataset.path,
+        owner: {
+          displayName: USERS.creator.displayName,
+        },
+        start: dataset.start,
+        end: dataset.end,
+        analysisCount: dataset.analysisCount,
+        spectrogramCount: dataset.spectrogramCount,
+      },
+      allSpectrogramAnalysis: undefined,
+      allAnnotationCampaigns: undefined,
+      allChannelConfigurations: undefined,
+    },
     filled: {
       datasetById: {
         id: dataset.id,
@@ -53,10 +80,17 @@ export const DATASET_QUERIES: {
         },
         start: dataset.start,
         end: dataset.end,
+        analysisCount: dataset.analysisCount,
+        spectrogramCount: dataset.spectrogramCount,
       },
+      allChannelConfigurations: {
+        results: [ { deployment } ],
+      },
+      allSpectrogramAnalysis: ANALYSIS_QUERIES.allSpectrogramAnalysis.filled.allSpectrogramAnalysis,
+      allAnnotationCampaigns: CAMPAIGN_QUERIES.allCampaigns.filled.allAnnotationCampaigns,
     },
   },
-  listDatasetsAndAnalysis: {
+  listDatasetsWithAnalysis: {
     defaultType: 'filled',
     empty: {
       allDatasets: { results: [] },

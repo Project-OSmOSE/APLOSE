@@ -1,0 +1,30 @@
+mutation submitTask (
+    $campaignID: ID!
+    $spectrogramID: ID!
+    $phase: AnnotationPhaseType!
+    $annotations: [AnnotationInput]!
+    $taskComments: [AnnotationCommentInput]!
+
+    $startedAt: DateTime!
+    $endedAt: DateTime!
+) {
+    submitAnnotationTask(
+        spectrogramId: $spectrogramID
+        phaseType: $phase
+        campaignId: $campaignID
+        startedAt: $startedAt
+        endedAt: $endedAt
+        annotations: $annotations
+        taskComments: $taskComments
+    ) {
+        ok
+        annotationErrors {
+            field
+            messages
+        }
+        taskCommentsErrors {
+            field
+            messages
+        }
+    }
+}

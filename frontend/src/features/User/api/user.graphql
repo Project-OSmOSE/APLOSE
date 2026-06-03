@@ -1,0 +1,71 @@
+# Current user
+
+fragment CurrentUser on UserNode {
+    id
+    displayName
+    isAdmin
+    isSuperuser
+    username
+    email
+}
+
+query getCurrentUser {
+    currentUser { ...CurrentUser }
+}
+
+
+# List users
+
+fragment User on UserNode {
+    id
+    displayName
+    username
+    expertise
+}
+
+fragment UserGroup on UserGroupNode {
+    id
+    name
+    users {
+        id
+    }
+}
+
+query allUsers {
+    allUsers { results { ...User } }
+    allUserGroups { results { ...UserGroup } }
+}
+
+# Update email
+
+mutation updateCurrentUserEmail(
+    $email: String!
+) {
+    currentUserUpdate(input: {
+        email: $email
+    }) {
+        errors {
+            field
+            messages
+        }
+    }
+}
+
+
+# Update password
+mutation updateCurrentUserPassword(
+    $oldPassword: String!
+    $newPassword: String!
+) {
+    userUpdatePassword(
+        input: {
+            oldPassword: $oldPassword
+            newPassword: $newPassword
+        }
+    ) {
+        errors {
+            field
+            messages
+        }
+    }
+}

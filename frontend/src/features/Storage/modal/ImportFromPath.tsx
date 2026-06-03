@@ -1,20 +1,13 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useSearchStorage } from '@/api';
 import { useAppDispatch } from '@/features/App';
 import { gqlAPI } from '@/api/baseGqlApi';
-import {
-    Button,
-    GraphQLErrorText,
-    HelpButton,
-    Modal,
-    ModalFooter,
-    ModalHeader,
-    type ModalProps,
-} from '@/components/ui';
+import { Button, HelpButton, Modal, ModalFooter, ModalHeader, type ModalProps, WarningText } from '@/components/ui';
 import { Item } from '@/features/Storage';
 import { Searchbar } from '@/components/form';
 import { IonNote, IonSpinner } from '@ionic/react';
 import { useKeyDownEvent } from '@/features/UX';
+import { useQuery } from '@tanstack/react-query';
+import * as API from '../api'
 
 export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
     const [ searchQuery, setSearchQuery ] = useState<string | undefined>();
@@ -28,7 +21,11 @@ export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
         if (!value) setSearchQuery(undefined)
     }, [ setSearch, setSearchQuery ])
 
-    const { item, isLoading, error } = useSearchStorage({ path: searchQuery ?? '' }, { skip: !searchQuery })
+    const { isLoading, error, data: item } = useQuery({
+        ...API.searchQuery({path: searchQuery ?? ''}),
+        enabled: !!searchQuery
+    })
+
     const dispatch = useAppDispatch();
 
     const invalidateStorage = useCallback(() => {
@@ -37,7 +34,7 @@ export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
 
     const content = useMemo(() => {
         if (isLoading) return <IonSpinner/>
-        if (error) return <GraphQLErrorText error={ error }/>
+        if (error) return <WarningText error={ error }/>
         if (!searchQuery) return <IonNote>
             You can search for the exact path of:
             <ul>

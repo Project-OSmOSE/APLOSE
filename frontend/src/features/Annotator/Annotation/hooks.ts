@@ -3,10 +3,10 @@ import { useCallback } from 'react';
 import { addAnnotation, type Annotation, blur, focusAnnotation, removeAnnotation, updateAnnotation } from './slice';
 import { selectAllAnnotations } from './selectors'
 import { getNewItemID } from '@/service/function';
-import { AnnotationType, useCurrentPhase, useCurrentUser } from '@/api';
+import { AnnotationType } from '@/api';
 import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
 import { useAlert } from '@/components/ui';
-import { useParams } from '@tanstack/react-router';
+import { useLoaderData, useParams } from '@tanstack/react-router';
 
 type AnnotationEqualsType = Pick<Annotation, 'label' | 'confidence' | 'startTime' | 'endTime' | 'startFrequency' | 'endFrequency'>
 
@@ -68,17 +68,16 @@ export const useGetAnnotation = () => {
 
 export const useAddAnnotation = () => {
     const getNewID = useGetNewAnnotationID()
-    const { user } = useCurrentUser();
-    const { phase } = useCurrentPhase()
+    const { user } = useLoaderData({ from: '/_authenticated' })
+    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const dispatch = useAppDispatch();
 
     return useCallback((annotation: Omit<Annotation, 'id' | 'analysis' | 'annotationPhase'>) => {
-        if (!phase) return;
         const addedAnnotation = dispatch(addAnnotation({
             ...annotation,
             annotationPhase: phase.id,
             id: getNewID(),
-            annotator: user?.id,
+            annotator: user.id,
         })).payload as Annotation
         dispatch(focusAnnotation(addedAnnotation))
     }, [ dispatch, getNewID, user, phase ])
@@ -139,8 +138,8 @@ export const useInvalidateAnnotation = () => {
 
 export const useUpdateAnnotation = () => {
     const { phaseType } = useParams({ strict: false });
-    const { user } = useCurrentUser();
-    const { phase } = useCurrentPhase()
+    const { user } = useLoaderData({ from: '/_authenticated' })
+    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const allAnnotations = useAppSelector(selectAllAnnotations);
     const defaultConfidence = useAppSelector(selectDefaultConfidence);
     const getNewID = useGetNewAnnotationID()
@@ -153,7 +152,7 @@ export const useUpdateAnnotation = () => {
     return useCallback((annotation: Annotation, update: Partial<Annotation>) => {
         if (!phase) return;
         if (annotation.type === AnnotationType.Weak && 'label' in update) return;
-        if (phaseType === 'Annotation' || annotation.annotator === user?.id) {
+        if (phaseType === 'Annotation' || annotation.annotator === user.id) {
             annotation = dispatch(updateAnnotation({ id: annotation.id, ...update })).payload as Annotation
         } else {
             // Verification mode
@@ -161,7 +160,7 @@ export const useUpdateAnnotation = () => {
                 ...annotation, // Base is initial annotation
                 ...(annotation.update ?? { id: getNewID() }), // Add existing update info if exist
                 ...update, // Update according provided info
-                annotator: user?.id, // Current user is this update creator
+                annotator: user.id, // Current user is this update creator
                 detectorConfiguration: undefined, // Detector is no longer the creator of this update
                 validation: undefined,
                 annotationPhase: phase.id,
@@ -186,7 +185,7 @@ export const useUpdateAnnotation = () => {
 
 export const useRemoveAnnotation = () => {
     const { phaseType } = useParams({ strict: false });
-    const { user } = useCurrentUser();
+    const { user } = useLoaderData({ from: '/_authenticated' })
     const allAnnotations = useAppSelector(selectAllAnnotations);
 
     const getAnnotations = useGetAnnotations()
@@ -209,7 +208,7 @@ export const useRemoveAnnotation = () => {
             })
             return;
         }
-        if (phaseType === 'Annotation' || annotation.annotator === user?.id) {
+        if (phaseType === 'Annotation' || annotation.annotator === user.id) {
             dispatch(removeAnnotation(annotation))
             const weak = allAnnotations.find(a => a.type === AnnotationType.Weak && a.label === annotation.label && a.id !== annotation.id);
             if (weak && focusWeak) dispatch(focusAnnotation(weak))

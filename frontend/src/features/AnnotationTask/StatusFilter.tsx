@@ -2,15 +2,20 @@ import React, { useCallback } from 'react';
 import styles from './styles.module.scss'
 import { Modal, type ModalProps } from '@/components/ui';
 import { Input, Switch } from '@/components/form';
-import { AnnotationTaskStatus, useCurrentUser } from '@/api';
+import { AnnotationTaskStatus } from '@/api';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
-import { useNavigate } from '@tanstack/react-router';
+import { useLoaderData, useNavigate } from '@tanstack/react-router';
 
 export const StatusFilterModal: React.FC<ModalProps & {
     onUpdate: () => void
 }> = ({ onUpdate, onClose }) => {
-    const { user } = useCurrentUser()
-    const { status, onlyAssigned } = Route.useSearch({select: ({status, onlyAssigned}) => ({ status, onlyAssigned })});
+    const { user } = useLoaderData({ from: '/_authenticated' })
+    const { status, onlyAssigned } = Route.useSearch({
+        select: ({ status, onlyAssigned }) => ({
+            status,
+            onlyAssigned,
+        }),
+    });
     const routeParams = Route.useParams()
     const navigate = useNavigate();
 
@@ -56,11 +61,11 @@ export const StatusFilterModal: React.FC<ModalProps & {
                 value={ valueToBooleanOption(status) }
                 onValueSelected={ setState }/>
 
-        { user?.isAdmin &&
+        { user.isAdmin &&
             <Input type="checkbox"
                    label="Display only assigned tasks"
                    checked={ onlyAssigned ?? false }
-                   onChange={ onOnlyAssignedChanged }/>}
+                   onChange={ onOnlyAssignedChanged }/> }
 
     </Modal>
 }

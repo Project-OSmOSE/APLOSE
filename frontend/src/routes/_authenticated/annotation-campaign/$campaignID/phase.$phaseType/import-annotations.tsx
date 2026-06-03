@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
-import { IonSkeletonText } from '@ionic/react';
+import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 
 import { Head } from '@/components/ui';
 
-import { AnnotationPhaseType, useCurrentCampaign } from '@/api';
+import { AnnotationPhaseType } from '@/api';
 import {
     DetectorConfigurationsFormBloc,
     DetectorsFormBloc,
@@ -18,7 +17,7 @@ import styles from './import-annotations.module.scss';
 
 
 const ImportAnnotations: React.FC = () => {
-    const { campaign } = useCurrentCampaign();
+    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const phaseType = Route.useParams({select: ({phaseType}) => phaseType});
     const {
         selectedDetectorsForImport,
@@ -50,8 +49,7 @@ const ImportAnnotations: React.FC = () => {
             <ImportAnnotationsContextProvider>
 
                 <Head title="Import annotations"
-                      subtitle={ campaign ? `${ campaign.name } - ${ phaseType }` :
-                          <IonSkeletonText animated style={ { width: 128 } }/> }/>
+                      subtitle={ `${ campaign.name } - ${ phaseType }` }/>
 
                 <div className={ className }>
                     <ImportAnnotationsFormBloc/>

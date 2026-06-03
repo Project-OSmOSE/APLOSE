@@ -2,7 +2,7 @@ import { essentialTag, expect, test } from './utils';
 import { gqlURL, interceptRequests } from './utils/mock';
 import { storageAnalysis, storageDataset, storageFolder } from './utils/mock/types';
 import type { Params } from './utils/types';
-import type { ImportDatasetFromStorageMutationVariables } from '../src/api/storage/storage.generated';
+import type { ImportDatasetFromStorageMutationVariables } from '../src/features/Storage';
 
 // Utils
 
@@ -12,7 +12,7 @@ const TEST = {
         test(`as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
-                listDatasets: 'empty',
+                allDatasets: 'empty',
                 browseStorage: 'empty',
             })
             await test.step(`Navigate`, () => page.storage.go({ as }));

@@ -1,18 +1,20 @@
 import React, { useCallback, useMemo } from 'react';
 import { IonChip, IonIcon } from '@ionic/react';
 import { closeCircle, swapHorizontal } from 'ionicons/icons';
-import { Route } from '@/routes/_authenticated/annotation-campaign';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 
 export const AnnotationCampaignArchiveFilter: React.FC = () => {
-    const filter_isArchived = Route.useSearch({ select: ({ filter_isArchived }) => filter_isArchived });
+    const filter_isArchived = useSearch({
+        from: '/_authenticated/annotation-campaign/',
+        select: ({ filter_isArchived }) => filter_isArchived,
+    });
     const navigate = useNavigate();
 
     const exists = useMemo(() => filter_isArchived !== undefined && filter_isArchived !== null, [ filter_isArchived ])
 
     const toggle = useCallback(() => {
         navigate({
-            to: Route.to,
+            to: '/annotation-campaign',
             search: (prev) => ({
                 ...prev,
                 filter_isArchived: prev?.filter_isArchived ? null : prev?.filter_isArchived === false,

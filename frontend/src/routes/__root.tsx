@@ -6,6 +6,7 @@ import { AudioProvider } from '@/features/Audio';
 import styles from '@/routes/(public)/public.module.scss';
 import { Footer, PublicHeader } from '@/components/layout';
 import { IonNote } from '@ionic/react';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 
 export const Route = createRootRouteWithContext()({
@@ -14,7 +15,10 @@ export const Route = createRootRouteWithContext()({
             <AlertProvider>
                 <ReactFlowProvider>
                     <Outlet/>
+
+                    {/* Dev tools */}
                     <TanStackRouterDevtools/>
+                    <ReactQueryDevtools initialIsOpen={false} position='right' />
                 </ReactFlowProvider>
             </AlertProvider>
         </AudioProvider>,

@@ -5,28 +5,34 @@ import { IonButton, IonSpinner } from '@ionic/react';
 import { useToast } from '@/components/ui';
 import { FormBloc, Input, Select, Textarea } from '@/components/form';
 
-import { useCreateCampaign } from '@/api';
-
 import { type Colormap, COLORMAPS } from '@/features/Colormap';
 import { DatasetSelect } from '@/features/Dataset';
 
 import styles from './new.module.scss';
+import { AnnotationCampaign, Dataset, Storage } from '@/features';
+import { queryClient } from '@/api/queryClient';
+import { useMutation } from '@tanstack/react-query';
+import type { GqlError } from '@/api/utils';
+import type { CreateCampaignMutationVariables } from '@/features/AnnotationCampaign';
+import { useAppDispatch } from '@/features/App';
 
 const NewAnnotationCampaign: React.FC = () => {
     const dataset_id = Route.useSearch({ select: ({ dataset_id }) => dataset_id });
     const router = useRouter()
 
     const {
-        createCampaign,
-        campaign,
-        isLoading: isSubmittingCampaign,
+        mutateAsync: createCampaign,
+        data,
+        isPending: isSubmittingCampaign,
         error: errors,
-        formErrors,
-    } = useCreateCampaign()
+    } = useMutation(AnnotationCampaign.API.createMutation)
+    const formErrors = useMemo(() => (data?.errors ?? []) as GqlError<CreateCampaignMutationVariables>[], [ data ])
+
     const toast = useToast();
     const navigate = useNavigate();
 
     const page = useRef<HTMLDivElement | null>(null);
+    const dispatch = useAppDispatch();
 
     // Global information
     const [ name, setName ] = useState<string>('');
@@ -91,20 +97,23 @@ const NewAnnotationCampaign: React.FC = () => {
             allowColormapTuning,
             colormapDefault,
             colormapInvertedDefault,
+        }).then(data => {
+            if (!data?.annotationCampaign) return;
+            dispatch(Storage.Slice.actions.invalidatePath(data.annotationCampaign.dataset.path))
         })
-    }, [ name, description, instructionsUrl, createCampaign, deadline, datasetID, analysisIDs, allowImageTuning, allowColormapTuning, colormapDefault, colormapInvertedDefault ])
+    }, [ name, description, instructionsUrl, createCampaign, deadline, datasetID, analysisIDs, allowImageTuning, allowColormapTuning, colormapDefault, colormapInvertedDefault, dispatch ])
 
     useEffect(() => {
         if (errors) toast.raiseError({ error: errors })
     }, [ errors ]);
     useEffect(() => {
-        if (!campaign) return;
+        if (!data?.annotationCampaign) return;
         navigate({
             to: '/annotation-campaign/$campaignID',
-            params: { campaignID: campaign.id },
+            params: { campaignID: data.annotationCampaign.id },
             replace: true,
         })
-    }, [ campaign, navigate ]);
+    }, [ data, navigate ]);
 
     return useMemo(() => <div className={ styles.page } ref={ page }>
 
@@ -193,5 +202,6 @@ export const Route = createFileRoute('/_authenticated/_admin/annotation-campaign
     validateSearch: (search: Record<string, unknown>) => ({
         dataset_id: search['dataset_id'] as string,
     }),
+    loader: () => queryClient.ensureQueryData(Dataset.API.listWithAnalysisQuery),
     component: NewAnnotationCampaign,
 })

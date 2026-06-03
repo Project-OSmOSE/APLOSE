@@ -1,8 +1,10 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useAppSelector } from '@/features/App';
 import { selectBrightness, selectColormap, selectContrast, selectIsColormapReversed } from './selectors'
-import { COLORMAPS, createColormap } from './colormaps'
+import { Colormap, COLORMAPS, createColormap } from './colormaps'
 import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
+import { useLoaderData } from '@tanstack/react-router';
+import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
 
 
 function interpolate(value: number, minSource: number, maxSource: number, minTarget: number, maxTarget: number): number {
@@ -42,4 +44,13 @@ export const useApplyColormap = () => {
     }
     context.putImageData(imgData, 0, 0);
   }, [ colormap, isColormapReversed, width, height ])
+}
+
+export const useCanChangeColormap = () => {
+  const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+  const analysis = useAnnotatorAnalysis()
+  return useMemo(() => {
+    if (!campaign.allowColormapTuning) return false;
+    return analysis?.colormap.name === 'Greys' as Colormap
+  }, [campaign, analysis]);
 }

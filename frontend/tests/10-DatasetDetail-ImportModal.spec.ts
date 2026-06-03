@@ -2,7 +2,7 @@ import { essentialTag, expect, test } from './utils';
 import { interceptRequests } from './utils/mock';
 import type { Params } from './utils/types';
 import { storageAnalysis, storageDataset } from './utils/mock/types';
-import type { ImportDatasetFromStorageMutationVariables } from '../src/api/storage/storage.generated';
+import type { ImportDatasetFromStorageMutationVariables } from '../src/features/Storage';
 
 // Utils
 
@@ -12,8 +12,8 @@ const TEST = {
         test(`as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
-                listSpectrogramAnalysis: 'empty',
-                listChannelConfigurations: 'empty',
+                allSpectrogramAnalysis: 'empty',
+                getDatasetByID: 'dataEmpty',
                 searchStorage: 'dataset',
                 browseStorage: 'empty',
             })

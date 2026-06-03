@@ -1,19 +1,13 @@
-import React, { useEffect, useMemo } from 'react';
-import { IonIcon, IonNote, IonSpinner } from '@ionic/react';
+import React, { useEffect } from 'react';
+import { IonIcon, IonNote } from '@ionic/react';
 import { downloadOutline } from 'ionicons/icons/index.js';
 import { dateToString } from '@/service/function';
-import { Button, GraphQLErrorText, Table, Tbody, Td, Th, Thead, Tr, useToast } from '@/components/ui';
-import { ListSpectrogramAnalysisQueryVariables, useAllSpectrogramAnalysis } from '@/api';
+import { Button, Table, Tbody, Td, Th, Thead, Tr, useToast } from '@/components/ui';
 import { useDownloadAnalysis } from '@/api/download';
+import type { AllSpectrogramAnalysisQuery } from '@/features/SpectrogramAnalysis/api';
 
-export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVariables> = (option) => {
-
-    const {
-        data,
-        error,
-        isFetching,
-    } = useAllSpectrogramAnalysis(option);
-    const analysis = useMemo(() => data?.allSpectrogramAnalysis?.results.filter(r => r && r.spectrograms).map(r => r!), [ data ])
+type Analysis = NonNullable<NonNullable<AllSpectrogramAnalysisQuery['allSpectrogramAnalysis']>['results'][number]>
+export const SpectrogramAnalysisTable: React.FC<{ analysis: Analysis[] }> = ({ analysis }) => {
     const [ downloadAnalysis, { error: downloadError } ] = useDownloadAnalysis()
     const toast = useToast()
 
@@ -21,10 +15,7 @@ export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVari
         if (downloadError) toast.raiseError({ error: downloadError })
     }, [ downloadError ]);
 
-
-    if (isFetching) return <IonSpinner/>
-    if (error) return <GraphQLErrorText error={ error }/>
-    if (!analysis || analysis.length === 0) return <IonNote color="medium">No spectrogram analysis</IonNote>
+    if (analysis.length === 0) return <IonNote color="medium">No spectrogram analysis</IonNote>
 
     return <Table>
         <Thead>
@@ -45,26 +36,26 @@ export const SpectrogramAnalysisTable: React.FC<ListSpectrogramAnalysisQueryVari
         </Thead>
 
         <Tbody>
-        { analysis.map(analysis => <Tr key={ analysis.id }>
-            <Th scope='col'>{ analysis.name }</Th>
-            <Td>Spectrogram</Td>
-            <Td>{ dateToString(analysis.createdAt) }</Td>
-            <Td>{ analysis.spectrograms!.totalCount }</Td>
-            <Td>{ dateToString(analysis.start) }</Td>
-            <Td>{ dateToString(analysis.end) }</Td>
-            <Td>{ analysis.dataDuration }</Td>
-            <Td>{ analysis.fft.samplingFrequency }</Td>
-            <Td>{ analysis.fft.nfft }</Td>
-            <Td>{ analysis.fft.windowSize }</Td>
-            <Td>{ analysis.fft.overlap }</Td>
-            <Td>
-                <Button size="small" color="dark" fill="clear" onClick={ () => downloadAnalysis(analysis) }>
-                    <IonIcon icon={ downloadOutline } slot="icon-only"/>
-                </Button>
-                <br/>
-                { analysis.legacy && <IonNote color="medium">{ 'OSEkit v<0.2.5' }</IonNote> }
-            </Td>
-        </Tr>) }
+            { analysis.map(analysis => <Tr key={ analysis.id }>
+                <Th scope="col">{ analysis.name }</Th>
+                <Td>Spectrogram</Td>
+                <Td>{ dateToString(analysis.createdAt) }</Td>
+                <Td>{ analysis.spectrograms!.totalCount }</Td>
+                <Td>{ dateToString(analysis.start) }</Td>
+                <Td>{ dateToString(analysis.end) }</Td>
+                <Td>{ analysis.dataDuration }</Td>
+                <Td>{ analysis.fft.samplingFrequency }</Td>
+                <Td>{ analysis.fft.nfft }</Td>
+                <Td>{ analysis.fft.windowSize }</Td>
+                <Td>{ analysis.fft.overlap }</Td>
+                <Td>
+                    <Button size="small" color="dark" fill="clear" onClick={ () => downloadAnalysis(analysis) }>
+                        <IonIcon icon={ downloadOutline } slot="icon-only"/>
+                    </Button>
+                    <br/>
+                    { analysis.legacy && <IonNote color="medium">{ 'OSEkit v<0.2.5' }</IonNote> }
+                </Td>
+            </Tr>) }
         </Tbody>
     </Table>
 }

@@ -1,12 +1,12 @@
-import type { ListSpectrogramAnalysisQuery } from '../../../src/api/spectrogram-analysis';
+import type { AllSpectrogramAnalysisQuery } from '../../../src/features/SpectrogramAnalysis';
 import type { GqlQuery } from './_types';
 import { fft, spectrogramAnalysis } from './types';
 
 
 export const ANALYSIS_QUERIES: {
-    listSpectrogramAnalysis: GqlQuery<ListSpectrogramAnalysisQuery>,
+    allSpectrogramAnalysis: GqlQuery<AllSpectrogramAnalysisQuery>,
 } = {
-    listSpectrogramAnalysis: {
+    allSpectrogramAnalysis: {
         defaultType: 'filled',
         empty: {
             allSpectrogramAnalysis: null,

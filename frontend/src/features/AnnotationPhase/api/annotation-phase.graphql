@@ -1,0 +1,56 @@
+query getAnnotationPhase(
+    $campaignID: ID!
+    $phase: AnnotationPhaseType!
+) {
+    annotationPhaseByCampaignPhase(
+        campaignId: $campaignID
+        phaseType: $phase
+    ) {
+        id
+        phase
+        isEditable
+        isUserAllowedToManage
+        endedAt
+        hasAnnotations
+        tasksCount
+        completedTasksCount
+        userTasksCount
+        userCompletedTasksCount
+    }
+}
+
+mutation endPhase($id: ID!) {
+    endAnnotationPhase(id: $id) {
+        ok
+    }
+}
+
+mutation createAnnotationPhase(
+    $campaignID: ID!
+    $labelsWithAcousticFeatures: [ID]!
+    $labelSetID: ID!
+    $confidenceSetID: ID
+    $allowPointAnnotation: Boolean!
+) {
+    createAnnotationPhase(campaignId: $campaignID, type: Annotation) {
+        id
+    }
+    updateAnnotationCampaign(input: {
+        id: $campaignID
+        allowPointAnnotation: $allowPointAnnotation
+        labelsWithAcousticFeatures: $labelsWithAcousticFeatures
+        labelSet: $labelSetID
+        confidenceSet: $confidenceSetID
+    }) {
+        errors {
+            field
+            messages
+        }
+    }
+}
+
+mutation createVerificationPhase($campaignID: ID!) {
+    createAnnotationPhase(campaignId: $campaignID, type: Verification) {
+        id
+    }
+}

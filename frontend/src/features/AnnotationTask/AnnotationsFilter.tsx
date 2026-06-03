@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback } from 'react';
-import { AnnotationPhaseType, useCurrentCampaign } from '@/api';
+import { AnnotationPhaseType } from '@/api';
 import { ConfidenceSelect } from '@/features/Confidence';
 import { LabelSelect } from '@/features/Labels';
 import { BooleanSwitch } from '@/components/form';
@@ -8,7 +8,7 @@ import { Modal, type ModalProps } from '@/components/ui';
 import { DetectorSelect } from '@/features/Detector';
 import { UserSelect } from '@/features/User';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
-import { useNavigate } from '@tanstack/react-router';
+import { useLoaderData, useNavigate } from '@tanstack/react-router';
 
 
 export const AnnotationsFilterModal: React.FC<ModalProps & {
@@ -40,7 +40,7 @@ export const AnnotationsFilterModal: React.FC<ModalProps & {
     });
     const routeParams = Route.useParams()
     const navigate = useNavigate();
-    const { campaign, isFetching } = useCurrentCampaign()
+    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
 
     const setWithAnnotations = useCallback((input?: boolean) => {
         if (input && withAnnotations) return;
@@ -145,31 +145,28 @@ export const AnnotationsFilterModal: React.FC<ModalProps & {
                        onValueSelected={ setWithAnnotations }/>
 
         <LabelSelect placeholder="Filter by label"
-                     options={ campaign?.labelSet?.labels ?? [] }
+                     options={ campaign.labelSet?.labels ?? [] }
                      valueName={ annotationLabel ?? undefined }
                      disabled={ withAnnotations !== true }
-                     onSelected={ setLabel }
-                     isLoading={ isFetching }/>
+                     onSelected={ setLabel }/>
 
-        { campaign?.confidenceSet && <ConfidenceSelect placeholder="Filter by confidence"
-                                                       options={ campaign?.confidenceSet?.confidenceIndicators ?? [] }
+        { campaign.confidenceSet && <ConfidenceSelect placeholder="Filter by confidence"
+                                                       options={ campaign.confidenceSet?.confidenceIndicators ?? [] }
                                                        valueLabel={ annotationConfidence ?? undefined }
                                                        onSelected={ setConfidence }/> }
 
         { routeParams.phaseType === AnnotationPhaseType.Verification && <Fragment>
 
             <DetectorSelect placeholder="Filter by detector"
-                            options={ campaign?.detectors ?? [] }
+                            options={ campaign.detectors ?? [] }
                             valueID={ annotationDetector ?? undefined }
-                            onSelected={ setDetector }
-                            isLoading={ isFetching }/>
+                            onSelected={ setDetector }/>
 
             <UserSelect label="Annotator"
                         placeholder="Filter by annotator"
-                        options={ campaign?.annotators ?? [] }
+                        options={ campaign.annotators ?? [] }
                         valueID={ annotationAnnotator ?? undefined }
-                        onSelected={ setAnnotator }
-                        isLoading={ isFetching }/>
+                        onSelected={ setAnnotator }/>
 
         </Fragment> }
 

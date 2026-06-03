@@ -1,30 +1,20 @@
-import React, { useCallback } from 'react';
-import { useDataset } from '@/api';
-import { useAppDispatch } from '@/features/App';
-import { gqlAPI } from '@/api/baseGqlApi';
-import { listSpectrogramAnalysisTag } from '@/api/spectrogram-analysis/api';
+import React from 'react';
 import { HelpButton, Modal, ModalFooter, ModalHeader, type ModalProps } from '@/components/ui';
 import { Item } from '@/features/Storage';
-import { useParams } from '@tanstack/react-router';
+import { useLoaderData } from '@tanstack/react-router';
 
 export const ImportDatasetAnalysisModal: React.FC<ModalProps> = ({ onClose }) => {
-    const { datasetID } = useParams({ strict: false });
-    const { dataset } = useDataset({ id: datasetID })
-    const dispatch = useAppDispatch();
-
-    const invalidateSpectrogramList = useCallback(() => {
-        if (!dataset) return
-        dispatch(gqlAPI.util.invalidateTags([ listSpectrogramAnalysisTag({
-            datasetID: dataset.id,
-        }) ]))
-    }, [ dataset, dispatch ])
+    const { dataset } = useLoaderData({
+        from: '/_authenticated/_admin/dataset/$datasetID',
+        select: ({ dataset }) => ({ dataset }),
+    })
 
     return (
         <Modal onClose={ onClose }>
             <ModalHeader title="Import an analysis"
                          onClose={ onClose }/>
 
-            { dataset && <Item path={ dataset.path } forceOpen disableImport onUpdated={ invalidateSpectrogramList }/> }
+            { dataset && <Item path={ dataset.path } forceOpen disableImport/> }
 
             <ModalFooter>
                 <HelpButton url="/doc/user/data/generate"

@@ -1,0 +1,112 @@
+import { createSelector, createSlice } from '@reduxjs/toolkit';
+import { useEffect, useMemo } from 'react';
+import { useAppDispatch, useAppSelector } from '@/features/App';
+import { useQuery } from '@tanstack/react-query';
+import { Storage } from '@/features'
+import type { StorageItemFragment } from '@/features/Storage';
+
+export const Slice = createSlice({
+    name: 'storage',
+    initialState: {
+        record: {} as Record<string, StorageItemFragment>,
+        parents: {} as Record<string, Array<string>>,
+        invalidatedPath: [] as Array<string>,
+        invalidatedListPaths: [] as Array<string>,
+    },
+    reducers: {
+        setRecord: (state, action: { payload: StorageItemFragment }) => {
+            state.record[action.payload.path] = action.payload;
+        },
+        setParents: (state, action: { payload: { parent: string, children: string[] } }) => {
+            state.parents[action.payload.parent] = action.payload.children;
+        },
+        validatePath: (state, action: { payload: string }) => {
+            state.invalidatedListPaths = state.invalidatedListPaths.filter(p => p !== action.payload);
+        },
+        invalidatePath: (state, action: { payload: string }) => {
+            state.invalidatedPath = [...state.invalidatedPath, action.payload];
+            state.invalidatedListPaths = [...state.invalidatedListPaths, action.payload];
+        },
+    },
+    selectors: {
+        selectRecord: state => state.record,
+        selectParents: state => state.parents,
+        selectInvalidatedPath: state => state.invalidatedPath,
+        selectInvalidatedListPath: state => state.invalidatedListPaths,
+    },
+})
+
+const selectRecord = createSelector(state => state, Slice.selectors.selectRecord)
+const selectParents = createSelector(state => state, Slice.selectors.selectParents)
+const selectInvalidatedPath = createSelector(state => state, Slice.selectors.selectInvalidatedPath)
+const selectInvalidatedListPath = createSelector(state => state, Slice.selectors.selectInvalidatedListPath)
+
+export const useStorageSearch = (path: string): StorageItemFragment | undefined => {
+    const record = useAppSelector(selectRecord)
+    const invalidatedPath = useAppSelector(selectInvalidatedPath)
+
+    const dispatch = useAppDispatch()
+
+    const {
+        refetch: search,
+        data: item,
+    } = useQuery({
+        ...Storage.API.searchQuery({ path }),
+        enabled: false,
+    })
+
+    useEffect(() => {
+        if (invalidatedPath.includes(path)) search()
+        if (!record[path]) search()
+    }, [ invalidatedPath, path, record ]);
+
+    useEffect(() => {
+        if (!item) return
+        dispatch(Slice.actions.setRecord(item))
+        dispatch(Slice.actions.validatePath(item?.path))
+    }, [ item ]);
+
+    return useMemo(() => record[path], [ record, path ]);
+}
+
+export const useStorageBrowse = (path: string = '') => {
+    const record = useAppSelector(selectRecord)
+    const parents = useAppSelector(selectParents)
+    const invalidatedListPaths = useAppSelector(selectInvalidatedListPath)
+    const children = useMemo(() => {
+        const children = parents[path]
+        if (children === undefined) return undefined;
+        return Object.values(record).filter(r => children?.includes(r.path))
+    }, [ record, path, parents ]);
+
+    const dispatch = useAppDispatch()
+
+    const {
+        refetch: browse,
+        data,
+    } = useQuery({
+        ...Storage.API.browseQuery({ path }),
+        enabled: false,
+    })
+
+    useEffect(() => {
+        if (invalidatedListPaths.includes(path)) browse()
+        if (children === undefined) browse()
+    }, [ invalidatedListPaths, path, children ]);
+
+    useEffect(() => {
+        if (!data) return
+        for (const item of data) {
+            if (!item) continue
+            dispatch(Slice.actions.setRecord(item))
+        }
+        dispatch(Slice.actions.setParents({
+            parent: path,
+            children: data.map(d => d.path),
+        }))
+        dispatch(Slice.actions.validatePath(path))
+    }, [ data ]);
+
+    return children
+}
+

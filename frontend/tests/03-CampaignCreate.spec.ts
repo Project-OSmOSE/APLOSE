@@ -2,7 +2,7 @@ import { essentialTag, expect, expectNoRequestsOnAction, type Page, test } from 
 import { gqlURL, interceptRequests, mockError } from './utils/mock';
 import type { GqlMutation } from './utils/mock/_gql';
 import { campaign, dataset, spectrogramAnalysis, type UserType } from './utils/mock/types';
-import type { CreateCampaignMutationVariables } from '../src/api/annotation-campaign/annotation-campaign.generated';
+import type { CreateCampaignMutationVariables } from '../src/features/AnnotationCampaign';
 import type { Params } from './utils/types';
 
 // Utils
@@ -136,7 +136,7 @@ const TEST = {
     test(`Handle empty state as ${ as }`, { tag }, async ({ page }) => {
       await interceptRequests(page, {
         getCurrentUser: as,
-        listDatasetsAndAnalysis: 'empty',
+        listDatasetsWithAnalysis: 'empty',
       })
       await STEP.navigate(page, { as })
 

@@ -1,80 +1,50 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { type Annotation, blur, focusAnnotation } from '@/features/Annotator/Annotation/slice';
-import {
-  ConfidenceNode,
-  getAnnotationTaskFulfilled,
-  type GetAnnotationTaskQuery,
-  getCampaignFulfilled,
-  type GetCampaignQuery,
-  getCurrentUserFulfilled,
-  type GetCurrentUserQuery,
-} from '@/api';
-import type { GetAnnotationTaskQueryVariables } from '@/api/annotation-task/annotation-task.generated';
-import { convertGqlToAnnotations } from '@/features/Annotator/Annotation';
+import { ConfidenceNode } from '@/api';
 
 export type Confidence = Pick<ConfidenceNode, 'isDefault' | 'label'>
 
 type ConfidenceState = {
-  focus?: string;
+    focus?: string;
 
-  _defaultConfidence?: string;
-  _campaignID?: string;
-  _userID?: string;
+    _defaultConfidence?: string;
 }
 
 const initialState: ConfidenceState = {
-  focus: undefined,
+    focus: undefined,
 
-  _defaultConfidence: undefined,
-  _campaignID: undefined,
+    _defaultConfidence: undefined,
 }
 
 export const AnnotatorConfidenceSlice = createSlice({
-  name: 'AnnotatorConfidence',
-  initialState,
-  reducers: {
-    focus: (state, action: { payload: string }) => {
-      state.focus = action.payload;
+    name: 'AnnotatorConfidence',
+    initialState,
+    reducers: {
+        focus: (state, action: { payload: string }) => {
+            state.focus = action.payload;
+        },
+        initCampaign: (state, action: { payload: { default: string | undefined } }) => {
+            state._defaultConfidence = action.payload.default
+            state.focus = state._defaultConfidence ?? initialState.focus
+        },
+        initSpectrogram: (state, action: { payload: { focus: string | undefined } }) => {
+            state.focus = action.payload.focus ?? state._defaultConfidence
+        },
     },
-  },
-  extraReducers: builder => {
-    builder.addCase(focusAnnotation, (state: ConfidenceState, action: { payload: Annotation }) => {
-      state.focus = action.payload.confidence ?? undefined
-    })
-    builder.addCase(blur, (state: ConfidenceState) => {
-      state.focus = state._defaultConfidence
-    })
-    builder.addMatcher(getCampaignFulfilled, (state: ConfidenceState, action: { payload: GetCampaignQuery }) => {
-      const allConfidences = action.payload.annotationCampaignById?.confidenceSet?.confidenceIndicators?.filter(c => c !== null).map(c => c!) ?? []
-      state._defaultConfidence = (allConfidences?.find(c => c?.isDefault) ?? allConfidences?.find(c => c !== null))?.label
-      if (state._campaignID !== action.payload.annotationCampaignById?.id) {
-        state._campaignID = action.payload.annotationCampaignById?.id
-        state.focus = state._defaultConfidence ?? initialState.focus
-      }
-    })
-    builder.addMatcher(getCurrentUserFulfilled, (state: ConfidenceState, action: {
-      payload: GetCurrentUserQuery
-    }) => {
-      state._userID = action.payload.currentUser?.id
-    })
-    builder.addMatcher(getAnnotationTaskFulfilled, (state: ConfidenceState, action: {
-      payload: GetAnnotationTaskQuery
-      meta: { arg: { originalArgs: GetAnnotationTaskQueryVariables } }
-    }) => {
-      const annotations = [
-          ...action.payload.annotationSpectrogramById?.task?.userAnnotations?.results ?? [],
-        ...action.payload.annotationSpectrogramById?.task?.annotationsToCheck?.results ?? [],
-      ].filter(a => a !== null).map(a => a!) ?? []
-      const defaultAnnotation = [ ...convertGqlToAnnotations(annotations, action.meta.arg.originalArgs.phaseType, state._userID) ].reverse().pop();
-      state.focus = defaultAnnotation?.update?.confidence ?? defaultAnnotation?.confidence ?? state._defaultConfidence ?? initialState.focus
-    })
-  },
-  selectors: {
-    selectFocus: state => state.focus,
-    selectDefault: state => state._defaultConfidence,
-  },
+    extraReducers: builder => {
+        builder.addCase(focusAnnotation, (state: ConfidenceState, action: { payload: Annotation }) => {
+            state.focus = action.payload.confidence ?? undefined
+        })
+        builder.addCase(blur, (state: ConfidenceState) => {
+            state.focus = state._defaultConfidence
+        })
+    },
+    selectors: {
+        selectFocus: state => state.focus,
+        selectDefault: state => state._defaultConfidence,
+    },
 })
 
 export const {
-  focus: focusConfidence,
+    focus: focusConfidence,
 } = AnnotatorConfidenceSlice.actions

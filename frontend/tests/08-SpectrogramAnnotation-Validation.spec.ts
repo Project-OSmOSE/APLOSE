@@ -20,7 +20,7 @@ import {
     AnnotationPhaseType,
     AnnotationType,
 } from '../src/api/types.gql-generated';
-import type { SubmitTaskMutationVariables } from '../src/api/annotation-task/annotation-task.generated';
+import type { SubmitTaskMutationVariables } from '../src/features/AnnotationTask';
 import type { Params } from './utils/types';
 
 // Utils
@@ -36,7 +36,7 @@ const STEP = {
             const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;
             expect(variables.campaignID).toEqual(campaign.id);
             expect(variables.phase).toEqual(phase);
-            expect(variables.spectrogramID).toEqual(TASKS.unsubmitted.id);
+            expect(variables.spectrogramID).toEqual(TASKS.submitted.id);
             const expectedAnnotations: AnnotationInput[] = [
                 {
                     annotationPhase: otherPhase.id,
@@ -87,7 +87,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: phase,
-                getAnnotationTask: 'submittedAsOwner',
+                getAnnotationSpectrogram: 'submittedAsOwner',
             })
             await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
 
@@ -106,7 +106,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: phase,
-                getAnnotationTask: 'submittedAsOwner',
+                getAnnotationSpectrogram: 'submittedAsOwner',
             })
             await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
 
@@ -126,7 +126,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: phase,
-                getAnnotationTask: 'submittedAsOwner',
+                getAnnotationSpectrogram: 'submittedAsOwner',
             })
             await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
 
@@ -148,7 +148,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: phase,
-                getAnnotationTask: 'submittedAsOwner',
+                getAnnotationSpectrogram: 'submittedAsOwner',
             })
             await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
 
@@ -168,7 +168,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: phase,
-                getAnnotationTask: 'submittedAsOwner',
+                getAnnotationSpectrogram: 'submittedAsOwner',
             })
             await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
 
@@ -190,7 +190,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: phase,
-                getAnnotationTask: 'submittedAsOwner',
+                getAnnotationSpectrogram: 'submittedAsOwner',
             })
             await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
 
@@ -230,7 +230,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: phase,
-                getAnnotationTask: 'submittedAsOwner',
+                getAnnotationSpectrogram: 'submittedAsOwner',
             })
             await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
 

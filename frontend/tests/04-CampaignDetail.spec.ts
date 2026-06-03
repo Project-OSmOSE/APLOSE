@@ -16,9 +16,9 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getCampaign: as == 'annotator' ? 'default' : 'manager',
-                listSpectrogramAnalysis: 'empty',
+                allSpectrogramAnalysis: 'empty',
                 getAnnotationPhase: 'empty',
-                listAnnotationTask: 'empty',
+                allAnnotationSpectrograms: 'empty',
             })
             await test.step(`Navigate`, async () => {
                 await page.campaignDetail.go({ as })

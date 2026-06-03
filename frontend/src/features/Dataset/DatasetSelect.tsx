@@ -1,8 +1,7 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { IonSpinner } from '@ionic/react';
-import { GraphQLErrorText, Link, WarningText } from '@/components/ui';
+import { Link, WarningText } from '@/components/ui';
 import { ChipsInput, Select } from '@/components/form';
-import { useAllDatasetsAndAnalysis } from '@/api';
+import { useLoaderData } from '@tanstack/react-router';
 
 export const DatasetSelect: React.FC<{
     datasetError?: string,
@@ -15,13 +14,13 @@ export const DatasetSelect: React.FC<{
 }> = ({
           datasetError,
           analysisError,
-                                      initialDatasetId,
+          initialDatasetId,
           onDatasetSelected,
           selectAnalysis,
           onAnalysisSelected,
           onAnalysisColormapsChanged,
       }) => {
-    const { allDatasets, isFetching, error } = useAllDatasetsAndAnalysis()
+    const allDatasets = useLoaderData({ from: '/_authenticated/_admin/annotation-campaign/new' })
 
     const datasetOptions = useMemo(() => {
         return allDatasets?.map(d => ({
@@ -51,7 +50,7 @@ export const DatasetSelect: React.FC<{
         setSelectedDatasetID(value);
         onDatasetSelected(value);
         updateAnalysisSelection(allDatasets?.find(d => d?.id == value)?.spectrogramAnalysis?.results.filter(r => !!r).map(a => a!.id) ?? [])
-    }, [ setSelectedDatasetID, updateAnalysisSelection, allDatasets ]);
+    }, [ setSelectedDatasetID, updateAnalysisSelection, allDatasets, onDatasetSelected ]);
 
     useEffect(() => {
         if (!onAnalysisColormapsChanged) return;
@@ -64,10 +63,6 @@ export const DatasetSelect: React.FC<{
     }, [ selectedDatasetID, selectedAnalysis ]);
 
 
-    if (isFetching)
-        return <IonSpinner/>
-    if (error)
-        return <GraphQLErrorText error={ error }/>
     if (!allDatasets || allDatasets.length === 0)
         return <WarningText message="You should first import dataset from Storage"
                             children={ <Link to="/storage">Storage</Link> }/>

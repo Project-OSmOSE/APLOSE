@@ -1,14 +1,15 @@
 import React, { useCallback, useMemo } from 'react';
 import { Select } from '@/components/form';
-import { useAppDispatch, useAppSelector } from '@/features/App';
-import { selectAllAnalysis, selectAnalysis } from './selectors';
+import { useAppDispatch } from '@/features/App';
 import { Analysis, setAnalysis } from './slice';
 import { frequencyToString } from '@/service/function';
+import { useLoaderData } from '@tanstack/react-router';
+import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
 
 
 export const AnalysisSelect: React.FC = () => {
-    const allAnalysis = useAppSelector(selectAllAnalysis)
-    const analysis = useAppSelector(selectAnalysis)
+    const { analysis: allAnalysis } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const analysis = useAnnotatorAnalysis()
     const dispatch = useAppDispatch()
 
     const set = useCallback((value?: Analysis) => {

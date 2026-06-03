@@ -2,16 +2,15 @@ import React, { useCallback } from 'react';
 import { AnnotationPhaseType } from '@/api';
 import { IonChip, IonIcon } from '@ionic/react';
 import { closeCircle } from 'ionicons/icons';
-import { Route } from '@/routes/_authenticated/annotation-campaign';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 
 export const AnnotationCampaignPhaseTypeFilter: React.FC = () => {
-  const filter_phase  = Route.useSearch({select: ({ filter_phase }) => filter_phase });
+  const filter_phase  = useSearch({from: '/_authenticated/annotation-campaign/', select: ({ filter_phase }) => filter_phase });
   const navigate = useNavigate();
 
   const toggle = useCallback(() => {
     navigate({
-      to: Route.to,
+      to: '/annotation-campaign',
       search: (prev) => ({
         ...prev,
         filter_phase: !prev?.filter_phase ? AnnotationPhaseType.Verification : null,

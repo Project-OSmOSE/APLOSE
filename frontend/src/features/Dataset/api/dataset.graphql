@@ -1,0 +1,106 @@
+fragment Dataset on DatasetNode {
+    id
+    name
+    path
+    description
+    createdAt
+    legacy
+    analysisCount
+    spectrogramCount
+    start
+    end
+}
+
+query allDatasets {
+    allDatasets(orderBy: "-createdAt") {
+        results {
+            ...Dataset
+            annotationCampaigns {
+                edges {
+                    node {
+                        id
+                        name
+                        isArchived
+                    }
+                }
+            }
+        }
+    }
+}
+
+query getDatasetByID($id: ID!) {
+    datasetById(id: $id) {
+        ...Dataset
+        owner {
+            displayName
+        }
+    }
+    allChannelConfigurations(datasetId: $id) {
+        results {
+            deployment {
+                name
+                campaign {
+                    name
+                }
+                site {
+                    name
+                }
+                project {
+                    name
+                }
+            }
+            recorderSpecification {
+                recorder {
+                    serialNumber
+                    model {
+                        name
+                    }
+                }
+                hydrophone {
+                    serialNumber
+                    model {
+                        name
+                    }
+                }
+            }
+            detectorSpecification {
+                detector {
+                    serialNumber
+                    model {
+                        name
+                    }
+                }
+            }
+        }
+    }
+    allSpectrogramAnalysis(
+        orderBy: "-createdAt"
+        dataset: $id
+    ) {
+        results { ...SpectrogramAnalysis }
+    }
+    allAnnotationCampaigns(
+        analysis_DatasetId: $id
+        orderBy: "name"
+    ) {
+        results { ...BaseCampaign }
+    }
+}
+
+query listDatasetsWithAnalysis {
+    allDatasets(orderBy: "name") {
+        results {
+            id
+            name
+            spectrogramAnalysis(orderBy: "name") {
+                results {
+                    id
+                    name
+                    colormap {
+                        name
+                    }
+                }
+            }
+        }
+    }
+}

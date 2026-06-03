@@ -4,8 +4,9 @@ import styles from './styles.module.scss';
 import { Input } from '@/components/form';
 import { IonButton, IonIcon } from '@ionic/react';
 import { lockClosedOutline, trashBinOutline } from 'ionicons/icons/index.js';
-import { AnnotationFileRangeInput, ErrorType, useCurrentCampaign, UserNode } from '@/api';
+import { AnnotationFileRangeInput, ErrorType, UserNode } from '@/api';
 import { NBSP } from '@/service/type';
+import { useLoaderData } from '@tanstack/react-router';
 
 type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
     id: string;
@@ -21,7 +22,7 @@ export const FileRangeInputRow: React.FC<{
     setForced?: () => void;
     errors?: Array<ErrorType>
 }> = ({ range, annotator, onUpdate, onDelete, setForced, errors }) => {
-    const { campaign } = useCurrentCampaign();
+    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const [ isLocked, setIsLocked ] = useState<boolean>(range.started ?? false);
     const alert = useAlert();
 
@@ -53,8 +54,8 @@ export const FileRangeInputRow: React.FC<{
                    error={ errors?.find(e => e.field === 'firstFileIndex')?.messages.join(' ') }
                    onChange={ (e: ChangeEvent<HTMLInputElement>) => onUpdate({ firstFileIndex: e.target.valueAsNumber }) }
                    placeholder="1"
-                   min={ 1 } max={ campaign?.spectrogramsCount }
-                   disabled={ campaign?.spectrogramsCount === undefined || isLocked }/>
+                   min={ 1 } max={ campaign.spectrogramsCount }
+                   disabled={ campaign.spectrogramsCount === undefined || isLocked }/>
         </Td>
         <Td>
             <Input type="number"
@@ -62,9 +63,9 @@ export const FileRangeInputRow: React.FC<{
                    value={ range.lastFileIndex ?? '' }
                    error={ errors?.find(e => e.field === 'lastFileIndex')?.messages.join(' ') }
                    onChange={ (e: ChangeEvent<HTMLInputElement>) => onUpdate({ lastFileIndex: e.target.valueAsNumber }) }
-                   placeholder={ campaign?.spectrogramsCount?.toString() }
-                   min={ 1 } max={ campaign?.spectrogramsCount }
-                   disabled={ campaign?.spectrogramsCount === undefined || isLocked }/>
+                   placeholder={ campaign.spectrogramsCount?.toString() }
+                   min={ 1 } max={ campaign.spectrogramsCount }
+                   disabled={ campaign.spectrogramsCount === undefined || isLocked }/>
 
         </Td>
         <Td>

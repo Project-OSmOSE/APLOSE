@@ -1,9 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { EventSlice } from '@/features/UX/Events';
-import { logoutOn401Listener } from '@/api/auth';
-import { getUserOnLoginMiddleware } from '@/api/user';
-import { StorageSlice } from '@/api/storage';
-import { AuthSlice } from '@/features/Auth';
+import { Storage } from '@/features';
 import { gqlAPI } from '@/api/baseGqlApi';
 import { AnnotatorReducer } from '@/features/Annotator/reducer';
 import { restAPI } from '@/api/baseRestApi';
@@ -13,8 +10,7 @@ export const AppStore = configureStore({
   reducer: {
     event: EventSlice.reducer,
 
-    auth: AuthSlice.reducer,
-    [StorageSlice.reducerPath]: StorageSlice.reducer,
+    [Storage.Slice.reducerPath]: Storage.Slice.reducer,
     gql: gqlAPI.reducer,
     [restAPI.reducerPath]: restAPI.reducer,
 
@@ -25,8 +21,6 @@ export const AppStore = configureStore({
     getDefaultMiddleware()
       .concat(gqlAPI.middleware)
       .concat(restAPI.middleware)
-      .concat(getUserOnLoginMiddleware.middleware)
-      .concat(logoutOn401Listener.middleware)
 })
 
 export type AppState = ReturnType<typeof AppStore.getState>;

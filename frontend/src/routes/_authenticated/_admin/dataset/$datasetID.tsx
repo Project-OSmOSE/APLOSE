@@ -1,29 +1,24 @@
 import React, { Fragment, useMemo } from 'react';
-import { createFileRoute } from '@tanstack/react-router'
-import { IonButton, IonIcon, IonSpinner } from '@ionic/react';
+import { createFileRoute, notFound } from '@tanstack/react-router'
+import { IonButton, IonIcon } from '@ionic/react';
 import { addOutline, downloadOutline } from 'ionicons/icons';
 
-import { GraphQLErrorText, Link, useModal, WarningText } from '@/components/ui';
-
-import { useDataset } from '@/api';
+import { Link, useModal } from '@/components/ui';
 
 import { ImportDatasetAnalysisModal } from '@/features/Storage';
 import { DatasetHead, DatasetInfoCreation } from '@/features/Dataset';
 import { ChannelConfigurationTable } from '@/features/ChannelConfiguration';
 import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 import { Cards } from '@/features/AnnotationCampaign';
+import { queryClient } from '@/api/queryClient';
+import { Dataset } from '@/features';
 
 const DatasetDetail: React.FC = () => {
-    const id = Route.useParams({select: ({datasetID}) => datasetID});
-
-    const { dataset, isLoading, error } = useDataset({ id })
+    const { dataset, campaigns, analysis } = Route.useLoaderData()
 
     const importAnalysisModal = useModal(ImportDatasetAnalysisModal);
 
     return useMemo(() => {
-        if (isLoading) return <Fragment><DatasetHead/><IonSpinner/></Fragment>
-        if (error) return <Fragment><DatasetHead/><GraphQLErrorText error={ error }/></Fragment>
-        if (!dataset) return <Fragment><DatasetHead/><WarningText message="Dataset not found"/></Fragment>
         return <Fragment>
             <DatasetHead/>
 
@@ -31,13 +26,13 @@ const DatasetDetail: React.FC = () => {
 
                 <div>
                     <h5>Channel configurations</h5>
-                    <ChannelConfigurationTable datasetID={ dataset.id }/>
+                    <ChannelConfigurationTable/>
                 </div>
 
                 <div style={ { overflowX: 'hidden', display: 'grid', gap: '1rem' } }>
                     <h5>Analysis</h5>
 
-                    <SpectrogramAnalysisTable datasetID={ dataset.id }/>
+                    <SpectrogramAnalysisTable analysis={ analysis }/>
 
                     <IonButton color="primary" fill="clear"
                                style={ { zIndex: 2, justifySelf: 'center' } }
@@ -49,7 +44,7 @@ const DatasetDetail: React.FC = () => {
 
                 <div style={ { overflowX: 'hidden', display: 'grid', gap: '1rem' } }>
                     <h5>Annotation campaigns</h5>
-                    <Cards filters={ { filter_datasetID: id } }/>
+                    <Cards campaigns={ campaigns }/>
 
                     <Link color="primary" fill="clear"
                           style={ { zIndex: 2, justifySelf: 'center' } }
@@ -65,9 +60,14 @@ const DatasetDetail: React.FC = () => {
 
             { importAnalysisModal.element }
         </Fragment>
-    }, [ id, isLoading, error, dataset, importAnalysisModal ])
+    }, [ dataset, importAnalysisModal, campaigns, analysis ])
 }
 
 export const Route = createFileRoute('/_authenticated/_admin/dataset/$datasetID')({
+    loader: async ({ params: { datasetID } }) => {
+        const { dataset, ...data } = await queryClient.ensureQueryData(Dataset.API.byIdQuery({ id: datasetID }))
+        if (!dataset) throw notFound()
+        return { dataset, ...data }
+    },
     component: DatasetDetail,
 })

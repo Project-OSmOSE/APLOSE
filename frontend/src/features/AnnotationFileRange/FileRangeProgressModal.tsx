@@ -2,34 +2,29 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import styles from './styles.module.scss';
 import {
     Button,
-    GraphQLErrorText,
     Modal,
     ModalFooter,
     ModalHeader,
     type ModalProps,
-    Table,
     type Order,
     Progress,
+    Table,
     Tbody,
     Td,
     Th,
     Thead,
     Tr,
     useToast,
+    WarningText,
 } from '@/components/ui';
 import { IonIcon, IonNote, IonSpinner } from '@ionic/react';
 import { downloadOutline } from 'ionicons/icons/index.js';
-import {
-    AnnotationFileRangeNode,
-    AnnotationTaskNodeNodeConnection,
-    Maybe,
-    useAllFileRanges,
-    useAllUsers,
-    useCurrentPhase,
-    UserNode,
-} from '@/api';
+import { AnnotationFileRangeNode, AnnotationTaskNodeNodeConnection, Maybe, UserNode } from '@/api';
 import { useDownloadAnnotations, useDownloadProgress } from '@/api/download';
 import { NBSP } from '@/service/type';
+import { useQuery } from '@tanstack/react-query';
+import { AnnotationFileRange, User } from '@/features';
+import { useLoaderData } from '@tanstack/react-router';
 
 type Progression = {
     user: Pick<UserNode, 'id' | 'displayName' | 'expertise' | 'username'>;
@@ -46,9 +41,16 @@ type Sort = {
 }
 
 export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
-    const { phase } = useCurrentPhase()
-    const { users, isFetching: isLoadingUsers, error: userError } = useAllUsers();
-    const { allFileRanges, isFetching: isLoadingFileRanges, error: fileRangeError } = useAllFileRanges();
+    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
+    const { data, isLoading: isLoadingUsers, error: userError } = useQuery(User.API.allQuery)
+    const {
+        data: allFileRanges,
+        isFetching: isLoadingFileRanges,
+        error: fileRangeError,
+    } = useQuery(AnnotationFileRange.API.forPhaseQuery({
+        campaignID: campaign.id, phaseType: phase.phase,
+    }));
     const { downloadAnnotations, error: downloadAnnotationsError } = useDownloadAnnotations()
     const { downloadProgress, error: downloadProgressError } = useDownloadProgress()
     const toast = useToast()
@@ -64,14 +66,14 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
     const [ sort, setSort ] = useState<Sort>({ entry: 'Progress', sort: 'desc' });
 
     const progress = useMemo(() => {
-        if (!allFileRanges || !users || users.length === 0) return [];
+        if (!allFileRanges || !data || data.users.length === 0) return [];
         const progression = new Array<Progression>();
         for (const range of allFileRanges) {
             let progress: Progression | undefined = progression.find(p => p.user?.id === range!.annotator?.id);
             if (progress) {
                 progress.ranges.push(range!);
             } else {
-                const user = users.find(u => u!.id == range!.annotator?.id)!
+                const user = data.users.find(u => u!.id == range!.annotator?.id)!
                 progress = {
                     user,
                     ranges: [ range! ],
@@ -85,7 +87,7 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
             const total = p.ranges.reduce((v, r) => v + (r.filesCount ?? 0), 0);
             return { ...p, progress: total > 0 ? Math.trunc(100 * totalFinished / total) : 0 }
         })
-    }, [allFileRanges, users]);
+    }, [ allFileRanges, data ]);
 
     const sortedProgress = useMemo(() => {
         const collator = new Intl.Collator(undefined, {
@@ -112,8 +114,8 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
 
             { (isLoadingUsers || isLoadingFileRanges) && <IonSpinner/> }
 
-            { userError && <GraphQLErrorText error={ userError }/> }
-            { fileRangeError && <GraphQLErrorText error={ fileRangeError }/> }
+            { userError && <WarningText error={ userError }/> }
+            { fileRangeError && <WarningText error={ fileRangeError }/> }
 
             { (!isLoadingUsers && !isLoadingFileRanges) && progress.length === 0 && <IonNote>No annotators</IonNote> }
 
@@ -133,9 +135,10 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    { sortedProgress.map(p => <Tr key={p.user.id}>
+                    { sortedProgress.map(p => <Tr key={ p.user.id }>
                         <Th scope="row">
-                            { p.user.displayName || p.user.username }{ NBSP }{ p.user.expertise && <Fragment>({ p.user.expertise })</Fragment> }
+                            { p.user.displayName || p.user.username }{ NBSP }{ p.user.expertise &&
+                            <Fragment>({ p.user.expertise })</Fragment> }
                         </Th>
                         <Td>
                             <div className={ styles.progressContent }>
@@ -155,7 +158,7 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
                 </Tbody>
             </Table> }
 
-      { phase?.isUserAllowedToManage && users && allFileRanges && (
+            { phase?.isUserAllowedToManage && data && allFileRanges && (
                 <ModalFooter className={ styles.footer }>
                     <div className={ styles.buttons }>
                         { progress.length > 0 && <Fragment>

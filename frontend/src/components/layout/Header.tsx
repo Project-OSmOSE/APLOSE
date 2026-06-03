@@ -1,17 +1,15 @@
 import React, { Fragment, ReactNode, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query';
 import { IonButton, IonIcon } from '@ionic/react';
 import { closeOutline, menuOutline } from 'ionicons/icons/index.js';
 
 import { DocumentationButton, Link } from '@/components/ui';
 
-import { selectCurrentUser } from '@/api';
-
-import { useAppSelector } from '@/features/App';
+import { User } from '@/features';
 
 import logo from '/images/ode_logo_192x192.png';
 import styles from './layout.module.scss'
-import { selectIsConnected } from '@/features/Auth';
 
 export const Header: React.FC<{
     buttons?: ReactNode;
@@ -19,22 +17,22 @@ export const Header: React.FC<{
     size?: 'small' | 'default';
     canNavigate?: () => Promise<boolean>;
 }> = ({ children, buttons, size, canNavigate }) => {
+    const { data: user } = useQuery(User.API.currentQuery)
 
     const [ isOpen, setIsOpen ] = useState<boolean>(false);
-    const currentUser = useAppSelector(selectCurrentUser)
     const navigate = useNavigate();
 
     const toggleOpening = useCallback(() => setIsOpen(previous => !previous), [])
 
     const onAPLOSEClick = useCallback(async () => {
-        if (currentUser) {
+        if (user) {
             if (!canNavigate || await canNavigate()) {
                 await navigate({ to: `/annotation-campaign` });
             }
         } else {
             await navigate({ to: `/` });
         }
-    }, [ currentUser, navigate, canNavigate ])
+    }, [ user, navigate, canNavigate ])
 
     const onAPLOSEAuxClick = useCallback(() => {
         window.open('/', '_blank');
@@ -66,16 +64,16 @@ export const Header: React.FC<{
 }
 
 export const PublicHeader: React.FC = () => {
-    const isConnected = useAppSelector(selectIsConnected);
+    const { data: user } = useQuery(User.API.currentQuery)
 
     return useMemo(() =>
             <Header buttons={ <Fragment>
-                <Link size="large" to={ isConnected ? '/annotation-campaign' : '/login' }>
-                    { isConnected ? 'APLOSE' : 'Login' }
+                <Link size="large" to={ user ? '/annotation-campaign' : '/login' }>
+                    { user ? 'APLOSE' : 'Login' }
                 </Link>
                 <Link href="/" size="large">OSmOSE</Link>
             </Fragment>
             }/>,
-        [ isConnected ],
+        [ user ],
     )
 }

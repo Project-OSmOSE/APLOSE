@@ -18,7 +18,7 @@ import {
     AnnotationType,
 } from '../src/api/types.gql-generated';
 import { gqlURL, interceptRequests } from './utils/mock';
-import type { SubmitTaskMutationVariables } from '../src/api/annotation-task/annotation-task.generated';
+import type { SubmitTaskMutationVariables } from '../src/features/AnnotationTask';
 import type { Params } from './utils/types';
 
 
@@ -29,7 +29,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: 'annotator',
                 getAnnotationPhase: phase,
-                getAnnotationTask: 'unsubmitted',
+                getAnnotationSpectrogram: 'unsubmitted',
             })
             await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
             const type = AnnotationType.Box
@@ -83,7 +83,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: 'annotator',
                 getAnnotationPhase: phase,
-                getAnnotationTask: 'submitted',
+                getAnnotationSpectrogram: 'submitted',
             })
             await test.step(`Navigate`, () => page.annotator.go({ as, phase }))
             const type = AnnotationType.Box
@@ -101,7 +101,7 @@ const TEST = {
                 const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;
                 expect(variables.campaignID).toEqual(campaign.id);
                 expect(variables.phase).toEqual(phase);
-                expect(variables.spectrogramID).toEqual(TASKS.unsubmitted.id);
+                expect(variables.spectrogramID).toEqual(TASKS.submitted.id);
                 expect(variables.annotations).toEqual([
                     {
                         annotationPhase: phaseObj.id,

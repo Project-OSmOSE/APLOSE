@@ -1,15 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { IonButton } from '@ionic/react';
+import { IonButton, IonSpinner } from '@ionic/react';
 
 import { Link, useToast } from '@/components/ui';
 import { Input } from '@/components/form';
 import { getErrorMessage } from '@/service/function';
 
 import { useLogin } from '@/api';
-
-import { useAppSelector } from '@/features/App';
-import { selectIsConnected } from '@/features/Auth';
 import { NON_FILTERED_KEY_DOWN_EVENT, useEvent } from '@/features/UX';
 
 import styles from './public.module.scss';
@@ -18,7 +15,6 @@ import styles from './public.module.scss';
 const Login: React.FC = () => {
 
     // State
-    const isConnected = useAppSelector(selectIsConnected)
     const [ username, setUsername ] = useState<string>('');
     const [ password, setPassword ] = useState<string>('');
     const [ errors, setErrors ] = useState<{ global?: string, username?: string, password?: string }>({});
@@ -40,10 +36,6 @@ const Login: React.FC = () => {
         if (loginError) toast.raiseError({ error: loginError });
     }, [ loginError ]);
 
-    useEffect(() => {
-        if (isConnected) navigate({ to, replace: true });
-    }, [ isConnected ]);
-
     const submit = useCallback(async () => {
         setErrors({})
         if (!username) setErrors({ username: 'This field is required.' })
@@ -51,7 +43,9 @@ const Login: React.FC = () => {
         if (!username || !password) return;
 
         await login({ username, password }).unwrap()
-            .then(() => navigate({ to, replace: true }))
+            .then(() => {
+                navigate({ to, replace: true })
+            })
             .catch(error => setErrors({ global: getErrorMessage(error) }));
     }, [ setErrors, username, password, navigate, to, login ])
 
@@ -88,6 +82,8 @@ const Login: React.FC = () => {
         <div className={ styles.buttons }>
 
             <Link to="/">Back to Home</Link>
+
+            { isLoading && <IonSpinner/> }
 
             <IonButton color="primary" onClick={ submit }
                        disabled={ isLoading }>

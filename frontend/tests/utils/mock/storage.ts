@@ -3,7 +3,7 @@ import {
     BrowseStorageQuery,
     type ImportDatasetFromStorageMutation,
     type SearchStorageQuery,
-} from '../../../src/api/storage/storage.generated';
+} from '../../../src/features/Storage';
 import { storageAnalysis, storageDataset, storageFolder } from './types';
 
 export const STORAGE_QUERIES: {

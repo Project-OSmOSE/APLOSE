@@ -4,23 +4,25 @@ import { IonNote } from '@ionic/react';
 import { Head } from '@/components/ui';
 
 import { datetimeToString } from '@/service/function';
-import { useDataset } from '@/api';
 import styles from './styles.module.scss';
-import { useParams } from '@tanstack/react-router';
+import { useLoaderData } from '@tanstack/react-router';
 
 export const DatasetHead: React.FC = () => {
-  const { datasetID: id } = useParams({ strict: false });
-  const { dataset } = useDataset({ id })
-  return <Head title={ dataset?.name }
-               subtitle={ dataset?.path }
-               canGoBack>
-    { dataset?.description && <p>{ dataset.description }</p> }
-    { dataset && <div className={ styles.info }>
-        <Calendar/>
-        <IonNote>Start:</IonNote>
-        <p>{ datetimeToString(dataset.start) }</p>
-        <IonNote>End:</IonNote>
-        <p>{ datetimeToString(dataset.end) }</p>
-    </div> }
-  </Head>
+    const { dataset } = useLoaderData({
+        from: '/_authenticated/_admin/dataset/$datasetID',
+        select: ({ dataset }) => ({ dataset }),
+    })
+
+    return <Head title={ dataset.name }
+                 subtitle={ dataset.path }
+                 canGoBack>
+        { dataset.description && <p>{ dataset.description }</p> }
+        <div className={ styles.info }>
+            <Calendar/>
+            <IonNote>Start:</IonNote>
+            <p>{ datetimeToString(dataset.start) }</p>
+            <IonNote>End:</IonNote>
+            <p>{ datetimeToString(dataset.end) }</p>
+        </div>
+    </Head>
 }

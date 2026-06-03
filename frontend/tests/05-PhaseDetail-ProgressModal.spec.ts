@@ -13,9 +13,9 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
-                listFileRanges: 'empty',
-                listSpectrogramAnalysis: 'empty',
-                listAnnotationTask: 'empty',
+                fileRangesForPhase: 'empty',
+                allSpectrogramAnalysis: 'empty',
+                allAnnotationSpectrograms: 'empty',
             })
             await test.step(`Navigate`, async () => {
                 await page.phaseDetail.go({ as, phase })
@@ -37,7 +37,10 @@ const TEST = {
             })
             await test.step(`Navigate`, async () => {
                 await page.phaseDetail.go({ as, phase })
-                await page.phaseDetail.progressModal.button.click()
+                await Promise.all([
+                    page.phaseDetail.progressModal.button.click(),
+                    page.waitForGqlRequest('allUsers')
+                ])
             })
 
             await test.step('Display progress', async () => {

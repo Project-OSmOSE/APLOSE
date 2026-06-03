@@ -1,6 +1,6 @@
 import { DownloadRestAPI } from '@/api/download/api';
 import { useCallback } from 'react';
-import { useCurrentCampaign, useCurrentPhase } from '@/api';
+import { useLoaderData } from '@tanstack/react-router';
 
 const {
   downloadAnalysis,
@@ -12,13 +12,12 @@ const {
 export const useDownloadAnalysis = downloadAnalysis.useMutation
 
 export const useDownloadAnnotations = () => {
-  const { campaign } = useCurrentCampaign();
-  const { phase } = useCurrentPhase();
+  const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+  const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
   const [ method, info ] = downloadAnnotations.useMutation()
 
   return {
     downloadAnnotations: useCallback(() => {
-      if (!campaign || !phase) return;
       return method({
         phaseID: phase.id,
         campaignName: campaign.name,
@@ -29,13 +28,12 @@ export const useDownloadAnnotations = () => {
 }
 
 export const useDownloadProgress = () => {
-  const { campaign } = useCurrentCampaign();
-  const { phase } = useCurrentPhase();
+  const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+  const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
   const [ method, info ] = downloadProgress.useMutation()
 
   return {
     downloadProgress: useCallback(() => {
-      if (!campaign || !phase) return;
       return method({
         phaseID: phase.id,
         campaignName: campaign.name,

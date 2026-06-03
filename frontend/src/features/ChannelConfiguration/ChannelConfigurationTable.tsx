@@ -1,28 +1,23 @@
 import React, { Fragment } from 'react';
-import { IonNote, IonSpinner } from '@ionic/react';
+import { IonNote } from '@ionic/react';
 
-import { FadedText, GraphQLErrorText, Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
-import { useAllChannelConfigurations } from '@/api';
-import styles from './styles.module.scss'
+import { FadedText, Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
+import { useLoaderData } from '@tanstack/react-router';
 
-export const ChannelConfigurationTable: React.FC<{ datasetID: string }> = ({ datasetID }) => {
+export const ChannelConfigurationTable: React.FC = () => {
 
-    const {
-        allChannelConfigurations,
-        isLoading,
-        error,
-        isFetching,
-    } = useAllChannelConfigurations({ datasetID });
+    const { allChannelConfigurations } = useLoaderData({
+        from: '/_authenticated/_admin/dataset/$datasetID',
+        select: ({ allChannelConfigurations }) => ({ allChannelConfigurations }),
+    })
 
-    if (isLoading) return <IonSpinner/>
-    if (error) return <GraphQLErrorText error={ error }/>
-    if (!allChannelConfigurations || allChannelConfigurations.length === 0)
+    if (allChannelConfigurations.length === 0)
         return <IonNote color="medium">No acquisition information</IonNote>
 
-    return <Table spacing='small'>
+    return <Table spacing="small">
         <Thead>
             <Tr>
-                <Th scope="col">Project { isFetching && <IonSpinner className={ styles.gridSpinner }/> }</Th>
+                <Th scope="col">Project</Th>
                 <Th scope="col">Deployment</Th>
                 <Th scope="col">Site</Th>
                 <Th scope="col">Campaign</Th>

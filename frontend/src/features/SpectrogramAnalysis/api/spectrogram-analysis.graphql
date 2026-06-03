@@ -1,0 +1,30 @@
+fragment SpectrogramAnalysis on SpectrogramAnalysisNode {
+    id
+    name
+    description
+    createdAt
+    legacy
+    dataDuration
+    start
+    end
+    fft {
+        samplingFrequency
+        nfft
+        windowSize
+        overlap
+    }
+    spectrograms {
+        totalCount
+    }
+}
+
+query allSpectrogramAnalysis(
+    $annotationCampaignID: ID
+) {
+    allSpectrogramAnalysis(
+        orderBy: "-createdAt"
+        annotationCampaigns_Id: $annotationCampaignID
+    ) {
+        results { ...SpectrogramAnalysis }
+    }
+}
