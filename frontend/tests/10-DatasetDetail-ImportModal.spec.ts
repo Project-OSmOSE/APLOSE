@@ -13,7 +13,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 allSpectrogramAnalysis: 'empty',
-                channelConfigurationsForDataset: 'empty',
+                getDatasetByID: 'dataEmpty',
                 searchStorage: 'dataset',
                 browseStorage: 'empty',
             })

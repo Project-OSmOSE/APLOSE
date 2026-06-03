@@ -14,7 +14,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 allSpectrogramAnalysis: 'empty',
-                channelConfigurationsForDataset: 'empty',
+                getDatasetByID: 'dataEmpty',
                 browseStorage: 'empty',
             })
             await test.step(`Navigate`, () => page.datasetDetail.go({ as }));
