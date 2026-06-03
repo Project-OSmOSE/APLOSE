@@ -35,6 +35,56 @@ query getDatasetByID($id: ID!) {
             displayName
         }
     }
+    allChannelConfigurations(datasetId: $id) {
+        results {
+            deployment {
+                name
+                campaign {
+                    name
+                }
+                site {
+                    name
+                }
+                project {
+                    name
+                }
+            }
+            recorderSpecification {
+                recorder {
+                    serialNumber
+                    model {
+                        name
+                    }
+                }
+                hydrophone {
+                    serialNumber
+                    model {
+                        name
+                    }
+                }
+            }
+            detectorSpecification {
+                detector {
+                    serialNumber
+                    model {
+                        name
+                    }
+                }
+            }
+        }
+    }
+    allSpectrogramAnalysis(
+        orderBy: "-createdAt"
+        dataset: $id
+    ) {
+        results { ...SpectrogramAnalysis }
+    }
+    allAnnotationCampaigns(
+        analysis_DatasetId: $id
+        orderBy: "name"
+    ) {
+        results { ...BaseCampaign }
+    }
 }
 
 query listDatasetsWithAnalysis {

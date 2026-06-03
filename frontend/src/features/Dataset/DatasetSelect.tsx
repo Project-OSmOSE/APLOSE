@@ -20,10 +20,7 @@ export const DatasetSelect: React.FC<{
           onAnalysisSelected,
           onAnalysisColormapsChanged,
       }) => {
-    const { allDatasets } = useLoaderData({
-        from: '/_authenticated/_admin/annotation-campaign/new',
-        select: ({ allDatasets }) => ({ allDatasets }),
-    })
+    const allDatasets = useLoaderData({ from: '/_authenticated/_admin/annotation-campaign/new' })
 
     const datasetOptions = useMemo(() => {
         return allDatasets?.map(d => ({

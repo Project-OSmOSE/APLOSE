@@ -21,7 +21,12 @@ export const allQuery = queryOptions({
 export const byIdQuery = (variables: GetDatasetByIdQueryVariables) => queryOptions({
     queryKey: queryKeys.dataset.byId(variables),
     queryFn: () => graphqlClient.request<GetDatasetByIdQuery>(GetDatasetByIdDocument, variables)
-        .then(data => data.datasetById),
+        .then(data => ({
+            dataset: data.datasetById,
+            allChannelConfigurations: cleanGqlList(data.allChannelConfigurations?.results),
+            analysis: cleanGqlList(data.allSpectrogramAnalysis?.results),
+            campaigns: cleanGqlList(data.allAnnotationCampaigns?.results),
+        })),
 })
 
 export const listWithAnalysisQuery = queryOptions({

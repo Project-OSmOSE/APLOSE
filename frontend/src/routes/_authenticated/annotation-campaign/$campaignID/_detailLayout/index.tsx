@@ -15,7 +15,7 @@ import { queryClient } from '@/api/queryClient';
 import { SpectrogramAnalysis } from '@/features';
 
 const AnnotationCampaignInfo: React.FC = () => {
-    const { analysis } = Route.useLoaderData()
+    const analysis = Route.useLoaderData()
     const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
 
     const labelSetModal = useModal(LabelSetModal)
@@ -90,13 +90,6 @@ const AnnotationCampaignInfo: React.FC = () => {
 }
 
 export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout/')({
-    loader: async ({ params: { campaignID } }) => {
-        const [
-            analysis,
-        ] = await Promise.all([
-            queryClient.ensureQueryData(SpectrogramAnalysis.API.allQuery({ annotationCampaignID: campaignID })),
-        ])
-        return { analysis }
-    },
+    loader: ({ params: { campaignID } }) => queryClient.ensureQueryData(SpectrogramAnalysis.API.allQuery({ annotationCampaignID: campaignID })),
     component: AnnotationCampaignInfo,
 })

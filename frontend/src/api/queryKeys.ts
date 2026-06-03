@@ -2,7 +2,6 @@ import { queryClient } from './queryClient';
 import type { QueryKey } from '@tanstack/react-query';
 import type { BrowseStorageQueryVariables, SearchStorageQueryVariables } from '@/features/Storage';
 import type { GetDatasetByIdQueryVariables } from '@/features/Dataset';
-import type { ChannelConfigurationsForDatasetQueryVariables } from '@/features/ChannelConfiguration';
 import type { FileRangesForPhaseQueryVariables } from '@/features/AnnotationFileRange';
 import type { AllCampaignsQueryVariables, GetCampaignQueryVariables } from '@/features/AnnotationCampaign';
 import type { AllSpectrogramAnalysisQueryVariables } from '@/features/SpectrogramAnalysis';
@@ -54,9 +53,6 @@ export const queryKeys = {
                       spectrogramID,
                       analysisID,
                   }: GetAnnotationSpectrogramPathsQueryVariables) => [ 'spectrogram', 'path', spectrogramID, analysisID ] as const,
-    },
-    channelConfiguration: {
-        forDataset: (variables: ChannelConfigurationsForDatasetQueryVariables) => [ 'channel-configuration', 'for dataset', variables.datasetID ] as const,
     },
     dataset: {
         all: [ 'dataset' ] as const,

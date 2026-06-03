@@ -11,7 +11,7 @@ import { ChannelConfigurationTable } from '@/features/ChannelConfiguration';
 import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 import { Cards } from '@/features/AnnotationCampaign';
 import { queryClient } from '@/api/queryClient';
-import { AnnotationCampaign, ChannelConfiguration, Dataset, SpectrogramAnalysis } from '@/features';
+import { Dataset } from '@/features';
 
 const DatasetDetail: React.FC = () => {
     const { dataset, campaigns, analysis } = Route.useLoaderData()
@@ -65,24 +65,9 @@ const DatasetDetail: React.FC = () => {
 
 export const Route = createFileRoute('/_authenticated/_admin/dataset/$datasetID')({
     loader: async ({ params: { datasetID } }) => {
-        const [
-            dataset,
-            allChannelConfigurations,
-            campaigns,
-            analysis,
-        ] = await Promise.all([
-            queryClient.ensureQueryData(Dataset.API.byIdQuery({ id: datasetID })),
-            queryClient.ensureQueryData(ChannelConfiguration.API.forDatasetQuery({ datasetID })),
-            queryClient.ensureQueryData(AnnotationCampaign.API.allQuery({ filter_datasetID: datasetID })),
-            queryClient.ensureQueryData(SpectrogramAnalysis.API.allQuery({ datasetID })),
-        ])
+        const { dataset, ...data } = await queryClient.ensureQueryData(Dataset.API.byIdQuery({ id: datasetID }))
         if (!dataset) throw notFound()
-        return {
-            dataset,
-            allChannelConfigurations,
-            campaigns,
-            analysis,
-        }
+        return { dataset, ...data }
     },
     component: DatasetDetail,
 })
