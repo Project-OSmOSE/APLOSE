@@ -62,7 +62,7 @@ export const PHASE_QUERIES: {
     Verification: {
       annotationPhaseByCampaignPhase: {
         id: phase.id,
-        phase: AnnotationPhaseType.Annotation,
+        phase: AnnotationPhaseType.Verification,
         completedTasksCount,
         tasksCount,
         userCompletedTasksCount,

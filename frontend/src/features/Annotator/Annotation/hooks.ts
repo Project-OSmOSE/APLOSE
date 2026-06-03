@@ -73,7 +73,6 @@ export const useAddAnnotation = () => {
     const dispatch = useAppDispatch();
 
     return useCallback((annotation: Omit<Annotation, 'id' | 'analysis' | 'annotationPhase'>) => {
-        if (!phase) return;
         const addedAnnotation = dispatch(addAnnotation({
             ...annotation,
             annotationPhase: phase.id,

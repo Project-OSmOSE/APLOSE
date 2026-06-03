@@ -26,7 +26,7 @@ export const queryKeys = {
         byId: (variables: GetCampaignQueryVariables) => [ 'campaign', variables.id ] as const,
     },
     phase: {
-        get: (variables: GetAnnotationPhaseQueryVariables) => [ 'phase', variables.campaignID, variables.phase ] as const,
+        get: ({ campaignID, phase }: GetAnnotationPhaseQueryVariables) => [ 'phase', campaignID, phase ] as const,
     },
     fileRange: {
         forPhase: (variables: FileRangesForPhaseQueryVariables) => [ 'file-range', 'for phase', variables.campaignID, variables.phaseType ] as const,
