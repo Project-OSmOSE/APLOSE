@@ -15,7 +15,7 @@
     ],
     "esModuleInterop": true,
     /* Bundler mode */
-    "moduleResolution": "nodenext",
+    "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
