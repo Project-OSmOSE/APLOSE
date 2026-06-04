@@ -1,11 +1,12 @@
-$space: 0.5rem;
-$iconSize: 1.2rem;
+$vertical-space: 0.4rem;
+$horizontal-space: 0.8rem;
+$icon-size: 1.2rem;
 
 .Input {
-  border-radius: #{$space};
+  border-radius: #{$vertical-space};
   border: none;
   background: var(--color-light-shade);
-  padding: #{$space};
+  padding: #{$vertical-space} #{$horizontal-space};
   outline-color: var(--color-primary);
   accent-color: var(--color-primary);
 
@@ -19,16 +20,16 @@ $iconSize: 1.2rem;
   display: grid;
 
   .Input {
-    padding-right: calc(#{$space} * 2 + #{$iconSize});
+    padding-right: calc(#{$horizontal-space} * 2 + #{$icon-size});
   }
 
   .Icon {
     position: absolute;
     top: 50%;
-    right: #{$space};
+    right: #{$horizontal-space};
     transform: translateY(-50%);
     color: var(--color-medium);
-    width: #{$iconSize};
-    height: #{$iconSize};
+    width: #{$icon-size};
+    height: #{$icon-size};
   }
 }

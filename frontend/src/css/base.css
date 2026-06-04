@@ -71,7 +71,7 @@
     /*--aplose-backdrop: 0 0 0 200000px var(--aplose-backdrop-color);*/
 }
 
-* {
+body {
     font-family: "Exo 2", Roboto, sans-serif;
     color: var(--color-dark)
 }

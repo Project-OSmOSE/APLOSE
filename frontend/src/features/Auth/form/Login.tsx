@@ -6,10 +6,23 @@ import { Button, ButtonGroup, Link } from '@/components/base/Button';
 import { AuthRestAPI } from '@/api';
 import type { BaseUIEvent } from '@base-ui/react';
 import { useNavigate } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
+import { Route } from '@/routes/(public)/login';
+import { User } from '@/features';
+import { useToast } from '@/components/ui';
+import { IonSpinner } from '@ionic/react';
 
 export const Login: React.FC = () => {
-    const [ mutate, { isLoading } ] = AuthRestAPI.endpoints.login.useMutation()
+    const [ mutate, { isLoading: isLoginIn } ] = AuthRestAPI.endpoints.login.useMutation()
+    const { refetch: refetchUser, isRefetching } = useQuery(User.API.currentQuery)
+
+    const isLoading = useMemo(() => isLoginIn || isRefetching, [ isLoginIn, isRefetching ])
+
+    const search = Route.useSearch()
+    const to = useMemo(() => search?.redirect || '/annotation-campaign', [ search ]);
     const navigate = useNavigate();
+
+    const toast = useToast()
 
     const submit = useCallback(async (event: BaseUIEvent<React.FormEvent<HTMLFormElement>>) => {
         event.preventDefault();
@@ -17,8 +30,14 @@ export const Login: React.FC = () => {
         const username = formData.get('username') as string;
         const password = formData.get('password') as string;
 
-        await mutate({ username, password})
-    }, [ mutate, navigate ])
+        try {
+            await mutate({ username, password }).unwrap()
+            await refetchUser()
+            await navigate({ to, replace: true })
+        } catch (error) {
+            toast.raiseError({ error })
+        }
+    }, [ mutate, refetchUser, navigate, to, toast ])
 
     return useMemo(() => <Form onSubmit={ submit }>
             <Fieldset.Root>
@@ -27,19 +46,18 @@ export const Login: React.FC = () => {
                     <Field.Control required
                                    type="text"
                                    autoComplete="username"/>
-                    <Field.Error/>
                 </Field.Root>
 
                 <Field.Root name="password">
                     <Field.Label>Password</Field.Label>
                     <Field.PasswordControl required
                                            autoComplete="password"/>
-                    <Field.Error/>
                 </Field.Root>
             </Fieldset.Root>
 
             <ButtonGroup spaceBetween>
                 <Link to="/">Back to home</Link>
+                { isLoading && <IonSpinner/> }
                 <Button color="primary" type="submit" disabled={ isLoading }>
                     Login
                 </Button>
