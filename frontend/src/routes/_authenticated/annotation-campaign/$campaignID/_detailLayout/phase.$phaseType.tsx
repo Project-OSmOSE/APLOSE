@@ -14,10 +14,16 @@ import styles from './phase.$phaseType.module.scss';
 import { queryClient } from '@/api/queryClient';
 import { AnnotationPhase, AnnotationSpectrogram, User } from '@/features';
 import { IonNote, IonSpinner } from '@ionic/react';
+import { useQuery } from '@tanstack/react-query';
 
 const AnnotationCampaignPhaseDetail: React.FC = () => {
     const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const { phase, spectrograms, spectrogramsPageCount } = Route.useLoaderData()
+    const { spectrograms, spectrogramsPageCount } = Route.useLoaderData()
+    const { campaignID, phaseType  } = Route.useParams()
+    const { data: phase } = useQuery(AnnotationPhase.API.getQuery({
+        campaignID,
+        phase: phaseType,
+    }))
 
     const search = Route.useSearch();
     const routeParams = Route.useParams()
@@ -57,7 +63,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
 
                 <FileRangeActionBar/>
 
-                { phase.phase === 'Verification' && !phase.hasAnnotations && phases.find(p => p.phase === AnnotationPhaseType.Verification) &&
+                { phase?.phase === 'Verification' && !phase?.hasAnnotations && phases.find(p => p.phase === AnnotationPhaseType.Verification) &&
                     <WarningText message="Your campaign doesn't have any annotations to check"
                                  children={ <ImportAnnotationsButton/> }/> }
 
@@ -74,9 +80,9 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
                             <Th scope="col" center filterable
                                 isFiltered={ search.withAnnotations ?? false }
                                 onFilterClick={ annotationFilterModal.open }>
-                                Annotations{ phase.phase === 'Verification' && <Fragment><br/>to check</Fragment> }
+                                Annotations{ phase?.phase === 'Verification' && <Fragment><br/>to check</Fragment> }
                             </Th>
-                            { phase.phase === 'Verification' && <Th scope="col" center>Validated<br/>annotations</Th> }
+                            { phase?.phase === 'Verification' && <Th scope="col" center>Validated<br/>annotations</Th> }
                             <Th scope="col" center filterable
                                 isFiltered={ search.status !== undefined || search.onlyAssigned !== undefined }
                                 onFilterClick={ statusFilterModal.open }>
@@ -136,7 +142,7 @@ export const Route = createFileRoute('/_authenticated/annotation-campaign/$campa
             queryClient.ensureQueryData(AnnotationSpectrogram.API.allQuery({
                 campaignID,
                 phaseType,
-                annotatorID: user.id,
+                annotatorID: user!.id,
                 limit: PAGE_SIZE,
                 offset: PAGE_SIZE * ((deps.page ?? 1) - 1),
                 ...deps,
