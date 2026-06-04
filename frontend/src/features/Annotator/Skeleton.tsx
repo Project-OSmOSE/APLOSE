@@ -7,7 +7,7 @@ import styles from './styles.module.scss';
 import { IoCheckmarkCircleOutline, IoChevronForwardOutline } from 'react-icons/io5';
 import { AnnotationTaskStatus } from '@/api';
 import { gqlAPI } from '@/api/baseGqlApi';
-import { useAppDispatch, useAppSelector } from '@/features/App';
+import { useAppDispatch } from '@/features/App';
 import { useAnnotatorCanNavigate } from '@/features/Annotator/Navigation';
 import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
 import { PointerProvider } from '@/features/Annotator/Pointer/context';
@@ -15,7 +15,7 @@ import { useLoaderData, useSearch } from '@tanstack/react-router';
 import { AnnotatorVisualConfigurationSlice } from '@/features/Annotator/VisualConfiguration';
 import type { Colormap } from '@/features/Colormap';
 import { AnnotatorConfidenceSlice } from '@/features/Annotator/Confidence';
-import { AnnotatorAnalysisSlice, selectAnalysisID } from '@/features/Annotator/Analysis';
+import { AnnotatorAnalysisSlice } from '@/features/Annotator/Analysis';
 import { AnnotatorLabelSlice } from '@/features/Annotator/Label';
 import { AnnotatorUXSlice } from '@/features/Annotator/UX';
 import { AnnotatorCommentSlice } from '@/features/Annotator/Comment';
@@ -28,11 +28,15 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
     const {
         campaign,
         confidences,
-        analysis,
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
-    const { spectrogram, annotations, info, isEditionAuthorized } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
-    const analysisID = useAppSelector(selectAnalysisID)
+    const {
+        spectrogram,
+        annotations,
+        info,
+        isEditionAuthorized,
+        defaultAnalysis,
+    } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const canNavigate = useAnnotatorCanNavigate()
     const dispatch = useAppDispatch()
 
@@ -55,18 +59,6 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
             default: confidences?.find(c => c?.isDefault) ?? confidences.length ? confidences[0].label : undefined,
         }))
         dispatch(AnnotatorLabelSlice.actions.initCampaign())
-
-        // Select default analysis when none existing is selected
-        if (analysis.length && !analysis.find(a => a.id === analysisID)) {
-            const baseScaleAnalysis = analysis.find(a =>
-                !a.frequencyScaleParts || a.frequencyScaleParts.length == 0 ||
-                (a.frequencyScaleParts.length == 1 && a.frequencyScaleParts[0]!.minValue == 0 && a.frequencyScaleParts[0]!.maxValue == a.fft.samplingFrequency / 2),
-            );
-            const minID = Math.min(...analysis.map(a => +a!.id))?.toString();
-            if (minID) {
-                dispatch(AnnotatorAnalysisSlice.actions.setAnalysis(analysis.find(a => a.id === (baseScaleAnalysis?.id ?? minID))));
-            }
-        }
     }, [ campaign ]);
 
     useEffect(() => {
@@ -74,7 +66,7 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
         dispatch(AnnotatorUXSlice.actions.initSpectrogram())
 
         const allAnnotations = convertGqlToAnnotations(annotations, phase.phase, user.id)
-        const defaultAnnotation = [...allAnnotations].pop()
+        const defaultAnnotation = [ ...allAnnotations ].pop()
         dispatch(AnnotatorConfidenceSlice.actions.initSpectrogram({
             focus: defaultAnnotation?.confidence ?? undefined,
         }))
@@ -86,9 +78,13 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
         }))
         dispatch(AnnotatorAnnotationSlice.actions.initSpectrogram({
             all: allAnnotations,
-            default: defaultAnnotation
+            default: defaultAnnotation,
         }))
     }, [ spectrogram ]);
+
+    useEffect(() => {
+        dispatch(AnnotatorAnalysisSlice.actions.setAnalysis(defaultAnalysis));
+    }, [ defaultAnalysis ]);
 
     return <PointerProvider>
         <AnnotatorCanvasContextProvider>

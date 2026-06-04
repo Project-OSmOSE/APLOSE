@@ -6,15 +6,12 @@ export type ModalProps = { onClose: () => void };
 export const useModal = (component: React.FC<ModalProps & any>, extraArgs?: object) => {
     const [ isOpen, setIsOpen ] = useState<boolean>(false);
     const toggle = useCallback(() => {
-        console.log('toggle', component.name)
         setIsOpen(prev => !prev)
     }, [ setIsOpen, component ])
     const open = useCallback(() => {
-        console.log('open', component.name)
         setIsOpen(true)
     }, [ setIsOpen , component])
     const close = useCallback(() => {
-        console.log('close', component.name)
         setIsOpen(false)
     }, [ setIsOpen, component ])
 

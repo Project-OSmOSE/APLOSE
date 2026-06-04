@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { selectZoom } from '@/features/Annotator/Zoom';
 import { useToast } from '@/components/ui';
 import { useWindowHeight } from '@/features/Annotator/Canvas';
@@ -16,24 +16,35 @@ export const useDrawSpectrogram = () => {
 
     const {
         data: paths,
+        refetch,
     } = useQuery({
         ...AnnotationSpectrogram.API.getPathQuery({
             spectrogramID: spectrogram.id,
             analysisID: analysis?.id ?? '',
-        }), enabled: !!analysis,
+        }),
+        enabled: !!analysis,
     });
     const height = useWindowHeight()
     const timeScale = useTimeScale()
     const toast = useToast()
-    const images = useRef<Map<number, Array<HTMLImageElement | undefined>>>(new Map);
+    const images = useRef<Map<number, Array<HTMLImageElement | undefined>>>(new Map());
     const failedImagesSources = useRef<string[]>([])
+
+    useEffect(() => {
+        images.current = new Map();
+    }, [analysis]);
 
     const areAllImagesLoaded = useCallback((): boolean => {
         return images.current.get(zoom)?.filter(i => !!i).length === zoom
     }, [ zoom ])
 
     const loadImages = useCallback(async () => {
-        if (!analysis || !paths?.spectrogramPath || !spectrogram) {
+        let _paths = paths
+        if (!_paths) {
+            const { data } = await refetch()
+            _paths = data
+        }
+        if (!analysis || !_paths?.spectrogramPath || !spectrogram) {
             images.current = new Map();
             return;
         }
@@ -42,7 +53,7 @@ export const useDrawSpectrogram = () => {
         const filename = spectrogram.filename
         return Promise.all(
             Array.from(new Array<HTMLImageElement | undefined>(zoom)).map(async (_, index) => {
-                let src = paths.spectrogramPath;
+                let src = _paths.spectrogramPath;
                 if (!src) return;
                 if (analysis.legacy) {
                     src = `${ src.split(filename)[0] }${ filename }_${ zoom }_${ index }${ src.split(filename)[1] }`
@@ -69,7 +80,7 @@ export const useDrawSpectrogram = () => {
         ).then(loadedImages => {
             images.current.set(zoom, loadedImages)
         })
-    }, [ analysis, zoom, failedImagesSources, areAllImagesLoaded, spectrogram, analysis, paths, toast ])
+    }, [ analysis, zoom, failedImagesSources, areAllImagesLoaded, spectrogram, analysis, paths, toast, refetch ])
 
     return useCallback(async (context: CanvasRenderingContext2D) => {
         if (!areAllImagesLoaded()) await loadImages();

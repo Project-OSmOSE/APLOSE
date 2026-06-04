@@ -24,7 +24,7 @@ export const useFocusCanvasOnTime = () => {
   return useCallback((time: number) => {
     const left = timeScale.valueToPosition(time) - containerWidth / 2;
     mainCanvasRef?.current?.parentElement?.scrollTo({ left })
-  }, [ timeScale, containerWidth ])
+  }, [ timeScale, containerWidth, mainCanvasRef ])
 }
 
 export const useDrawCanvas = () => {
@@ -49,7 +49,7 @@ export const useDrawCanvas = () => {
     await drawSpectrogram(context)
     applyColormap(context)
     drawTempAnnotation(context)
-  }, [ width, height, drawSpectrogram, applyFilter, applyColormap, drawTempAnnotation ]);
+  }, [ width, height, drawSpectrogram, applyFilter, applyColormap, drawTempAnnotation, mainCanvasRef ]);
 }
 
 export const useDownloadCanvas = () => {
@@ -127,5 +127,5 @@ export const useDownloadCanvas = () => {
     link.target = '_blank';
     link.download = filename;
     link.click();
-  }, [ height, zoom, draw ])
+  }, [ height, zoom, draw, mainCanvasRef, xAxisCanvasRef, yAxisCanvasRef ])
 }

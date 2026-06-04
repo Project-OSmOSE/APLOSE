@@ -26,7 +26,7 @@ import { AnnotationsBloc } from '@/features/Annotator/Annotation/AnnotationsBloc
 import styles from './$spectrogramID.module.scss';
 import { type AllSpectrogramsFilters } from '@/features/AnnotationSpectrogram';
 import { queryClient } from '@/api/queryClient';
-import { AnnotationSpectrogram, User } from '@/features';
+import { AnnotationCampaign, AnnotationSpectrogram, User } from '@/features';
 import { useQuery } from '@tanstack/react-query';
 
 const AnnotatorPage: React.FC = () => {
@@ -134,11 +134,30 @@ export const Route = createFileRoute(
     loaderDeps: ({ search }) => search as AllSpectrogramsFilters,
     loader: async ({ params: { campaignID, phaseType, spectrogramID }, deps }) => {
         const user = await queryClient.ensureQueryData(User.API.currentQuery)
-        const { spectrogram, ...data } = await queryClient.ensureQueryData(AnnotationSpectrogram.API.getQuery({
-            campaignID, phaseType, spectrogramID, ...deps, annotatorID: user.id,
-        }))
+        const [
+            { spectrogram, ...data },
+            { analysis }
+        ] = await Promise.all([
+            queryClient.ensureQueryData(AnnotationSpectrogram.API.getQuery({
+            campaignID, phaseType, spectrogramID, ...deps, annotatorID: user!.id,
+        })),
+            queryClient.ensureQueryData(AnnotationCampaign.API.byIdQuery({ id: campaignID }))
+        ])
         if (!spectrogram) throw notFound()
-        return { spectrogram, ...data }
+        const baseScaleAnalysis = analysis.find(a =>
+            !a.frequencyScaleParts || a.frequencyScaleParts.length == 0 ||
+            (a.frequencyScaleParts.length == 1 && a.frequencyScaleParts[0]!.minValue == 0 && a.frequencyScaleParts[0]!.maxValue == a.fft.samplingFrequency / 2),
+        );
+        const minID = Math.min(...analysis.map(a => +a!.id))?.toString();
+        const defaultAnalysis = minID ? analysis.find(a => a.id === (baseScaleAnalysis?.id ?? minID)) : undefined
+
+        if (defaultAnalysis) {
+            await queryClient.ensureQueryData(AnnotationSpectrogram.API.getPathQuery({
+                spectrogramID: spectrogram.id,
+                analysisID: defaultAnalysis.id,
+            }))
+        }
+        return { spectrogram, defaultAnalysis, ...data }
     },
     component: AnnotatorPage,
 })
