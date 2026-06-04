@@ -74,11 +74,12 @@ export const useEvent = <T>(signal: Signal<T>, callback: (event: T) => void) => 
   }, [ callback ]);
 }
 
-export const useKeyDownEvent = (keys: string[], callback: (event: KeyboardEvent) => void) => {
+export const useKeyDownEvent = (keys: string[], callback: (event: KeyboardEvent) => void, filtered=true) => {
   const onKbdEvent = useCallback((event: KeyboardEvent) => {
+    console.log(event.code, event.key)
     if (!keys.includes(event.key)) return
     event.preventDefault();
     callback(event);
   }, [ keys, callback ])
-  useEvent(KEY_DOWN_EVENT, onKbdEvent)
+  useEvent(filtered ? KEY_DOWN_EVENT : NON_FILTERED_KEY_DOWN_EVENT, onKbdEvent)
 }

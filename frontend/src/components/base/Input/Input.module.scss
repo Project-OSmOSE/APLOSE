@@ -1,0 +1,34 @@
+$space: 0.5rem;
+$iconSize: 1.2rem;
+
+.Input {
+  border-radius: #{$space};
+  border: none;
+  background: var(--color-light-shade);
+  padding: #{$space};
+  outline-color: var(--color-primary);
+  accent-color: var(--color-primary);
+
+  &[data-invalid] {
+    box-shadow: inset 0 0 0 1px var(--color-danger);
+  }
+}
+
+.PasswordInput {
+  position: relative;
+  display: grid;
+
+  .Input {
+    padding-right: calc(#{$space} * 2 + #{$iconSize});
+  }
+
+  .Icon {
+    position: absolute;
+    top: 50%;
+    right: #{$space};
+    transform: translateY(-50%);
+    color: var(--color-medium);
+    width: #{$iconSize};
+    height: #{$iconSize};
+  }
+}

@@ -4,10 +4,10 @@ import { Copy, Help } from '@solar-icons/react';
 import { useToast } from '@/components/ui';
 import { Button } from './Button';
 
-export { Button, type ButtonProps } from './Button';
-export { ButtonGroup, type ButtonGroupProps } from './ButtonGroup';
-export { ExternalLink, type ExternalLinkProps } from './ExternalLink';
-export { Link, type LinkProps } from './Link';
+export * from './Button';
+export * from './ButtonGroup';
+export * from './ExternalLink';
+export * from './Link';
 
 
 export const DocumentationButton: React.FC = React.memo(() => (

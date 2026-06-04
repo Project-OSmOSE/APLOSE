@@ -9,9 +9,9 @@ import { Button, Link } from '@/components/base/Button';
 import { getErrorMessage } from '@/service/function';
 
 import { useLogin } from '@/api';
-import { NON_FILTERED_KEY_DOWN_EVENT, useEvent } from '@/features/UX';
-import { User } from '@/features'
 
+import { User } from '@/features'
+import { Auth } from '@/features/Auth';
 import styles from './public.module.scss';
 
 
@@ -52,18 +52,10 @@ const Login: React.FC = () => {
             .catch(error => setErrors({ global: getErrorMessage(error) }));
     }, [ setErrors, username, password, navigate, to, login, refetchUser ])
 
-    const onKbdEvent = useCallback((event: KeyboardEvent) => {
-        switch (event.code) {
-            case 'Enter':
-            case 'NumpadEnter':
-                submit();
-                break;
-        }
-    }, [ submit ])
-    useEvent(NON_FILTERED_KEY_DOWN_EVENT, onKbdEvent);
-
     return <div className={ styles.loginContent }>
         <h2>Login</h2>
+
+        <Auth.Form.Login/>
 
         <form className={ styles.inputs }>
             <Input id="loginInput"

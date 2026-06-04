@@ -44,8 +44,6 @@
 
   @each $color in primary, warning, danger {
     &[color=#{$color}] {
-      // Lightness change required for a better accessibility
-      //color: hsl(var(--color-#{$color}-h), var(--color-#{$color}-s), 38%);
       color: var(--color-#{$color}-text);
 
       &:not([disabled]):hover {

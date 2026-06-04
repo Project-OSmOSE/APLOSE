@@ -1,0 +1,11 @@
+.Note {
+  font-size: 0.9rem;
+  font-weight: 300;
+  margin: 0;
+
+  @each $color in primary, warning, danger {
+    &.#{$color} {
+      color: var(--color-#{$color}-text);
+    }
+  }
+}
