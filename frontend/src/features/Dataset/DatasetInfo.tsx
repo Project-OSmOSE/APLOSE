@@ -2,9 +2,10 @@ import React, { Fragment } from 'react';
 import { IonNote } from '@ionic/react';
 
 import { dateToString } from '@/service/function';
-import { FadedText, Link } from '@/components/ui';
+import { FadedText } from '@/components/ui';
 import styles from './styles.module.scss';
 import { useLoaderData } from '@tanstack/react-router';
+import { Link } from '@/components/base/Button';
 
 export const DatasetInfoCreation: React.FC = () => {
     const { dataset } = useLoaderData({

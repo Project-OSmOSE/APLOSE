@@ -1,5 +1,5 @@
 import React, { Fragment, type MouseEvent, useCallback, useMemo, useState } from 'react';
-import { ImportStatusEnum, } from '@/api';
+import { ImportStatusEnum } from '@/api';
 import styles from './styles.module.scss';
 import {
     type ImportDatasetFromStorageMutation,
@@ -19,12 +19,13 @@ import {
     InfoCircle,
     Unread,
 } from '@solar-icons/react';
-import { CopyErrorStackButton, TooltipOverlay, useToast } from '@/components/ui';
+import { TooltipOverlay, useToast } from '@/components/ui';
 import { DatasetName } from '@/features/Dataset';
 import { importMutation } from '../api'
 import { useMutation } from '@tanstack/react-query';
 import { useAppDispatch } from '@/features/App';
 import { Storage } from '@/features';
+import { CopyErrorStackButton } from '@/components/base/Button';
 
 type Props = {
     parentItem?: StorageItemFragment,

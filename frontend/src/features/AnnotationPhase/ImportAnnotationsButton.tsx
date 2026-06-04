@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react';
-import { Link, TooltipOverlay } from '@/components/ui';
-import { IonIcon } from '@ionic/react';
-import { cloudUploadOutline } from 'ionicons/icons/index.js';
+import { TooltipOverlay } from '@/components/ui';
 import { AnnotationPhaseType } from '@/api';
 import { useLoaderData, useParams } from '@tanstack/react-router';
+import { Link } from '@/components/base/Button';
+import { CloudUpload } from '@solar-icons/react';
 
 
 export const ImportAnnotationsButton: React.FC = () => {
@@ -14,10 +14,9 @@ export const ImportAnnotationsButton: React.FC = () => {
     if (!phases.find(p => p.phase === AnnotationPhaseType.Verification)) return <Fragment/>
     return <TooltipOverlay tooltipContent={ <p>Import annotations for verification</p> } anchor="right">
         <Link to="/annotation-campaign/$campaignID/phase/$phaseType/import-annotations"
-              params={ { campaignID: campaign.id, phaseType: AnnotationPhaseType.Verification } } fill="outline"
-              color="medium"
+              params={ { campaignID: campaign.id, phaseType: AnnotationPhaseType.Verification } }
               data-testid="import">
-            <IonIcon icon={ cloudUploadOutline } slot="icon-only"/>
+            <CloudUpload weight="Linear" size={ 24 }/>
         </Link>
     </TooltipOverlay>
 }

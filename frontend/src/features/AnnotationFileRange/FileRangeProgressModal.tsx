@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import styles from './styles.module.scss';
 import {
-    Button,
     Modal,
     ModalFooter,
     ModalHeader,
@@ -17,14 +16,15 @@ import {
     useToast,
     WarningText,
 } from '@/components/ui';
-import { IonIcon, IonNote, IonSpinner } from '@ionic/react';
-import { downloadOutline } from 'ionicons/icons/index.js';
+import { IonNote, IonSpinner } from '@ionic/react';
 import { AnnotationFileRangeNode, AnnotationTaskNodeNodeConnection, Maybe, UserNode } from '@/api';
 import { useDownloadAnnotations, useDownloadProgress } from '@/api/download';
 import { NBSP } from '@/service/type';
 import { useQuery } from '@tanstack/react-query';
 import { AnnotationFileRange, User } from '@/features';
 import { useLoaderData } from '@tanstack/react-router';
+import { Button, ButtonGroup } from '@/components/base/Button';
+import { Download } from '@solar-icons/react';
 
 type Progression = {
     user: Pick<UserNode, 'id' | 'displayName' | 'expertise' | 'username'>;
@@ -160,21 +160,19 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
 
             { phase?.isUserAllowedToManage && data && allFileRanges && (
                 <ModalFooter className={ styles.footer }>
-                    <div className={ styles.buttons }>
+                    <ButtonGroup spaceBetween>
                         { progress.length > 0 && <Fragment>
-                            <Button size="small" color="dark" fill="clear"
-                                    onClick={ downloadAnnotations }>
-                                <IonIcon icon={ downloadOutline } slot="start"/>
+                            <Button onClick={ downloadAnnotations }>
+                                <Download weight="Linear" size={ 20 }/>
                                 Results (csv)
                             </Button>
 
-                            <Button size="small" color="dark" fill="clear"
-                                    onClick={ downloadProgress }>
-                                <IonIcon icon={ downloadOutline } slot="start"/>
+                            <Button onClick={ downloadProgress }>
+                                <Download weight="Linear" size={ 20 }/>
                                 Status (csv)
                             </Button>
                         </Fragment> }
-                    </div>
+                    </ButtonGroup>
                 </ModalFooter>
             ) }
         </Modal>

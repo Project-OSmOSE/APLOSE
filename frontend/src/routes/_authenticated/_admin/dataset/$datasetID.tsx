@@ -1,9 +1,7 @@
 import React, { Fragment, useMemo } from 'react';
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import { IonButton, IonIcon } from '@ionic/react';
-import { addOutline, downloadOutline } from 'ionicons/icons';
 
-import { Link, useModal } from '@/components/ui';
+import { useModal } from '@/components/ui';
 
 import { ImportDatasetAnalysisModal } from '@/features/Storage';
 import { DatasetHead, DatasetInfoCreation } from '@/features/Dataset';
@@ -12,6 +10,8 @@ import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 import { Cards } from '@/features/AnnotationCampaign';
 import { queryClient } from '@/api/queryClient';
 import { Dataset } from '@/features';
+import { Download, WidgetAdd } from '@solar-icons/react';
+import { Button, Link } from '@/components/base/Button';
 
 const DatasetDetail: React.FC = () => {
     const { dataset, campaigns, analysis } = Route.useLoaderData()
@@ -34,24 +34,23 @@ const DatasetDetail: React.FC = () => {
 
                     <SpectrogramAnalysisTable analysis={ analysis }/>
 
-                    <IonButton color="primary" fill="clear"
-                               style={ { zIndex: 2, justifySelf: 'center' } }
-                               onClick={ importAnalysisModal.toggle }>
-                        <IonIcon icon={ downloadOutline } slot="start"/>
+                    <Button color="primary"
+                            style={ { zIndex: 2, justifySelf: 'center' } }
+                            onClick={ importAnalysisModal.toggle }>
+                        <Download weight="Linear" size={ 20 }/>
                         Import analysis
-                    </IonButton>
+                    </Button>
                 </div>
 
                 <div style={ { overflowX: 'hidden', display: 'grid', gap: '1rem' } }>
                     <h5>Annotation campaigns</h5>
                     <Cards campaigns={ campaigns }/>
 
-                    <Link color="primary" fill="clear"
+                    <Link color="primary" to="/annotation-campaign/new"
                           style={ { zIndex: 2, justifySelf: 'center' } }
-                          to="/annotation-campaign/new"
                           search={ { dataset_id: dataset.id } }>
-                        <IonIcon icon={ addOutline } slot="start"/>
-                        Create campaign
+                        <WidgetAdd weight="Linear" size={ 20 }/>
+                        New annotation campaign
                     </Link>
                 </div>
             </div>

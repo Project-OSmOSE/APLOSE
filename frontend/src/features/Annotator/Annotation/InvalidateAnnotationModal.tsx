@@ -1,9 +1,10 @@
 import React, { Fragment, useCallback } from 'react';
-import { Button, Modal, ModalHeader, type ModalProps } from '@/components/ui';
+import { Modal, ModalHeader, type ModalProps } from '@/components/ui';
 import { Annotation, focusAnnotation } from './slice'
 import { AnnotationType } from '@/api';
 import { useInvalidateAnnotation } from './hooks';
 import { useAppDispatch } from '@/features/App';
+import { Button } from '@/components/base/Button';
 
 export const InvalidateAnnotationModal: React.FC<ModalProps & {
     annotation: Annotation,
@@ -30,29 +31,29 @@ export const InvalidateAnnotationModal: React.FC<ModalProps & {
     }, [ onClose, invalidate, annotation ]);
 
     return <Modal onClose={ onClose }>
-            <ModalHeader title="Invalidate a result" onClose={ onClose }/>
-            <h5>Why do you want to invalidate this result?</h5>
+        <ModalHeader title="Invalidate a result" onClose={ onClose }/>
+        <h5>Why do you want to invalidate this result?</h5>
 
-            <div>
-                { annotation.type !== AnnotationType.Weak && <Fragment>
-                    <p>The position or dimension of the annotation is incorrect</p>
-                    <Button fill="outline" onClick={ move }>
-                        Move or resize
-                    </Button>
-                </Fragment> }
-            </div>
-            <div>
-                <p>The label is incorrect</p>
-                <Button fill="outline" onClick={ askUpdateLabel }>
-                    Change the label
+        <div>
+            { annotation.type !== AnnotationType.Weak && <Fragment>
+                <p>The position or dimension of the annotation is incorrect</p>
+                <Button onClick={ move }>
+                    Move or resize
                 </Button>
-            </div>
-            <div>
-                <p>The annotation shouldn't exist</p>
-                <Button fill="outline" onClick={ remove }>
-                    Remove
-                </Button>
-            </div>
+            </Fragment> }
+        </div>
+        <div>
+            <p>The label is incorrect</p>
+            <Button onClick={ askUpdateLabel }>
+                Change the label
+            </Button>
+        </div>
+        <div>
+            <p>The annotation shouldn't exist</p>
+            <Button onClick={ remove }>
+                Remove
+            </Button>
+        </div>
 
-        </Modal>
+    </Modal>
 }

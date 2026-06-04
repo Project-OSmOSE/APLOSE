@@ -7,13 +7,15 @@ import {
     type Maybe,
 } from '@/api';
 import React, { Fragment, useMemo } from 'react';
-import { Button, Td, Th, Tr } from '@/components/ui';
+import { Td, Th, Tr } from '@/components/ui';
 import { IonIcon } from '@ionic/react';
-import { checkmarkCircle, chevronForwardOutline, ellipseOutline } from 'ionicons/icons/index.js';
+import { checkmarkCircle, ellipseOutline } from 'ionicons/icons/index.js';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 import { formatTime } from '@/service/function';
 import styles from './styles.module.scss'
 import { useLoaderData } from '@tanstack/react-router';
+import { Button } from '@/components/base/Button';
+import { AltArrowRight } from '@solar-icons/react';
 
 export const SpectrogramRow: React.FC<{
     spectrogram: Pick<AnnotationSpectrogramNode, 'id' | 'filename' | 'duration' | 'start' | 'isAssigned'>,
@@ -41,25 +43,25 @@ export const SpectrogramRow: React.FC<{
         return (userAnnotations?.totalCount ?? 0) + (validAnnotationsToCheck?.totalCount ?? 0)
     }, [ userAnnotations, validAnnotationsToCheck ])
 
-    return <Tr className={ submitted ? styles.submitted : ''}>
-        <Th scope='row'>{ spectrogram.filename }</Th>
+    return <Tr className={ submitted ? styles.submitted : '' }>
+        <Th scope="row">{ spectrogram.filename }</Th>
         <Td center>{ start.toUTCString() }</Td>
         <Td center>{ formatTime(spectrogram.duration) }</Td>
-        <Td center>{ spectrogram.isAssigned ?allAnnotationsCount : "-" }</Td>
-        { phase?.phase == 'Verification' && <Td center>{ spectrogram.isAssigned ?validAnnotationsCount : "-" }</Td> }
+        <Td center>{ spectrogram.isAssigned ? allAnnotationsCount : '-' }</Td>
+        { phase?.phase == 'Verification' && <Td center>{ spectrogram.isAssigned ? validAnnotationsCount : '-' }</Td> }
         <Td center>
-            {spectrogram.isAssigned ? <Fragment>
+            { spectrogram.isAssigned ? <Fragment>
                 { submitted &&
                     <IonIcon icon={ checkmarkCircle } color="primary"/> }
                 { !submitted &&
                     <IonIcon icon={ ellipseOutline } color="medium"/> }
-            </Fragment> : "-" }
+            </Fragment> : '-' }
         </Td>
         <Td>
-            <Button color="dark" fill="clear" size="small"
+            <Button color="primary"
                     data-testid="access-button"
                     onClick={ () => openAnnotator(spectrogram.id) }>
-                <IonIcon icon={ chevronForwardOutline } color="primary" slot="icon-only"/>
+                <AltArrowRight weight="Linear" size={ 24 }/>
             </Button>
         </Td>
     </Tr>

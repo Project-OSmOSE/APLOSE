@@ -2,7 +2,7 @@ import React, { Fragment, ReactNode, useMemo } from 'react';
 import { IoWarningOutline } from 'react-icons/io5';
 import styles from './ui.module.scss';
 import { getErrorMessage } from '@/service/function';
-import { CopyErrorStackButton } from '@/components/ui/Button';
+import { CopyErrorStackButton } from '@/components/base/Button';
 import type { GqlError } from '@/api/baseGqlApi';
 
 export const FadedText: React.FC<{ children: ReactNode }> = ({ children }) => (

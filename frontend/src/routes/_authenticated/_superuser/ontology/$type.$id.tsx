@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { IonSpinner } from '@ionic/react';
 
+import { Button, ButtonGroup } from '@/components/base/Button';
 import { Input, Label } from '@/components/form';
-import { Button } from '@/components/ui';
 
 import styles from './$type.$id.module.scss';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -66,7 +66,7 @@ const OntologyPanel: React.FC = () => {
     }, [ data ])
     useEffect(() => {
         reset()
-    }, [id]);
+    }, [ id ]);
 
     if (!id) return <div className={ styles.panel }/>
     return <div className={ styles.panel }>
@@ -100,10 +100,14 @@ const OntologyPanel: React.FC = () => {
                        onChange={ e => setTaxon(e.currentTarget.value) }/>
             </div>
 
-            <div className={ styles.buttons }>
-                <Button color="medium" fill="clear" onClick={ reset }>Reset changes</Button>
-                <Button onClick={ update }>Save</Button>
-            </div>
+            <ButtonGroup spaceBetween>
+                <Button onClick={ reset }>
+                    Reset changes
+                </Button>
+                <Button onClick={ update } color="primary">
+                    Save
+                </Button>
+            </ButtonGroup>
         </div> }
     </div>
 }

@@ -1,20 +1,25 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styles from './styles.module.scss';
 import { IonButton, IonIcon } from '@ionic/react';
-import { peopleOutline, playOutline, refreshOutline } from 'ionicons/icons/index.js';
-import { ActionBar, Button, Link, Progress, TooltipOverlay, useModal } from '@/components/ui';
+import { refreshOutline } from 'ionicons/icons/index.js';
+import { ActionBar, Progress, TooltipOverlay, useModal } from '@/components/ui';
 import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
 import { FileRangeProgressModal } from '@/features/AnnotationFileRange';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
-import { analytics } from 'ionicons/icons';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
+import { Button, Link } from '@/components/base/Button';
+import { CourseUp, Play, UsersGroupRounded } from '@solar-icons/react';
 
 export const FileRangeActionBar: React.FC = () => {
     const searchParams = Route.useSearch();
     const routeParams = Route.useParams()
     const navigate = useNavigate();
-    const { phase, spectrograms, resumeSpectrogramId } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
+    const {
+        phase,
+        spectrograms,
+        resumeSpectrogramId,
+    } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
     const openAnnotator = useOpenAnnotator()
 
     const updateSearch = useCallback((input: string) => {
@@ -78,20 +83,19 @@ export const FileRangeActionBar: React.FC = () => {
                                          total={ phase.tasksCount }/> : <Fragment/> }
 
                            <TooltipOverlay tooltipContent={ <p>Annotators progression</p> } anchor="right">
-                               <IonButton fill="clear" color="medium" onClick={ progressModal.toggle }
-                                          data-testid="progress">
-                                   <IonIcon icon={ analytics } slot="icon-only"/>
-                               </IonButton>
+                               <Button onClick={ progressModal.toggle } data-testid="progress">
+                                   <CourseUp weight="Linear" size={ 24 }/>
+                               </Button>
                            </TooltipOverlay>
                        </div>
 
                        { phase?.isEditable && phase?.isUserAllowedToManage && <Fragment>
                            {/* Manage annotators */ }
                            <TooltipOverlay tooltipContent={ <p>Manage annotators</p> } anchor="right">
-                               <Link fill="outline" color="medium" data-testid="manage"
+                               <Link data-testid="manage"
                                      to="/annotation-campaign/$campaignID/phase/$phaseType/edit-annotators"
                                      params={ routeParams }>
-                                   <IonIcon icon={ peopleOutline } slot="icon-only"/>
+                                   <UsersGroupRounded weight="Linear" size={ 24 }/>
                                </Link>
                            </TooltipOverlay>
 
@@ -101,11 +105,11 @@ export const FileRangeActionBar: React.FC = () => {
 
                        {/* Resume */ }
                        <TooltipOverlay tooltipContent={ <p>{ resumeBtnTooltip }</p> } anchor="right">
-                           <Button color="primary" fill="outline" data-testid="resume"
+                           <Button color="primary" data-testid="resume"
                                    disabled={ hasFilters || !(spectrograms && spectrograms.length > 0) || !resumeSpectrogramId }
                                    style={ { pointerEvents: 'unset' } }
                                    onClick={ resume }>
-                               <IonIcon icon={ playOutline } slot="icon-only"/>
+                               <Play weight="Bold" size={ 24 }/>
                            </Button>
                        </TooltipOverlay>
                    </div> }/>

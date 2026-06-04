@@ -1,12 +1,13 @@
-import React, { Fragment, useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
 import { closeOutline, menuOutline } from 'ionicons/icons/index.js';
 import { useLogout } from '@/api';
-import { DocumentationButton, Link } from '@/components/ui';
+import { ExternalLink, Link } from '@/components/base/Button';
 import styles from './layout.module.scss';
 import logo from '/images/ode_logo_192x192.png';
 import { useQuery } from '@tanstack/react-query';
 import { User } from '@/features';
+import { useLocation } from '@tanstack/react-router';
 
 export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
     const [ isOpen, setIsOpen ] = useState<boolean>(false);
@@ -19,11 +20,17 @@ export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
 
     const close = useCallback(() => setIsOpen(false), [ setIsOpen ])
 
+    // Close on navigation
+    const location = useLocation()
+    useEffect(() => {
+        close()
+    }, [ location ]);
+
     return (
         <div className={ [ styles.navbar, isOpen ? styles.opened : styles.closed, className ].join(' ') }>
 
             <div className={ styles.title }>
-                <Link to="/annotation-campaign" onClick={ close }>
+                <Link to="/annotation-campaign">
                     <img src={ logo } alt="APLOSE"/>
                     <h1>APLOSE</h1>
                 </Link>
@@ -37,28 +44,34 @@ export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
             <div className={ styles.navContent }>
 
                 <div className={ styles.links }>
-                    <Link to="/annotation-campaign" onClick={ close }>
+                    <Link to="/annotation-campaign">
                         Annotation campaigns
                     </Link>
                     { user?.isAdmin && <Fragment>
-                        <Link to="/dataset" onClick={ close }>Datasets</Link>
-                    </Fragment> }
-                    { user?.isAdmin && <Fragment>
-                        <Link to="/storage" onClick={ close }>Storage</Link>
+                        <Link to="/dataset">
+                            Datasets
+                        </Link>
+                        <Link to="/storage">
+                            Storage
+                        </Link>
                     </Fragment> }
                 </div>
 
                 { user?.isAdmin && <Fragment>
-                    <Link href="/backend/admin" target="_blank" color="medium">Admin</Link>
+                    <ExternalLink href="/backend/admin" target="_blank">Admin</ExternalLink>
                 </Fragment> }
 
-                <DocumentationButton/>
+                { user?.isSuperuser && <Fragment>
+                    <Link to="/ontology/$type"
+                          params={ { type: 'source' } }>
+                        Ontology
+                    </Link>
+                    <Link to="/sql">
+                        SQL query
+                    </Link>
+                </Fragment> }
 
-                { user?.isSuperuser && <Link to="/ontology/$type" params={ { type: 'source' } } color="medium"
-                                             onClick={ close }>Ontology</Link> }
-                { user?.isSuperuser && <Link to="/sql" color="medium" onClick={ close }>SQL query</Link> }
-
-                <Link to="/account" color="medium" onClick={ close }>Account</Link>
+                <Link to="/account">Account</Link>
 
                 <IonButton className={ styles.logoutButton }
                            color={ 'medium' }

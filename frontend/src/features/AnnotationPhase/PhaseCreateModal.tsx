@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { IonSpinner } from '@ionic/react';
-import { Button, Modal, ModalHeader, WarningText } from '@/components/ui';
+import { Modal, ModalHeader, WarningText } from '@/components/ui';
 import { FormBloc, Input } from '@/components/form';
 import { LabelSetSelect } from '@/features/Labels';
 import { ConfidenceSetSelect } from '@/features/Confidence';
@@ -9,6 +9,7 @@ import { AnnotationLabelNode, AnnotationPhaseType, LabelSetNode, Maybe } from '@
 import styles from './styles.module.scss';
 import { useMutation } from '@tanstack/react-query';
 import { createAnnotationMutation, createVerificationMutation } from './api'
+import { Button } from '@/components/base/Button';
 
 type Label = Pick<AnnotationLabelNode, 'id' | 'name'>
 type LabelSet = Pick<LabelSetNode, 'id' | 'description'> & {
@@ -107,13 +108,13 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
             { error && <WarningText error={ error }/> }
         </div>
         <div className={ styles.buttons }>
-            <Button color="medium" fill="clear" onClick={ onClose }>
+            <Button onClick={ onClose }>
                 Cancel
             </Button>
 
             <div className={ styles.buttons }>
                 { (isPostingPhase) && <IonSpinner/> }
-                <Button color="primary" fill="solid"
+                <Button color="primary"
                         disabled={ !labelSet }
                         onClick={ create }>
                     Create
@@ -172,16 +173,16 @@ export const AnnotationPhaseCreateVerificationModal: React.FC<{
         </div>
 
         <div className={ styles.buttons }>
-            <Button color="medium" fill="clear" onClick={ onClose }>
+            <Button onClick={ onClose }>
                 Cancel
             </Button>
 
             <div className={ styles.buttons }>
                 { isPostingPhase && <IonSpinner/> }
-                <Button color="primary" fill="clear" onClick={ createAndImport }>
+                <Button color="primary" onClick={ createAndImport }>
                     Create and import annotations
                 </Button>
-                <Button color="primary" fill="solid"
+                <Button color="primary"
                         onClick={ create }>
                     Create
                 </Button>

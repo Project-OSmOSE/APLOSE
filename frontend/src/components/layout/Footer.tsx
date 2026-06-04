@@ -1,11 +1,16 @@
 import React, { useMemo } from 'react';
 import { IonIcon, IonNote } from '@ionic/react';
-import { logoGithub, mailOutline } from 'ionicons/icons/index.js';
-import { Link } from '@/components/ui';
+import { Letter } from '@solar-icons/react';
+
 import { CONTACT_MAIL, CONTACT_URI, GITHUB_URL, OSMOSE_URL } from '@/consts/links';
+import { DocumentationButton, ExternalLink, Link } from '@/components/base/Button';
+
+import { logoGithub } from 'ionicons/icons/index.js';
 import logo from '/images/ode_logo_192x192.png';
+
 import style from './layout.module.scss';
 import json from '../../../global-package.json'
+
 
 export const Footer: React.FC = () => {
     const version = useMemo(() => json.version, [])
@@ -13,25 +18,31 @@ export const Footer: React.FC = () => {
     return (
         <footer className={ style.footer }>
             <div>
-                <Link href={ GITHUB_URL } target="_blank" color="medium">
+                <ExternalLink href={ GITHUB_URL } target="_blank">
                     <IonIcon icon={ logoGithub } slot="start"/>
                     Github
-                </Link>
+                </ExternalLink>
                 <IonNote color="medium">{ version }</IonNote>
             </div>
 
             <div className={ style.proposition }>
                 <p>Proposed by</p>
-                <Link href={ OSMOSE_URL }>OSmOSE <img src={ logo } alt="OSmOSE"/></Link>
+                <ExternalLink href={ OSMOSE_URL }>
+                    OSmOSE <img src={ logo } alt="OSmOSE"/>
+                </ExternalLink>
             </div>
 
             <div>
-                <Link to='/terms' color="medium">Terms of use</Link>
+                <DocumentationButton/>
                 <IonNote color="medium">|</IonNote>
-                <Link href={ CONTACT_URI } color="medium">
-                    <IonIcon icon={ mailOutline } slot="end"/>
-                    { CONTACT_MAIL }
+                <Link to="/terms">
+                    Terms of use
                 </Link>
+                <IonNote color="medium">|</IonNote>
+                <ExternalLink href={ CONTACT_URI }>
+                    <Letter/>
+                    { CONTACT_MAIL }
+                </ExternalLink>
             </div>
         </footer>
     );

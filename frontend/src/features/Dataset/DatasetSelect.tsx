@@ -1,7 +1,8 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, WarningText } from '@/components/ui';
+import { WarningText } from '@/components/ui';
 import { ChipsInput, Select } from '@/components/form';
 import { useLoaderData } from '@tanstack/react-router';
+import { Link } from '@/components/base/Button';
 
 export const DatasetSelect: React.FC<{
     datasetError?: string,

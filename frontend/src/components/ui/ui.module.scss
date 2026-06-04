@@ -97,8 +97,7 @@
     --padding-start: 1rem;
     --padding-end: 1rem;
     --border-radius: 0rem;
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
+    border-radius: 1rem 1rem 0 0;
     overflow: hidden;
     border: 1px solid rgba(var(--ion-color-medium-rgb), 0);
     border-bottom: none;

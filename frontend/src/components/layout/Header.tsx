@@ -4,12 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 import { IonButton, IonIcon } from '@ionic/react';
 import { closeOutline, menuOutline } from 'ionicons/icons/index.js';
 
-import { DocumentationButton, Link } from '@/components/ui';
-
 import { User } from '@/features';
 
 import logo from '/images/ode_logo_192x192.png';
 import styles from './layout.module.scss'
+import { ButtonGroup, ExternalLink, Link } from '@/components/base/Button';
 
 export const Header: React.FC<{
     buttons?: ReactNode;
@@ -53,12 +52,9 @@ export const Header: React.FC<{
 
             { children && <div className={ styles.info }>{ children }</div> }
 
-            <div className={ styles.links }>
-                <DocumentationButton size={ size }/>
-
+            <ButtonGroup end>
                 { buttons }
-
-            </div>
+            </ButtonGroup>
         </header>
     )
 }
@@ -68,10 +64,10 @@ export const PublicHeader: React.FC = () => {
 
     return useMemo(() =>
             <Header buttons={ <Fragment>
-                <Link size="large" to={ user ? '/annotation-campaign' : '/login' }>
+                <Link color='primary' to={ user ? '/annotation-campaign' : '/login' }>
                     { user ? 'APLOSE' : 'Login' }
                 </Link>
-                <Link href="/" size="large">OSmOSE</Link>
+                <ExternalLink href="/">OSmOSE</ExternalLink>
             </Fragment>
             }/>,
         [ user ],

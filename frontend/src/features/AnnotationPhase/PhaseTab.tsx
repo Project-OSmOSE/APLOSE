@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { IonIcon } from '@ionic/react';
-import { addOutline, closeOutline } from 'ionicons/icons/index.js';
-import { Button, Tab, useAlert, useModal } from '@/components/ui';
+import { closeOutline } from 'ionicons/icons/index.js';
+import { Tab, useAlert, useModal } from '@/components/ui';
 import { AnnotationPhaseType } from '@/api';
 import { AnnotationPhaseCreateAnnotationModal, AnnotationPhaseCreateVerificationModal } from './PhaseCreateModal'
 import { useParams } from '@tanstack/react-router';
@@ -9,6 +9,8 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { endMutation } from './api'
 import { queryClient } from '@/api/queryClient';
 import { queryKeys } from '@/api/queryKeys';
+import { Button } from '@/components/base/Button';
+import { AddSquare } from '@solar-icons/react';
 import { AnnotationCampaign } from '@/features';
 
 export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: phaseType }) => {
@@ -82,11 +84,9 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
     if (!data?.campaign?.isEditable || !data?.campaign?.isUserAllowedToManage) return <Fragment/>
 
     return <Fragment>
-        <Button fill="clear" color="medium"
-                disabled={isFetching}
-                onClick={ openModal }>
+        <Button disabled={isFetching} onClick={ openModal }>
             { phaseType }
-            <IonIcon icon={ addOutline } slot="end"/>
+            <AddSquare weight="Linear" size={ 20 }/>
         </Button>
 
         { annotationModal.element }

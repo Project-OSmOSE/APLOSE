@@ -64,13 +64,6 @@
 
   }
 
-  .buttons {
-    display: grid;
-    grid-auto-flow: column;
-    gap: 0.5rem;
-    justify-content: space-between;
-  }
-
   @media (max-width: 800px) {
     .footer {
       grid-auto-flow: row !important;
@@ -88,6 +81,7 @@
 .filterButtons {
   display: grid;
   grid-auto-flow: column;
+  align-items: center;
   gap: 1rem;
 
   .progress {

@@ -1,0 +1,1 @@
+export type BaseColor = 'default' | 'primary' | 'warning' | 'danger'

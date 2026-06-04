@@ -2,7 +2,8 @@ import React, { Fragment, useMemo } from 'react';
 import { createFileRoute } from '@tanstack/react-router'
 import { IonNote, IonSpinner } from '@ionic/react';
 
-import { Button, Head, HelpButton, useModal } from '@/components/ui';
+import { Button, HelpButton } from '@/components/base/Button';
+import { Head, useModal } from '@/components/ui';
 
 import { ImportFromPath, ServerItem } from '@/features/Storage';
 import { Storage } from '@/features';
@@ -17,12 +18,12 @@ const StorageBrowser: React.FC = () => {
             <Head title="Storage"
                   buttons={
                       <Fragment>
-                          <Button fill="clear"
-                                  onClick={ searchModal.toggle }>
+                          <Button color="primary" onClick={ searchModal.toggle }>
                               Search path
                           </Button>
-                          <HelpButton url="/doc/user/data/generate"
-                                      label="How to generate a dataset"/>
+                          <HelpButton url="/doc/user/data/generate">
+                              How to generate a dataset
+                          </HelpButton>
                       </Fragment>
                   }/>
 
@@ -49,5 +50,5 @@ export const Route = createFileRoute('/_authenticated/_admin/storage')({
     pendingComponent: () => <Fragment>
         <Head title="Storage"/>
         <IonSpinner/>
-    </Fragment>
+    </Fragment>,
 })

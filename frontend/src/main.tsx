@@ -6,6 +6,7 @@ import '@ionic/react/css/core.css';
 import './css/ionic-override.css';
 import './css/annotation-colors.css';
 import './css/app.css';
+import './css/base.css';
 
 import { IonApp, IonSpinner, setupIonicReact } from '@ionic/react';
 import { createRouter, RouterProvider } from '@tanstack/react-router';

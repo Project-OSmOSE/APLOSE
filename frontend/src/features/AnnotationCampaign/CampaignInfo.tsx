@@ -1,5 +1,5 @@
 import React, { type ReactNode, useMemo } from 'react';
-import { Link } from '@/components/ui';
+import { Link } from '@/components/base/Button';
 
 
 export const CampaignName: React.FC<{
@@ -9,7 +9,7 @@ export const CampaignName: React.FC<{
 }> = ({ children, id, link }) => useMemo(() => {
     if (link && id) return <Link to="/annotation-campaign/$campaignID"
                                  params={ { campaignID: id } }
-                                 preload={ false }
-                                 color="primary">{ children }</Link>
+                                 color='primary'
+                                 preload={ false }>{ children }</Link>
     return <p>{ children }</p>
 }, [ children, id, link ])

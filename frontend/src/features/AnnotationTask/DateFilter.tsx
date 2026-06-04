@@ -1,12 +1,12 @@
 import React, { ChangeEvent, useCallback, useMemo } from 'react';
-import { Button, Modal, type ModalProps } from '@/components/ui';
+import { Modal, type ModalProps } from '@/components/ui';
 import { Input } from '@/components/form';
-import { IonIcon } from '@ionic/react';
-import { closeOutline } from 'ionicons/icons/index.js';
 import styles from './styles.module.scss'
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 import { useNavigate } from '@tanstack/react-router';
 import type { AllSpectrogramsFilters } from '@/features/AnnotationSpectrogram';
+import { Button } from '@/components/base/Button';
+import { Backspace } from '@solar-icons/react';
 
 
 function getDateString(event: ChangeEvent<HTMLInputElement>): string | undefined {
@@ -62,15 +62,15 @@ export const DateFilterModal: React.FC<ModalProps & {
         <Input label="Minimum date" type="datetime-local" placeholder="Min date" step="1"
                value={ minDate }
                onChange={ event => update({ from: getDateString(event) }) }/>
-        <Button fill="clear" onClick={ () => update({ from: undefined }) } disabled={ !minDate }>
-            <IonIcon icon={ closeOutline }/>
+        <Button onClick={ () => update({ from: undefined }) } disabled={ !minDate }>
+            <Backspace weight="Linear" size={ 20 }/>
         </Button>
 
         <Input label="Maximum date" type="datetime-local" placeholder="Max date" step="1"
                value={ maxDate }
                onChange={ event => update({ to: getDateString(event) }) }/>
-        <Button fill="clear" onClick={ () => update({ to: undefined }) } disabled={ !maxDate }>
-            <IonIcon icon={ closeOutline }/>
+        <Button onClick={ () => update({ to: undefined }) } disabled={ !maxDate }>
+            <Backspace weight="Linear" size={ 20 }/>
         </Button>
     </Modal>
 }

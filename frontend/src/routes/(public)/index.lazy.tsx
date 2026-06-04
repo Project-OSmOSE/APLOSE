@@ -3,7 +3,7 @@ import React, { Fragment, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { IonButton, IonIcon } from '@ionic/react';
 import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
-import { DocumentationButton, Link } from '@/components/ui';
+import { DocumentationButton, ExternalLink } from '@/components/base/Button';
 import { useHomeCollaborators } from '@/api/collaborator';
 import styles from './public.module.scss';
 
@@ -154,9 +154,9 @@ const Resources: React.FC = React.memo(() => (
         <div className={ styles.links }>
             <DocumentationButton/>
             /
-            <Link href="/app/images/campagne.pdf" target="_blank" color="medium">
+            <ExternalLink href="/app/images/campagne.pdf" target="_blank">
                 Annotation Campaign APOCADO
-            </Link>
+            </ExternalLink>
         </div>
     </div>
 ))

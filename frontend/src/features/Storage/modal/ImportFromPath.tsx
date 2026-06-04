@@ -1,13 +1,14 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useAppDispatch } from '@/features/App';
 import { gqlAPI } from '@/api/baseGqlApi';
-import { Button, HelpButton, Modal, ModalFooter, ModalHeader, type ModalProps, WarningText } from '@/components/ui';
+import { Modal, ModalFooter, ModalHeader, type ModalProps, WarningText } from '@/components/ui';
 import { Item } from '@/features/Storage';
 import { Searchbar } from '@/components/form';
 import { IonNote, IonSpinner } from '@ionic/react';
 import { useKeyDownEvent } from '@/features/UX';
 import { useQuery } from '@tanstack/react-query';
 import * as API from '../api'
+import { Button, HelpButton } from '@/components/base/Button';
 
 export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
     const [ searchQuery, setSearchQuery ] = useState<string | undefined>();
@@ -22,8 +23,8 @@ export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
     }, [ setSearch, setSearchQuery ])
 
     const { isLoading, error, data: item } = useQuery({
-        ...API.searchQuery({path: searchQuery ?? ''}),
-        enabled: !!searchQuery
+        ...API.searchQuery({ path: searchQuery ?? '' }),
+        enabled: !!searchQuery,
     })
 
     const dispatch = useAppDispatch();
@@ -56,14 +57,15 @@ export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
                 <Searchbar placeholder="Enter exact path"
                            search={ search }
                            onInput={ updateSearch }/>
-                <Button fill="clear" onClick={ validateSearch }>Search</Button>
+                <Button color="primary" onClick={ validateSearch }>Search</Button>
             </div>
 
             { content }
 
             <ModalFooter>
-                <HelpButton url="/doc/user/data/generate"
-                            label="How to generate a dataset"/>
+                <HelpButton url="/doc/user/data/generate">
+                    How to generate a dataset
+                </HelpButton>
             </ModalFooter>
         </Modal>
     )

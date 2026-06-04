@@ -6,7 +6,7 @@ import { keymap } from '@codemirror/view';
 import { defaultKeymap, indentWithTab } from '@codemirror/commands';
 import { Prec } from '@codemirror/state';
 
-import { Button, Kbd, Pagination, Table, Tbody, Td, Th, Thead, Tr, WarningText } from '@/components/ui';
+import { Kbd, Pagination, Table, Tbody, Td, Th, Thead, Tr, WarningText } from '@/components/ui';
 import { SQLRestAPI } from '@/api/sql';
 
 import { NBSP } from '@/service/type';
@@ -14,6 +14,7 @@ import { NBSP } from '@/service/type';
 import styles from './sql.module.scss';
 import { User } from '@/features';
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { Button, ButtonGroup } from '@/components/base/Button';
 
 const SqlQuery: React.FC = () => {
     const { data: user } = useSuspenseQuery(User.API.currentQuery)
@@ -87,11 +88,15 @@ const SqlQuery: React.FC = () => {
                      setupEditor();
                  } }/>
 
-            <Button fill="outline" className={ styles.run } onClick={ () => runQuery(1) }>Run query{ NBSP }<Kbd
-                keys={ [ 'ctrl', 'enter' ] }/></Button>
+            <ButtonGroup>
+                <Button color="primary" onClick={ () => runQuery(1) }>
+                    Run query{ NBSP }<Kbd keys={ [ 'ctrl', 'enter' ] }/>
+                </Button>
 
-            <Button fill="outline" className={ styles.download }
-                    onClick={ download } disabled={ !results }>Download</Button>
+                <Button color="primary" onClick={ download } disabled={ !results }>
+                    Download
+                </Button>
+            </ButtonGroup>
 
             { error && <WarningText className={ styles.error } error={ error }/> }
 

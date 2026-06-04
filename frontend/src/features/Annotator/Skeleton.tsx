@@ -1,12 +1,10 @@
-import React, { Fragment, ReactNode, useCallback, useEffect } from 'react';
+import React, { Fragment, ReactNode, useEffect } from 'react';
 import { Footer, Header } from '@/components/layout';
-import { Link, Progress } from '@/components/ui';
-import { IonIcon, IonNote } from '@ionic/react';
-import { helpBuoyOutline } from 'ionicons/icons/index.js';
+import { Progress } from '@/components/ui';
+import { IonNote } from '@ionic/react';
 import styles from './styles.module.scss';
 import { IoCheckmarkCircleOutline, IoChevronForwardOutline } from 'react-icons/io5';
 import { AnnotationTaskStatus } from '@/api';
-import { gqlAPI } from '@/api/baseGqlApi';
 import { useAppDispatch } from '@/features/App';
 import { useAnnotatorCanNavigate } from '@/features/Annotator/Navigation';
 import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
@@ -21,6 +19,8 @@ import { AnnotatorUXSlice } from '@/features/Annotator/UX';
 import { AnnotatorCommentSlice } from '@/features/Annotator/Comment';
 import { cleanGqlList } from '@/api/utils';
 import { AnnotatorAnnotationSlice, convertGqlToAnnotations } from '@/features/Annotator/Annotation';
+import { ExternalLink, Link } from '@/components/base/Button';
+import { Help } from '@solar-icons/react';
 
 export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
     const search = useSearch({ strict: false });
@@ -39,13 +39,6 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const canNavigate = useAnnotatorCanNavigate()
     const dispatch = useAppDispatch()
-
-    const onBack = useCallback(() => {
-        dispatch(gqlAPI.util.invalidateTags([ {
-            type: 'AnnotationPhase',
-            id: phase.id,
-        } ]))
-    }, [ phase, dispatch ])
 
     useEffect(() => {
         dispatch(AnnotatorVisualConfigurationSlice.actions.initCampaign({
@@ -94,18 +87,13 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                         buttons={ <Fragment>
 
                             { campaign.instructionsUrl &&
-                                <Link color="medium" target="_blank"
-                                      href={ campaign.instructionsUrl }>
-                                    <IonIcon icon={ helpBuoyOutline }
-                                             slot="start"/>
+                                <ExternalLink target="_blank" href={ campaign.instructionsUrl }>
+                                    <Help weight="Linear" size={ 20 }/>
                                     Campaign instructions
-                                </Link>
+                                </ExternalLink>
                             }
 
-                            <Link color="medium" fill="outline"
-                                  size="small"
-                                  onClick={ onBack }
-                                  to="/annotation-campaign/$campaignID/phase/$phaseType"
+                            <Link to="/annotation-campaign/$campaignID/phase/$phaseType"
                                   params={ { campaignID: campaign.id, phaseType: phase.phase } }
                                   search={ search }>
                                 Back to campaign

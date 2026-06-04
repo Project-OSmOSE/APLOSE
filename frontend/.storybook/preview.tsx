@@ -1,5 +1,7 @@
 import type { Preview } from '@storybook/tanstack-react/dist'
 
+import '../src/css/base.css';
+
 const preview: Preview = {
   parameters: {
     controls: {

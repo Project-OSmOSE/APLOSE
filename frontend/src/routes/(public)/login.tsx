@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { IonButton, IonSpinner } from '@ionic/react';
 import { useQuery } from '@tanstack/react-query';
+import { IonSpinner } from '@ionic/react';
 
-import { Link, useToast } from '@/components/ui';
+import { useToast } from '@/components/ui';
 import { Input } from '@/components/form';
+import { Button, Link } from '@/components/base/Button';
 import { getErrorMessage } from '@/service/function';
 
 import { useLogin } from '@/api';
@@ -87,10 +88,11 @@ const Login: React.FC = () => {
 
             { isLoading && <IonSpinner/> }
 
-            <IonButton color="primary" onClick={ submit }
-                       disabled={ isLoading }>
+            <Button color="primary"
+                    onClick={ submit }
+                    disabled={ isLoading }>
                 Login
-            </IonButton>
+            </Button>
         </div>
     </div>
 }

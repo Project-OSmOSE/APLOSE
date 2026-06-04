@@ -1,7 +1,8 @@
 import React from 'react';
-import { IonIcon } from '@ionic/react';
-import { addOutline } from 'ionicons/icons/index.js';
-import { ActionBar, Link } from '@/components/ui';
+import { WidgetAdd } from '@solar-icons/react';
+
+import { Link } from '@/components/base/Button';
+import { ActionBar } from '@/components/ui';
 
 import { AnnotationCampaignResetFiltersButton } from './ResetButton';
 import { AnnotationCampaignArchiveFilter } from './ArchiveFilter';
@@ -30,10 +31,8 @@ export const AnnotationCampaignListFilterActionBar: React.FC = () => {
                           }),
                           replace: true,
                       }) }
-                      actionButton={ user.isAdmin && <Link color="primary"
-                                                           fill="outline"
-                                                           to="/annotation-campaign/new">
-                          <IonIcon icon={ addOutline } slot="start"/>
+                      actionButton={ user.isAdmin && <Link color="primary" to="/annotation-campaign/new">
+                          <WidgetAdd weight="Linear" size={ 20 }/>
                           New annotation campaign
                       </Link> }>
         <AnnotationCampaignAnnotatorFilter/>
