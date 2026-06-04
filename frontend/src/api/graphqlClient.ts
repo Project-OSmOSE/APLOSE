@@ -1,6 +1,6 @@
 import type { RequestExtendedOptions } from 'graphql-request';
 import { GraphQLClient } from 'graphql-request';
-import { getTokenFromCookie } from '@/api/utils';
+import { clearTokenFromCookie, getTokenFromCookie } from '@/api/utils';
 
 
 /**
@@ -10,7 +10,7 @@ const requestMiddleware = async (request: any) => {
     const token = getTokenFromCookie();
 
     if (!token) {
-        document.cookie = 'token=;max-age=0;path=/';
+        clearTokenFromCookie()
         throw new Error('Unauthorized');
     }
 
@@ -35,7 +35,7 @@ const responseMiddleware = (response: any) => {
         );
 
         if (hasAuthError) {
-            document.cookie = 'token=;max-age=0;path=/';
+            clearTokenFromCookie()
             throw new Error('Unauthorized');
         }
 

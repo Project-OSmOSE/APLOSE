@@ -20,7 +20,11 @@ import { cleanGqlList } from '@/api/utils';
 export const currentQuery = queryOptions({
     queryKey: queryKeys.user.current,
     queryFn: () => graphqlClient.request<GetCurrentUserQuery>(GetCurrentUserDocument, {})
-        .then(data => data.currentUser!),
+        .then(data => data.currentUser!)
+        .catch(e =>  {
+            if (e.message === 'Unauthorized') return null
+            throw e
+        }),
 })
 
 export const allQuery = queryOptions({

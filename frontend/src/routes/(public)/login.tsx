@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { IonButton, IonSpinner } from '@ionic/react';
+import { useQuery } from '@tanstack/react-query';
 
 import { Link, useToast } from '@/components/ui';
 import { Input } from '@/components/form';
@@ -8,6 +9,7 @@ import { getErrorMessage } from '@/service/function';
 
 import { useLogin } from '@/api';
 import { NON_FILTERED_KEY_DOWN_EVENT, useEvent } from '@/features/UX';
+import { User } from '@/features'
 
 import styles from './public.module.scss';
 
@@ -25,6 +27,7 @@ const Login: React.FC = () => {
     const to = useMemo(() => search?.redirect || '/annotation-campaign', [ search ]);
     const [ login, { isLoading, error: loginError } ] = useLogin();
     const toast = useToast()
+    const { refetch: refetchUser } = useQuery(User.API.currentQuery)
 
     useEffect(() => {
         return () => {
@@ -43,11 +46,10 @@ const Login: React.FC = () => {
         if (!username || !password) return;
 
         await login({ username, password }).unwrap()
-            .then(() => {
-                navigate({ to, replace: true })
-            })
+            .then(() => refetchUser())
+            .then(() => navigate({ to, replace: true }))
             .catch(error => setErrors({ global: getErrorMessage(error) }));
-    }, [ setErrors, username, password, navigate, to, login ])
+    }, [ setErrors, username, password, navigate, to, login, refetchUser ])
 
     const onKbdEvent = useCallback((event: KeyboardEvent) => {
         switch (event.code) {

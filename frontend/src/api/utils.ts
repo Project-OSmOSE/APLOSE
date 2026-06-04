@@ -12,6 +12,9 @@ export function getTokenFromCookie(): Token | undefined {
     const tokenCookie = document.cookie?.split(';').filter((item) => item.trim().startsWith('token='))[0];
     return tokenCookie?.split('=').pop();
 }
+export function clearTokenFromCookie(): void {
+    document.cookie = 'token=;max-age=0;path=/';
+}
 
 export function prepareHeaders(headers: Headers) {
     // Set Authorization
