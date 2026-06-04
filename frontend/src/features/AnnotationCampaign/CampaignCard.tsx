@@ -27,13 +27,11 @@ const Card: React.FC<{ campaign: Campaign }> = React.memo(({ campaign }) => {
     let color: Color = 'secondary';
     let badge: string = 'Open';
 
+    const deadline = campaign.deadline ? new Date(campaign.deadline) : undefined;
     if (campaign.isArchived) {
         badge = 'Archived'
         color = 'medium'
-    }
-
-    const deadline = campaign.deadline ? new Date(campaign.deadline) : undefined;
-    if (deadline && (deadline.getTime() - 7 * 24 * 60 * 60 * 1000) <= NOW) {
+    } else if (deadline && (deadline.getTime() - 7 * 24 * 60 * 60 * 1000) <= NOW) {
         badge = `Due date: ${ dateToString(deadline) }`
         color = 'warning'
     }

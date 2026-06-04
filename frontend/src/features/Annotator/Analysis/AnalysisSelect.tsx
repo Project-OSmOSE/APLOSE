@@ -31,6 +31,7 @@ export const AnalysisSelect: React.FC = () => {
             }
             const range = `[${ frequencyToString(min) }Hz-${ frequencyToString(max) }Hz]`
             label += ` | scale: ${ parts.length > 0 ? parts.length : 1 } ${ range }`
+            label += ` | ${ a.colormap.name }`
             return { value: a!.id, label }
         }) ?? []
     }, [ allAnalysis ]);
