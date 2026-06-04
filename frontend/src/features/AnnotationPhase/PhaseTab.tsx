@@ -4,16 +4,18 @@ import { addOutline, closeOutline } from 'ionicons/icons/index.js';
 import { Button, Tab, useAlert, useModal } from '@/components/ui';
 import { AnnotationPhaseType } from '@/api';
 import { AnnotationPhaseCreateAnnotationModal, AnnotationPhaseCreateVerificationModal } from './PhaseCreateModal'
-import { useLoaderData, useParams } from '@tanstack/react-router';
-import { useMutation } from '@tanstack/react-query';
+import { useParams } from '@tanstack/react-router';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { endMutation } from './api'
 import { queryClient } from '@/api/queryClient';
 import { queryKeys } from '@/api/queryKeys';
+import { AnnotationCampaign } from '@/features';
 
 export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: phaseType }) => {
     const { phaseType: currentPhaseType } = useParams({ strict: false });
-    const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const phase = useMemo(() => phases?.find(p => p.phase === phaseType), [ phases, phaseType ])
+    const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { data, isFetching } = useQuery(AnnotationCampaign.API.byIdQuery({ id: campaignID }))
+    const phase = useMemo(() => data?.phases?.find(p => p.phase === phaseType), [ data, phaseType ])
 
     const alert = useAlert();
     const verificationModal = useModal(AnnotationPhaseCreateVerificationModal);
@@ -27,8 +29,8 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
                 annotationModal.toggle()
                 break;
             case AnnotationPhaseType.Verification:
-                if (!phases) return;
-                if (phases.find(p => p.phase === 'Annotation')) return verificationModal.toggle()
+                if (!data) return;
+                if (data.phases.find(p => p.phase === 'Annotation')) return verificationModal.toggle()
                 else {
                     return alert.showAlert({
                         type: 'Warning',
@@ -42,18 +44,13 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
                     })
                 }
         }
-    }, [ phases, annotationModal, verificationModal, alert, phaseType ])
+    }, [ data, annotationModal, verificationModal, alert, phaseType ])
 
     const onSuccess = useCallback(() => {
-        queryClient.invalidateQueries({ queryKey: queryKeys.campaign.byId({ id: campaign.id }) })
+        queryClient.invalidateQueries({ queryKey: queryKeys.campaign.byId({ id: campaignID }) })
         queryClient.invalidateQueries({ queryKey: queryKeys.campaign.base })
-        queryClient.invalidateQueries({
-            queryKey: queryKeys.phase.get({
-                campaignID: campaign.id,
-                phase: phaseType,
-            }),
-        })
-    }, [ campaign, phaseType ])
+        queryClient.invalidateQueries({ queryKey: queryKeys.phase.get({ campaignID, phase: phaseType }) })
+    }, [ campaignID, phaseType ])
     const { mutate: endPhase } = useMutation({
         ...endMutation,
         onSuccess,
@@ -71,20 +68,23 @@ export const AnnotationPhaseTab: React.FC<{ phaseType: AnnotationPhaseType }> = 
                 } ],
             });
         } else endPhase({ id: phase.id })
-    }, [ endPhase, phase, campaign, alert ]);
+    }, [ endPhase, phase, alert ]);
 
-    if (phase)
+    if (data?.campaign && phase)
         return <Tab to="/annotation-campaign/$campaignID/phase/$phaseType"
-                    params={ { campaignID: campaign.id, phaseType } } active={ currentPhaseType === phaseType }>
+                    disabled={isFetching}
+                    params={ { campaignID, phaseType } } active={ currentPhaseType === phaseType }>
             { phaseType }
 
-            { campaign.isEditable && campaign.isUserAllowedToManage && currentPhaseType === phaseType && phase?.isOpen &&
+            { data.campaign.isEditable && data.campaign.isUserAllowedToManage && currentPhaseType === phaseType && phase?.isOpen &&
                 <IonIcon icon={ closeOutline } slot="end" onClick={ end }/> }
         </Tab>
-    if (!campaign.isEditable || !campaign.isUserAllowedToManage) return <Fragment/>
+    if (!data?.campaign?.isEditable || !data?.campaign?.isUserAllowedToManage) return <Fragment/>
 
     return <Fragment>
-        <Button fill="clear" color="medium" onClick={ openModal }>
+        <Button fill="clear" color="medium"
+                disabled={isFetching}
+                onClick={ openModal }>
             { phaseType }
             <IonIcon icon={ addOutline } slot="end"/>
         </Button>

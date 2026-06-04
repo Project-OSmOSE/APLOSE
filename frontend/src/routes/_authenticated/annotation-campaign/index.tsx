@@ -10,11 +10,14 @@ import {
 } from '@/features/AnnotationCampaign';
 import { queryClient } from '@/api/queryClient';
 import { AnnotationCampaign } from '@/features';
+import { useQuery } from '@tanstack/react-query';
 
 const AnnotationCampaignList: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useLoaderData({ from: '/_authenticated' })
-    const campaigns = Route.useLoaderData()
+    const params = Route.useParams()
+    const search = Route.useSearch()
+    const { data: campaigns } = useQuery(AnnotationCampaign.API.allQuery({ ...search, ...params }))
 
     const init = useCallback(() => {
         navigate({

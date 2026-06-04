@@ -11,7 +11,7 @@ import { queryKeys } from '@/api/queryKeys';
 import { User } from '@/features';
 
 const Component: React.FC = () => {
-    const { status, error, isFetching } = useQuery(User.API.currentQuery)
+    const { status, error, isFetching, data: user } = useQuery(User.API.currentQuery)
 
     const navigate = useNavigate();
     const router = useRouter();
@@ -29,19 +29,15 @@ const Component: React.FC = () => {
     }, [ router, toast, navigate, error ])
 
     useEffect(() => {
-        if (!isFetching && status === 'error') handleNotConnected()
-    }, [ status ]);
+        if (!isFetching && (status === 'error' || !user)) handleNotConnected()
+    }, [ status, user ]);
 
     return <AploseSkeleton><Outlet/></AploseSkeleton>
 }
 export const Route = createFileRoute('/_authenticated')({
     loader: async () => {
-        try {
-            const user = await queryClient.ensureQueryData(User.API.currentQuery)
-            if (user) return { user }
-        } catch (e) {
-            if (![ 'Unauthorized', 'Authentication failed' ].includes((e as Error).message)) throw e
-        }
+        const user = await queryClient.ensureQueryData(User.API.currentQuery)
+        if (user) return { user }
         throw redirect({
             to: '/login',
             search: { redirect: location.pathname.replace('/app', '') },
