@@ -9,12 +9,14 @@ import { type Colormap, COLORMAPS } from '@/features/Colormap';
 import { DatasetSelect } from '@/features/Dataset';
 
 import styles from './new.module.scss';
-import { AnnotationCampaign, Dataset, Storage } from '@/features';
+import { AnnotationCampaign, Dataset } from '@/features';
+import { Slice as StorageSlice } from '@/features/Storage';
 import { queryClient } from '@/api/queryClient';
 import { useMutation } from '@tanstack/react-query';
 import type { GqlError } from '@/api/utils';
 import type { CreateCampaignMutationVariables } from '@/features/AnnotationCampaign';
 import { useAppDispatch } from '@/features/App';
+import { queryKeys } from '@/api/queryKeys';
 
 const NewAnnotationCampaign: React.FC = () => {
     const dataset_id = Route.useSearch({ select: ({ dataset_id }) => dataset_id });
@@ -99,7 +101,7 @@ const NewAnnotationCampaign: React.FC = () => {
             colormapInvertedDefault,
         }).then(data => {
             if (!data?.annotationCampaign) return;
-            dispatch(Storage.Slice.actions.invalidatePath(data.annotationCampaign.dataset.path))
+            dispatch(StorageSlice.actions.invalidatePath(data.annotationCampaign.dataset.path))
         })
     }, [ name, description, instructionsUrl, createCampaign, deadline, datasetID, analysisIDs, allowImageTuning, allowColormapTuning, colormapDefault, colormapInvertedDefault, dispatch ])
 
@@ -202,6 +204,12 @@ export const Route = createFileRoute('/_authenticated/_admin/annotation-campaign
     validateSearch: (search: Record<string, unknown>) => ({
         dataset_id: search['dataset_id'] as string,
     }),
-    loader: () => queryClient.ensureQueryData(Dataset.API.listWithAnalysisQuery),
+    loader: async () => {
+        const datasets = await queryClient.ensureQueryData(Dataset.API.listWithAnalysisQuery)
+        if (queryClient.getQueryState(queryKeys.dataset.listWithAnalysis)?.isInvalidated) {
+            return await queryClient.fetchQuery(Dataset.API.listWithAnalysisQuery)
+        }
+        return datasets
+    },
     component: NewAnnotationCampaign,
 })

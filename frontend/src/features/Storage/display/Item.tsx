@@ -1,11 +1,13 @@
 import React, { Fragment, type MouseEvent, useCallback, useMemo, useState } from 'react';
-import { ImportStatusEnum, } from '@/api';
+import { ImportStatusEnum } from '@/api';
 import styles from './styles.module.scss';
 import {
-    type ImportDatasetFromStorageMutation,
+    type ImportDatasetFromStorageMutationVariables,
     ItemList,
     type StorageAnalysisFragment,
     type StorageItemFragment,
+    Slice as StorageSlice,
+    useStorageSearch
 } from '@/features/Storage';
 import { IonButton, IonNote, IonSpinner } from '@ionic/react';
 import {
@@ -24,7 +26,6 @@ import { DatasetName } from '@/features/Dataset';
 import { importMutation } from '../api'
 import { useMutation } from '@tanstack/react-query';
 import { useAppDispatch } from '@/features/App';
-import { Storage } from '@/features';
 
 type Props = {
     parentItem?: StorageItemFragment,
@@ -43,7 +44,7 @@ export const Item: React.FC<Props> = ({
                                           forceOpen,
                                           disableImport,
                                       }) => {
-    const item = Storage.useStorageSearch(path)
+    const item = useStorageSearch(path)
 
     // Open
     const [ _isOpen, _setIsOpen ] = useState<boolean>(forceOpen || false);
@@ -61,19 +62,7 @@ export const Item: React.FC<Props> = ({
     // Import
     const toast = useToast()
     const dispatch = useAppDispatch()
-    const onError = useCallback((error: Error) => {
-        toast.raiseError({ error })
-    }, [ toast ])
-    const onSuccess = useCallback((data: ImportDatasetFromStorageMutation) => {
-        const path = data.importDataset?.dataset.path
-        if (!path) return
-        dispatch(Storage.Slice.actions.invalidatePath(path))
-    }, [ onUpdated, dispatch ])
-    const { mutate, isPending } = useMutation({
-        ...importMutation,
-        onError,
-        onSuccess,
-    })
+    const { mutateAsync, isPending } = useMutation(importMutation)
     const canImport = useMemo(() => {
         if (!item || item.error || isPending || disableImport) return false
         switch (item.__typename) {
@@ -84,25 +73,32 @@ export const Item: React.FC<Props> = ({
                 return parentItem && item.importStatus === ImportStatusEnum.Partial || item.importStatus === ImportStatusEnum.Available
         }
     }, [ item, isPending, disableImport ])
-    const download = useCallback((event: MouseEvent) => {
+    const download = useCallback(async (event: MouseEvent) => {
         event.stopPropagation()
         if (!canImport || !item) return;
+        const options: ImportDatasetFromStorageMutationVariables = {
+            datasetPath: item.path,
+        }
         switch (item.__typename) {
             case 'DatasetStorageNode':
-                mutate({
-                    datasetPath: item.path,
-                })
+                options.datasetPath = item.path
                 break;
             case 'AnalysisStorageNode':
-                mutate({
-                    analysisPath: item.path,
-                    datasetPath: parentItem!.path,
-                })
+                options.analysisPath = item.path
+                options.datasetPath = parentItem!.path
                 break;
             default:
                 return;
         }
-    }, [ canImport, item, mutate, parentItem ])
+        try {
+            const data = await mutateAsync(options)
+            const path = data.importDataset?.dataset.path
+            if (!path) return
+            dispatch(StorageSlice.actions.invalidatePath(path))
+        } catch (error) {
+            toast.raiseError({ error })
+        }
+    }, [ canImport, item, mutateAsync, parentItem, toast, dispatch ])
 
     return useMemo(() => {
         let rowIcon;
