@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
 import { createFileRoute, Outlet, redirect, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query';
-import { User } from '@/features';
-import { queryClient } from '@/api/queryClient';
+import { UserAPI } from '@/features/User';
 
 const Component: React.FC = () => {
-    const { data: user } = useQuery(User.API.currentQuery)
+    const { data: user } = useQuery(UserAPI.currentQuery)
 
     const navigate = useNavigate();
     useEffect(() => {
@@ -15,9 +14,10 @@ const Component: React.FC = () => {
     return <Outlet/>
 }
 export const Route = createFileRoute('/_authenticated/_superuser')({
-    loader: async () => {
-        const user = await queryClient.ensureQueryData(User.API.currentQuery)
-        if (!user.isSuperuser) throw redirect({ to: '/annotation-campaign' })
+    loader: async ({ parentMatchPromise }) => {
+        const { loaderData } = await parentMatchPromise
+        if (!loaderData?.user?.isSuperuser) throw redirect({ to: '/annotation-campaign' })
+        return { ...loaderData }
     },
     component: Component,
 })

@@ -26,7 +26,8 @@ import { AnnotationsBloc } from '@/features/Annotator/Annotation/AnnotationsBloc
 import styles from './$spectrogramID.module.scss';
 import { type AllSpectrogramsFilters } from '@/features/AnnotationSpectrogram';
 import { queryClient } from '@/api/queryClient';
-import { AnnotationCampaign, AnnotationSpectrogram, User } from '@/features';
+import { AnnotationCampaign, AnnotationSpectrogram } from '@/features';
+import { UserAPI } from '@/features/User';
 import { useQuery } from '@tanstack/react-query';
 
 const AnnotatorPage: React.FC = () => {
@@ -133,7 +134,7 @@ export const Route = createFileRoute(
     },
     loaderDeps: ({ search }) => search as AllSpectrogramsFilters,
     loader: async ({ params: { campaignID, phaseType, spectrogramID }, deps }) => {
-        const user = await queryClient.ensureQueryData(User.API.currentQuery)
+        const user = await queryClient.ensureQueryData(UserAPI.currentQuery)
         const [
             { spectrogram, ...data },
             { analysis }

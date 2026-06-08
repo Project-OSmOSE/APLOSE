@@ -1,10 +1,11 @@
 import React from 'react';
-import { Field, type FieldControlProps } from '@base-ui/react'
+import { Field, type FieldControlProps as BaseFieldControlProps } from '@base-ui/react'
 import { Input } from '@/components/base/Input'
 
-export type { FieldControlProps } from '@base-ui/react/field'
+export type FieldControlProps = BaseFieldControlProps
 
 export const Control: React.FC<FieldControlProps> = React.memo((props) => (
-    <Field.Control render={ props => <Input type="text" { ...props }/> }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    <Field.Control render={ ({ ref, ...props }) => <Input type="text" { ...props }/> }
                    { ...props } />
 ))

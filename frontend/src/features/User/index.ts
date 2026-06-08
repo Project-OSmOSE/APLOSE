@@ -1,10 +1,8 @@
-export * as API from './api'
+export * as UserAPI from './api'
+export * as UserForm from './form'
+
 export type * from './api'
 
-export * as Form from './form'
-
 export * from './MailButton'
-export * from './UpdatePassword'
 export * from './UserSelect'
 
-export * as User from './index.parts'

@@ -8,13 +8,13 @@ import type { BaseUIEvent } from '@base-ui/react';
 import { useNavigate } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { Route } from '@/routes/(public)/login';
-import { User } from '@/features';
+import { UserAPI } from '@/features/User';
 import { useToast } from '@/components/ui';
 import { IonSpinner } from '@ionic/react';
 
 export const Login: React.FC = () => {
     const [ mutate, { isLoading: isLoginIn } ] = AuthRestAPI.endpoints.login.useMutation()
-    const { refetch: refetchUser, isRefetching } = useQuery(User.API.currentQuery)
+    const { refetch: refetchUser, isRefetching } = useQuery(UserAPI.currentQuery)
 
     const isLoading = useMemo(() => isLoginIn || isRefetching, [ isLoginIn, isRefetching ])
 

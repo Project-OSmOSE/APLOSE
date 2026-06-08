@@ -21,7 +21,8 @@ import { AnnotationFileRangeNode, AnnotationTaskNodeNodeConnection, Maybe, UserN
 import { useDownloadAnnotations, useDownloadProgress } from '@/api/download';
 import { NBSP } from '@/service/type';
 import { useQuery } from '@tanstack/react-query';
-import { AnnotationFileRange, User } from '@/features';
+import { AnnotationFileRange } from '@/features';
+import { UserAPI } from '@/features/User';
 import { useLoaderData } from '@tanstack/react-router';
 import { Button, ButtonGroup } from '@/components/base/Button';
 import { Download } from '@solar-icons/react';
@@ -43,7 +44,7 @@ type Sort = {
 export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
-    const { data, isLoading: isLoadingUsers, error: userError } = useQuery(User.API.allQuery)
+    const { data, isLoading: isLoadingUsers, error: userError } = useQuery(UserAPI.allQuery)
     const {
         data: allFileRanges,
         isFetching: isLoadingFileRanges,

@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { IonButton, IonIcon } from '@ionic/react';
 import { closeOutline, menuOutline } from 'ionicons/icons/index.js';
 
-import { User } from '@/features';
+import { UserAPI } from '@/features/User';
 
 import logo from '/images/ode_logo_192x192.png';
 import styles from './layout.module.scss'
@@ -16,7 +16,7 @@ export const Header: React.FC<{
     size?: 'small' | 'default';
     canNavigate?: () => Promise<boolean>;
 }> = ({ children, buttons, size, canNavigate }) => {
-    const { data: user } = useQuery(User.API.currentQuery)
+    const { data: user } = useQuery(UserAPI.currentQuery)
 
     const [ isOpen, setIsOpen ] = useState<boolean>(false);
     const navigate = useNavigate();
@@ -60,7 +60,7 @@ export const Header: React.FC<{
 }
 
 export const PublicHeader: React.FC = () => {
-    const { data: user } = useQuery(User.API.currentQuery)
+    const { data: user } = useQuery(UserAPI.currentQuery)
 
     return useMemo(() =>
             <Header buttons={ <Fragment>

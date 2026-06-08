@@ -12,12 +12,12 @@ import { SQLRestAPI } from '@/api/sql';
 import { NBSP } from '@/service/type';
 
 import styles from './sql.module.scss';
-import { User } from '@/features';
+import { UserAPI } from '@/features/User';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { Button, ButtonGroup } from '@/components/base/Button';
 
 const SqlQuery: React.FC = () => {
-    const { data: user } = useSuspenseQuery(User.API.currentQuery)
+    const { data: user } = useSuspenseQuery(UserAPI.currentQuery)
     const { data: schema } = SQLRestAPI.endpoints.sqlSchema.useQuery();
     const [ run, { data: results, error } ] = SQLRestAPI.endpoints.postSQL.useMutation();
 

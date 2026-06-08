@@ -6,13 +6,13 @@ import { ExternalLink, Link } from '@/components/base/Button';
 import styles from './layout.module.scss';
 import logo from '/images/ode_logo_192x192.png';
 import { useQuery } from '@tanstack/react-query';
-import { User } from '@/features';
+import { UserAPI } from '@/features/User';
 import { useLocation } from '@tanstack/react-router';
 
 export const Navbar: React.FC<{ className?: string }> = ({ className }) => {
     const [ isOpen, setIsOpen ] = useState<boolean>(false);
     const { logout } = useLogout()
-    const { data: user } = useQuery(User.API.currentQuery)
+    const { data: user } = useQuery(UserAPI.currentQuery)
 
     const toggleOpening = useCallback(() => {
         setIsOpen(previous => !previous);

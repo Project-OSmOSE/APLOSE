@@ -5,8 +5,7 @@ import { IonSpinner } from '@ionic/react';
 import { FadedText, WarningText } from '@/components/ui';
 import { FormBloc } from '@/components/form';
 
-import { UpdatePassword } from '@/features/User';
-import { User } from '@/features';
+import { UserForm } from '@/features/User';
 
 import styles from './account.module.scss';
 
@@ -25,9 +24,9 @@ const Account: React.FC = () => {
                         </div>
                     </FormBloc>
 
-                    <User.Form.Email/>
+                    <UserForm.Email/>
 
-                    <UpdatePassword/>
+                    <UserForm.Password/>
                 </div>
             </div>,
         [ user ])

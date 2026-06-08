@@ -12,7 +12,8 @@ import { type AllSpectrogramsFilters, SpectrogramRow } from '@/features/Annotati
 
 import styles from './phase.$phaseType.module.scss';
 import { queryClient } from '@/api/queryClient';
-import { AnnotationPhase, AnnotationSpectrogram, User } from '@/features';
+import { AnnotationPhase, AnnotationSpectrogram } from '@/features';
+import { UserAPI } from '@/features/User';
 import { IonNote, IonSpinner } from '@ionic/react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -130,7 +131,7 @@ export const Route = createFileRoute('/_authenticated/annotation-campaign/$campa
     loaderDeps: ({ search }) => search as AllSpectrogramsFilters,
     loader: async ({ params: { campaignID, phaseType }, deps }) => {
         const PAGE_SIZE = 20
-        const user = await queryClient.ensureQueryData(User.API.currentQuery)
+        const user = await queryClient.ensureQueryData(UserAPI.currentQuery)
         const [
             phase,
             { spectrograms, totalCount, resumeId },

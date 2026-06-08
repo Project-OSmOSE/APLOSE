@@ -8,10 +8,10 @@ import { useToast } from '@/components/ui';
 import { queryClient } from '@/api/queryClient';
 import { queryKeys } from '@/api/queryKeys';
 
-import { User } from '@/features';
+import { UserAPI } from '@/features/User';
 
 const Component: React.FC = () => {
-    const { status, error, isFetching, data: user } = useQuery(User.API.currentQuery)
+    const { status, error, isFetching, data: user } = useQuery(UserAPI.currentQuery)
 
     const navigate = useNavigate();
     const router = useRouter();
@@ -36,7 +36,7 @@ const Component: React.FC = () => {
 }
 export const Route = createFileRoute('/_authenticated')({
     loader: async () => {
-        const user = await queryClient.ensureQueryData(User.API.currentQuery)
+        const user = await queryClient.ensureQueryData(UserAPI.currentQuery)
         if (user) return { user }
         throw redirect({
             to: '/login',
