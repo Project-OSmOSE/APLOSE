@@ -1,8 +1,8 @@
 import React, { type ReactNode, useCallback, useMemo } from 'react';
 import { ExternalLink } from './ExternalLink';
 import { Copy, Help } from '@solar-icons/react';
-import { useToast } from '@/components/ui';
 import { Button } from './Button';
+import { Toast } from '@/components/base/Toast';
 
 export * from './Button';
 export * from './ButtonGroup';
@@ -22,12 +22,16 @@ export const HelpButton: React.FC<{ url: string, children?: ReactNode }> = ({ ur
 }
 
 export const CopyErrorStackButton: React.FC<{ stack: any, withLabel?: boolean }> = ({ stack, withLabel }) => {
-    const toast = useToast();
+    const toastManager = Toast.useToastManager();
 
     const copy = useCallback(async () => {
         await navigator.clipboard.writeText(typeof stack == 'string' ? stack : JSON.stringify(stack))
-        toast.present(`Error stack trace has been copied into the clipboard`, 'medium')
-    }, [ toast, stack ])
+        toastManager.add({
+            title: 'Copied!',
+            description: `Error stack trace has been copied into the clipboard`,
+            type: 'success',
+        })
+    }, [ toastManager, stack ])
 
     return useMemo(() =>
             <Button color="danger" onClick={ copy }>

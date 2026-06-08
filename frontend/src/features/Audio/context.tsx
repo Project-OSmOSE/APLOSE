@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { useToast } from '@/components/ui';
+import { Toast } from '@/components/base/Toast';
 
 type AudioState = 'play' | 'pause'
 
@@ -66,23 +66,7 @@ export const AudioProvider: React.FC<AudioContextProvider> = ({ children }) => {
   const [ playbackRate, _setPlaybackRate ] = useState<number>(1);
   const [ state, _setState ] = useState<AudioState>('pause');
   const [ source, setSource ] = useState<string | undefined>();
-  const toast = useToast();
-
-  useEffect(() => {
-    _setTime(0)
-    pause()
-    _setState('pause')
-    _setStopTime(undefined)
-    const interval = setInterval(() => {
-      if (!elementRef.current || elementRef.current?.paused) return;
-
-      const time = elementRef.current?.currentTime;
-      if (stopTimeRef.current && time && time > stopTimeRef.current) pause();
-      else _setTime(time)
-    }, 1 / 30) // 1/30 is the more common video FPS os it should be enough to update currentTime in view
-
-    return () => clearInterval(interval)
-  }, [ source ]);
+  const toastManager = Toast.useToastManager();
 
   const setStopTime = useCallback((stopTime?: number) => {
     _setStopTime(stopTime)
@@ -118,12 +102,9 @@ export const AudioProvider: React.FC<AudioContextProvider> = ({ children }) => {
     if (start) seek(start)
     setStopTime(end)
     elementRef?.current?.play().catch(error => {
-      toast.raiseError({
-        message: 'Audio failed playing',
-        error,
-      })
+      toastManager.addError({ title: 'Audio failed playing', error })
     });
-  }, [ seek, setStopTime ])
+  }, [ seek, setStopTime, toastManager ])
 
   const onPlay = useCallback(() => {
     _setState('play')
@@ -157,6 +138,22 @@ export const AudioProvider: React.FC<AudioContextProvider> = ({ children }) => {
     },
     seek, play, pause, download,
   }), [ time, source, playbackRate, duration, setPlaybackRate, state, stopTime, setStopTime, setSource, pause, play, seek, download ]);
+
+  useEffect(() => {
+    _setTime(0)
+    pause()
+    _setState('pause')
+    _setStopTime(undefined)
+    const interval = setInterval(() => {
+      if (!elementRef.current || elementRef.current?.paused) return;
+
+      const time = elementRef.current?.currentTime;
+      if (stopTimeRef.current && time && time > stopTimeRef.current) pause();
+      else _setTime(time)
+    }, 1 / 30) // 1/30 is the more common video FPS os it should be enough to update currentTime in view
+
+    return () => clearInterval(interval)
+  }, [ source ]);
 
   return (
     <AudioContext.Provider value={ contextValue }>

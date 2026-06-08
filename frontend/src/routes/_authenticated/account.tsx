@@ -1,35 +1,30 @@
-import React, { useMemo } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 import { IonSpinner } from '@ionic/react';
 
-import { FadedText, WarningText } from '@/components/ui';
-import { FormBloc } from '@/components/form';
+import { Head, WarningText } from '@/components/ui';
 
 import { UserForm } from '@/features/User';
-
-import styles from './account.module.scss';
+import { Field } from '@/components/base/Field';
+import { Form } from '@/components/base/Form';
 
 const Account: React.FC = () => {
     const { user } = useLoaderData({ from: '/_authenticated' })
 
-    return useMemo(() =>
-            <div className={ styles.page }>
-                <h2>Account</h2>
+    return useMemo(() => <Fragment>
+        <Head title="Account"/>
 
-                <div className={ styles.content }>
-                    <FormBloc>
-                        <div>
-                            <FadedText>Username</FadedText>
-                            <p>{ user.username }</p>
-                        </div>
-                    </FormBloc>
+        <Form>
+            <Field.Root>
+                <Field.Label>Username</Field.Label>
+                <Field.Control value={ user.username } disabled/>
+            </Field.Root>
+        </Form>
 
-                    <UserForm.Email/>
+        <UserForm.Email/>
 
-                    <UserForm.Password/>
-                </div>
-            </div>,
-        [ user ])
+        <UserForm.Password/>
+    </Fragment>, [ user ])
 }
 
 export const Route = createFileRoute('/_authenticated/account')({

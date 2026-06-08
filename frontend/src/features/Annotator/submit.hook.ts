@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { useToast } from '@/components/ui';
+import { Toast } from '@/components/base/Toast';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 import { useKeyDownEvent } from '@/features/UX/Events';
@@ -26,7 +26,7 @@ export const useAnnotatorSubmit = () => {
         isEditionAuthorized,
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const openAnnotator = useOpenAnnotator()
-    const toast = useToast()
+    const toastManager = Toast.useToastManager()
     const navigate = useNavigate()
     const allAnnotations = useAppSelector(selectAllAnnotations)
     const taskComments = useAppSelector(selectTaskComments)
@@ -39,15 +39,8 @@ export const useAnnotatorSubmit = () => {
     const allFileIsSeen = useAppSelector(selectAllFileIsSeen)
     const start = useAppSelector(selectStart)
 
-    const submit = useCallback(async () => {
+    const realSubmit = useCallback(() => {
         if (!isEditionAuthorized) return;
-        if (!allFileIsSeen) {
-            const force = await toast.raiseError({
-                message: 'Be careful, you haven\' see all of the file yet. Try scrolling to the end or changing the zoom level',
-                canForce: true, forceText: 'Force',
-            });
-            if (!force) return;
-        }
         submitTask({
             campaignID: campaign.id,
             spectrogramID: spectrogram.id,
@@ -57,8 +50,27 @@ export const useAnnotatorSubmit = () => {
             startedAt: start.toISOString(),
             endedAt: new Date().toISOString(),
         })
-    }, [ openAnnotator, toast, allAnnotations, isEditionAuthorized, submitTask, allFileIsSeen, start, taskComments, campaign, phase, spectrogram ])
-    useKeyDownEvent([ 'Enter', 'NumpadEnter' ], submit)
+    }, [ isEditionAuthorized, allAnnotations, submitTask, start, taskComments, campaign, phase, spectrogram ])
+    const submit = useCallback(() => {
+        if (!isEditionAuthorized) return;
+        if (!allFileIsSeen) {
+            const id = toastManager.add({
+                title: 'File unseen',
+                description: 'Be careful, you haven\' see all of the file yet. Try scrolling to the end or changing the zoom level',
+                type: 'warning',
+                actionProps: {
+                    children: 'Submit anyway',
+                    onClick: () => {
+                        toastManager.close(id)
+                        realSubmit()
+                    },
+                },
+            })
+            return;
+        }
+        realSubmit()
+    }, [ toastManager, realSubmit, isEditionAuthorized, allFileIsSeen ])
+    useKeyDownEvent([ 'Enter', 'NumpadEnter' ], () => submit())
 
     useEffect(() => {
         if (!isSuccess) return;
@@ -73,7 +85,7 @@ export const useAnnotatorSubmit = () => {
     }, [ isSuccess, navigate ]);
 
     useEffect(() => {
-        if (error) toast.raiseError({ error })
+        if (error) toastManager.addError({ title: 'Submission failed', error })
     }, [ error ]);
 
     return { submit, isSuccess, error, ...submitInfo }

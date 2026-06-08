@@ -320,13 +320,8 @@
   }
 
   .content {
-    display: grid;
-    align-items: start;
-    align-content: stretch;
-    grid-template-rows: auto 1fr;
     min-height: 0;
     overflow: hidden;
-    gap: 1rem;
 
     h2 {
       padding: 0.5rem 0 0;

@@ -2,7 +2,7 @@ import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState }
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
 import { IonButton, IonSpinner } from '@ionic/react';
 
-import { useToast } from '@/components/ui';
+import { Toast } from '@/components/base/Toast';
 import { FormBloc, Input, Select, Textarea } from '@/components/form';
 
 import { type Colormap, COLORMAPS } from '@/features/Colormap';
@@ -28,7 +28,7 @@ const NewAnnotationCampaign: React.FC = () => {
     } = useMutation(AnnotationCampaign.API.createMutation)
     const formErrors = useMemo(() => (data?.errors ?? []) as GqlError<CreateCampaignMutationVariables>[], [ data ])
 
-    const toast = useToast();
+    const toastManager = Toast.useToastManager();
     const navigate = useNavigate();
 
     const page = useRef<HTMLDivElement | null>(null);
@@ -104,7 +104,7 @@ const NewAnnotationCampaign: React.FC = () => {
     }, [ name, description, instructionsUrl, createCampaign, deadline, datasetID, analysisIDs, allowImageTuning, allowColormapTuning, colormapDefault, colormapInvertedDefault, dispatch ])
 
     useEffect(() => {
-        if (errors) toast.raiseError({ error: errors })
+        if (errors) toastManager.addError({ title: 'Campaign creation failed', error: errors })
     }, [ errors ]);
     useEffect(() => {
         if (!data?.annotationCampaign) return;

@@ -11,8 +11,11 @@
 
     /* Success */
     --color-success: #85B14D;
+    --color-success-text: #618038;
     --color-success-rgb: 133, 177, 77;
     --color-success-h: 86;
+    --color-success-s: 39%;
+    --color-success-l: 50%;
     --color-success-shade: #759c44;
     --color-success-tint: #91b95f;
 
@@ -63,12 +66,18 @@
     --ion-color-secondary-shade: #00a0bf;
     --ion-color-secondary-tint: #1abddd;
 
-
+    --box-shadow-small: 0 1px 0 rgba(var(--color-dark-rgb),0.05),
+                        0 0 8px rgba(var(--color-dark-rgb),0.1);
+    --box-shadow: 0px 0px 2px rgba(var(--color-dark-rgb),0.05),
+                  0px 0px 16px rgba(var(--color-dark-rgb),0.1);
     /*--aplose-border-color: rgba(var(--ion-color-medium-rgb), 0.5);*/
-    /*--aplose-box-shadow: rgba(var(--ion-color-dark-rgb), 0.1) 0 1rem 50px,*/
     /*rgba(var(--ion-color-dark-rgb), 0.2) 0 0.25rem 10px;*/
     /*--aplose-backdrop-color: rgba(var(--ion-color-dark-rgb), 0.15);*/
     /*--aplose-backdrop: 0 0 0 200000px var(--aplose-backdrop-color);*/
+}
+
+#root {
+    isolation: isolate;
 }
 
 body {

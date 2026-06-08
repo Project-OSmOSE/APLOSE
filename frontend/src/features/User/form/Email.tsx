@@ -5,14 +5,14 @@ import { Field } from '@/components/base/Field';
 import { Button, ButtonGroup } from '@/components/base/Button';
 import type { BaseUIEvent } from '@base-ui/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useToast } from '@/components/ui';
 import { IonSpinner } from '@ionic/react';
 import * as API from '../api';
 import { updateEmailMutation } from '../api';
+import { Toast } from '@/components/base/Toast';
 
 export const Email: React.FC = () => {
     const { data: user } = useQuery(API.currentQuery)
-    const toast = useToast();
+    const toastManager = Toast.useToastManager()
     const {
         mutate,
         isPending,
@@ -27,9 +27,9 @@ export const Email: React.FC = () => {
         try {
             await mutate({ email })
         } catch (error) {
-            toast.raiseError({ error })
+            toastManager.addError({ title: 'Email update failed', error })
         }
-    }, [ mutate, toast ])
+    }, [ mutate, toastManager ])
 
     const errors = useMemo(() =>
             data?.currentUserUpdate?.errors.reduce((prev, current) => ({

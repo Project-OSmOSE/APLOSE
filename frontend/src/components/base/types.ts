@@ -1,1 +1,1 @@
-export type BaseColor = 'default' | 'primary' | 'warning' | 'danger'
+export type BaseColor = 'default' | 'primary' | 'success' | 'warning' | 'danger'

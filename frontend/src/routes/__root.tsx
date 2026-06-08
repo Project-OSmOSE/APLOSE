@@ -7,21 +7,24 @@ import styles from '@/routes/(public)/public.module.scss';
 import { Footer, PublicHeader } from '@/components/layout';
 import { IonNote } from '@ionic/react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { BaseProvider } from '@/components/base/Provider';
 
 
 export const Route = createRootRouteWithContext()({
     component: () =>
-        <AudioProvider>
-            <AlertProvider>
-                <ReactFlowProvider>
-                    <Outlet/>
+        <BaseProvider>
+            <AudioProvider>
+                <AlertProvider>
+                    <ReactFlowProvider>
+                        <Outlet/>
 
-                    {/* Dev tools */}
-                    <TanStackRouterDevtools/>
-                    <ReactQueryDevtools initialIsOpen={false} position='right' />
-                </ReactFlowProvider>
-            </AlertProvider>
-        </AudioProvider>,
+                        {/* Dev tools */ }
+                        <TanStackRouterDevtools/>
+                        <ReactQueryDevtools initialIsOpen={ false } position="right"/>
+                    </ReactFlowProvider>
+                </AlertProvider>
+            </AudioProvider>
+        </BaseProvider>,
 
     notFoundComponent: () =>
         <div className={ styles.notFoundPage }>

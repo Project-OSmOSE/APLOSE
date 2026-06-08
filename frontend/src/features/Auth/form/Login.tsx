@@ -9,7 +9,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { Route } from '@/routes/(public)/login';
 import { UserAPI } from '@/features/User';
-import { useToast } from '@/components/ui';
+import { Toast } from '@/components/base/Toast';
 import { IonSpinner } from '@ionic/react';
 
 export const Login: React.FC = () => {
@@ -22,7 +22,7 @@ export const Login: React.FC = () => {
     const to = useMemo(() => search?.redirect || '/annotation-campaign', [ search ]);
     const navigate = useNavigate();
 
-    const toast = useToast()
+    const toastManager = Toast.useToastManager()
 
     const submit = useCallback(async (event: BaseUIEvent<React.FormEvent<HTMLFormElement>>) => {
         event.preventDefault();
@@ -35,9 +35,9 @@ export const Login: React.FC = () => {
             await refetchUser()
             await navigate({ to, replace: true })
         } catch (error) {
-            toast.raiseError({ error })
+            toastManager.addError({ title: 'Login failed', error })
         }
-    }, [ mutate, refetchUser, navigate, to, toast ])
+    }, [ mutate, refetchUser, navigate, to, toastManager ])
 
     return useMemo(() => <Form onSubmit={ submit }>
             <Fieldset.Root>

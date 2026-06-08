@@ -1,5 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, ModalFooter, ModalHeader, type ModalProps, useToast } from '@/components/ui';
+import { Modal, ModalFooter, ModalHeader, type ModalProps } from '@/components/ui';
+import { Toast } from '@/components/base/Toast';
 import { IonButton, IonSpinner } from '@ionic/react';
 import { AnnotationLabelNode } from '@/api';
 import { LabelSetFeaturesSelect } from '@/features/Labels';
@@ -15,8 +16,8 @@ type Label = Pick<AnnotationLabelNode, 'id' | 'name'>
 export const LabelSetModal: React.FC<ModalProps> = ({ onClose }) => {
     const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { data } = useQuery(AnnotationCampaign.API.byIdQuery({ id: campaignID }))
-    const { campaign, labels } = useMemo(() => ({ ...data }), [data])
-    const toast = useToast();
+    const { campaign, labels } = useMemo(() => ({ ...data }), [ data ])
+    const toastManager = Toast.useToastManager();
     const {
         mutateAsync: updateCampaignFeaturedLabels,
         isPending: isSubmitting,
@@ -28,10 +29,10 @@ export const LabelSetModal: React.FC<ModalProps> = ({ onClose }) => {
     const [ disabled, setDisabled ] = useState<boolean>(true);
 
     useEffect(() => {
-        if (patchError) toast.raiseError({ error: patchError });
+        if (patchError) toastManager.addError({ title: 'Update labels failed', error: patchError });
     }, [ patchError ]);
     useEffect(() => {
-        if (isPatchSuccessful) toast.present(`Labels successfully updated`, 'success');
+        if (isPatchSuccessful) toastManager.add({ title: `Labels successfully updated`, type: 'success' });
     }, [ isPatchSuccessful ]);
 
     const toggleDisabled = useCallback(() => {

@@ -3,7 +3,7 @@
   font-weight: 300;
   margin: 0;
 
-  @each $color in primary, warning, danger {
+  @each $color in primary, warning, success, danger {
     &.#{$color} {
       color: var(--color-#{$color}-text);
     }

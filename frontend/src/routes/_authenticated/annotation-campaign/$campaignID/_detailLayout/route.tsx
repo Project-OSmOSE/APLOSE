@@ -4,7 +4,7 @@ import React, { Fragment, useMemo } from 'react';
 import { FadedText, Head, Tab, Tabs } from '@/components/ui';
 import { dateToString } from '@/service/function';
 import { NBSP } from '@/service/type';
-import { MailButton } from '@/features/User';
+import { UserComponents } from '@/features/User';
 import { AnnotationPhaseTab } from '@/features/AnnotationPhase';
 
 const AnnotationCampaignDetail: React.FC = () => {
@@ -17,7 +17,7 @@ const AnnotationCampaignDetail: React.FC = () => {
                 <Head title={ campaign.name } canGoBack
                       subtitle={ <FadedText>
                           Created on { dateToString(campaign.createdAt) } by { campaign.owner.displayName }
-                          { campaign.owner.email && <Fragment>{ NBSP }<MailButton user={ campaign.owner }/>
+                          { campaign.owner.email && <Fragment>{ NBSP }<UserComponents.CopyMailButton user={ campaign.owner }/>
                           </Fragment> }
                       </FadedText> }/>
 

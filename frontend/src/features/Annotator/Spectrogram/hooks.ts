@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { selectZoom } from '@/features/Annotator/Zoom';
-import { useToast } from '@/components/ui';
+import { Toast } from '@/components/base/Toast';
 import { useWindowHeight } from '@/features/Annotator/Canvas';
 import { useTimeScale } from '@/features/Annotator/Axis';
 import { useAppSelector } from '@/features/App';
@@ -26,7 +26,7 @@ export const useDrawSpectrogram = () => {
     });
     const height = useWindowHeight()
     const timeScale = useTimeScale()
-    const toast = useToast()
+    const toastManager = Toast.useToastManager()
     const images = useRef<Map<number, Array<HTMLImageElement | undefined>>>(new Map());
     const failedImagesSources = useRef<string[]>([])
 
@@ -69,10 +69,7 @@ export const useDrawSpectrogram = () => {
                     }
                     image.onerror = error => {
                         failedImagesSources.current.push(src)
-                        toast.raiseError({
-                            message: `Cannot load spectrogram image with source: ${ image.src }`,
-                            error,
-                        })
+                        toastManager.addError({ title: `Fail loading spectrogram: ${ image.src }`, error })
                         resolve(undefined);
                     }
                 })
@@ -80,7 +77,7 @@ export const useDrawSpectrogram = () => {
         ).then(loadedImages => {
             images.current.set(zoom, loadedImages)
         })
-    }, [ analysis, zoom, failedImagesSources, areAllImagesLoaded, spectrogram, analysis, paths, toast, refetch ])
+    }, [ analysis, zoom, failedImagesSources, areAllImagesLoaded, spectrogram, analysis, paths, toastManager, refetch ])
 
     return useCallback(async (context: CanvasRenderingContext2D) => {
         if (!areAllImagesLoaded()) await loadImages();

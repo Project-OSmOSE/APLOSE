@@ -42,7 +42,7 @@
     cursor: default;
   }
 
-  @each $color in primary, warning, danger {
+  @each $color in primary, warning, success, danger {
     &[color=#{$color}] {
       color: var(--color-#{$color}-text);
 

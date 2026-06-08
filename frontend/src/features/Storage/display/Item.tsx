@@ -19,7 +19,8 @@ import {
     InfoCircle,
     Unread,
 } from '@solar-icons/react';
-import { TooltipOverlay, useToast } from '@/components/ui';
+import { TooltipOverlay } from '@/components/ui';
+import { Toast } from '@/components/base/Toast';
 import { DatasetName } from '@/features/Dataset';
 import { importMutation } from '../api'
 import { useMutation } from '@tanstack/react-query';
@@ -60,11 +61,11 @@ export const Item: React.FC<Props> = ({
     }, [ _setIsOpen, canToggle ])
 
     // Import
-    const toast = useToast()
+    const toastManager = Toast.useToastManager()
     const dispatch = useAppDispatch()
     const onError = useCallback((error: Error) => {
-        toast.raiseError({ error })
-    }, [ toast ])
+        toastManager.addError({ title: 'Import failed', error })
+    }, [ toastManager ])
     const onSuccess = useCallback((data: ImportDatasetFromStorageMutation) => {
         const path = data.importDataset?.dataset.path
         if (!path) return

@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { IonNote } from '@ionic/react';
 import { dateToString } from '@/service/function';
-import { Table, Tbody, Td, Th, Thead, Tr, useToast } from '@/components/ui';
+import { Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
+import { Toast } from '@/components/base/Toast';
 import { useDownloadAnalysis } from '@/api/download';
 import type { AllSpectrogramAnalysisQuery } from '@/features/SpectrogramAnalysis/api';
 import { Button } from '@/components/base/Button';
@@ -10,10 +11,10 @@ import { Download } from '@solar-icons/react';
 type Analysis = NonNullable<NonNullable<AllSpectrogramAnalysisQuery['allSpectrogramAnalysis']>['results'][number]>
 export const SpectrogramAnalysisTable: React.FC<{ analysis: Analysis[] }> = ({ analysis }) => {
     const [ downloadAnalysis, { error: downloadError } ] = useDownloadAnalysis()
-    const toast = useToast()
+    const toastManager = Toast.useToastManager()
 
     useEffect(() => {
-        if (downloadError) toast.raiseError({ error: downloadError })
+        if (downloadError) toastManager.addError({ title: 'Download analysis failed', error: downloadError })
     }, [ downloadError ]);
 
     if (analysis.length === 0) return <IonNote color="medium">No spectrogram analysis</IonNote>

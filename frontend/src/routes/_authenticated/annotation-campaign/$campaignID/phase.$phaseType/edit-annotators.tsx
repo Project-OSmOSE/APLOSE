@@ -2,7 +2,8 @@ import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'reac
 import { createFileRoute, useLoaderData, useRouter } from '@tanstack/react-router';
 import { IonButton, IonNote, IonSpinner } from '@ionic/react';
 
-import { Head, Table, Tbody, Th, Thead, Tr, useToast } from '@/components/ui';
+import { Head, Table, Tbody, Th, Thead, Tr } from '@/components/ui';
+import { Toast } from '@/components/base/Toast';
 import { FormBloc, type Item, ListSearchbar, type SearchItem } from '@/components/form';
 
 import { AnnotationFileRangeInput, AnnotationPhaseType } from '@/api';
@@ -25,7 +26,7 @@ const EditAnnotators: React.FC = () => {
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const router = useRouter();
-    const toast = useToast();
+    const toastManager = Toast.useToastManager();
     const { users, groups, allFileRanges } = Route.useLoaderData()
     const {
         mutate: updateFileRanges,
@@ -113,7 +114,7 @@ const EditAnnotators: React.FC = () => {
         updateFileRanges({ campaignID: campaign.id, phaseType: phase.phase, fileRanges, force })
     }, [ fileRanges, updateFileRanges, force, campaign, phase ])
     useEffect(() => {
-        if (errorSubmitting) toast.raiseError({ error: errorSubmitting })
+        if (errorSubmitting) toastManager.addError({ title: 'Submission failed', error: errorSubmitting })
     }, [ errorSubmitting ]);
     useEffect(() => {
         if (submissionStatus === 'success') back()

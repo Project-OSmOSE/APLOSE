@@ -5,13 +5,13 @@ import { Field } from '@/components/base/Field';
 import { Button, ButtonGroup } from '@/components/base/Button';
 import type { BaseUIEvent } from '@base-ui/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useToast } from '@/components/ui';
 import { IonSpinner } from '@ionic/react';
 import * as API from '../api';
 import { updatePasswordMutation } from '../api';
 import { cleanGqlList } from '@/api/utils';
 import type { Errors } from '@base-ui/react/internals/form-context';
 import type { FieldControlProps } from '@/components/base/Field/Control';
+import { Toast } from '@/components/base/Toast';
 
 const PWD_CONSTRAINTS: Omit<Partial<FieldControlProps>, 'required' | 'autoComplete'> = {
     minLength: 8,
@@ -20,7 +20,7 @@ const PWD_CONSTRAINTS: Omit<Partial<FieldControlProps>, 'required' | 'autoComple
 export const Password: React.FC = () => {
     const { data: user } = useQuery(API.currentQuery)
     const [ newPasswordMismatch, setNewPasswordMismatch ] = useState<boolean>(false);
-    const toast = useToast();
+    const toastManager = Toast.useToastManager()
     const {
         mutate,
         isPending,
@@ -41,9 +41,9 @@ export const Password: React.FC = () => {
         try {
             await mutate({ oldPassword, newPassword })
         } catch (error) {
-            toast.raiseError({ error })
+            toastManager.addError({ title: 'Password update failed', error })
         }
-    }, [ mutate, toast ])
+    }, [ mutate, toastManager ])
 
     const errors: Errors | undefined = useMemo(() => {
         const baseErrors: Errors = cleanGqlList(data?.userUpdatePassword?.errors).reduce((prev, current) => ({
@@ -71,7 +71,7 @@ export const Password: React.FC = () => {
                     <Field.Label>New password</Field.Label>
                     <Field.PasswordControl required
                                            autoComplete="new-password"
-                                           {...PWD_CONSTRAINTS} />
+                                           { ...PWD_CONSTRAINTS } />
                     <Field.Error/>
                 </Field.Root>
 
@@ -79,7 +79,7 @@ export const Password: React.FC = () => {
                     <Field.Label>Confirm new password</Field.Label>
                     <Field.PasswordControl required
                                            autoComplete="new-password"
-                                           {...PWD_CONSTRAINTS} />
+                                           { ...PWD_CONSTRAINTS } />
                     <Field.Error/>
                 </Field.Root>
 

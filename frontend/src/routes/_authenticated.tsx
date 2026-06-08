@@ -3,7 +3,7 @@ import { createFileRoute, Outlet, redirect, useNavigate, useRouter } from '@tans
 import { useQuery } from '@tanstack/react-query';
 
 import { AploseSkeleton } from '@/components/layout';
-import { useToast } from '@/components/ui';
+import { Toast } from '@/components/base/Toast';
 
 import { queryClient } from '@/api/queryClient';
 import { queryKeys } from '@/api/queryKeys';
@@ -15,7 +15,7 @@ const Component: React.FC = () => {
 
     const navigate = useNavigate();
     const router = useRouter();
-    const toast = useToast()
+    const toastManager = Toast.useToastManager()
 
     const handleNotConnected = useCallback(async () => {
         await queryClient.invalidateQueries({ queryKey: queryKeys.user.current })
@@ -24,9 +24,8 @@ const Component: React.FC = () => {
             search: { redirect: router.latestLocation.pathname.replace('/app', '') },
             replace: true,
         });
-        if (error) toast.raiseError(error);
-
-    }, [ router, toast, navigate, error ])
+        if (error) toastManager.addError({ title: 'Fail getting current user', error });
+    }, [ router, toastManager, navigate, error ])
 
     useEffect(() => {
         if (!isFetching && (status === 'error' || !user)) handleNotConnected()

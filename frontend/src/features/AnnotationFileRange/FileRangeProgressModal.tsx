@@ -13,9 +13,9 @@ import {
     Th,
     Thead,
     Tr,
-    useToast,
     WarningText,
 } from '@/components/ui';
+import { Toast } from '@/components/base/Toast';
 import { IonNote, IonSpinner } from '@ionic/react';
 import { AnnotationFileRangeNode, AnnotationTaskNodeNodeConnection, Maybe, UserNode } from '@/api';
 import { useDownloadAnnotations, useDownloadProgress } from '@/api/download';
@@ -54,14 +54,14 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
     }));
     const { downloadAnnotations, error: downloadAnnotationsError } = useDownloadAnnotations()
     const { downloadProgress, error: downloadProgressError } = useDownloadProgress()
-    const toast = useToast()
+    const toastManager = Toast.useToastManager()
 
     useEffect(() => {
-        if (downloadAnnotationsError) toast.raiseError({ error: downloadAnnotationsError })
+        if (downloadAnnotationsError) toastManager.addError({ title: 'Result download failed', error: downloadAnnotationsError })
     }, [ downloadAnnotationsError ]);
 
     useEffect(() => {
-        if (downloadProgressError) toast.raiseError({ error: downloadProgressError })
+        if (downloadProgressError) toastManager.addError({ title: 'Progression download failed',error: downloadProgressError })
     }, [ downloadProgressError ]);
 
     const [ sort, setSort ] = useState<Sort>({ entry: 'Progress', sort: 'desc' });
