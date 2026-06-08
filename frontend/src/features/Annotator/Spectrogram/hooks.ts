@@ -31,8 +31,9 @@ export const useDrawSpectrogram = () => {
     const failedImagesSources = useRef<string[]>([])
 
     useEffect(() => {
+        // Reset images when spectrogram or analysis changes
         images.current = new Map();
-    }, [analysis]);
+    }, [analysis, spectrogram]);
 
     const areAllImagesLoaded = useCallback((): boolean => {
         return images.current.get(zoom)?.filter(i => !!i).length === zoom
