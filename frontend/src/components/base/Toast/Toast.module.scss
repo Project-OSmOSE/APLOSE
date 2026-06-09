@@ -1,3 +1,5 @@
+@import "@/css/base.types";
+
 .Viewport {
   position: fixed;
   z-index: 1;
@@ -106,18 +108,18 @@
     outline-offset: -1px;
   }
 
-  @each $type in primary, success, warning, danger {
-    &.#{$type} {
+  @each $color in $base-colors {
+    &.#{$color} {
       background-color: hsl(
-                      var(--color-#{$type}-h),
-                      var(--color-#{$type}-s),
+                      var(--color-#{$color}-h),
+                      var(--color-#{$color}-s),
                       95%
       );
-      color: var(--color-#{$type}-text);
+      color: var(--color-#{$color}-text);
 
 
       * {
-        outline-color: var(--color-#{$type});
+        outline-color: var(--color-#{$color});
       }
     }
   }

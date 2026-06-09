@@ -29,8 +29,7 @@ const ToastList: React.FC = () => {
                     <Toast.Title className={ styles.Title }/>
                     <Toast.Description className={ styles.Description }/>
                     {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */ }
-                    <Toast.Action className={ styles.Action } render={ ({ ref, ...props }) => <>
-                        {/* @ts-expect-error: don't know why it doesn't recognize "color" type */ }
+                    <Toast.Action className={ styles.Action } render={ ({ ref, color, ...props }) => <>
                         <Button color={ toast.type } { ...props }/>
                     </> }/>
                     <Toast.Close className={ styles.Close }>

@@ -1,7 +1,8 @@
 .Form {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 3rem;
   width: min(100%, 40rem);
   margin: 4rem auto;
+  overflow: hidden auto;
 }

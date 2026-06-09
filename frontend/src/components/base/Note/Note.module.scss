@@ -1,9 +1,11 @@
+@import "@/css/base.types";
+
 .Note {
   font-size: 0.9rem;
   font-weight: 300;
   margin: 0;
 
-  @each $color in primary, warning, success, danger {
+  @each $color in $base-colors {
     &.#{$color} {
       color: var(--color-#{$color}-text);
     }
