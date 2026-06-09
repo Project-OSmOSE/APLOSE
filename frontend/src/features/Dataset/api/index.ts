@@ -4,6 +4,8 @@ import { graphqlClient } from '@/api/graphqlClient';
 import {
     AllDatasetsDocument,
     type AllDatasetsQuery,
+    AllDatasetsWithCampaignsDocument,
+    type AllDatasetsWithCampaignsQuery,
     GetDatasetByIdDocument,
     type GetDatasetByIdQuery,
     type GetDatasetByIdQueryVariables,
@@ -15,6 +17,12 @@ import { cleanGqlList } from '@/api/utils';
 export const allQuery = queryOptions({
     queryKey: queryKeys.dataset.all,
     queryFn: () => graphqlClient.request<AllDatasetsQuery>(AllDatasetsDocument, {})
+        .then(data => cleanGqlList(data.allDatasets?.results)),
+})
+
+export const allWithCampaignsQuery = queryOptions({
+    queryKey: queryKeys.dataset.allWithCampaigns,
+    queryFn: () => graphqlClient.request<AllDatasetsWithCampaignsQuery>(AllDatasetsWithCampaignsDocument, {})
         .then(data => cleanGqlList(data.allDatasets?.results)),
 })
 
