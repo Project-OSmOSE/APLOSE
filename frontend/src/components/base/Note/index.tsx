@@ -4,9 +4,9 @@ import styles from './Note.module.scss'
 
 export type NoteProps = HTMLAttributes<HTMLParagraphElement> & { color?: BaseColor };
 
-export const Note: React.FC<NoteProps> = React.memo(({ className, color, children, ...props }) => (
+export const Note: React.FC<NoteProps> = ({ className, color, children, ...props }) => (
     <p className={ [ className, styles.Note, color ? styles[color] : '' ].join(' ') }
        { ...props }>
         { children }
     </p>
-))
+)

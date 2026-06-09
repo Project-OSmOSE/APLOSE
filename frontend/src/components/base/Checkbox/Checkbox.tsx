@@ -3,8 +3,10 @@ import { Checkbox as BaseCheckbox } from '@base-ui/react'
 import { Unread } from '@solar-icons/react';
 import styles from './Checkbox.module.scss'
 
-export const Checkbox: React.FC = React.memo(() => (
-    <BaseCheckbox.Root className={ styles.Root } render={ <div/> }>
+type Props = Omit<BaseCheckbox.Root.Props, 'children' | 'className' | 'render'>
+
+export const Checkbox: React.FC<Props> = React.memo((props) => (
+    <BaseCheckbox.Root className={ styles.Root } render={ <div/> } { ...props } >
         <BaseCheckbox.Indicator keepMounted
                                 className={ styles.Indicator }>
             <Unread weight="Linear" size={ 24 }/>

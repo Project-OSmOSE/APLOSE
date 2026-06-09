@@ -4,5 +4,6 @@
   gap: 3rem;
   width: min(100%, 40rem);
   margin: 4rem auto;
-  overflow: hidden auto;
+  padding: 0 2px; // For input outlines
+  overflow-y: auto;
 }
