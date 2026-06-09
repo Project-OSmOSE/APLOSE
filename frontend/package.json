@@ -28,6 +28,7 @@
     "@codemirror/commands": "^6.8.1",
     "@codemirror/lang-sql": "^6.8.0",
     "@codemirror/view": "^6.36.5",
+    "@emotion/styled": "^11.14.1",
     "@ionic/react": "^7.6.2",
     "@reduxjs/toolkit": "^2.2.1",
     "@rtk-query/graphql-request-base-query": "^2.3.1",
