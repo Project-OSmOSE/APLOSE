@@ -2,4 +2,7 @@ import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute(
     '/_authenticated/annotation-campaign',
-)({ component: Outlet })
+)({
+    loader: async ({ parentMatchPromise }) => (await parentMatchPromise).loaderData!,
+    component: Outlet
+})

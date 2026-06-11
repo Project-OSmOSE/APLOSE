@@ -6,9 +6,9 @@ import { SoundNode, SourceNode } from '@/api';
 import { NewNode, NODE_ORIGIN, NODE_TYPES, useGetInitialNodes, useOntologyTreeFlow } from '@/features/Ontology';
 
 import styles from './$type.module.scss';
-import { queryClient } from '@/api/queryClient';
 import { Ontology } from '@/features';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { ensureValidQueryData } from '@/api/utils';
 
 
 type DataType = Pick<SoundNode | SourceNode, 'id' | 'englishName'> & {
@@ -138,9 +138,9 @@ export const Route = createFileRoute('/_authenticated/_superuser/ontology/$type'
     loader: ({ params: { type } }) => {
         switch (type) {
             case 'source':
-                return queryClient.ensureQueryData(Ontology.API.allSourcesQuery)
+                return ensureValidQueryData(Ontology.API.allSourcesQuery)
             case 'sound':
-                return queryClient.ensureQueryData(Ontology.API.allSoundsQuery)
+                return ensureValidQueryData(Ontology.API.allSoundsQuery)
         }
     },
     component: OntologyTab,

@@ -11,8 +11,8 @@ import { DatasetName } from '@/features/Dataset';
 import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 
 import styles from './index.module.scss';
-import { queryClient } from '@/api/queryClient';
 import { SpectrogramAnalysis } from '@/features';
+import { ensureValidQueryData } from '@/api/utils';
 
 const AnnotationCampaignInfo: React.FC = () => {
     const analysis = Route.useLoaderData()
@@ -90,6 +90,6 @@ const AnnotationCampaignInfo: React.FC = () => {
 }
 
 export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout/')({
-    loader: ({ params: { campaignID } }) => queryClient.ensureQueryData(SpectrogramAnalysis.API.allQuery({ annotationCampaignID: campaignID })),
+    loader: ({ params: { campaignID } }) => ensureValidQueryData(SpectrogramAnalysis.API.allQuery({ annotationCampaignID: campaignID })),
     component: AnnotationCampaignInfo,
 })

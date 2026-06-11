@@ -25,9 +25,9 @@ import { AnnotationsBloc } from '@/features/Annotator/Annotation/AnnotationsBloc
 
 import styles from './$spectrogramID.module.scss';
 import { type AllSpectrogramsFilters } from '@/features/AnnotationSpectrogram';
-import { queryClient } from '@/api/queryClient';
-import { AnnotationCampaign, AnnotationSpectrogram, User } from '@/features';
+import { AnnotationCampaign, AnnotationSpectrogram } from '@/features';
 import { useQuery } from '@tanstack/react-query';
+import { ensureValidQueryData } from '@/api/utils';
 
 const AnnotatorPage: React.FC = () => {
     const campaignID = Route.useParams({ select: ({ campaignID }) => campaignID });
@@ -132,16 +132,17 @@ export const Route = createFileRoute(
         parse: rawParams => rawParams as { campaignID: string, spectrogramID: string, phaseType: AnnotationPhaseType },
     },
     loaderDeps: ({ search }) => search as AllSpectrogramsFilters,
-    loader: async ({ params: { campaignID, phaseType, spectrogramID }, deps }) => {
-        const user = await queryClient.ensureQueryData(User.API.currentQuery)
+    loader: async ({ params: { campaignID, phaseType, spectrogramID }, deps, parentMatchPromise }) => {
+        const { user } = (await parentMatchPromise).loaderData!
+
         const [
             { spectrogram, ...data },
             { analysis }
         ] = await Promise.all([
-            queryClient.ensureQueryData(AnnotationSpectrogram.API.getQuery({
+            ensureValidQueryData(AnnotationSpectrogram.API.getQuery({
             campaignID, phaseType, spectrogramID, ...deps, annotatorID: user!.id,
         })),
-            queryClient.ensureQueryData(AnnotationCampaign.API.byIdQuery({ id: campaignID }))
+            ensureValidQueryData(AnnotationCampaign.API.byIdQuery({ id: campaignID }))
         ])
         if (!spectrogram) throw notFound()
         const baseScaleAnalysis = analysis.find(a =>
@@ -152,7 +153,7 @@ export const Route = createFileRoute(
         const defaultAnalysis = minID ? analysis.find(a => a.id === (baseScaleAnalysis?.id ?? minID)) : undefined
 
         if (defaultAnalysis) {
-            await queryClient.ensureQueryData(AnnotationSpectrogram.API.getPathQuery({
+            await ensureValidQueryData(AnnotationSpectrogram.API.getPathQuery({
                 spectrogramID: spectrogram.id,
                 analysisID: defaultAnalysis.id,
             }))

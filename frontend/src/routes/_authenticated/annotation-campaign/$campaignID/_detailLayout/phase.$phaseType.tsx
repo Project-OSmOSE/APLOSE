@@ -11,37 +11,45 @@ import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
 import { type AllSpectrogramsFilters, SpectrogramRow } from '@/features/AnnotationSpectrogram';
 
 import styles from './phase.$phaseType.module.scss';
-import { queryClient } from '@/api/queryClient';
-import { AnnotationPhase, AnnotationSpectrogram, User } from '@/features';
+import { AnnotationPhase, AnnotationSpectrogram } from '@/features';
 import { IonNote, IonSpinner } from '@ionic/react';
 import { useQuery } from '@tanstack/react-query';
+import { ensureValidQueryData } from '@/api/utils';
+
+const PAGE_SIZE = 20
 
 const AnnotationCampaignPhaseDetail: React.FC = () => {
-    const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const { spectrograms, spectrogramsPageCount } = Route.useLoaderData()
-    const { campaignID, phaseType  } = Route.useParams()
+    const { campaign, phases, user } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { campaignID, phaseType } = Route.useParams()
+    const search = Route.useSearch()
+    const { data, isFetching } = useQuery(AnnotationSpectrogram.API.allQuery({
+        campaignID,
+        phaseType,
+        annotatorID: user.id,
+        limit: PAGE_SIZE,
+        offset: PAGE_SIZE * ((search.page ?? 1) - 1),
+        ...search,
+    }))
     const { data: phase } = useQuery(AnnotationPhase.API.getQuery({
         campaignID,
         phase: phaseType,
     }))
 
-    const search = Route.useSearch();
-    const routeParams = Route.useParams()
     const navigate = useNavigate();
 
-    const isEmpty = useMemo(() => spectrograms.length === 0 || campaign.isArchived, [ spectrograms, campaign ])
+    const isEmpty = useMemo(() => data && data.spectrograms.length === 0 || campaign.isArchived, [ data, campaign ])
 
     const updatePage = useCallback((page?: number) => {
         navigate({
             to: Route.to,
-            params: routeParams,
+            params: { campaignID, phaseType },
             search: (prev) => ({
                 ...prev,
                 page: page ?? 1,
             }),
             replace: true,
         })
-    }, [ navigate, routeParams ])
+    }, [ navigate, campaignID, phaseType ])
 
     const annotationFilterModal = useModal(AnnotationsFilterModal, {
         onUpdate: updatePage,
@@ -56,70 +64,68 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
         onUpdate: updatePage,
     })
 
-    return useMemo(() => {
-        return <div className={ styles.phase }>
+    return <div className={ styles.phase }>
 
-            <div className={ [ styles.tasks, isEmpty ? styles.empty : '' ].join(' ') }>
+        <div className={ [ styles.tasks, isEmpty ? styles.empty : '' ].join(' ') }>
 
-                <FileRangeActionBar/>
+            <FileRangeActionBar isPending={ isFetching }/>
 
-                { phase?.phase === 'Verification' && !phase?.hasAnnotations && phases.find(p => p.phase === AnnotationPhaseType.Verification) &&
-                    <WarningText message="Your campaign doesn't have any annotations to check"
-                                 children={ <ImportAnnotationsButton/> }/> }
+            { phase?.phase === 'Verification' && !phase?.hasAnnotations && phases.find(p => p.phase === AnnotationPhaseType.Verification) &&
+                <WarningText message="Your campaign doesn't have any annotations to check"
+                             children={ <ImportAnnotationsButton/> }/> }
 
-                <Table spacing="small">
-                    <Thead>
-                        <Tr>
-                            <Th scope="col">Filename</Th>
-                            <Th scope="col" center filterable
-                                isFiltered={ hasDateFilter }
-                                onFilterClick={ dateFilterModal.open }>
-                                Date
-                            </Th>
-                            <Th scope="col" center>Duration</Th>
-                            <Th scope="col" center filterable
-                                isFiltered={ search.withAnnotations ?? false }
-                                onFilterClick={ annotationFilterModal.open }>
-                                Annotations{ phase?.phase === 'Verification' && <Fragment><br/>to check</Fragment> }
-                            </Th>
-                            { phase?.phase === 'Verification' && <Th scope="col" center>Validated<br/>annotations</Th> }
-                            <Th scope="col" center filterable
-                                isFiltered={ search.status !== undefined || search.onlyAssigned !== undefined }
-                                onFilterClick={ statusFilterModal.open }>
-                                Status
-                            </Th>
-                            <Th scope="col">
-                                Access
-                            </Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        { spectrograms.map(s => <SpectrogramRow key={ s!.id }
-                                                                 spectrogram={ s! }
-                                                                 task={ s!.task }
-                                                                 userAnnotations={ s!.task?.userAnnotations }
-                                                                 validAnnotationsToCheck={ s!.task?.validAnnotationsToCheck }
-                                                                 annotationsToCheck={ s!.task?.annotationsToCheck }/>) }
-                    </Tbody>
-                </Table>
+            <Table spacing="small">
+                <Thead>
+                    <Tr>
+                        <Th scope="col">Filename</Th>
+                        <Th scope="col" center filterable
+                            isFiltered={ hasDateFilter }
+                            onFilterClick={ dateFilterModal.open }>
+                            Date
+                        </Th>
+                        <Th scope="col" center>Duration</Th>
+                        <Th scope="col" center filterable
+                            isFiltered={ search.withAnnotations ?? false }
+                            onFilterClick={ annotationFilterModal.open }>
+                            Annotations{ phase?.phase === 'Verification' && <Fragment><br/>to check</Fragment> }
+                        </Th>
+                        { phase?.phase === 'Verification' && <Th scope="col" center>Validated<br/>annotations</Th> }
+                        <Th scope="col" center filterable
+                            isFiltered={ search.status !== undefined || search.onlyAssigned !== undefined }
+                            onFilterClick={ statusFilterModal.open }>
+                            Status
+                        </Th>
+                        <Th scope="col">
+                            Access
+                        </Th>
+                    </Tr>
+                </Thead>
+                <Tbody>
+                    { data && data.spectrograms.map(s => <SpectrogramRow key={ s!.id }
+                                                                         spectrogram={ s! }
+                                                                         task={ s!.task }
+                                                                         userAnnotations={ s!.task?.userAnnotations }
+                                                                         validAnnotationsToCheck={ s!.task?.validAnnotationsToCheck }
+                                                                         annotationsToCheck={ s!.task?.annotationsToCheck }/>) }
+                </Tbody>
+            </Table>
 
-                { spectrograms.length > 0 &&
-                    <Pagination currentPage={ search.page ?? 1 } totalPages={ spectrogramsPageCount }
-                                setCurrentPage={ updatePage }/> }
+            { data && data.spectrograms.length > 0 &&
+                <Pagination currentPage={ search.page ?? 1 }
+                            totalPages={ Math.ceil((data.totalCount ?? 0) / PAGE_SIZE) }
+                            setCurrentPage={ updatePage }/> }
 
-                { spectrograms.length === 0 &&
-                    <p>You have no files to annotate.</p> }
-                { campaign.isArchived ? <p>The campaign is archived. No more annotation can be done.</p> :
-                    (phase?.endedAt && <p>The phase is ended. No more annotation can be done.</p>) }
+            { data && data.spectrograms.length === 0 &&
+                <p>You have no files to annotate.</p> }
+            { campaign.isArchived ? <p>The campaign is archived. No more annotation can be done.</p> :
+                (phase?.endedAt && <p>The phase is ended. No more annotation can be done.</p>) }
 
-            </div>
-
-            { annotationFilterModal.element }
-            { dateFilterModal.element }
-            { statusFilterModal.element }
         </div>
-    }, [ campaign, phase, isEmpty, phases, hasDateFilter, dateFilterModal, search, annotationFilterModal,
-        statusFilterModal, spectrograms, spectrogramsPageCount, updatePage,  ]);
+
+        { annotationFilterModal.element }
+        { dateFilterModal.element }
+        { statusFilterModal.element }
+    </div>
 }
 
 export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType')({
@@ -128,18 +134,18 @@ export const Route = createFileRoute('/_authenticated/annotation-campaign/$campa
         parse: rawParams => rawParams as { campaignID: string, phaseType: AnnotationPhaseType },
     },
     loaderDeps: ({ search }) => search as AllSpectrogramsFilters,
-    loader: async ({ params: { campaignID, phaseType }, deps }) => {
-        const PAGE_SIZE = 20
-        const user = await queryClient.ensureQueryData(User.API.currentQuery)
+    loader: async ({ params: { campaignID, phaseType }, deps, parentMatchPromise }) => {
+        const { user } = (await parentMatchPromise).loaderData!
+
         const [
             phase,
-            { spectrograms, totalCount, resumeId },
+            { spectrograms, resumeId },
         ] = await Promise.all([
-            queryClient.ensureQueryData(AnnotationPhase.API.getQuery({
+            ensureValidQueryData(AnnotationPhase.API.getQuery({
                 campaignID,
                 phase: phaseType,
             })),
-            queryClient.ensureQueryData(AnnotationSpectrogram.API.allQuery({
+            ensureValidQueryData(AnnotationSpectrogram.API.allQuery({
                 campaignID,
                 phaseType,
                 annotatorID: user!.id,
@@ -149,9 +155,13 @@ export const Route = createFileRoute('/_authenticated/annotation-campaign/$campa
             })),
         ])
         if (!phase) throw notFound()
-        return { phase, spectrograms, spectrogramsPageCount: Math.ceil((totalCount ?? 0) / PAGE_SIZE), resumeSpectrogramId: resumeId }
+        return {
+            phase,
+            spectrograms,
+            resumeSpectrogramId: resumeId,
+        }
     },
     component: AnnotationCampaignPhaseDetail,
     pendingComponent: IonSpinner,
-    notFoundComponent: () => <IonNote color='medium'>Phase not found</IonNote>
+    notFoundComponent: () => <IonNote color="medium">Phase not found</IonNote>,
 })

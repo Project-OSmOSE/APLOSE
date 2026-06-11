@@ -1,7 +1,7 @@
 import React, { Fragment, ReactNode, useCallback, useEffect } from 'react';
 import { Footer, Header } from '@/components/layout';
 import { Link, Progress } from '@/components/ui';
-import { IonIcon, IonNote } from '@ionic/react';
+import { IonIcon, IonNote, IonSpinner } from '@ionic/react';
 import { helpBuoyOutline } from 'ionicons/icons/index.js';
 import styles from './styles.module.scss';
 import { IoCheckmarkCircleOutline, IoChevronForwardOutline } from 'react-icons/io5';
@@ -11,7 +11,7 @@ import { useAppDispatch } from '@/features/App';
 import { useAnnotatorCanNavigate } from '@/features/Annotator/Navigation';
 import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
 import { PointerProvider } from '@/features/Annotator/Pointer/context';
-import { useLoaderData, useSearch } from '@tanstack/react-router';
+import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
 import { AnnotatorVisualConfigurationSlice } from '@/features/Annotator/VisualConfiguration';
 import type { Colormap } from '@/features/Colormap';
 import { AnnotatorConfidenceSlice } from '@/features/Annotator/Confidence';
@@ -19,11 +19,12 @@ import { AnnotatorAnalysisSlice } from '@/features/Annotator/Analysis';
 import { AnnotatorLabelSlice } from '@/features/Annotator/Label';
 import { AnnotatorUXSlice } from '@/features/Annotator/UX';
 import { AnnotatorCommentSlice } from '@/features/Annotator/Comment';
+import { AnnotationSpectrogram } from '@/features';
 import { cleanGqlList } from '@/api/utils';
 import { AnnotatorAnnotationSlice, convertGqlToAnnotations } from '@/features/Annotator/Annotation';
+import { useQuery } from '@tanstack/react-query';
 
 export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
-    const search = useSearch({ strict: false });
     const { user } = useLoaderData({ from: '/_authenticated' })
     const {
         campaign,
@@ -31,12 +32,19 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const {
-        spectrogram,
-        annotations,
         info,
         isEditionAuthorized,
         defaultAnalysis,
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const {
+        campaignID,
+        phaseType,
+        spectrogramID,
+    } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const search = useSearch({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const { data, isFetching } = useQuery(AnnotationSpectrogram.API.getQuery({
+        campaignID, phaseType, spectrogramID, ...search, annotatorID: user.id,
+    }))
     const canNavigate = useAnnotatorCanNavigate()
     const dispatch = useAppDispatch()
 
@@ -62,10 +70,11 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
     }, [ campaign ]);
 
     useEffect(() => {
+        if (!data) return
         dispatch(AnnotatorVisualConfigurationSlice.actions.initSpectrogram())
         dispatch(AnnotatorUXSlice.actions.initSpectrogram())
 
-        const allAnnotations = convertGqlToAnnotations(annotations, phase.phase, user.id)
+        const allAnnotations = convertGqlToAnnotations(data.annotations, phase.phase, user.id)
         const defaultAnnotation = [ ...allAnnotations ].pop()
         dispatch(AnnotatorConfidenceSlice.actions.initSpectrogram({
             focus: defaultAnnotation?.confidence ?? undefined,
@@ -74,13 +83,13 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
             focus: defaultAnnotation?.label ?? undefined,
         }))
         dispatch(AnnotatorCommentSlice.actions.initSpectrogram({
-            taskComments: cleanGqlList(spectrogram.task?.userComments?.results),
+            taskComments: cleanGqlList(data.spectrogram?.task?.userComments?.results),
         }))
         dispatch(AnnotatorAnnotationSlice.actions.initSpectrogram({
             all: allAnnotations,
             default: defaultAnnotation,
         }))
-    }, [ spectrogram ]);
+    }, [ data ]);
 
     useEffect(() => {
         dispatch(AnnotatorAnalysisSlice.actions.setAnalysis(defaultAnalysis));
@@ -92,6 +101,8 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                 <Header size="small"
                         canNavigate={ canNavigate }
                         buttons={ <Fragment>
+
+                            { isFetching && <IonSpinner/> }
 
                             { campaign.instructionsUrl &&
                                 <Link color="medium" target="_blank"
@@ -112,10 +123,10 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                             </Link>
                         </Fragment> }>
 
-                    { spectrogram && <div className={ styles.info }>
+                    { data?.spectrogram && <div className={ styles.info }>
                         <p>
                             { campaign.name }
-                            <IoChevronForwardOutline/> { spectrogram.filename } { spectrogram.task?.status === AnnotationTaskStatus.Finished &&
+                            <IoChevronForwardOutline/> { data.spectrogram.filename } { data.spectrogram.task?.status === AnnotationTaskStatus.Finished &&
                             <IoCheckmarkCircleOutline/> }
                         </p>
                         { isEditionAuthorized && info?.totalCount &&
@@ -125,7 +136,7 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                                       total={ info.totalCount }/> }
                         { campaign.archive ? <IonNote>You cannot annotate an archived campaign.</IonNote> :
                             phase?.endedAt ? <IonNote>You cannot annotate an ended phase.</IonNote> :
-                                !spectrogram.isAssigned ?
+                                !data.spectrogram.isAssigned ?
                                     <IonNote>You are not assigned to annotate this file.</IonNote> :
                                     <Fragment/>
                         }

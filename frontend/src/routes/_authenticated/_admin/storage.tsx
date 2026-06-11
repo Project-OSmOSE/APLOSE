@@ -6,9 +6,9 @@ import { Button, Head, HelpButton, useModal } from '@/components/ui';
 
 import { ImportFromPath, ServerItem } from '@/features/Storage';
 import { Storage } from '@/features';
-import { queryClient } from '@/api/queryClient';
 
 import styles from './storage.module.scss'
+import { ensureValidQueryData } from '@/api/utils';
 
 const StorageBrowser: React.FC = () => {
     const searchModal = useModal(ImportFromPath);
@@ -44,10 +44,10 @@ const StorageBrowser: React.FC = () => {
         [ searchModal ])
 }
 export const Route = createFileRoute('/_authenticated/_admin/storage')({
-    loader: () => queryClient.ensureQueryData(Storage.API.browseQuery({ path: '' })),
+    loader: () => ensureValidQueryData(Storage.API.browseQuery({ path: '' })),
     component: StorageBrowser,
     pendingComponent: () => <Fragment>
         <Head title="Storage"/>
         <IonSpinner/>
-    </Fragment>
+    </Fragment>,
 })
