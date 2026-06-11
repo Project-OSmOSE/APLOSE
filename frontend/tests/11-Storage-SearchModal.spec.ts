@@ -12,7 +12,7 @@ const TEST = {
         test(`as ${ as }`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
-                allDatasets: 'empty',
+                allDatasetsWithCampaigns: 'empty',
                 browseStorage: 'empty',
 
             })

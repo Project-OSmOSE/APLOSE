@@ -17,10 +17,11 @@ export const allQuery = (variables: AllSpectrogramAnalysisQueryVariables) => que
         .then(data => cleanGqlList(data.allSpectrogramAnalysis?.results)),
 })
 
+export const allForDatasetQueryFn= (variables: AllSpectrogramAnalysisForDatasetQueryVariables) => graphqlClient.request<AllSpectrogramAnalysisForDatasetQuery>(AllSpectrogramAnalysisForDatasetDocument, variables)
+    .then(data => cleanGqlList(data.allSpectrogramAnalysis?.results))
 export const allForDatasetQuery = (variables: AllSpectrogramAnalysisForDatasetQueryVariables) => queryOptions({
     queryKey: queryKeys.analysis.allForDataset(variables),
-    queryFn: () => graphqlClient.request<AllSpectrogramAnalysisForDatasetQuery>(AllSpectrogramAnalysisForDatasetDocument, variables)
-        .then(data => cleanGqlList(data.allSpectrogramAnalysis?.results)),
+    queryFn: () => allForDatasetQueryFn(variables)
 })
 
 export type * from './spectrogram-analysis.generated'

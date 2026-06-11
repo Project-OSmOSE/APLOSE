@@ -7,6 +7,7 @@ import type {
     QueryActionCreatorResult,
     QueryDefinition,
 } from '@reduxjs/toolkit/query';
+import type { Errors } from '@base-ui/react/internals/form-context';
 
 export function getTokenFromCookie(): Token | undefined {
     const tokenCookie = document.cookie?.split(';').filter((item) => item.trim().startsWith('token='))[0];
@@ -44,4 +45,11 @@ export async function getLoader<Arguments = any, Result = any>(
 
 export function cleanGqlList<T>(data?: Array<T | undefined | null> | null): Array<T> {
     return data?.filter(d => !!d).map(d => d!) ?? []
+}
+
+export function cleanGqlErrors(errors?: Array<ErrorType | null> | null): Errors {
+    return cleanGqlList(errors).reduce((prev, current) => ({
+        ...prev,
+        [current.field]: current.messages,
+    }), {})
 }

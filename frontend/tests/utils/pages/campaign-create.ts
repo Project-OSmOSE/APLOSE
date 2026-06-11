@@ -1,6 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { CampaignListPage } from './campaign-list';
-import { selectInAlert } from '../functions';
 import { type Dataset } from '../mock/types';
 import type { Params } from '../types';
 import type { Colormap } from '../../../src/features/Colormap';
@@ -8,56 +7,58 @@ import type { Colormap } from '../../../src/features/Colormap';
 
 export class CampaignCreatePage {
 
-  get createButton(): Locator {
-    return this.page.getByRole('button', { name: 'Create campaign' })
-  }
+    get createButton(): Locator {
+        return this.page.getByRole('button', { name: 'Create' })
+    }
 
-  get nameInput(): Locator {
-    return this.page.getByPlaceholder('Campaign name')
-  }
+    get nameInput(): Locator {
+        return this.page.getByLabel('Name')
+    }
 
-  get descriptionInput(): Locator {
-    return this.page.getByPlaceholder('Enter your campaign description')
-  }
+    get descriptionInput(): Locator {
+        return this.page.getByLabel('Description')
+    }
 
-  get instructionsUrlInput(): Locator {
-    return this.page.getByPlaceholder('URL')
-  }
+    get instructionsUrlInput(): Locator {
+        return this.page.getByLabel('Instruction URL')
+    }
 
-  get deadlineInput(): Locator {
-    return this.page.getByPlaceholder('Deadline')
-  }
+    get deadlineInput(): Locator {
+        return this.page.getByLabel('Deadline')
+    }
 
-  get brightnessContrastCheckBox(): Locator {
-    return this.page.getByText('Allow brigthness / contrast modification')
-  }
+    get brightnessContrastCheckBox(): Locator {
+        return this.page.getByRole('checkbox', { name: 'Allow brightness / contrast modification' })
+    }
 
-  get colormapCheckBox(): Locator {
-    return this.page.getByText('Allow colormap modification')
-  }
+    get colormapCheckBox(): Locator {
+        return this.page.getByRole('checkbox', { name: 'Allow colormap modification' })
+    }
 
-  get invertColormapCheckBox(): Locator {
-    return this.page.getByText('Invert default colormap')
-  }
+    get invertColormapCheckBox(): Locator {
+        return this.page.getByRole('checkbox', { name: 'Invert default colormap' })
+    }
 
-  constructor(private page: Page,
-              private list = new CampaignListPage(page)) {
-  }
+    constructor(private page: Page,
+                private list = new CampaignListPage(page)) {
+    }
 
-  async go({ as }: Pick<Params, 'as'>): Promise<void> {
-    await this.list.go({ as })
-    await this.list.createCampaignButton.click()
-    await expect(this.page.getByRole('heading', { name: 'Create Annotation Campaign', exact: true })).toBeVisible()
-  }
+    async go({ as }: Pick<Params, 'as'>): Promise<void> {
+        await this.list.go({ as })
+        await this.list.createCampaignButton.click()
+        await expect(this.page.getByRole('heading', { name: 'Create Annotation Campaign', exact: true })).toBeVisible()
+    }
 
-  async selectDataset(dataset: Dataset) {
-    await this.page.getByRole('button', { name: 'Select a dataset' }).click();
-    await selectInAlert(this.page, dataset.name);
-  }
+    async selectDataset(dataset: Dataset) {
+        await this.page.getByRole('combobox', { name: 'Dataset' }).fill(dataset.name);
+        const popup = this.page.getByTestId('dataset-select-popup')
+        await popup.getByText(dataset.name).click();
+    }
 
-  async selectColormap(colormap: Colormap) {
-    await this.page.getByRole('button', { name: 'Greys' }).click();
-    await this.page.locator('#options').getByText(colormap).click();
-  }
+    async selectColormap(colormap: Colormap) {
+        await this.page.getByRole('combobox', { name: 'Colormap' }).fill(colormap);
+        const popup = this.page.getByTestId('colormap-select-popup')
+        await popup.getByText(colormap).click();
+    }
 
 }

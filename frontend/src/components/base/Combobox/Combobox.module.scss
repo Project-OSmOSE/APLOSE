@@ -1,4 +1,4 @@
-@import '@/components/base/Input/Input.module';
+@use '@/components/base/Input/Input.module';
 
 $icon-size: 1.5rem;
 
@@ -7,7 +7,7 @@ $icon-size: 1.5rem;
   display: grid;
 
   .Input {
-    padding-right: #{$horizontal-space};
+    padding-right: #{Input.$horizontal-space};
   }
 
   &[data-disabled] {
@@ -16,26 +16,26 @@ $icon-size: 1.5rem;
 
   &:has(.Trigger):has(.Clear) {
     .Input {
-      padding-right: calc(3 * #{$horizontal-space} + 2 * #{$icon-size});
+      padding-right: calc(3 * #{Input.$horizontal-space} + 2 * #{$icon-size});
     }
 
     .Trigger {
-      right: #{$horizontal-space};
+      right: #{Input.$horizontal-space};
     }
 
     .Clear {
-      right: calc(2 * #{$horizontal-space} + #{$icon-size});
+      right: calc(2 * #{Input.$horizontal-space} + #{$icon-size});
     }
   }
 
   &:has(.Trigger):not(:has(.Clear)),
   &:has(.Clear):not(:has(.Trigger)) {
     .Input {
-      padding-right: calc(2 * #{$horizontal-space} + #{$icon-size});
+      padding-right: calc(2 * #{Input.$horizontal-space} + #{$icon-size});
     }
 
     .Trigger, .Clear {
-      right: #{$horizontal-space};
+      right: #{Input.$horizontal-space};
     }
   }
 }

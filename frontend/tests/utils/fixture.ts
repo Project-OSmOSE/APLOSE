@@ -57,7 +57,7 @@ export const test = testBase.extend<Fixture>({
     // Block all BFF requests from making it through to the 'real'
     // dependency. If we get this far it means we've forgotten to register a
     // handler, and (at least locally) we're using a real dependency.
-    await page.route('**/graphql', function (route: Route) {
+    await page.route('**/graphql', function (route: Route, req : Request) {
       route.abort('blockedbyclient');
     });
 

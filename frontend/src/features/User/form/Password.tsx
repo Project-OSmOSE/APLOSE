@@ -8,7 +8,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { IonSpinner } from '@ionic/react';
 import * as API from '../api';
 import { updatePasswordMutation } from '../api';
-import { cleanGqlList } from '@/api/utils';
+import { cleanGqlErrors } from '@/api/utils';
 import type { Errors } from '@base-ui/react/internals/form-context';
 import type { FieldControlProps } from '@/components/base/Field/Control';
 import { Toast } from '@/components/base/Toast';
@@ -46,10 +46,7 @@ export const Password: React.FC = () => {
     }, [ mutate, toastManager ])
 
     const errors: Errors | undefined = useMemo(() => {
-        const baseErrors: Errors = cleanGqlList(data?.userUpdatePassword?.errors).reduce((prev, current) => ({
-            ...prev,
-            [current.field]: current.messages,
-        }), {})
+        const baseErrors = cleanGqlErrors(data?.userUpdatePassword?.errors)
         if (newPasswordMismatch)
             baseErrors.newPasswordConfirm = 'The confirmation password does not match the given new password.'
         return baseErrors

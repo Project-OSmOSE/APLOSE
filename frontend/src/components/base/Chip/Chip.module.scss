@@ -1,4 +1,4 @@
-@import "@/css/base.types";
+@use "@/css/base";
 
 .Chip {
   padding: 0.4rem 0.8rem;
@@ -10,7 +10,7 @@
 
   background-color: rgba(var(--color-dark-rgb), 0.15);
   color: var(--color-dark);
-  @each $color in $base-colors {
+  @each $color in base.$colors {
     &[data-color=#{$color}] {
       background-color: rgba(var(--color-#{$color}-rgb), 0.15);
       color: var(--color-#{$color}-text);

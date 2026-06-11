@@ -4,7 +4,10 @@ import type { BrowseStorageQueryVariables, SearchStorageQueryVariables } from '@
 import type { GetDatasetByIdQueryVariables } from '@/features/Dataset';
 import type { FileRangesForPhaseQueryVariables } from '@/features/AnnotationFileRange';
 import type { AllCampaignsQueryVariables, GetCampaignQueryVariables } from '@/features/AnnotationCampaign';
-import type { AllSpectrogramAnalysisQueryVariables } from '@/features/SpectrogramAnalysis';
+import type {
+    AllSpectrogramAnalysisForDatasetQueryVariables,
+    AllSpectrogramAnalysisQueryVariables,
+} from '@/features/SpectrogramAnalysis';
 import type { GetDetailedSoundByIdQueryVariables, GetDetailedSourceByIdQueryVariables } from '@/features/Ontology';
 import type { GetAnnotationPhaseQueryVariables } from '@/features/AnnotationPhase';
 import type {
@@ -58,11 +61,13 @@ export const queryKeys = {
     },
     dataset: {
         all: [ 'dataset' ] as const,
+        allWithCampaigns: [ 'dataset', 'campaign' ] as const,
         byId: (variables: GetDatasetByIdQueryVariables) => [ 'dataset', variables.id ] as const,
         listWithAnalysis: [ 'dataset', 'analysis' ] as const,
     },
     analysis: {
         all: (variables: AllSpectrogramAnalysisQueryVariables) => [ 'analysis', variables ] as const,
+        allForDataset: ({ datasetID }: AllSpectrogramAnalysisForDatasetQueryVariables) => [ 'analysis', 'dataset', datasetID ] as const,
     },
     ontology: {
         sound: {

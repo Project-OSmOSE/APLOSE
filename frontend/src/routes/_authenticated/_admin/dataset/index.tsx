@@ -17,7 +17,7 @@ const Skeleton: React.FC<{ children: ReactNode }> = ({ children }) => (<Fragment
 )
 
 export const Route = createFileRoute('/_authenticated/_admin/dataset/')({
-    loader: () => queryClient.ensureQueryData(Dataset.API.allQuery),
+    loader: () => queryClient.ensureQueryData(Dataset.API.allWithCampaignsQuery),
     component: () => <Skeleton children={ <DatasetTable/> }/>,
     pendingComponent: () => <Skeleton children={ <IonSpinner/> }/>,
 })

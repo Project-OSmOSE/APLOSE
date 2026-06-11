@@ -9,6 +9,7 @@ import { IonSpinner } from '@ionic/react';
 import * as API from '../api';
 import { updateEmailMutation } from '../api';
 import { Toast } from '@/components/base/Toast';
+import { cleanGqlErrors } from '@/api/utils';
 
 export const Email: React.FC = () => {
     const { data: user } = useQuery(API.currentQuery)
@@ -31,12 +32,7 @@ export const Email: React.FC = () => {
         }
     }, [ mutate, toastManager ])
 
-    const errors = useMemo(() =>
-            data?.currentUserUpdate?.errors.reduce((prev, current) => ({
-                ...prev,
-                [current.field]: current.messages,
-            }), {})
-        , [ data ])
+    const errors = useMemo(() => cleanGqlErrors(data?.currentUserUpdate?.errors), [ data ])
 
     return useMemo(() => <Form onSubmit={ submit }
                                errors={ errors }>

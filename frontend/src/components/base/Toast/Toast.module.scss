@@ -1,4 +1,4 @@
-@import "@/css/base.types";
+@use "@/css/base";
 
 .Viewport {
   position: fixed;
@@ -108,7 +108,7 @@
     outline-offset: -1px;
   }
 
-  @each $color in $base-colors {
+  @each $color in base.$colors {
     &.#{$color} {
       background-color: hsl(
                       var(--color-#{$color}-h),

@@ -1,0 +1,16 @@
+.SelectItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+
+  img {
+    border-radius: 0.2rem;
+  }
+}
+
+.SelectValue {
+  margin: 0.5rem;
+  height: 1rem;
+  border-radius: 0.2rem;
+}

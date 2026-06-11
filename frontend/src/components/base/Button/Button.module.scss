@@ -1,4 +1,4 @@
-@import "@/css/base.types";
+@use "@/css/base";
 
 .Button {
   border: none;
@@ -44,7 +44,7 @@
     cursor: default;
   }
 
-  @each $color in $base-colors {
+  @each $color in base.$colors {
     &[color=#{$color}] {
       color: var(--color-#{$color}-text);
 

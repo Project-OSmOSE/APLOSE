@@ -1,11 +1,17 @@
-@import "@/css/base.types";
+@use "@/css/base";
 
 .Note {
   font-size: 0.9rem;
   font-weight: 400;
   margin: 0;
 
-  @each $color in $base-colors {
+  display: flex; // Fallback for browser not understanding ruby
+  align-items: center;
+  flex-wrap: wrap;
+  display: ruby;
+
+
+  @each $color in base.$colors {
     &.#{$color} {
       color: var(--color-#{$color}-text);
     }

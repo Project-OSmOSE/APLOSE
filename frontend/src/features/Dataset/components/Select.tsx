@@ -20,8 +20,8 @@ export const Select: React.FC<DatasetSelectProps> = ({ id, ...props }) => {
 
     return (
         <ComboboxRoot items={ datasets }
+                      itemToStringValue={ (itemValue: SelectValue) => itemValue.id }
                       itemToStringLabel={ (itemValue: SelectValue) => itemValue.name }
-                      itemToStringValue={ (itemValue: SelectValue) => itemValue.name }
                       isItemEqualToValue={ (itemValue: SelectValue, value: SelectValue) => itemValue.id == value.id }
                       { ...props }>
 
@@ -33,7 +33,7 @@ export const Select: React.FC<DatasetSelectProps> = ({ id, ...props }) => {
 
             <Combobox.Portal>
                 <Combobox.Positioner>
-                    <Combobox.Popup>
+                    <Combobox.Popup data-testid='dataset-select-popup'>
                         <Combobox.Empty>No dataset found.</Combobox.Empty>
                         <Combobox.List>
                             { (item: SelectValue) => (

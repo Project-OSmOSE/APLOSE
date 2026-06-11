@@ -1,10 +1,11 @@
-import React, { Fragment } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { Fragment, useCallback, useState } from 'react';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 
 import { Combobox, ComboboxRootProps } from '@/components/base/Combobox'
 
 import * as API from '../api'
 import { type AllSpectrogramAnalysisForDatasetQuery } from '../api'
+import { queryKeys } from '@/api/queryKeys';
 
 type N<T> = NonNullable<T>
 export type SelectValue = N<N<AllSpectrogramAnalysisForDatasetQuery['allSpectrogramAnalysis']>['results'][number]>
@@ -12,25 +13,50 @@ type RootProps = ComboboxRootProps<SelectValue, true>
 const ComboboxRoot: React.FC<RootProps> = (props) => <Combobox.Root multiple { ...props }/>
 
 function toStr(value: SelectValue) {
-    return `${value.name} (${value.colormap.name})`
+    return `${ value.name } (${ value.colormap.name })`
 }
 
 type AnalysisSelectProps =
     Omit<RootProps, 'items' | 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue'>
-    & { datasetID?: string, id?: string }
-export const Select: React.FC<AnalysisSelectProps> = ({ datasetID, id, ...props }) => {
+    & {
+    datasetID?: string, id?: string, fillOnLoad?: boolean,
+    onValueChange?: ((value: SelectValue[]) => void);
+}
+export const Select: React.FC<AnalysisSelectProps> = ({
+                                                          datasetID,
+                                                          id,
+                                                          fillOnLoad,
+                                                          value,
+                                                          onValueChange,
+                                                          ...props
+                                                      }) => {
+
+    const [ values, setValues ] = useState<SelectValue[]>(value ?? []);
+    const onChange = useCallback((values: SelectValue[]) => {
+        setValues(values);
+        if (onValueChange) onValueChange(values);
+    }, [ setValues, onValueChange ])
+    const queryFn = useCallback(async () => {
+        if (!datasetID) return;
+        const analysis = await API.allForDatasetQueryFn({ datasetID })
+        if (fillOnLoad) onChange(analysis)
+        return analysis
+    }, [ datasetID, onChange, fillOnLoad ])
     const {
         data: analysis,
         isPending,
         isSuccess,
-    } = useQuery({
-        ...API.allForDatasetQuery({ datasetID: datasetID ?? '' }),
+    } = useQuery(queryOptions({
+        queryKey: queryKeys.analysis.allForDataset({ datasetID: datasetID ?? '' }),
+        queryFn,
         enabled: !!datasetID,
-    })
+    }))
 
     return (
-        <ComboboxRoot items={ analysis }
-                      itemToStringValue={ toStr }
+        <ComboboxRoot value={ values }
+                      onValueChange={ onChange }
+                      items={ analysis }
+                      itemToStringValue={ itemValue => itemValue.id }
                       itemToStringLabel={ toStr }
                       disabled={ !datasetID || !isSuccess }
                       isItemEqualToValue={ (itemValue: SelectValue, value: SelectValue) => itemValue.id == value.id }
@@ -56,7 +82,7 @@ export const Select: React.FC<AnalysisSelectProps> = ({ datasetID, id, ...props 
             </Combobox.InputGroup>
 
             <Combobox.Portal>
-                <Combobox.Positioner>
+                <Combobox.Positioner side="top">
                     <Combobox.Popup>
                         <Combobox.Empty>No dataset found.</Combobox.Empty>
                         <Combobox.List>
