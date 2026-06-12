@@ -59,17 +59,18 @@ const TEST = {
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
             })
             await test.step(`Navigate`, () => Promise.all([
-                page.phaseDetail.go({ as, phase })
+                page.phaseDetail.go({ as, phase }),
             ]))
 
-            await test.step('Search file', async () => {
-                const [ request ] = await Promise.all([
-                    page.waitForGqlRequest('allAnnotationSpectrograms'),
+            await test.step('Search file', () => Promise.all([
                     page.phaseDetail.searchFile(spectrogram.filename),
-                ])
-                const variables = request.postDataJSON().variables as AllAnnotationSpectrogramsQueryVariables
-                expect(variables.search).toEqual(spectrogram.filename)
-            })
+                    page.waitForGqlRequest('allAnnotationSpectrograms', (request) => {
+                        const variables = request.postDataJSON().variables as AllAnnotationSpectrogramsQueryVariables
+                        console.debug(JSON.stringify(variables))
+                        return variables.search === spectrogram.filename
+                    })
+                ]),
+            )
         }),
 
     cannotUpdatePhase: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
