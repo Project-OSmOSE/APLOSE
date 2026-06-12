@@ -11,9 +11,9 @@ import { getNewItemID } from '@/service/function';
 import { FileRangeInputRow } from '@/features/AnnotationFileRange';
 
 import styles from './edit-annotators.module.scss';
-import { queryClient } from '@/api/queryClient';
 import { AnnotationFileRange, User } from '@/features';
 import { useMutation } from '@tanstack/react-query';
+import { ensureValidQueryData } from '@/api/utils';
 
 type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
     id: string;
@@ -200,8 +200,8 @@ export const Route = createFileRoute('/_authenticated/annotation-campaign/$campa
             { users, groups },
             allFileRanges,
         ] = await Promise.all([
-            queryClient.ensureQueryData(User.API.allQuery),
-            queryClient.ensureQueryData(AnnotationFileRange.API.forPhaseQuery(params)),
+            ensureValidQueryData(User.API.allQuery),
+            ensureValidQueryData(AnnotationFileRange.API.forPhaseQuery(params)),
         ])
         return { users, groups, allFileRanges }
     },

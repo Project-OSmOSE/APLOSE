@@ -8,9 +8,9 @@ import {
     AnnotationCampaignListFilterActionBar,
     Cards,
 } from '@/features/AnnotationCampaign';
-import { queryClient } from '@/api/queryClient';
 import { AnnotationCampaign } from '@/features';
 import { useQuery } from '@tanstack/react-query';
+import { ensureValidQueryData } from '@/api/utils';
 
 const AnnotationCampaignList: React.FC = () => {
     const navigate = useNavigate();
@@ -71,7 +71,7 @@ const AnnotationCampaignList: React.FC = () => {
 export const Route = createFileRoute('/_authenticated/annotation-campaign/')({
     validateSearch: (search: Record<string, unknown>) => search as AllCampaignsQueryVariables,
     loaderDeps: ({ search }) => search as AllCampaignsQueryVariables,
-    loader: ({ params, deps }) => queryClient.ensureQueryData(AnnotationCampaign.API.allQuery({
+    loader: ({ params, deps }) => ensureValidQueryData(AnnotationCampaign.API.allQuery({
         ...deps,
         ...params,
     })),

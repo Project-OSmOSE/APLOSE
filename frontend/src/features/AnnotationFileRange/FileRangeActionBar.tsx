@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styles from './styles.module.scss';
-import { IonButton, IonIcon } from '@ionic/react';
+import { IonButton, IonIcon, IonSpinner } from '@ionic/react';
 import { peopleOutline, playOutline, refreshOutline } from 'ionicons/icons/index.js';
 import { ActionBar, Button, Link, Progress, TooltipOverlay, useModal } from '@/components/ui';
 import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
@@ -10,11 +10,15 @@ import { analytics } from 'ionicons/icons';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
 
-export const FileRangeActionBar: React.FC = () => {
+export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPending }) => {
     const searchParams = Route.useSearch();
     const routeParams = Route.useParams()
     const navigate = useNavigate();
-    const { phase, spectrograms, resumeSpectrogramId } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
+    const {
+        phase,
+        spectrograms,
+        resumeSpectrogramId,
+    } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
     const openAnnotator = useOpenAnnotator()
 
     const updateSearch = useCallback((input: string) => {
@@ -59,6 +63,8 @@ export const FileRangeActionBar: React.FC = () => {
                    searchPlaceholder="Search filename"
                    onSearchChange={ updateSearch }
                    actionButton={ <div className={ styles.filterButtons }>
+
+                       { isPending && <IonSpinner/> }
 
                        { (hasFilters || searchParams.onlyAssigned) &&
                            <IonButton fill="clear" color="medium" size="small" onClick={ clear }>

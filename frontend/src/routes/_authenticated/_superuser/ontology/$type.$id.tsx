@@ -8,7 +8,7 @@ import { Button } from '@/components/ui';
 import styles from './$type.$id.module.scss';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Ontology } from '@/features';
-import { queryClient } from '@/api/queryClient';
+import { ensureValidQueryData } from '@/api/utils';
 
 const OntologyPanel: React.FC = () => {
     const { type, id } = Route.useParams({ select: ({ type, id }) => ({ type, id }) });
@@ -117,9 +117,9 @@ export const Route = createFileRoute('/_authenticated/_superuser/ontology/$type/
     loader: ({ params: { type, id } }) => {
         switch (type) {
             case 'source':
-                return queryClient.ensureQueryData(Ontology.API.sourceByIdQuery({ id }))
+                return ensureValidQueryData(Ontology.API.sourceByIdQuery({ id }))
             case 'sound':
-                return queryClient.ensureQueryData(Ontology.API.soundByIdQuery({ id }))
+                return ensureValidQueryData(Ontology.API.soundByIdQuery({ id }))
         }
     },
     component: OntologyPanel,

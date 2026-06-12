@@ -10,8 +10,8 @@ import { DatasetHead, DatasetInfoCreation } from '@/features/Dataset';
 import { ChannelConfigurationTable } from '@/features/ChannelConfiguration';
 import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 import { Cards } from '@/features/AnnotationCampaign';
-import { queryClient } from '@/api/queryClient';
 import { Dataset } from '@/features';
+import { ensureValidQueryData } from '@/api/utils';
 
 const DatasetDetail: React.FC = () => {
     const { dataset, campaigns, analysis } = Route.useLoaderData()
@@ -65,7 +65,7 @@ const DatasetDetail: React.FC = () => {
 
 export const Route = createFileRoute('/_authenticated/_admin/dataset/$datasetID')({
     loader: async ({ params: { datasetID } }) => {
-        const { dataset, ...data } = await queryClient.ensureQueryData(Dataset.API.byIdQuery({ id: datasetID }))
+        const { dataset, ...data } = await ensureValidQueryData(Dataset.API.byIdQuery({ id: datasetID }))
         if (!dataset) throw notFound()
         return { dataset, ...data }
     },

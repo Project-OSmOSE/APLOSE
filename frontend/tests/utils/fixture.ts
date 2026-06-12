@@ -40,7 +40,7 @@ interface PageExtension {
 
   readonly annotator: AnnotatorPage;
 
-  waitForGqlRequest(operationName: keyof GqlOperations): Promise<Request>;
+  waitForGqlRequest(operationName: keyof GqlOperations, additionalCheck?: (request: Request) => boolean): Promise<Request>;
 }
 
 export interface Page extends PageBase, PageExtension {
@@ -77,10 +77,12 @@ export const test = testBase.extend<Fixture>({
       phaseEdit: new PhaseEditAnnotatorsPage(page),
       annotator: new AnnotatorPage(page),
 
-      waitForGqlRequest: (operationName: keyof GqlOperations): Promise<Request> => {
+      waitForGqlRequest: (operationName: keyof GqlOperations, additionalCheck?: (request: Request) => boolean): Promise<Request> => {
         return page.waitForRequest((request: Request) => {
           if (!new RegExp(gqlRegex).test(request.url())) return false;
-          return request.postDataJSON().operationName === operationName
+          if (request.postDataJSON()?.operationName !== operationName) return false
+          if (additionalCheck) return additionalCheck(request);
+          return true
         })
       }
     }
