@@ -1,4 +1,3 @@
-export * from './ChipsInput'
 export * from './FormBloc'
 export * from './Input'
 export * from './Label'
