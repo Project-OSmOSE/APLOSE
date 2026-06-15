@@ -1,0 +1,16 @@
+name: Notify Discord on Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  github-releases-to-discord:
+    runs-on: ubuntu-latest
+    steps:
+      - name: GitHub Releases to OSmOSE Discord
+        uses: SethCohen/github-releases-to-discord@v1
+        with:
+          webhook_url: ${{ secrets.OSMOSE_WEBHOOK_URL }}
+          username: "APLOSE Release"
+          avatar_url: "https://github.com/Project-OSmOSE/APLOSE/blob/master/frontend/public/images/logo/x96.png"
