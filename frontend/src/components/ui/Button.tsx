@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useMemo } from 'react';
+import React, { Fragment, type ReactNode, useCallback, useMemo } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
 import { useCanGoBack, useRouter } from '@tanstack/react-router'
 import { chevronBackOutline } from 'ionicons/icons/index.js';
@@ -28,25 +28,25 @@ export const DocumentationButton: React.FC<{
     <Link color="medium" href="/doc/" size={ size } target="_blank">Documentation</Link>
 )
 
-export const BackButton: React.FC = () => {
+export const BackButton: React.FC<{ children?: ReactNode, block?: boolean }> = ({ children, block }) => {
     const router = useRouter()
     const canGoBack = useCanGoBack()
 
     return useMemo(() => {
         if (!canGoBack) return <Fragment/>
         return <IonButton fill="clear"
-                   color="medium"
-                   style={ {
-                       position: 'absolute',
-                       left: '1rem',
-                       top: '50%',
-                       transform: 'translateY(-50%)',
-                   } }
-                   onClick={ () => router.history.back() }>
+                          color="medium"
+                          style={ block ? undefined : {
+                              position: 'absolute',
+                              left: '1rem',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                          } }
+                          onClick={ () => router.history.back() }>
             <IonIcon icon={ chevronBackOutline } slot="start"/>
-            Back
+            { children ?? 'Back' }
         </IonButton>
-    }, [canGoBack, router])
+    }, [ canGoBack, router, block ])
 }
 
 export const HelpButton: React.FC<{ url: string, label?: string }> = ({ url, label }) => {

@@ -66,7 +66,6 @@ const TEST = {
                     page.phaseDetail.searchFile(spectrogram.filename),
                     page.waitForGqlRequest('allAnnotationSpectrograms', (request) => {
                         const variables = request.postDataJSON().variables as AllAnnotationSpectrogramsQueryVariables
-                        console.debug(JSON.stringify(variables))
                         return variables.search === spectrogram.filename
                     })
                 ]),
