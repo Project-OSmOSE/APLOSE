@@ -29,13 +29,14 @@ export const useOpenAnnotator = () => {
     const search: any = useSearch({ strict: false });
     const navigate = useNavigate()
 
-    return useCallback((spectrogramID: string, options?: { resume?: boolean}) => {
-        const _search = {...search}
+    return useCallback((spectrogramID: string, options?: { resume?: boolean, replace?: boolean }) => {
+        const _search = { ...search }
         if (options?.resume) _search.onlyAssigned = true
         navigate({
             to: '/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID',
             params: { ...routeParams, spectrogramID },
             search: _search,
+            replace: options?.replace,
         });
     }, [ routeParams, search, navigate ])
 }

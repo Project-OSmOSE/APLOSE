@@ -1,12 +1,11 @@
-import React, { Fragment, ReactNode, useCallback, useEffect } from 'react';
+import React, { Fragment, ReactNode, useEffect } from 'react';
 import { Footer, Header } from '@/components/layout';
-import { Link, Progress } from '@/components/ui';
+import { BackButton, Link, Progress } from '@/components/ui';
 import { IonIcon, IonNote, IonSpinner } from '@ionic/react';
 import { helpBuoyOutline } from 'ionicons/icons/index.js';
 import styles from './styles.module.scss';
 import { IoCheckmarkCircleOutline, IoChevronForwardOutline } from 'react-icons/io5';
 import { AnnotationTaskStatus } from '@/api';
-import { gqlAPI } from '@/api/baseGqlApi';
 import { useAppDispatch } from '@/features/App';
 import { useAnnotatorCanNavigate } from '@/features/Annotator/Navigation';
 import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
@@ -47,13 +46,6 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
     }))
     const canNavigate = useAnnotatorCanNavigate()
     const dispatch = useAppDispatch()
-
-    const onBack = useCallback(() => {
-        dispatch(gqlAPI.util.invalidateTags([ {
-            type: 'AnnotationPhase',
-            id: phase.id,
-        } ]))
-    }, [ phase, dispatch ])
 
     useEffect(() => {
         dispatch(AnnotatorVisualConfigurationSlice.actions.initCampaign({
@@ -113,14 +105,7 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                                 </Link>
                             }
 
-                            <Link color="medium" fill="outline"
-                                  size="small"
-                                  onClick={ onBack }
-                                  to="/annotation-campaign/$campaignID/phase/$phaseType"
-                                  params={ { campaignID: campaign.id, phaseType: phase.phase } }
-                                  search={ search }>
-                                Back to campaign
-                            </Link>
+                            <BackButton block>Back to campaign</BackButton>
                         </Fragment> }>
 
                     { data?.spectrogram && <div className={ styles.info }>

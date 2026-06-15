@@ -14,7 +14,10 @@ export const NavigationButtons: React.FC = () => {
     const { user } = useLoaderData({ from: '/_authenticated' })
     const params = useParams({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const search = useSearch({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
-    const { info, isEditionAuthorized } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const {
+        info,
+        isEditionAuthorized,
+    } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const canNavigate = useAnnotatorCanNavigate()
     const openAnnotator = useOpenAnnotator()
     const { submit, isPending } = useAnnotatorSubmit()
@@ -22,12 +25,12 @@ export const NavigationButtons: React.FC = () => {
     const navPrevious = useCallback(async () => {
         if (isPending) return;
         if (!info?.previousSpectrogramId) return;
-        if (await canNavigate()) openAnnotator(info.previousSpectrogramId)
+        if (await canNavigate()) openAnnotator(info.previousSpectrogramId, { replace: true })
     }, [ openAnnotator, isPending, info, canNavigate ])
     const navNext = useCallback(async () => {
         if (isPending) return;
         if (!info?.nextSpectrogramId) return;
-        if (await canNavigate()) openAnnotator(info.nextSpectrogramId)
+        if (await canNavigate()) openAnnotator(info.nextSpectrogramId, { replace: true })
     }, [ canNavigate, openAnnotator, isPending, info ])
 
     useKeyDownEvent([ 'ArrowLeft' ], navPrevious)
@@ -39,9 +42,9 @@ export const NavigationButtons: React.FC = () => {
             ...params,
             ...search,
             annotatorID: user.id,
-            spectrogramID: info.nextSpectrogramId
+            spectrogramID: info.nextSpectrogramId,
         }))
-    }, [info]);
+    }, [ info ]);
 
     return (
         <div className={ styles.navigation }>
