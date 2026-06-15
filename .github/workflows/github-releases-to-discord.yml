@@ -2,7 +2,7 @@ name: Notify Discord on Release
 
 on:
   release:
-    types: [released,]
+    types: [published, released,]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
@@ -17,15 +17,53 @@ on:
         required: false
 
 jobs:
-  github-releases-to-discord:
+  discord-notification:
     runs-on: ubuntu-latest
     steps:
       - name: GitHub Releases to OSmOSE Discord
-        uses: SethCohen/github-releases-to-discord@v1
-        with:
-          webhook_url: ${{ secrets.OSMOSE_WEBHOOK_URL }}
-          username: "APLOSE Release"
-          avatar_url: "https://github.com/Project-OSmOSE/APLOSE/blob/master/frontend/public/images/logo/x96.png"
-          release_name: ${{ inputs.release_name }}
-          release_body: ${{ inputs.release_body }}
-          release_html_url: ${{ inputs.release_html_url }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.OSMOSE_WEBHOOK_URL }}
+          RELEASE_NAME: ${{ github.event.release.name }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_AUTHOR: ${{ github.event.release.author.login }}
+          IS_PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+            # Define colors for embeds (green for stable, yellow for prerelease)
+            if [ "$IS_PRERELEASE" = "true" ]; then
+              COLOR="16776960"  # Yellow
+              TITLE_PREFIX="🔶 Pre-release: "
+            else
+              COLOR="65280"     # Green
+              TITLE_PREFIX="✅ Release: "
+            fi
+            
+            # Prepare release body (limit to 2048 chars for Discord embed)
+            BODY="${RELEASE_BODY:0:2048}"
+            if [ ${#RELEASE_BODY} -gt 2048 ]; then
+              BODY="${BODY}..."
+            fi
+            
+            # Create JSON payload for Discord webhook
+            PAYLOAD=$(cat <<EOF
+            {
+              "embeds": [
+                {
+                  "title": "${TITLE_PREFIX}${RELEASE_NAME}",
+                  "description": "${BODY}",
+                  "url": "${RELEASE_URL}",
+                  "color": ${COLOR},
+                  "footer": {
+                    "text": "Released by ${RELEASE_AUTHOR}"
+                  }
+                }
+              ]
+            }
+            EOF
+            )
+            
+            # Send message to Discord
+            curl -X POST \
+              -H 'Content-type: application/json' \
+              --data "${PAYLOAD}" \
+              "${DISCORD_WEBHOOK}"
