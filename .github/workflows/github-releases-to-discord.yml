@@ -1,58 +1,50 @@
-name: Notify Discord on Release
+name: Discord Release Notification
 
 on:
   release:
-    types:
-     - published
+    types: [published]
 
 jobs:
-  discord-notification:
+  notify:
     runs-on: ubuntu-latest
+
     steps:
-      - name: GitHub Releases to OSmOSE Discord
+      - name: Send Discord notification
+        uses: actions/github-script@v7
         env:
-          DISCORD_WEBHOOK: ${{ secrets.OSMOSE_WEBHOOK_URL }}
-          RELEASE_NAME: ${{ github.event.release.name }}
-          RELEASE_BODY: ${{ github.event.release.body }}
-          RELEASE_URL: ${{ github.event.release.html_url }}
-          RELEASE_AUTHOR: ${{ github.event.release.author.login }}
-          IS_PRERELEASE: ${{ github.event.release.prerelease }}
-        run: |
-            # Define colors for embeds (green for stable, yellow for prerelease)
-            if [ "$IS_PRERELEASE" = "true" ]; then
-              COLOR="16776960"  # Yellow
-              TITLE_PREFIX="🔶 Pre-release: "
-            else
-              COLOR="65280"     # Green
-              TITLE_PREFIX="✅ Release: "
-            fi
-            
-            # Prepare release body (limit to 2048 chars for Discord embed)
-            BODY="${RELEASE_BODY:0:2048}"
-            if [ ${#RELEASE_BODY} -gt 2048 ]; then
-              BODY="${BODY}..."
-            fi
-            
-            # Create JSON payload for Discord webhook
-            PAYLOAD=$(cat <<EOF
-            {
-              "embeds": [
-                {
-                  "title": "${TITLE_PREFIX}${RELEASE_NAME}",
-                  "description": "${BODY}",
-                  "url": "${RELEASE_URL}",
-                  "color": ${COLOR},
-                  "footer": {
-                    "text": "Released by ${RELEASE_AUTHOR}"
-                  }
-                }
-              ]
+          DISCORD_WEBHOOK_URL: ${{ secrets.OSMOSE_WEBHOOK_URL }}
+        with:
+          script: |
+            const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+            const { release } = context.payload;
+            const { owner, repo } = context.repo;
+
+            // Truncate body to Discord's embed description limit (4096 chars)
+            const description = (release.body || 'No description provided.').slice(0, 4096);
+
+            const embed = {
+              title: `🚀 New release: ${release.name || release.tag_name}`,
+              description,
+              url: release.html_url,
+              color: 0x57F287, // Discord green
+              fields: [
+                { name: 'Repository',  value: `${owner}/${repo}`,                        inline: true },
+                { name: 'Tag',         value: release.tag_name,                           inline: true },
+                { name: 'Pre-release', value: release.prerelease ? '⚠️ Yes' : '✅ No',   inline: true },
+              ],
+              footer: { text: `Published by ${release.author.login}` },
+              timestamp: release.published_at,
+            };
+
+            const response = await fetch(webhookUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ embeds: [embed] }),
+            });
+
+            if (!response.ok) {
+              const text = await response.text();
+              throw new Error(`Discord webhook error ${response.status}: ${text}`);
             }
-            EOF
-            )
-            
-            # Send message to Discord
-            curl -X POST \
-              -H 'Content-type: application/json' \
-              --data "${PAYLOAD}" \
-              "${DISCORD_WEBHOOK}"
+
+            console.log('Discord notification sent successfully!');
