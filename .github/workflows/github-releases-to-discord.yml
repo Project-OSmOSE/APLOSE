@@ -26,3 +26,6 @@ jobs:
           webhook_url: ${{ secrets.OSMOSE_WEBHOOK_URL }}
           username: "APLOSE Release"
           avatar_url: "https://github.com/Project-OSmOSE/APLOSE/blob/master/frontend/public/images/logo/x96.png"
+          release_name: ${{ inputs.release_name }}
+          release_body: ${{ inputs.release_body }}
+          release_html_url: ${{ inputs.release_html_url }}
