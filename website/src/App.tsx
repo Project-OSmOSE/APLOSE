@@ -13,6 +13,7 @@ import { ProjectDetail } from './pages/Projects/ProjectDetail/ProjectDetail';
 import { setupIonicReact } from '@ionic/react';
 import { Legals } from './pages/Legals/Legals';
 import '@ionic/react/css/core.css';
+import { OurToolsPage } from './pages/OurTools/OurToolsPage';
 
 
 setupIonicReact({
@@ -63,6 +64,12 @@ const App: React.FC = () => {
                 <Route exact path="/news">
                     <Layout>
                         <NewsPage/>
+                    </Layout>
+                </Route>
+
+                <Route exact path="/our-tools">
+                    <Layout>
+                        <OurToolsPage/>
                     </Layout>
                 </Route>
 
