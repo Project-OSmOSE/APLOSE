@@ -1,14 +1,20 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import { IonSpinner } from '@ionic/react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import type { BaseUIEvent } from '@base-ui/react';
+
+import type { SourceNode } from '@/api';
+import { queryClient } from '@/api/queryClient';
+import { Ontology } from '@/features';
+import type { UpdateSoundMutationVariables } from '@/features/Ontology';
 
 import { Button, ButtonGroup } from '@/components/base/Button';
-import { Input, Label } from '@/components/form';
+import { Spinner } from '@/components/base/Spinner';
+import { Form } from '@/components/base/Form';
+import { Fieldset } from '@/components/base/Fieldset';
+import { Field } from '@/components/base/Field';
 
 import styles from './$type.$id.module.scss';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { Ontology } from '@/features';
-import { queryClient } from '@/api/queryClient';
 
 const OntologyPanel: React.FC = () => {
     const { type, id } = Route.useParams({ select: ({ type, id }) => ({ type, id }) });
@@ -28,87 +34,79 @@ const OntologyPanel: React.FC = () => {
     const isFetching = useMemo(() => isFetchingSound || isFetchingSource, [ isFetchingSource, isFetchingSound ])
     const data = useMemo(() => type == 'source' ? source : sound, [ type, source, sound ])
 
-    const [ englishName, setEnglishName ] = useState<string | undefined>(data?.englishName);
-    const [ frenchName, setFrenchName ] = useState<string | undefined>(data?.frenchName ?? undefined);
-    const [ latinName, setLatinName ] = useState<string | undefined>(data?.__typename === 'SourceNode' ? (data?.latinName ?? undefined) : undefined);
-    const [ codeName, setCodeName ] = useState<string | undefined>(data?.codeName ?? undefined);
-    const [ taxon, setTaxon ] = useState<string | undefined>(data?.taxon ?? undefined);
+    const submit = useCallback(async (event: BaseUIEvent<React.FormEvent<HTMLFormElement>>) => {
+        if (!data) return;
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const info: UpdateSoundMutationVariables = {
+            id: data.id,
+            parent_id: data.parent?.id,
+            englishName: formData.get('englishName') as string || data.englishName,
+            frenchName: formData.get('frenchName') as string || data.frenchName,
+            codeName: formData.get('codeName') as string || data.codeName,
+            taxon: formData.get('taxon') as string || data.taxon,
+        }
 
-    const update = useCallback(() => {
-        if (!data || !englishName) return;
         switch (type) {
             case 'source':
                 return updateSource({
-                    id: data.id,
-                    englishName,
-                    latinName,
-                    frenchName,
-                    codeName,
-                    taxon,
+                    ...info,
+                    latinName: formData.get('latinName') as string || (data as SourceNode).latinName,
                 })
             case 'sound':
-                return updateSound({
-                    id: data.id,
-                    englishName,
-                    frenchName,
-                    codeName,
-                    taxon,
-                })
+                return updateSound(info)
         }
-    }, [ updateSource, updateSound, data, englishName, latinName, frenchName, codeName, taxon, type ])
-
-    const reset = useCallback(() => {
-        setEnglishName(data?.englishName);
-        setFrenchName(data?.frenchName ?? undefined);
-        if (data?.__typename === 'SourceNode') setLatinName(data?.latinName ?? undefined);
-        setCodeName(data?.codeName ?? undefined);
-        setTaxon(data?.taxon ?? undefined);
-    }, [ data ])
-    useEffect(() => {
-        reset()
-    }, [ id ]);
+    }, [type, data, updateSource, updateSound]);
 
     if (!id) return <div className={ styles.panel }/>
     return <div className={ styles.panel }>
-        { isFetching && <IonSpinner/> }
+        { isFetching && <Spinner/> }
 
-        { !isFetching && data && <div className={ styles.item }>
-            <h5>ID: { data.id }</h5>
-            <div>
-                <Label required label="English name"/>
-                <Input value={ englishName }
-                       onChange={ e => setEnglishName(e.currentTarget.value) }/>
-            </div>
-            { type === 'source' && <div>
-                <Label required label="Latin name"/>
-                <Input value={ latinName }
-                       onChange={ e => setLatinName(e.currentTarget.value) }/>
-            </div> }
-            <div>
-                <Label required label="French name"/>
-                <Input value={ frenchName }
-                       onChange={ e => setFrenchName(e.currentTarget.value) }/>
-            </div>
-            <div>
-                <Label required label="Code name"/>
-                <Input value={ codeName }
-                       onChange={ e => setCodeName(e.currentTarget.value) }/>
-            </div>
-            <div>
-                <Label required label="Taxon"/>
-                <Input value={ taxon }
-                       onChange={ e => setTaxon(e.currentTarget.value) }/>
-            </div>
+        { !isFetching && data && <Form onSubmit={ submit }>
+            <Fieldset.Root>
+                <Fieldset.Legend>ID: { data.id }</Fieldset.Legend>
+
+                <Field.Root name='englishName'>
+                    <Field.Label required>English name</Field.Label>
+                    <Field.Control type="text" placeholder={ data.englishName }/>
+                    <Field.Error/>
+                </Field.Root>
+
+                { type === 'source' && <Field.Root name='latinName'>
+                    <Field.Label>Latin name</Field.Label>
+                    <Field.Control type="text" placeholder={ (data as SourceNode).latinName ?? undefined }/>
+                    <Field.Error/>
+                </Field.Root> }
+
+                <Field.Root name='frenchName'>
+                    <Field.Label>French name</Field.Label>
+                    <Field.Control type="text" placeholder={ data.frenchName ?? undefined }/>
+                    <Field.Error/>
+                </Field.Root>
+
+                <Field.Root name='codeName'>
+                    <Field.Label>Code name</Field.Label>
+                    <Field.Control type="text" placeholder={ data.codeName ?? undefined }/>
+                    <Field.Error/>
+                </Field.Root>
+
+                <Field.Root name='taxon'>
+                    <Field.Label>Taxon</Field.Label>
+                    <Field.Control type="text" placeholder={ data.taxon ?? undefined }/>
+                    <Field.Error/>
+                </Field.Root>
+
+            </Fieldset.Root>
 
             <ButtonGroup spaceBetween>
-                <Button onClick={ reset }>
-                    Reset changes
+                <Button type="reset">
+                    Reset
                 </Button>
-                <Button onClick={ update } color="primary">
+                <Button type="submit" color="primary">
                     Save
                 </Button>
             </ButtonGroup>
-        </div> }
+        </Form> }
     </div>
 }
 

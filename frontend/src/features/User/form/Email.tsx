@@ -5,7 +5,7 @@ import { Field } from '@/components/base/Field';
 import { Button, ButtonGroup } from '@/components/base/Button';
 import type { BaseUIEvent } from '@base-ui/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { IonSpinner } from '@ionic/react';
+import { Spinner } from '@/components/base/Spinner';
 import * as API from '../api';
 import { updateEmailMutation } from '../api';
 import { Toast } from '@/components/base/Toast';
@@ -49,7 +49,7 @@ export const Email: React.FC = () => {
                 </Field.Root>
 
                 <ButtonGroup end>
-                    { isPending && <IonSpinner/> }
+                    { isPending && <Spinner/> }
                     <Button color="primary" type="submit" disabled={ isPending }>
                         Update
                     </Button>

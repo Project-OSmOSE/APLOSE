@@ -1,34 +1,32 @@
-import React, { Fragment, useMemo } from 'react';
-import { createFileRoute, useLoaderData } from '@tanstack/react-router';
-import { IonSpinner } from '@ionic/react';
+import React, { useMemo } from 'react';
+import { createLazyFileRoute, useLoaderData } from '@tanstack/react-router';
 
-import { Head, WarningText } from '@/components/ui';
+import { Head } from '@/components/ui';
 
 import { UserForm } from '@/features/User';
 import { Field } from '@/components/base/Field';
 import { Form } from '@/components/base/Form';
+import { Content } from '@/components/layout/Content';
 
 const Account: React.FC = () => {
     const { user } = useLoaderData({ from: '/_authenticated' })
 
-    return useMemo(() => <Fragment>
+    return useMemo(() => <Content start>
         <Head title="Account"/>
 
         <Form>
             <Field.Root>
                 <Field.Label>Username</Field.Label>
-                <Field.Control value={ user.username } disabled/>
+                <Field.Control value={ user.username } type="text" disabled/>
             </Field.Root>
         </Form>
 
         <UserForm.Email/>
 
         <UserForm.Password/>
-    </Fragment>, [ user ])
+    </Content>, [ user ])
 }
 
-export const Route = createFileRoute('/_authenticated/account')({
+export const Route = createLazyFileRoute('/_authenticated/account')({
     component: Account,
-    pendingComponent: IonSpinner,
-    errorComponent: WarningText,
 })

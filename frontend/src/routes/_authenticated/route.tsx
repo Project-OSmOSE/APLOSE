@@ -2,13 +2,16 @@ import React, { useCallback, useEffect } from 'react';
 import { createFileRoute, Outlet, redirect, useNavigate, useRouter } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query';
 
-import { AploseSkeleton } from '@/components/layout';
+import { Page } from '@/components/layout';
 import { Toast } from '@/components/base/Toast';
 
 import { queryClient } from '@/api/queryClient';
 import { queryKeys } from '@/api/queryKeys';
 
 import { UserAPI } from '@/features/User';
+import { Spinner } from '@/components/base/Spinner';
+import { WarningText } from '@/components/ui';
+import { Center } from '@/components/layout/Display';
 
 const Component: React.FC = () => {
     const { status, error, isFetching, data: user } = useQuery(UserAPI.currentQuery)
@@ -31,7 +34,7 @@ const Component: React.FC = () => {
         if (!isFetching && (status === 'error' || !user)) handleNotConnected()
     }, [ status, user ]);
 
-    return <AploseSkeleton><Outlet/></AploseSkeleton>
+    return <Page.Authenticated><Outlet/></Page.Authenticated>
 }
 export const Route = createFileRoute('/_authenticated')({
     loader: async () => {
@@ -44,4 +47,10 @@ export const Route = createFileRoute('/_authenticated')({
         })
     },
     component: Component,
+    errorComponent: (error) => <Page.Authenticated>
+        <Center><WarningText error={ error }/></Center>
+    </Page.Authenticated>,
+    pendingComponent: () => <Page.Authenticated>
+        <Center><Spinner/></Center>
+    </Page.Authenticated>,
 })

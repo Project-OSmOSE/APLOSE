@@ -17,6 +17,9 @@ query getDetailedSoundByID($id: ID!){
         frenchName
         codeName
         taxon
+        parent {
+            id
+        }
     }
 }
 

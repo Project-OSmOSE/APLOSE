@@ -5,12 +5,16 @@
   overflow: auto;
   gap: 1rem;
 
-  .sql {
-    max-height: 12rem;
-    overflow: auto;
-  }
-
   .error {
     align-self: start;
+  }
+}
+
+.sql {
+  max-height: 12rem;
+  overflow: auto;
+
+  * {
+    font-family: Consolas, serif;
   }
 }

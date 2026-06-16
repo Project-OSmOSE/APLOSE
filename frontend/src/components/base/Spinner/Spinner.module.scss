@@ -1,11 +1,11 @@
 .Spinner {
-  width: 2rem;
-  height: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   overflow: hidden;
 
   > span {
-    width: 2rem;
-    height: 2rem;
+    width: 1.5rem;
+    height: 1.5rem;
     border-radius: 50%;
     display: inline-block;
     position: relative;
@@ -20,8 +20,8 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: calc(2rem - 4px);
-      height: calc(2rem - 4px);
+      width: calc(1.5rem - 4px);
+      height: calc(1.5rem - 4px);
       border-radius: 50%;
       background: white;
     }

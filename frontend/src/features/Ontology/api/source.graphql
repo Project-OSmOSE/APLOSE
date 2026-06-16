@@ -18,6 +18,9 @@ query getDetailedSourceByID($id: ID!){
         frenchName
         codeName
         taxon
+        parent {
+            id
+        }
     }
 }
 

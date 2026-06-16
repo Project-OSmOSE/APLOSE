@@ -1,35 +1,35 @@
 import React, { useMemo } from 'react';
-import { IonButton } from '@ionic/react';
+import { Button } from '@/components/base/Button';
 import styles from './ui.module.scss';
 
 export const Pagination: React.FC<{
-  currentPage: number,
-  totalPages: number,
-  setCurrentPage: (page: number) => void,
-  className?: string
+    currentPage: number,
+    totalPages: number,
+    setCurrentPage: (page: number) => void,
+    className?: string
 }> = ({ currentPage, totalPages, setCurrentPage, className }) => {
 
-  const showPages = useMemo(() => {
-    const pages = [ currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2 ].filter(i => i > 1 && i < totalPages);
+    const showPages = useMemo(() => {
+        const pages = [ currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2 ].filter(i => i > 1 && i < totalPages);
 
-    const show: Array<number | '...'> = [ 1 ];
-    if (!pages.includes(2)) show.push('...')
-    show.push(...pages);
-    if (!pages.includes(totalPages - 1)) show.push('...');
-    show.push(totalPages);
-    return show;
-  }, [ currentPage, totalPages ]);
+        const show: Array<number | '...'> = [ 1 ];
+        if (!pages.includes(2)) show.push('...')
+        show.push(...pages);
+        if (!pages.includes(totalPages - 1)) show.push('...');
+        show.push(totalPages);
+        return show;
+    }, [ currentPage, totalPages ]);
 
-  if (totalPages === 1) return;
+    if (totalPages === 1) return;
 
-  return <div className={ [styles.pagination, className].join(' ') }>
-    { showPages.map((i, index) => {
-      if (i === '...') return <p key={ index }>...</p>
-      return <IonButton key={ index }
-                        fill={ i === currentPage ? 'solid' : 'outline' }
-                        onClick={ () => setCurrentPage(i) }>
-        { i }
-      </IonButton>
-    }) }
-  </div>
+    return <div className={ [ styles.pagination, className ].join(' ') }>
+        { showPages.map((i, index) => {
+            if (i === '...') return <p key={ index }>...</p>
+            return <Button key={ index }
+                           disabled={ i === currentPage }
+                           onClick={ () => setCurrentPage(i) }>
+                { i }
+            </Button>
+        }) }
+    </div>
 }

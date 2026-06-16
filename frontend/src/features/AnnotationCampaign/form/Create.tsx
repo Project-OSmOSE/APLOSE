@@ -126,9 +126,7 @@ export const Create: React.FC = () => {
                                          onValueChange={ setDataset }/>
                 <Field.Error/>
                 <Note color="medium">
-                    <InfoCircle weight="Linear"/> You can import new datasets in the
-                    <Link to="/storage">Storage</Link>
-                    section
+                    <InfoCircle weight="Linear"/> You can import new datasets in the <Link inText to="/storage">Storage</Link> section
                 </Note>
             </Field.Root>
 

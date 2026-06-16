@@ -15,13 +15,11 @@ const Home = React.memo(() => <Fragment>
         Annotation Platform for Ocean Sound Explorers
     </h1>
     <p>
-        APLOSE is the
-        <ExternalLink inText color="primary" href="https://osmose.ifremer.fr">
-            <img src={ logo } alt="OSmOSE" height={ 20 }/>OSmOSE
-        </ExternalLink>
-        team platform for marine acoustic research. It is an open-source annotation platform that facilitates
-        collaboration in the field of underwater acoustics.
-        Dive into our short video presentation to find out more about APLOSE.
+        APLOSE is the <ExternalLink inText color="primary" href="https://osmose.ifremer.fr"><img src={ logo }
+                                                                                                 alt="OSmOSE"
+                                                                                                 height={ 20 }/>OSmOSE</ExternalLink> team
+        platform for marine acoustic research. It is an open-source annotation platform that facilitates collaboration
+        in the field of underwater acoustics. Dive into our short video presentation to find out more about APLOSE.
     </p>
     <video controls className={ styles.Video }>
         <source src="video/home/démo_APLOSE.mp4" type="video/mp4"/>
@@ -76,20 +74,18 @@ const Home = React.memo(() => <Fragment>
 
     <h2 className={ styles.Center }>Collaboration and open source</h2>
     <p>
-        APLOSE platform was used in several research projects involving citizen science with the Astrolabe
-        Expeditions organization
-        <ExternalLink href="https://www.astrolabe-expeditions.org/" target="_blank">Astrolabe</ExternalLink>,
-        the Sorbonne university and the Institut d’Alembert. It also helps with delphinidae monitoring along the French
-        Mediterranean coast by the association
-        <ExternalLink href="https://miraceti.org/" target="_blank">MIRACETI</ExternalLink>.
-        The annotations made through APLOSE also enabled to evaluate automated detection algorithm performance and to
-        create a geophony reference dataset. APLOSE relies on its open-source community, welcoming contributions from
-        everywhere to enhance and develop the platform further. For example, the platform was deployed on the
-        <ExternalLink href="https://www.france-energies-marines.org/" target="_blank">France Energies
-            Marines</ExternalLink> server to be
-        managed and used by their team. They will also take part in the development of the future
-        technological improvements of APLOSE, in collaboration with the OSmOSE team.
-        All the codes and associate documentations to collaborate can be found on our Github page.
+        APLOSE platform was used in several research projects involving citizen science with the Astrolabe Expeditions
+        organization <ExternalLink inText href="https://www.astrolabe-expeditions.org/"
+                                   target="_blank">Astrolabe</ExternalLink>, the Sorbonne university and the Institut
+        d’Alembert. It also helps with delphinidae monitoring along the French Mediterranean coast by the
+        association <ExternalLink inText href="https://miraceti.org/" target="_blank">MIRACETI</ExternalLink>. The
+        annotations made through APLOSE also enabled to evaluate automated detection algorithm performance and to create
+        a geophony reference dataset. APLOSE relies on its open-source community, welcoming contributions from
+        everywhere to enhance and develop the platform further. For example, the platform was deployed on
+        the <ExternalLink inText href="https://www.france-energies-marines.org/" target="_blank">France Energies
+        Marines</ExternalLink> server to be managed and used by their team. They will also take part in the development
+        of the future technological improvements of APLOSE, in collaboration with the OSmOSE team. All the codes and
+        associate documentations to collaborate can be found on our Github page.
     </p>
 
     <h2 className={ styles.Center }>Join the APLOSE community</h2>

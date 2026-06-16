@@ -80,4 +80,9 @@
 
 .ExternalLink, .Link {
   text-decoration: none !important;
+
+  &.Text {
+    text-decoration: underline !important;
+    color: var(--color-primary);
+  }
 }

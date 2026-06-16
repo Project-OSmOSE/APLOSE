@@ -8,7 +8,7 @@
   display: flex; // Fallback for browser not understanding ruby
   align-items: center;
   flex-wrap: wrap;
-  display: ruby;
+  gap: 0.25rem;
 
 
   @each $color in base.$colors {

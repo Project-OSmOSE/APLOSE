@@ -78,7 +78,9 @@
 
 body {
     margin: 0;
-    color: var(--color-dark)
+    color: var(--color-dark);
+    font-size:  1rem;
+    overflow: hidden;
 }
 
 * {

@@ -8,11 +8,11 @@ import { logoGithub } from 'ionicons/icons';
 import logo from '/images/ode_logo_192x192.png';
 import { Note } from '@/components/base/Note';
 
-export const Footer: React.FC = React.memo(() => {
+export const Footer: React.FC<{ className?: string }> = React.memo(({ className }) => {
     const version = useMemo(() => json.version, [])
 
     return (
-        <footer className={ styles.Footer }>
+        <footer className={ [ styles.Footer, className ].join(' ') }>
             <div>
                 <ExternalLink href={ GITHUB_URL } target="_blank">
                     <IonIcon icon={ logoGithub } slot="start"/>

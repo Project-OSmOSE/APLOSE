@@ -5,6 +5,7 @@
   align-items: center;
   font-family: var(--font-family), sans-serif;
   color: var(--color-dark);
+  background: white;
   gap: 0.5rem 1rem;
   padding: 0.2rem 2rem;
   grid-column: 1 / -1;
@@ -43,7 +44,7 @@
     }
   }
 
-  @media (max-width: 800px) {
+  @media (max-width: 600px) {
     grid-template-columns: 1fr;
     justify-content: center;
     justify-items: center;

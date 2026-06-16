@@ -10,7 +10,7 @@ import logo from '/images/logo/x96.png';
 export const Public: React.FC = () => {
     const { data: user } = useQuery(UserAPI.currentQuery)
 
-    return <NavigationMenu.Root className={ [ styles.Navigation, styles.NavigationRoot, styles.Public ].join(' ') }>
+    return <NavigationMenu.Root className={ [ styles.Navigation, styles.Public ].join(' ') }>
         <NavigationMenu.List>
             <NavigationMenu.Item>
                 <Link to="/" className={ styles.Title }>

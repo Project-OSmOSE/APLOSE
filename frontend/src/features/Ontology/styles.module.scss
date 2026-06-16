@@ -1,6 +1,6 @@
 .node {
   padding: 0.25rem 0.75rem;
-  border: 2px solid var(--ion-color-primary);
+  border: 2px solid var(--color-primary);
   border-radius: 0.5rem;
   transition: background-color 300ms ease;
 
@@ -10,9 +10,10 @@
     text-overflow: ellipsis;
     word-wrap: break-word;
     width: 16ch;
+    margin: 0;
   }
 
   &.selected {
-    background: rgba(var(--ion-color-primary-rgb), 0.1);
+    background: rgba(var(--color-primary-rgb), 0.1);
   }
 }

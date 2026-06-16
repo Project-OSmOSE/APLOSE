@@ -7,7 +7,8 @@ import type {
     QueryActionCreatorResult,
     QueryDefinition,
 } from '@reduxjs/toolkit/query';
-import type { Errors } from '@base-ui/react/internals/form-context';
+import { queryClient } from '@/api/queryClient';
+import type { DefaultError, EnsureQueryDataOptions, QueryKey } from '@tanstack/react-query';
 
 export function getTokenFromCookie(): Token | undefined {
     const tokenCookie = document.cookie?.split(';').filter((item) => item.trim().startsWith('token='))[0];
@@ -52,4 +53,12 @@ export function cleanGqlErrors(errors?: Array<ErrorType | null> | null): Errors 
         ...prev,
         [current.field]: current.messages,
     }), {})
+}
+
+export async function ensureValidQueryData<TQueryFnData, TError = DefaultError, TData = TQueryFnData, TQueryKey extends QueryKey = QueryKey>(options: EnsureQueryDataOptions<TQueryFnData, TError, TData, TQueryKey>): Promise<TData> {
+    const data = await queryClient.ensureQueryData(options)
+    if (queryClient.getQueryState(options.queryKey)?.isInvalidated) {
+        return await queryClient.fetchQuery(options)
+    }
+    return data
 }

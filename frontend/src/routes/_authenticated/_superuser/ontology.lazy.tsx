@@ -1,18 +1,18 @@
-import React, { Fragment, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { createLazyFileRoute, Outlet, useParams } from '@tanstack/react-router'
 
 import { Head, Tab, Tabs } from '@/components/ui';
 
 import styles from './ontology.module.scss';
+import { Content } from '@/components/layout/Content';
 
 const OntologyPage: React.FC = () => {
 
     const { type } = useParams({ strict: false });
 
-    return useMemo(() => <Fragment>
+    return useMemo(() => <Content className={styles.content}>
             <Head title="Ontology"/>
 
-            <div className={ styles.page }>
                 <Tabs>
                     <Tab to="/ontology/$type" params={ { type: 'source' } }
                          active={ type === 'source' }>
@@ -25,8 +25,7 @@ const OntologyPage: React.FC = () => {
                 </Tabs>
 
                 <Outlet/>
-            </div>
-        </Fragment>,
+        </Content>,
         [ type ])
 }
 

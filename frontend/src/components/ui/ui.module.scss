@@ -13,8 +13,8 @@
 
   display: grid;
   justify-items: center;
-  color: var(--ion-color-danger);
-  border: 2px solid var(--ion-color-danger);
+  background-color: rgba(var(--color-danger-rgb), 0.05);
+  color: var(--color-danger);
   border-radius: 0.5rem;
   padding: 0.5rem 2rem;
   gap: 0.5rem;
@@ -35,16 +35,14 @@
 }
 
 .kbd {
-  background: var(--ion-color-light-shade);
-  color: var(--ion-color-light-contrast);
-  padding: 0.1rem 0.25rem;
-  border-radius: 0.25rem;
-  border: 1px solid var(--ion-color-medium-tint);
+  background: var(--color-light);
+  padding: 0.1rem 0.2rem;
+  border-radius: 0.2rem;
   box-shadow: var(--box-shadow);
 
   > kbd {
     background: transparent;
-    color: var(--ion-color-light-contrast);
+    box-shadow: none;
   }
 }
 
@@ -69,27 +67,10 @@
 }
 
 .tabs {
-  border-bottom: 1px solid rgba(var(--ion-color-medium-rgb), 0.25);
+  border-bottom: 1px solid rgba(var(--color-medium-rgb), 0.25);
   display: flex;
   gap: 1rem;
   padding-bottom: 0.5rem;
-
-  ion-button {
-    --padding-bottom: 0.25rem;
-    --padding-top: 0.5rem;
-    --padding-start: 1rem;
-    --padding-end: 1rem;
-    --border-radius: 0rem;
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
-    overflow: hidden;
-    border: 1px solid rgba(var(--ion-color-medium-rgb), 0);
-    border-bottom: none;
-
-    &.active {
-      border-color: rgba(var(--ion-color-medium-rgb), 0.5);
-    }
-  }
 
   .tab {
     --padding-bottom: 0.25rem;
@@ -99,11 +80,12 @@
     --border-radius: 0rem;
     border-radius: 1rem 1rem 0 0;
     overflow: hidden;
-    border: 1px solid rgba(var(--ion-color-medium-rgb), 0);
+    border: 1px solid rgba(var(--color-medium-rgb), 0);
     border-bottom: none;
 
     &.active {
-      border-color: rgba(var(--ion-color-medium-rgb), 0.5);
+      border-color: rgba(var(--color-medium-rgb), 0.5);
+      color: var(--color-primary);
     }
 
     ion-icon {
@@ -120,6 +102,10 @@
     display: grid;
     justify-items: center;
     position: relative;
+
+    h2 {
+      font-weight: 400;
+    }
 
     ion-note {
       align-items: center;
@@ -256,7 +242,7 @@
 }
 
 .table {
-  overflow: auto !important;
+  overflow-x: scroll;
   height: 100%;
   display: grid;
   align-content: start;
@@ -283,7 +269,7 @@
 
       th {
         font-weight: 400;
-        color: var(--ion-color-dark-tint);
+        color: var(--color-dark-tint);
 
         &.sortable > div, &.filterable > div {
           display: grid;
@@ -346,7 +332,7 @@
 
       th, td {
         transition: background 50ms ease-in-out;
-        background: rgba(var(--ion-color-dark-rgb), 0);
+        background: rgba(var(--color-dark-rgb), 0);
       }
 
       th {
@@ -358,7 +344,7 @@
       }
 
       tr {
-        color: var(--ion-color-dark);
+        color: var(--color-dark);
         opacity: 0.8;
         transition: opacity 50ms ease-in-out;
 
@@ -370,7 +356,7 @@
           opacity: 1;
 
           th, td {
-            box-shadow: inset 0 0 0 1000rem rgba(var(--ion-color-dark-rgb), 0.025);
+            box-shadow: inset 0 0 0 1000rem rgba(var(--color-dark-rgb), 0.025);
 
             &:first-child {
               border-radius: 0.5rem 0 0 0.5rem;

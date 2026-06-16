@@ -1,38 +1,17 @@
-.Navigation {
+.Navigation, .InnerNav {
   display: grid;
   align-content: space-between;
   position: sticky;
   top: 0;
+  background: white;
+  box-shadow: var(--box-shadow);
 
-  &.Public, &.phone {
+  &.Public, &.Mobile {
     display: grid;
     grid-auto-flow: column;
     align-items: center;
     padding: 0 1rem 0 0;
     justify-content: space-between;
-    background: white;
-    box-shadow: var(--box-shadow);
-  }
-
-  &.phone {
-    display: none;
-  }
-
-  @media (max-width: 800px) {
-    &.large {
-      display: none;
-    }
-    &.phone {
-      display: grid;
-    }
-  }
-
-  .Submenu {
-    display: grid;
-    gap: 0.5re;
-    align-content: start;
-    justify-items: start;
-    user-select: none;
   }
 
   .Title {
@@ -53,4 +32,23 @@
   button {
     text-wrap: nowrap;
   }
+}
+
+
+.InnerNav {
+  background: transparent;
+  box-shadow: none;
+  height: 100%;
+
+  ul {
+    justify-items: end;
+  }
+}
+
+.Submenu {
+  display: grid;
+  gap: 0.5re;
+  align-content: start;
+  justify-items: start;
+  user-select: none;
 }
