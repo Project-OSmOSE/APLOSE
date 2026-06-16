@@ -1,5 +1,5 @@
 import React, { Fragment, ReactNode, useEffect } from 'react';
-import { Footer, Header } from '@/components/layout';
+import { OldFooter, Header } from '@/components/layout';
 import { Progress } from '@/components/ui';
 import { IonNote } from '@ionic/react';
 import styles from './styles.module.scss';
@@ -123,7 +123,7 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
 
                 { children }
 
-                <Footer/>
+                <OldFooter/>
             </div>
         </AnnotatorCanvasContextProvider>
     </PointerProvider>

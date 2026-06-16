@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode, useCallback, useMemo, useState } from 'react';
+import React, { ReactNode, useCallback, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query';
 import { IonButton, IonIcon } from '@ionic/react';
@@ -8,7 +8,7 @@ import { UserAPI } from '@/features/User';
 
 import logo from '/images/ode_logo_192x192.png';
 import styles from './layout.module.scss'
-import { ButtonGroup, ExternalLink, Link } from '@/components/base/Button';
+import { ButtonGroup } from '@/components/base/Button';
 
 export const Header: React.FC<{
     buttons?: ReactNode;
@@ -56,20 +56,5 @@ export const Header: React.FC<{
                 { buttons }
             </ButtonGroup>
         </header>
-    )
-}
-
-export const PublicHeader: React.FC = () => {
-    const { data: user } = useQuery(UserAPI.currentQuery)
-
-    return useMemo(() =>
-            <Header buttons={ <Fragment>
-                <Link color='primary' to={ user ? '/annotation-campaign' : '/login' }>
-                    { user ? 'APLOSE' : 'Login' }
-                </Link>
-                <ExternalLink href="/">OSmOSE</ExternalLink>
-            </Fragment>
-            }/>,
-        [ user ],
     )
 }

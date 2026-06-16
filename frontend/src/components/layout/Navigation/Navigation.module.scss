@@ -1,0 +1,56 @@
+.Navigation {
+  display: grid;
+  align-content: space-between;
+  position: sticky;
+  top: 0;
+
+  &.Public, &.phone {
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+    padding: 0 1rem 0 0;
+    justify-content: space-between;
+    background: white;
+    box-shadow: var(--box-shadow);
+  }
+
+  &.phone {
+    display: none;
+  }
+
+  @media (max-width: 800px) {
+    &.large {
+      display: none;
+    }
+    &.phone {
+      display: grid;
+    }
+  }
+
+  .Submenu {
+    display: grid;
+    gap: 0.5re;
+    align-content: start;
+    justify-items: start;
+    user-select: none;
+  }
+
+  .Title {
+    img {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 16%;
+      color: var(--ion-color-dark-tint);
+      margin: 0;
+    }
+  }
+
+  button {
+    text-wrap: nowrap;
+  }
+}

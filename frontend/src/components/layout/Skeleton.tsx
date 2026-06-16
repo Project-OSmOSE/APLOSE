@@ -1,7 +1,7 @@
 import React, { type ReactNode, useMemo } from 'react';
 import { useParams } from '@tanstack/react-router';
 
-import { Footer } from './Footer';
+import { OldFooter } from './OldFooter';
 import { Navbar } from './Navbar';
 
 import styles from './layout.module.scss';
@@ -20,7 +20,7 @@ export const AploseSkeleton: React.FC<{
 
                 <div className={ styles.content }>{ children }</div>
 
-                <Footer/>
+                <OldFooter/>
             </div>
         )
     }, [ children, looseParams ])

@@ -4,10 +4,23 @@ import { SquareTopDown } from '@solar-icons/react';
 import { NBSP } from '@/service/type';
 import styles from './Button.module.scss';
 
-export type ExternalLinkProps = Omit<ButtonProps, 'onClick'> & Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'target' | 'href'>
+export type ExternalLinkProps =
+    Omit<ButtonProps, 'onClick'>
+    & Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'target' | 'href'>
+    & { inText?: boolean }
 
-export const ExternalLink: React.FC<ExternalLinkProps> = React.memo(({ href, target, children, ...props }) => (
-    <a href={ href } target={ target } className={styles.ExternalLink}>
+export const ExternalLink: React.FC<ExternalLinkProps> = React.memo(({
+                                                                         href,
+                                                                         target,
+                                                                         children,
+                                                                         inText,
+                                                                         rel,
+                                                                         className,
+                                                                         ...props
+                                                                     }) => (
+    <a href={ href } target={ target }
+       rel={ rel ?? target === '_blank' ? 'noopener noreferrer' : undefined }
+       className={ [ styles.ExternalLink, inText ? styles.Text : '', className ].join(' ') }>
         <Button { ...props }>
             { children }{ target === '_blank' && <Fragment>{ NBSP }<SquareTopDown weight="Linear"/></Fragment> }
         </Button>

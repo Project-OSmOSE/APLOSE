@@ -1,14 +1,9 @@
 import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
-import './css/bootstrap-4.1.3.min.css';
-import '@ionic/react/css/core.css';
-import './css/ionic-override.css';
-import './css/annotation-colors.css';
-import './css/app.css';
 import './css/base.css';
 
-import { IonApp, IonSpinner, setupIonicReact } from '@ionic/react';
+import { IonSpinner } from '@ionic/react';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
 import { StoreProvider } from '@/features/App';
@@ -19,10 +14,6 @@ import { WarningText } from '@/components/ui';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/api/queryClient';
 
-setupIonicReact({
-    mode: 'md',
-    spinner: 'crescent',
-});
 
 const router = createRouter({
     basepath: '/app',
@@ -56,10 +47,8 @@ const App: React.FC = () => {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <IonApp>
-            <StoreProvider>
-                <App/>
-            </StoreProvider>
-        </IonApp>
+        <StoreProvider>
+            <App/>
+        </StoreProvider>
     </StrictMode>,
 )

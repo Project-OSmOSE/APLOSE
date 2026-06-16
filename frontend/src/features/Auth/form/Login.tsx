@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Route } from '@/routes/(public)/login';
 import { UserAPI } from '@/features/User';
 import { Toast } from '@/components/base/Toast';
-import { IonSpinner } from '@ionic/react';
+import { Spinner } from '@/components/base/Spinner';
 
 export const Login: React.FC = () => {
     const [ mutate, { isLoading: isLoginIn } ] = AuthRestAPI.endpoints.login.useMutation()
@@ -57,7 +57,7 @@ export const Login: React.FC = () => {
 
             <ButtonGroup spaceBetween>
                 <Link to="/">Back to home</Link>
-                { isLoading && <IonSpinner/> }
+                { isLoading && <Spinner/> }
                 <Button color="primary" type="submit" disabled={ isLoading }>
                     Login
                 </Button>

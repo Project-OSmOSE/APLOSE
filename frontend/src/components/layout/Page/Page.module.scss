@@ -1,0 +1,42 @@
+.Page {
+  display: grid;
+  min-height: 100vh;
+
+  &.Public {
+    grid-template-rows: auto 1fr auto;
+  }
+}
+
+.Content {
+  display: grid;
+  padding: 2rem 4rem;
+  justify-content: center;
+  line-height: 1.5;
+
+  @media (max-width: 800px) {
+    padding: 2rem 1rem;
+  }
+
+  * {
+    max-width: 48rem;
+  }
+
+  h1, h2, h3 {
+    margin-top: 4rem;
+    margin-bottom: 0;
+    color: var(--color-primary-text);
+
+    @media (max-width: 800px) {
+      margin-top: 2rem;
+    }
+  }
+
+  p {
+    display: ruby;
+    text-align: justify;
+  }
+
+  ul {
+    margin: 0;
+  }
+}

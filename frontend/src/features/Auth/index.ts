@@ -1,1 +1,1 @@
-export * as Auth from './index.parts'
+export * as AuthForm from './form'

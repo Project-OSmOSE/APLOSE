@@ -12,7 +12,7 @@ import style from './layout.module.scss';
 import json from '../../../global-package.json'
 
 
-export const Footer: React.FC = () => {
+export const OldFooter: React.FC = () => {
     const version = useMemo(() => json.version, [])
 
     return (

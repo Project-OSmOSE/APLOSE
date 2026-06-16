@@ -12,12 +12,14 @@
   gap: 0.4rem;
 
   --padding-vertical: 0.4rem;
+  --margin-vertical: 0.1rem;
   --padding-horizontal: 0.6rem;
+  --margin-horizontal: 0.2rem;
   border-radius: max(var(--padding-vertical), var(--padding-horizontal));
 
-  --padding-vertical-hover: calc(var(--padding-vertical) + 0.1rem);
-  --padding-horizontal-hover: calc(var(--padding-horizontal) + 0.2rem);
-  margin: 0.1rem 0.2rem;
+  --padding-vertical-hover: calc(var(--padding-vertical) + var(--margin-vertical));
+  --padding-horizontal-hover: calc(var(--padding-horizontal) + var(--margin-horizontal));
+  margin: var(--margin-vertical) var(--margin-horizontal);
 
   padding: var(--padding-vertical) var(--padding-horizontal);
 
