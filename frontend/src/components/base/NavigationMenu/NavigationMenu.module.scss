@@ -1,0 +1,28 @@
+.List {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.Trigger {
+  border: none;
+  background: none;
+  outline: none !important;;
+  padding: 0;
+}
+
+.Popup {
+  box-sizing: border-box;
+  background-color: var(--color-light-shade);
+  min-width: var(--anchor-width);
+  max-width: var(--available-width);
+  max-height: min(var(--available-height), 12rem);
+  transform-origin: var(--transform-origin);
+
+  color: var(--color-dark);
+  box-shadow: var(--box-shadow-small);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}

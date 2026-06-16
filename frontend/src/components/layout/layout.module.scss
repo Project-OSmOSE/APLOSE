@@ -193,22 +193,7 @@
   grid-template-rows: auto 1fr;
   margin-bottom: 0.5rem;
 
-  .navContent {
-    display: grid;
-    gap: 0.5rem;
-    align-content: start;
-    //padding-right: 2rem;
-    transition: 300ms ease-out;
-    overflow: hidden;
-    justify-items: start;
-    grid-template-rows: 1fr auto auto auto;
-
-    .logoutButton {
-      justify-self: stretch;
-    }
-  }
-
-  .title {
+  > .title {
     display: grid;
     grid-auto-flow: column;
     gap: 0.5rem;
@@ -266,7 +251,7 @@
     z-index: 5;
     grid-template-rows: unset;
 
-    .title {
+    > .title {
       img {
         width: 2rem;
         height: 2rem;
@@ -311,7 +296,7 @@
   scrollbar-gutter: stable;
   font-family: var(--ion-font-family), sans-serif;
 
-  .navbar {
+  nav {
     grid-row: 1 / -1;
     padding-bottom: 1rem;
     @media (max-width: 800px) {
@@ -360,4 +345,51 @@
     }
   }
 
+}
+
+.NavigationRoot {
+  display: grid;
+  align-content: space-between;
+
+  &.phone {
+    display: none;
+  }
+
+  @media (max-width: 800px) {
+    &.large {
+      display: none;
+    }
+    &.phone {
+      display: grid;
+      justify-content: space-between;
+      background: white;
+      box-shadow: var(--box-shadow);
+      padding: 0;
+      width: 100vw;
+    }
+  }
+
+  .Submenu {
+    display: grid;
+    gap: 0.5re;
+    align-content: start;
+    justify-items: start;
+    user-select: none;
+  }
+
+  .Title {
+    img {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin: 0;
+    }
+  }
+
+  button {
+    text-wrap: nowrap;
+  }
 }

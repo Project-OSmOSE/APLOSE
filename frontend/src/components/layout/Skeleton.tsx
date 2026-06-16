@@ -16,7 +16,7 @@ export const AploseSkeleton: React.FC<{
         return (
             <div className={ styles.skeleton }>
 
-                <Navbar className={ styles.navbar }/>
+                <Navbar/>
 
                 <div className={ styles.content }>{ children }</div>
 
