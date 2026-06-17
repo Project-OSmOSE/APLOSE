@@ -80,7 +80,7 @@ export const test = testBase.extend<Fixture>({
       waitForGqlRequest: (operationName: keyof GqlOperations): Promise<Request> => {
         return page.waitForRequest((request: Request) => {
           if (!new RegExp(gqlRegex).test(request.url())) return false;
-          return request.postDataJSON().operationName === operationName
+          return request.postDataJSON()?.operationName === operationName
         })
       }
     }
