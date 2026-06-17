@@ -6,11 +6,6 @@ import type { Params } from './utils/types';
 
 const STEP = {
     // Links
-    hasDocumentationLink: (page: Page) =>
-        test.step('Has documentation link', async () => {
-            const url = await page.navbar.documentationLink.getAttribute('href')
-            expect(url).toEqual(URL.doc)
-        }),
     hasAdminLink: (page: Page) =>
         test.step('Has admin link', async () => {
             const url = await page.navbar.adminLink.getAttribute('href')
@@ -63,13 +58,13 @@ const TEST = {
             await interceptRequests(page, { getCurrentUser: as })
             await test.step(`Navigate`, () => page.navbar.go({ as }));
 
-            await STEP.hasDocumentationLink(page)
-            await STEP.hasNoAdminLink(page)
             await STEP.accessCampaign(page)
-            await STEP.accessAccountManagement(page)
             await STEP.cannotAccessDataset(page)
             await STEP.cannotAccessStorage(page)
 
+            await page.navbar.openUserPopover(as)
+            await STEP.accessAccountManagement(page)
+            await STEP.hasNoAdminLink(page)
             await STEP.canLogout(page)
         }),
 
@@ -78,13 +73,13 @@ const TEST = {
             await interceptRequests(page, { getCurrentUser: as })
             await test.step(`Navigate`, () => page.navbar.go({ as }));
 
-            await STEP.hasDocumentationLink(page)
-            await STEP.hasAdminLink(page)
             await STEP.accessCampaign(page)
-            await STEP.accessAccountManagement(page)
             await STEP.accessDataset(page)
             await STEP.accessStorage(page)
-
+            
+            await page.navbar.openUserPopover(as)
+            await STEP.hasAdminLink(page)
+            await STEP.accessAccountManagement(page)
             await STEP.canLogout(page)
         }),
 }
