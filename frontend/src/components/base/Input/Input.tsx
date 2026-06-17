@@ -1,14 +1,45 @@
-import React, { type HTMLInputTypeAttribute } from 'react';
+import React, { Fragment, type HTMLInputTypeAttribute, useCallback, useMemo, useState } from 'react';
 import { Input as BaseInput, type InputProps as BaseInputProps } from '@base-ui/react'
 import styles from './Input.module.scss'
+import { Eye, EyeClosed } from '@solar-icons/react';
 
 export type InputProps = Omit<BaseInputProps, 'type' | 'render'> & {
-    type: HTMLInputTypeAttribute & ('text' | 'url' | 'date' | 'email' | 'textarea')
+    startIcon?: any,
+    type: HTMLInputTypeAttribute & ('text' | 'url' | 'date' | 'email' | 'textarea' | 'password')
 }
 
-export const Input: React.FC<InputProps> = ({ className, type, ...props }) => (
-    <BaseInput className={ [ className, styles.Input ].join(' ') }
-               render={ type === 'textarea' ? <textarea/> : undefined }
-               type={ type }
-               { ...props }/>
-)
+export const Input: React.FC<InputProps> = ({ className, type, startIcon: _startIcon, ...props }) => {
+    const [ pwdType, setPwdType ] = useState<HTMLInputTypeAttribute>('password');
+    const togglePwdType = useCallback(() => {
+        setPwdType(prev => prev === 'password' ? 'text' : 'password')
+    }, [ setPwdType ])
+
+    const startIcon = useMemo(() => _startIcon ? React.createElement(
+        _startIcon,
+        {
+            weight: 'Linear',
+            className: [ styles.Icon, styles.start ].join(' '),
+        },
+    ) : <Fragment/>, [ _startIcon ]);
+    const endIcon = useMemo(() => {
+        if (type !== 'password') return <Fragment/>;
+        return React.createElement(
+            pwdType === 'password' ? Eye : EyeClosed,
+            {
+                weight: 'Linear',
+                className: [ styles.Icon, styles.end ].join(' '),
+                onClick: togglePwdType,
+            },
+        )
+    }, [ pwdType, togglePwdType ]);
+
+    return <div className={ styles.InputContainer }>
+        <BaseInput className={ [ className, styles.Input ].join(' ') }
+                   render={ type === 'textarea' ? <textarea/> : undefined }
+                   type={ type === 'password' ? pwdType : type }
+                   { ...props }/>
+
+        { startIcon }
+        { endIcon }
+    </div>
+}

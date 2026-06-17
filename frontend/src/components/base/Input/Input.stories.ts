@@ -1,9 +1,10 @@
 import { Input, InputProps } from './Input.tsx';
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
 import type { HTMLInputTypeAttribute } from 'react';
+import { Magnifer } from '@solar-icons/react';
 
 const meta = {
-    title: 'Base/Input/Input',
+    title: 'Base/Input',
     component: Input,
     parameters: {
         // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
@@ -18,7 +19,7 @@ const meta = {
         },
         type: {
             control: { type: 'radio' },
-            options: [ 'text', 'email', 'url' ] as HTMLInputTypeAttribute[],
+            options: [ 'text', 'email', 'url', 'password', 'date', 'textarea' ] as HTMLInputTypeAttribute[],
             required: false,
             type: 'HTMLInputTypeAttribute',
         },
@@ -35,3 +36,27 @@ type Story = StoryObj<typeof meta>;
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {};
+
+export const Textarea: Story = {
+    args: {
+        type: 'textarea',
+    } satisfies Partial<InputProps>,
+};
+
+export const Date: Story = {
+    args: {
+        type: 'date',
+    } satisfies Partial<InputProps>,
+};
+
+export const Password: Story = {
+    args: {
+        type: 'password',
+    } satisfies Partial<InputProps>,
+};
+
+export const StartIcon: Story = {
+    args: {
+        startIcon: Magnifer,
+    } satisfies Partial<InputProps>,
+};

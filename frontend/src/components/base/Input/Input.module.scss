@@ -16,21 +16,31 @@ $icon-size: 1.2rem;
   }
 }
 
-.PasswordInput {
+.InputContainer {
   position: relative;
   display: grid;
 
-  .Input {
+  &:has(.Icon.start) .Input {
+    padding-left: calc(#{$horizontal-space} * 2 + #{$icon-size});
+  }
+  &:has(.Icon.end) .Input {
     padding-right: calc(#{$horizontal-space} * 2 + #{$icon-size});
   }
+}
 
-  .Icon {
-    position: absolute;
-    top: 50%;
+.Icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-medium);
+  width: #{$icon-size};
+  height: #{$icon-size};
+
+  &.start {
+    left: #{$horizontal-space};
+  }
+
+  &.end {
     right: #{$horizontal-space};
-    transform: translateY(-50%);
-    color: var(--color-medium);
-    width: #{$icon-size};
-    height: #{$icon-size};
   }
 }
