@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { createFileRoute } from '@tanstack/react-router'
 
 import { HelpButton } from '@/components/base/Button';
-import { Head } from '@/components/ui';
+import { Head, WarningText } from '@/components/ui';
 
 import { ServerItem, StorageModal } from '@/features/Storage';
 import { Storage } from '@/features';
@@ -48,8 +48,12 @@ const StorageBrowser: React.FC = () => (
 export const Route = createFileRoute('/_authenticated/_admin/storage')({
     loader: () => queryClient.ensureQueryData(Storage.API.browseQuery({ path: '' })),
     component: StorageBrowser,
-    pendingComponent: () => <Fragment>
+    pendingComponent: () => <Content className={ styles.Storage }>
         <Head title="Storage"/>
         <Center><Spinner/></Center>
-    </Fragment>,
+    </Content>,
+    errorComponent: (error) => <Content className={ styles.Storage }>
+        <Head title="Storage"/>
+        <Center><WarningText error={ error }/></Center>
+    </Content>,
 })

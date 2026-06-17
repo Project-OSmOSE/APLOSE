@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { createLazyFileRoute, useLoaderData } from '@tanstack/react-router';
 
 import { Head } from '@/components/ui';
@@ -8,10 +8,12 @@ import { Field } from '@/components/base/Field';
 import { Form } from '@/components/base/Form';
 import { Content } from '@/components/layout/Content';
 
+import styles from './account.module.scss'
+
 const Account: React.FC = () => {
     const { user } = useLoaderData({ from: '/_authenticated' })
 
-    return useMemo(() => <Content start>
+    return <Content start className={ styles.Content }>
         <Head title="Account"/>
 
         <Form>
@@ -24,7 +26,7 @@ const Account: React.FC = () => {
         <UserForm.Email/>
 
         <UserForm.Password/>
-    </Content>, [ user ])
+    </Content>
 }
 
 export const Route = createLazyFileRoute('/_authenticated/account')({

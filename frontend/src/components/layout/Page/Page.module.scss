@@ -1,7 +1,6 @@
 .Page {
   display: grid;
   min-height: 100vh;
-  overflow-x: hidden;
 
   &.Public {
     grid-template-rows: auto 1fr auto;
@@ -39,8 +38,7 @@
   &.Authenticated {
     display: grid;
     padding-left: 16rem; // Navbar
-    padding-bottom: 3.6rem; // Footer
-    height: calc(100vh - 3.6rem);
+    overflow-x: hidden;
 
     p {
       margin: 0;

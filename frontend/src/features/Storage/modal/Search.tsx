@@ -5,7 +5,7 @@ import { WarningText } from '@/components/ui';
 import { Item } from '@/features/Storage';
 import { useQuery } from '@tanstack/react-query';
 import * as API from '../api'
-import { Button, ButtonGroup, HelpButton } from '@/components/base/Button';
+import { Button, HelpButton } from '@/components/base/Button';
 import { Dialog } from '@/components/base/Dialog';
 import { Form } from '@/components/base/Form';
 import { Field } from '@/components/base/Field';
@@ -63,10 +63,7 @@ export const Search: React.FC = () => {
                     <Field.Error/>
                 </Field.Root>
 
-                <ButtonGroup end>
-                    { isLoading && <Spinner/> }
-                    <Button color="primary" type="submit">Search</Button>
-                </ButtonGroup>
+                <Button color="primary" type="submit">Search</Button>
             </Form>
 
             { content }

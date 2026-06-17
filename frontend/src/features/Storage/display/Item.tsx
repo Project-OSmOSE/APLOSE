@@ -21,6 +21,7 @@ import {
 import { Toast } from '@/components/base/Toast';
 import { DatasetName } from '@/features/Dataset';
 import { importMutation } from '../api'
+import { useStorageSearch } from '../hooks'
 import { useMutation } from '@tanstack/react-query';
 import { useAppDispatch } from '@/features/App';
 import { Storage } from '@/features';
@@ -46,7 +47,7 @@ export const Item: React.FC<Props> = ({
                                           forceOpen,
                                           disableImport,
                                       }) => {
-    const item = Storage.useStorageSearch(path)
+    const item = useStorageSearch(path)
 
     // Open
     const [ _isOpen, _setIsOpen ] = useState<boolean>(forceOpen || false);
