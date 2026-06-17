@@ -1,13 +1,14 @@
-import React, { type HTMLInputTypeAttribute } from 'react';
+import React from 'react';
 import { Field, type FieldControlProps as BaseFieldControlProps } from '@base-ui/react'
-import { Input } from '@/components/base/Input'
+import { Input, type InputProps } from '@/components/base/Input'
 
 export type FieldControlProps = Omit<BaseFieldControlProps, 'type'> & {
-    type: HTMLInputTypeAttribute & ('text' | 'date' | 'url' | 'email' | 'textarea')
+    startIcon?: any,
+    type: InputProps['type']
 }
 
-export const Control: React.FC<FieldControlProps> = React.memo((props) => (
+export const Control: React.FC<FieldControlProps> = React.memo(({ type, startIcon, ...props }) => (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    <Field.Control render={ ({ ref, ...props }) => <Input type="text" { ...props }/> }
+    <Field.Control render={ ({ ref, ...props }) => <Input type={ type } startIcon={ startIcon } { ...props }/> }
                    { ...props } />
 ))

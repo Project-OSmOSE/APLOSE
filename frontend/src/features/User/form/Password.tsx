@@ -59,24 +59,27 @@ export const Password: React.FC = () => {
 
                 <Field.Root name="oldPassword">
                     <Field.Label>Old password</Field.Label>
-                    <Field.PasswordControl required
-                                           autoComplete="current-password"/>
+                    <Field.Control required
+                                   type="password"
+                                   autoComplete="current-password"/>
                     <Field.Error/>
                 </Field.Root>
 
                 <Field.Root name="newPassword">
                     <Field.Label>New password</Field.Label>
-                    <Field.PasswordControl required
-                                           autoComplete="new-password"
-                                           { ...PWD_CONSTRAINTS } />
+                    <Field.Control required
+                                   type="password"
+                                   autoComplete="new-password"
+                                   { ...PWD_CONSTRAINTS } />
                     <Field.Error/>
                 </Field.Root>
 
                 <Field.Root name="newPasswordConfirm">
                     <Field.Label>Confirm new password</Field.Label>
-                    <Field.PasswordControl required
-                                           autoComplete="new-password"
-                                           { ...PWD_CONSTRAINTS } />
+                    <Field.Control required
+                                   type="password"
+                                   autoComplete="new-password"
+                                   { ...PWD_CONSTRAINTS } />
                     <Field.Error/>
                 </Field.Root>
 

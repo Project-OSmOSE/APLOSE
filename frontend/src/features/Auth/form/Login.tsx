@@ -50,8 +50,9 @@ export const Login: React.FC = () => {
 
                 <Field.Root name="password">
                     <Field.Label>Password</Field.Label>
-                    <Field.PasswordControl required
-                                           autoComplete="password"/>
+                    <Field.Control required
+                                   type="password"
+                                   autoComplete="password"/>
                 </Field.Root>
             </Fieldset.Root>
 

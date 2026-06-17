@@ -1,6 +1,5 @@
 export * from './Root'
 export * from './Label'
 export * from './Control'
-export * from './PasswordControl'
 export * from './Error'
 export * from './Description'
