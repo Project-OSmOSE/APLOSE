@@ -149,24 +149,31 @@ export const Item: React.FC<Props> = ({
                     : <p>{ item.name }</p> }
 
                 {/* Import Icon */ }
-                { isPending ? <IonSpinner/> : importIcon }
+                { isPending ? <Spinner/> : importIcon }
 
                 {/* Use Icon */ }
-                { usages > 0 && <TooltipOverlay tooltipContent={ `Currently used in ${ usages } campaigns.` }>
-                    <InfoCircle size={ 24 } color="medium"/>
-                </TooltipOverlay> }
+                { usages > 0 && <Popover.Root>
+                    <Popover.Trigger openOnHover>
+                        <Note color="medium">
+                            <InfoCircle size={ 24 }/>
+                        </Note>
+                    </Popover.Trigger>
+                    <Popover.Content>
+                        Currently used in { usages } campaigns
+                    </Popover.Content>
+                </Popover.Root> }
 
                 {/* Open Icon */ }
-                { canToggle && <IonNote>{ isOpen ? <AltArrowDown/> : <AltArrowRight/> }</IonNote> }
+                { canToggle && <Note>{ isOpen ? <AltArrowDown/> : <AltArrowRight/> }</Note> }
 
                 {/* Import button */ }
-                { canImport && <IonButton size="small" fill="outline" onClick={ download }>
+                { canImport && <Button color="primary" onClick={ download }>
                     Import
-                </IonButton> }
+                </Button> }
 
                 {/* Error */ }
                 { item.error && <Fragment>
-                    <IonNote color="danger">{ item.error }</IonNote>
+                    <Note color="danger">{ item.error }</Note>
                     <CopyErrorStackButton stack={ item.stack }/>
                 </Fragment> }
             </div>

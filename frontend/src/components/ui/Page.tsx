@@ -1,9 +1,10 @@
 import React, { ReactNode, useCallback } from 'react';
-import { IonNote, IonSkeletonText } from '@ionic/react';
+import { IonSkeletonText } from '@ionic/react';
 import styles from './ui.module.scss'
 import { useCanGoBack, useRouter } from '@tanstack/react-router';
 import { AltArrowLeft } from '@solar-icons/react';
 import { Button } from '@/components/base/Button';
+import { Note } from '@/components/base/Note';
 
 export const Head: React.FC<{
     title?: string;
@@ -21,10 +22,10 @@ export const Head: React.FC<{
         <div className={ styles.title }>
             <h2>{ title ??
                 <IonSkeletonText animated style={ { width: 256, height: '1ch', justifySelf: 'center' } }/> }</h2>
-            { subtitle && <IonNote color="medium">{ subtitle }</IonNote> }
+            { subtitle && <Note color="medium">{ subtitle }</Note> }
 
             { canGoBack && _canGoBack && <Button className={ styles.BackButton }
-                                   onClick={ back }>
+                                                 onClick={ back }>
                 <AltArrowLeft weight="Linear" size={ 24 }/>
                 Back
             </Button> }

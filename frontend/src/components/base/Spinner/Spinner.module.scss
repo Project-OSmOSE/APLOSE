@@ -9,7 +9,7 @@
     border-radius: 50%;
     display: inline-block;
     position: relative;
-    background: linear-gradient(0deg, rgba(var(--color-primary-rgb), 0.2) 33%, var(--color-primary) 100%);
+    background: linear-gradient(0deg, hsl(var(--color-primary-h), var(--color-primary-s), 95%) 33%, var(--color-primary) 100%);
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
 
@@ -23,6 +23,7 @@
       width: calc(1.5rem - 4px);
       height: calc(1.5rem - 4px);
       border-radius: 50%;
+      //background: hsl(var(--color-primary-h), var(--color-primary-s), 95%);
       background: white;
     }
   }

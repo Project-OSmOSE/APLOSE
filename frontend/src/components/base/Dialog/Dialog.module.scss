@@ -1,0 +1,87 @@
+@use "@/css/base";
+
+.Backdrop {
+  position: fixed;
+  min-height: 100dvh;
+  inset: 0;
+  background-image: base.$backdrop-background-image;
+  opacity: 0.7;
+  transition: opacity 150ms;
+
+  /* iOS 26+: Ensure the backdrop covers the entire visible viewport. */
+  @supports (-webkit-touch-callout: none) {
+    position: absolute;
+  }
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+  }
+}
+
+.Popup {
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: calc(100vw - 3rem);
+  margin-top: -2rem;
+  padding: 1rem;
+  background-color: white;
+  box-shadow: var(--box-shadow);
+  transition:
+          transform 100ms ease-out,
+          opacity 100ms ease-out;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.98);
+  }
+
+  min-width: min(42rem, 80%);
+  max-height: 80%;
+  @media (max-width: 800px) {
+    padding: 1rem;
+    min-width: unset;
+    max-width: unset;
+  }
+}
+
+.Intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.Title {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+}
+
+.Description {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-medium);
+}
+
+.Actions {
+  display: flex;
+  justify-content: end;
+  gap: 0.75rem;
+}
+
+.Close {
+  position: absolute;
+  top: 1.75rem;
+  transform: translateY(-50%);
+  right: 1rem;
+}

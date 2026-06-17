@@ -1,9 +1,13 @@
 .Form {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 1rem;
   width: min(100%, 40rem);
-  margin: 2rem auto;
   padding: 0 2px; // For input outlines
   overflow-y: auto;
+
+  &.horizontal {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
 }

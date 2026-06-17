@@ -1,2 +1,2 @@
 export * from './ImportDatasetAnalysisModal'
-export * from './ImportFromPath'
+export * from './Search'

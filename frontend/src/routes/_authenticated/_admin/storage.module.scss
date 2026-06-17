@@ -1,10 +1,14 @@
+.Storage {
+  grid-template-rows: auto 1fr;
+}
+
 .content {
   height: 100%;
   width: 100%;
   overflow-y: auto;
 
   .inner {
-    background: rgba(var(--ion-color-dark-rgb), 0.05);
+    background: rgba(var(--color-dark-rgb), 0.04);
     display: grid;
     grid-auto-flow: row;
     padding: 2rem;

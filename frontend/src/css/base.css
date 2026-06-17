@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cal+Sans&family=Encode+Sans+SC:wght@100..900&family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap');
+
 :root {
     /* Primary */
     --color-primary: #238583;
@@ -80,9 +82,12 @@ body {
     margin: 0;
     color: var(--color-dark);
     font-size:  1rem;
-    overflow: hidden;
 }
 
 * {
     font-family: "Exo 2", Roboto, sans-serif;
+}
+
+ul {
+    margin: 0;
 }

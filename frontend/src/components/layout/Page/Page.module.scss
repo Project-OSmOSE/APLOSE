@@ -33,10 +33,6 @@
       p {
         text-align: justify;
       }
-
-      ul {
-        margin: 0;
-      }
     }
   }
 
@@ -45,6 +41,10 @@
     padding-left: 16rem; // Navbar
     padding-bottom: 3.6rem; // Footer
     height: calc(100vh - 3.6rem);
+
+    p {
+      margin: 0;
+    }
 
     .Nav {
       position: fixed;

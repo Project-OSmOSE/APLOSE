@@ -1,8 +1,9 @@
 import React, { useCallback } from 'react';
 import { UserNode } from '@/api';
 import { Letter } from '@solar-icons/react';
-import { Tooltip } from '@/components/base/Tooltip';
 import { Toast } from '@/components/base/Toast';
+import { Popover } from '@/components/base/Popover';
+import { Button } from '@/components/base/Button';
 
 export type CopyMailButtonProps = { user: Pick<UserNode, 'email' | 'displayName'> }
 
@@ -18,17 +19,14 @@ export const CopyMailButton: React.FC<CopyMailButtonProps> = ({ user }) => {
         })
     }, [ user, toastManager ])
 
-    return <Tooltip.Root>
-        <Tooltip.Trigger aria-label={ `Copy ${ user.email }` } onClick={ copy }>
-            <Letter weight="Linear" size={ 20 }/>
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-            <Tooltip.Positioner>
-                <Tooltip.Popup>
-                    <Tooltip.Arrow/>
-                    Copy { user.email }
-                </Tooltip.Popup>
-            </Tooltip.Positioner>
-        </Tooltip.Portal>
-    </Tooltip.Root>
+    return <Popover.Root>
+        <Popover.Trigger openOnHover>
+            <Button aria-label={ `Copy ${ user.email }` } onClick={ copy }>
+                <Letter weight="Linear" size={ 20 }/>
+            </Button>
+        </Popover.Trigger>
+        <Popover.Content>
+            Copy { user.email }
+        </Popover.Content>
+    </Popover.Root>
 }

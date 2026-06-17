@@ -26,70 +26,65 @@ export const AuthenticatedMobile: React.FC<{ className?: string }> = ({ classNam
             <NavigationMenu.Item>
                 <Drawer.Root>
                     <Drawer.Trigger>Menu</Drawer.Trigger>
-                    <Drawer.Portal>
-                        <Drawer.Backdrop/>
-                        <Drawer.Viewport>
-                            <Drawer.Popup>
-                                <NavigationMenu.Root className={ styles.InnerNav }>
-                                    <NavigationMenu.List>
-                                        <NavigationMenu.Item>
-                                            <Drawer.Close/>
-                                        </NavigationMenu.Item>
+                    <Drawer.Content>
+                        <NavigationMenu.Root className={ styles.InnerNav }>
+                            <NavigationMenu.List>
+                                <NavigationMenu.Item>
+                                    <Drawer.Close/>
+                                </NavigationMenu.Item>
 
-                                        <NavigationMenu.Item>
-                                            <Link to="/annotation-campaign">
-                                                Annotation campaigns
-                                            </Link>
-                                        </NavigationMenu.Item>
+                                <NavigationMenu.Item>
+                                    <Link to="/annotation-campaign">
+                                        Annotation campaigns
+                                    </Link>
+                                </NavigationMenu.Item>
 
-                                        { user.isAdmin && <Fragment>
-                                            <NavigationMenu.Item>
-                                                <Link to="/dataset">
-                                                    Datasets
-                                                </Link>
-                                            </NavigationMenu.Item>
+                                { user.isAdmin && <Fragment>
+                                    <NavigationMenu.Item>
+                                        <Link to="/dataset">
+                                            Datasets
+                                        </Link>
+                                    </NavigationMenu.Item>
 
-                                            <NavigationMenu.Item>
-                                                <Link to="/storage">
-                                                    Storage
-                                                </Link>
-                                            </NavigationMenu.Item>
-                                        </Fragment> }
-                                    </NavigationMenu.List>
+                                    <NavigationMenu.Item>
+                                        <Link to="/storage">
+                                            Storage
+                                        </Link>
+                                    </NavigationMenu.Item>
+                                </Fragment> }
+                            </NavigationMenu.List>
 
-                                    <NavigationMenu.List>
-                                        { user.isSuperuser && <Fragment>
-                                            <NavigationMenu.Item>
-                                                <Link to="/ontology/$type"
-                                                      params={ { type: 'source' } }>
-                                                    Ontology
-                                                </Link>
-                                            </NavigationMenu.Item>
+                            <NavigationMenu.List>
+                                { user.isSuperuser && <Fragment>
+                                    <NavigationMenu.Item>
+                                        <Link to="/ontology/$type"
+                                              params={ { type: 'source' } }>
+                                            Ontology
+                                        </Link>
+                                    </NavigationMenu.Item>
 
-                                            <NavigationMenu.Item>
-                                                <Link to="/sql">
-                                                    SQL query
-                                                </Link>
-                                            </NavigationMenu.Item>
-                                        </Fragment> }
+                                    <NavigationMenu.Item>
+                                        <Link to="/sql">
+                                            SQL query
+                                        </Link>
+                                    </NavigationMenu.Item>
+                                </Fragment> }
 
-                                        <NavigationMenu.Item>
-                                            { user.isAdmin && <ExternalLink href="/backend/admin"
-                                                                            target="_blank">Admin</ExternalLink> }
-                                        </NavigationMenu.Item>
+                                <NavigationMenu.Item>
+                                    { user.isAdmin && <ExternalLink href="/backend/admin"
+                                                                    target="_blank">Admin</ExternalLink> }
+                                </NavigationMenu.Item>
 
-                                        <NavigationMenu.Item>
-                                            <Link to="/account">Account</Link>
-                                        </NavigationMenu.Item>
+                                <NavigationMenu.Item>
+                                    <Link to="/account">Account</Link>
+                                </NavigationMenu.Item>
 
-                                        <NavigationMenu.Item>
-                                            <Button color="warning" onClick={ logout }>Logout</Button>
-                                        </NavigationMenu.Item>
-                                    </NavigationMenu.List>
-                                </NavigationMenu.Root>
-                            </Drawer.Popup>
-                        </Drawer.Viewport>
-                    </Drawer.Portal>
+                                <NavigationMenu.Item>
+                                    <Button color="warning" onClick={ logout }>Logout</Button>
+                                </NavigationMenu.Item>
+                            </NavigationMenu.List>
+                        </NavigationMenu.Root>
+                    </Drawer.Content>
                 </Drawer.Root>
             </NavigationMenu.Item>
         </NavigationMenu.List>

@@ -15,7 +15,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/api/queryClient';
 
 
-const router = createRouter({
+export const router = createRouter({
     basepath: '/app',
     routeTree,
     defaultPreload: 'intent',

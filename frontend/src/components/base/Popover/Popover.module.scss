@@ -1,0 +1,22 @@
+.Trigger {
+  border: none;
+  background: none;
+}
+
+.Popup {
+  background-color: white;
+  box-shadow: var(--box-shadow-small);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+
+  p {
+    margin: 0;
+  }
+}
+
+.Title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-medium-text);
+}

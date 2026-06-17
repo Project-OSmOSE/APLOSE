@@ -78,16 +78,6 @@ export const Authenticated: React.FC<{ className?: string }> = ({ className }) =
             </NavigationMenu.Item>
         </NavigationMenu.List>
 
-        <NavigationMenu.Portal>
-            <NavigationMenu.Positioner side="right"
-                                       sideOffset={ 10 }
-                                       collisionPadding={ { top: 5, bottom: 20, left: 20, right: 20 } }
-                                       collisionAvoidance={ { side: 'none' } }>
-                <NavigationMenu.Popup>
-                    <NavigationMenu.Arrow/>
-                    <NavigationMenu.Viewport/>
-                </NavigationMenu.Popup>
-            </NavigationMenu.Positioner>
-        </NavigationMenu.Portal>
+        <NavigationMenu.Portal/>
     </NavigationMenu.Root>
 }

@@ -1,3 +1,5 @@
+@use "@/css/base";
+
 .Backdrop {
 
   --backdrop-opacity: 0.7;
@@ -5,7 +7,7 @@
   position: fixed;
   min-height: 100dvh;
   inset: 0;
-  background-image: linear-gradient(to bottom, rgba(var(--color-dark-rgb), 15%) 0, rgba(var(--color-dark-rgb), 20%) 50%);
+  background-image: base.$backdrop-background-image;
   opacity: calc(var(--backdrop-opacity) * (1 - var(--drawer-swipe-progress)));
   transition-duration: 450ms;
   transition-property: opacity;

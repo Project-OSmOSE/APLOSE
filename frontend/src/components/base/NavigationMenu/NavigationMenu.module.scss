@@ -15,14 +15,14 @@
 
 .Popup {
   box-sizing: border-box;
-  background-color: var(--color-light-shade);
+  background-color: var(--color-light);
   min-width: var(--anchor-width);
   max-width: var(--available-width);
   max-height: min(var(--available-height), 12rem);
   transform-origin: var(--transform-origin);
 
   color: var(--color-dark);
-  box-shadow: var(--box-shadow-small);
+  box-shadow: var(--box-shadow);
   padding: 0.5rem;
   border-radius: 0.5rem;
 }
