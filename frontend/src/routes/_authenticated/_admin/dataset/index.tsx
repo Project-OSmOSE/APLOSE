@@ -1,5 +1,4 @@
-import React, { Fragment, type ReactNode } from 'react';
-import { IonSpinner } from '@ionic/react';
+import React, { type ReactNode } from 'react';
 import { createFileRoute } from '@tanstack/react-router'
 
 import { Head } from '@/components/ui';
@@ -8,16 +7,21 @@ import { DatasetTable } from '@/features/Dataset';
 import { queryClient } from '@/api/queryClient';
 import { Dataset } from '@/features';
 import { Link } from '@/components/base/Button';
+import { Content } from '@/components/layout/Content';
+import { Spinner } from '@/components/base/Spinner';
+import { Center } from '@/components/layout/Display';
+import styles from './dataset.module.scss'
 
-const Skeleton: React.FC<{ children: ReactNode }> = ({ children }) => (<Fragment>
+const Skeleton: React.FC<{ children: ReactNode }> = ({ children }) => (
+    <Content className={ styles.DatasetList }>
         <Head title="Datasets"
               buttons={ <Link to="/storage" color="primary">Import datasets from storage</Link> }/>
         { children }
-    </Fragment>
+    </Content>
 )
 
 export const Route = createFileRoute('/_authenticated/_admin/dataset/')({
     loader: () => queryClient.ensureQueryData(Dataset.API.allWithCampaignsQuery),
     component: () => <Skeleton children={ <DatasetTable/> }/>,
-    pendingComponent: () => <Skeleton children={ <IonSpinner/> }/>,
+    pendingComponent: () => <Skeleton children={ <Center><Spinner/></Center> }/>,
 })

@@ -103,8 +103,7 @@ export const DatasetTable: React.FC = () => {
             { sortedDatasets.map(d => <tr key={ d.id }>
                 <Th scope="row">
                     <DatasetName { ...d } link/>
-                    <br/>
-                    <p className={ styles.light }>{ d.path }</p>
+                    <Note color='medium'>{ d.path }</Note>
                 </Th>
                 <Td>{ dateToString(d.createdAt) }</Td>
                 <Td>

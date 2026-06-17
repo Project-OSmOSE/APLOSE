@@ -328,9 +328,10 @@
 
       th {
         font-weight: 500;
+        text-align: start;
 
-        ion-button {
-          --padding-start: 0;
+        button {
+          text-align: start;
         }
       }
 
