@@ -1,8 +1,8 @@
-import React, { Fragment, MouseEvent, useCallback, useMemo } from 'react';
+import React, { MouseEvent, useCallback, useMemo } from 'react';
 import { IonChip, IonIcon } from '@ionic/react';
 import { checkmarkOutline, closeCircle, eyeOffOutline, eyeOutline } from 'ionicons/icons/index.js';
 import styles from './styles.module.scss';
-import { Kbd, TooltipOverlay } from '@/components/ui';
+import { Kbd } from '@/components/ui';
 import {
     focusAnnotation,
     selectAllAnnotations,
@@ -20,6 +20,7 @@ import { setHiddenLabels } from './slice';
 import { selectFocusLabel, selectHiddenLabels } from './selectors';
 import { NBSP } from '@/service/type';
 import { useLoaderData } from '@tanstack/react-router';
+import { Popover } from '@/components/base/Popover';
 
 export const AlphanumericKeys = [
     [ '&', 'é', '"', '\'', '(', '-', 'è', '_', 'ç' ],
@@ -94,38 +95,43 @@ export const LabelChip: React.FC<{
 
             { index >= 9 ?
                 <p>{ label }</p> :
-                <TooltipOverlay title="Shortcut"
-                                tooltipContent={ <Fragment>
-                                    <p>
-                                        <Kbd keys={ number } className={ colorClass }/>
-                                        { NBSP }or{ NBSP }
-                                        <Kbd keys={ key } className={ colorClass }/>:
-                                        { NBSP }Choose this label
-                                    </p>
-                                </Fragment> }>
-                    <p>{ label }</p>
-                </TooltipOverlay>
+                <Popover.Root>
+                    <Popover.Trigger openOnHover>
+                        <p>{ label }</p>
+                    </Popover.Trigger>
+                    <Popover.Content>
+                        <Popover.Title>Shortcut</Popover.Title>
+                        <Kbd keys={ number } className={ colorClass }/>
+                        { NBSP }or{ NBSP }
+                        <Kbd keys={ key } className={ colorClass }/>:
+                        { NBSP }Choose this label
+                    </Popover.Content>
+                </Popover.Root>
             }
 
 
             { isUsed && <div className={ styles.labelsButtons }>
-                <TooltipOverlay
-                    tooltipContent={ <Fragment>
+                <Popover.Root>
+                    <Popover.Trigger openOnHover>
+                        { isHidden ?
+                            <IonIcon icon={ eyeOffOutline } onClick={ show } color={ buttonColor }/> :
+                            <IonIcon icon={ eyeOutline } onClick={ hide } color={ buttonColor }/> }
+                    </Popover.Trigger>
+                    <Popover.Content>
                         <p>{ isHidden ? 'Show' : 'Hide' } corresponding annotations on spectrogram</p>
                         <p>Press <Kbd keys={ 'ctrl' }/> to show only this labels annotations</p>
-                    </Fragment> }>
-                    { isHidden ?
-                        <IonIcon icon={ eyeOffOutline } onClick={ show } color={ buttonColor }/> :
-                        <IonIcon icon={ eyeOutline } onClick={ hide } color={ buttonColor }/> }
-                </TooltipOverlay>
+                    </Popover.Content>
+                </Popover.Root>
 
-                <TooltipOverlay
-                    tooltipContent={ <p>Remove corresponding annotations</p> }>
-                    <IonIcon icon={ closeCircle }
-                             onClick={ remove }
-                             data-testid="remove-label"
-                             color={ buttonColor }/>
-                </TooltipOverlay>
+                <Popover.Root>
+                    <Popover.Trigger openOnHover>
+                        <IonIcon icon={ closeCircle }
+                                 onClick={ remove }
+                                 data-testid="remove-label"
+                                 color={ buttonColor }/>
+                    </Popover.Trigger>
+                    <Popover.Content>Remove corresponding annotations</Popover.Content>
+                </Popover.Root>
             </div> }
         </IonChip>
     )

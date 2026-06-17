@@ -12,6 +12,5 @@ export * from './Progress'
 export * from './Table'
 export * from './Tabs'
 export * from './Text'
-export * from './Tooltip'
 
 export * from './popover.hook'

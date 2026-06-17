@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback } from 'react';
-import { Kbd, TooltipOverlay, useModal } from '@/components/ui';
+import { Kbd, useModal } from '@/components/ui';
 import { IoChatbubbleEllipses, IoChatbubbleOutline, IoPlayCircle, IoSwapHorizontal, IoTrashBin } from 'react-icons/io5';
 import styles from './styles.module.scss';
 import { useAudio } from '@/features/Audio';
@@ -8,6 +8,7 @@ import type { Annotation } from './slice';
 import { useRemoveAnnotation, useUpdateAnnotation } from '@/features/Annotator/Annotation/hooks';
 import { useAppSelector } from '@/features/App';
 import { selectFocusLabel } from '@/features/Annotator/Label';
+import { Popover } from '@/components/base/Popover';
 
 export const AnnotationHeadContent: React.FC<{
     annotation: Annotation,
@@ -35,33 +36,45 @@ export const AnnotationHeadContent: React.FC<{
 
     return <Fragment>
         {/* Play annotation button */ }
-        <TooltipOverlay tooltipContent={ <p>Play the audio of the annotation</p> }>
-            <IoPlayCircle className={ styles.button } onClick={ play }/>
-        </TooltipOverlay>
+        <Popover.Root>
+            <Popover.Trigger openOnHover>
+                <IoPlayCircle className={ styles.button } onClick={ play }/>
+            </Popover.Trigger>
+            <Popover.Content>Play the audio of the annotation</Popover.Content>
+        </Popover.Root>
 
         {/* Comment info */ }
         { (annotation.comments && annotation.comments.length > 0) ?
             <IoChatbubbleEllipses/> :
-            <TooltipOverlay tooltipContent={ <p>No comments</p> }>
-                <IoChatbubbleOutline className={ styles.outlineIcon }/>
-            </TooltipOverlay> }
+            <Popover.Root>
+                <Popover.Trigger openOnHover>
+                    <IoChatbubbleOutline className={ styles.outlineIcon }/>
+                </Popover.Trigger>
+                <Popover.Content>No comments</Popover.Content>
+            </Popover.Root> }
 
         {/* Label */ }
         <p>{ annotation.update?.label ?? annotation.label }</p>
 
         {/* Update label button */ }
-        <TooltipOverlay tooltipContent={ <p>Update the label</p> }>
-            <IoSwapHorizontal className={ styles.button }
-                              data-testid="update-box"
-                              onClick={ labelUpdateModal.open }/>
-        </TooltipOverlay>
+        <Popover.Root>
+            <Popover.Trigger openOnHover>
+                <IoSwapHorizontal className={ styles.button }
+                                  data-testid="update-box"
+                                  onClick={ labelUpdateModal.open }/>
+            </Popover.Trigger>
+            <Popover.Content>Update the label</Popover.Content>
+        </Popover.Root>
 
         {/* Remove button */ }
-        <TooltipOverlay tooltipContent={ <p><Kbd keys="delete"/> Remove the annotation</p> }>
-            <IoTrashBin className={ styles.button }
-                        data-testid="remove-box"
-                        onClick={ remove }/>
-        </TooltipOverlay>
+        <Popover.Root>
+            <Popover.Trigger openOnHover>
+                <IoTrashBin className={ styles.button }
+                            data-testid="remove-box"
+                            onClick={ remove }/>
+            </Popover.Trigger>
+            <Popover.Content><Kbd keys="delete"/> Remove the annotation</Popover.Content>
+        </Popover.Root>
 
         { labelUpdateModal.element }
     </Fragment>

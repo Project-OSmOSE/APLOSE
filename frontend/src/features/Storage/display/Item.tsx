@@ -7,7 +7,6 @@ import {
     type StorageAnalysisFragment,
     type StorageItemFragment,
 } from '@/features/Storage';
-import { IonButton, IonNote, IonSpinner } from '@ionic/react';
 import {
     AltArrowDown,
     AltArrowRight,
@@ -19,14 +18,16 @@ import {
     InfoCircle,
     Unread,
 } from '@solar-icons/react';
-import { TooltipOverlay } from '@/components/ui';
 import { Toast } from '@/components/base/Toast';
 import { DatasetName } from '@/features/Dataset';
 import { importMutation } from '../api'
 import { useMutation } from '@tanstack/react-query';
 import { useAppDispatch } from '@/features/App';
 import { Storage } from '@/features';
-import { CopyErrorStackButton } from '@/components/base/Button';
+import { Button, CopyErrorStackButton } from '@/components/base/Button';
+import { Spinner } from '@/components/base/Spinner';
+import { Note } from '@/components/base/Note';
+import { Popover } from '@/components/base/Popover';
 
 type Props = {
     parentItem?: StorageItemFragment,

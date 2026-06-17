@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useMemo } from 'react';
 import styles from './styles.module.scss';
 import { IonButton, IonIcon } from '@ionic/react';
 import { refreshOutline } from 'ionicons/icons/index.js';
-import { ActionBar, Progress, TooltipOverlay, useModal } from '@/components/ui';
+import { ActionBar, Progress, useModal } from '@/components/ui';
 import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
 import { FileRangeProgressModal } from '@/features/AnnotationFileRange';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
@@ -10,6 +10,7 @@ import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { Button, Link } from '@/components/base/Button';
 import { CourseUp, Play, UsersGroupRounded } from '@solar-icons/react';
+import { Popover } from '@/components/base/Popover';
 
 export const FileRangeActionBar: React.FC = () => {
     const searchParams = Route.useSearch();
@@ -82,36 +83,45 @@ export const FileRangeActionBar: React.FC = () => {
                                          value={ phase.completedTasksCount ?? 0 }
                                          total={ phase.tasksCount }/> : <Fragment/> }
 
-                           <TooltipOverlay tooltipContent={ <p>Annotators progression</p> } anchor="right">
-                               <Button onClick={ progressModal.toggle } data-testid="progress">
-                                   <CourseUp weight="Linear" size={ 24 }/>
-                               </Button>
-                           </TooltipOverlay>
+                           <Popover.Root>
+                               <Popover.Trigger openOnHover>
+                                   <Button onClick={ progressModal.toggle } data-testid="progress">
+                                       <CourseUp weight="Linear" size={ 24 }/>
+                                   </Button>
+                               </Popover.Trigger>
+                               <Popover.Content>Annotators progression</Popover.Content>
+                           </Popover.Root>
                        </div>
 
                        { phase?.isEditable && phase?.isUserAllowedToManage && <Fragment>
                            {/* Manage annotators */ }
-                           <TooltipOverlay tooltipContent={ <p>Manage annotators</p> } anchor="right">
-                               <Link data-testid="manage"
-                                     to="/annotation-campaign/$campaignID/phase/$phaseType/edit-annotators"
-                                     params={ routeParams }>
-                                   <UsersGroupRounded weight="Linear" size={ 24 }/>
-                               </Link>
-                           </TooltipOverlay>
+                           <Popover.Root>
+                               <Popover.Trigger openOnHover>
+                                   <Link data-testid="manage"
+                                         to="/annotation-campaign/$campaignID/phase/$phaseType/edit-annotators"
+                                         params={ routeParams }>
+                                       <UsersGroupRounded weight="Linear" size={ 24 }/>
+                                   </Link>
+                               </Popover.Trigger>
+                               <Popover.Content>Manage annotators</Popover.Content>
+                           </Popover.Root>
 
                            {/* Import annotations */ }
                            <ImportAnnotationsButton/>
                        </Fragment> }
 
                        {/* Resume */ }
-                       <TooltipOverlay tooltipContent={ <p>{ resumeBtnTooltip }</p> } anchor="right">
-                           <Button color="primary" data-testid="resume"
-                                   disabled={ hasFilters || !(spectrograms && spectrograms.length > 0) || !resumeSpectrogramId }
-                                   style={ { pointerEvents: 'unset' } }
-                                   onClick={ resume }>
-                               <Play weight="Bold" size={ 24 }/>
-                           </Button>
-                       </TooltipOverlay>
+                       <Popover.Root>
+                           <Popover.Trigger openOnHover>
+                               <Button color="primary" data-testid="resume"
+                                       disabled={ hasFilters || !(spectrograms && spectrograms.length > 0) || !resumeSpectrogramId }
+                                       style={ { pointerEvents: 'unset' } }
+                                       onClick={ resume }>
+                                   <Play weight="Bold" size={ 24 }/>
+                               </Button>
+                           </Popover.Trigger>
+                           <Popover.Content>{ resumeBtnTooltip }</Popover.Content>
+                       </Popover.Root>
                    </div> }/>
 
         { progressModal.element }
