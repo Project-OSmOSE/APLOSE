@@ -35,7 +35,7 @@ class SearchStorage {
   }
 
   async search(path: string) {
-    await this.modal.getByRole('searchbox').fill(path)
+    await this.modal.getByPlaceholder('Enter exact path').fill(path)
     await this.page.keyboard.press('Enter')
   }
 }

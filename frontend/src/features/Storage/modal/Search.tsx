@@ -54,7 +54,7 @@ export const Search: React.FC = () => {
             <Dialog.Title>Search path</Dialog.Title>
             <Dialog.Close/>
 
-            <Form onSubmit={ submit }>
+            <Form horizontal onSubmit={ submit }>
                 <Field.Root name="search">
                     <Field.Control required
                                    startIcon={ Magnifer }
