@@ -1,11 +1,11 @@
 import React, { Fragment } from 'react';
-import { IonNote } from '@ionic/react';
 
 import { dateToString } from '@/service/function';
 import { FadedText } from '@/components/ui';
 import styles from './styles.module.scss';
 import { useLoaderData } from '@tanstack/react-router';
 import { Link } from '@/components/base/Button';
+import { Note } from '@/components/base/Note';
 
 export const DatasetInfoCreation: React.FC = () => {
     const { dataset } = useLoaderData({
@@ -13,9 +13,9 @@ export const DatasetInfoCreation: React.FC = () => {
         select: ({ dataset }) => ({ dataset }),
     })
 
-    return <IonNote className={ styles.importNote } color="medium">
+    return <Note className={ styles.importNote } color="medium">
         Dataset imported on { dateToString(new Date(dataset.createdAt)) } by { dataset.owner.displayName }
-    </IonNote>
+    </Note>
 }
 
 export const DatasetName: React.FC<{

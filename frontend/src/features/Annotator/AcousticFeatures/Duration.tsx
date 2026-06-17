@@ -3,8 +3,8 @@ import { type Annotation, useUpdateAnnotation } from '@/features/Annotator/Annot
 import { Td, Th, Tr } from '@/components/ui';
 import { Input } from '@/components/form';
 import styles from './styles.module.scss';
-import { IonNote } from '@ionic/react';
 import { useLoaderData } from '@tanstack/react-router';
+import { Note } from '@/components/base/Note';
 
 export const Duration: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
@@ -32,7 +32,7 @@ export const Duration: React.FC<{ annotation: Annotation }> = ({ annotation }) =
                        min={ 0.01 } max={ spectrogram.duration ?? 0 }
                        disabled={ phase?.phase === 'Verification' }
                        onChange={ e => onDurationUpdate(+e.currentTarget.value) }/>
-                <IonNote>s</IonNote>
+                <Note>s</Note>
             </div>
         </Td>
     </Tr>

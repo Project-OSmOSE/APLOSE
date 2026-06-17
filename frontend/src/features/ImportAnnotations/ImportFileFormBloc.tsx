@@ -1,5 +1,5 @@
 import React, { DragEvent, Fragment, useCallback, useMemo, useState } from 'react';
-import { IonButton, IonIcon, IonNote, IonSpinner } from '@ionic/react';
+import { IonButton, IonIcon, IonSpinner } from '@ionic/react';
 import { FormBloc } from '@/components/form';
 import { useImportAnnotationsContext } from './context';
 import styles from './styles.module.scss'
@@ -7,6 +7,7 @@ import { ACCEPT_CSV_MIME_TYPE, ACCEPT_CSV_SEPARATOR, IMPORT_ANNOTATIONS_COLUMNS 
 import { WarningText } from '@/components/ui';
 import { cloudUploadOutline, refreshOutline } from 'ionicons/icons/index.js';
 import { useLoaderData } from '@tanstack/react-router';
+import { Note } from '@/components/base/Note';
 
 export const ImportAnnotationsFormBloc: React.FC = () => {
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
@@ -55,8 +56,10 @@ export const ImportAnnotationsFormBloc: React.FC = () => {
     return <FormBloc className={ styles.importBloc }>
 
         {/* Information */ }
-        <IonNote color="medium"
-                 children={ `The imported CSV should only contain annotations related to this campaign dataset: ${ campaign.dataset?.name }` }/>
+        <Note color="medium">
+            The imported CSV should only contain annotations related to this campaign
+            dataset: { campaign.dataset?.name }
+        </Note>
 
         {/* Drag N Drop zone */ }
         <div className={ dragNDropClassName }

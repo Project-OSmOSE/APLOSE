@@ -1,7 +1,7 @@
 import React, { Fragment, MouseEvent, useCallback, useMemo, useState } from 'react';
 import { Td, Th } from '@/components/ui';
 import { Input } from '@/components/form';
-import { IonButton, IonCheckbox, IonIcon, IonNote } from '@ionic/react';
+import { IonButton, IonCheckbox, IonIcon } from '@ionic/react';
 import styles from './styles.module.scss';
 import { createOutline } from 'ionicons/icons';
 import { useAppDispatch, useAppSelector } from '@/features/App';
@@ -9,6 +9,7 @@ import { endPositionSelection, selectIsSelectingPositionForAnnotation, selectPos
 import { useGetFreqTime, useIsInAnnotation } from '@/features/Annotator/Pointer';
 import { CLICK_EVENT, useEvent } from '@/features/UX';
 import type { Annotation } from '@/features/Annotator/Annotation';
+import { Note } from '@/components/base/Note';
 
 
 export const InputRow: React.FC<{
@@ -81,7 +82,7 @@ export const InputRow: React.FC<{
                 <Input className={ styles.input }
                        value={ value ?? '' } type="number" min={ 0 } max={ max } disabled={ disabled }
                        onChange={ e => update(e.target.valueAsNumber) }/>
-                { unit && <IonNote>{ unit }</IonNote> }
+                { unit && <Note>{ unit }</Note> }
                 { clickable && <IonButton size="small" fill="clear"
                                           className={ isSelecting ? styles.selectedButton : undefined }
                                           onClick={ toggleSelection }>
@@ -132,6 +133,6 @@ export const NoteRow: React.FC<{
 }> = ({ label, note }) => {
     return <Fragment>
         <Th scope="row">{ label }</Th>
-        <Td><IonNote>{ note }</IonNote></Td>
+        <Td><Note>{ note }</Note></Td>
     </Fragment>
 }

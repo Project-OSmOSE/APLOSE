@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link as RouterLink, type LinkComponentProps } from '@tanstack/react-router'
-import { IonBadge, IonIcon, IonNote } from '@ionic/react';
+import { IonBadge, IonIcon } from '@ionic/react';
 import { Color } from '@ionic/core';
 import { crop } from 'ionicons/icons/index.js';
 
@@ -9,12 +9,13 @@ import { dateToString, pluralize } from '@/service/function';
 
 import styles from './styles.module.scss';
 import { type AllCampaignsQuery } from './api';
+import { Note } from '@/components/base/Note';
 
 type Campaign = NonNullable<NonNullable<AllCampaignsQuery['allAnnotationCampaigns']>['results'][number]>;
 
 export const Cards: React.FC<{ campaigns?: Campaign[] }> = React.memo(({ campaigns }) => {
     if (!campaigns || campaigns.length === 0)
-        return <IonNote color="medium">No campaigns</IonNote>
+        return <Note color="medium">No campaigns</Note>
 
     return <div className={ styles.cards }>
         { campaigns?.map(c => <Card key={ c.id } campaign={ c }/>) }

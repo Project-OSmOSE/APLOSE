@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { IonIcon, IonNote } from '@ionic/react';
+import { IonIcon } from '@ionic/react';
 import { Letter } from '@solar-icons/react';
 
 import { CONTACT_MAIL, CONTACT_URI, GITHUB_URL, OSMOSE_URL } from '@/consts/links';
@@ -10,6 +10,7 @@ import logo from '/images/ode_logo_192x192.png';
 
 import style from './layout.module.scss';
 import json from '../../../global-package.json'
+import { Note } from '@/components/base/Note';
 
 
 export const OldFooter: React.FC = () => {
@@ -22,7 +23,7 @@ export const OldFooter: React.FC = () => {
                     <IonIcon icon={ logoGithub } slot="start"/>
                     Github
                 </ExternalLink>
-                <IonNote color="medium">{ version }</IonNote>
+                <Note color="medium">{ version }</Note>
             </div>
 
             <div className={ style.proposition }>
@@ -34,11 +35,11 @@ export const OldFooter: React.FC = () => {
 
             <div>
                 <DocumentationButton/>
-                <IonNote color="medium">|</IonNote>
+                <Note color="medium">|</Note>
                 <Link to="/terms">
                     Terms of use
                 </Link>
-                <IonNote color="medium">|</IonNote>
+                <Note color="medium">|</Note>
                 <ExternalLink href={ CONTACT_URI }>
                     <Letter/>
                     { CONTACT_MAIL }

@@ -4,11 +4,12 @@ import { gqlAPI } from '@/api/baseGqlApi';
 import { Modal, ModalFooter, ModalHeader, type ModalProps, WarningText } from '@/components/ui';
 import { Item } from '@/features/Storage';
 import { Searchbar } from '@/components/form';
-import { IonNote, IonSpinner } from '@ionic/react';
+import { IonSpinner } from '@ionic/react';
 import { useKeyDownEvent } from '@/features/UX';
 import { useQuery } from '@tanstack/react-query';
 import * as API from '../api'
 import { Button, HelpButton } from '@/components/base/Button';
+import { Note } from '@/components/base/Note';
 
 export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
     const [ searchQuery, setSearchQuery ] = useState<string | undefined>();
@@ -36,15 +37,15 @@ export const ImportFromPath: React.FC<ModalProps> = ({ onClose }) => {
     const content = useMemo(() => {
         if (isLoading) return <IonSpinner/>
         if (error) return <WarningText error={ error }/>
-        if (!searchQuery) return <IonNote>
+        if (!searchQuery) return <Note>
             You can search for the exact path of:
             <ul>
                 <li>a common folder</li>
                 <li>a dataset folder</li>
                 <li>an OSEkit dataset.json file describing a dataset</li>
             </ul>
-        </IonNote>
-        if (!item) return <IonNote>Not found</IonNote>
+        </Note>
+        if (!item) return <Note>Not found</Note>
         return <Item path={ item.path } forceOpen onUpdated={ invalidateStorage }/>
     }, [ isLoading, error, item, searchQuery, invalidateStorage ])
 

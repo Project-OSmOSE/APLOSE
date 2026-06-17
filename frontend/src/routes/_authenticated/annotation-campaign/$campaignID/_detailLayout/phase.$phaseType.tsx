@@ -14,13 +14,14 @@ import styles from './phase.$phaseType.module.scss';
 import { queryClient } from '@/api/queryClient';
 import { AnnotationPhase, AnnotationSpectrogram } from '@/features';
 import { UserAPI } from '@/features/User';
-import { IonNote, IonSpinner } from '@ionic/react';
+import { IonSpinner } from '@ionic/react';
 import { useQuery } from '@tanstack/react-query';
+import { Note } from '@/components/base/Note';
 
 const AnnotationCampaignPhaseDetail: React.FC = () => {
     const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { spectrograms, spectrogramsPageCount } = Route.useLoaderData()
-    const { campaignID, phaseType  } = Route.useParams()
+    const { campaignID, phaseType } = Route.useParams()
     const { data: phase } = useQuery(AnnotationPhase.API.getQuery({
         campaignID,
         phase: phaseType,
@@ -96,11 +97,11 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
                     </Thead>
                     <Tbody>
                         { spectrograms.map(s => <SpectrogramRow key={ s!.id }
-                                                                 spectrogram={ s! }
-                                                                 task={ s!.task }
-                                                                 userAnnotations={ s!.task?.userAnnotations }
-                                                                 validAnnotationsToCheck={ s!.task?.validAnnotationsToCheck }
-                                                                 annotationsToCheck={ s!.task?.annotationsToCheck }/>) }
+                                                                spectrogram={ s! }
+                                                                task={ s!.task }
+                                                                userAnnotations={ s!.task?.userAnnotations }
+                                                                validAnnotationsToCheck={ s!.task?.validAnnotationsToCheck }
+                                                                annotationsToCheck={ s!.task?.annotationsToCheck }/>) }
                     </Tbody>
                 </Table>
 
@@ -120,7 +121,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
             { statusFilterModal.element }
         </div>
     }, [ campaign, phase, isEmpty, phases, hasDateFilter, dateFilterModal, search, annotationFilterModal,
-        statusFilterModal, spectrograms, spectrogramsPageCount, updatePage,  ]);
+        statusFilterModal, spectrograms, spectrogramsPageCount, updatePage ]);
 }
 
 export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType')({
@@ -150,9 +151,14 @@ export const Route = createFileRoute('/_authenticated/annotation-campaign/$campa
             })),
         ])
         if (!phase) throw notFound()
-        return { phase, spectrograms, spectrogramsPageCount: Math.ceil((totalCount ?? 0) / PAGE_SIZE), resumeSpectrogramId: resumeId }
+        return {
+            phase,
+            spectrograms,
+            spectrogramsPageCount: Math.ceil((totalCount ?? 0) / PAGE_SIZE),
+            resumeSpectrogramId: resumeId,
+        }
     },
     component: AnnotationCampaignPhaseDetail,
     pendingComponent: IonSpinner,
-    notFoundComponent: () => <IonNote color='medium'>Phase not found</IonNote>
+    notFoundComponent: () => <Note color="medium">Phase not found</Note>,
 })

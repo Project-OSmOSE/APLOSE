@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
-import { IonNote } from '@ionic/react';
 
 import { FadedText, Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
 import { useLoaderData } from '@tanstack/react-router';
+import { Note } from '@/components/base/Note';
 
 export const ChannelConfigurationTable: React.FC = () => {
 
@@ -12,7 +12,7 @@ export const ChannelConfigurationTable: React.FC = () => {
     })
 
     if (allChannelConfigurations.length === 0)
-        return <IonNote color="medium">No acquisition information</IonNote>
+        return <Note color="medium">No acquisition information</Note>
 
     return <Table spacing="small">
         <Thead>

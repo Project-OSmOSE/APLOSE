@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { createFileRoute, useLoaderData, useRouter } from '@tanstack/react-router';
-import { IonButton, IonNote, IonSpinner } from '@ionic/react';
+import { IonButton, IonSpinner } from '@ionic/react';
 
 import { Head, Table, Tbody, Th, Thead, Tr } from '@/components/ui';
 import { Toast } from '@/components/base/Toast';
@@ -16,6 +16,7 @@ import { queryClient } from '@/api/queryClient';
 import { AnnotationFileRange } from '@/features';
 import { UserAPI } from '@/features/User';
 import { useMutation } from '@tanstack/react-query';
+import { Note } from '@/components/base/Note';
 
 type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
     id: string;
@@ -167,15 +168,13 @@ const EditAnnotators: React.FC = () => {
                             ) }
                         </Tbody>
 
-                        { fileRanges.length === 0 && <IonNote color="medium">No annotators</IonNote> }
+                        { fileRanges.length === 0 && <Note color="medium">No annotators</Note> }
                     </Table>
 
-                    { phase?.phase === 'Verification' &&
-                        <IonNote>To fully verify your annotations, you should have a verification user that is not an
-                            annotator
-                            or
-                            at
-                            least two verification users</IonNote> }
+                    { phase?.phase === 'Verification' && <Note>
+                        To fully verify your annotations, you should have a verification user that is not an annotator or at
+                        least two verification users
+                    </Note> }
 
                     <div className={ styles.buttons }>
                         <IonButton color="medium" fill="outline" onClick={ back }>

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { IonBadge, IonNote } from '@ionic/react';
+import { IonBadge } from '@ionic/react';
 
 import { type Order, Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
 import { dateToString } from '@/service/function';
@@ -10,6 +10,7 @@ import { CampaignName } from '@/features/AnnotationCampaign/CampaignInfo';
 import styles from './styles.module.scss'
 import { useLoaderData } from '@tanstack/react-router';
 import type { DatasetFragment } from '@/features/Dataset/api';
+import { Note } from '@/components/base/Note';
 
 
 type Sort = {
@@ -64,10 +65,10 @@ export const DatasetTable: React.FC = () => {
         })
     }, [ allDatasets, sorting ]);
 
-    if (!sortedDatasets || sortedDatasets.length === 0) return <IonNote color="medium"
-                                                                        style={ { textAlign: 'center' } }>
+    if (!sortedDatasets || sortedDatasets.length === 0) return <Note color="medium"
+                                                                     style={ { textAlign: 'center' } }>
         No datasets
-    </IonNote>
+    </Note>
     return <Table>
         <Thead>
             <Tr>
@@ -76,7 +77,7 @@ export const DatasetTable: React.FC = () => {
                     setOrder={ order => setSorting({ column: 'name', order: order }) }>
                     <div>
                         Name<br/>
-                        <IonNote>Path</IonNote>
+                        <Note>Path</Note>
                     </div>
                 </Th>
 

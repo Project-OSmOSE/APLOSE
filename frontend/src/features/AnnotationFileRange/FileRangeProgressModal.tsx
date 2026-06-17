@@ -16,7 +16,7 @@ import {
     WarningText,
 } from '@/components/ui';
 import { Toast } from '@/components/base/Toast';
-import { IonNote, IonSpinner } from '@ionic/react';
+import { IonSpinner } from '@ionic/react';
 import { AnnotationFileRangeNode, AnnotationTaskNodeNodeConnection, Maybe, UserNode } from '@/api';
 import { useDownloadAnnotations, useDownloadProgress } from '@/api/download';
 import { NBSP } from '@/service/type';
@@ -26,6 +26,7 @@ import { UserAPI } from '@/features/User';
 import { useLoaderData } from '@tanstack/react-router';
 import { Button, ButtonGroup } from '@/components/base/Button';
 import { Download } from '@solar-icons/react';
+import { Note } from '@/components/base/Note';
 
 type Progression = {
     user: Pick<UserNode, 'id' | 'displayName' | 'expertise' | 'username'>;
@@ -57,11 +58,17 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
     const toastManager = Toast.useToastManager()
 
     useEffect(() => {
-        if (downloadAnnotationsError) toastManager.addError({ title: 'Result download failed', error: downloadAnnotationsError })
+        if (downloadAnnotationsError) toastManager.addError({
+            title: 'Result download failed',
+            error: downloadAnnotationsError,
+        })
     }, [ downloadAnnotationsError ]);
 
     useEffect(() => {
-        if (downloadProgressError) toastManager.addError({ title: 'Progression download failed',error: downloadProgressError })
+        if (downloadProgressError) toastManager.addError({
+            title: 'Progression download failed',
+            error: downloadProgressError,
+        })
     }, [ downloadProgressError ]);
 
     const [ sort, setSort ] = useState<Sort>({ entry: 'Progress', sort: 'desc' });
@@ -118,7 +125,7 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
             { userError && <WarningText error={ userError }/> }
             { fileRangeError && <WarningText error={ fileRangeError }/> }
 
-            { (!isLoadingUsers && !isLoadingFileRanges) && progress.length === 0 && <IonNote>No annotators</IonNote> }
+            { (!isLoadingUsers && !isLoadingFileRanges) && progress.length === 0 && <Note>No annotators</Note> }
 
             { progress.length > 0 && <Table>
                 <Thead>

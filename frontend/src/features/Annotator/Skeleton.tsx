@@ -1,7 +1,6 @@
 import React, { Fragment, ReactNode, useEffect } from 'react';
-import { OldFooter, Header } from '@/components/layout';
+import { Header, OldFooter } from '@/components/layout';
 import { Progress } from '@/components/ui';
-import { IonNote } from '@ionic/react';
 import styles from './styles.module.scss';
 import { IoCheckmarkCircleOutline, IoChevronForwardOutline } from 'react-icons/io5';
 import { AnnotationTaskStatus } from '@/api';
@@ -21,6 +20,7 @@ import { cleanGqlList } from '@/api/utils';
 import { AnnotatorAnnotationSlice, convertGqlToAnnotations } from '@/features/Annotator/Annotation';
 import { ExternalLink, Link } from '@/components/base/Button';
 import { Help } from '@solar-icons/react';
+import { Note } from '@/components/base/Note';
 
 export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
     const search = useSearch({ strict: false });
@@ -111,10 +111,10 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                                       className={ styles.progress }
                                       value={ (info.currentIndex ?? 0) + 1 }
                                       total={ info.totalCount }/> }
-                        { campaign.archive ? <IonNote>You cannot annotate an archived campaign.</IonNote> :
-                            phase?.endedAt ? <IonNote>You cannot annotate an ended phase.</IonNote> :
+                        { campaign.archive ? <Note>You cannot annotate an archived campaign.</Note> :
+                            phase?.endedAt ? <Note>You cannot annotate an ended phase.</Note> :
                                 !spectrogram.isAssigned ?
-                                    <IonNote>You are not assigned to annotate this file.</IonNote> :
+                                    <Note>You are not assigned to annotate this file.</Note> :
                                     <Fragment/>
                         }
                     </div> }
