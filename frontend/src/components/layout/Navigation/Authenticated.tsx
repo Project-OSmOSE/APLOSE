@@ -10,7 +10,7 @@ import { useLoaderData } from '@tanstack/react-router';
 
 export const Authenticated: React.FC<{ className?: string }> = ({ className }) => {
     const { logout } = useLogout()
-    const { user } = useLoaderData({ from: '/_authenticated' })
+    const data = useLoaderData({ from: '/_authenticated' })
 
     return <NavigationMenu.Root className={ [ styles.Navigation, className ].join(' ') }>
         <NavigationMenu.List>
@@ -27,7 +27,7 @@ export const Authenticated: React.FC<{ className?: string }> = ({ className }) =
                 </Link>
             </NavigationMenu.Item>
 
-            { user.isAdmin && <Fragment>
+            { data?.user.isAdmin && <Fragment>
                 <NavigationMenu.Item>
                     <Link to="/dataset">
                         Datasets
@@ -43,7 +43,7 @@ export const Authenticated: React.FC<{ className?: string }> = ({ className }) =
         </NavigationMenu.List>
 
         <NavigationMenu.List>
-            { user.isSuperuser && <Fragment>
+            { data?.user.isSuperuser && <Fragment>
                 <NavigationMenu.Item>
                     <Link to="/ontology/$type"
                           params={ { type: 'source' } }>
@@ -60,14 +60,14 @@ export const Authenticated: React.FC<{ className?: string }> = ({ className }) =
 
             <NavigationMenu.Item>
                 <NavigationMenu.Trigger>
-                    <UserComponents.Avatar user={ user }/>
+                    <UserComponents.Avatar user={ data?.user }/>
                 </NavigationMenu.Trigger>
                 <NavigationMenu.Content>
                     <div className={ styles.Submenu }>
 
                         <Button color="warning" onClick={ logout }>Logout</Button>
 
-                        { user.isAdmin && <Fragment>
+                        { data?.user.isAdmin && <Fragment>
                             <ExternalLink href="/backend/admin" target="_blank">Admin</ExternalLink>
                         </Fragment> }
 

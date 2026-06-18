@@ -10,7 +10,7 @@ import { useLoaderData } from '@tanstack/react-router';
 
 export const AuthenticatedMobile: React.FC<{ className?: string }> = ({ className }) => {
     const { logout } = useLogout()
-    const { user } = useLoaderData({ from: '/_authenticated' })
+    const data = useLoaderData({ from: '/_authenticated' })
 
     return <NavigationMenu.Root className={ [ styles.Navigation, styles.Mobile, className ].join(' ') }>
         <NavigationMenu.List>
@@ -39,7 +39,7 @@ export const AuthenticatedMobile: React.FC<{ className?: string }> = ({ classNam
                                     </Link>
                                 </NavigationMenu.Item>
 
-                                { user.isAdmin && <Fragment>
+                                { data?.user.isAdmin && <Fragment>
                                     <NavigationMenu.Item>
                                         <Link to="/dataset">
                                             Datasets
@@ -55,7 +55,7 @@ export const AuthenticatedMobile: React.FC<{ className?: string }> = ({ classNam
                             </NavigationMenu.List>
 
                             <NavigationMenu.List>
-                                { user.isSuperuser && <Fragment>
+                                { data?.user.isSuperuser && <Fragment>
                                     <NavigationMenu.Item>
                                         <Link to="/ontology/$type"
                                               params={ { type: 'source' } }>
@@ -71,7 +71,7 @@ export const AuthenticatedMobile: React.FC<{ className?: string }> = ({ classNam
                                 </Fragment> }
 
                                 <NavigationMenu.Item>
-                                    { user.isAdmin && <ExternalLink href="/backend/admin"
+                                    { data?.user.isAdmin && <ExternalLink href="/backend/admin"
                                                                     target="_blank">Admin</ExternalLink> }
                                 </NavigationMenu.Item>
 
