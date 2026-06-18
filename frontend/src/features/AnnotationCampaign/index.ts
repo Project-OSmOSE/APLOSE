@@ -1,3 +1,4 @@
+export * as CampaignComponents from './components'
 export * as CampaignForm from './form'
 
 export * as API from './api'
