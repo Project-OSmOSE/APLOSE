@@ -59,7 +59,7 @@ export const Search: React.FC = () => {
                     <Field.Control required
                                    startIcon={ Magnifer }
                                    placeholder="Enter exact path"
-                                   type="text"/>
+                                   type="search"/>
                     <Field.Error/>
                 </Field.Root>
 

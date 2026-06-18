@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
-import { IonChip, IonIcon } from '@ionic/react';
-import { closeCircle } from 'ionicons/icons';
 import { useLoaderData, useNavigate, useSearch } from '@tanstack/react-router';
+import { Chip, ChipRemove } from '@/components/base/Chip';
 
 export const AnnotationCampaignOwnerFilter: React.FC = () => {
     const filter_ownerID = useSearch({
@@ -23,10 +22,9 @@ export const AnnotationCampaignOwnerFilter: React.FC = () => {
         })
     }, [ navigate, user ])
 
-    return <IonChip outline={ !filter_ownerID }
-                    onClick={ toggle }
-                    color={ filter_ownerID ? 'primary' : 'medium' }>
+    return <Chip onClick={ toggle }
+                 color={ filter_ownerID ? 'primary' : 'medium' }>
         Owned campaigns
-        { filter_ownerID && <IonIcon icon={ closeCircle } color="primary"/> }
-    </IonChip>
+        { filter_ownerID && <ChipRemove/> }
+    </Chip>
 }

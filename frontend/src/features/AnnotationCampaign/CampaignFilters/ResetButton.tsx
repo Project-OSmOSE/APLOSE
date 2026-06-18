@@ -1,35 +1,35 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { type AllCampaignsQueryVariables } from '../api';
-import { IonButton, IonIcon } from '@ionic/react';
-import { refreshOutline } from 'ionicons/icons';
 import { Route } from '@/routes/_authenticated/annotation-campaign';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
+import { Restart } from '@solar-icons/react';
+import { Button } from '@/components/base/Button';
 
 export const AnnotationCampaignResetFiltersButton: React.FC = () => {
-  const searchParams = Route.useSearch();
-  const navigate = useNavigate();
-  const { user } = useLoaderData({ from: '/_authenticated' })
+    const searchParams = Route.useSearch();
+    const navigate = useNavigate();
+    const { user } = useLoaderData({ from: '/_authenticated' })
 
-  const canReset = useMemo(() => {
-    return !(!searchParams.search && searchParams.filter_isArchived == false && !searchParams.filter_phase && !!searchParams.filter_annotatorID && !searchParams.filter_ownerID)
-  }, [ searchParams ]);
-  const resetFilters = useCallback(() => {
-    navigate({
-      to: Route.to,
-      search: {
-        search: null,
-        filter_isArchived: false,
-        filter_phase: null,
-        filter_annotatorID: user.id,
-        filter_ownerID: null,
-        filter_datasetID: null,
-      } as AllCampaignsQueryVariables,
-    })
-  }, [ navigate, user ])
+    const canReset = useMemo(() => {
+        return !(!searchParams.search && searchParams.filter_isArchived == false && !searchParams.filter_phase && !!searchParams.filter_annotatorID && !searchParams.filter_ownerID)
+    }, [ searchParams ]);
+    const resetFilters = useCallback(() => {
+        navigate({
+            to: Route.to,
+            search: {
+                search: null,
+                filter_isArchived: false,
+                filter_phase: null,
+                filter_annotatorID: user.id,
+                filter_ownerID: null,
+                filter_datasetID: null,
+            } as AllCampaignsQueryVariables,
+        })
+    }, [ navigate, user ])
 
-  if (!canReset) return <Fragment/>
-  return <IonButton fill="clear" color="medium" onClick={ resetFilters }>
-    <IonIcon icon={ refreshOutline } slot="start"/>
-    Reset
-  </IonButton>
+    if (!canReset) return <Fragment/>
+    return <Button color="medium" onClick={ resetFilters }>
+        <Restart weight="Linear" size={ 20 }/>
+        Reset
+    </Button>
 }

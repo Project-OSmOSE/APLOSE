@@ -11,17 +11,8 @@
   align-items: center;
   gap: 0.4rem;
 
-  --padding-vertical: 0.4rem;
-  --margin-vertical: 0.1rem;
-  --padding-horizontal: 0.6rem;
-  --margin-horizontal: 0.2rem;
-  border-radius: max(var(--padding-vertical), var(--padding-horizontal));
-
-  --padding-vertical-hover: calc(var(--padding-vertical) + var(--margin-vertical));
-  --padding-horizontal-hover: calc(var(--padding-horizontal) + var(--margin-horizontal));
-  margin: var(--margin-vertical) var(--margin-horizontal);
-
-  padding: var(--padding-vertical) var(--padding-horizontal);
+  border-radius: 0.6rem;
+  padding: 0.4rem 0.6rem;
 
   transition: 150ms ease-in;
   //-webkit-transition : 150ms ease-in; /* For filter transition, on supported browsers */
@@ -36,8 +27,6 @@
   text-decoration: none !important;
 
   &:not([disabled]):hover {
-    padding: var(--padding-vertical-hover) var(--padding-horizontal-hover);
-    margin: 0;
     background: rgba(var(--color-dark-rgb), 0.025);
   }
 

@@ -1,7 +1,7 @@
 import { createFileRoute, useLoaderData, useNavigate } from '@tanstack/react-router';
-import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
-import { Head } from '@/components/ui';
+import { Head, WarningText } from '@/components/ui';
 
 import {
     type AllCampaignsQueryVariables,
@@ -11,13 +11,16 @@ import {
 import { queryClient } from '@/api/queryClient';
 import { AnnotationCampaign } from '@/features';
 import { useQuery } from '@tanstack/react-query';
+import { Content } from '@/components/layout/Content';
+import { Center } from '@/components/layout/Display';
+import { Spinner } from '@/components/base/Spinner';
 
 const AnnotationCampaignList: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useLoaderData({ from: '/_authenticated' })
     const params = Route.useParams()
     const search = Route.useSearch()
-    const { data: campaigns } = useQuery(AnnotationCampaign.API.allQuery({ ...search, ...params }))
+    const { data: campaigns, isFetching } = useQuery(AnnotationCampaign.API.allQuery({ ...search, ...params }))
 
     const init = useCallback(() => {
         navigate({
@@ -48,32 +51,32 @@ const AnnotationCampaignList: React.FC = () => {
         init()
     }, []);
 
-    return useMemo(() => <Fragment>
+    return <Content style={ { gridTemplateRows: 'auto auto 1fr' } }>
         <Head title="Annotation campaigns"/>
 
-        <div style={ {
-            display: 'grid',
-            maxHeight: '100%',
-            gridTemplateRows: 'auto 1fr',
-            overflow: 'hidden',
-            gap: '1rem',
-        } }>
+        <AnnotationCampaignListFilterActionBar/>
 
-            <AnnotationCampaignListFilterActionBar/>
-
-            <Cards campaigns={ campaigns }/>
-
-        </div>
-    </Fragment>, [ campaigns ])
+        <Cards campaigns={ campaigns } isFetching={ isFetching }/>
+    </Content>
 }
 
 
 export const Route = createFileRoute('/_authenticated/annotation-campaign/')({
     validateSearch: (search: Record<string, unknown>) => search as AllCampaignsQueryVariables,
     loaderDeps: ({ search }) => search as AllCampaignsQueryVariables,
-    loader: ({ params, deps }) => queryClient.ensureQueryData(AnnotationCampaign.API.allQuery({
-        ...deps,
-        ...params,
-    })),
+    loader: ({ params, deps }) => {
+        queryClient.ensureQueryData(AnnotationCampaign.API.allQuery({
+            ...deps,
+            ...params,
+        }))
+    },
     component: AnnotationCampaignList,
+    pendingComponent: () => <Content oneContent>
+        <Head title="Annotation campaigns"/>
+        <Center><Spinner/></Center>
+    </Content>,
+    errorComponent: ({ error }) => <Content oneContent>
+        <Head title="Annotation campaigns"/>
+        <Center><WarningText error={ error }/></Center>
+    </Content>,
 })

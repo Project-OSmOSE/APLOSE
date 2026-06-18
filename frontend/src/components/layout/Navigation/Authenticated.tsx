@@ -60,7 +60,7 @@ export const Authenticated: React.FC<{ className?: string }> = ({ className }) =
 
             <NavigationMenu.Item>
                 <NavigationMenu.Trigger>
-                    <UserComponents.Avatar user={ data?.user }/>
+                    { data && <UserComponents.Avatar user={ data?.user }/> }
                 </NavigationMenu.Trigger>
                 <NavigationMenu.Content>
                     <div className={ styles.Submenu }>

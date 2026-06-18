@@ -5,7 +5,7 @@ import { Eye, EyeClosed } from '@solar-icons/react';
 
 export type InputProps = Omit<BaseInputProps, 'type' | 'render'> & {
     startIcon?: any,
-    type: HTMLInputTypeAttribute & ('text' | 'url' | 'date' | 'email' | 'textarea' | 'password')
+    type: HTMLInputTypeAttribute & ('text' | 'url' | 'date' | 'email' | 'textarea' | 'password' | 'search')
 }
 
 export const Input: React.FC<InputProps> = ({ className, type, startIcon: _startIcon, ...props }) => {
@@ -33,8 +33,8 @@ export const Input: React.FC<InputProps> = ({ className, type, startIcon: _start
         )
     }, [ pwdType, togglePwdType ]);
 
-    return <div className={ styles.InputContainer }>
-        <BaseInput className={ [ className, styles.Input ].join(' ') }
+    return <div className={ [ styles.InputContainer, className ].join(' ') }>
+        <BaseInput className={ styles.Input }
                    render={ type === 'textarea' ? <textarea/> : undefined }
                    type={ type === 'password' ? pwdType : type }
                    { ...props }/>
