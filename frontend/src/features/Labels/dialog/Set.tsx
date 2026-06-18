@@ -1,19 +1,19 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, ModalFooter, ModalHeader, type ModalProps } from '@/components/ui';
 import { Toast } from '@/components/base/Toast';
-import { IonButton, IonSpinner } from '@ionic/react';
 import { AnnotationLabelNode } from '@/api';
-import { LabelSetFeaturesSelect } from '@/features/Labels';
+import { Table } from '../component';
 import { AnnotationCampaign } from '@/features';
-import styles from './styles.module.scss';
 import { useParams } from '@tanstack/react-router';
 import { cleanGqlList } from '@/api/utils';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { Dialog } from '@/components/base/Dialog';
+import { Button, ButtonGroup } from '@/components/base/Button';
+import { Spinner } from '@/components/base/Spinner';
 
 
 type Label = Pick<AnnotationLabelNode, 'id' | 'name'>
 
-export const LabelSetModal: React.FC<ModalProps> = ({ onClose }) => {
+export const Set: React.FC = () => {
     const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { data } = useQuery(AnnotationCampaign.API.byIdQuery({ id: campaignID }))
     const { campaign, labels } = useMemo(() => ({ ...data }), [ data ])
@@ -52,38 +52,38 @@ export const LabelSetModal: React.FC<ModalProps> = ({ onClose }) => {
         }
     }, [ updateCampaignFeaturedLabels, labelsWithAcousticFeatures, toggleDisabled, campaign ])
 
+    if (!campaign?.labelSet) return <Fragment/>
     return (
-        <Modal onClose={ onClose } className={ [ styles.modal ].join(' ') }>
-            <ModalHeader onClose={ onClose }
-                         title={ campaign!.labelSet?.name }
-                         subtitle="Label set"/>
+        <Dialog.Content>
+            <Dialog.Title>{ campaign.labelSet.name }</Dialog.Title>
+            <Dialog.CloseIcon/>
 
-            { campaign!.labelSet && <Fragment>
-                <LabelSetFeaturesSelect description={ campaign!.labelSet.description ?? undefined }
-                                        labels={ labels ?? [] }
-                                        labelsWithAcousticFeatures={ labelsWithAcousticFeatures }
-                                        disabled={ disabled }
-                                        setLabelsWithAcousticFeatures={ setLabelsWithAcousticFeatures }/>
-            </Fragment> }
+            { campaign.labelSet.description && <Dialog.Description>
+                { campaign.labelSet.description }
+            </Dialog.Description> }
+
+            <Table labels={ labels ?? [] }
+                   labelsWithAcousticFeatures={ labelsWithAcousticFeatures }
+                   disabled={ disabled }
+                   setLabelsWithAcousticFeatures={ setLabelsWithAcousticFeatures }/>
 
 
-            <ModalFooter>
+            <ButtonGroup spaceBetween>
                 { campaign!.isEditable && campaign!.isUserAllowedToManage && !campaign!.isArchived && (
-                    <IonButton fill="outline"
-                               onClick={ toggleDisabled }
-                               disabled={ isSubmitting || !disabled }>
+                    <Button onClick={ toggleDisabled }
+                            disabled={ isSubmitting || !disabled }>
                         Update labels with features
-                    </IonButton>
+                    </Button>
                 ) }
+                { isSubmitting && <Spinner/> }
                 { campaign!.isEditable && campaign!.isUserAllowedToManage && !disabled && (
-                    <IonButton fill="outline"
-                               disabled={ isSubmitting }
-                               onClick={ onSave }>
+                    <Button color="primary"
+                            disabled={ isSubmitting }
+                            onClick={ onSave }>
                         Save
-                        { isSubmitting && <IonSpinner slot="end"/> }
-                    </IonButton>
+                    </Button>
                 ) }
-            </ModalFooter>
-        </Modal>
+            </ButtonGroup>
+        </Dialog.Content>
     )
 }

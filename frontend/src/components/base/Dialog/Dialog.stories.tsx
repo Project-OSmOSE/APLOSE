@@ -9,7 +9,7 @@ type Props = {
 const meta = {
     title: 'Base/Dialog',
     component: ({ content }: Props) => (
-        <Dialog.Root>
+        <Dialog.Root open>
             <Dialog.Trigger>
                 Open me
             </Dialog.Trigger>
@@ -28,7 +28,7 @@ const meta = {
     args: {
         content: <Dialog.Content>
             <Dialog.Title>Lorem ipsum</Dialog.Title>
-            <Dialog.Close/>
+            <Dialog.CloseIcon/>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
         </Dialog.Content>,
     } satisfies Props,

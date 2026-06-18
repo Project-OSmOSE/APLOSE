@@ -12,4 +12,8 @@
   &.oneContent {
     grid-template-rows: auto 1fr;
   }
+
+  &.inner {
+    height: unset;
+  }
 }

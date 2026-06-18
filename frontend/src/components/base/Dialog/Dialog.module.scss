@@ -51,6 +51,19 @@
     min-width: unset;
     max-width: unset;
   }
+  
+  p {
+    margin: 0;
+  }
+
+  &.Alert {
+    min-width: unset;
+    max-width: 32rem;
+
+    .Title {
+      font-weight: 500;
+    }
+  }
 }
 
 .Intro {
@@ -64,6 +77,12 @@
   font-size: 1.2rem;
   line-height: 1.5rem;
   font-weight: 700;
+
+  @each $color in base.$colors {
+    &.#{$color} {
+      color: var(--color-#{$color}-text);
+    }
+  }
 }
 
 .Description {
@@ -79,7 +98,7 @@
   gap: 0.75rem;
 }
 
-.Close {
+.CloseIcon {
   position: absolute;
   top: 1.75rem;
   transform: translateY(-50%);

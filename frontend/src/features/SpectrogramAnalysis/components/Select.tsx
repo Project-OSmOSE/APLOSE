@@ -84,7 +84,7 @@ export const Select: React.FC<AnalysisSelectProps> = ({
             <Combobox.Portal>
                 <Combobox.Positioner side="top">
                     <Combobox.Popup>
-                        <Combobox.Empty>No dataset found.</Combobox.Empty>
+                        <Combobox.Empty>No analysis found.</Combobox.Empty>
                         <Combobox.List>
                             { (item: SelectValue) => (
                                 <Combobox.Item key={ item.id } value={ item }>

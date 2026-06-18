@@ -13,7 +13,7 @@ export const ImportAnalysis: React.FC = () => {
     return (
         <Dialog.Content>
             <Dialog.Title>Import an analysis</Dialog.Title>
-            <Dialog.Close/>
+            <Dialog.CloseIcon/>
 
             { dataset && <Item path={ dataset.path } forceOpen disableImport/> }
 

@@ -1,5 +1,4 @@
-import React, { Fragment } from 'react';
-import { FadedText } from '@/components/ui';
+import React from 'react';
 import { useLoaderData } from '@tanstack/react-router';
 import { Link } from '@/components/base/Button';
 
@@ -7,18 +6,13 @@ import { Link } from '@/components/base/Button';
 export const DatasetName: React.FC<{
     name: string
     id?: string
-    labeled?: true
     link?: true
-}> = ({ name, id, labeled, link }) => {
+}> = ({ name, id, link }) => {
     const { user } = useLoaderData({ from: '/_authenticated' })
 
-    if (link && id && user.isAdmin) return <Fragment>
-        { labeled && <FadedText>Dataset</FadedText> }
-        <Link to="/dataset/$datasetID" preload={ false } params={ { datasetID: id } } color="primary">{ name }</Link>
-    </Fragment>
+    if (link && id && user.isAdmin)
+        return <Link to="/dataset/$datasetID" preload={ false } params={ { datasetID: id } }
+                     color="primary">{ name }</Link>
 
-    return <div>
-        { labeled && <FadedText>Dataset</FadedText> }
-        <p>{ name }</p>
-    </div>
+    return <p>{ name }</p>
 }

@@ -10,4 +10,9 @@
       color: var(--color-#{$color}-text);
     }
   }
+
+  &.flex {
+    display: flex;
+    align-items: center;
+  }
 }

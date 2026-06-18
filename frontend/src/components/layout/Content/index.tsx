@@ -1,15 +1,16 @@
 import React, { type HTMLAttributes } from 'react';
 import styles from './Content.module.scss'
 
-type ContentProps = Pick<HTMLAttributes<HTMLDivElement>, 'children' | 'className' | 'style'> & (
-    { start?: boolean, oneContent?: never } |
-    { start?: never, oneContent?: boolean }
-    )
+type TypesProps = { start?: boolean }
+    & { oneContent?: boolean }
+    & { inner?: boolean }
+type ContentProps = Pick<HTMLAttributes<HTMLDivElement>, 'children' | 'className' | 'style'> & TypesProps
 
-export const Content: React.FC<ContentProps> = ({ start, oneContent, className, ...props }) => {
+export const Content: React.FC<ContentProps> = ({ className, children, style, ...types }) => {
     const classes = [ styles.Content ]
-    if (start) classes.push(styles.start)
-    if (oneContent) classes.push(styles.oneContent)
     if (className) classes.push(className)
-    return <div className={ classes.join(' ') } { ...props }/>
+    for (const type of Object.keys(types)) {
+        if (types[type as keyof TypesProps]) classes.push(styles[type])
+    }
+    return <div className={ classes.join(' ') } style={ style } children={ children }/>
 }

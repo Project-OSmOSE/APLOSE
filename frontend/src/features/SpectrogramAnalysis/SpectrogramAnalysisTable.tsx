@@ -9,7 +9,10 @@ import { Download } from '@solar-icons/react';
 import { Note } from '@/components/base/Note';
 
 type Analysis = NonNullable<NonNullable<AllSpectrogramAnalysisQuery['allSpectrogramAnalysis']>['results'][number]>
-export const SpectrogramAnalysisTable: React.FC<{ analysis: Analysis[] }> = ({ analysis }) => {
+export const SpectrogramAnalysisTable: React.FC<{
+    analysis: Analysis[],
+    spacing?: 'small' | 'regular'
+}> = ({ analysis, spacing }) => {
     const [ downloadAnalysis, { error: downloadError } ] = useDownloadAnalysis()
     const toastManager = Toast.useToastManager()
 
@@ -19,7 +22,7 @@ export const SpectrogramAnalysisTable: React.FC<{ analysis: Analysis[] }> = ({ a
 
     if (analysis.length === 0) return <Note color="medium">No spectrogram analysis</Note>
 
-    return <Table>
+    return <Table spacing={ spacing }>
         <Thead>
             <Tr>
                 <Th scope="col">Name</Th>

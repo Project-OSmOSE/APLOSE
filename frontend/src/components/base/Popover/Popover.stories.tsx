@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
 import React from 'react';
 import { InfoCircle } from '@solar-icons/react';
 import { Note } from '@/components/base/Note';
+import { Button } from '../Button/Button.tsx';
 
 type Props = {
     openOnHover: boolean,
@@ -56,6 +57,12 @@ export const Default: Story = {};
 export const Icon: Story = {
     args: {
         trigger: <Note color="medium"><InfoCircle size={ 20 }/></Note>,
+    },
+};
+
+export const WithButton: Story = {
+    args: {
+        trigger: <Button color="medium"><InfoCircle size={ 20 }/></Button>,
     },
 };
 

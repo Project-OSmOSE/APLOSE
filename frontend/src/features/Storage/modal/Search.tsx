@@ -52,7 +52,7 @@ export const Search: React.FC = () => {
     return (
         <Dialog.Content>
             <Dialog.Title>Search path</Dialog.Title>
-            <Dialog.Close/>
+            <Dialog.CloseIcon/>
 
             <Form horizontal onSubmit={ submit }>
                 <Field.Root name="search">

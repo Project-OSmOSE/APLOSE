@@ -87,6 +87,9 @@ export const queryKeys = {
         all: [ 'user' ] as const,
         current: [ 'user', 'current' ] as const,
     },
+    label: {
+        allSets: ['label', 'set'] as const,
+    }
 };
 
 /**

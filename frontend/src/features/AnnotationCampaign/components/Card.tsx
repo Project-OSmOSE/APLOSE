@@ -3,10 +3,9 @@ import { Link as RouterLink, type LinkComponentProps } from '@tanstack/react-rou
 import { type AllCampaignsQuery } from '../api';
 import { Badge } from '@/features/AnnotationCampaign/components/Badge';
 import { Progress } from '@/components/base/Progress';
-import { cleanGqlList } from '@/api/utils';
-import { useCampaignState } from '@/features/AnnotationCampaign/hooks';
 import styles from './Card.module.scss';
 import { Note } from '@/components/base/Note';
+import { PhasesProgress } from './PhasesProgress';
 
 type Campaign = NonNullable<NonNullable<AllCampaignsQuery['allAnnotationCampaigns']>['results'][number]>;
 
@@ -33,7 +32,7 @@ export const Card: React.FC<CardProps> = ({ campaign }) => {
             <Note color="medium">{ campaign.datasetName }</Note>
         </div>
 
-        <PhaseProgress campaign={ campaign }/>
+        <PhasesProgress userRelated campaign={ campaign }/>
 
         { campaign.tasksCount ?
             <Progress value={ campaign.completedTasksCount / campaign.tasksCount * 100 }
@@ -48,21 +47,3 @@ export const Card: React.FC<CardProps> = ({ campaign }) => {
             </Progress> }
     </RouterLink>
 }
-
-const PhaseProgress: React.FC<{
-    campaign: Pick<Campaign, 'phases' | 'isArchived' | 'deadline'>
-}> = React.memo(({ campaign }) => {
-    const { state, color } = useCampaignState(campaign)
-    const phases = cleanGqlList(campaign.phases?.results).sort((a, b) => a.phase.localeCompare(b.phase))
-
-    return phases.map(p => (
-            <Progress key={ p.phase }
-                      value={ p.userCompletedTasksCount }
-                      max={ p.userTasksCount }
-                      color={ !p.isOpen ? 'medium' : color }
-                      disabled={ !p.isOpen || state == 'Archived' }>
-                { p.phase } { !p.isOpen && <i>Closed</i> }
-            </Progress>
-        ),
-    )
-})

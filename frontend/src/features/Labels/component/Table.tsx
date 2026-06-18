@@ -1,11 +1,12 @@
-import React, { FormEvent, Fragment } from 'react';
-import { Table, Tbody, Td, Th, Thead, Tr, WarningText } from '@/components/ui';
-import { IonCheckbox } from '@ionic/react';
+import React, { MouseEvent, Fragment } from 'react';
+import { Table as BaseTable, Tbody, Td, Th, Thead, Tr, WarningText } from '@/components/ui';
 import { AnnotationLabelNode } from '@/api';
+import { Checkbox } from '@/components/base/Checkbox';
+import type { BaseUIEvent } from '@base-ui/react';
 
 type Label = Pick<AnnotationLabelNode, 'name' | 'id'>
 
-export const LabelSetFeaturesSelect: React.FC<{
+export const Table: React.FC<{
     description?: string,
     labels: Label[],
     labelsWithAcousticFeatures: Label[];
@@ -23,7 +24,7 @@ export const LabelSetFeaturesSelect: React.FC<{
           error,
       }) => {
 
-    const onLabelChecked = (event: FormEvent<HTMLIonCheckboxElement>, label: Label) => {
+    const onLabelChecked = (event: BaseUIEvent<MouseEvent>, label: Label) => {
         event.stopPropagation()
         event.preventDefault()
         if (labelsWithAcousticFeatures.find(l => l.id === label.id)) {
@@ -38,7 +39,7 @@ export const LabelSetFeaturesSelect: React.FC<{
 
         { error && <WarningText error={ error }/> }
 
-        <Table className={ allDisabled ? 'disabled' : '' }>
+        <BaseTable className={ allDisabled ? 'disabled' : '' }>
             <Thead>
                 <Tr>
                     <Th scope="col">Label</Th>
@@ -48,12 +49,12 @@ export const LabelSetFeaturesSelect: React.FC<{
             <Tbody>
                 { labels.map(label => <Tr key={ label.id }>
                     <Th scope="row">{ label.name }</Th>
-                    <Td>
-                        <IonCheckbox checked={ labelsWithAcousticFeatures.some(l => l.id === label.id) }
-                                     disabled={ disabled || allDisabled }
-                                     onClick={ event => onLabelChecked(event, label) }/></Td>
+                    <Td center>
+                        <Checkbox checked={ labelsWithAcousticFeatures.some(l => l.id === label.id) }
+                                  disabled={ disabled || allDisabled }
+                                  onClick={ event => onLabelChecked(event, label) }/></Td>
                 </Tr>) }
             </Tbody>
-        </Table>
+        </BaseTable>
     </Fragment>
 }

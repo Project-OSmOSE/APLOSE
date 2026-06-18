@@ -20,10 +20,11 @@ export const CopyMailButton: React.FC<CopyMailButtonProps> = ({ user }) => {
     }, [ user, toastManager ])
 
     return <Popover.Root>
-        <Popover.Trigger openOnHover>
-            <Button aria-label={ `Copy ${ user.email }` } onClick={ copy }>
-                <Letter weight="Linear" size={ 20 }/>
-            </Button>
+        {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */ }
+        <Popover.Trigger render={ ({ ref, color, ...props }) => <Button { ...props }/> }
+                         aria-label={ `Copy ${ user.email }` }
+                         onClick={ copy }>
+            <Letter weight="Linear" size={ 20 }/>
         </Popover.Trigger>
         <Popover.Content>
             Copy { user.email }

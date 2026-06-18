@@ -2,8 +2,6 @@ import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import './css/base.css';
-
-import { IonSpinner } from '@ionic/react';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
 import { StoreProvider } from '@/features/App';
@@ -13,6 +11,8 @@ import { routeTree } from '@/routeTree.gen';
 import { WarningText } from '@/components/ui';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/api/queryClient';
+import { Center } from '@/components/layout/Display';
+import { Spinner } from '@/components/base/Spinner';
 
 
 export const router = createRouter({
@@ -26,8 +26,8 @@ export const router = createRouter({
         isAdmin: undefined!,
         isSuperuser: undefined!,
     },
-    defaultPendingComponent: IonSpinner,
-    defaultErrorComponent: ({ error }) => <WarningText error={ error }/>,
+    defaultPendingComponent: () => <Center><Spinner/></Center>,
+    defaultErrorComponent: ({ error }) => <Center><WarningText error={ error }/></Center>,
 })
 
 // Register things for typesafety

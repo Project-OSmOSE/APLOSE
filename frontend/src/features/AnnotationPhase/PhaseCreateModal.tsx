@@ -3,18 +3,18 @@ import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { IonSpinner } from '@ionic/react';
 import { Modal, ModalHeader, WarningText } from '@/components/ui';
 import { FormBloc, Input } from '@/components/form';
-import { LabelSetSelect } from '@/features/Labels';
+import { LabelComponent } from '@/features/Labels';
 import { ConfidenceSetSelect } from '@/features/Confidence';
-import { AnnotationLabelNode, AnnotationPhaseType, LabelSetNode, Maybe } from '@/api';
+import { AnnotationLabelNode, AnnotationPhaseType } from '@/api';
 import styles from './styles.module.scss';
 import { useMutation } from '@tanstack/react-query';
 import { createAnnotationMutation, createVerificationMutation } from './api'
 import { Button } from '@/components/base/Button';
+import type { ListLabelSetsQuery } from '@/features/Labels/api';
 
 type Label = Pick<AnnotationLabelNode, 'id' | 'name'>
-type LabelSet = Pick<LabelSetNode, 'id' | 'description'> & {
-    labels: Array<Maybe<Label>>;
-}
+type N<T> = NonNullable<T>
+type LabelSet = N<N<ListLabelSetsQuery['allLabelSets']>['results'][number]>
 
 export const AnnotationPhaseCreateAnnotationModal: React.FC<{
     onClose: () => void;
@@ -35,15 +35,9 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
     const error = useMemo(() => errorPostingAnnotationPhase ?? errorPostingVerificationPhase, [ errorPostingAnnotationPhase, errorPostingVerificationPhase ])
     const navigate = useNavigate()
 
-    const [ labelSet, setLabelSet ] = useState<LabelSet | undefined>();
-    const selectLabelSet = useCallback((labelSet?: LabelSet) => {
-        setLabelSet(labelSet)
-    }, []);
+    const [ labelSet, setLabelSet ] = useState<LabelSet | null>(null);
 
     const [ labelsWithAcousticFeatures, setLabelsWithAcousticFeatures ] = useState<Label[]>([]);
-    const onLabelsWithFeaturesChange = useCallback((selection: Label[]) => {
-        setLabelsWithAcousticFeatures(selection)
-    }, [])
 
     const [ confidenceSetID, setConfidenceSetID ] = useState<string | undefined>();
     const selectConfidenceSetID = useCallback((id?: string) => {
@@ -89,11 +83,13 @@ export const AnnotationPhaseCreateAnnotationModal: React.FC<{
 
             <FormBloc>
 
-                <LabelSetSelect placeholder="Select a label set"
-                                selected={ labelSet }
-                                onSelected={ selectLabelSet }
-                                labelsWithAcousticFeatures={ labelsWithAcousticFeatures }
-                                setLabelsWithAcousticFeatures={ onLabelsWithFeaturesChange }/>
+                <LabelComponent.SetSelect value={ labelSet }
+                                          onValueChange={ setLabelSet }/>
+
+                { labelSet && <LabelComponent.Table description={ labelSet.description ?? undefined }
+                                                    labels={ (labelSet.labels ?? []).filter(l => l !== null) as Label[] }
+                                                    labelsWithAcousticFeatures={ labelsWithAcousticFeatures }
+                                                    setLabelsWithAcousticFeatures={ setLabelsWithAcousticFeatures }/> }
 
                 <ConfidenceSetSelect placeholder="Select a confidence set"
                                      selected={ confidenceSetID }
