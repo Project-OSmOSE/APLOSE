@@ -10,10 +10,9 @@ import { Link } from '@/components/base/Button';
 import { Content } from '@/components/layout/Content';
 import { Spinner } from '@/components/base/Spinner';
 import { Center } from '@/components/layout/Display';
-import styles from './dataset.module.scss'
 
 const Skeleton: React.FC<{ children: ReactNode }> = ({ children }) => (
-    <Content className={ styles.DatasetList }>
+    <Content oneContent>
         <Head title="Datasets"
               buttons={ <Link to="/storage" color="primary">Import datasets from storage</Link> }/>
         { children }

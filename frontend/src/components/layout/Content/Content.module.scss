@@ -8,4 +8,8 @@
   &.start {
     align-content: start;
   }
+
+  &.oneContent {
+    grid-template-rows: auto 1fr;
+  }
 }

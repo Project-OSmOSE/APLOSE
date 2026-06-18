@@ -1,22 +1,8 @@
 import React, { Fragment } from 'react';
-
-import { dateToString } from '@/service/function';
 import { FadedText } from '@/components/ui';
-import styles from './styles.module.scss';
 import { useLoaderData } from '@tanstack/react-router';
 import { Link } from '@/components/base/Button';
-import { Note } from '@/components/base/Note';
 
-export const DatasetInfoCreation: React.FC = () => {
-    const { dataset } = useLoaderData({
-        from: '/_authenticated/_admin/dataset/$datasetID',
-        select: ({ dataset }) => ({ dataset }),
-    })
-
-    return <Note className={ styles.importNote } color="medium">
-        Dataset imported on { dateToString(new Date(dataset.createdAt)) } by { dataset.owner.displayName }
-    </Note>
-}
 
 export const DatasetName: React.FC<{
     name: string
