@@ -1,38 +1,33 @@
-import { Dialog } from './index.ts';
+import { Badge, type BadgeProps } from './index.tsx';
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
-import { type ReactNode } from 'react';
+import type { BaseColor } from '@/components/base/types';
 
-
-type Props = {
-    content: ReactNode,
-}
 const meta = {
-    title: 'Base/Dialog',
-    component: ({ content }: Props) => (
-        <Dialog.Root>
-            <Dialog.Trigger>
-                Open me
-            </Dialog.Trigger>
-            { content }
-        </Dialog.Root>
-    ),
+    title: 'Base/Badge',
+    component: Badge,
     parameters: {
         // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
-        layout: 'padded',
+        layout: 'centered',
     },
     // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
     tags: [ 'autodocs' ],
     // More on argTypes: https://storybook.js.org/docs/api/argtypes
-    argTypes: {} satisfies Partial<Record<keyof Props, any>>,
+    argTypes: {
+        color: {
+            control: { type: 'radio' },
+            options: [ 'default', 'primary', 'warning', 'danger' ] as BaseColor[],
+            type: 'BaseColor',
+        },
+        children: {
+            control: { type: 'text' },
+        },
+    },
     // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#story-args
     args: {
-        content: <Dialog.Content>
-            <Dialog.Title>Lorem ipsum</Dialog.Title>
-            <Dialog.Close/>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        </Dialog.Content>,
-    } satisfies Props,
-} satisfies Meta<typeof Dialog>;
+        children: 'Test badge',
+        color: 'default',
+    } satisfies BadgeProps,
+} satisfies Meta<typeof Badge>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

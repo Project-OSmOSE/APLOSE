@@ -4,7 +4,7 @@ import React from 'react';
 import { BaseProvider } from '@/components/base/Provider';
 
 const meta = {
-    title: 'User/Components/CopyMailButton',
+    title: 'Features/User/CopyMailButton',
     component: CopyMailButton,
     decorators: [
         (Story: React.FC) => <BaseProvider><Story/></BaseProvider>,

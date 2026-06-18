@@ -1,0 +1,17 @@
+@use "@/css/base";
+
+.Badge {
+  border-radius: 0.25rem;
+  padding: 0.15rem 0.3rem;
+  color: var(--color-light);
+  font-weight: 500;
+  letter-spacing: 8%;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+
+  @each $color in base.$colors {
+    &[color=#{$color}] {
+      background: var(--color-#{$color}-tint);
+    }
+  }
+}
