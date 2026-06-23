@@ -19,9 +19,6 @@ export const allQuery = (variables: AllSpectrogramAnalysisQueryVariables) => que
 
 export const allForDatasetQueryFn= (variables: AllSpectrogramAnalysisForDatasetQueryVariables) => graphqlClient.request<AllSpectrogramAnalysisForDatasetQuery>(AllSpectrogramAnalysisForDatasetDocument, variables)
     .then(data => cleanGqlList(data.allSpectrogramAnalysis?.results))
-export const allForDatasetQuery = (variables: AllSpectrogramAnalysisForDatasetQueryVariables) => queryOptions({
-    queryKey: queryKeys.analysis.allForDataset(variables),
-    queryFn: () => allForDatasetQueryFn(variables)
-})
+
 
 export type * from './spectrogram-analysis.generated'

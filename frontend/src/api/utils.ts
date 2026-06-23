@@ -8,13 +8,12 @@ import type {
     QueryActionCreatorResult,
     QueryDefinition,
 } from '@reduxjs/toolkit/query';
-import { queryClient } from '@/api/queryClient';
-import type { DefaultError, EnsureQueryDataOptions, QueryKey } from '@tanstack/react-query';
 
 export function getTokenFromCookie(): Token | undefined {
     const tokenCookie = document.cookie?.split(';').filter((item) => item.trim().startsWith('token='))[0];
     return tokenCookie?.split('=').pop();
 }
+
 export function clearTokenFromCookie(): void {
     document.cookie = 'token=;max-age=0;path=/';
 }
@@ -27,7 +26,6 @@ export function prepareHeaders(headers: Headers) {
     return headers;
 }
 
-export type GqlError<T extends { [key in string]: any }> = ErrorType & { field: keyof T }
 
 export async function getLoader<Arguments = any, Result = any>(
     query: ApiEndpointQuery<
@@ -54,12 +52,4 @@ export function cleanGqlErrors(errors?: Array<ErrorType | null> | null): Errors 
         ...prev,
         [current.field]: current.messages,
     }), {})
-}
-
-export async function ensureValidQueryData<TQueryFnData, TError = DefaultError, TData = TQueryFnData, TQueryKey extends QueryKey = QueryKey>(options: EnsureQueryDataOptions<TQueryFnData, TError, TData, TQueryKey>): Promise<TData> {
-    const data = await queryClient.ensureQueryData(options)
-    if (queryClient.getQueryState(options.queryKey)?.isInvalidated) {
-        return await queryClient.fetchQuery(options)
-    }
-    return data
 }

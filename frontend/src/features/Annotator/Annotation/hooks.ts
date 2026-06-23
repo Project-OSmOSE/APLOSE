@@ -235,16 +235,3 @@ export const useUpdateAnnotationFeatures = () => {
     }, [ dispatch ])
 }
 
-export const useRemoveAnnotationFeatures = () => {
-    const dispatch = useAppDispatch();
-
-    return useCallback((annotation: Annotation) => {
-        if (annotation.type === AnnotationType.Weak) return;
-        annotation = dispatch(updateAnnotation({
-            id: annotation.id,
-            acousticFeatures: undefined,
-        })).payload as Annotation
-        dispatch(focusAnnotation(annotation))
-    }, [ dispatch ])
-}
-

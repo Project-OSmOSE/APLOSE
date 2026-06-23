@@ -1,5 +1,5 @@
 import { restAPI } from '../baseRestApi';
-import { invalidateEntity, queryKeys } from '@/api/queryKeys';
+import { queryKeys } from '@/api/queryKeys';
 import { queryClient } from '@/api/queryClient';
 import { clearTokenFromCookie } from '@/api/utils';
 
@@ -17,7 +17,6 @@ export const AuthRestAPI = restAPI.injectEndpoints({
             }),
             transformResponse: (response: LoginResponse) => {
                 document.cookie = `token=${ response.access };max-age=28000;path=/`;
-                invalidateEntity(queryKeys.user.current)
                 return response;
             },
         }),
@@ -25,7 +24,6 @@ export const AuthRestAPI = restAPI.injectEndpoints({
             queryFn: async () => {
                 clearTokenFromCookie()
                 queryClient.invalidateQueries({ queryKey: queryKeys.user.current })
-                    // .then(() => queryClient.clear())
                 return { data: null }
             },
         }),

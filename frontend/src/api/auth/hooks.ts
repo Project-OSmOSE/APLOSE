@@ -4,11 +4,8 @@ import { gqlAPI, GqlTags } from '@/api/baseGqlApi.ts';
 import { useNavigate } from '@tanstack/react-router';
 
 const {
-    login,
     logout,
 } = AuthRestAPI.endpoints
-
-export const useLogin = login.useMutation
 
 export const useLogout = () => {
     const [ _method, info ] = logout.useMutation()
