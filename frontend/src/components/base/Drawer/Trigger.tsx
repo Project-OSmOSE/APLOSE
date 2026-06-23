@@ -6,6 +6,6 @@ export type DrawerTriggerProps = Omit<BaseProps, 'render'>
 
 export const Trigger: React.FC<DrawerTriggerProps> = React.memo((props) => (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    <Drawer.Trigger render={ ({ color, ref, ...props }) => <Button { ...props }/> }
+    <Drawer.Trigger render={ ({ color, ...props }) => <Button { ...props }/> }
                             { ...props } />
 ))

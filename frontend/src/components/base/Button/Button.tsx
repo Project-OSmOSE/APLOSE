@@ -5,7 +5,8 @@ import type { BaseColor } from '@/components/base/types';
 
 export type  ButtonProps = BaseButtonProps & { color?: BaseColor }
 
-export const Button: React.FC<ButtonProps> = React.memo(({ className, ...props }) => (
-    <BaseButton { ...props }
+export const Button = React.forwardRef<HTMLButtonElement, Omit<ButtonProps, 'ref'>>(({ className, ...props }, ref) => (
+    <BaseButton ref={ ref }
+                { ...props }
                 className={ [ styles.Button, className ].join(' ') }/>
 ))

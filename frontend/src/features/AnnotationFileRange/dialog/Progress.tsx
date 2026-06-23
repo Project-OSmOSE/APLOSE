@@ -1,22 +1,7 @@
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import styles from './styles.module.scss';
-import {
-    Modal,
-    ModalFooter,
-    ModalHeader,
-    type ModalProps,
-    type Order,
-    Progress,
-    Table,
-    Tbody,
-    Td,
-    Th,
-    Thead,
-    Tr,
-    WarningText,
-} from '@/components/ui';
+import React, { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
+import { type Order, Table, Tbody, Td, Th, Thead, Tr, WarningText } from '@/components/ui';
 import { Toast } from '@/components/base/Toast';
-import { IonSpinner } from '@ionic/react';
+import { Progress as BaseProgress } from '@/components/base/Progress';
 import { AnnotationFileRangeNode, AnnotationTaskNodeNodeConnection, Maybe, UserNode } from '@/api';
 import { useDownloadAnnotations, useDownloadProgress } from '@/api/download';
 import { NBSP } from '@/service/type';
@@ -27,6 +12,10 @@ import { useLoaderData } from '@tanstack/react-router';
 import { Button, ButtonGroup } from '@/components/base/Button';
 import { Download } from '@solar-icons/react';
 import { Note } from '@/components/base/Note';
+import { Dialog } from '@/components/base/Dialog';
+import { Spinner } from '@/components/base/Spinner';
+import { Center } from '@/components/layout/Display';
+import styles from './styles.module.scss'
 
 type Progression = {
     user: Pick<UserNode, 'id' | 'displayName' | 'expertise' | 'username'>;
@@ -42,7 +31,15 @@ type Sort = {
     sort: Order;
 }
 
-export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
+const DialogSkeleton: React.FC<{ children: ReactNode }> = ({ children }) => (
+    <Dialog.Content>
+        <Dialog.Title>Annotators progression</Dialog.Title>
+        <Dialog.CloseIcon/>
+        { children }
+    </Dialog.Content>
+)
+
+export const Progress: React.FC = () => {
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
     const { data, isLoading: isLoadingUsers, error: userError } = useQuery(UserAPI.allQuery)
@@ -116,18 +113,18 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
         })
     }, [ progress, sort ]);
 
+    if (isLoadingUsers || isLoadingFileRanges)
+        return <DialogSkeleton><Center><Spinner/></Center></DialogSkeleton>
+    if (userError)
+        return <DialogSkeleton><Center><WarningText error={ userError }/></Center></DialogSkeleton>
+    if (fileRangeError)
+        return <DialogSkeleton><Center><WarningText error={ fileRangeError }/></Center></DialogSkeleton>
+    if (progress.length === 0)
+        return <DialogSkeleton><Note color="medium">No annotators</Note></DialogSkeleton>
+
     return (
-        <Modal onClose={ onClose } className={ styles.modal }>
-            <ModalHeader onClose={ onClose } title="Annotators progression"/>
-
-            { (isLoadingUsers || isLoadingFileRanges) && <IonSpinner/> }
-
-            { userError && <WarningText error={ userError }/> }
-            { fileRangeError && <WarningText error={ fileRangeError }/> }
-
-            { (!isLoadingUsers && !isLoadingFileRanges) && progress.length === 0 && <Note>No annotators</Note> }
-
-            { progress.length > 0 && <Table>
+        <DialogSkeleton>
+            <Table>
                 <Thead>
                     <Tr>
                         <Th scope="col" sortable
@@ -151,38 +148,33 @@ export const FileRangeProgressModal: React.FC<ModalProps> = ({ onClose }) => {
                         <Td>
                             <div className={ styles.progressContent }>
                                 { p.ranges.map(r => (
-                                    <Fragment key={ r.id }>
-                                        <p>{ r.firstFileIndex }</p>
-                                        <Progress value={ r.completedAnnotationTasks?.totalCount ?? 0 }
-                                                  total={ r.filesCount ?? 0 }
-                                                  color={ r.completedAnnotationTasks?.totalCount === r.filesCount ? 'success' : 'medium' }/>
-                                        <p>{ r.lastFileIndex }</p>
-                                    </Fragment>
+                                    <BaseProgress key={ r.id }
+                                                  value={ (r.completedAnnotationTasks?.totalCount ?? 0) / (r.filesCount ?? 1) * 100 }
+                                                  color={ r.completedAnnotationTasks?.totalCount === r.filesCount ? 'success' : 'medium' }>
+                                        { r.firstFileIndex } - { r.lastFileIndex }
+                                    </BaseProgress>
                                 )) }
-                                <p className={ styles.total }>{ p.progress }%</p>
                             </div>
                         </Td>
                     </Tr>) }
                 </Tbody>
-            </Table> }
+            </Table>
 
             { phase?.isUserAllowedToManage && data && allFileRanges && (
-                <ModalFooter className={ styles.footer }>
-                    <ButtonGroup spaceBetween>
-                        { progress.length > 0 && <Fragment>
-                            <Button onClick={ downloadAnnotations }>
-                                <Download weight="Linear" size={ 20 }/>
-                                Results (csv)
-                            </Button>
+                <ButtonGroup spaceBetween>
+                    { progress.length > 0 && <Fragment>
+                        <Button onClick={ downloadAnnotations }>
+                            <Download weight="Linear" size={ 20 }/>
+                            Results (csv)
+                        </Button>
 
-                            <Button onClick={ downloadProgress }>
-                                <Download weight="Linear" size={ 20 }/>
-                                Status (csv)
-                            </Button>
-                        </Fragment> }
-                    </ButtonGroup>
-                </ModalFooter>
+                        <Button onClick={ downloadProgress }>
+                            <Download weight="Linear" size={ 20 }/>
+                            Status (csv)
+                        </Button>
+                    </Fragment> }
+                </ButtonGroup>
             ) }
-        </Modal>
+        </DialogSkeleton>
     )
 }

@@ -1,8 +1,6 @@
 import { Chip, ChipProps } from './Chip.tsx';
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
 import type { BaseColor } from '@/components/base/types';
-// @ts-expect-error: using different ts-config: moduleResolution (see tsconfig.storybook.json)
-import { fn } from 'storybook/test';
 
 const meta = {
     title: 'Base/Chip',
@@ -28,7 +26,6 @@ const meta = {
     args: {
         children: 'My chip',
         color: 'primary',
-        onRemove: fn()
     } satisfies ChipProps,
 } satisfies Meta<typeof Chip>;
 export default meta;

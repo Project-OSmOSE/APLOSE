@@ -6,8 +6,8 @@ export type NoteProps = HTMLAttributes<HTMLParagraphElement> &
     { color?: BaseColor } & {flex?: boolean};
 
 export const Note: React.FC<NoteProps> = ({ className, color, flex, children, ...props }) => (
-    <p className={ [ className, styles.Note, color ? styles[color] : '', flex ? styles.flex : '' ].join(' ') }
+    <span className={ [ className, styles.Note, color ? styles[color] : '', flex ? styles.flex : '' ].join(' ') }
        { ...props }>
         { children }
-    </p>
+    </span>
 )

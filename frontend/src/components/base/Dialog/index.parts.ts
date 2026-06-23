@@ -3,6 +3,7 @@ import { Dialog } from '@base-ui/react/dialog'
 export const Root = Dialog.Root
 export * from './Trigger'
 
+export const Portal = Dialog.Portal
 export * from './Content'
 export * from './Title'
 export * from './Close'

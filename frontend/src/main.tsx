@@ -21,11 +21,6 @@ export const router = createRouter({
     defaultPreload: 'intent',
     defaultStaleTime: 5_000,
     scrollRestoration: true,
-    context: {
-        isConnected: undefined!,
-        isAdmin: undefined!,
-        isSuperuser: undefined!,
-    },
     defaultPendingComponent: () => <Center><Spinner/></Center>,
     defaultErrorComponent: ({ error }) => <Center><WarningText error={ error }/></Center>,
 })

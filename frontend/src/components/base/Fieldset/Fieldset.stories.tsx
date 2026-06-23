@@ -10,12 +10,12 @@ const meta = {
 
             <Field.Root>
                 <Field.Label>Company</Field.Label>
-                <Field.Control placeholder="Enter company name"/>
+                <Field.Control type='text' placeholder="Enter company name"/>
             </Field.Root>
 
             <Field.Root>
                 <Field.Label>Tax ID</Field.Label>
-                <Field.Control placeholder="Enter fiscal number"/>
+                <Field.Control type='text' placeholder="Enter fiscal number"/>
             </Field.Root>
 
         </Fieldset.Root>

@@ -5,6 +5,11 @@
   align-items: center;
   transition: 300ms;
   width: 100%;
+
+  &.horizontal {
+    grid-auto-flow: column;
+    justify-content: space-between;
+  }
 }
 
 .Label {

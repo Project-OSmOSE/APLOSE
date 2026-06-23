@@ -1,5 +1,4 @@
-import { type Page as PageBase, test as testBase } from '@playwright/test';
-import { type Request, Route } from 'playwright-core';
+import { type Page as PageBase, type Request, type Route, test as testBase } from '@playwright/test';
 import {
   AccountPage,
   AnnotatorPage,
@@ -40,7 +39,7 @@ interface PageExtension {
 
   readonly annotator: AnnotatorPage;
 
-  waitForGqlRequest(operationName: keyof GqlOperations): Promise<Request>;
+  waitForGqlRequest(operationName: keyof GqlOperations, postDataCheck?: (postData: any) => boolean): Promise<Request>;
 }
 
 export interface Page extends PageBase, PageExtension {
@@ -57,7 +56,7 @@ export const test = testBase.extend<Fixture>({
     // Block all BFF requests from making it through to the 'real'
     // dependency. If we get this far it means we've forgotten to register a
     // handler, and (at least locally) we're using a real dependency.
-    await page.route('**/graphql', function (route: Route, req : Request) {
+    await page.route('**/graphql', (route: Route) => {
       route.abort('blockedbyclient');
     });
 
@@ -77,10 +76,12 @@ export const test = testBase.extend<Fixture>({
       phaseEdit: new PhaseEditAnnotatorsPage(page),
       annotator: new AnnotatorPage(page),
 
-      waitForGqlRequest: (operationName: keyof GqlOperations): Promise<Request> => {
-        return page.waitForRequest((request: Request) => {
+      waitForGqlRequest: (operationName: keyof GqlOperations, postDataCheck?: (postData: any) => boolean): Promise<Request> => {
+        return page.waitForRequest((request: Request): boolean => {
           if (!new RegExp(gqlRegex).test(request.url())) return false;
-          return request.postDataJSON()?.operationName === operationName
+          if (request.postDataJSON()?.operationName !== operationName) return false;
+          if (postDataCheck) return postDataCheck(request.postDataJSON())
+          return true
         })
       }
     }

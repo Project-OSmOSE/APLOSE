@@ -38,11 +38,15 @@ export const ArchiveButton: React.FC = () => {
         </Button>
 
         <Dialog.Root handle={ emptyConfirmDialog }>
-            <ArchiveEmptyConfirmation onConfirm={ confirmArchive }/>
+            <Dialog.Portal>
+                <ArchiveEmptyConfirmation onConfirm={ confirmArchive }/>
+            </Dialog.Portal>
         </Dialog.Root>
 
         <Dialog.Root handle={ unfinishedConfirmDialog }>
-            <ArchiveUnfinishedConfirmation onConfirm={ confirmArchive }/>
+            <Dialog.Portal>
+                <ArchiveUnfinishedConfirmation onConfirm={ confirmArchive }/>
+            </Dialog.Portal>
         </Dialog.Root>
     </Fragment>
 }

@@ -4,34 +4,29 @@ import { Navbar } from './navbar';
 
 export class CampaignListPage {
 
-  get title(): Locator {
-    return this.page.getByRole('heading', { name: 'Annotation campaigns' })
-  }
+    get title(): Locator {
+        return this.page.getByRole('heading', { name: 'Annotation campaigns' })
+    }
 
-  get card(): Locator {
-    return this.page.getByTestId('campaign-card').first();
-  }
+    get card(): Locator {
+        return this.page.getByTestId('campaign-card').first();
+    }
 
-  get createCampaignButton(): Locator {
-    return this.page.getByRole('button', { name: 'New annotation campaign' })
-  }
+    get createCampaignButton(): Locator {
+        return this.page.getByRole('button', { name: 'New annotation campaign' })
+    }
 
-  constructor(private page: Page,
-              private navbar = new Navbar(page)) {
-  }
+    constructor(private page: Page,
+                private navbar = new Navbar(page)) {
+    }
 
-  async go({ as }: Pick<Params, 'as'>) {
-    await this.navbar.go({ as })
-  }
+    async go({ as }: Pick<Params, 'as'>) {
+        await this.navbar.go({ as })
+    }
 
-  async search(text: string) {
-    await this.page.getByRole('search').locator('input').fill(text)
-    await this.page.keyboard.press('Enter')
-  }
-
-  async clearSearch(text: string) {
-    await this.page.getByRole('search').locator('input').clear()
-    await this.page.keyboard.press('Enter')
-  }
+    async search(text: string) {
+        await this.page.getByRole('searchbox', { name: 'Search campaign name' }).fill(text)
+        await this.page.keyboard.press('Enter')
+    }
 
 }

@@ -8,14 +8,12 @@ import {
 } from '@/api';
 import React, { Fragment, useMemo } from 'react';
 import { Td, Th, Tr } from '@/components/ui';
-import { IonIcon } from '@ionic/react';
-import { checkmarkCircle, ellipseOutline } from 'ionicons/icons/index.js';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 import { formatTime } from '@/service/function';
 import styles from './styles.module.scss'
 import { useLoaderData } from '@tanstack/react-router';
 import { Button } from '@/components/base/Button';
-import { AltArrowRight } from '@solar-icons/react';
+import { AltArrowRight, CheckCircle, Record } from '@solar-icons/react';
 
 export const SpectrogramRow: React.FC<{
     spectrogram: Pick<AnnotationSpectrogramNode, 'id' | 'filename' | 'duration' | 'start' | 'isAssigned'>,
@@ -52,9 +50,9 @@ export const SpectrogramRow: React.FC<{
         <Td center>
             { spectrogram.isAssigned ? <Fragment>
                 { submitted &&
-                    <IonIcon icon={ checkmarkCircle } color="primary"/> }
+                    <CheckCircle weight="Bold" size={ 16 } className={ styles.iconPrimary }/> }
                 { !submitted &&
-                    <IonIcon icon={ ellipseOutline } color="medium"/> }
+                    <Record weight="Linear" size={ 16 } className={ styles.iconMedium }/> }
             </Fragment> : '-' }
         </Td>
         <Td>

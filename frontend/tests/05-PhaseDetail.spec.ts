@@ -59,17 +59,16 @@ const TEST = {
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
             })
             await test.step(`Navigate`, () => Promise.all([
-                page.phaseDetail.go({ as, phase })
+                page.phaseDetail.go({ as, phase }),
             ]))
 
-            await test.step('Search file', async () => {
-                const [ request ] = await Promise.all([
-                    page.waitForGqlRequest('allAnnotationSpectrograms'),
-                    page.phaseDetail.searchFile(spectrogram.filename),
-                ])
-                const variables = request.postDataJSON().variables as AllAnnotationSpectrogramsQueryVariables
-                expect(variables.search).toEqual(spectrogram.filename)
-            })
+            await test.step('Search file', () => Promise.all([
+                page.waitForGqlRequest('allAnnotationSpectrograms', (data) => {
+                    const variables = data.variables as AllAnnotationSpectrogramsQueryVariables
+                    return variables.search == spectrogram.filename
+                }),
+                page.phaseDetail.searchFile(spectrogram.filename),
+            ]))
         }),
 
     cannotUpdatePhase: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
@@ -121,6 +120,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+                allAnnotationSpectrograms: 'filled'
             })
             await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 

@@ -8,17 +8,22 @@ export type LinkProps =
     & Pick<LinkComponentProps, 'to' | 'params' | 'search' | 'preload' | 'replace'>
     & { inText?: boolean }
 
-export const Link: React.FC<LinkProps> = React.memo(({
-                                                         to,
-                                                         params,
-                                                         search,
-                                                         preload,
-                                                         replace,
-                                                         inText,
-                                                         children,
-                                                         ...props
-                                                     }) => (
-    <RouterLink to={ to } params={ params } search={ search } preload={ preload } replace={ replace }
+export const Link = React.forwardRef<HTMLAnchorElement, Omit<LinkProps, 'ref'>>(({
+                                                                                       to,
+                                                                                       params,
+                                                                                       search,
+                                                                                       preload,
+                                                                                       replace,
+                                                                                       inText,
+                                                                                       children,
+                                                                                       ...props
+                                                                                   }, ref) => (
+    <RouterLink ref={ ref }
+                to={ to }
+                params={ params }
+                search={ search }
+                preload={ preload }
+                replace={ replace }
                 className={ [ styles.Link, inText ? styles.Text : '' ].join(' ') }>
         { inText ? <Fragment>{ children }</Fragment> : <Button { ...props }>{ children }</Button> }
     </RouterLink>

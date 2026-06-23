@@ -154,10 +154,8 @@ export const Item: React.FC<Props> = ({
 
                 {/* Use Icon */ }
                 { usages > 0 && <Popover.Root>
-                    <Popover.Trigger openOnHover>
-                        <Note color="medium">
-                            <InfoCircle size={ 24 }/>
-                        </Note>
+                    <Popover.Trigger color='medium'>
+                        <InfoCircle size={ 24 }/>
                     </Popover.Trigger>
                     <Popover.Content>
                         Currently used in { usages } campaigns

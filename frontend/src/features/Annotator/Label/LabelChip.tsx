@@ -96,7 +96,7 @@ export const LabelChip: React.FC<{
             { index >= 9 ?
                 <p>{ label }</p> :
                 <Popover.Root>
-                    <Popover.Trigger openOnHover>
+                    <Popover.Trigger>
                         <p>{ label }</p>
                     </Popover.Trigger>
                     <Popover.Content>
@@ -112,7 +112,7 @@ export const LabelChip: React.FC<{
 
             { isUsed && <div className={ styles.labelsButtons }>
                 <Popover.Root>
-                    <Popover.Trigger openOnHover>
+                    <Popover.Trigger>
                         { isHidden ?
                             <IonIcon icon={ eyeOffOutline } onClick={ show } color={ buttonColor }/> :
                             <IonIcon icon={ eyeOutline } onClick={ hide } color={ buttonColor }/> }
@@ -124,7 +124,7 @@ export const LabelChip: React.FC<{
                 </Popover.Root>
 
                 <Popover.Root>
-                    <Popover.Trigger openOnHover>
+                    <Popover.Trigger>
                         <IonIcon icon={ closeCircle }
                                  onClick={ remove }
                                  data-testid="remove-label"

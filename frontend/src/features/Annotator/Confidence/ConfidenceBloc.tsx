@@ -9,7 +9,7 @@ export const ConfidenceBloc: React.FC = () => {
 
     if (!campaign.confidenceSet) return <Fragment/>
     return <Popover.Root>
-        <Popover.Trigger openOnHover>
+        <Popover.Trigger>
             <Bloc header="Confidence indicator"
                   centerBody>
                 { confidences.map(c => <ConfidenceChip confidence={ c.label } key={ c.label }/>) }

@@ -6,7 +6,8 @@ import { Button } from '@/components/base/Button';
 
 export const CloseIcon: React.FC = () => (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    <Dialog.Close render={ ({ color: _, ref, ...props }) => <Button { ...props }/> }
+    <Dialog.Close render={ ({ color: _, ...props }) => <Button { ...props }/> }
+                  data-testid='close-modal'
                   className={ styles.CloseIcon }>
         <CloseSquare weight="Linear" size={ 24 }/>
     </Dialog.Close>

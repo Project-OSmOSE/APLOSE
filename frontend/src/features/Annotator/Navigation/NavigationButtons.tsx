@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import styles from './styles.module.scss';
 import { Kbd } from '@/components/ui';
-import { IonButton, IonIcon } from '@ionic/react';
-import { caretBack, caretForward } from 'ionicons/icons/index.js';
 import { useAnnotatorCanNavigate, useOpenAnnotator } from './hooks';
 import { useKeyDownEvent } from '@/features/UX/Events';
 import { useAnnotatorSubmit } from '@/features/Annotator';
@@ -10,6 +8,7 @@ import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
 import { queryClient } from '@/api/queryClient';
 import { AnnotationSpectrogram } from '@/features';
 import { Popover } from '@/components/base/Popover';
+import { AltArrowLeft, AltArrowRight } from '@solar-icons/react';
 
 export const NavigationButtons: React.FC = () => {
     const { user } = useLoaderData({ from: '/_authenticated' })
@@ -50,12 +49,10 @@ export const NavigationButtons: React.FC = () => {
     return (
         <div className={ styles.navigation }>
             <Popover.Root>
-                <Popover.Trigger openOnHover>
-                    <IonButton color="medium" fill="clear" size="small"
-                               disabled={ isPending || !info?.previousSpectrogramId }
-                               onClick={ navPrevious }>
-                        <IonIcon icon={ caretBack } slot="icon-only"/>
-                    </IonButton>
+                <Popover.Trigger color="medium"
+                                 disabled={ isPending || !info?.previousSpectrogramId }
+                                 onClick={ navPrevious }>
+                    <AltArrowLeft weight="Linear" size={ 24 }/>
                 </Popover.Trigger>
                 <Popover.Content>
                     <Popover.Title>Shortcut</Popover.Title>
@@ -65,12 +62,10 @@ export const NavigationButtons: React.FC = () => {
 
             { isEditionAuthorized &&
                 <Popover.Root>
-                    <Popover.Trigger openOnHover>
-                        <IonButton color="medium" fill="outline"
-                                   disabled={ isPending }
-                                   onClick={ submit }>
-                            Submit &amp; load next recording
-                        </IonButton>
+                    <Popover.Trigger color="medium"
+                                     disabled={ isPending }
+                                     onClick={ submit }>
+                        Submit &amp; load next recording
                     </Popover.Trigger>
                     <Popover.Content>
                         <Popover.Title>Shortcut</Popover.Title>
@@ -79,12 +74,10 @@ export const NavigationButtons: React.FC = () => {
                 </Popover.Root> }
 
             <Popover.Root>
-                <Popover.Trigger openOnHover>
-                    <IonButton color="medium" fill="clear" size="small"
-                               disabled={ isPending || !info?.nextSpectrogramId }
-                               onClick={ navNext }>
-                        <IonIcon icon={ caretForward } slot="icon-only"/>
-                    </IonButton>
+                <Popover.Trigger color="medium"
+                                 disabled={ isPending || !info?.nextSpectrogramId }
+                                 onClick={ navNext }>
+                    <AltArrowRight weight="Linear" size={ 20 }/>
                 </Popover.Trigger>
                 <Popover.Content>
                     <Popover.Title>Shortcut</Popover.Title>

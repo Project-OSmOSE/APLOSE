@@ -22,7 +22,9 @@ const StorageBrowser: React.FC = () => (
                   <Fragment>
                       <Dialog.Root>
                           <Dialog.Trigger color="primary">Search path</Dialog.Trigger>
-                          <StorageModal.Search/>
+                          <Dialog.Portal>
+                              <StorageModal.Search/>
+                          </Dialog.Portal>
                       </Dialog.Root>
                       <HelpButton url="/doc/user/data/generate">
                           How to generate a dataset

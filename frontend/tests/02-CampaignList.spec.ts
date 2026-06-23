@@ -48,7 +48,7 @@ const TEST = {
 
             await test.step('Search', async () => {
                 const [ request ] = await Promise.all([
-                    page.waitForRequest(gqlURL),
+                    page.waitForGqlRequest('allCampaigns'),
                     page.campaigns.search('Test campaign'),
                 ])
                 const variables: AllCampaignsQueryVariables = request.postDataJSON().variables

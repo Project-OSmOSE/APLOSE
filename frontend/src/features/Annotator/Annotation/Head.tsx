@@ -37,7 +37,7 @@ export const AnnotationHeadContent: React.FC<{
     return <Fragment>
         {/* Play annotation button */ }
         <Popover.Root>
-            <Popover.Trigger openOnHover>
+            <Popover.Trigger>
                 <IoPlayCircle className={ styles.button } onClick={ play }/>
             </Popover.Trigger>
             <Popover.Content>Play the audio of the annotation</Popover.Content>
@@ -47,7 +47,7 @@ export const AnnotationHeadContent: React.FC<{
         { (annotation.comments && annotation.comments.length > 0) ?
             <IoChatbubbleEllipses/> :
             <Popover.Root>
-                <Popover.Trigger openOnHover>
+                <Popover.Trigger>
                     <IoChatbubbleOutline className={ styles.outlineIcon }/>
                 </Popover.Trigger>
                 <Popover.Content>No comments</Popover.Content>
@@ -58,7 +58,7 @@ export const AnnotationHeadContent: React.FC<{
 
         {/* Update label button */ }
         <Popover.Root>
-            <Popover.Trigger openOnHover>
+            <Popover.Trigger>
                 <IoSwapHorizontal className={ styles.button }
                                   data-testid="update-box"
                                   onClick={ labelUpdateModal.open }/>
@@ -68,7 +68,7 @@ export const AnnotationHeadContent: React.FC<{
 
         {/* Remove button */ }
         <Popover.Root>
-            <Popover.Trigger openOnHover>
+            <Popover.Trigger>
                 <IoTrashBin className={ styles.button }
                             data-testid="remove-box"
                             onClick={ remove }/>

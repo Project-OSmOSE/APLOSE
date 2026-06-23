@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Button, ExternalLink, Link } from '@/components/base/Button';
 
 import { NavigationMenu } from '@/components/base/NavigationMenu';
-import { UserComponents } from '@/features/User';
+import { UserComponent } from '@/features/User';
 import styles from './Navigation.module.scss';
 import logo from '/images/logo/x96.png';
 import { useLogout } from '@/api';
@@ -60,7 +60,7 @@ export const Authenticated: React.FC<{ className?: string }> = ({ className }) =
 
             <NavigationMenu.Item>
                 <NavigationMenu.Trigger>
-                    { data && <UserComponents.Avatar user={ data?.user }/> }
+                    { data && <UserComponent.Avatar user={ data?.user }/> }
                 </NavigationMenu.Trigger>
                 <NavigationMenu.Content>
                     <div className={ styles.Submenu }>

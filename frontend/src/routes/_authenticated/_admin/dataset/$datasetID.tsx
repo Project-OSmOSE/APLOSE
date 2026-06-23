@@ -53,7 +53,9 @@ const DatasetDetail: React.FC = () => {
                             <Download weight="Linear" size={ 20 }/>
                             Import analysis
                         </Dialog.Trigger>
-                        <StorageModal.ImportAnalysis/>
+                        <Dialog.Portal>
+                            <StorageModal.ImportAnalysis/>
+                        </Dialog.Portal>
                     </Dialog.Root>
                 </ButtonGroup>
 

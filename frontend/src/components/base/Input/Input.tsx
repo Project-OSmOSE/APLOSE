@@ -5,7 +5,7 @@ import { Eye, EyeClosed } from '@solar-icons/react';
 
 export type InputProps = Omit<BaseInputProps, 'type' | 'render'> & {
     startIcon?: any,
-    type: HTMLInputTypeAttribute & ('text' | 'url' | 'date' | 'email' | 'textarea' | 'password' | 'search')
+    type: HTMLInputTypeAttribute & ('text' | 'url' | 'date' | 'datetime-local' | 'email' | 'textarea' | 'password' | 'search')
 }
 
 export const Input: React.FC<InputProps> = ({ className, type, startIcon: _startIcon, ...props }) => {

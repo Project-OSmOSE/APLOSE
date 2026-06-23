@@ -59,7 +59,6 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
-  padding-bottom: 0.25rem
 }
 
 .tabs {
@@ -129,7 +128,7 @@
   padding: 0.25rem 0.5rem;
   background-color: transparent;
 
-  >:first-child {
+  > :first-child {
     grid-row: 1 / 2;
     justify-self: center;
   }
@@ -145,6 +144,7 @@
   &:hover:not(:has(.importRow:hover)) {
     background-color: rgba(var(--ion-color-primary-rgb), 0.06);
   }
+
   &.error:hover:not(:has(.importRow:hover)) {
     background-color: rgba(var(--ion-color-danger-rgb), 0.06);
   }
@@ -242,6 +242,7 @@
   align-content: start;
 
   --spacing: 1rem;
+
   &.spacingSmall {
     --spacing: 0.2rem;
   }
@@ -265,7 +266,7 @@
         font-weight: 400;
         color: var(--color-dark-tint);
 
-        &.sortable > div, &.filterable > div {
+        &.sortable > div {
           display: grid;
           grid-template-columns: 1fr auto;
           align-items: center;
@@ -283,7 +284,7 @@
               }
             }
 
-            .active  * {
+            .active * {
               stroke-width: 2.5px;
             }
           }
@@ -291,6 +292,7 @@
 
         &.center {
           text-align: center;
+
           > div {
             justify-content: center;
             grid-template-columns: unset;
@@ -300,15 +302,12 @@
 
         &.start {
           text-align: start;
+
           > div {
             justify-content: start;
             grid-template-columns: unset;
             grid-auto-flow: column;
           }
-        }
-
-        &.sortable.filterable > div {
-          grid-template-columns: 1fr auto auto;
         }
       }
     }
@@ -345,9 +344,6 @@
 
         td.center {
           text-align: center;
-          display: flex;
-          align-items: center;
-          justify-content: center;
         }
 
         &:hover {

@@ -39,7 +39,7 @@ export const Login: React.FC = () => {
         }
     }, [ mutate, refetchUser, navigate, to, toastManager ])
 
-    return useMemo(() => <Form onSubmit={ submit }>
+    return useMemo(() => <Form onSubmit={ submit } style={ { overflowY: 'unset' } }>
             <Fieldset.Root>
                 <Field.Root name="username">
                     <Field.Label>Username</Field.Label>

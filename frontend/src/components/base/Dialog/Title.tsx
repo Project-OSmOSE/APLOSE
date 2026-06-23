@@ -6,6 +6,6 @@ import type { BaseColor } from '@/components/base/types';
 export type DialogTitleProps = Omit<BaseProps, 'className'> & {color?: BaseColor}
 
 export const Title: React.FC<DialogTitleProps> = ({ color, ...props }) => (
-    <Dialog.Title className={ [styles.Title, styles[color]].join(' ') }
+    <Dialog.Title className={ [styles.Title, styles[color ?? '']].join(' ') }
                   { ...props } />
 )

@@ -1,76 +1,73 @@
-import React, { ChangeEvent, useCallback, useMemo } from 'react';
-import { Modal, type ModalProps } from '@/components/ui';
-import { Input } from '@/components/form';
-import styles from './styles.module.scss'
+import React, { type FormEvent, useCallback } from 'react';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 import { useNavigate } from '@tanstack/react-router';
+import { ButtonGroup } from '@/components/base/Button';
+import { Dialog } from '@/components/base/Dialog';
+import { Field } from '@/components/base/Field';
+import { Form } from '@/components/base/Form';
+import type { BaseUIEvent } from '@base-ui/react';
 import type { AllSpectrogramsFilters } from '@/features/AnnotationSpectrogram';
-import { Button } from '@/components/base/Button';
-import { Backspace } from '@solar-icons/react';
 
 
-function getDateString(event: ChangeEvent<HTMLInputElement>): string | undefined {
-    const value = event.currentTarget.value;
-    if (!value) return undefined;
-    const date = new Date(value);
-    return new Date(Date.UTC(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        date.getHours(),
-        date.getMinutes(),
-        date.getSeconds(),
-    )).toISOString()
-}
-
-export const DateFilterModal: React.FC<ModalProps & {
-    onUpdate: () => void
-}> = ({ onUpdate, onClose }) => {
+export const DateFilterModal: React.FC = () => {
     const { from, to } = Route.useSearch({ select: ({ from, to }) => ({ from, to }) });
     const routeParams = Route.useParams()
     const navigate = useNavigate();
 
-    const minDate: string = useMemo(() => {
-        if (!from) return '';
-        const date = from.split('');
-        date.pop();
-        return date.join('');
-    }, [ from ]);
-    const maxDate: string = useMemo(() => {
-        if (!to) return '';
-        const date = to.split('');
-        date.pop();
-        return date.join('');
-    }, [ to ]);
-
-    const update = useCallback((update: Partial<AllSpectrogramsFilters>) => {
+    const update = useCallback((data: Pick<AllSpectrogramsFilters, 'from' | 'to'>) => {
         navigate({
             to: Route.to,
             params: routeParams,
             search: (prev) => ({
                 ...prev,
-                ...update,
+                ...data,
                 page: 1,
             }),
             replace: true,
         })
-        onUpdate()
-    }, [ navigate, routeParams, onUpdate ])
+    }, [ navigate, routeParams ])
 
-    return <Modal className={ styles.dateFilterModal }
-                  onClose={ onClose }>
-        <Input label="Minimum date" type="datetime-local" placeholder="Min date" step="1"
-               value={ minDate }
-               onChange={ event => update({ from: getDateString(event) }) }/>
-        <Button onClick={ () => update({ from: undefined }) } disabled={ !minDate }>
-            <Backspace weight="Linear" size={ 20 }/>
-        </Button>
+    const onSubmit = useCallback((event: BaseUIEvent<FormEvent<HTMLFormElement>>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        update({
+            from: formData.get('from') as string || undefined,
+            to: formData.get('to') as string || undefined,
+        })
+    }, [ update ])
 
-        <Input label="Maximum date" type="datetime-local" placeholder="Max date" step="1"
-               value={ maxDate }
-               onChange={ event => update({ to: getDateString(event) }) }/>
-        <Button onClick={ () => update({ to: undefined }) } disabled={ !maxDate }>
-            <Backspace weight="Linear" size={ 20 }/>
-        </Button>
-    </Modal>
+    const onReset = useCallback((event: BaseUIEvent<FormEvent<HTMLFormElement>>) => {
+        event.preventDefault();
+        update({
+            from: undefined,
+            to: undefined,
+        })
+    }, [ update ])
+
+    return <Dialog.Content>
+        <Form onSubmit={ onSubmit } onReset={ onReset }>
+            <Field.Root name="from">
+                <Field.Label>Minimum date</Field.Label>
+                <Field.Control type="datetime-local"
+                               defaultValue={ from ?? undefined }
+                               step={ 1 }
+                               placeholder="Min date"/>
+                <Field.Error/>
+            </Field.Root>
+
+            <Field.Root name="to">
+                <Field.Label>Maximum date</Field.Label>
+                <Field.Control type="datetime-local"
+                               defaultValue={ to ?? undefined }
+                               step={ 1 }
+                               placeholder="Max date"/>
+                <Field.Error/>
+            </Field.Root>
+
+            <ButtonGroup spaceBetween>
+                <Dialog.Close type="reset">Reset</Dialog.Close>
+                <Dialog.Close type="submit" color="primary">Filter</Dialog.Close>
+            </ButtonGroup>
+        </Form>
+    </Dialog.Content>
 }

@@ -7,6 +7,6 @@ export type DialogCloseProps = Omit<BaseProps, 'render'> & { color?: BaseColor }
 
 export const Close: React.FC<DialogCloseProps> = ({ color, ...props }) => (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    <Dialog.Close render={ ({ color: _, ref, ...props }) => <Button color={ color } { ...props }/> }
+    <Dialog.Close render={ ({ color: _, ...props }) => <Button color={ color } { ...props }/> }
                   { ...props }/>
 )

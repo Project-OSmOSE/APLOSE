@@ -1,4 +1,5 @@
 import type { Token } from '@/api/auth';
+import type { Errors } from '@base-ui/react/internals/form-context';
 import type { ErrorType } from '@/api/types.gql-generated';
 import { AppStore } from '@/features/App';
 import type {

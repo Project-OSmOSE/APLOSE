@@ -13,7 +13,9 @@ const meta = {
             <Dialog.Trigger>
                 Open me
             </Dialog.Trigger>
+            <Dialog.Portal>
             { content }
+            </Dialog.Portal>
         </Dialog.Root>
     ),
     parameters: {

@@ -54,7 +54,9 @@ const AnnotationCampaignInfo: React.FC = () => {
                                 <Dialog.Trigger color="medium" disabled={ !campaign.labelSet }>
                                     { campaign.labelSet?.name ?? 'No label set' }
                                 </Dialog.Trigger>
-                                <LabelDialog.Set/>
+                                <Dialog.Portal>
+                                    <LabelDialog.Set/>
+                                </Dialog.Portal>
                             </Dialog.Root> }
                         </div>
                     </div>

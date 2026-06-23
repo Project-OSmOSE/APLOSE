@@ -13,13 +13,17 @@ const meta = {
             <Dialog.Trigger>
                 ArchiveEmptyConfirmation
             </Dialog.Trigger>
-            <ArchiveEmptyConfirmation onConfirm={ fn }/>
+            <Dialog.Portal>
+                <ArchiveEmptyConfirmation onConfirm={ fn }/>
+            </Dialog.Portal>
         </Dialog.Root>
         <Dialog.Root>
             <Dialog.Trigger>
                 ArchiveUnfinishedConfirmation
             </Dialog.Trigger>
-            <ArchiveUnfinishedConfirmation onConfirm={ fn }/>
+            <Dialog.Portal>
+                <ArchiveUnfinishedConfirmation onConfirm={ fn }/>
+            </Dialog.Portal>
         </Dialog.Root>
     </Fragment>,
     parameters: {

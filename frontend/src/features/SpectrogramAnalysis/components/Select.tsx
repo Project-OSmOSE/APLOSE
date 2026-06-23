@@ -9,6 +9,7 @@ import { queryKeys } from '@/api/queryKeys';
 
 type N<T> = NonNullable<T>
 export type SelectValue = N<N<AllSpectrogramAnalysisForDatasetQuery['allSpectrogramAnalysis']>['results'][number]>
+
 type RootProps = ComboboxRootProps<SelectValue, true>
 const ComboboxRoot: React.FC<RootProps> = (props) => <Combobox.Root multiple { ...props }/>
 

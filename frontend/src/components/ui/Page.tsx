@@ -22,7 +22,7 @@ export const Head: React.FC<{
         <div className={ styles.title }>
             <h2>{ title ??
                 <IonSkeletonText animated style={ { width: 256, height: '1ch', justifySelf: 'center' } }/> }</h2>
-            { subtitle && <Note color="medium">{ subtitle }</Note> }
+            { subtitle && <Note flex color="medium">{ subtitle }</Note> }
 
             { canGoBack && _canGoBack && <Button className={ styles.BackButton }
                                                  onClick={ back }>

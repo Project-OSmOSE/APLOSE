@@ -1,5 +1,4 @@
-import { Page, type Route } from 'playwright-core';
-import { Page as TestPage } from '@playwright/test';
+import { Page, type Route } from '@playwright/test';
 import { GQL_MOCK, type GqlOperations } from './_gql';
 import { REST_MOCK, type RestOperations } from './_rest';
 
@@ -13,8 +12,8 @@ export const gqlURL = '**/graphql'
 export const gqlRegex = /.*\/graphql/g
 
 export async function interceptRequests(
-  page: Page & TestPage,
-  operations: Operations,
+  page: Page,
+  operations: Partial<Operations>,
 ): Promise<{ [key in keyof Operations]?: Record<string, unknown> }> {
   // A list of GQL variables which the handler has been called with.
   const reqs: { [key in keyof Operations]?: Record<string, unknown> } = {};

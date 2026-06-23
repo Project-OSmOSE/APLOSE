@@ -4,10 +4,9 @@ import React, { Fragment } from 'react';
 import { Head, Tab, Tabs } from '@/components/ui';
 import { dateToString } from '@/service/function';
 import { NBSP } from '@/service/type';
-import { UserComponents } from '@/features/User';
+import { UserComponent } from '@/features/User';
 import { AnnotationPhaseTab } from '@/features/AnnotationPhase';
 import { Content } from '@/components/layout/Content';
-import { Note } from '@/components/base/Note';
 
 const AnnotationCampaignDetail: React.FC = () => {
     const { phaseType } = useParams({ strict: false });
@@ -16,11 +15,11 @@ const AnnotationCampaignDetail: React.FC = () => {
     return <Content oneContent>
 
         <Head title={ campaign.name } canGoBack
-              subtitle={ <Note color="medium" flex>
+              subtitle={ <Fragment>
                   Created on { dateToString(campaign.createdAt) } by { campaign.owner.displayName }
-                  { campaign.owner.email && <Fragment>{ NBSP }<UserComponents.CopyMailButton user={ campaign.owner }/>
+                  { campaign.owner.email && <Fragment>{ NBSP }<UserComponent.CopyMailButton user={ campaign.owner }/>
                   </Fragment> }
-              </Note> }/>
+              </Fragment> }/>
 
         <Content oneContent inner>
 
