@@ -1,12 +1,12 @@
-import React, { ChangeEvent, Fragment, useState } from 'react';
-import { Td, Th, Tr, useAlert } from '@/components/ui';
-import styles from './styles.module.scss';
-import { Input } from '@/components/form';
-import { IonButton, IonIcon } from '@ionic/react';
-import { lockClosedOutline, trashBinOutline } from 'ionicons/icons/index.js';
-import { AnnotationFileRangeInput, ErrorType, UserNode } from '@/api';
-import { NBSP } from '@/service/type';
+import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import { useLoaderData } from '@tanstack/react-router';
+import { Lock, TrashBinTrash } from '@solar-icons/react';
+
+import { AnnotationFileRangeInput, ErrorType, UserNode } from '@/api';
+import { Td, Th, Tr, useAlert } from '@/components/ui';
+import { Button, ButtonGroup, Dialog, Field, Popover } from '@/components/base';
+
+import { NBSP } from '@/service/type';
 
 type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
     id: string;
@@ -26,21 +26,13 @@ export const FileRangeInputRow: React.FC<{
     const [ isLocked, setIsLocked ] = useState<boolean>(range.started ?? false);
     const alert = useAlert();
 
-    function unlock() {
-        alert.showAlert({
-            type: 'Warning',
-            message: `This annotator has already started to annotated. By updating its file range you could remove some annotations he/she made. Are you sure?`,
-            actions: [
-                {
-                    label: `Update file range`,
-                    callback: () => {
-                        setIsLocked(false)
-                        if (setForced) setForced()
-                    },
-                },
-            ],
-        })
-    }
+    const unlock = useCallback(() => {
+        setIsLocked(false)
+        if (setForced) setForced()
+    }, [ alert, setForced ])
+
+    const firstFileIndexError = useMemo(() => errors?.find(e => e.field === 'firstFileIndex')?.messages.join(' '), [ errors ])
+    const lastFileIndexError = useMemo(() => errors?.find(e => e.field === 'lastFileIndex')?.messages.join(' '), [ errors ])
 
     return <Tr>
         <Th scope="row">
@@ -48,39 +40,55 @@ export const FileRangeInputRow: React.FC<{
             <Fragment>( { annotator.expertise } )</Fragment> }
         </Th>
         <Td>
-            <Input type="number"
-                   data-testid="firstFileIndex"
-                   value={ range.firstFileIndex ?? '' }
-                   error={ errors?.find(e => e.field === 'firstFileIndex')?.messages.join(' ') }
-                   onChange={ (e: ChangeEvent<HTMLInputElement>) => onUpdate({ firstFileIndex: e.target.valueAsNumber }) }
-                   placeholder="1"
-                   min={ 1 } max={ campaign.spectrogramsCount }
-                   disabled={ campaign.spectrogramsCount === undefined || isLocked }/>
+            <Field.Root>
+                <Field.Control type="number"
+                               placeholder="1"
+                               data-testid="firstFileIndex"
+                               value={ range.firstFileIndex ?? '' }
+                               min={ 1 } max={ campaign.spectrogramsCount }
+                               disabled={ campaign.spectrogramsCount === undefined || isLocked }
+                               onValueChange={ value => onUpdate({ firstFileIndex: +value }) }/>
+                { firstFileIndexError && <Field.Error> { firstFileIndexError }                </Field.Error> }
+            </Field.Root>
         </Td>
         <Td>
-            <Input type="number"
-                   data-testid="lastFileIndex"
-                   value={ range.lastFileIndex ?? '' }
-                   error={ errors?.find(e => e.field === 'lastFileIndex')?.messages.join(' ') }
-                   onChange={ (e: ChangeEvent<HTMLInputElement>) => onUpdate({ lastFileIndex: e.target.valueAsNumber }) }
-                   placeholder={ campaign.spectrogramsCount?.toString() }
-                   min={ 1 } max={ campaign.spectrogramsCount }
-                   disabled={ campaign.spectrogramsCount === undefined || isLocked }/>
-
+            <Field.Root>
+                <Field.Control type="number"
+                               placeholder={ campaign.spectrogramsCount?.toString() }
+                               data-testid="lastFileIndex"
+                               value={ range.lastFileIndex ?? '' }
+                               min={ 1 } max={ campaign.spectrogramsCount }
+                               disabled={ campaign.spectrogramsCount === undefined || isLocked }
+                               onValueChange={ value => onUpdate({ lastFileIndex: +value }) }/>
+                { lastFileIndexError && <Field.Error> { lastFileIndexError }                </Field.Error> }
+            </Field.Root>
         </Td>
         <Td>
-            { isLocked ? <IonButton color="medium" fill="outline"
-                                    data-testid="unlock"
-                                    data-tooltip={ 'This user has already started to annotate' }
-                                    className={ [ styles.annotatorButton, 'tooltip-right' ].join(' ') }
-                                    onClick={ unlock }>
-                <IonIcon icon={ lockClosedOutline }/>
-            </IonButton> : <IonButton color="danger"
-                                      data-testid="remove"
-                                      className={ styles.annotatorButton }
-                                      onClick={ () => onDelete(range) }>
-                <IonIcon icon={ trashBinOutline }/>
-            </IonButton> }
+            { isLocked ? <Dialog.Root>
+                <Dialog.Trigger render={ <div/> } nativeButton={ false }>
+                    <Popover.Root>
+                        <Popover.Trigger color="medium" data-testid="unlock">
+                            <Lock weight="Linear" size={ 20 }/>
+                        </Popover.Trigger>
+                        <Popover.Content>This user has already started to annotate</Popover.Content>
+                    </Popover.Root>
+                </Dialog.Trigger>
+                <Dialog.Portal>
+                    <Dialog.Content alert>
+                        <p>
+                            This annotator has already started to annotated.<br/>
+                            By updating its file range you could remove some annotations he/she made.<br/>
+                            Are you sure?
+                        </p>
+                        <ButtonGroup end>
+                            <Dialog.Close>Cancel</Dialog.Close>
+                            <Dialog.Close color="warning" onClick={ unlock }>Update file range</Dialog.Close>
+                        </ButtonGroup>
+                    </Dialog.Content>
+                </Dialog.Portal>
+            </Dialog.Root> : <Button color="danger" data-testid="remove" onClick={ () => onDelete(range) }>
+                <TrashBinTrash weight="Linear" size={ 20 }/>
+            </Button> }
         </Td>
     </Tr>
 }

@@ -4,6 +4,7 @@ export type {
 import { Combobox } from '@base-ui/react/combobox'
 
 export const Root = Combobox.Root
+export const useFilter = Combobox.useFilter
 export const Label = Combobox.Label
 
 export * from './InputGroup'

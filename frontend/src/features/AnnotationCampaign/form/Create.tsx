@@ -1,24 +1,20 @@
 import React, { Fragment, useCallback, useId, useMemo, useState } from 'react';
-import { Form } from '@/components/base/Form';
-import { Fieldset } from '@/components/base/Fieldset';
-import { Field } from '@/components/base/Field';
-import * as API from '../api'
 import { useMutation } from '@tanstack/react-query';
 import { type BaseUIEvent } from '@base-ui/react';
+import { useNavigate } from '@tanstack/react-router';
+import { InfoCircle } from '@solar-icons/react';
+
+import { cleanGqlErrors } from '@/api/utils';
+import { Button, ButtonGroup, Checkbox, Field, Fieldset, Form, Link, Note, Spinner, Toast } from '@/components/base';
+
 import { useAppDispatch } from '@/features/App';
-import { Toast } from '@/components/base/Toast';
 import { Slice as StorageSlice } from '@/features/Storage'
-import { Checkbox } from '@/components/base/Checkbox';
-import { Note } from '@/components/base/Note';
 import { DatasetComponent } from '@/features/Dataset';
 import { AnalysisComponent } from '@/features/SpectrogramAnalysis';
-import { Button, ButtonGroup, Link } from '@/components/base/Button';
-import { IonSpinner } from '@ionic/react';
-import { useNavigate } from '@tanstack/react-router';
 import { ColormapComponents } from '@/features/Colormap';
+
+import * as API from '../api'
 import styles from './CampaignForm.module.scss'
-import { InfoCircle } from '@solar-icons/react';
-import { cleanGqlErrors } from '@/api/utils';
 
 export const Create: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -83,7 +79,7 @@ export const Create: React.FC = () => {
     const errors = useMemo(() => cleanGqlErrors(data?.errors), [ data ])
 
     return <Form onSubmit={ submit }
-                 errors={errors}
+                 errors={ errors }
                  className={ styles.Create }>
 
         <Fieldset.Root>
@@ -126,7 +122,8 @@ export const Create: React.FC = () => {
                                          onValueChange={ setDataset }/>
                 <Field.Error/>
                 <Note color="medium">
-                    <InfoCircle weight="Linear"/> You can import new datasets in the <Link inText to="/storage">Storage</Link> section
+                    <InfoCircle weight="Linear"/> You can import new datasets in the <Link inText
+                                                                                           to="/storage">Storage</Link> section
                 </Note>
             </Field.Root>
 
@@ -163,7 +160,7 @@ export const Create: React.FC = () => {
                 <Field.Error/>
             </Field.Root>
 
-            { allowColormapTuning && <Fragment>
+            { (allowColormapTuning ||true) && <Fragment>
                 <Field.Root name="colormapDefault">
                     <Field.Label htmlFor={ colormapSelectID }>Default colormap</Field.Label>
                     <ColormapComponents.Select id={ colormapSelectID }
@@ -183,7 +180,7 @@ export const Create: React.FC = () => {
         </Fieldset.Root>
 
         <ButtonGroup end>
-            { isPending && <IonSpinner/> }
+            { isPending && <Spinner/> }
             <Button color="primary" type="submit" disabled={ isPending }>
                 Create
             </Button>

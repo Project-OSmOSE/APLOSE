@@ -1,28 +1,34 @@
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import type { ComboboxRootProps } from '@base-ui/react/combobox'
 import { Combobox } from './index';
 
 
-export type ComboboxSelectProps<Value> = ComboboxRootProps<Value, false> & {
+export type ComboboxSelectProps<Value, Multiple extends boolean | undefined = false> =
+    ComboboxRootProps<Value, Multiple>
+    & {
     itemName: string
     id?: string
     placeholder?: string
-    'data-testid'?: string
+    'data-testid'?: string,
+    itemToElementValue?: (item: Value) => ReactNode,
 }
 
-export function ComboboxSelect<Value>({
-                                          itemName,
-                                          id,
-                                          itemToStringLabel,
-                                          ...props
-                                      }: ComboboxSelectProps<Value>): React.JSX.Element {
+export function ComboboxSelect<Value, Multiple extends boolean | undefined = false>({
+                                                                                        itemName,
+                                                                                        id,
+                                                                                        placeholder,
+                                                                                        itemToStringLabel,
+                                                                                        itemToElementValue,
+                                                                                        ...props
+                                                                                    }: ComboboxSelectProps<Value, Multiple>): React.JSX.Element {
     return (
         <Combobox.Root itemToStringLabel={ itemToStringLabel } { ...props }>
 
             <Combobox.InputGroup>
-                <Combobox.Input placeholder={ `Select a ${ itemName }` } id={ id }/>
+                <Combobox.Input placeholder={ placeholder ? placeholder : `Select a ${ itemName }` } id={ id }/>
                 <Combobox.Clear/>
                 <Combobox.Trigger/>
+                { itemToElementValue && <Combobox.Value children={ item => itemToElementValue(item) }/> }
             </Combobox.InputGroup>
 
             <Combobox.Portal>
@@ -33,7 +39,8 @@ export function ComboboxSelect<Value>({
                             { (item, k) => (
                                 <Combobox.Item key={ k } value={ item }>
                                     <Combobox.ItemIndicator/>
-                                    <span>{ itemToStringLabel ? itemToStringLabel(item) : item }</span>
+                                    { itemToElementValue ? itemToElementValue(item) :
+                                        <span>{ itemToStringLabel ? itemToStringLabel(item) : item }</span> }
                                 </Combobox.Item>
                             ) }
                         </Combobox.List>

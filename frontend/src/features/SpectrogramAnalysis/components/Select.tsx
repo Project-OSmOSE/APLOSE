@@ -1,16 +1,15 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { queryOptions, useQuery } from '@tanstack/react-query';
 
-import { Combobox, ComboboxRootProps } from '@/components/base/Combobox'
+import { queryKeys } from '@/api/queryKeys';
+import { Combobox } from '@/components/base'
 
 import * as API from '../api'
-import { type AllSpectrogramAnalysisForDatasetQuery } from '../api'
-import { queryKeys } from '@/api/queryKeys';
 
 type N<T> = NonNullable<T>
-export type SelectValue = N<N<AllSpectrogramAnalysisForDatasetQuery['allSpectrogramAnalysis']>['results'][number]>
+export type SelectValue = N<N<API.AllSpectrogramAnalysisForDatasetQuery['allSpectrogramAnalysis']>['results'][number]>
 
-type RootProps = ComboboxRootProps<SelectValue, true>
+type RootProps = Combobox.ComboboxRootProps<SelectValue, true>
 const ComboboxRoot: React.FC<RootProps> = (props) => <Combobox.Root multiple { ...props }/>
 
 function toStr(value: SelectValue) {
