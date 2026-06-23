@@ -5,7 +5,7 @@ import { ListLabelSetsDocument, type ListLabelSetsQuery } from './label.generate
 import { cleanGqlList } from '@/api/utils';
 
 
-export const allQuery = queryOptions({
+export const allSetsQuery = queryOptions({
     queryKey: queryKeys.label.allSets,
     queryFn: () => graphqlClient.request<ListLabelSetsQuery>(ListLabelSetsDocument, {})
         .then(data => cleanGqlList(data.allLabelSets?.results)),

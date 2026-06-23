@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react';
-import { AnnotationPhaseType } from '@/api';
 import { useLoaderData, useParams } from '@tanstack/react-router';
 import { CloudUpload } from '@solar-icons/react';
-import { Popover } from '@/components/base/Popover';
+
+import { AnnotationPhaseType } from '@/api';
+import { Popover } from '@/components/base';
 
 
 export const ImportAnnotationsButton: React.FC = () => {

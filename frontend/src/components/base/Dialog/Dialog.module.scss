@@ -28,20 +28,24 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
   max-width: calc(100vw - 3rem);
   margin-top: -2rem;
   padding: 1rem;
   background-color: white;
   box-shadow: var(--box-shadow);
   transition:
-          transform 100ms ease-out,
+          translate 100ms ease-out,
+          scale 100ms ease-out,
           opacity 100ms ease-out;
+  translate: -50% calc(-50% + 1.25rem * var(--nested-dialogs));
+  scale: calc(1 - 0.1 * var(--nested-dialogs));
+  opacity: calc(1 - 0.3 * var(--nested-dialogs));
 
   &[data-starting-style],
   &[data-ending-style] {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.98);
+    translate: -50% calc(-50% + 0.25rem + 1.25rem * var(--nested-dialogs));
+    scale: 0.96;
   }
 
   min-width: min(42rem, 80%);

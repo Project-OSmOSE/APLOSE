@@ -1,6 +1,7 @@
-import { Dialog } from '@base-ui/react/dialog'
+import { Dialog, DialogRootActions } from '@base-ui/react/dialog'
 
 export const Root = Dialog.Root
+export type RootActions = DialogRootActions
 export * from './Trigger'
 
 export const Portal = Dialog.Portal

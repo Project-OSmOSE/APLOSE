@@ -7,7 +7,7 @@ import { AnnotationPhaseType } from '@/api';
 
 import { AnnotationsFilterModal, DateFilterModal, StatusFilterModal } from '@/features/AnnotationTask';
 import { FileRangeActionBar } from '@/features/AnnotationFileRange';
-import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
+import { PhaseComponent } from '@/features/AnnotationPhase';
 import { type AllSpectrogramsFilters, SpectrogramRow } from '@/features/AnnotationSpectrogram';
 
 import styles from './phase.$phaseType.module.scss';
@@ -88,7 +88,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
 
             { phase?.phase === 'Verification' && !phase?.hasAnnotations && phases.find(p => p.phase === AnnotationPhaseType.Verification) &&
                 <WarningText message="Your campaign doesn't have any annotations to check"
-                             children={ <ImportAnnotationsButton/> }/> }
+                             children={ <PhaseComponent.ImportAnnotationsButton/> }/> }
 
             { !isLoading && <Table spacing="small">
                 <Thead>

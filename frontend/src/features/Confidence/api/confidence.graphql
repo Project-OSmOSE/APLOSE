@@ -1,0 +1,13 @@
+query listConfidenceSets {
+    allConfidenceSets {
+        results {
+            id
+            name
+            desc
+            confidenceIndicators {
+                label
+                level
+            }
+        }
+    }
+}

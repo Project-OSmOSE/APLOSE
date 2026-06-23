@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styles from './styles.module.scss';
 import { ActionBar } from '@/components/ui';
-import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
+import { PhaseComponent } from '@/features/AnnotationPhase';
 import { FileRangeDialog } from '@/features/AnnotationFileRange';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
@@ -122,7 +122,7 @@ export const FileRangeActionBar: React.FC = () => {
                            </Popover.Root>
 
                            {/* Import annotations */ }
-                           <ImportAnnotationsButton/>
+                           <PhaseComponent.ImportAnnotationsButton/>
                        </Fragment> }
 
                        {/* Resume */ }

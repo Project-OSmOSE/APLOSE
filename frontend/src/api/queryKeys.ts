@@ -90,6 +90,9 @@ export const queryKeys = {
     label: {
         allSets: [ 'label', 'set' ] as const,
     },
+    confidence: {
+        allSets: [ 'confidence', 'set' ] as const,
+    },
     detector: {
         all: [ 'detector' ] as const,
     },

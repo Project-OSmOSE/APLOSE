@@ -5,7 +5,7 @@ import { Head, Tab, Tabs } from '@/components/ui';
 import { dateToString } from '@/service/function';
 import { NBSP } from '@/service/type';
 import { UserComponent } from '@/features/User';
-import { AnnotationPhaseTab } from '@/features/AnnotationPhase';
+import { PhaseComponent } from '@/features/AnnotationPhase';
 import { Content } from '@/components/layout/Content';
 
 const AnnotationCampaignDetail: React.FC = () => {
@@ -29,8 +29,8 @@ const AnnotationCampaignDetail: React.FC = () => {
                     Information
                 </Tab>
 
-                <AnnotationPhaseTab phaseType={ AnnotationPhaseType.Annotation }/>
-                <AnnotationPhaseTab phaseType={ AnnotationPhaseType.Verification }/>
+                <PhaseComponent.Tab phaseType={ AnnotationPhaseType.Annotation }/>
+                <PhaseComponent.Tab phaseType={ AnnotationPhaseType.Verification }/>
             </Tabs>
 
             <Outlet/>
