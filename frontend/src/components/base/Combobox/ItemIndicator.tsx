@@ -6,7 +6,7 @@ import styles from './Combobox.module.scss'
 export type ComboboxItemIndicatorProps = Omit<BaseComboboxItemIndicatorProps, 'style' | 'className' | 'children' | 'aria-label'>
 
 export const ItemIndicator: React.FC<ComboboxItemIndicatorProps> = (props) => (
-    <Combobox.ItemIndicator className={ styles.ItemIndicator } { ...props } aria-label="Open popup">
+    <Combobox.ItemIndicator className={ styles.ItemIndicator } { ...props }>
         <Unread weight="Linear" size={ 24 }/>
     </Combobox.ItemIndicator>
 )
