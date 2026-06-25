@@ -14,9 +14,6 @@ export type ImportFileFormBlocProps = {
     onLoaded: (file: File, annotations: Annotation[]) => void;
     onReset: () => void;
 }
-export type ImportFileFormBlocRef = {
-    reset: () => void;
-}
 export const ImportFileFormBloc: React.FC<ImportFileFormBlocProps> = ({
                                                                           onLoaded,
                                                                           onReset,

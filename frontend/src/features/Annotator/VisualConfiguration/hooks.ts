@@ -1,10 +1,11 @@
 import { useCallback, useMemo } from 'react';
 import { useAppSelector } from '@/features/App';
 import { selectBrightness, selectColormap, selectContrast, selectIsColormapReversed } from './selectors'
-import { Colormap, COLORMAPS, createColormap } from './colormaps'
+import { createColormap } from './colormaps'
 import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
 import { useLoaderData } from '@tanstack/react-router';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
+import { type Colormap, COLORMAPS } from '@/features/Colormap';
 
 
 function interpolate(value: number, minSource: number, maxSource: number, minTarget: number, maxTarget: number): number {

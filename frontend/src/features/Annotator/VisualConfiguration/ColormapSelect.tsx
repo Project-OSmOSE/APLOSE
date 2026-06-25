@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Select } from '@/components/form';
-import { Colormap, COLORMAPS } from './colormaps';
+import { Colormap, COLORMAPS } from '@/features/Colormap';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { setColormap } from './slice';
 import { selectColormap } from './selectors';

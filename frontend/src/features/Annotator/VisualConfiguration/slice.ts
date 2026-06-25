@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Colormap } from './colormaps';
+import { Colormap } from '@/features/Colormap';
 import { Analysis, setAnalysis } from '@/features/Annotator/Analysis/slice';
 
 
