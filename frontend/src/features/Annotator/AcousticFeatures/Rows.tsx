@@ -7,7 +7,7 @@ import { createOutline } from 'ionicons/icons';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { endPositionSelection, selectIsSelectingPositionForAnnotation, selectPosition } from '@/features/Annotator/UX';
 import { useGetFreqTime, useIsInAnnotation } from '@/features/Annotator/Pointer';
-import { CLICK_EVENT, useEvent } from '@/features/UX';
+import { CLICK_EVENT, useRegisterToEvent } from '@/components/ui/Event';
 import type { Annotation } from '@/features/Annotator/Annotation';
 import { Note } from '@/components/base/Note';
 
@@ -73,7 +73,7 @@ export const InputRow: React.FC<{
         if (position) update(position.frequency)
         unselect()
     }, [ getFreqTime, clickable, isSelecting, isInAnnotation, isSelectingAnnotationFrequency, update, annotation, unselect ]);
-    useEvent(CLICK_EVENT, onClick)
+    useRegisterToEvent(CLICK_EVENT, onClick)
 
     return <Fragment>
         <Th scope="row">{ label }</Th>

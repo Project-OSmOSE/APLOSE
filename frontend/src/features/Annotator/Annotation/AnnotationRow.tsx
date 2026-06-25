@@ -20,7 +20,7 @@ import { IoChatbubbleEllipses, IoChatbubbleOutline } from 'react-icons/io5';
 import { InvalidateAnnotationModal } from '@/features/Annotator/Annotation/InvalidateAnnotationModal';
 import { IonButton, IonIcon } from '@ionic/react';
 import { checkmarkOutline, closeOutline } from 'ionicons/icons/index.js';
-import { useKeyDownEvent } from '@/features/UX';
+import { useRegisterToKeyDownEvent } from'@/components/ui/Event';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 import { UpdateLabelModal } from '@/features/Annotator/Label/UpdateLabelModal';
@@ -86,7 +86,7 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
         if (!isActive) return;
         removeAnnotation(annotation)
     }, [ annotation, removeAnnotation, isActive, getAnnotations ]);
-    useKeyDownEvent([ 'Delete' ], remove);
+    useRegisterToKeyDownEvent([ 'Delete' ], remove);
 
     return <Tr className={ annotation.id !== focusedAnnotation?.id ? 'disabled' : '' } onClick={ onClick }>
 

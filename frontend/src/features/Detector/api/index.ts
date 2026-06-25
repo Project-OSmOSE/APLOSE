@@ -6,7 +6,7 @@ import { cleanGqlList } from '@/api/utils';
 
 
 export const allQuery = queryOptions({
-    queryKey: queryKeys.label.allSets,
+    queryKey: queryKeys.detector.all,
     queryFn: () => graphqlClient.request<ListDetectorsQuery>(ListDetectorsDocument, {})
         .then(data => cleanGqlList(data.allDetectors?.results)),
 })

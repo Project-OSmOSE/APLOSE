@@ -72,6 +72,12 @@
 
   &.Text {
     text-decoration: underline !important;
-    color: var(--color-primary);
+    color: var(--color-primary-text);
+  }
+
+  @each $color in base.$colors {
+    &.#{$color}.Text {
+      color: var(--color-#{$color}-text);
+    }
   }
 }

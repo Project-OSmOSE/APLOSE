@@ -34,7 +34,7 @@ type Props = {
     }
 }
 export const PhasesProgress: React.FC<Props> = React.memo(({ userRelated, campaign }) => {
-    const { state, color } = useCampaignState(campaign)
+    const { color } = useCampaignState(campaign)
 
     return campaign.phases?.results
         .filter(p => !!p)
@@ -43,8 +43,7 @@ export const PhasesProgress: React.FC<Props> = React.memo(({ userRelated, campai
             <Progress key={ p.phase }
                       value={ userRelated ? (p as AnnotationPhaseNode).userCompletedTasksCount : (p as AnnotationPhaseNode).completedTasksCount }
                       max={ userRelated? (p as AnnotationPhaseNode).userTasksCount : (p as AnnotationPhaseNode).tasksCount }
-                      color={ !p.isOpen ? 'medium' : color }
-                      disabled={ !p.isOpen || state == 'Archived' }>
+                      color={ !p.isOpen ? 'medium' : color }>
                 { p.phase } { !p.isOpen && <i>Closed</i> }
             </Progress>
         ),

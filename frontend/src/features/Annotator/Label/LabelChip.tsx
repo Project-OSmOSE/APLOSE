@@ -13,7 +13,7 @@ import {
     useUpdateAnnotation,
 } from '@/features/Annotator/Annotation';
 import { AnnotationType } from '@/api';
-import { useKeyDownEvent } from '@/features/UX';
+import { useRegisterToKeyDownEvent } from '@/components/ui/Event';
 import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { setHiddenLabels } from './slice';
@@ -62,7 +62,7 @@ export const LabelChip: React.FC<{
         if (weak) return dispatch(focusAnnotation(weak))
         addAnnotation({ ...weakProperties, confidence: defaultConfidence })
     }, [ focusedAnnotation, updateAnnotation, label, getAnnotation, dispatch, addAnnotation, defaultConfidence ])
-    useKeyDownEvent([ number, key ], select)
+    useRegisterToKeyDownEvent([ number, key ], select)
 
     const show = useCallback((event: MouseEvent) => {
         event.stopPropagation();

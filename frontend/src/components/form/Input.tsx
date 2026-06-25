@@ -1,11 +1,10 @@
 import React, { Fragment, HTMLInputTypeAttribute, InputHTMLAttributes, useCallback, useMemo, useState } from 'react';
 import { IonIcon } from '@ionic/react';
 import { eyeOffOutline, eyeOutline } from 'ionicons/icons/index.js';
-import { useAppDispatch } from '@/features/App';
-import { EventSlice } from '@/features/UX/Events';
 import styles from './form.module.scss'
 import { Label } from './Label';
 import { Note } from '@/components/base/Note';
+import { useEvent } from '@/components/ui/Event';
 
 type InputProperties = {
     label?: string;
@@ -28,6 +27,7 @@ export const Input: React.FC<InputProperties> = ({
                                                      ['data-testid']: testId,
                                                      ...inputArgs
                                                  }) => {
+    const { enableShortcuts, disableShortcuts } = useEvent()
 
     const className = useMemo(() => {
         const className = [];
@@ -36,7 +36,6 @@ export const Input: React.FC<InputProperties> = ({
         return className
     }, [ startIcon, _type ])
     const [ type, setType ] = useState<HTMLInputTypeAttribute | undefined>(_type);
-    const dispatch = useAppDispatch();
 
     const toggleType = useCallback(() => {
         if (_type !== 'password') return;
@@ -62,11 +61,11 @@ export const Input: React.FC<InputProperties> = ({
                    required={ required }
                    disabled={ disabled }
                    onFocus={ e => {
-                       dispatch(EventSlice.actions.disableShortcuts())
+                       disableShortcuts()
                        if (onFocus) onFocus(e)
                    } }
                    onBlur={ e => {
-                       dispatch(EventSlice.actions.enableShortcuts())
+                       enableShortcuts()
                        if (onBlur) onBlur(e)
                    } }
                    className={ `${ className.join(' ') } ${ inputArgs.className }` }/>

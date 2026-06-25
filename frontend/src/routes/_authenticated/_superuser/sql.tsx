@@ -9,7 +9,7 @@ import { Prec } from '@codemirror/state';
 import { SQLRestAPI } from '@/api/sql';
 import { NBSP } from '@/service/type';
 import { AppStore } from '@/features/App';
-import { useCtrlKeyDownEvent } from '@/features/UX';
+import { useRegisterToCtrlKeyDownEvent } from '@/components/ui/Event';
 
 import { Head, Kbd, Pagination, Table, Tbody, Td, Th, Thead, Tr, WarningText } from '@/components/ui';
 import { Button, ButtonGroup } from '@/components/base/Button';
@@ -34,7 +34,7 @@ const SqlQuery: React.FC = () => {
         if (query) run({ query, page });
     }, [ run, setPage, isLoading ])
     const onEventRunQuery = useCallback(() => runQuery(1), [ runQuery ])
-    useCtrlKeyDownEvent([ 'Enter' ], onEventRunQuery)
+    useRegisterToCtrlKeyDownEvent([ 'Enter' ], onEventRunQuery)
 
     const setupEditor = useCallback(() => {
         if (!editorContainerRef.current) return;

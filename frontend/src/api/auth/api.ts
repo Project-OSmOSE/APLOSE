@@ -2,8 +2,8 @@ import { restAPI } from '../baseRestApi';
 import { queryKeys } from '@/api/queryKeys';
 import { queryClient } from '@/api/queryClient';
 import { clearTokenFromCookie } from '@/api/utils';
+import type { Token } from './types';
 
-export type Token = string | undefined;
 
 type LoginResponse = { access: Token, refresh: Token }
 

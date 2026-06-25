@@ -11,7 +11,12 @@
 
   @each $color in base.$colors {
     &[color=#{$color}] {
-      background: var(--color-#{$color}-tint);
+      background: var(--color-#{$color}-bg);
     }
+  }
+  
+  &[color=default] {
+    color: var(--color-text);
+    background-color: var(--color-light-shade);
   }
 }

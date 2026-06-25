@@ -1,9 +1,8 @@
 import React, { TextareaHTMLAttributes } from 'react';
-import { useAppDispatch } from '@/features/App';
-import { EventSlice } from '@/features/UX/Events';
 import styles from './form.module.scss'
 import { Label } from './Label';
 import { Note } from '@/components/base/Note';
+import { useEvent } from '@/components/ui/Event';
 
 
 export type OldTextareaProperties = {
@@ -24,8 +23,7 @@ export const Textarea: React.FC<OldTextareaProperties> = ({
                                                               ['data-testid']: testId,
                                                               ...textareaArgs
                                                           }) => {
-
-    const dispatch = useAppDispatch();
+    const { enableShortcuts, disableShortcuts } = useEvent()
 
     return <div id="aplose-input" className={ [ styles.default, 'textarea', containerClassName ].join(' ') }
                 aria-disabled={ disabled } aria-invalid={ !!error }>
@@ -36,8 +34,8 @@ export const Textarea: React.FC<OldTextareaProperties> = ({
                 value={ value }
                 data-testid={ testId }
                 disabled={ disabled }
-                onFocus={ () => dispatch(EventSlice.actions.disableShortcuts()) }
-                onBlur={ () => dispatch(EventSlice.actions.enableShortcuts()) }
+                onFocus={ disableShortcuts }
+                onBlur={ enableShortcuts }
                 required={ required }/>
         </div>
         { error && <Note color="danger">{ error }</Note> }

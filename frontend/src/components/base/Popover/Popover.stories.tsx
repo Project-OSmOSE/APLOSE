@@ -13,7 +13,7 @@ const meta = {
     title: 'Base/Popover',
     component: ({ content, trigger, title }: Props) => (
         <Popover.Root>
-            <Popover.Trigger >
+            <Popover.Trigger aria-label='popover trigger'>
                 { trigger }
             </Popover.Trigger>
             <Popover.Content>

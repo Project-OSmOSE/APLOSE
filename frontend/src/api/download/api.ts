@@ -1,6 +1,6 @@
 import { restAPI } from '@/api/baseRestApi';
 import { getDownloadResponseHandler } from '@/service/function';
-import type { SpectrogramAnalysisNode } from '@/api';
+import type { SpectrogramAnalysisNode } from '@/api/types.gql-generated';
 
 
 export const DownloadRestAPI = restAPI.injectEndpoints({

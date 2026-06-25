@@ -15,7 +15,7 @@ export const Checkbox: React.FC<Props> = React.memo((props) => (
                                     return createElement(
                                         state.checked ? CheckSquare : Stop,
                                         {
-                                            weight: 'LineDuotone',
+                                            weight: 'Linear',
                                             size: 24,
                                             className: styles.Indicator,
                                             color: state.checked ? 'primary' : 'medium',

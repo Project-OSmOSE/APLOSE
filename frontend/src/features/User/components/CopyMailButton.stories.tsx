@@ -1,14 +1,9 @@
 import { CopyMailButton, type CopyMailButtonProps } from './CopyMailButton.tsx';
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
-import React from 'react';
-import { BaseProvider } from '@/components/base/Provider';
 
 const meta = {
     title: 'Features/User/CopyMailButton',
     component: CopyMailButton,
-    decorators: [
-        (Story: React.FC) => <BaseProvider><Story/></BaseProvider>,
-    ],
     parameters: {
         // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
         layout: 'centered',
@@ -21,7 +16,7 @@ const meta = {
             control: { type: 'object' },
             type: {
                 name: 'object',
-                value: { email: 'string', displayName: 'string' }
+                value: { email: 'string', displayName: 'string' },
             },
         },
     } satisfies Partial<Record<keyof CopyMailButtonProps, any>>,

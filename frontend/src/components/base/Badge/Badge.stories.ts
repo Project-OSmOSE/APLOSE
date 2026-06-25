@@ -1,6 +1,6 @@
 import { Badge, type BadgeProps } from './index.tsx';
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
-import type { BaseColor } from '@/components/base/types';
+import { BaseColors } from '@/components/base/types';
 
 const meta = {
     title: 'Base/Badge',
@@ -15,7 +15,7 @@ const meta = {
     argTypes: {
         color: {
             control: { type: 'radio' },
-            options: [ 'default', 'primary', 'warning', 'danger' ] as BaseColor[],
+            options: BaseColors,
             type: 'BaseColor',
         },
         children: {
@@ -33,3 +33,13 @@ type Story = StoryObj<typeof meta>;
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {};
+
+export const Primary: Story = { args: { color: 'primary' } satisfies Partial<BadgeProps> };
+
+export const Warning: Story = { args: { color: 'warning' } satisfies Partial<BadgeProps> };
+
+export const Danger: Story = { args: { color: 'danger' } satisfies Partial<BadgeProps> };
+
+export const Success: Story = { args: { color: 'success' } satisfies Partial<BadgeProps> };
+
+export const Medium: Story = { args: { color: 'medium' } satisfies Partial<BadgeProps> };

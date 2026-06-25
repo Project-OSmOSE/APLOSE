@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import styles from './styles.module.scss';
 import { Kbd } from '@/components/ui';
 import { useAnnotatorCanNavigate, useOpenAnnotator } from './hooks';
-import { useKeyDownEvent } from '@/features/UX/Events';
+import { useRegisterToKeyDownEvent } from '@/components/ui/Event';
 import { useAnnotatorSubmit } from '@/features/Annotator';
 import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
 import { queryClient } from '@/api/queryClient';
@@ -33,8 +33,8 @@ export const NavigationButtons: React.FC = () => {
         if (await canNavigate()) openAnnotator(info.nextSpectrogramId)
     }, [ canNavigate, openAnnotator, isPending, info ])
 
-    useKeyDownEvent([ 'ArrowLeft' ], navPrevious)
-    useKeyDownEvent([ 'ArrowRight' ], navNext)
+    useRegisterToKeyDownEvent([ 'ArrowLeft' ], navPrevious)
+    useRegisterToKeyDownEvent([ 'ArrowRight' ], navNext)
 
     useEffect(() => {
         if (!info?.nextSpectrogramId) return

@@ -20,13 +20,11 @@ const TEST = {
 
             await page.phaseImport.importFileStep()
 
-            await page.phaseImport.selectDetectorStep('detector1')
-            await page.phaseImport.selectDetectorStep('detector2')
-            await page.phaseImport.selectDetectorStep('detector3')
-
-            await page.phaseImport.enterDetectorConfigurationStep('detector1', detectorConfiguration.configuration)
-            await page.phaseImport.enterDetectorConfigurationStep('detector2', detectorConfiguration.configuration)
-            await page.phaseImport.enterDetectorConfigurationStep('detector3', detectorConfiguration.configuration)
+            await test.step(`Enter configuration for detectors`, async () => {
+                await page.getByRole('row', { name: 'detector1' }).getByRole('textbox').fill(detectorConfiguration.configuration)
+                await page.getByRole('row', { name: 'detector2' }).getByRole('textbox').fill(detectorConfiguration.configuration)
+                await page.getByRole('row', { name: 'detector3' }).getByRole('textbox').fill(detectorConfiguration.configuration)
+            })
 
             await test.step(`Import`, async () => {
                 await expect(page.phaseImport.importButton).toBeEnabled({ timeout: 500 })
@@ -55,12 +53,11 @@ const TEST = {
 
             await page.phaseImport.importFileStep()
 
-            await page.phaseImport.selectDetectorStep('detector1')
+            await page.phaseImport.unselectDetectorStep('detector2')
+            await page.phaseImport.unselectDetectorStep('detector3')
 
-            await page.phaseImport.enterDetectorConfigurationStep('detector1', detectorConfiguration.configuration)
-            await test.step('Cannot see not imported detectors', async () => {
-                await expect(page.phaseImport.getConfigurationSelect('detector2')).not.toBeVisible()
-                await expect(page.phaseImport.getConfigurationSelect('detector3')).not.toBeVisible()
+            await test.step(`Enter configuration for detectors`, async () => {
+                await page.getByRole('row', { name: 'detector1' }).getByRole('textbox').fill(detectorConfiguration.configuration)
             })
 
             await test.step(`Import`, async () => {
@@ -88,12 +85,12 @@ const TEST = {
             await page.phaseImport.importFileStep()
 
             await test.step('Display detector as known', async () => {
-                await expect(page.getByText('detector1Already in database').first()).toBeVisible()
+                await expect(page.getByRole('row', { name: 'detector1' }).getByRole('combobox', { name: 'Create detector' })).toHaveValue('detector1')
             })
 
             await test.step('Select Detector configurations', async () => {
                 await page.phaseImport.getConfigurationSelect('detector1').click()
-                await expect(page.phaseImport.getConfigurationSelectOptions('detector1').getByText(detectorConfiguration.configuration)).toBeVisible()
+                await expect(page.phaseImport.getConfigurationSelectOptions().getByText(detectorConfiguration.configuration)).toBeVisible()
             })
         }),
 
@@ -108,13 +105,11 @@ const TEST = {
 
             await page.phaseImport.importFileStep()
 
-            await page.phaseImport.selectDetectorStep('detector1')
-            await page.phaseImport.selectDetectorStep('detector2')
-            await page.phaseImport.selectDetectorStep('detector3')
-
-            await page.phaseImport.enterDetectorConfigurationStep('detector1', detectorConfiguration.configuration)
-            await page.phaseImport.enterDetectorConfigurationStep('detector2', detectorConfiguration.configuration)
-            await page.phaseImport.enterDetectorConfigurationStep('detector3', detectorConfiguration.configuration)
+            await test.step(`Enter configuration for detectors`, async () => {
+                await page.getByRole('row', { name: 'detector1' }).getByRole('textbox').fill(detectorConfiguration.configuration)
+                await page.getByRole('row', { name: 'detector2' }).getByRole('textbox').fill(detectorConfiguration.configuration)
+                await page.getByRole('row', { name: 'detector3' }).getByRole('textbox').fill(detectorConfiguration.configuration)
+            })
 
             await test.step('Reset import', async () => {
                 await page.phaseImport.resetFileButton.click()

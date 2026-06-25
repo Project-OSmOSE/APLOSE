@@ -1,8 +1,7 @@
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { Alert as AlertType } from './type';
 import { Alert } from './Alert';
-import { useAppDispatch } from '@/features/App';
-import { EventSlice } from '@/features/UX/Events';
+import { useEvent } from '@/components/ui/Event';
 
 // Based on https://medium.com/@mayankvishwakarma.dev/building-an-alert-provider-in-react-using-context-and-custom-hooks-7c90931de088
 
@@ -30,14 +29,14 @@ export const useAlert = () => {
 }
 
 export const AlertProvider: React.FC<AlertContextProvider> = ({ children }) => {
+  const { enableShortcuts, disableShortcuts } = useEvent()
   const [ alert, setAlert ] = useState<AlertType | undefined>();
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (alert) {
-      dispatch(EventSlice.actions.disableShortcuts())
+      disableShortcuts()
     } else {
-      dispatch(EventSlice.actions.enableShortcuts())
+      enableShortcuts()
     }
   }, [ alert ]);
 

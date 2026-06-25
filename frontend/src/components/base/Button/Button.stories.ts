@@ -1,8 +1,8 @@
-import { Button } from './Button.tsx';
+import { Button, ButtonProps } from './Button.tsx';
 // @ts-expect-error: using different ts-config: moduleResolution (see tsconfig.storybook.json)
 import { fn } from 'storybook/test';
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
-import type { BaseColor } from '@/components/base/types';
+import { BaseColors } from '@/components/base/types';
 
 const meta = {
     title: 'Base/Button/Button',
@@ -23,7 +23,7 @@ const meta = {
         },
         color: {
             control: { type: 'radio' },
-            options: [ 'default', 'primary', 'warning', 'danger' ] as BaseColor[],
+            options: BaseColors,
             type: 'BaseColor',
         },
         disabled: {
@@ -36,10 +36,20 @@ const meta = {
         children: 'Test button',
         color: 'default',
         disabled: false,
-    },
+    } satisfies ButtonProps,
 } satisfies Meta<typeof Button>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {};
+
+export const Primary: Story = { args: { color: 'primary' } satisfies Partial<ButtonProps> };
+
+export const Warning: Story = { args: { color: 'warning' } satisfies Partial<ButtonProps> };
+
+export const Danger: Story = { args: { color: 'danger' } satisfies Partial<ButtonProps> };
+
+export const Success: Story = { args: { color: 'success' } satisfies Partial<ButtonProps> };
+
+export const Medium: Story = { args: { color: 'medium' } satisfies Partial<ButtonProps> };

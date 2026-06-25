@@ -346,6 +346,10 @@
           text-align: center;
         }
 
+        td.top, th.top {
+          vertical-align: baseline;
+        }
+
         &:hover {
           opacity: 1;
 

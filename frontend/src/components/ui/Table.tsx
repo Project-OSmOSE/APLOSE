@@ -31,17 +31,19 @@ export type Order = 'asc' | 'desc';
 export const Th: React.FC<{
     children?: ReactNode;
 } & Partial<Pick<HTMLTableCellElement, 'scope' | 'colSpan' | 'rowSpan'>> &
+    {top?: boolean} &
     ({ center?: false, start?: false } | { center: true, start?: false } | { center?: false, start: true }) &
     ({ sortable?: false, order?: never, setOrder?: never } | {
         sortable: true,
         order?: Order | false,
         setOrder: (order: Order) => void
     })> =
-    ({ children, center, start, sortable, order, setOrder, ...props }) =>
+    ({ children, center, start, sortable, order, setOrder, top, ...props }) =>
         useMemo(() => {
             const classes = []
             if (center) classes.push(styles.center)
             if (start) classes.push(styles.start)
+            if (top) classes.push(styles.top)
             if (sortable) classes.push(styles.sortable)
 
             return <th { ...props } className={ classes.join(' ') }>
@@ -61,10 +63,11 @@ export const Th: React.FC<{
         }, [ children, center, start, setOrder, order, sortable, props ])
 
 export const Td: React.FC<Partial<Pick<HTMLTableDataCellElement, 'colSpan' | 'rowSpan'>> &
-    { children: ReactNode, center?: boolean, className?: string }> = ({
+    { children: ReactNode, center?: boolean, top?: boolean, className?: string }> = ({
                                                                           center,
                                                                           className,
+    top,
                                                                           ...props
                                                                       }) =>
     useMemo(() => <td
-        className={ [ className, center ? styles.center : '' ].join(' ') } { ...props }/>, [ props, center, className ])
+        className={ [ className, center ? styles.center : '' , top ? styles.top : '' ].join(' ') } { ...props }/>, [ props, center, className ])

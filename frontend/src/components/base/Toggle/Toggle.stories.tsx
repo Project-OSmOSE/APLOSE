@@ -2,13 +2,15 @@ import { Toggle } from './index.ts';
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
 
 type Props = {
+    value?: string
     options: Array<string>
 }
 const meta = {
     title: 'Base/Toggle',
-    component: ({ options }: Props) => (
-        <Toggle.Group defaultValue={ [ options[0] ] }>
-            { options.map((o, k) => <Toggle.Item key={ k } value={ o }>{ o }</Toggle.Item>) }
+    component: ({ options, value }: Props) => (
+        <Toggle.Group defaultValue={ [ options[0] ] } value={ value }>
+            { options.map((o, k) => <Toggle.Item key={ k } color={ k == 0 ? 'medium' : 'primary' }
+                                                 value={ o }>{ o }</Toggle.Item>) }
         </Toggle.Group>
     ),
     parameters: {
@@ -29,3 +31,15 @@ type Story = StoryObj<typeof meta>;
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {};
+
+export const No: Story = {
+    args: { value: 'no' } as Partial<Props>
+};
+
+export const Maybe: Story = {
+    args: { value: 'maybe' } as Partial<Props>
+};
+
+export const Yes: Story = {
+    args: { value: 'yes' } as Partial<Props>
+};

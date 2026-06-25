@@ -12,7 +12,7 @@ import styles from './styles.module.scss'
 import { formatTime } from '@/service/function';
 import { useUpdateAnnotation } from '@/features/Annotator/Annotation/hooks';
 import { AnnotationHeadContent } from '@/features/Annotator/Annotation/Head';
-import { MOUSE_DOWN_EVENT } from '@/features/UX';
+import { MOUSE_DOWN_EVENT } from '@/components/ui/Event';
 import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
 import { useLoaderData } from '@tanstack/react-router';
 import { useIsDrawingEnabled } from '@/features/Annotator/UX/hooks';

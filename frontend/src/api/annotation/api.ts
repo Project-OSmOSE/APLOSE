@@ -14,14 +14,15 @@ const keys: (keyof ImportAnnotation)[] = [
   'detector_configuration__configuration',
 ];
 
+export type ImportAnnotationsParams = {
+  campaignID: string | number;
+  annotations: ImportAnnotation[];
+  force_datetime?: boolean;
+  force_max_frequency?: boolean;
+}
 export const AnnotationRestAPI = restAPI.injectEndpoints({
   endpoints: builder => ({
-    importAnnotations: builder.mutation<void, {
-      campaignID: string | number;
-      annotations: ImportAnnotation[];
-      force_datetime?: boolean;
-      force_max_frequency?: boolean;
-    }>({
+    importAnnotations: builder.mutation<void, ImportAnnotationsParams>({
       query: ({ campaignID, annotations, ...params }) => {
         return {
           url: `/api/annotation/campaign/${ campaignID }/phase/${ AnnotationPhaseType.Annotation }/`,

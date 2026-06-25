@@ -17,69 +17,75 @@ const __file = path.join(__dirname.join('/'), 'fixtures', 'annotation_results.cs
 
 export class PhaseImportAnnotationsPage {
 
-  get title(): Locator {
-    return this.page.getByRole('heading', { name: 'Import annotations' })
-  }
+    get title(): Locator {
+        return this.page.getByRole('heading', { name: 'Import annotations' })
+    }
 
-  get importButton(): Locator {
-    return this.page.getByRole('button', { name: 'Import' })
-  }
+    get importButton(): Locator {
+        return this.page.getByRole('button', { name: 'Import' })
+    }
 
-  get resetFileButton(): Locator {
-    return this.page.getByRole('button', { name: 'Reset' })
-  }
+    get resetFileButton(): Locator {
+        return this.page.getByRole('button', { name: 'Reset' })
+    }
 
-  get fileData(): string {
-    return fs.readFileSync(__file, 'utf8');
-  }
+    get fileData(): string {
+        return fs.readFileSync(__file, 'utf8');
+    }
 
-  constructor(private page: Page,
-              private detail = new PhaseDetailPage(page)) {
-  }
+    constructor(private page: Page,
+                private detail = new PhaseDetailPage(page)) {
+    }
 
-  async go({ as, phase }: Pick<Params, 'as' | 'phase'>): Promise<void> {
-    await this.detail.go({ as, phase })
-    await this.detail.importAnnotationsButton.click();
-  }
+    async go({ as, phase }: Pick<Params, 'as' | 'phase'>): Promise<void> {
+        await this.detail.go({ as, phase })
+        await this.detail.importAnnotationsButton.click();
+    }
 
-  getAnalysisSelect(): Locator {
-    return this.page.getByTestId(`select-analysis`)
-  }
+    getAnalysisSelect(): Locator {
+        return this.page.getByTestId(`select-analysis`)
+    }
 
-  getAnalysisSelectOptions(): Locator {
-    return this.page.getByTestId(`select-analysis-options`)
-  }
+    getAnalysisSelectOptions(): Locator {
+        return this.page.getByTestId(`select-analysis-options`)
+    }
 
-  async importFileStep() {
-    return test.step('Import file', async () => {
-      const [ fileChooser ] = await Promise.all([
-        this.page.waitForEvent('filechooser'),
-        this.page.getByText('Import annotations (csv)').click(),
-      ])
-      await fileChooser.setFiles(__file);
-    })
-  }
+    async importFileStep() {
+        return test.step('Import file', async () => {
+            const [ fileChooser ] = await Promise.all([
+                this.page.waitForEvent('filechooser'),
+                this.page.getByText('Import annotations (csv)').click(),
+            ])
+            await fileChooser.setFiles(__file);
+        })
+    }
 
-  async selectDetectorStep(name: string) {
-    return test.step(`Select detector ${ name }`, async () => {
-      await this.page.getByTestId(`select-${ name }`).click()
-      await this.page.getByTestId(`select-${ name }-options`).getByText('Create').click()
-    })
-  }
+    async unselectDetectorStep(name: string) {
+        return test.step(`Unelect detector ${ name }`, async () => {
+            await this.page.getByRole('row', { name }).getByRole('checkbox').click()
+        })
+    }
 
-  getConfigurationSelect(detector: string): Locator {
-    return this.page.getByTestId(`select-${ detector }-configuration`)
-  }
+    async selectDetectorStep(name: string) {
+        return test.step(`Select detector ${ name }`, async () => {
+            await this.page.getByRole('row', { name }).getByRole('combobox', { name: 'Create detector' }).fill(name)
+            await this.page.getByTestId(`detector-select-popup`).getByText(name).click()
+        })
+    }
 
-  getConfigurationSelectOptions(detector: string): Locator {
-    return this.page.getByTestId(`select-${ detector }-configuration-options`)
-  }
+    getConfigurationSelect(detector: string): Locator {
+        return this.page.getByRole('row', { name: detector }).getByRole('combobox', { name: 'Create configuration' })
+    }
 
-  async enterDetectorConfigurationStep(name: string, configuration: string) {
-    return test.step(`Enter configuration for detector ${ name }`, async () => {
-      await this.getConfigurationSelect(name).click()
-      await this.getConfigurationSelectOptions(name).getByText('Create new').click()
-      await this.page.getByTestId(`input-${ name }-configuration`).fill(configuration)
-    })
-  }
+    getConfigurationSelectOptions(): Locator {
+        return  this.page.getByTestId(`detector-configuration-select-popup`)
+    }
+
+    async enterDetectorConfigurationStep(name: string, configuration: string) {
+        return test.step(`Enter configuration for detector ${ name }`, async () => {
+            await this.getConfigurationSelect(name).click()
+            await this.getConfigurationSelectOptions().getByText('Create new').click()
+            await this.page.getByRole('row', { name }).getByRole('textbox').fill(configuration)
+        })
+    }
 }

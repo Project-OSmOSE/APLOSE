@@ -9,22 +9,23 @@ export type LinkProps =
     & { inText?: boolean }
 
 export const Link = React.forwardRef<HTMLAnchorElement, Omit<LinkProps, 'ref'>>(({
-                                                                                       to,
-                                                                                       params,
-                                                                                       search,
-                                                                                       preload,
-                                                                                       replace,
-                                                                                       inText,
-                                                                                       children,
-                                                                                       ...props
-                                                                                   }, ref) => (
+                                                                                     to,
+                                                                                     params,
+                                                                                     search,
+                                                                                     preload,
+                                                                                     replace,
+                                                                                     inText,
+                                                                                     children,
+                                                                                     color,
+                                                                                     ...props
+                                                                                 }, ref) => (
     <RouterLink ref={ ref }
                 to={ to }
                 params={ params }
                 search={ search }
                 preload={ preload }
                 replace={ replace }
-                className={ [ styles.Link, inText ? styles.Text : '' ].join(' ') }>
-        { inText ? <Fragment>{ children }</Fragment> : <Button { ...props }>{ children }</Button> }
+                className={ [ styles.Link, inText ? styles.Text : '', styles[color ?? ''] ].join(' ') }>
+        { inText ? <Fragment>{ children }</Fragment> : <Button color={ color } { ...props }>{ children }</Button> }
     </RouterLink>
 ))

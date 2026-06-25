@@ -3,7 +3,8 @@
 :root {
     /* Primary */
     --color-primary: #238583;
-    --color-primary-text: #22817F;
+    --color-primary-text: #1F7573;
+    --color-primary-bg: #22817F;
     --color-primary-rgb: 35, 133, 131;
     --color-primary-h: 179;
     --color-primary-s: 58%;
@@ -13,7 +14,8 @@
 
     /* Success */
     --color-success: #85B14D;
-    --color-success-text: #618038;
+    --color-success-text: #5A7533;
+    --color-success-bg: #5E7C36;
     --color-success-rgb: 133, 177, 77;
     --color-success-h: 86;
     --color-success-s: 39%;
@@ -23,7 +25,8 @@
 
     /* Warning */
     --color-warning: #CC8229;
-    --color-warning-text: #A26720;
+    --color-warning-text: #955F1D;
+    --color-warning-bg: #A26720;
     --color-warning-rgb: 204, 130, 41;
     --color-warning-h: 33;
     --color-warning-s: 67%;
@@ -33,7 +36,8 @@
 
     /* Danger */
     --color-danger: #D86045;
-    --color-danger-text: #CE4A2C;
+    --color-danger-text: #B94227;
+    --color-danger-bg: #CE4A2C;
     --color-danger-rgb: 216, 96, 69;
     --color-danger-h: 11;
     --color-danger-s: 65%;
@@ -49,7 +53,8 @@
 
     /* Medium */
     --color-medium: #6C757D;
-    --color-medium-text: #6C757D;
+    --color-medium-text: #616970;
+    --color-medium-bg: #6C757D;
     --color-medium-rgb: 108, 117, 125;
     --color-medium-shade: #5f676e;
     --color-medium-tint: #7b838a;

@@ -1,8 +1,8 @@
 import React from 'react';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import Markdown from 'react-markdown';
-import { getLoader } from '@/api/utils';
 import { AuthRestAPI } from '@/api';
+import { AppStore } from '@/features/App';
 
 const TermsOfUse: React.FC = () => {
     const content: string = Route.useLoaderData()
@@ -11,10 +11,16 @@ const TermsOfUse: React.FC = () => {
 
 export const Route = createFileRoute('/(public)/terms')({
     loader: async () => {
-        const { data, error } = await getLoader(AuthRestAPI.endpoints.terms, undefined)
-        if (error?.originalStatus === 404) throw notFound()
-        if (!data) throw notFound()
-        return data
+        let info = AuthRestAPI.endpoints.terms.select()(AppStore.getState() as any)
+        if (info.data) return info
+
+        const promise = AppStore.dispatch(AuthRestAPI.endpoints.terms.initiate())
+        info = await promise
+        promise.unsubscribe()
+
+        if ((info.error as any)?.originalStatus === 404) throw notFound()
+        if (!info.data) throw notFound()
+        return info.data
     },
     component: TermsOfUse,
 })

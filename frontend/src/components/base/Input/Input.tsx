@@ -2,6 +2,7 @@ import React, { Fragment, type HTMLInputTypeAttribute, useCallback, useMemo, use
 import { Input as BaseInput, type InputProps as BaseInputProps } from '@base-ui/react'
 import styles from './Input.module.scss'
 import { Eye, EyeClosed } from '@solar-icons/react';
+import { useEvent } from '@/components/ui/Event';
 
 export type InputProps = Omit<BaseInputProps, 'type' | 'render'> & {
     startIcon?: any,
@@ -9,6 +10,8 @@ export type InputProps = Omit<BaseInputProps, 'type' | 'render'> & {
 }
 
 export const Input: React.FC<InputProps> = ({ className, type, startIcon: _startIcon, ...props }) => {
+    const { enableShortcuts, disableShortcuts } = useEvent()
+
     const [ pwdType, setPwdType ] = useState<HTMLInputTypeAttribute>('password');
     const togglePwdType = useCallback(() => {
         setPwdType(prev => prev === 'password' ? 'text' : 'password')
@@ -37,6 +40,8 @@ export const Input: React.FC<InputProps> = ({ className, type, startIcon: _start
         <BaseInput className={ styles.Input }
                    render={ type === 'textarea' ? <textarea/> : undefined }
                    type={ type === 'password' ? pwdType : type }
+                   onFocus={ disableShortcuts }
+                   onBlur={ enableShortcuts }
                    { ...props }/>
 
         { startIcon }

@@ -1,18 +1,18 @@
-import type { BrowseStorageQueryVariables, SearchStorageQueryVariables } from '@/features/Storage';
-import type { GetDatasetByIdQueryVariables } from '@/features/Dataset';
-import type { FileRangesForPhaseQueryVariables } from '@/features/AnnotationFileRange';
-import type { AllCampaignsQueryVariables, GetCampaignQueryVariables } from '@/features/AnnotationCampaign';
+import type { BrowseStorageQueryVariables, SearchStorageQueryVariables } from '@/features/Storage/api';
+import type { GetDatasetByIdQueryVariables } from '@/features/Dataset/api';
+import type { FileRangesForPhaseQueryVariables } from '@/features/AnnotationFileRange/api';
+import type { AllCampaignsQueryVariables, GetCampaignQueryVariables } from '@/features/AnnotationCampaign/api';
 import type {
     AllSpectrogramAnalysisForDatasetQueryVariables,
     AllSpectrogramAnalysisQueryVariables,
-} from '@/features/SpectrogramAnalysis';
-import type { GetDetailedSoundByIdQueryVariables, GetDetailedSourceByIdQueryVariables } from '@/features/Ontology';
-import type { GetAnnotationPhaseQueryVariables } from '@/features/AnnotationPhase';
+} from '@/features/SpectrogramAnalysis/api';
+import type { GetDetailedSoundByIdQueryVariables, GetDetailedSourceByIdQueryVariables } from '@/features/Ontology/api';
+import type { GetAnnotationPhaseQueryVariables } from '@/features/AnnotationPhase/api';
 import type {
     AllAnnotationSpectrogramsQueryVariables,
     GetAnnotationSpectrogramPathsQueryVariables,
     GetAnnotationSpectrogramQueryVariables,
-} from '@/features/AnnotationSpectrogram';
+} from '@/features/AnnotationSpectrogram/api';
 import type { AnnotationPhaseType } from '@/api/types.gql-generated';
 
 /**

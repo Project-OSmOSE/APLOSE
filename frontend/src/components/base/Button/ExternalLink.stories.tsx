@@ -1,6 +1,6 @@
 import { ExternalLink, type ExternalLinkProps } from './ExternalLink.tsx';
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
-import type { BaseColor } from '@/components/base/types';
+import { BaseColors } from '@/components/base/types';
 import type { HTMLAttributeAnchorTarget } from 'react';
 
 const meta = {
@@ -19,7 +19,7 @@ const meta = {
         },
         color: {
             control: { type: 'radio' },
-            options: [ 'default', 'primary', 'warning', 'danger' ] as BaseColor[],
+            options: BaseColors,
             type: 'BaseColor',
         },
         target: {
@@ -38,8 +38,4 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
-export const Default: Story = {
-    args: {
-        target: '_blank',
-    } satisfies ExternalLinkProps,
-};
+export const Default: Story = {};

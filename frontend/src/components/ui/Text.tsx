@@ -1,8 +1,6 @@
-import React, { Fragment, ReactNode, useMemo } from 'react';
+import React, { Fragment, ReactNode } from 'react';
 import styles from './ui.module.scss';
 import { getErrorMessage } from '@/service/function';
-import { CopyErrorStackButton } from '@/components/base/Button';
-import type { GqlError } from '@/api/baseGqlApi';
 import { DangerTriangle } from '@solar-icons/react';
 
 export const FadedText: React.FC<{ children: ReactNode }> = ({ children }) => (
@@ -25,26 +23,3 @@ export const WarningText: React.FC<{
     </div>
 )
 
-
-export const GraphQLErrorText: React.FC<{
-    error: GqlError,
-    className?: string
-}> = ({ error, className }) => {
-
-    return useMemo(() => {
-        className = [ styles.warningText, className ].join(' ')
-        if (!error.messages) {
-            return <div className={ className }>
-                <DangerTriangle weight="LineDuotone" size={ 24 }/>
-                { error.statusErrorMessage }
-            </div>
-        }
-
-        return <div className={ [ styles.warningText, className ].join(' ') }>
-            <DangerTriangle weight="LineDuotone" size={ 24 }/>
-            { error.messages.map((m, k) => <Fragment key={ k }>{ m }</Fragment>) }
-            <CopyErrorStackButton stack={ error.original } withLabel/>
-        </div>
-    }, [ error, className ])
-
-}

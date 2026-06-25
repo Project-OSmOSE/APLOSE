@@ -4,7 +4,7 @@ import { clearTempAnnotation, setTempAnnotation } from './slice';
 import { selectTempAnnotation } from './selectors';
 import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
 import { AnnotationType } from '@/api';
-import { MOUSE_DOWN_EVENT, MOUSE_MOVE_EVENT, MOUSE_UP_EVENT, useEvent } from '@/features/UX/Events';
+import { MOUSE_DOWN_EVENT, MOUSE_MOVE_EVENT, MOUSE_UP_EVENT, useRegisterToEvent } from '@/components/ui/Event';
 import { useGetFreqTime, useIsHoverCanvas } from '@/features/Annotator/Pointer';
 import { formatTime } from '@/service/function';
 import { selectFocusLabel } from '@/features/Annotator/Label';
@@ -64,7 +64,7 @@ export const useTempAnnotationsEvents = () => {
             endFrequency: data.frequency,
         }))
     }, [ isHoverCanvas, getFreqTime, isDrawingEnabled, dispatch ])
-    useEvent(MOUSE_DOWN_EVENT, onStartTempAnnotation);
+    useRegisterToEvent(MOUSE_DOWN_EVENT, onStartTempAnnotation);
 
     const onUpdateTempAnnotation = useCallback((e: PointerEvent<HTMLDivElement>) => {
         const isHover = isHoverCanvas(e)
@@ -81,7 +81,7 @@ export const useTempAnnotationsEvents = () => {
         }
         if (!isHover || !data) pointer.clearPosition()
     }, [ isHoverCanvas, getFreqTime, dispatch, tempAnnotation, pointer ])
-    useEvent(MOUSE_MOVE_EVENT, onUpdateTempAnnotation);
+    useRegisterToEvent(MOUSE_MOVE_EVENT, onUpdateTempAnnotation);
 
     const onEndNewAnnotation = useCallback((e: PointerEvent<HTMLDivElement>) => {
         if (tempAnnotation && focusedLabel) {
@@ -142,7 +142,7 @@ export const useTempAnnotationsEvents = () => {
         dispatch(clearTempAnnotation())
         if (!isHoverCanvas(e)) pointer.clearPosition()
     }, [ dispatch, pointer, addAnnotation, getFreqTime, isHoverCanvas, toastManager, timeScale, frequencyScale, campaign, focusedLabel, defaultConfidence, focusedConfidence, tempAnnotation ])
-    useEvent(MOUSE_UP_EVENT, onEndNewAnnotation);
+    useRegisterToEvent(MOUSE_UP_EVENT, onEndNewAnnotation);
 
     return { onStartTempAnnotation }
 }

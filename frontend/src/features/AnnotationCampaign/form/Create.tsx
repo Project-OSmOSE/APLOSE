@@ -43,7 +43,6 @@ export const Create: React.FC = () => {
     const submit = useCallback(async (event: BaseUIEvent<React.FormEvent<HTMLFormElement>>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        console.log('submit', formData);
         [ ...formData.entries() ].forEach(data => console.log(...data))
 
         try {

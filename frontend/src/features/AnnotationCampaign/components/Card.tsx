@@ -36,12 +36,10 @@ export const Card: React.FC<CardProps> = ({ campaign }) => {
 
         { campaign.tasksCount ?
             <Progress value={ campaign.completedTasksCount / campaign.tasksCount * 100 }
-                      disabled={ campaign.isArchived }
                       color="medium">
                 Campaign progress
             </Progress> : <Progress value={ campaign.completedTasksCount }
                                     max={ 0 }
-                                    disabled={ campaign.isArchived }
                                     color="medium">
                 Campaign progress
             </Progress> }

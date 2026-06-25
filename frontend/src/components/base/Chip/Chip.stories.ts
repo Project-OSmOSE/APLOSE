@@ -25,7 +25,7 @@ const meta = {
     // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#story-args
     args: {
         children: 'My chip',
-        color: 'primary',
+        color: 'default',
     } satisfies ChipProps,
 } satisfies Meta<typeof Chip>;
 export default meta;
@@ -33,3 +33,13 @@ type Story = StoryObj<typeof meta>;
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {};
+
+export const Primary: Story = { args: { color: 'primary' } satisfies Partial<ChipProps> };
+
+export const Warning: Story = { args: { color: 'warning' } satisfies Partial<ChipProps> };
+
+export const Danger: Story = { args: { color: 'danger' } satisfies Partial<ChipProps> };
+
+export const Success: Story = { args: { color: 'success' } satisfies Partial<ChipProps> };
+
+export const Medium: Story = { args: { color: 'medium' } satisfies Partial<ChipProps> };

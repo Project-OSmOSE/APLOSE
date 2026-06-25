@@ -12,12 +12,13 @@ import {
 } from '@ionic/react';
 import { IonRadioGroupCustomEvent } from '@ionic/core/dist/types/components';
 import { caretDown, caretUp } from 'ionicons/icons/index.js';
-import { AUX_CLICK_EVENT, CLICK_EVENT, useEvent, useFilter } from '@/features/UX';
+import { AUX_CLICK_EVENT, CLICK_EVENT, useRegisterToEvent } from '@/components/ui/Event';
 import { Modal, ModalFooter, ModalHeader, usePopover } from '@/components/ui';
 import styles from './form.module.scss'
 import { Item } from './types';
 import { Label } from './Label';
 import { Note } from '@/components/base/Note';
+import { useFilter } from '@/features/UX';
 
 
 export type SelectValue = number | string | undefined;
@@ -84,8 +85,8 @@ export const Select: React.FC<SelectProperties> = ({
         if (event.target === optionsRef.current) return;
         setIsOpen(false);
     }, [ setIsOpen ])
-    useEvent(CLICK_EVENT, blur);
-    useEvent(AUX_CLICK_EVENT, blur);
+    useRegisterToEvent(CLICK_EVENT, blur);
+    useRegisterToEvent(AUX_CLICK_EVENT, blur);
 
     const getOptions = useCallback((): Array<Item> => {
         let values = [ ...parentOptions ];

@@ -2,7 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { Toast } from '@/components/base/Toast';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
-import { useKeyDownEvent } from '@/features/UX/Events';
+import { useRegisterToKeyDownEvent } from '@/components/ui/Event';
 import { AnnotationTask } from '@/features';
 import { convertAnnotationsToPost, selectAllAnnotations } from '@/features/Annotator/Annotation';
 import { convertCommentsToPost, selectTaskComments } from '@/features/Annotator/Comment';
@@ -70,7 +70,7 @@ export const useAnnotatorSubmit = () => {
         }
         realSubmit()
     }, [ toastManager, realSubmit, isEditionAuthorized, allFileIsSeen ])
-    useKeyDownEvent([ 'Enter', 'NumpadEnter' ], () => submit())
+    useRegisterToKeyDownEvent([ 'Enter', 'NumpadEnter' ], () => submit())
 
     useEffect(() => {
         if (!isSuccess) return;

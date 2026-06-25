@@ -1,4 +1,4 @@
-import React, { type ReactNode } from 'react';
+import React, { Fragment, type ReactNode } from 'react';
 import type { ComboboxRootProps } from '@base-ui/react/combobox'
 import { Combobox } from './index';
 
@@ -19,14 +19,19 @@ export function ComboboxSelect<Value, Multiple extends boolean | undefined = fal
                                                                                         placeholder,
                                                                                         itemToStringLabel,
                                                                                         itemToElementValue,
+                                                                                        disabled,
                                                                                         ...props
                                                                                     }: ComboboxSelectProps<Value, Multiple>): React.JSX.Element {
     return (
-        <Combobox.Root itemToStringLabel={ itemToStringLabel } { ...props }>
+        <Combobox.Root itemToStringLabel={ itemToStringLabel }
+                       disabled={ disabled }
+                       { ...props }>
 
             <Combobox.InputGroup>
                 <Combobox.Input placeholder={ placeholder ? placeholder : `Select a ${ itemName }` } id={ id }/>
-                <Combobox.Clear/>
+                { !disabled && <Fragment>
+                    <Combobox.Clear/>
+                </Fragment> }
                 <Combobox.Trigger/>
                 { itemToElementValue && <Combobox.Value children={ item => itemToElementValue(item) }/> }
             </Combobox.InputGroup>
