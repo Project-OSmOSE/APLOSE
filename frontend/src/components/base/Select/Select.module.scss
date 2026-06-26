@@ -4,10 +4,14 @@
   border-radius: #{Input.$vertical-space};
   border: none;
   background: var(--color-light-shade);
-  padding: #{Input.$vertical-space} calc(#{Input.$horizontal-space} * 2 + #{Input.$icon-size}) #{Input.$vertical-space} #{Input.$horizontal-space};
+  padding: #{Input.$vertical-space}
+  calc(#{Input.$horizontal-space} * 2 + #{Input.$icon-size})
+  #{Input.$vertical-space} #{Input.$horizontal-space};
   outline-color: var(--color-primary);
   accent-color: var(--color-primary);
   font-size: inherit;
+  text-align: start;
+  position: relative;
 
   &[data-invalid] {
     box-shadow: inset 0 0 0 1px var(--color-danger);
@@ -16,6 +20,7 @@
   .ChevronIcon {
     position: absolute;
     width: #{Input.$icon-size};
+    height: #{Input.$icon-size};
     top: 50%;
     transform: translateY(-50%);
     background-color: transparent;

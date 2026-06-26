@@ -33,7 +33,7 @@ const meta = {
         children: 'Test link',
         color: 'default',
         disabled: false,
-        to: '/'
+        to: '/',
     } satisfies LinkProps,
 } satisfies Meta<typeof Link>;
 export default meta;
@@ -52,6 +52,8 @@ export const Success: Story = { args: { color: 'success' } satisfies Partial<Lin
 
 export const Medium: Story = { args: { color: 'medium' } satisfies Partial<LinkProps> };
 
+export const Dark: Story = { args: { color: 'dark' } satisfies Partial<LinkProps> };
+
 export const DefaultInText: Story = {};
 
 export const PrimaryInText: Story = { args: { color: 'primary', inText: true } satisfies Partial<LinkProps> };
@@ -63,3 +65,5 @@ export const DangerInText: Story = { args: { color: 'danger', inText: true } sat
 export const SuccessInText: Story = { args: { color: 'success', inText: true } satisfies Partial<LinkProps> };
 
 export const MediumInText: Story = { args: { color: 'medium', inText: true } satisfies Partial<LinkProps> };
+
+export const DarkInText: Story = { args: { color: 'dark', inText: true } satisfies Partial<LinkProps> };

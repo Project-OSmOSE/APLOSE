@@ -53,3 +53,5 @@ export const Danger: Story = { args: { color: 'danger' } satisfies Partial<Butto
 export const Success: Story = { args: { color: 'success' } satisfies Partial<ButtonProps> };
 
 export const Medium: Story = { args: { color: 'medium' } satisfies Partial<ButtonProps> };
+
+export const Dark: Story = { args: { color: 'dark' } satisfies Partial<ButtonProps> };

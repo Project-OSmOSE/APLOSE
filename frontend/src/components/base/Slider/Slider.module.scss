@@ -1,0 +1,111 @@
+@use '@/css/base';
+
+.Root {
+  display: grid;
+  align-items: center;
+  min-width: 14rem;
+
+  &:has(.Label) .Control {
+    grid-column: 1/-1;
+  }
+
+  // Colors
+  .Indicator {
+    background-color: var(--color-medium);
+  }
+
+  .Thumb {
+    background-color: var(--color-medium-tint);
+  }
+
+  .Value {
+    color: var(--color-medium-text);
+  }
+
+  @each $color in base.$colors {
+    &[color=#{$color}] {
+      .Indicator {
+        background-color: var(--color-#{$color});
+      }
+
+      .Thumb {
+        background-color: var(--color-#{$color}-tint);
+      }
+
+      .Value {
+        color: var(--color-#{$color}-text);
+      }
+    }
+  }
+
+  // Display
+  .Label {
+    grid-area: label
+  }
+
+  .Value {
+    grid-area: value;
+  }
+
+  .Control {
+    grid-area: control;
+  }
+
+  &:has(.Label) {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "label value" "control control";
+  }
+
+  &:not(:has(.Label)):has(.Value) {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "control value";
+    gap: 0.5rem;
+  }
+}
+
+.Value {
+  text-align: end;
+  font-size: 0.9rem;
+  line-height: 0.9rem;
+  font-weight: 600;
+}
+
+.Control {
+  grid-area: control;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-self: stretch;
+  padding-block: 0.75rem;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.Track {
+  width: 100%;
+  height: 0.25rem;
+  background: var(--color-light-shade);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.Indicator {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.Thumb {
+  box-sizing: border-box;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 2rem;
+  -webkit-user-select: none;
+  user-select: none;
+  box-shadow: var(--box-shadow-small);
+
+  &:has(:focus-visible) {
+    outline: 2px solid oklch(14.5% 0 0deg);
+    outline-offset: 2px;
+  }
+}

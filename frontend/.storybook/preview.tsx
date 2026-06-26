@@ -3,6 +3,7 @@ import type { Preview } from '@storybook/tanstack-react/dist'
 import '../src/css/base.css';
 import { Toast } from '../src/components/base';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { StoreProvider } from '../src/features/App';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -40,12 +41,9 @@ const preview: Preview = {
         },
     },
     decorators: [
-        (Story: any) => <Toast.Provider>
-            <Story/>
-        </Toast.Provider>,
-        (Story: any) => <QueryClientProvider client={ queryClient }>
-            <Story/>
-        </QueryClientProvider>,
+        (Story: any) => <Toast.Provider children={ <Story/> }/>,
+        (Story: any) => <QueryClientProvider client={ queryClient } children={ <Story/> }/>,
+        (Story: any) => <StoreProvider children={ <Story/> }/>,
     ],
 };
 

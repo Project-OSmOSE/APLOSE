@@ -4,6 +4,7 @@ export const BaseColors = [
     'success',
     'warning',
     'danger',
-    'medium'
+    'medium',
+    'dark'
 ]
 export type BaseColor = typeof BaseColors[number];
