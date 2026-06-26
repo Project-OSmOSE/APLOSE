@@ -3,11 +3,10 @@ import { createFileRoute, notFound } from '@tanstack/react-router'
 
 import { AnnotationPhaseType } from '@/api';
 import { useAppSelector } from '@/features/App';
-import { AudioDownloadButton, CurrentTime, PlaybackRateSelect, PlayPauseButton, useAudio } from '@/features/Audio';
+import { CurrentTime, PlaybackRateSelect, PlayPauseButton, useAudio } from '@/features/Audio';
 import { usePointer } from '@/features/Annotator/Pointer';
 import { AnnotatorSkeleton } from '@/features/Annotator/Skeleton';
 import { selectAnalysisID } from '@/features/Annotator/Analysis';
-import { SpectrogramDownloadButton } from '@/features/Annotator/Spectrogram';
 import { AnnotatorCanvasWindow } from '@/features/Annotator/Canvas';
 import { NavigationButtons } from '@/features/Annotator/Navigation';
 import { FocusedAnnotationBloc } from '@/features/Annotator/Annotation';
@@ -23,6 +22,7 @@ import { AnnotationCampaign, AnnotationSpectrogram } from '@/features';
 import { UserAPI } from '@/features/User';
 import { useQuery } from '@tanstack/react-query';
 import { ConfigBar } from '@/features/Annotator/ConfigBar';
+import { DownloadButtons } from '@/features/Annotator/DownloadButtons';
 
 const AnnotatorPage: React.FC = () => {
     const campaignID = Route.useParams({ select: ({ campaignID }) => campaignID });
@@ -95,10 +95,7 @@ const AnnotatorPage: React.FC = () => {
                     </Fragment> }
                 </div>
 
-                <div className={ styles.downloadButtons }>
-                    <AudioDownloadButton/>
-                    <SpectrogramDownloadButton/>
-                </div>
+                <DownloadButtons/>
             </div>
         </AnnotatorSkeleton>
     }, [ spectrogram, isEditionAuthorized ])
