@@ -4,12 +4,18 @@ import styles from './Slider.module.scss'
 import type { BaseColor } from '@/components/base/types';
 import { Note } from '@/components/base';
 
-export type SliderProps = Omit<BaseProps, 'thumbAlignment' | 'children'> & {
+export type SliderProps = Omit<BaseProps<number>, 'thumbAlignment' | 'children'> & {
     color?: BaseColor
     label?: string
     displayValue?: boolean
 }
-export const Slider: React.FC<SliderProps> = ({ label, displayValue, className, ...props }) => (
+export const Slider: React.FC<SliderProps> = ({
+                                                  label,
+                                                  displayValue,
+                                                  className,
+                                                  onDoubleClick,
+                                                  ...props
+                                              }) => (
     <BaseSlider.Root className={ [ styles.Root, className ].join(' ') }
                      thumbAlignment="edge"
                      { ...props }>
@@ -17,7 +23,7 @@ export const Slider: React.FC<SliderProps> = ({ label, displayValue, className, 
                                      className={ styles.Label }
                                      children={ label }/> }
         { displayValue && <BaseSlider.Value className={ styles.Value }/> }
-        <BaseSlider.Control className={ styles.Control }>
+        <BaseSlider.Control onDoubleClick={ onDoubleClick } className={ styles.Control }>
             <BaseSlider.Track className={ styles.Track }>
                 <BaseSlider.Indicator className={ styles.Indicator }/>
                 <BaseSlider.Thumb className={ [ styles.Thumb, className ].join(' ') }/>

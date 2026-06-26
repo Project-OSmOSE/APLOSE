@@ -56,7 +56,7 @@ export class CampaignCreatePage {
     }
 
     async selectColormap(colormap: Colormap) {
-        await this.page.getByRole('combobox', { name: 'Colormap' }).fill(colormap);
+        await this.page.getByRole('combobox', { name: 'Default colormap' }).click();
         const popup = this.page.getByTestId('colormap-select-popup')
         await popup.getByText(colormap).click();
     }

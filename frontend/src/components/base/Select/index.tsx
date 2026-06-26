@@ -11,25 +11,28 @@ export type SelectProps<Value, Multiple extends boolean | undefined = false> =
     itemName: string
     itemToStringValue: (item: Value) => string,
     itemToElementLabel: (item: Value) => ReactNode,
+    valueItemToElementLabel?: (item: Value) => ReactNode,
 }
 
 export function Select<Value, Multiple extends boolean = false>({
                                                                     itemName,
                                                                     items,
                                                                     itemToElementLabel,
+                                                                    valueItemToElementLabel,
                                                                     ...props
                                                                 }: SelectProps<Value, Multiple>) {
 
-    const _itemToElementLabel = useCallback((value: Value | null) => {
-        if (value) return itemToElementLabel(value)
-        return <Note color="medium">Select { itemName }</Note>
-    }, [ itemToElementLabel, itemName ])
+    const _valueItemToElementLabel = useCallback((value: Value | null) => {
+        if (!value) return <Note color="medium">Select { itemName }</Note>
+        if (valueItemToElementLabel) return valueItemToElementLabel(value)
+        return itemToElementLabel(value)
+    }, [ itemToElementLabel, valueItemToElementLabel, itemName ])
 
     return <BaseSelect.Root items={ items.map(i => ({ label: itemToElementLabel(i), value: i })) }
                             { ...props }>
         <BaseSelect.Trigger className={ styles.Select }>
             <BaseSelect.Value className={ styles.Value }
-                              children={ _itemToElementLabel }/>
+                              children={ _valueItemToElementLabel }/>
             <BaseSelect.Icon className={ styles.ChevronIcon }>
                 <AltArrowDown weight="Linear" size={ 20 }/>
             </BaseSelect.Icon>

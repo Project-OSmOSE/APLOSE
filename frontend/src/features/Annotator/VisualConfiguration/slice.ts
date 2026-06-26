@@ -40,8 +40,8 @@ export const AnnotatorVisualConfigurationSlice = createSlice({
         resetContrast: (state) => {
             state.contrast = initialState.contrast;
         },
-        setColormap: (state, action: { payload: Colormap | undefined }) => {
-            state.colormap = action.payload;
+        setColormap: (state, action: { payload: Colormap | null | undefined }) => {
+            state.colormap = action.payload ?? undefined;
         },
         revertColormap: (state) => {
             state.isColormapReversed = !state.isColormapReversed;
@@ -67,7 +67,7 @@ export const AnnotatorVisualConfigurationSlice = createSlice({
 
     },
     extraReducers: builder => {
-        builder.addCase(setAnalysis, (state: VisualConfigurationState, action: { payload: Analysis }) => {
+        builder.addCase(setAnalysis, (state: VisualConfigurationState, action: { payload: Analysis | null }) => {
             if (!state._allowConfiguration) return;
             if (action.payload?.colormap.name !== 'Greys' as Colormap) return;
             state.colormap = state.colormap ?? state._campaignDefaultColormap ?? 'Greys'

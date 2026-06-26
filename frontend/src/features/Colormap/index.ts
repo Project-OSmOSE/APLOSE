@@ -1,3 +1,3 @@
 export * from './const'
 
-export * as ColormapComponents from './components'
+export * as ColormapComponent from './components'

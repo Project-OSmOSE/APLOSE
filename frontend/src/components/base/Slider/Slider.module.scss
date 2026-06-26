@@ -51,15 +51,54 @@
     grid-area: control;
   }
 
-  &:has(.Label) {
-    grid-template-columns: 1fr auto;
-    grid-template-areas: "label value" "control control";
-  }
+  grid-template-areas: "control";
 
-  &:not(:has(.Label)):has(.Value) {
+  &:has(.Value) {
     grid-template-columns: 1fr auto;
     grid-template-areas: "control value";
     gap: 0.5rem;
+  }
+
+  &:has(.Label) {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "label value" "control control";
+    gap: 0;
+  }
+
+  // Orientation
+  &[data-orientation='vertical'] {
+    height: 8rem;
+    min-width: unset;
+    justify-items: center;
+
+    .Control {
+      height: 100%;
+      padding-inline: 0.75rem;
+    }
+
+    .Track {
+      height: 100%;
+      width: 0.25rem;
+    }
+
+    &:has(.Value) {
+      grid-template-columns: unset;
+      grid-template-rows: 1fr auto;
+      grid-template-areas: "control" "value";
+      gap: 0;
+    }
+
+    &:has(.Label) {
+      grid-template-columns: unset;
+      grid-template-rows: auto 1fr;
+      grid-template-areas: "label" "control";
+      gap: 0;
+
+      &:has(.Value) {
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas: "label" "control" "value";
+      }
+    }
   }
 }
 
@@ -75,6 +114,7 @@
   box-sizing: border-box;
   display: flex;
   align-items: center;
+  justify-content: center;
   justify-self: stretch;
   padding-block: 0.75rem;
   touch-action: none;

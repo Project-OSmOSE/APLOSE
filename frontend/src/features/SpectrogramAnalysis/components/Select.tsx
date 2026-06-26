@@ -1,101 +1,59 @@
-import React, { Fragment, useCallback, useState } from 'react';
-import { queryOptions, useQuery } from '@tanstack/react-query';
+import React, { useCallback } from 'react';
 
-import { queryKeys } from '@/api/queryKeys';
-import { Combobox } from '@/components/base'
+import type { ColormapNode, FftNode, LinearScaleNode, Maybe, SpectrogramAnalysisNode } from '@/api/types.gql-generated';
+import { Note, Select as BaseSelect, SelectProps as BaseSelectProps } from '@/components/base'
+import { cleanGqlList } from '@/api/utils';
+import { frequencyToString } from '@/service/function';
 
-import * as API from '../api'
-
-type N<T> = NonNullable<T>
-export type SelectValue = N<N<API.AllSpectrogramAnalysisForDatasetQuery['allSpectrogramAnalysis']>['results'][number]>
-
-type RootProps = Combobox.ComboboxRootProps<SelectValue, true>
-const ComboboxRoot: React.FC<RootProps> = (props) => <Combobox.Root multiple { ...props }/>
-
-function toStr(value: SelectValue) {
-    return `${ value.name } (${ value.colormap.name })`
+export type SelectValue = Pick<SpectrogramAnalysisNode, 'id'> & {
+    fft: Pick<FftNode, 'nfft' | 'windowSize' | 'overlap' | 'samplingFrequency'>,
+    colormap: Pick<ColormapNode, 'name'>,
+    frequencyScaleParts?: Maybe<Array<Maybe<Pick<LinearScaleNode, 'minValue' | 'maxValue'>>>>;
 }
 
-type AnalysisSelectProps =
-    Omit<RootProps, 'items' | 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue'>
-    & {
-    datasetID?: string, id?: string, fillOnLoad?: boolean,
-    onValueChange?: ((value: SelectValue[]) => void);
-}
-export const Select: React.FC<AnalysisSelectProps> = ({
-                                                          datasetID,
-                                                          id,
-                                                          fillOnLoad,
-                                                          value,
-                                                          onValueChange,
-                                                          ...props
-                                                      }) => {
+export type SelectProps = Omit<BaseSelectProps<SelectValue, false>, 'itemName' | 'itemToStringValue' | 'itemToElementLabel' | 'isItemEqualToValue'>
+export const Select: React.FC<SelectProps> = (props) => {
 
-    const [ values, setValues ] = useState<SelectValue[]>(value ?? []);
-    const onChange = useCallback((values: SelectValue[]) => {
-        setValues(values);
-        if (onValueChange) onValueChange(values);
-    }, [ setValues, onValueChange ])
-    const queryFn = useCallback(async () => {
-        if (!datasetID) return;
-        const analysis = await API.allForDatasetQueryFn({ datasetID })
-        if (fillOnLoad) onChange(analysis)
-        return analysis
-    }, [ datasetID, onChange, fillOnLoad ])
-    const {
-        data: analysis,
-        isPending,
-        isSuccess,
-    } = useQuery(queryOptions({
-        queryKey: queryKeys.analysis.allForDataset({ datasetID: datasetID ?? '' }),
-        queryFn,
-        enabled: !!datasetID,
-    }))
+    const itemToElementLabel = useCallback((item: SelectValue) => {
+        const parts = cleanGqlList(item.frequencyScaleParts)
+        const defaultMax = item.fft.samplingFrequency / 2
+        let min = 0
+        let max = defaultMax
+        if (parts.length) {
+            min = Math.min(...parts.map(a => a?.minValue ?? 0))
+            max = Math.max(...parts.map(a => a?.maxValue ?? defaultMax))
+        }
+        return <div>
+            <Note color="medium">nfft: </Note>{ item.fft.nfft }
+            <Note color="medium"> | winsize: </Note>{ item.fft.windowSize }
+            <Note color="medium"> | overlap: </Note>{ item.fft.overlap }
+            <Note color="medium"> |
+                scale: </Note>{ parts.length > 0 ? parts.length : 1 } [{ frequencyToString(min) }Hz-{ frequencyToString(max) }Hz]
+            <Note color="medium"> | colormap: </Note>{ item.colormap.name }
+        </div>
+    }, [])
+
+    const valueItemToElementLabel = useCallback((item: SelectValue) => {
+        const parts = cleanGqlList(item.frequencyScaleParts)
+        const defaultMax = item.fft.samplingFrequency / 2
+        let min = 0
+        let max = defaultMax
+        if (parts.length) {
+            min = Math.min(...parts.map(a => a?.minValue ?? 0))
+            max = Math.max(...parts.map(a => a?.maxValue ?? defaultMax))
+        }
+        return <div>
+            { item.fft.nfft }_{ item.fft.windowSize }_{ item.fft.overlap }
+            <Note color="medium"> | { parts.length > 0 ? parts.length : 1 } [{ frequencyToString(min) }Hz-{ frequencyToString(max) }Hz] | { item.colormap.name }</Note>
+        </div>
+    }, [])
 
     return (
-        <ComboboxRoot value={ values }
-                      onValueChange={ onChange }
-                      items={ analysis }
-                      itemToStringValue={ itemValue => itemValue.id }
-                      itemToStringLabel={ toStr }
-                      disabled={ !datasetID || !isSuccess }
-                      isItemEqualToValue={ (itemValue: SelectValue, value: SelectValue) => itemValue.id == value.id }
-                      { ...props }>
-
-            <Combobox.InputGroup>
-                <Combobox.Chips>
-                    <Combobox.Value>
-                        { (value: SelectValue[]) => (
-                            <Fragment>
-                                <Combobox.Input id={ id } placeholder={ value.length > 0 ? '' : 'Select analysis' }/>
-                                { value.map((analysis) => (
-                                    <Combobox.Chip key={ analysis.id } aria-label={ toStr(analysis) }>
-                                        { toStr(analysis) }
-                                    </Combobox.Chip>
-                                )) }
-                            </Fragment>
-                        ) }
-                    </Combobox.Value>
-                </Combobox.Chips>
-
-                { datasetID && isPending && <Combobox.Loader/> }
-            </Combobox.InputGroup>
-
-            <Combobox.Portal>
-                <Combobox.Positioner side="top">
-                    <Combobox.Popup>
-                        <Combobox.Empty>No analysis found.</Combobox.Empty>
-                        <Combobox.List>
-                            { (item: SelectValue) => (
-                                <Combobox.Item key={ item.id } value={ item }>
-                                    <Combobox.ItemIndicator/>
-                                    <span>{ toStr(item) }</span>
-                                </Combobox.Item>
-                            ) }
-                        </Combobox.List>
-                    </Combobox.Popup>
-                </Combobox.Positioner>
-            </Combobox.Portal>
-        </ComboboxRoot>
+        <BaseSelect itemName="analysis"
+                    itemToStringValue={ item => item.id }
+                    itemToElementLabel={ itemToElementLabel }
+                    valueItemToElementLabel={ valueItemToElementLabel }
+                    isItemEqualToValue={ (a, b) => a.id === b.id }
+                    { ...props }/>
     )
 }

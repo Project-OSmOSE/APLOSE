@@ -61,6 +61,8 @@
 
     /* Dark */
     --color-dark: #061D38;
+    --color-dark-text: #061D38;
+    --color-dark-bg: #061D38;
     --color-dark-rgb: 6, 29, 56;
     --color-dark-shade: #051a31;
     --color-dark-tint: #1f344c;

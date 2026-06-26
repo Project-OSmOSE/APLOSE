@@ -17,7 +17,7 @@ export const AnnotatorAnalysisSlice = createSlice({
         _campaignID: undefined,
     } as AnalysisState,
     reducers: {
-        setAnalysis: (state, action: { payload: Analysis }) => {
+        setAnalysis: (state, action: { payload: Analysis | null }) => {
             state.id = action.payload?.id
         },
     },

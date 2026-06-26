@@ -4,17 +4,10 @@ import { createFileRoute, notFound } from '@tanstack/react-router'
 import { AnnotationPhaseType } from '@/api';
 import { useAppSelector } from '@/features/App';
 import { AudioDownloadButton, CurrentTime, PlaybackRateSelect, PlayPauseButton, useAudio } from '@/features/Audio';
-import { PointerInfo, usePointer } from '@/features/Annotator/Pointer';
+import { usePointer } from '@/features/Annotator/Pointer';
 import { AnnotatorSkeleton } from '@/features/Annotator/Skeleton';
-import { AnalysisSelect, selectAnalysisID } from '@/features/Annotator/Analysis';
-import {
-    BrightnessSelect,
-    ColormapReverseButton,
-    ColormapSelect,
-    ContrastSelect,
-} from '@/features/Annotator/VisualConfiguration';
-import { ZoomButtons } from '@/features/Annotator/Zoom';
-import { SpectrogramDownloadButton, SpectrogramInfo } from '@/features/Annotator/Spectrogram';
+import { selectAnalysisID } from '@/features/Annotator/Analysis';
+import { SpectrogramDownloadButton } from '@/features/Annotator/Spectrogram';
 import { AnnotatorCanvasWindow } from '@/features/Annotator/Canvas';
 import { NavigationButtons } from '@/features/Annotator/Navigation';
 import { FocusedAnnotationBloc } from '@/features/Annotator/Annotation';
@@ -29,6 +22,7 @@ import { queryClient } from '@/api/queryClient';
 import { AnnotationCampaign, AnnotationSpectrogram } from '@/features';
 import { UserAPI } from '@/features/User';
 import { useQuery } from '@tanstack/react-query';
+import { ConfigBar } from '@/features/Annotator/ConfigBar';
 
 const AnnotatorPage: React.FC = () => {
     const campaignID = Route.useParams({ select: ({ campaignID }) => campaignID });
@@ -77,22 +71,7 @@ const AnnotatorPage: React.FC = () => {
 
                 <div className={ styles.spectrogramContainer }>
 
-                    <div className={ styles.spectrogramData }>
-
-                        <div className={ styles.spectrogramConfiguration }>
-                            <AnalysisSelect/>
-                            <div>
-                                <ColormapSelect/>
-                                <ColormapReverseButton/>
-                            </div>
-                            <BrightnessSelect/>
-                            <ContrastSelect/>
-                            <ZoomButtons/>
-                        </div>
-
-                        <PointerInfo/>
-                        <SpectrogramInfo/>
-                    </div>
+                    <ConfigBar/>
 
                     <AnnotatorCanvasWindow/>
 
@@ -137,12 +116,12 @@ export const Route = createFileRoute(
         const user = await queryClient.ensureQueryData(UserAPI.currentQuery)
         const [
             { spectrogram, ...data },
-            { analysis }
+            { analysis },
         ] = await Promise.all([
             queryClient.ensureQueryData(AnnotationSpectrogram.API.getQuery({
-            campaignID, phaseType, spectrogramID, ...deps, annotatorID: user!.id,
-        })),
-            queryClient.ensureQueryData(AnnotationCampaign.API.byIdQuery({ id: campaignID }))
+                campaignID, phaseType, spectrogramID, ...deps, annotatorID: user!.id,
+            })),
+            queryClient.ensureQueryData(AnnotationCampaign.API.byIdQuery({ id: campaignID })),
         ])
         if (!spectrogram) throw notFound()
         const baseScaleAnalysis = analysis.find(a =>

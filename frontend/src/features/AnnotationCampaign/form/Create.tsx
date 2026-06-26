@@ -11,7 +11,7 @@ import { useAppDispatch } from '@/features/App';
 import { Slice as StorageSlice } from '@/features/Storage'
 import { DatasetComponent } from '@/features/Dataset';
 import { AnalysisComponent } from '@/features/SpectrogramAnalysis';
-import { ColormapComponents } from '@/features/Colormap';
+import { ColormapComponent } from '@/features/Colormap';
 
 import * as API from '../api'
 import styles from './CampaignForm.module.scss'
@@ -128,10 +128,10 @@ export const Create: React.FC = () => {
 
             <Field.Root name="analysisIDs">
                 <Field.Label htmlFor={ analysisSelectID }>Analysis</Field.Label>
-                <AnalysisComponent.Select datasetID={ dataset?.id }
-                                          required fillOnLoad
-                                          id={ analysisSelectID }
-                                          onValueChange={ setAnalysis }/>
+                <AnalysisComponent.ComboboxSelectMultiple datasetID={ dataset?.id }
+                                                          required fillOnLoad
+                                                          id={ analysisSelectID }
+                                                          onValueChange={ setAnalysis }/>
                 { !dataset && <Field.Description>Select a dataset first</Field.Description> }
                 <Field.Error/>
             </Field.Root>
@@ -159,11 +159,10 @@ export const Create: React.FC = () => {
                 <Field.Error/>
             </Field.Root>
 
-            { (allowColormapTuning ||true) && <Fragment>
+            { allowColormapTuning && <Fragment>
                 <Field.Root name="colormapDefault">
                     <Field.Label htmlFor={ colormapSelectID }>Default colormap</Field.Label>
-                    <ColormapComponents.Select id={ colormapSelectID }
-                                               required/>
+                    <ColormapComponent.Select required/>
                     <Field.Error/>
                 </Field.Root>
 

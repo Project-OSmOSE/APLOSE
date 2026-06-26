@@ -3,24 +3,10 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 0.5rem;
-
-  img {
-    border-radius: 0.2rem;
-  }
 }
 
-// Inside popup
-*[data-base-ui-portal] .SelectItem {
-  position: initial;
-  transform: unset;
-}
-
-.SelectValue {
-  margin: 0.5rem;
+.Colormap {
   height: 1rem;
+  width: 6rem;
   border-radius: 0.2rem;
 }

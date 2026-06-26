@@ -104,7 +104,6 @@ const ConfigurationSelect: React.FC<{
     }, [])
 
     const hasItems = useMemo(() => {
-        console.debug('hasItems', name, items?.length)
         return items && items.length > 0
     }, [ items ])
 
