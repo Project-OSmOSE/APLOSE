@@ -3,9 +3,6 @@ import styles from './ui.module.scss';
 import { getErrorMessage } from '@/service/function';
 import { DangerTriangle } from '@solar-icons/react';
 
-export const FadedText: React.FC<{ children: ReactNode }> = ({ children }) => (
-    <span className={ styles.fadedText }>{ children }</span>
-)
 
 export const WarningText: React.FC<{
     message?: string,

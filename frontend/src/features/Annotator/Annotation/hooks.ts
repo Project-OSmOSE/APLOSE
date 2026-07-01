@@ -5,8 +5,8 @@ import { selectAllAnnotations } from './selectors'
 import { getNewItemID } from '@/service/function';
 import { AnnotationType } from '@/api';
 import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
-import { useAlert } from '@/components/ui';
 import { useLoaderData, useParams } from '@tanstack/react-router';
+import { Alert } from '@/components/base';
 
 type AnnotationEqualsType = Pick<Annotation, 'label' | 'confidence' | 'startTime' | 'endTime' | 'startFrequency' | 'endFrequency'>
 
@@ -191,32 +191,42 @@ export const useRemoveAnnotation = () => {
     const getAnnotations = useGetAnnotations()
     const invalidate = useInvalidateAnnotation()
     const dispatch = useAppDispatch();
-    const alert = useAlert()
+    const alert = Alert.useManager()
 
-    const remove = useCallback((annotation: Annotation, focusWeak: boolean = true, mustConfirm: boolean = true) => {
-        if (annotation.type === 'Weak' && mustConfirm) {
-            const annotationsForLabel = getAnnotations({ label: annotation.label })
-            alert.showAlert({
-                type: 'Warning',
-                message: `You are about to remove ${ annotationsForLabel.length } annotations using "${ annotation.label }" label. Are you sure?`,
-                actions: [ {
-                    label: `Remove "${ annotation.label }" annotations`,
-                    callback: () => {
-                        annotationsForLabel.forEach(a => remove(a, false, false))
-                    },
-                } ],
-            })
-            return;
-        }
+    const actualRemove = useCallback((annotation: Annotation) => {
         if (phaseType === 'Annotation' || annotation.annotator === user.id) {
             dispatch(removeAnnotation(annotation))
-            const weak = allAnnotations.find(a => a.type === AnnotationType.Weak && a.label === annotation.label && a.id !== annotation.id);
-            if (weak && focusWeak) dispatch(focusAnnotation(weak))
-            else dispatch(blur())
         } else {
             invalidate(annotation)
         }
-    }, [ phaseType, allAnnotations, invalidate, getAnnotations, user, dispatch ])
+    }, [phaseType, dispatch, invalidate, user])
+
+    const remove = useCallback(async (annotation: Annotation, focusWeak: boolean = true, mustConfirm: boolean = true) => {
+        if (annotation.type === 'Weak' && mustConfirm) {
+            const annotationsForLabel = getAnnotations({ label: annotation.label })
+            const confirmRemove = await alert.present({
+                color: 'warning',
+                message: `You are about to remove ${ annotationsForLabel.length } annotations using "${ annotation.label }" label. Are you sure?`,
+                buttons: [
+                    { type: 'Cancel' },
+                    {
+                        type: 'Confirm',
+                        confirmData: true,
+                        text: `Remove "${ annotation.label }" annotations`,
+                    },
+                ],
+            })
+            if (confirmRemove) {
+                for (const a of annotationsForLabel) actualRemove(a)
+                dispatch(blur())
+            }
+        } else {
+            actualRemove(annotation)
+            const weak = allAnnotations.find(a => a.type === AnnotationType.Weak && a.label === annotation.label && a.id !== annotation.id);
+            if (weak && focusWeak && annotation.annotator === user.id) dispatch(focusAnnotation(weak))
+            else dispatch(blur())
+        }
+    }, [ phaseType, allAnnotations, actualRemove, alert, getAnnotations, user, dispatch ])
 
     return useCallback((annotation: Annotation) => remove(annotation), [ remove ])
 }

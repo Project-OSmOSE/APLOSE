@@ -1,26 +1,26 @@
 import { useCallback } from 'react';
-import { useAlert } from '@/components/ui';
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
 import { useAppSelector } from '@/features/App';
 import { selectUpdated } from '@/features/Annotator/UX';
+import { Alert } from '@/components/base';
 
-//TODO!!
+// TODO: useTanstack <Block/> or useBlock()
 export const useAnnotatorCanNavigate = () => {
     const isUpdated = useAppSelector(selectUpdated);
-    const alert = useAlert();
+    const alert = Alert.useManager()
 
-    return useCallback(async (): Promise<boolean> => {
+    return useCallback(async (): Promise<boolean | null> => {
         if (!isUpdated) return true;
-        return new Promise<boolean>((resolve) => {
-            alert.showAlert({
-                type: 'Warning',
-                message: `You have unsaved changes. Are you sure you want to forget all of them?`,
-                actions: [ {
-                    label: 'Forget my changes',
-                    callback: () => resolve(true),
-                } ],
-                onCancel: () => resolve(false),
-            })
+        return await alert.present({
+            color: 'warning',
+            message: `You have unsaved changes. Are you sure you want to forget all of them?`,
+            buttons: [ {
+                type: 'Cancel',
+            }, {
+                type: 'Confirm',
+                text: 'Forget my changes',
+                confirmData: true,
+            } ],
         })
     }, [ alert, isUpdated ])
 }

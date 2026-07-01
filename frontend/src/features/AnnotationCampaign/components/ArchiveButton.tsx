@@ -4,31 +4,55 @@ import { useLoaderData } from '@tanstack/react-router';
 import { useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/base/Button';
 import { Archive } from '@solar-icons/react';
-import { Dialog } from '@/components/base/Dialog';
-import { ArchiveEmptyConfirmation, ArchiveUnfinishedConfirmation } from '@/features/AnnotationCampaign/modal';
+import { Alert } from '@/components/base';
+import type { AlertButton } from '@/components/base/Alert/Alert';
 
 export const ArchiveButton: React.FC = () => {
     const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { mutate: archiveCampaign } = useMutation(archiveMutation)
 
-    const emptyConfirmDialog = Dialog.createHandle();
-    const unfinishedConfirmDialog = Dialog.createHandle();
-
-    const confirmArchive = useCallback(() => {
-        archiveCampaign(campaign)
-    }, [ archiveCampaign, campaign ])
+    const alert = Alert.useManager()
 
     const archive = useCallback(async () => {
-        if (phases.length === 0)
-            return emptyConfirmDialog.open(null)
+        const buttons: AlertButton<boolean>[] = [
+            { type: 'Cancel' },
+            {
+                type: 'Confirm',
+                confirmData: true,
+                color: 'warning',
+                text: 'Archive',
+            },
+        ]
+        if (phases.length === 0) {
+            const confirm = await alert.present({
+                color: 'warning',
+                title: 'Empty campaign',
+                message: <Fragment>
+                    The campaign is empty.<br/>
+                    Are you sure you want to archive this campaign?
+                </Fragment>,
+                buttons,
+            })
+            if (!confirm) return;
+        }
 
         const progress = phases.reduce((previousValue, p) => previousValue + ((p.isOpen ? p.completedTasksCount : p.tasksCount) ?? 0), 0);
         const total = phases.reduce((previousValue, p) => previousValue + (p.tasksCount ?? 0), 0);
-        if (progress < total)
-            return unfinishedConfirmDialog.open(null)
+        if (progress < total) {
+            const confirm = await alert.present({
+                color: 'warning',
+                title: 'Unfinished campaign',
+                message: <Fragment>
+                    There is still unfinished annotations.<br/>
+                    Are you sure you want to archive this campaign?
+                </Fragment>,
+                buttons,
+            })
+            if (!confirm) return;
+        }
 
-        confirmArchive()
-    }, [ phases, confirmArchive, emptyConfirmDialog, unfinishedConfirmDialog ]);
+        archiveCampaign(campaign)
+    }, [ phases, archiveCampaign, campaign, alert ]);
 
     if (campaign.isArchived || !campaign.isEditable || !campaign.isUserAllowedToManage) return <Fragment/>
     return <Fragment>
@@ -36,17 +60,5 @@ export const ArchiveButton: React.FC = () => {
             <Archive weight="Linear" size={ 20 }/>
             Archive
         </Button>
-
-        <Dialog.Root handle={ emptyConfirmDialog }>
-            <Dialog.Portal>
-                <ArchiveEmptyConfirmation onConfirm={ confirmArchive }/>
-            </Dialog.Portal>
-        </Dialog.Root>
-
-        <Dialog.Root handle={ unfinishedConfirmDialog }>
-            <Dialog.Portal>
-                <ArchiveUnfinishedConfirmation onConfirm={ confirmArchive }/>
-            </Dialog.Portal>
-        </Dialog.Root>
     </Fragment>
 }

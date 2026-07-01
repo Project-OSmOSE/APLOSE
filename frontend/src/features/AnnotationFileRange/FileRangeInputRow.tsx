@@ -3,7 +3,7 @@ import { useLoaderData } from '@tanstack/react-router';
 import { Lock, TrashBinTrash } from '@solar-icons/react';
 
 import { AnnotationFileRangeInput, ErrorType, UserNode } from '@/api';
-import { Td, Th, Tr, useAlert } from '@/components/ui';
+import { Td, Th, Tr } from '@/components/ui';
 import { Button, ButtonGroup, Dialog, Field, Popover } from '@/components/base';
 
 import { NBSP } from '@/service/type';
@@ -24,12 +24,11 @@ export const FileRangeInputRow: React.FC<{
 }> = ({ range, annotator, onUpdate, onDelete, setForced, errors }) => {
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const [ isLocked, setIsLocked ] = useState<boolean>(range.started ?? false);
-    const alert = useAlert();
 
     const unlock = useCallback(() => {
         setIsLocked(false)
         if (setForced) setForced()
-    }, [ alert, setForced ])
+    }, [ setForced ])
 
     const firstFileIndexError = useMemo(() => errors?.find(e => e.field === 'firstFileIndex')?.messages.join(' '), [ errors ])
     const lastFileIndexError = useMemo(() => errors?.find(e => e.field === 'lastFileIndex')?.messages.join(' '), [ errors ])

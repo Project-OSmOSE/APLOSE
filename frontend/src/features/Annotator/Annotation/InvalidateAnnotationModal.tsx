@@ -1,59 +1,61 @@
 import React, { Fragment, useCallback } from 'react';
-import { Modal, ModalHeader, type ModalProps } from '@/components/ui';
 import { Annotation, focusAnnotation } from './slice'
 import { AnnotationType } from '@/api';
 import { useInvalidateAnnotation } from './hooks';
 import { useAppDispatch } from '@/features/App';
-import { Button } from '@/components/base/Button';
+import { Dialog } from '@/components/base';
 
-export const InvalidateAnnotationModal: React.FC<ModalProps & {
+export type InvalidateAnnotationModalProps = {
     annotation: Annotation,
     onAskLabelChange: () => void
-}> = ({ onClose, annotation, onAskLabelChange }) => {
+}
+export const InvalidateAnnotationModal: React.FC<InvalidateAnnotationModalProps> = ({
+                                                                                        annotation,
+                                                                                        onAskLabelChange,
+                                                                                    }) => {
     const invalidate = useInvalidateAnnotation()
 
     const dispatch = useAppDispatch();
 
     const move = useCallback(() => {
-        onClose();
         dispatch(focusAnnotation(annotation))
-    }, [ onClose, dispatch, annotation ]);
+    }, [ dispatch, annotation ]);
 
     const askUpdateLabel = useCallback(() => {
         dispatch(focusAnnotation(annotation))
         onAskLabelChange()
-        onClose();
-    }, [ dispatch, annotation, onClose, onAskLabelChange ]);
+    }, [ dispatch, annotation, onAskLabelChange ]);
 
     const remove = useCallback(() => {
-        onClose()
         invalidate(annotation)
-    }, [ onClose, invalidate, annotation ]);
+    }, [ invalidate, annotation ]);
 
-    return <Modal onClose={ onClose }>
-        <ModalHeader title="Invalidate a result" onClose={ onClose }/>
-        <h5>Why do you want to invalidate this result?</h5>
+    return <Dialog.Content>
+        <Dialog.Title>Invalidate a result</Dialog.Title>
+        <Dialog.CloseIcon/>
+
+        <p>Why do you want to invalidate this result?</p>
 
         <div>
             { annotation.type !== AnnotationType.Weak && <Fragment>
                 <p>The position or dimension of the annotation is incorrect</p>
-                <Button onClick={ move }>
+                <Dialog.Close color='primary' onClick={ move }>
                     Move or resize
-                </Button>
+                </Dialog.Close>
             </Fragment> }
         </div>
         <div>
             <p>The label is incorrect</p>
-            <Button onClick={ askUpdateLabel }>
+            <Dialog.Close color='primary' onClick={ askUpdateLabel }>
                 Change the label
-            </Button>
+            </Dialog.Close>
         </div>
         <div>
             <p>The annotation shouldn't exist</p>
-            <Button onClick={ remove }>
+            <Dialog.Close color='primary' onClick={ remove }>
                 Remove
-            </Button>
+            </Dialog.Close>
         </div>
 
-    </Modal>
+    </Dialog.Content>
 }

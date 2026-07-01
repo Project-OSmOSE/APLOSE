@@ -1,4 +1,3 @@
-export * from './Alert'
 export * from './ExtendedDiv'
 export * from './Scale'
 export * from './Modal'
@@ -11,5 +10,3 @@ export * from './Pagination'
 export * from './Table'
 export * from './Tabs'
 export * from './Text'
-
-export * from './popover.hook'
