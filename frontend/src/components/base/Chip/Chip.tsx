@@ -4,15 +4,19 @@ import styles from './Chip.module.scss'
 
 export type ChipProps = {
     color?: BaseColor;
+    annotationColorIndex?: number;
 } & HTMLProps<HTMLDivElement>;
 
 export const Chip: React.FC<ChipProps> = ({
                                               children,
                                               color,
+                                              annotationColorIndex,
+                                              className,
                                               ...props
                                           }) => {
-
-    return <div className={ styles.Chip }
+    const classes = [ styles.Chip, className ]
+    if (annotationColorIndex !== undefined) classes.push(styles['index-' + annotationColorIndex%10])
+    return <div className={ classes.join(' ') }
                 data-color={ color }
                 { ...props }>
         { children }

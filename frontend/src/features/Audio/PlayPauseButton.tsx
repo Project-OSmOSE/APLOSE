@@ -1,9 +1,8 @@
 import React, { Fragment, useCallback } from 'react';
-import { IonIcon } from '@ionic/react';
-import { pause, play } from 'ionicons/icons/index.js';
 import { Kbd } from '@/components/ui';
 import { useAudio } from './context';
 import { Popover } from '@/components/base/Popover';
+import { Pause, Play } from '@solar-icons/react';
 
 export const PlayPauseButton: React.FC = () => {
     const audio = useAudio()
@@ -17,14 +16,13 @@ export const PlayPauseButton: React.FC = () => {
                 audio.play();
                 break;
         }
-    }, [ audio.state ])
+    }, [ audio ])
 
     if (!audio.source) return <Fragment/>
     return <Popover.Root>
-        <Popover.Trigger color="primary"
-                         onClick={ toggle }>
-            { audio.state === 'pause' && <IonIcon icon={ play } slot={ 'icon-only' }/> }
-            { audio.state === 'play' && <IonIcon icon={ pause } slot={ 'icon-only' }/> }
+        <Popover.Trigger color="primary" onClick={ toggle }>
+            { audio.state === 'pause' && <Play weight="Bold" size={ 20 }/> }
+            { audio.state === 'play' && <Pause weight="Bold" size={ 20 }/> }
         </Popover.Trigger>
         <Popover.Content>
             <Popover.Title>Shortcut</Popover.Title>

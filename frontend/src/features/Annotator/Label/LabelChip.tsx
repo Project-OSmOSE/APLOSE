@@ -1,6 +1,4 @@
-import React, { MouseEvent, useCallback, useMemo } from 'react';
-import { IonChip, IonIcon } from '@ionic/react';
-import { checkmarkOutline, closeCircle, eyeOffOutline, eyeOutline } from 'ionicons/icons/index.js';
+import React, { Fragment, MouseEvent, useCallback, useMemo } from 'react';
 import styles from './styles.module.scss';
 import { Kbd } from '@/components/ui';
 import {
@@ -21,6 +19,8 @@ import { selectFocusLabel, selectHiddenLabels } from './selectors';
 import { NBSP } from '@/service/type';
 import { useLoaderData } from '@tanstack/react-router';
 import { Popover } from '@/components/base/Popover';
+import { Chip, type ChipProps, ChipRemove } from '@/components/base';
+import { Eye, EyeClosed, Unread } from '@solar-icons/react';
 
 export const AlphanumericKeys = [
     [ '&', 'é', '"', '\'', '(', '-', 'è', '_', 'ç' ],
@@ -48,9 +48,7 @@ export const LabelChip: React.FC<{
     const number = useMemo(() => AlphanumericKeys[1][index], [ index ]);
     const key = useMemo(() => AlphanumericKeys[0][index], [ index ]);
     const isUsed = useMemo(() => allAnnotations.some(a => a.label === label), [ allAnnotations, label ])
-    const color = useMemo(() => (index % 10).toString(), [ index ])
     const isHidden = useMemo(() => hiddenLabels.includes(label), [ hiddenLabels, label ])
-    const buttonColor = useMemo(() => focusedLabel === label ? undefined : color, [ color, focusedLabel, label ])
     const dispatch = useAppDispatch()
 
     const select = useCallback(() => {
@@ -67,7 +65,7 @@ export const LabelChip: React.FC<{
     const show = useCallback((event: MouseEvent) => {
         event.stopPropagation();
         // Hide all but current if ctrlKey pressed
-        if (event.ctrlKey) dispatch(setHiddenLabels(labels.map(l => l.name)))
+        if (event.ctrlKey) dispatch(setHiddenLabels(labels.map(l => l.name).filter(l => l !== label)))
         dispatch(setHiddenLabels(hiddenLabels.filter(l => l !== label)))
     }, [ label, hiddenLabels, dispatch, labels ])
 
@@ -78,26 +76,25 @@ export const LabelChip: React.FC<{
         else dispatch(setHiddenLabels([ ...hiddenLabels, label ]))
     }, [ label, show, dispatch, hiddenLabels ])
 
-    const remove = useCallback((event: MouseEvent) => {
-        event.stopPropagation();
+    const remove = useCallback(() => {
         const annotation = getAnnotation({ label, type: AnnotationType.Weak })
         if (!annotation) return;
         removeAnnotation(annotation)
     }, [ label, getAnnotation, removeAnnotation ])
 
     return (
-        <IonChip outline={ !isUsed }
-                 className={ className }
-                 data-testid="label-chip"
-                 onClick={ select }
-                 color={ color }>
-            { focusedLabel === label && <IonIcon src={ checkmarkOutline }/> }
+        <Chip className={ className }
+            // outline={ !isUsed }
+              data-testid="label-chip"
+              onClick={ select }
+              { ...(isUsed ? { annotationColorIndex: index } : { color: 'medium' }) as Partial<ChipProps> }>
+            { focusedLabel === label && <Unread weight="Linear" size={ 20 }/> }
 
             { index >= 9 ?
-                <p>{ label }</p> :
+                <span>{ label }</span> :
                 <Popover.Root>
-                    <Popover.Trigger>
-                        <p>{ label }</p>
+                    <Popover.Trigger render={ <span/> } nativeButton={ false }>
+                        { label }
                     </Popover.Trigger>
                     <Popover.Content>
                         <Popover.Title>Shortcut</Popover.Title>
@@ -110,12 +107,12 @@ export const LabelChip: React.FC<{
             }
 
 
-            { isUsed && <div className={ styles.labelsButtons }>
+            { isUsed && <Fragment>
                 <Popover.Root>
-                    <Popover.Trigger>
+                    <Popover.Trigger render={ <div/> } nativeButton={ false } className={ styles.button }>
                         { isHidden ?
-                            <IonIcon icon={ eyeOffOutline } onClick={ show } color={ buttonColor }/> :
-                            <IonIcon icon={ eyeOutline } onClick={ hide } color={ buttonColor }/> }
+                            <EyeClosed weight="Linear" size={ 20 } onClick={ show }/> :
+                            <Eye weight="Linear" size={ 20 } onClick={ hide }/> }
                     </Popover.Trigger>
                     <Popover.Content>
                         <p>{ isHidden ? 'Show' : 'Hide' } corresponding annotations on spectrogram</p>
@@ -124,15 +121,12 @@ export const LabelChip: React.FC<{
                 </Popover.Root>
 
                 <Popover.Root>
-                    <Popover.Trigger>
-                        <IonIcon icon={ closeCircle }
-                                 onClick={ remove }
-                                 data-testid="remove-label"
-                                 color={ buttonColor }/>
+                    <Popover.Trigger render={ <div/> } nativeButton={ false } className={ styles.button }>
+                        <ChipRemove onClick={ remove } data-testid="remove-label"/>
                     </Popover.Trigger>
                     <Popover.Content>Remove corresponding annotations</Popover.Content>
                 </Popover.Root>
-            </div> }
-        </IonChip>
+            </Fragment> }
+        </Chip>
     )
 }

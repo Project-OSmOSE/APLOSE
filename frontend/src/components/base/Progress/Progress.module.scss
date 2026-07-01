@@ -3,24 +3,36 @@
 .Progress {
   display: grid;
   grid-template-columns: 1fr auto;
-  row-gap: 0.5rem;
+  grid-template-areas: "label value" "track track";
+  align-items: center;
+  gap: 0.5rem;
   min-width: 15rem;
   max-width: 100%;
+
+  &:has(.Value) {
+    grid-template-areas: "track value";
+  }
+
+  &:has(.Label) {
+    grid-template-areas: "label value" "track track";
+  }
 }
 
 .Label {
+  grid-area: label;
   font-size: 0.9rem;
   color: var(--color-medium);
 }
 
 .Value {
+  grid-area: value;
   text-align: right;
   font-size: 0.9rem;
   font-weight: 600;
 }
 
 .Track {
-  grid-column: 1 / -1;
+  grid-area: track;
   overflow: hidden;
   height: 0.25rem;
   background-color: var(--color-light-shade);

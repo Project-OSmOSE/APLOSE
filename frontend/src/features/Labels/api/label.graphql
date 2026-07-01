@@ -1,13 +1,12 @@
+fragment Label on AnnotationLabelNode { id, name }
+
 query listLabelSets {
     allLabelSets {
         results {
             id
             name
             description
-            labels {
-                id
-                name
-            }
+            labels { ...Label }
         }
     }
 }

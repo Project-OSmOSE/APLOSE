@@ -1,15 +1,14 @@
 import React, { Fragment, MouseEvent, useCallback, useMemo, useState } from 'react';
 import { Td, Th } from '@/components/ui';
-import { Input } from '@/components/form';
-import { IonButton, IonCheckbox, IonIcon } from '@ionic/react';
+import { Button, Input, Note } from '@/components/base';
+import { IonCheckbox } from '@ionic/react';
 import styles from './styles.module.scss';
-import { createOutline } from 'ionicons/icons';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { endPositionSelection, selectIsSelectingPositionForAnnotation, selectPosition } from '@/features/Annotator/UX';
 import { useGetFreqTime, useIsInAnnotation } from '@/features/Annotator/Pointer';
 import { CLICK_EVENT, useRegisterToEvent } from '@/components/ui/Event';
 import type { Annotation } from '@/features/Annotator/Annotation';
-import { Note } from '@/components/base/Note';
+import { PenNewSquare } from '@solar-icons/react';
 
 
 export const InputRow: React.FC<{
@@ -83,11 +82,10 @@ export const InputRow: React.FC<{
                        value={ value ?? '' } type="number" min={ 0 } max={ max } disabled={ disabled }
                        onChange={ e => update(e.target.valueAsNumber) }/>
                 { unit && <Note>{ unit }</Note> }
-                { clickable && <IonButton size="small" fill="clear"
-                                          className={ isSelecting ? styles.selectedButton : undefined }
-                                          onClick={ toggleSelection }>
-                    <IonIcon icon={ createOutline } slot="icon-only"/>
-                </IonButton> }
+                { clickable && <Button disabled={ isSelecting }
+                                       onClick={ toggleSelection }>
+                    <PenNewSquare weight="Linear" size={ 20 }/>
+                </Button> }
             </div>
         </Td>
     </Fragment>

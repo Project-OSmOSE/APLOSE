@@ -1,4 +1,8 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:color';
 @use "@/css/base";
+@use "@/css/annotation";
 
 .Button {
   border: none;
@@ -44,6 +48,18 @@
       }
     }
   }
+
+  @for $index from 0 through 9 {
+    &.index-#{$index} {
+      $color: list.nth(annotation.$colors, $index + 1);
+      color: map.get($color, text);
+
+      &:not([disabled]):hover {
+        background: color.change(map.get($color, base), $alpha: .1);
+      }
+    }
+  }
+
 }
 
 .ButtonGroup {

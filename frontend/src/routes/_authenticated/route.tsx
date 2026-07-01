@@ -34,7 +34,7 @@ const Component: React.FC = () => {
         if (!isFetching && (status === 'error' || !user)) handleNotConnected()
     }, [ status, user ]);
 
-    return <Page.Authenticated><Outlet/></Page.Authenticated>
+    return <Outlet/>
 }
 export const Route = createFileRoute('/_authenticated')({
     loader: async () => {

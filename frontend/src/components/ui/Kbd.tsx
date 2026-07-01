@@ -23,10 +23,12 @@ type Key =
   | 'space'
   | string
   | number;
+const isMac = navigator.platform.toUpperCase().indexOf('MAC')>=0;
+
 const KEY_MAP: Record<Key, string> = {
   command: '⌘',
   shift: '⇧',
-  ctrl: '⌃',
+  ctrl: isMac ? '⌃' : 'Ctrl',
   option: '⌥',
   enter: '↵',
   delete: '⌫',

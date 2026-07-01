@@ -14,6 +14,7 @@ import { UserAPI } from '@/features/User';
 import { useMutation } from '@tanstack/react-query';
 import { Content } from '@/components/layout/Content';
 import { cleanGqlList } from '@/api/utils';
+import { Page } from '@/components/layout';
 
 type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
     id: string;
@@ -150,65 +151,67 @@ const EditAnnotators: React.FC = () => {
         if (submissionStatus === 'success') back()
     }, [ submissionStatus ]);
 
-    return <Content oneContent>
-        <Head title="Manage annotators"
-              canGoBack
-              subtitle={ `${ campaign.name } - ${ phase.phase }` }/>
+    return <Page.Authenticated>
+        <Content oneContent>
+            <Head title="Manage annotators"
+                  canGoBack
+                  subtitle={ `${ campaign.name } - ${ phase.phase }` }/>
 
-        <Form center>
-            <Search onSearch={ addFileRange } fileRanges={ fileRanges }/>
+            <Form center>
+                <Search onSearch={ addFileRange } fileRanges={ fileRanges }/>
 
 
-            <Table>
-                <Thead>
-                    <Tr>
-                        <Th scope="col">Annotator</Th>
-                        <Th scope="col" colSpan={ 2 }>
-                            File range
-                            <br/>
-                            <small>(between 1 and { campaign?.spectrogramsCount })</small>
-                            <br/>
-                            <small className="disabled"><i>Start and end limits are included</i></small>
-                        </Th>
-                        <Th scope="col"/>
-                    </Tr>
-                </Thead>
-                <Tbody>
-                    { fileRanges.map((range, k) => {
-                            const user = users.find(u => u?.id == range.annotatorId)
-                            if (!user) return <Fragment/>
-                            return <FileRangeInputRow key={ k }
-                                                      range={ range }
-                                                      annotator={ user }
-                                                      onUpdate={ change => {
-                                                          updateFileRange({
-                                                              ...range,
-                                                              ...change,
-                                                          })
-                                                      } }
-                                                      setForced={ () => setForce(true) }
-                                                      onDelete={ removeFileRange }/>
-                        },
-                    ) }
-                </Tbody>
+                <Table>
+                    <Thead>
+                        <Tr>
+                            <Th scope="col">Annotator</Th>
+                            <Th scope="col" colSpan={ 2 }>
+                                File range
+                                <br/>
+                                <small>(between 1 and { campaign?.spectrogramsCount })</small>
+                                <br/>
+                                <small className="disabled"><i>Start and end limits are included</i></small>
+                            </Th>
+                            <Th scope="col"/>
+                        </Tr>
+                    </Thead>
+                    <Tbody>
+                        { fileRanges.map((range, k) => {
+                                const user = users.find(u => u?.id == range.annotatorId)
+                                if (!user) return <Fragment/>
+                                return <FileRangeInputRow key={ k }
+                                                          range={ range }
+                                                          annotator={ user }
+                                                          onUpdate={ change => {
+                                                              updateFileRange({
+                                                                  ...range,
+                                                                  ...change,
+                                                              })
+                                                          } }
+                                                          setForced={ () => setForce(true) }
+                                                          onDelete={ removeFileRange }/>
+                            },
+                        ) }
+                    </Tbody>
 
-                { fileRanges.length === 0 && <Note color="medium">No annotators</Note> }
-            </Table>
+                    { fileRanges.length === 0 && <Note color="medium">No annotators</Note> }
+                </Table>
 
-            { phase?.phase === 'Verification' && <Note>
-                To fully verify your annotations, you should have a verification user that is not an annotator or at
-                least two verification users
-            </Note> }
+                { phase?.phase === 'Verification' && <Note>
+                    To fully verify your annotations, you should have a verification user that is not an annotator or at
+                    least two verification users
+                </Note> }
 
-            <ButtonGroup end>
-                { isSubmitting && <Spinner/> }
+                <ButtonGroup end>
+                    { isSubmitting && <Spinner/> }
 
-                <Button disabled={ isSubmitting } color="primary" onClick={ submit }>
-                    Update annotators
-                </Button>
-            </ButtonGroup>
-        </Form>
-    </Content>
+                    <Button disabled={ isSubmitting } color="primary" onClick={ submit }>
+                        Update annotators
+                    </Button>
+                </ButtonGroup>
+            </Form>
+        </Content>
+    </Page.Authenticated>
 }
 
 export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/edit-annotators')({

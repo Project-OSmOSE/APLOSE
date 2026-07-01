@@ -1,14 +1,12 @@
 import React, { Fragment, ReactNode, useEffect } from 'react';
-import { Header, OldFooter } from '@/components/layout';
-import { Progress } from '@/components/ui';
+import { Footer, Navigation } from '@/components/layout';
 import styles from './styles.module.scss';
 import { IoCheckmarkCircleOutline, IoChevronForwardOutline } from 'react-icons/io5';
 import { AnnotationTaskStatus } from '@/api';
 import { useAppDispatch } from '@/features/App';
-import { useAnnotatorCanNavigate } from '@/features/Annotator/Navigation';
 import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
 import { PointerProvider } from '@/features/Annotator/Pointer/context';
-import { useLoaderData, useSearch } from '@tanstack/react-router';
+import { useLoaderData } from '@tanstack/react-router';
 import { AnnotatorVisualConfigurationSlice } from '@/features/Annotator/VisualConfiguration';
 import type { Colormap } from '@/features/Colormap';
 import { AnnotatorConfidenceSlice } from '@/features/Annotator/Confidence';
@@ -18,12 +16,9 @@ import { AnnotatorUXSlice } from '@/features/Annotator/UX';
 import { AnnotatorCommentSlice } from '@/features/Annotator/Comment';
 import { cleanGqlList } from '@/api/utils';
 import { AnnotatorAnnotationSlice, convertGqlToAnnotations } from '@/features/Annotator/Annotation';
-import { ExternalLink, Link } from '@/components/base/Button';
-import { Help } from '@solar-icons/react';
-import { Note } from '@/components/base/Note';
+import { Note, Progress } from '@/components/base';
 
 export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
-    const search = useSearch({ strict: false });
     const { user } = useLoaderData({ from: '/_authenticated' })
     const {
         campaign,
@@ -37,7 +32,15 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
         isEditionAuthorized,
         defaultAnalysis,
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
-    const canNavigate = useAnnotatorCanNavigate()
+    //TODO!!
+    // const canNavigate = useAnnotatorCanNavigate()
+    // const isUpdated = useAppSelector(selectUpdated);
+    // const { } = useBlocker({
+    //     withResolver: true,
+    //     shouldBlockFn: ({current, next}) => {
+    //
+    //     }
+    // })
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -82,48 +85,30 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
     return <PointerProvider>
         <AnnotatorCanvasContextProvider>
             <div className={ styles.page }>
-                <Header size="small"
-                        canNavigate={ canNavigate }
-                        buttons={ <Fragment>
-
-                            { campaign.instructionsUrl &&
-                                <ExternalLink target="_blank" href={ campaign.instructionsUrl }>
-                                    <Help weight="Linear" size={ 20 }/>
-                                    Campaign instructions
-                                </ExternalLink>
-                            }
-
-                            <Link to="/annotation-campaign/$campaignID/phase/$phaseType"
-                                  params={ { campaignID: campaign.id, phaseType: phase.phase } }
-                                  search={ search }>
-                                Back to campaign
-                            </Link>
-                        </Fragment> }>
-
-                    { spectrogram && <div className={ styles.info }>
-                        <p>
+                <Navigation.Annotator>
+                    <div className={ styles.info }>
+                        <Note color="medium">
                             { campaign.name }
                             <IoChevronForwardOutline/> { spectrogram.filename } { spectrogram.task?.status === AnnotationTaskStatus.Finished &&
                             <IoCheckmarkCircleOutline/> }
-                        </p>
+                        </Note>
                         { isEditionAuthorized && info?.totalCount &&
-                            <Progress label="Position"
-                                      className={ styles.progress }
+                            <Progress color="medium"
                                       value={ (info.currentIndex ?? 0) + 1 }
-                                      total={ info.totalCount }/> }
+                                      max={ info.totalCount }/> }
+
                         { campaign.archive ? <Note>You cannot annotate an archived campaign.</Note> :
                             phase?.endedAt ? <Note>You cannot annotate an ended phase.</Note> :
                                 !spectrogram.isAssigned ?
                                     <Note>You are not assigned to annotate this file.</Note> :
                                     <Fragment/>
                         }
-                    </div> }
-
-                </Header>
+                    </div>
+                </Navigation.Annotator>
 
                 { children }
 
-                <OldFooter/>
+                <Footer/>
             </div>
         </AnnotatorCanvasContextProvider>
     </PointerProvider>

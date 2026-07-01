@@ -20,7 +20,17 @@ import {
 } from '@/features/Annotator/VisualConfiguration';
 import { Colormap, ColormapComponent } from '@/features/Colormap';
 import { Button, Note, Popover, Slider } from '@/components/base';
-import { MagniferZoomIn, MagniferZoomOut, MirrorLeft, MirrorRight, Restart, Stop, Sun } from '@solar-icons/react';
+import {
+    CalendarMinimalistic,
+    MagniferZoomIn,
+    MagniferZoomOut,
+    MirrorLeft,
+    MirrorRight,
+    Restart,
+    Stop,
+    Sun,
+    Target,
+} from '@solar-icons/react';
 import { selectZoom, useZoomIn, useZoomInLevel, useZoomOut, useZoomOutLevel } from '@/features/Annotator/Zoom';
 import { usePointer } from '@/features/Annotator/Pointer';
 import { formatTime } from '@/service/function';
@@ -84,7 +94,7 @@ export const ConfigBar: React.FC = () => {
 
         <div className={ styles.Inner }>
             <AnalysisComponent.Select items={ allAnalysis }
-                                      value={ analysis }
+                                      value={ analysis || null }
                                       onValueChange={ setAnalysis }/>
 
             { canChangeColormap && <div className={ styles.HorizontalItem }>
@@ -141,15 +151,15 @@ export const ConfigBar: React.FC = () => {
             </div> }
         </div>
 
-        { pointer.position && <div className={ styles.HorizontalTextItem }>
-            <Note color="medium">Pointer</Note>
-            <p>{ pointer.position.frequency.toFixed(2) }Hz
-                / { formatTime(pointer.position.time, (spectrogram?.duration ?? 0) < 60) }</p>
+        { pointer.position && <div className={ styles.HorizontalItem }>
+            <Note color="medium" flex><Target weight="BoldDuotone" size={ 16 }/></Note>
+            <Note color="dark">{ pointer.position.frequency.toFixed(2) }Hz
+                / { formatTime(pointer.position.time, (spectrogram?.duration ?? 0) < 60) }</Note>
         </div> }
 
-        <div className={ styles.HorizontalTextItem }>
-            <Note color="medium">Date</Note>
-            { new Date(spectrogram.start).toUTCString() }
+        <div className={ styles.HorizontalItem }>
+            <Note color="medium" flex><CalendarMinimalistic weight="BoldDuotone" size={ 16 }/></Note>
+            <Note color="dark">{ new Date(spectrogram.start).toUTCString() }</Note>
         </div>
 
     </div>

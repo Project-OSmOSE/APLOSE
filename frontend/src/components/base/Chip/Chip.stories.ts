@@ -43,3 +43,14 @@ export const Danger: Story = { args: { color: 'danger' } satisfies Partial<ChipP
 export const Success: Story = { args: { color: 'success' } satisfies Partial<ChipProps> };
 
 export const Medium: Story = { args: { color: 'medium' } satisfies Partial<ChipProps> };
+
+export const Annotation0: Story = { args: { color: undefined, annotationColorIndex: 0 } satisfies Partial<ChipProps> };
+export const Annotation1: Story = { args: { color: undefined, annotationColorIndex: 1 } satisfies Partial<ChipProps> };
+export const Annotation2: Story = { args: { color: undefined, annotationColorIndex: 2 } satisfies Partial<ChipProps> };
+export const Annotation3: Story = { args: { color: undefined, annotationColorIndex: 3 } satisfies Partial<ChipProps> };
+export const Annotation4: Story = { args: { color: undefined, annotationColorIndex: 4 } satisfies Partial<ChipProps> };
+export const Annotation5: Story = { args: { color: undefined, annotationColorIndex: 5 } satisfies Partial<ChipProps> };
+export const Annotation6: Story = { args: { color: undefined, annotationColorIndex: 6 } satisfies Partial<ChipProps> };
+export const Annotation7: Story = { args: { color: undefined, annotationColorIndex: 7 } satisfies Partial<ChipProps> };
+export const Annotation8: Story = { args: { color: undefined, annotationColorIndex: 8 } satisfies Partial<ChipProps> };
+export const Annotation9: Story = { args: { color: undefined, annotationColorIndex: 9 } satisfies Partial<ChipProps> };

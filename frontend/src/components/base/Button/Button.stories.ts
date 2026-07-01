@@ -55,3 +55,14 @@ export const Success: Story = { args: { color: 'success' } satisfies Partial<But
 export const Medium: Story = { args: { color: 'medium' } satisfies Partial<ButtonProps> };
 
 export const Dark: Story = { args: { color: 'dark' } satisfies Partial<ButtonProps> };
+
+export const Annotation0: Story = { args: { color: undefined, annotationColorIndex: 0 } satisfies Partial<ButtonProps> };
+export const Annotation1: Story = { args: { color: undefined, annotationColorIndex: 1 } satisfies Partial<ButtonProps> };
+export const Annotation2: Story = { args: { color: undefined, annotationColorIndex: 2 } satisfies Partial<ButtonProps> };
+export const Annotation3: Story = { args: { color: undefined, annotationColorIndex: 3 } satisfies Partial<ButtonProps> };
+export const Annotation4: Story = { args: { color: undefined, annotationColorIndex: 4 } satisfies Partial<ButtonProps> };
+export const Annotation5: Story = { args: { color: undefined, annotationColorIndex: 5 } satisfies Partial<ButtonProps> };
+export const Annotation6: Story = { args: { color: undefined, annotationColorIndex: 6 } satisfies Partial<ButtonProps> };
+export const Annotation7: Story = { args: { color: undefined, annotationColorIndex: 7 } satisfies Partial<ButtonProps> };
+export const Annotation8: Story = { args: { color: undefined, annotationColorIndex: 8 } satisfies Partial<ButtonProps> };
+export const Annotation9: Story = { args: { color: undefined, annotationColorIndex: 9 } satisfies Partial<ButtonProps> };

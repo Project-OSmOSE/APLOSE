@@ -1,4 +1,8 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:color';
 @use "@/css/base";
+@use "@/css/annotation";
 
 .Chip {
   padding: 0.4rem 0.8rem;
@@ -14,6 +18,14 @@
     &[data-color=#{$color}] {
       background-color: rgba(var(--color-#{$color}-rgb), 0.15);
       color: var(--color-#{$color}-text);
+    }
+  }
+
+  @for $index from 0 through 9 {
+    &.index-#{$index} {
+      $color: list.nth(annotation.$colors, $index + 1);
+      color: map.get($color, text);
+      background: color.change(map.get($color, base), $alpha: .1);
     }
   }
 

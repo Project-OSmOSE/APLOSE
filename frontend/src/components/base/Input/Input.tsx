@@ -1,13 +1,15 @@
-import React, { Fragment, type HTMLInputTypeAttribute, useCallback, useMemo, useState } from 'react';
+import React, { Fragment, type HTMLInputTypeAttribute, type HTMLProps, useCallback, useMemo, useState } from 'react';
 import { Input as BaseInput, type InputProps as BaseInputProps } from '@base-ui/react'
 import styles from './Input.module.scss'
 import { Eye, EyeClosed } from '@solar-icons/react';
 import { useEvent } from '@/components/ui/Event';
 
 export type InputProps = Omit<BaseInputProps, 'type' | 'render'> & {
-    startIcon?: any,
-    type: HTMLInputTypeAttribute & ('text' | 'url' | 'date' | 'datetime-local' | 'email' | 'textarea' | 'password' | 'search' | 'number')
+    startIcon?: any
 }
+    & ({
+    type: HTMLInputTypeAttribute & ('text' | 'url' | 'date' | 'datetime-local' | 'email' | 'textarea' | 'password' | 'search' | 'number')
+} | ({ type: 'textarea' } & HTMLProps<HTMLTextAreaElement>));
 
 export const Input: React.FC<InputProps> = ({ className, type, startIcon: _startIcon, ...props }) => {
     const { enableShortcuts, disableShortcuts } = useEvent()

@@ -1,9 +1,8 @@
 import React from 'react';
 import { Dialog, type DialogCloseProps as BaseProps } from '@base-ui/react/dialog';
-import { Button } from '@/components/base/Button';
-import type { BaseColor } from '@/components/base/types';
+import { Button, type ButtonProps } from '@/components/base/Button';
 
-export type DialogCloseProps = Omit<BaseProps, 'render'> & { color?: BaseColor }
+export type DialogCloseProps = Omit<BaseProps, 'render'> & ButtonProps
 
 export const Close: React.FC<DialogCloseProps> = ({ color, ...props }) => (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

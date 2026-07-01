@@ -16,6 +16,7 @@ import { formatTime, pluralize } from '@/service/function';
 import { Guidelines } from './(components)/-Guidelines';
 import { type Annotation } from './(components)/-type';
 import styles from './styles.module.scss'
+import { Page } from '@/components/layout';
 
 
 export const ImportAnnotations: React.FC = () => {
@@ -88,37 +89,39 @@ export const ImportAnnotations: React.FC = () => {
         if (didUpload) router.history.back()
     }, [ toastManager, annotations, detectorNames, router, upload ])
 
-    return <Content oneContent>
-        <Head title="Import annotations"
-              canGoBack
-              subtitle={ `${ campaign.name } - ${ phaseType }` }
-              buttons={ <Guidelines/> }/>
+    return <Page.Authenticated>
+        <Content oneContent>
+            <Head title="Import annotations"
+                  canGoBack
+                  subtitle={ `${ campaign.name } - ${ phaseType }` }
+                  buttons={ <Guidelines/> }/>
 
-        <Form className={ styles.Form } onSubmit={ onSubmit }>
-            <ImportFileFormBloc onLoaded={ onFileLoaded }
-                                onReset={ onFileReset }/>
+            <Form className={ styles.Form } onSubmit={ onSubmit }>
+                <ImportFileFormBloc onLoaded={ onFileLoaded }
+                                    onReset={ onFileReset }/>
 
-            <DetectorsTable names={ detectorNames }/>
+                <DetectorsTable names={ detectorNames }/>
 
-            { isUploading && <div>
-                <Progress value={ uploaded } max={ total } color="primary">
-                    Upload
-                </Progress>
-                <Note color="medium">
-                    Estimated remaining time: { formatTime(remainingDuration) }
-                </Note>
-            </div> }
+                { isUploading && <div>
+                    <Progress value={ uploaded } max={ total } color="primary">
+                        Upload
+                    </Progress>
+                    <Note color="medium">
+                        Estimated remaining time: { formatTime(remainingDuration) }
+                    </Note>
+                </div> }
 
-            <ButtonGroup end>
-                { isUploading && <Spinner/> }
+                <ButtonGroup end>
+                    { isUploading && <Spinner/> }
 
-                <Button type="submit" disabled={ !file || isUploading }>
-                    Import
-                </Button>
-            </ButtonGroup>
-        </Form>
+                    <Button type="submit" disabled={ !file || isUploading }>
+                        Import
+                    </Button>
+                </ButtonGroup>
+            </Form>
 
-    </Content>
+        </Content>
+    </Page.Authenticated>
 }
 
 export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/import-annotations')({

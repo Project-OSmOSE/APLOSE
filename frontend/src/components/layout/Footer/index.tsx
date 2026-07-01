@@ -3,8 +3,7 @@ import json from '../../../../global-package.json';
 import styles from './Footer.module.scss';
 import { DocumentationButton, ExternalLink, Link } from '@/components/base/Button';
 import { GITHUB_URL, OSMOSE_URL } from '@/consts/links';
-import { IonIcon } from '@ionic/react';
-import { logoGithub } from 'ionicons/icons';
+import { SiGithub } from 'react-icons/si';
 import logo from '/images/ode_logo_192x192.png';
 import { Note } from '@/components/base/Note';
 
@@ -15,7 +14,7 @@ export const Footer: React.FC<{ className?: string }> = React.memo(({ className 
         <footer className={ [ styles.Footer, className ].join(' ') }>
             <div>
                 <ExternalLink href={ GITHUB_URL } target="_blank">
-                    <IonIcon icon={ logoGithub } slot="start"/>
+                    <SiGithub/>
                     Github
                 </ExternalLink>
                 <Note color="medium">{ version }</Note>

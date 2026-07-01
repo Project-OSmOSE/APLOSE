@@ -4,6 +4,7 @@ import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
 import { useAppSelector } from '@/features/App';
 import { selectUpdated } from '@/features/Annotator/UX';
 
+//TODO!!
 export const useAnnotatorCanNavigate = () => {
     const isUpdated = useAppSelector(selectUpdated);
     const alert = useAlert();
@@ -29,8 +30,8 @@ export const useOpenAnnotator = () => {
     const search: any = useSearch({ strict: false });
     const navigate = useNavigate()
 
-    return useCallback((spectrogramID: string, options?: { resume?: boolean}) => {
-        const _search = {...search}
+    return useCallback((spectrogramID: string, options?: { resume?: boolean }) => {
+        const _search = { ...search }
         if (options?.resume) _search.onlyAssigned = true
         navigate({
             to: '/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID',

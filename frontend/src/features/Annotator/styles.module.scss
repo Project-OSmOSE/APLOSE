@@ -2,6 +2,7 @@
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 100vh;
+  gap: 0.5rem;
   overflow: auto;
 
   .info {
@@ -14,13 +15,6 @@
       grid-auto-flow: column;
       align-items: center;
       gap: 1rem;
-    }
-
-    .progress {
-      grid-template-columns: auto 1fr;
-      gap: 1rem;
-      align-items: center;
-      width: 20rem;
     }
   }
 }

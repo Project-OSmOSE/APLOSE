@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Content } from '@/components/layout/Content';
 import { Center } from '@/components/layout/Display';
 import { Spinner } from '@/components/base/Spinner';
+import { Page } from '@/components/layout';
 
 const AnnotationCampaignList: React.FC = () => {
     const navigate = useNavigate();
@@ -51,13 +52,15 @@ const AnnotationCampaignList: React.FC = () => {
         init()
     }, []);
 
-    return <Content style={ { gridTemplateRows: 'auto auto 1fr' } }>
-        <Head title="Annotation campaigns"/>
+    return <Page.Authenticated>
+        <Content style={ { gridTemplateRows: 'auto auto 1fr' } }>
+            <Head title="Annotation campaigns"/>
 
-        <AnnotationCampaignListFilterActionBar/>
+            <AnnotationCampaignListFilterActionBar/>
 
-        <Cards campaigns={ campaigns } isFetching={ isFetching }/>
-    </Content>
+            <Cards campaigns={ campaigns } isFetching={ isFetching }/>
+        </Content>
+    </Page.Authenticated>
 }
 
 
