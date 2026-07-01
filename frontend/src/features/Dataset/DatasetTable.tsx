@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import { IonBadge } from '@ionic/react';
 
 import { type Order, Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
 import { dateToString } from '@/service/function';
@@ -10,7 +9,7 @@ import { CampaignName } from '@/features/AnnotationCampaign/CampaignInfo';
 import styles from './styles.module.scss'
 import { useLoaderData } from '@tanstack/react-router';
 import type { DatasetFragment } from '@/features/Dataset/api';
-import { Note } from '@/components/base/Note';
+import { Badge, Note } from '@/components/base';
 
 
 type Sort = {
@@ -103,7 +102,7 @@ export const DatasetTable: React.FC = () => {
             { sortedDatasets.map(d => <tr key={ d.id }>
                 <Th scope="row">
                     <DatasetName { ...d } link/>
-                    <Note color='medium'>{ d.path }</Note>
+                    <Note color="medium">{ d.path }</Note>
                 </Th>
                 <Td>{ dateToString(d.createdAt) }</Td>
                 <Td>
@@ -116,7 +115,7 @@ export const DatasetTable: React.FC = () => {
                     <div className={ styles.campaignList }> { d.annotationCampaigns.edges.map((e) =>
                         e?.node && <CampaignName id={ e.node.id } key={ e.node.id } link>
                             { e.node.name }&nbsp;
-                            { e.node.isArchived && <IonBadge color="medium">Archived</IonBadge> }
+                            { e.node.isArchived && <Badge color="medium">Archived</Badge> }
                         </CampaignName>) }</div>
                 </Td>
             </tr>) }

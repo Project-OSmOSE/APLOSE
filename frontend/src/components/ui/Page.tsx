@@ -1,10 +1,8 @@
 import React, { ReactNode, useCallback } from 'react';
-import { IonSkeletonText } from '@ionic/react';
-import styles from './ui.module.scss'
 import { useCanGoBack, useRouter } from '@tanstack/react-router';
 import { AltArrowLeft } from '@solar-icons/react';
-import { Button } from '@/components/base/Button';
-import { Note } from '@/components/base/Note';
+import { Button, Note, SkeletonText } from '@/components/base';
+import styles from './ui.module.scss'
 
 export const Head: React.FC<{
     title?: string;
@@ -21,7 +19,7 @@ export const Head: React.FC<{
     return <div className={ styles.head }>
         <div className={ styles.title }>
             <h2>{ title ??
-                <IonSkeletonText animated style={ { width: 256, height: '1ch', justifySelf: 'center' } }/> }</h2>
+                <SkeletonText width={ 256 }/> }</h2>
             { subtitle && <Note flex color="medium">{ subtitle }</Note> }
 
             { canGoBack && _canGoBack && <Button className={ styles.BackButton }

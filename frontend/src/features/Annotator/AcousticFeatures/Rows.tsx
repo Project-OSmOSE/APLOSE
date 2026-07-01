@@ -1,7 +1,6 @@
 import React, { Fragment, MouseEvent, useCallback, useMemo, useState } from 'react';
 import { Td, Th } from '@/components/ui';
-import { Button, Input, Note } from '@/components/base';
-import { IonCheckbox } from '@ionic/react';
+import { Button, Checkbox, Input, Note } from '@/components/base';
 import styles from './styles.module.scss';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { endPositionSelection, selectIsSelectingPositionForAnnotation, selectPosition } from '@/features/Annotator/UX';
@@ -95,7 +94,7 @@ export const BooleanRow: React.FC<{
     label: string,
     checked?: boolean | null,
     columnSpan?: boolean,
-    toggle: () => void,
+    onCheckedChange: (checked: boolean) => void,
 } & (
     {
         value?: number | null,
@@ -104,7 +103,7 @@ export const BooleanRow: React.FC<{
     value?: never,
     onValueChange?: never
 }
-    )> = ({ label, checked, columnSpan, toggle, value, onValueChange }) => {
+    )> = ({ label, checked, columnSpan, onCheckedChange, value, onValueChange }) => {
     const className = useMemo(() => {
         const classes = [ styles.checkCell ]
         if (onValueChange) classes.push(styles.inputCell)
@@ -116,7 +115,7 @@ export const BooleanRow: React.FC<{
         <Th scope="row">{ label }</Th>
         <Td>
             <div className={ className }>
-                <IonCheckbox checked={ checked ?? undefined } onClick={ toggle }/>
+                <Checkbox checked={ checked ?? undefined } onCheckedChange={ onCheckedChange }/>
                 { onValueChange && <Input value={ value ?? '' } type="number" min={ 0 }
                                           className={ styles.input } disabled={ !checked }
                                           onChange={ e => onValueChange(e.target.valueAsNumber) }/> }

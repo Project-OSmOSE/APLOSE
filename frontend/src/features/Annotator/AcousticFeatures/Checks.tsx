@@ -1,26 +1,32 @@
 import React, { Fragment, useCallback } from 'react';
 import type { AcousticFeaturesProps } from './props';
 import styles from './styles.module.scss';
-import { type Features, useUpdateAnnotationFeatures } from '@/features/Annotator/Annotation';
-import { IonCheckbox } from '@ionic/react';
+import { Checkbox, Field } from '@/components/base';
+import { useUpdateAnnotationFeatures } from '@/features/Annotator/Annotation';
 
 export const Checks: React.FC<AcousticFeaturesProps> = ({ annotation }) => {
 
     const updateFeatures = useUpdateAnnotationFeatures()
-    const onFeatureToggle = useCallback((field: keyof Features) => {
-        updateFeatures(annotation, { [field]: !annotation.acousticFeatures![field] })
+
+    const onIntensityTooLowChange = useCallback((isIntensityTooLow: boolean) => {
+        updateFeatures(annotation, { isIntensityTooLow })
+    }, [ updateFeatures, annotation ])
+
+    const onOverlapSignalChange = useCallback((doesOverlapOtherSignals: boolean) => {
+        updateFeatures(annotation, { doesOverlapOtherSignals })
     }, [ updateFeatures, annotation ])
 
     return <Fragment>
-        <div className={ styles.line }>
-            <p>Intensity is too low</p>
-            <IonCheckbox checked={ annotation.acousticFeatures!.isIntensityTooLow ?? undefined }
-                         onClick={ () => onFeatureToggle('isIntensityTooLow') }/>
-        </div>
-        <div className={ styles.line }>
-            <p>Overlap other signal</p>
-            <IonCheckbox checked={ annotation.acousticFeatures!.doesOverlapOtherSignals ?? undefined }
-                         onClick={ () => onFeatureToggle('doesOverlapOtherSignals') }/>
-        </div>
+        <Field.Root horizontal className={ styles.line }>
+            <Field.Label>Intensity is too low</Field.Label>
+            <Checkbox checked={ annotation.acousticFeatures?.isIntensityTooLow ?? undefined }
+                      onCheckedChange={ onIntensityTooLowChange }/>
+        </Field.Root>
+
+        <Field.Root horizontal className={ styles.line }>
+            <Field.Label>Overlap other signal</Field.Label>
+            <Checkbox checked={ annotation.acousticFeatures?.doesOverlapOtherSignals ?? undefined }
+                      onCheckedChange={ onOverlapSignalChange }/>
+        </Field.Root>
     </Fragment>
 }

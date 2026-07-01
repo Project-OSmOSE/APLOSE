@@ -29,8 +29,9 @@ export const Frequency: React.FC<{ annotation: Annotation }> = ({ annotation }) 
     const onFeatureUpdate = useCallback((field: keyof Features, value: number) => {
         updateFeatures(annotation, { [field]: value })
     }, [ updateFeatures, annotation ])
-    const onFeatureToggle = useCallback((field: keyof Features) => {
-        updateFeatures(annotation, { [field]: !annotation.acousticFeatures![field] })
+
+    const onHasHarmonicsChange = useCallback((hasHarmonics: boolean) => {
+        updateFeatures(annotation, { hasHarmonics })
     }, [ updateFeatures, annotation ])
 
     return <Fragment>
@@ -96,10 +97,9 @@ export const Frequency: React.FC<{ annotation: Annotation }> = ({ annotation }) 
 
         {/* Has harmonics */ }
         <Tr>
-            <BooleanRow
-                label="Has harmonics"
-                checked={ annotation.acousticFeatures?.hasHarmonics }
-                toggle={ () => onFeatureToggle('hasHarmonics') }/>
+            <BooleanRow label="Has harmonics"
+                        checked={ annotation.acousticFeatures?.hasHarmonics }
+                        onCheckedChange={ onHasHarmonicsChange }/>
         </Tr>
     </Fragment>
 }
