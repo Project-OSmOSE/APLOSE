@@ -39,20 +39,20 @@ export const InvalidateAnnotationModal: React.FC<InvalidateAnnotationModalProps>
         <div>
             { annotation.type !== AnnotationType.Weak && <Fragment>
                 <p>The position or dimension of the annotation is incorrect</p>
-                <Dialog.Close color='primary' onClick={ move }>
+                <Dialog.Close color="primary" onClick={ move }>
                     Move or resize
                 </Dialog.Close>
             </Fragment> }
         </div>
         <div>
             <p>The label is incorrect</p>
-            <Dialog.Close color='primary' onClick={ askUpdateLabel }>
+            <Dialog.Close color="primary" onClick={ askUpdateLabel }>
                 Change the label
             </Dialog.Close>
         </div>
         <div>
             <p>The annotation shouldn't exist</p>
-            <Dialog.Close color='primary' onClick={ remove }>
+            <Dialog.Close color="primary" onClick={ remove }>
                 Remove
             </Dialog.Close>
         </div>

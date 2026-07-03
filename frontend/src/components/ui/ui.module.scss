@@ -1,11 +1,7 @@
-
-.fadedText {
-  color: rgba(var(--ion-color-medium-rgb), 0.5);
-  display: flex;
-  align-items: center;
-  font-size: 0.9rem;
-  font-weight: 400;
-}
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:color';
+@use "@/css/annotation";
 
 .warningText {
   justify-self: center;
@@ -21,15 +17,6 @@
   text-align: center;
 }
 
-.progress {
-  display: grid;
-  gap: 0.25rem;
-
-  span[class^=ion-color-] {
-    color: var(--ion-color-base);
-  }
-}
-
 .kbd {
   background: var(--color-light);
   padding: 0.1rem 0.2rem;
@@ -39,6 +26,17 @@
   > kbd {
     background: transparent;
     box-shadow: none;
+  }
+
+  @for $index from 0 through 9 {
+    &.index-#{$index} {
+      $color: list.nth(annotation.$colors, $index + 1);
+      color: map.get($color, text);
+
+      &:not([disabled]):hover {
+        background: color.change(map.get($color, base), $alpha: .1);
+      }
+    }
   }
 }
 
@@ -119,39 +117,8 @@
   }
 }
 
-.importRow {
-  display: grid;
-  grid-template-columns: 3rem 1fr;
-  gap: 0.5rem;
-  align-items: center;
-  border-radius: 0.5rem;
-  padding: 0.25rem 0.5rem;
-  background-color: transparent;
-
-  > :first-child {
-    grid-row: 1 / 2;
-    justify-self: center;
-  }
-
-  &.success > :first-child {
-    color: var(--ion-color-success);
-  }
-
-  .importRow {
-    grid-column: 2;
-  }
-
-  &:hover:not(:has(.importRow:hover)) {
-    background-color: rgba(var(--ion-color-primary-rgb), 0.06);
-  }
-
-  &.error:hover:not(:has(.importRow:hover)) {
-    background-color: rgba(var(--ion-color-danger-rgb), 0.06);
-  }
-}
-
 .bloc {
-  border: 1px solid rgba(var(--ion-color-medium-rgb), 0.15) !important;
+  border: 1px solid rgba(var(--color-medium-rgb), 0.15) !important;
   border-radius: 0.5rem;
   overflow: hidden;
   display: grid;
@@ -159,21 +126,15 @@
   background: white;
   grid-template-rows: auto 1fr;
 
-  .header, .footer {
-    background: var(--ion-color-light-shade);
+  .header {
+    background: var(--color-light-shade);
     text-align: center;
     padding: 0.5rem;
     border: none !important;
-    border-bottom: 1px solid rgba(var(--ion-color-medium-rgb), 0.15) !important;
+    border-bottom: 1px solid rgba(var(--color-medium-rgb), 0.15) !important;
     position: relative;
-
-    &h6, h6 {
-      margin: 0;
-    }
-  }
-
-  .footer {
-    padding: unset;
+    margin: 0;
+    user-select: none;
   }
 
   .body {

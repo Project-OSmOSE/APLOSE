@@ -26,12 +26,12 @@
     gap: 1rem;
     align-items: center;
     grid-auto-flow: column;
-    color: var(--ion-color-primary);
+    color: var(--color-primary);
 
     &.dragging {
       height: 100%;
       cursor: pointer;
-      background: rgba(var(--ion-color-primary-rgb), 0.25);
+      background: rgba(var(--color-primary-rgb), 0.25);
     }
   }
 

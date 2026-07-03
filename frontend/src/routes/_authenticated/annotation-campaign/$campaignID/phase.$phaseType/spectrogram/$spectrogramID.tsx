@@ -2,11 +2,10 @@ import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { createFileRoute, notFound } from '@tanstack/react-router'
 
 import { AnnotationPhaseType } from '@/api';
-import { useAppSelector } from '@/features/App';
 import { CurrentTime, PlaybackRateSelect, PlayPauseButton, useAudio } from '@/features/Audio';
 import { usePointer } from '@/features/Annotator/Pointer';
 import { AnnotatorSkeleton } from '@/features/Annotator/Skeleton';
-import { selectAnalysisID } from '@/features/Annotator/Analysis';
+import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 import { AnnotatorCanvasWindow } from '@/features/Annotator/Canvas';
 import { NavigationButtons } from '@/features/Annotator/Navigation';
 import { FocusedAnnotationBloc } from '@/features/Annotator/Annotation';
@@ -28,14 +27,14 @@ const AnnotatorPage: React.FC = () => {
     const campaignID = Route.useParams({ select: ({ campaignID }) => campaignID });
     const { spectrogram, isEditionAuthorized } = Route.useLoaderData()
 
-    const analysisID = useAppSelector(selectAnalysisID)
+    const { selectedAnalysis } = useAnnotatorAnalysis()
     const {
         data: paths,
     } = useQuery({
         ...AnnotationSpectrogram.API.getPathQuery({
             spectrogramID: spectrogram.id,
-            analysisID: analysisID ?? '',
-        }), enabled: !!analysisID, refetchOnMount: true,
+            analysisID: selectedAnalysis?.id ?? '',
+        }), enabled: !!selectedAnalysis, refetchOnMount: true,
     });
     const audio = useAudio()
 

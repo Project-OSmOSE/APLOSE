@@ -22,7 +22,7 @@ export const useAlertContext = () => {
 export const Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { enableShortcuts, disableShortcuts } = useEvent()
     const [ alert, setAlert ] = useState<Alert<any> | undefined>();
-    const handle = Dialog.createHandle()
+    const [ isOpen, setIsOpen ] = useState(false);
 
     useEffect(() => {
         if (alert) {
@@ -34,14 +34,14 @@ export const Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
     const openAlert = useCallback((node: Alert<any>) => {
         setAlert(node)
-        handle.open('provider')
+        setIsOpen(true)
     }, [ alert ])
 
     return (
         <AlertContext.Provider value={ { openAlert } }>
             { children }
 
-            <Dialog.Root handle={ handle }>
+            <Dialog.Root open={ isOpen } onOpenChange={ setIsOpen }>
                 <Dialog.Portal>
                     { alert && <Alert { ...alert }/> }
                 </Dialog.Portal>

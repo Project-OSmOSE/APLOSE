@@ -1,3 +1,9 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:color';
+@use "@/css/base";
+@use "@/css/annotation";
+
 $border-size: 3px;
 $handle-long: 100%;
 $handle-thick: 0.75rem;
@@ -12,18 +18,35 @@ $handle-thick: 0.75rem;
     pointer-events: all;
   }
 
-  &.box {
-    border: $border-size solid var(--ion-color-base, var(--ion-color-dark));
+  @for $index from 0 through 9 {
+    &.index-#{$index} {
+      $color: list.nth(annotation.$colors, $index + 1);
+
+      &.box {
+        border: $border-size solid map.get($color, base);
+      }
+
+      &.point {
+        .vertical, .horizontal {
+          background: map.get($color, base);
+        }
+      }
+
+      .header {
+        background: color.change(map.get($color, base), $lightness: 95%);
+        color: map.get($color, text);
+        border: 1px solid map.get($color, text);
+      }
+    }
   }
 
   &.point {
     height: 32px;
     width: 32px;
     transform: translate(-50%, -50%);
-    border: none ;
+    border: none;
 
     .vertical, .horizontal {
-      background: var(--ion-color-base);
       position: absolute;
       left: 50%;
       top: 50%;
@@ -70,8 +93,6 @@ $handle-thick: 0.75rem;
     justify-items: center;
     grid-template-columns: auto auto 1fr auto auto;
     pointer-events: all;
-    background: var(--ion-color-base);
-    color: var(--ion-color-contrast);
     position: absolute;
     left: 50%;
     width: calc(100% + 2 * $border-size); /* Box border size */
@@ -113,17 +134,11 @@ $handle-thick: 0.75rem;
       font-size: .9rem;
     }
 
-    .button {
-      cursor: pointer;
-    }
-
     p {
       font-size: .75rem;
+      margin: 0;
     }
 
-    .outlineIcon path {
-      stroke-width: 3rem;
-    }
   }
 }
 
@@ -135,11 +150,6 @@ $handle-thick: 0.75rem;
     justify-items: start;
     align-items: center;
     gap: 0.5rem;
-
-    ion-note {
-      grid-column: 1 / -1;
-      font-style: italic;
-    }
   }
 }
 
@@ -190,4 +200,11 @@ $handle-thick: 0.75rem;
 
 .results {
   grid-area: results;
+}
+
+.horizontal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }

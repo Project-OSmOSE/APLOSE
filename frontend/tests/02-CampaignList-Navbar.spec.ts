@@ -64,6 +64,7 @@ const TEST = {
 
             await page.navbar.openUserPopover(as)
             await STEP.accessAccountManagement(page)
+            await page.navbar.openUserPopover(as)
             await STEP.hasNoAdminLink(page)
             await STEP.canLogout(page)
         }),
@@ -80,6 +81,7 @@ const TEST = {
             await page.navbar.openUserPopover(as)
             await STEP.hasAdminLink(page)
             await STEP.accessAccountManagement(page)
+            await page.navbar.openUserPopover(as)
             await STEP.canLogout(page)
         }),
 }

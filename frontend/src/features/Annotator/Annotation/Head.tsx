@@ -1,18 +1,21 @@
 import React, { Fragment, useCallback } from 'react';
-import { Kbd, useModal } from '@/components/ui';
-import { IoChatbubbleEllipses, IoChatbubbleOutline, IoPlayCircle, IoSwapHorizontal, IoTrashBin } from 'react-icons/io5';
-import styles from './styles.module.scss';
+import { Kbd } from '@/components/ui';
 import { useAudio } from '@/features/Audio';
-import { UpdateLabelModal } from '@/features/Labels';
+import { LabelDialog } from '@/features/Labels';
 import type { Annotation } from './slice';
 import { useRemoveAnnotation, useUpdateAnnotation } from '@/features/Annotator/Annotation/hooks';
 import { useAppSelector } from '@/features/App';
 import { selectFocusLabel } from '@/features/Annotator/Label';
-import { Popover } from '@/components/base/Popover';
+import { Dialog, Popover } from '@/components/base';
+import { useLoaderData } from '@tanstack/react-router';
+import type { LabelFragment } from '@/features/Labels/api';
+import { ChatLine, ChatSquare, Play, SortHorizontal, TrashBinTrash } from '@solar-icons/react';
 
 export const AnnotationHeadContent: React.FC<{
     annotation: Annotation,
-}> = ({ annotation }) => {
+    index: number;
+}> = ({ annotation, index }) => {
+    const { labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const audio = useAudio()
     const focusedLabel = useAppSelector(selectFocusLabel)
     const updateAnnotation = useUpdateAnnotation()
@@ -22,13 +25,9 @@ export const AnnotationHeadContent: React.FC<{
         audio.play(annotation.startTime ?? undefined, annotation.endTime ?? undefined)
     }, [ audio, annotation ])
 
-    const updateLabel = useCallback((label: string) => {
-        updateAnnotation(annotation, { label })
+    const updateLabel = useCallback((label: LabelFragment) => {
+        updateAnnotation(annotation, { label: label.name })
     }, [ annotation, updateAnnotation ]);
-    const labelUpdateModal = useModal(UpdateLabelModal, {
-        selected: focusedLabel,
-        onUpdate: updateLabel,
-    })
 
     const remove = useCallback(() => {
         removeAnnotation(annotation)
@@ -37,45 +36,46 @@ export const AnnotationHeadContent: React.FC<{
     return <Fragment>
         {/* Play annotation button */ }
         <Popover.Root>
-            <Popover.Trigger>
-                <IoPlayCircle className={ styles.button } onClick={ play }/>
+            <Popover.Trigger annotationColorIndex={ index } onClick={ play }>
+                <Play weight="Linear" size={ 20 }/>
             </Popover.Trigger>
             <Popover.Content>Play the audio of the annotation</Popover.Content>
         </Popover.Root>
 
         {/* Comment info */ }
         { (annotation.comments && annotation.comments.length > 0) ?
-            <IoChatbubbleEllipses/> :
-            <Popover.Root>
-                <Popover.Trigger>
-                    <IoChatbubbleOutline className={ styles.outlineIcon }/>
-                </Popover.Trigger>
-                <Popover.Content>No comments</Popover.Content>
-            </Popover.Root> }
+            <ChatLine weight="Bold" size={ 20 }/> :
+            <ChatSquare weight="Linear" size={ 20 }/> }
 
         {/* Label */ }
         <p>{ annotation.update?.label ?? annotation.label }</p>
 
         {/* Update label button */ }
-        <Popover.Root>
-            <Popover.Trigger>
-                <IoSwapHorizontal className={ styles.button }
-                                  data-testid="update-box"
-                                  onClick={ labelUpdateModal.open }/>
-            </Popover.Trigger>
-            <Popover.Content>Update the label</Popover.Content>
-        </Popover.Root>
+        <Dialog.Root>
+            <Dialog.Trigger render={ <div/> } nativeButton={ false }>
+                <Popover.Root>
+                    <Popover.Trigger annotationColorIndex={ index } data-testid="update-box">
+                        <SortHorizontal weight="Linear" size={ 20 }/>
+                    </Popover.Trigger>
+                    <Popover.Content>Update the label</Popover.Content>
+                </Popover.Root>
+            </Dialog.Trigger>
+            <Dialog.Portal>
+                <LabelDialog.Update availableLabels={ labels }
+                                    selected={ labels.find(l => l.name === focusedLabel) }
+                                    onSelect={ updateLabel }/>
+            </Dialog.Portal>
+        </Dialog.Root>
 
         {/* Remove button */ }
         <Popover.Root>
-            <Popover.Trigger>
-                <IoTrashBin className={ styles.button }
-                            data-testid="remove-box"
-                            onClick={ remove }/>
+            <Popover.Trigger annotationColorIndex={ index }
+                             data-testid="remove-box"
+                             onMouseDown={ e => e.stopPropagation() }
+                             onClick={ remove }>
+                <TrashBinTrash weight="Linear" size={ 20 }/>
             </Popover.Trigger>
             <Popover.Content><Kbd keys="delete"/> Remove the annotation</Popover.Content>
         </Popover.Root>
-
-        { labelUpdateModal.element }
     </Fragment>
 }

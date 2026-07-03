@@ -36,6 +36,29 @@ query allCampaigns(
     }
 }
 
+fragment CampaignAnalysis on SpectrogramAnalysisNode {
+    id
+    name
+    colormap {
+        name
+    }
+    fft {
+        nfft
+        windowSize
+        overlap
+        samplingFrequency
+    }
+    frequencyScaleParts {
+        ratio
+        minValue
+        maxValue
+    }
+    legacyConfiguration {
+        zoomLevel
+    }
+    legacy
+}
+
 query getCampaign($id: ID!) {
     annotationCampaignById(id: $id) {
         id
@@ -100,28 +123,7 @@ query getCampaign($id: ID!) {
         }
         analysis {
             edges {
-                node {
-                    id
-                    name
-                    colormap {
-                        name
-                    }
-                    fft {
-                        nfft
-                        windowSize
-                        overlap
-                        samplingFrequency
-                    }
-                    frequencyScaleParts {
-                        ratio
-                        minValue
-                        maxValue
-                    }
-                    legacyConfiguration {
-                        zoomLevel
-                    }
-                    legacy
-                }
+                node { ...CampaignAnalysis }
             }
         }
         spectrogramsCount

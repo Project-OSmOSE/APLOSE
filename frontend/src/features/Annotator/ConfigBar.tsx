@@ -1,24 +1,10 @@
-import React, { createElement, Fragment, useCallback } from 'react';
+import React, { createElement, Fragment } from 'react';
 import styles from './styles.module.scss'
 import { AnalysisComponent } from '../SpectrogramAnalysis';
 import { useLoaderData } from '@tanstack/react-router';
-import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
-import { useAppDispatch, useAppSelector } from '@/features/App';
-import { Analysis, setAnalysis as _setAnalysis } from '@/features/Annotator/Analysis';
-import {
-    resetBrightness as _resetBrightness,
-    resetContrast as _resetContrast,
-    revertColormap as _revertColormap,
-    selectBrightness,
-    selectColormap,
-    selectContrast,
-    selectIsColormapReversed,
-    setBrightness as _setBrightness,
-    setColormap as _setColormap,
-    setContrast as _setContrast,
-    useCanChangeColormap,
-} from '@/features/Annotator/VisualConfiguration';
-import { Colormap, ColormapComponent } from '@/features/Colormap';
+import { useAppSelector } from '@/features/App';
+import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
+import { ColormapComponent } from '@/features/Colormap';
 import { Button, Note, Popover, Slider } from '@/components/base';
 import {
     CalendarMinimalistic,
@@ -40,45 +26,17 @@ export const ConfigBar: React.FC = () => {
         analysis: allAnalysis,
         campaign,
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const dispatch = useAppDispatch()
     const { spectrogram } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
 
     // Spectrogram analysis
-    const analysis = useAnnotatorAnalysis()
-    const setAnalysis = useCallback((value: Analysis | null) => {
-        dispatch(_setAnalysis(value))
-    }, [ dispatch ])
-
-    // Colormap
-    const canChangeColormap = useCanChangeColormap();
-    //// Change
-    const colormap = useAppSelector(selectColormap);
-    const setColormap = useCallback((value: Colormap | null) => {
-        dispatch(_setColormap(value))
-    }, [ dispatch ])
-    //// Invert
-    const isColormapInverted = useAppSelector(selectIsColormapReversed);
-    const revertColormap = useCallback(() => {
-        dispatch(_revertColormap())
-    }, [ dispatch ])
-
-    // Image tuning
-    //// Brightness
-    const brightness = useAppSelector(selectBrightness);
-    const setBrightness = useCallback((value: number) => {
-        dispatch(_setBrightness(value))
-    }, [ dispatch ])
-    const resetBrightness = useCallback(() => {
-        dispatch(_resetBrightness())
-    }, [ dispatch ])
-    //// Contrast
-    const contrast = useAppSelector(selectContrast);
-    const setContrast = useCallback((value: number) => {
-        dispatch(_setContrast(value))
-    }, [ dispatch ])
-    const resetContrast = useCallback(() => {
-        dispatch(_resetContrast())
-    }, [ dispatch ])
+    const {
+        selectedAnalysis, setSelectedAnalysis,
+        canChangeColormap,
+        colormap, setColormap,
+        isColormapInverted, revertColormap,
+        brightness, setBrightness, resetBrightness,
+        contrast, setContrast, resetContrast,
+    } = useAnnotatorAnalysis()
 
     // Zoom
     const zoom = useAppSelector(selectZoom)
@@ -94,8 +52,8 @@ export const ConfigBar: React.FC = () => {
 
         <div className={ styles.Inner }>
             <AnalysisComponent.Select items={ allAnalysis }
-                                      value={ analysis || null }
-                                      onValueChange={ setAnalysis }/>
+                                      value={ selectedAnalysis }
+                                      onValueChange={ setSelectedAnalysis }/>
 
             { canChangeColormap && <div className={ styles.HorizontalItem }>
                 <Button color="dark" onClick={ revertColormap }>

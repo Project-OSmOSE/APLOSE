@@ -11,5 +11,5 @@ export const spectrogram: Spectrogram = {
   filename: 'filename',
   duration: 10,
 }
-export const AUDIO_PATH = 'filepath.wav'
-export const SPECTROGRAM_PATH = 'path'
+export const AUDIO_PATH = '/filepath.wav'
+export const SPECTROGRAM_PATH = '/path'

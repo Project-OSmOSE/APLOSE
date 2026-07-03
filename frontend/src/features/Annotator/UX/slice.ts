@@ -16,7 +16,7 @@ type UXState = {
 const initialState: UXState = {
     updated: false,
     allFileIsSeen: true, // Because initial zoom level == 1
-    isDrawingEnabled: false,
+    isDrawingEnabled: true,
     selectPositionForAnnotation: null,
     start: Date.now(),
 

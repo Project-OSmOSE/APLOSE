@@ -1,6 +1,5 @@
 export * from './ExtendedDiv'
 export * from './Scale'
-export * from './Modal'
 
 export * from './ActionBar'
 export * from './Bloc'

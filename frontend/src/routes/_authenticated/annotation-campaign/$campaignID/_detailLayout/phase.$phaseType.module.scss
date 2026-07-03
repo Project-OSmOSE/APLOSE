@@ -31,15 +31,6 @@
     &.empty {
       grid-template-rows: auto auto 1fr;
     }
-
-    .filesTable ion-button {
-      --padding-top: 0 !important;
-      --padding-bottom: 0 !important;
-    }
-
-    ion-spinner {
-      grid-column: 1 / -1;
-    }
   }
 }
 

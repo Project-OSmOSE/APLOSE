@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import type { ColormapNode, FftNode, LinearScaleNode, Maybe, SpectrogramAnalysisNode } from '@/api/types.gql-generated';
 import { Note, Select as BaseSelect, SelectProps as BaseSelectProps } from '@/components/base'
@@ -11,8 +11,9 @@ export type SelectValue = Pick<SpectrogramAnalysisNode, 'id'> & {
     frequencyScaleParts?: Maybe<Array<Maybe<Pick<LinearScaleNode, 'minValue' | 'maxValue'>>>>;
 }
 
-export type SelectProps = Omit<BaseSelectProps<SelectValue, false>, 'itemName' | 'itemToStringValue' | 'itemToElementLabel' | 'isItemEqualToValue'>
-export const Select: React.FC<SelectProps> = (props) => {
+export type SelectProps<Value> = Omit<BaseSelectProps<Value, false>, 'itemName' | 'itemToStringValue' | 'itemToElementLabel' | 'isItemEqualToValue'>
+
+export function Select<Value extends SelectValue>(props: SelectProps<Value>) {
 
     const itemToElementLabel = useCallback((item: SelectValue) => {
         const parts = cleanGqlList(item.frequencyScaleParts)
@@ -44,7 +45,9 @@ export const Select: React.FC<SelectProps> = (props) => {
         }
         return <div>
             { item.fft.nfft }_{ item.fft.windowSize }_{ item.fft.overlap }
-            <Note color="medium"> | { parts.length > 0 ? parts.length : 1 } [{ frequencyToString(min) }Hz-{ frequencyToString(max) }Hz] | { item.colormap.name }</Note>
+            <Note
+                color="medium"> | { parts.length > 0 ? parts.length : 1 } [{ frequencyToString(min) }Hz-{ frequencyToString(max) }Hz]
+                | { item.colormap.name }</Note>
         </div>
     }, [])
 

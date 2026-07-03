@@ -1,31 +1,31 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import type { AcousticFeaturesProps } from './props';
 import { useRemoveAnnotationFeatures } from './hooks';
-import styles from './styles.module.scss';
 import { useUpdateAnnotationFeatures } from '@/features/Annotator/Annotation';
+import { Field, Toggle } from '@/components/base';
 
+type Quantity = 'single' | 'multiple'
 export const QuantitySwitch: React.FC<AcousticFeaturesProps> = ({ annotation }) => {
     const updateFeatures = useUpdateAnnotationFeatures()
     const removeFeatures = useRemoveAnnotationFeatures()
 
-    const setMultiple = useCallback(() => {
-        removeFeatures(annotation)
-    }, [ annotation, removeFeatures ])
-
-    const setSingle = useCallback(() => {
-        if (annotation.acousticFeatures) return;
-        updateFeatures(annotation, {})
-    }, [ annotation, updateFeatures ])
-
-    return <div className={ styles.line }>
-        <b>Quantity</b>
-        <div className={ styles.switch }>
-            <div className={ !annotation?.acousticFeatures ? styles.active : undefined } onClick={ setMultiple }>
-                Multiple
-            </div>
-            <div className={ annotation?.acousticFeatures ? styles.active : undefined } onClick={ setSingle }>
-                Single
-            </div>
-        </div>
-    </div>
+    const [ quantity, _setQuantity ] = useState<Quantity>('multiple');
+    const setQuantity = useCallback((newQuantity: Quantity) => {
+        _setQuantity(newQuantity)
+        switch (newQuantity) {
+            case 'single':
+                if (annotation.acousticFeatures) return;
+                updateFeatures(annotation, {})
+                break;
+            case 'multiple':
+                removeFeatures(annotation)
+        }
+    }, [ annotation, updateFeatures, removeFeatures ])
+    return <Field.Root horizontal>
+        <Field.Label>Quantity</Field.Label>
+        <Toggle.Group value={ quantity } onValueChange={ setQuantity }>
+            <Toggle.Item value={ 'multiple' as Quantity }>Multiple</Toggle.Item>
+            <Toggle.Item value={ 'single' as Quantity }>Single</Toggle.Item>
+        </Toggle.Group>
+    </Field.Root>
 }

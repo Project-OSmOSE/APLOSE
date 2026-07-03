@@ -25,33 +25,34 @@ export const CommentBloc: React.FC = () => {
 
     const onSelectTask = useCallback(() => dispatch(blur()), [ dispatch ])
 
-    return <Bloc className={ styles.comments }
-                 bodyClassName={ styles.body }
-                 smallSpaces vertical
-                 header="Comment">
-        <Input type="textarea"
-               maxLength={ 255 }
-               rows={ 5 }
-               placeholder="Enter your comment"
-               style={ { resize: 'none' } }
-               disabled={ focusedAnnotation && focusedAnnotation?.annotator !== user.id }
-               value={ focusedComment?.comment ?? '' }
-               onChange={ updateComment }/>
+    return <Bloc.Root className={ styles.comments }>
+        <Bloc.Title>Comment</Bloc.Title>
+        <Bloc.Content className={ styles.body } smallSpaces vertical>
 
-        <Button color="danger"
-                className={ styles.removeButton }
-                disabled={ !focusedComment }
-                onClick={ () => focusedComment && remove(focusedComment) }>
-            Remove
-            <TrashBinTrash weight="Linear" size={ 20 }/>
-        </Button>
+            <Input type="textarea"
+                   maxLength={ 255 }
+                   rows={ 5 }
+                   placeholder="Enter your comment"
+                   style={ { resize: 'none' } }
+                   disabled={ focusedAnnotation && focusedAnnotation?.annotator !== user.id }
+                   value={ focusedComment?.comment ?? '' }
+                   onChange={ updateComment }/>
 
-        <Button color="medium"
-                className={ styles.taskCommentButton }
-                disabled={ !focusedAnnotation }
-                onClick={ onSelectTask }>
-            <SortHorizontal weight="Linear" size={ 20 }/>
-            Task comment
-        </Button>
-    </Bloc>
+            <Button color="danger"
+                    className={ styles.removeButton }
+                    disabled={ !focusedComment }
+                    onClick={ () => focusedComment && remove(focusedComment) }>
+                Remove
+                <TrashBinTrash weight="Linear" size={ 20 }/>
+            </Button>
+
+            <Button color="medium"
+                    className={ styles.taskCommentButton }
+                    disabled={ !focusedAnnotation }
+                    onClick={ onSelectTask }>
+                <SortHorizontal weight="Linear" size={ 20 }/>
+                Task comment
+            </Button>
+        </Bloc.Content>
+    </Bloc.Root>
 }

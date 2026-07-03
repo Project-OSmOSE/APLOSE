@@ -24,7 +24,7 @@ export const Create: React.FC = () => {
     const datasetSelectID = useId()
     const [ dataset, _setDataset ] = useState<DatasetComponent.SelectValue | null>(null);
     const analysisSelectID = useId()
-    const [ analysis, setAnalysis ] = useState<AnalysisComponent.SelectValue[]>([]);
+    const [ analysis, setAnalysis ] = useState<AnalysisComponent.ComboboxSelectValue[]>([]);
     const setDataset = useCallback((value: DatasetComponent.SelectValue | null) => {
         _setDataset(value)
         setAnalysis([])

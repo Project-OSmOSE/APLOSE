@@ -41,10 +41,6 @@ export const LabelChip: React.FC<{
     const getAnnotation = useGetAnnotation()
     const removeAnnotation = useRemoveAnnotation()
     const index = useMemo(() => labels.map(l => l.name).indexOf(label), [ labels, label ])
-    const className = useMemo(() => {
-        return focusedLabel === label ? styles.activeLabel : undefined
-    }, [ label, focusedLabel ])
-    const colorClass = useMemo(() => `ion-color-${ index }`, [ index ])
     const number = useMemo(() => AlphanumericKeys[1][index], [ index ]);
     const key = useMemo(() => AlphanumericKeys[0][index], [ index ]);
     const isUsed = useMemo(() => allAnnotations.some(a => a.label === label), [ allAnnotations, label ])
@@ -66,7 +62,7 @@ export const LabelChip: React.FC<{
         event.stopPropagation();
         // Hide all but current if ctrlKey pressed
         if (event.ctrlKey) dispatch(setHiddenLabels(labels.map(l => l.name).filter(l => l !== label)))
-        dispatch(setHiddenLabels(hiddenLabels.filter(l => l !== label)))
+        else dispatch(setHiddenLabels(hiddenLabels.filter(l => l !== label)))
     }, [ label, hiddenLabels, dispatch, labels ])
 
     const hide = useCallback((event: MouseEvent) => {
@@ -83,9 +79,7 @@ export const LabelChip: React.FC<{
     }, [ label, getAnnotation, removeAnnotation ])
 
     return (
-        <Chip className={ className }
-            // outline={ !isUsed }
-              data-testid="label-chip"
+        <Chip data-testid="label-chip"
               onClick={ select }
               { ...(isUsed ? { annotationColorIndex: index } : { color: 'medium' }) as Partial<ChipProps> }>
             { focusedLabel === label && <Unread weight="Linear" size={ 20 }/> }
@@ -98,9 +92,9 @@ export const LabelChip: React.FC<{
                     </Popover.Trigger>
                     <Popover.Content>
                         <Popover.Title>Shortcut</Popover.Title>
-                        <Kbd keys={ number } className={ colorClass }/>
+                        <Kbd keys={ number } annotationColorIndex={ index }/>
                         { NBSP }or{ NBSP }
-                        <Kbd keys={ key } className={ colorClass }/>:
+                        <Kbd keys={ key } annotationColorIndex={ index }/>:
                         { NBSP }Choose this label
                     </Popover.Content>
                 </Popover.Root>

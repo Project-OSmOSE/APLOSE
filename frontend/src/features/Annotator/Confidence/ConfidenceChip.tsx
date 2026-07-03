@@ -5,6 +5,7 @@ import { selectFocusConfidence } from '@/features/Annotator/Confidence/selectors
 import { focusConfidence } from '@/features/Annotator/Confidence/slice';
 import { Unread } from '@solar-icons/react';
 import { Chip } from '@/components/base';
+import styles from './styles.module.scss'
 
 export const ConfidenceChip: React.FC<{ confidence: string }> = ({ confidence }) => {
     const focusedAnnotation = useAppSelector(selectAnnotation)
@@ -19,6 +20,7 @@ export const ConfidenceChip: React.FC<{ confidence: string }> = ({ confidence })
     }, [ focusedAnnotation, updateAnnotation, confidence, dispatch ])
 
     return <Chip color={ isActive ? 'primary' : 'medium' }
+                 className={ styles.chip }
                  onClick={ select }
                  data-testid="confidence-chip">
         { isActive && <Unread weight="Linear" size={ 20 }/> }

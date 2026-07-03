@@ -19,17 +19,18 @@ export const AnnotationsBloc: React.FC = () => {
         })
     }, [ allAnnotations ])
 
-    return <Bloc className={ styles.results }
-                 data-testid="annotation-bloc"
-                 header="Annotations"
-                 vertical>
-        { allAnnotations.length === 0 ?
-            <Note color="medium">No results</Note> :
-            <Table>
-                <Tbody>
-                    { sortedAnnotations.map((a, index) => <AnnotationRow annotation={ a } key={ index }/>) }
-                </Tbody>
-            </Table>
-        }
-    </Bloc>
+    return <Bloc.Root className={ styles.results }
+                      data-testid="annotation-bloc">
+        <Bloc.Title>Annotations</Bloc.Title>
+        <Bloc.Content vertical>
+            { allAnnotations.length === 0 ?
+                <Note color="medium">No results</Note> :
+                <Table>
+                    <Tbody>
+                        { sortedAnnotations.map((a, index) => <AnnotationRow annotation={ a } key={ index }/>) }
+                    </Tbody>
+                </Table>
+            }
+        </Bloc.Content>
+    </Bloc.Root>
 }

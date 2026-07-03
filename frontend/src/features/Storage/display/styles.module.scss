@@ -13,13 +13,6 @@
   svg[color=medium] {
     color: var(--color-medium);
   }
-
-  > ion-button:nth-child(2) {
-    --padding-start: 0;
-    --padding-end: 0;
-    --padding-top: 0;
-    --padding-bottom: 0;
-  }
 }
 
 .dataset > :first-child,
@@ -77,10 +70,6 @@
 
     .list {
       padding-top: 0;
-    }
-
-    > ion-note {
-      padding-left: 2rem;
     }
   }
 }

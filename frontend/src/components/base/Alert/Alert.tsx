@@ -35,8 +35,9 @@ export function Alert<Confirm>({
 
         { buttons && <ButtonGroup end>
             { buttons.map((button, key) =>
-                <Dialog.Close key={ key }
-                              color={ button.color ?? button.type === 'Cancel' ? 'medium' : color ?? 'primary' }
+                <Dialog.Close autoFocus={ button.type === 'Confirm' }
+                              key={ key }
+                              color={ button.color ?? (button.type === 'Cancel' ? 'medium' : (color ?? 'primary')) }
                               children={ button.text ?? button.type }
                               onClick={ () => button.type === 'Cancel' ? onCancel?.() : onConfirm?.(button.confirmData) }/>) }
         </ButtonGroup> }

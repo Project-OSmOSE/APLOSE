@@ -67,14 +67,6 @@
     --color-dark-shade: #051a31;
     --color-dark-tint: #1f344c;
 
-    /*Old*/
-    --ion-color-secondary: #00B6D9;
-    --ion-color-secondary-rgb: 0, 182, 217;
-    --ion-color-secondary-contrast: #ffffff;
-    --ion-color-secondary-contrast-rgb: 255, 255, 255;
-    --ion-color-secondary-shade: #00a0bf;
-    --ion-color-secondary-tint: #1abddd;
-
     --box-shadow-small: 0 1px 0 rgba(var(--color-dark-rgb),0.05),
                         0 0 8px rgba(var(--color-dark-rgb),0.1);
     --box-shadow: 0px 0px 2px rgba(var(--color-dark-rgb),0.05),

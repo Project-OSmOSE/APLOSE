@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { Point, setZoom, setZoomOrigin } from './slice'
 import { selectZoom } from './selectors';
-import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
+import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 
 
 export const useZoomOut = () => {
@@ -34,10 +34,10 @@ export const useZoomOutLevel = () => {
 }
 
 export const useZoomInLevel = () => {
-    const analysis = useAnnotatorAnalysis()
+    const { selectedAnalysis } = useAnnotatorAnalysis()
     const zoom = useAppSelector(selectZoom)
     return useMemo(() => {
-        const max = analysis?.legacyConfiguration?.zoomLevel ?? 0
+        const max = selectedAnalysis?.legacyConfiguration?.zoomLevel ?? 0
         return zoom * 2 <= 2 ** max ? zoom * 2 : undefined
-    }, [ analysis, zoom ]);
+    }, [ selectedAnalysis, zoom ]);
 }
