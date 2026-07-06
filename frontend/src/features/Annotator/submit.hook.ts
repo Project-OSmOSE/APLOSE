@@ -50,7 +50,6 @@ export const useAnnotatorSubmit = () => {
         })
     }, [ isEditionAuthorized, allAnnotations, submitTask, start, taskComments, campaign, phase, spectrogram ])
     const submit = useCallback(() => {
-        console.debug('submit', isEditionAuthorized, allFileIsSeen)
         if (!isEditionAuthorized) return;
         if (!allFileIsSeen) {
             const id = toastManager.add({

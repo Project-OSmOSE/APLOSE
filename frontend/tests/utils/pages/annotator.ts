@@ -70,7 +70,6 @@ export class AnnotatorPage {
 
   async isLabelUsed(label: Label): Promise<boolean> {
     const color = await this.getLabelChip(label).getAttribute('data-color');
-    console.log('color', color, await this.getLabelChip(label).getAttribute('color'))
     return color !== 'medium';
   }
 
