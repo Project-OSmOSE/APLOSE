@@ -2,20 +2,20 @@ import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'reac
 import { Toast } from '@/components/base/Toast';
 import { AnnotationLabelNode } from '@/api';
 import { Table } from '../component';
-import { AnnotationCampaign } from '@/features';
 import { useParams } from '@tanstack/react-router';
 import { cleanGqlList } from '@/api/utils';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Dialog } from '@/components/base/Dialog';
 import { Button, ButtonGroup } from '@/components/base/Button';
 import { Spinner } from '@/components/base/Spinner';
+import { CampaignAPI } from '@/features/AnnotationCampaign';
 
 
 type Label = Pick<AnnotationLabelNode, 'id' | 'name'>
 
 export const Set: React.FC = () => {
     const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const { data } = useQuery(AnnotationCampaign.API.byIdQuery({ id: campaignID }))
+    const { data } = useQuery(CampaignAPI.byIdQuery({ id: campaignID }))
     const { campaign, labels } = useMemo(() => ({ ...data }), [ data ])
     const toastManager = Toast.useToastManager();
     const {
@@ -23,7 +23,7 @@ export const Set: React.FC = () => {
         isPending: isSubmitting,
         error: patchError,
         isSuccess: isPatchSuccessful,
-    } = useMutation(AnnotationCampaign.API.updateFeaturedLabelsMutation);
+    } = useMutation(CampaignAPI.updateFeaturedLabelsMutation);
 
     const [ labelsWithAcousticFeatures, setLabelsWithAcousticFeatures ] = useState<Label[]>(cleanGqlList(campaign!.labelsWithAcousticFeatures));
     const [ disabled, setDisabled ] = useState<boolean>(true);

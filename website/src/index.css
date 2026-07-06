@@ -42,17 +42,20 @@
   --ion-color-step-950: #2c3034;
 
   --content-margin: 4rem 8rem;
+  --content-gap: 4rem;
 }
 
 @media screen and (max-width: 1200px) {
   :root {
     --content-margin: 2rem;
+    --content-gap: 1rem;
   }
 }
 
 @media screen and (max-width: 800px) {
   :root {
     --content-margin: 1rem;
+    --content-gap: 1rem;
   }
 }
 

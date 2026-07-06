@@ -7,8 +7,7 @@ import { StorageModal } from '@/features/Storage';
 import { ChannelConfigurationTable } from '@/features/ChannelConfiguration';
 import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 import { Cards } from '@/features/AnnotationCampaign';
-import { queryClient } from '@/api/queryClient';
-import { Dataset } from '@/features';
+import { DatasetAPI } from '@/features/Dataset';
 import { Calendar, Download, WidgetAdd } from '@solar-icons/react';
 import { ButtonGroup, Link } from '@/components/base/Button';
 import { Dialog } from '@/components/base/Dialog';
@@ -18,6 +17,7 @@ import { datetimeToString, dateToString } from '@/service/function';
 import { Center } from '@/components/layout/Display';
 import { Spinner } from '@/components/base/Spinner';
 import styles from './styles.module.scss'
+import { ensureValidQueryData } from '@/api/utils';
 
 const DatasetDetail: React.FC = () => {
     const { dataset, campaigns, analysis } = Route.useLoaderData()
@@ -88,7 +88,7 @@ const ErrorComponent: React.FC<ErrorComponentProps> = ({ error }) => {
 
 export const Route = createFileRoute(`/_authenticated/_admin/dataset/$datasetID`)({
     loader: async ({ params: { datasetID } }) => {
-        const { dataset, ...data } = await queryClient.ensureQueryData(Dataset.API.byIdQuery({ id: datasetID }))
+        const { dataset, ...data } = await ensureValidQueryData(DatasetAPI.byIdQuery({ id: datasetID }))
         if (!dataset) throw notFound()
         return { dataset, ...data }
     },

@@ -2,10 +2,11 @@ import React, { Fragment, type MouseEvent, useCallback, useMemo, useState } from
 import { ImportStatusEnum } from '@/api';
 import styles from './styles.module.scss';
 import {
-    type ImportDatasetFromStorageMutation,
+    type ImportDatasetFromStorageMutationVariables,
     ItemList,
     type StorageAnalysisFragment,
     type StorageItemFragment,
+    StorageSlice,
 } from '@/features/Storage';
 import {
     AltArrowDown,
@@ -24,7 +25,6 @@ import { importMutation } from '../api'
 import { useStorageSearch } from '../hooks'
 import { useMutation } from '@tanstack/react-query';
 import { useAppDispatch } from '@/features/App';
-import { Storage } from '@/features';
 import { Button, CopyErrorStackButton } from '@/components/base/Button';
 import { Spinner } from '@/components/base/Spinner';
 import { Note } from '@/components/base/Note';
@@ -65,19 +65,7 @@ export const Item: React.FC<Props> = ({
     // Import
     const toastManager = Toast.useToastManager()
     const dispatch = useAppDispatch()
-    const onError = useCallback((error: Error) => {
-        toastManager.addError({ title: 'Import failed', error })
-    }, [ toastManager ])
-    const onSuccess = useCallback((data: ImportDatasetFromStorageMutation) => {
-        const path = data.importDataset?.dataset.path
-        if (!path) return
-        dispatch(Storage.Slice.actions.invalidatePath(path))
-    }, [ onUpdated, dispatch ])
-    const { mutate, isPending } = useMutation({
-        ...importMutation,
-        onError,
-        onSuccess,
-    })
+    const { mutateAsync, isPending } = useMutation(importMutation)
     const canImport = useMemo(() => {
         if (!item || item.error || isPending || disableImport) return false
         switch (item.__typename) {
@@ -88,25 +76,32 @@ export const Item: React.FC<Props> = ({
                 return parentItem && item.importStatus === ImportStatusEnum.Partial || item.importStatus === ImportStatusEnum.Available
         }
     }, [ item, isPending, disableImport ])
-    const download = useCallback((event: MouseEvent) => {
+    const download = useCallback(async (event: MouseEvent) => {
         event.stopPropagation()
         if (!canImport || !item) return;
+        const options: ImportDatasetFromStorageMutationVariables = {
+            datasetPath: item.path,
+        }
         switch (item.__typename) {
             case 'DatasetStorageNode':
-                mutate({
-                    datasetPath: item.path,
-                })
+                options.datasetPath = item.path
                 break;
             case 'AnalysisStorageNode':
-                mutate({
-                    analysisPath: item.path,
-                    datasetPath: parentItem!.path,
-                })
+                options.analysisPath = item.path
+                options.datasetPath = parentItem!.path
                 break;
             default:
                 return;
         }
-    }, [ canImport, item, mutate, parentItem ])
+        try {
+            const data = await mutateAsync(options)
+            const path = data.importDataset?.dataset.path
+            if (!path) return
+            dispatch(StorageSlice.actions.invalidatePath(path))
+        } catch (error) {
+            toastManager.addError({ title: 'Import failed', error })
+        }
+    }, [ canImport, item, mutateAsync, parentItem, toastManager, dispatch ])
 
     return useMemo(() => {
         let rowIcon;
@@ -154,7 +149,7 @@ export const Item: React.FC<Props> = ({
 
                 {/* Use Icon */ }
                 { usages > 0 && <Popover.Root>
-                    <Popover.Trigger color='medium'>
+                    <Popover.Trigger color="medium">
                         <InfoCircle size={ 24 }/>
                     </Popover.Trigger>
                     <Popover.Content>

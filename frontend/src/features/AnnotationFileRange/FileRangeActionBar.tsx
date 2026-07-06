@@ -12,11 +12,12 @@ import { Popover } from '@/components/base/Popover';
 import { Progress } from '@/components/base/Progress';
 import { Dialog } from '@/components/base/Dialog';
 import { useQuery } from '@tanstack/react-query';
-import { AnnotationSpectrogram } from '@/features';
+import { Spinner } from '@/components/base';
+import { AnnotationSpectrogramAPI } from '../AnnotationSpectrogram';
 
 const PAGE_SIZE = 20
 
-export const FileRangeActionBar: React.FC = () => {
+export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPending }) => {
     const searchParams = Route.useSearch();
     const routeParams = Route.useParams()
     const navigate = useNavigate();
@@ -26,7 +27,7 @@ export const FileRangeActionBar: React.FC = () => {
     const { user } = useLoaderData({ from: '/_authenticated' })
     const search = Route.useSearch()
     const { campaignID, phaseType } = Route.useParams()
-    const { data } = useQuery(AnnotationSpectrogram.API.allQuery({
+    const { data } = useQuery(AnnotationSpectrogramAPI.allQuery({
         campaignID,
         phaseType,
         annotatorID: user!.id,
@@ -76,6 +77,8 @@ export const FileRangeActionBar: React.FC = () => {
                    searchPlaceholder="Search filename"
                    onSearchChange={ updateSearch }
                    actionButton={ <div className={ styles.filterButtons }>
+
+                       { isPending && <Spinner/> }
 
                        { (hasFilters || searchParams.onlyAssigned) &&
                            <Button color="medium" onClick={ clear }>

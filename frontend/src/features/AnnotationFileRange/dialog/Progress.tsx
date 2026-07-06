@@ -6,7 +6,6 @@ import { AnnotationFileRangeNode, AnnotationTaskNodeNodeConnection, Maybe, UserN
 import { useDownloadAnnotations, useDownloadProgress } from '@/api/download';
 import { NBSP } from '@/service/type';
 import { useQuery } from '@tanstack/react-query';
-import { AnnotationFileRange } from '@/features';
 import { UserAPI } from '@/features/User';
 import { useLoaderData } from '@tanstack/react-router';
 import { Button, ButtonGroup } from '@/components/base/Button';
@@ -16,6 +15,7 @@ import { Dialog } from '@/components/base/Dialog';
 import { Spinner } from '@/components/base/Spinner';
 import { Center } from '@/components/layout/Display';
 import styles from './styles.module.scss'
+import * as FileRangeAPI from '../api';
 
 type Progression = {
     user: Pick<UserNode, 'id' | 'displayName' | 'expertise' | 'username'>;
@@ -47,7 +47,7 @@ export const Progress: React.FC = () => {
         data: allFileRanges,
         isFetching: isLoadingFileRanges,
         error: fileRangeError,
-    } = useQuery(AnnotationFileRange.API.forPhaseQuery({
+    } = useQuery(FileRangeAPI.forPhaseQuery({
         campaignID: campaign.id, phaseType: phase.phase,
     }));
     const { downloadAnnotations, error: downloadAnnotationsError } = useDownloadAnnotations()

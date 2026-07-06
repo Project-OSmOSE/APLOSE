@@ -4,9 +4,8 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import type { BaseUIEvent } from '@base-ui/react';
 
 import type { SourceNode } from '@/api';
-import { queryClient } from '@/api/queryClient';
-import { Ontology } from '@/features';
-import type { UpdateSoundMutationVariables } from '@/features/Ontology';
+import { ensureValidQueryData } from '@/api/utils';
+import { OntologyAPI, type UpdateSoundMutationVariables } from '@/features/Ontology';
 
 import { Button, ButtonGroup } from '@/components/base/Button';
 import { Spinner } from '@/components/base/Spinner';
@@ -20,16 +19,16 @@ const OntologyPanel: React.FC = () => {
     const { type, id } = Route.useParams({ select: ({ type, id }) => ({ type, id }) });
 
     const { data: source, isFetching: isFetchingSource } = useQuery({
-        ...Ontology.API.sourceByIdQuery({ id }),
+        ...OntologyAPI.sourceByIdQuery({ id }),
         enabled: type === 'source',
     });
     const { data: sound, isFetching: isFetchingSound } = useQuery({
-        ...Ontology.API.soundByIdQuery({ id }),
+        ...OntologyAPI.soundByIdQuery({ id }),
         enabled: type === 'sound',
     });
 
-    const { mutateAsync: updateSource } = useMutation(Ontology.API.updateSourceMutation)
-    const { mutateAsync: updateSound } = useMutation(Ontology.API.updateSoundMutation)
+    const { mutateAsync: updateSource } = useMutation(OntologyAPI.updateSourceMutation)
+    const { mutateAsync: updateSound } = useMutation(OntologyAPI.updateSoundMutation)
 
     const isFetching = useMemo(() => isFetchingSound || isFetchingSource, [ isFetchingSource, isFetchingSound ])
     const data = useMemo(() => type == 'source' ? source : sound, [ type, source, sound ])
@@ -56,7 +55,7 @@ const OntologyPanel: React.FC = () => {
             case 'sound':
                 return updateSound(info)
         }
-    }, [type, data, updateSource, updateSound]);
+    }, [ type, data, updateSource, updateSound ]);
 
     if (!id) return <div className={ styles.panel }/>
     return <div className={ styles.panel }>
@@ -66,31 +65,31 @@ const OntologyPanel: React.FC = () => {
             <Fieldset.Root>
                 <Fieldset.Legend>ID: { data.id }</Fieldset.Legend>
 
-                <Field.Root name='englishName'>
+                <Field.Root name="englishName">
                     <Field.Label required>English name</Field.Label>
                     <Field.Control type="text" placeholder={ data.englishName }/>
                     <Field.Error/>
                 </Field.Root>
 
-                { type === 'source' && <Field.Root name='latinName'>
+                { type === 'source' && <Field.Root name="latinName">
                     <Field.Label>Latin name</Field.Label>
                     <Field.Control type="text" placeholder={ (data as SourceNode).latinName ?? undefined }/>
                     <Field.Error/>
                 </Field.Root> }
 
-                <Field.Root name='frenchName'>
+                <Field.Root name="frenchName">
                     <Field.Label>French name</Field.Label>
                     <Field.Control type="text" placeholder={ data.frenchName ?? undefined }/>
                     <Field.Error/>
                 </Field.Root>
 
-                <Field.Root name='codeName'>
+                <Field.Root name="codeName">
                     <Field.Label>Code name</Field.Label>
                     <Field.Control type="text" placeholder={ data.codeName ?? undefined }/>
                     <Field.Error/>
                 </Field.Root>
 
-                <Field.Root name='taxon'>
+                <Field.Root name="taxon">
                     <Field.Label>Taxon</Field.Label>
                     <Field.Control type="text" placeholder={ data.taxon ?? undefined }/>
                     <Field.Error/>
@@ -119,9 +118,9 @@ export const Route = createFileRoute('/_authenticated/_superuser/ontology/$type/
     loader: ({ params: { type, id } }) => {
         switch (type) {
             case 'source':
-                return queryClient.ensureQueryData(Ontology.API.sourceByIdQuery({ id }))
+                return ensureValidQueryData(OntologyAPI.sourceByIdQuery({ id }))
             case 'sound':
-                return queryClient.ensureQueryData(Ontology.API.soundByIdQuery({ id }))
+                return ensureValidQueryData(OntologyAPI.soundByIdQuery({ id }))
         }
     },
     component: OntologyPanel,

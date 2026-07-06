@@ -15,13 +15,13 @@ import { CommentBloc } from '@/features/Annotator/Comment';
 import { AnnotationsBloc } from '@/features/Annotator/Annotation/AnnotationsBloc';
 
 import styles from './$spectrogramID.module.scss';
-import { type AllSpectrogramsFilters } from '@/features/AnnotationSpectrogram';
-import { queryClient } from '@/api/queryClient';
-import { AnnotationCampaign, AnnotationSpectrogram } from '@/features';
+import { type AllSpectrogramsFilters, AnnotationSpectrogramAPI } from '@/features/AnnotationSpectrogram';
+import { ensureValidQueryData } from '@/api/utils';
 import { UserAPI } from '@/features/User';
 import { useQuery } from '@tanstack/react-query';
 import { ConfigBar } from '@/features/Annotator/ConfigBar';
 import { DownloadButtons } from '@/features/Annotator/DownloadButtons';
+import { CampaignAPI } from '@/features/AnnotationCampaign';
 
 const AnnotatorPage: React.FC = () => {
     const campaignID = Route.useParams({ select: ({ campaignID }) => campaignID });
@@ -31,10 +31,12 @@ const AnnotatorPage: React.FC = () => {
     const {
         data: paths,
     } = useQuery({
-        ...AnnotationSpectrogram.API.getPathQuery({
+        ...AnnotationSpectrogramAPI.getPathQuery({
             spectrogramID: spectrogram.id,
             analysisID: selectedAnalysis?.id ?? '',
-        }), enabled: !!selectedAnalysis, refetchOnMount: true,
+        }),
+        enabled: !!selectedAnalysis,
+        refetchOnMount: true,
     });
     const audio = useAudio()
 
@@ -109,15 +111,15 @@ export const Route = createFileRoute(
     },
     loaderDeps: ({ search }) => search as AllSpectrogramsFilters,
     loader: async ({ params: { campaignID, phaseType, spectrogramID }, deps }) => {
-        const user = await queryClient.ensureQueryData(UserAPI.currentQuery)
+        const user = await ensureValidQueryData(UserAPI.currentQuery)
         const [
             { spectrogram, ...data },
             { analysis },
         ] = await Promise.all([
-            queryClient.ensureQueryData(AnnotationSpectrogram.API.getQuery({
+            ensureValidQueryData(AnnotationSpectrogramAPI.getQuery({
                 campaignID, phaseType, spectrogramID, ...deps, annotatorID: user!.id,
             })),
-            queryClient.ensureQueryData(AnnotationCampaign.API.byIdQuery({ id: campaignID })),
+            ensureValidQueryData(CampaignAPI.byIdQuery({ id: campaignID })),
         ])
         if (!spectrogram) throw notFound()
         const baseScaleAnalysis = analysis.find(a =>
@@ -128,7 +130,7 @@ export const Route = createFileRoute(
         const defaultAnalysis = minID ? analysis.find(a => a.id === (baseScaleAnalysis?.id ?? minID)) : undefined
 
         if (defaultAnalysis) {
-            await queryClient.ensureQueryData(AnnotationSpectrogram.API.getPathQuery({
+            await ensureValidQueryData(AnnotationSpectrogramAPI.getPathQuery({
                 spectrogramID: spectrogram.id,
                 analysisID: defaultAnalysis.id,
             }))

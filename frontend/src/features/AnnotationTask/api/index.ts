@@ -10,8 +10,8 @@ import { queryKeys } from '@/api/queryKeys';
 
 export const submitMutation = mutationOptions({
     mutationFn: (variables: SubmitTaskMutationVariables) => graphqlClient.request<SubmitTaskMutation>(SubmitTaskDocument, variables),
-    onSuccess: (_data, { campaignID, phase, spectrogramID }) => {
-        queryClient.invalidateQueries({ type: 'all', queryKey: queryKeys.spectrogram.get({ campaignID, phaseType: phase, spectrogramID }) })
+    onSuccess: (_data, { campaignID, phase }) => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.spectrogram.baseForPhase({ campaignID, phaseType: phase }) })
         queryClient.invalidateQueries({ queryKey: queryKeys.phase.get({ campaignID, phase }) })
     },
 })

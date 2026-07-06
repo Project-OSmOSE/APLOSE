@@ -7,18 +7,17 @@ import { AnnotationPhaseType } from '@/api';
 
 import { AnnotationsFilterModal, DateFilterModal, StatusFilterModal } from '@/features/AnnotationTask';
 import { FileRangeActionBar } from '@/features/AnnotationFileRange';
-import { PhaseComponent } from '@/features/AnnotationPhase';
-import { type AllSpectrogramsFilters, SpectrogramRow } from '@/features/AnnotationSpectrogram';
+import { PhaseAPI, PhaseComponent } from '@/features/AnnotationPhase';
+import { type AllSpectrogramsFilters, AnnotationSpectrogramAPI, SpectrogramRow } from '@/features/AnnotationSpectrogram';
 
 import styles from './phase.$phaseType.module.scss';
-import { queryClient } from '@/api/queryClient';
-import { AnnotationPhase, AnnotationSpectrogram } from '@/features';
 import { useQuery } from '@tanstack/react-query';
 import { Note } from '@/components/base/Note';
 import { Center } from '@/components/layout/Display';
 import { Spinner } from '@/components/base/Spinner';
 import { Dialog } from '@/components/base/Dialog';
 import { Filter } from '@solar-icons/react';
+import { ensureValidQueryData } from '@/api/utils';
 
 const PAGE_SIZE = 20
 
@@ -26,7 +25,7 @@ const SpectrogramRows: React.FC = React.memo(() => {
     const { user } = useLoaderData({ from: '/_authenticated' })
     const search = Route.useSearch()
     const { campaignID, phaseType } = Route.useParams()
-    const { data } = useQuery(AnnotationSpectrogram.API.allQuery({
+    const { data } = useQuery(AnnotationSpectrogramAPI.allQuery({
         campaignID,
         phaseType,
         annotatorID: user!.id,
@@ -47,7 +46,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
     const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const search = Route.useSearch()
     const { campaignID, phaseType } = Route.useParams()
-    const { data, isLoading, isFetching } = useQuery(AnnotationSpectrogram.API.allQuery({
+    const { data, isLoading, isFetching } = useQuery(AnnotationSpectrogramAPI.allQuery({
         campaignID,
         phaseType,
         annotatorID: user!.id,
@@ -55,27 +54,26 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
         offset: PAGE_SIZE * ((search.page ?? 1) - 1),
         ...search,
     }))
-    const { data: phase } = useQuery(AnnotationPhase.API.getQuery({
+    const { data: phase } = useQuery(PhaseAPI.getQuery({
         campaignID,
         phase: phaseType,
     }))
 
-    const routeParams = Route.useParams()
     const navigate = useNavigate();
 
-    const isEmpty = useMemo(() => !data || data.spectrograms.length === 0 || campaign.isArchived, [ data, campaign ])
+    const isEmpty = useMemo(() => data && data.spectrograms.length === 0 || campaign.isArchived, [ data, campaign ])
 
     const updatePage = useCallback((page?: number) => {
         navigate({
             to: Route.to,
-            params: routeParams,
+            params: { campaignID, phaseType },
             search: (prev) => ({
                 ...prev,
                 page: page ?? 1,
             }),
             replace: true,
         })
-    }, [ navigate, routeParams ])
+    }, [ navigate, campaignID, phaseType ])
 
     const hasDateFilter = useMemo(() => !!search.to || !!search.from, [ search ]);
     const hasStatusFilter = useMemo(() => search.status !== undefined || search.onlyAssigned !== undefined, [ search ]);
@@ -84,7 +82,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
 
         <div className={ [ styles.tasks, isEmpty ? styles.empty : '' ].join(' ') }>
 
-            <FileRangeActionBar/>
+            <FileRangeActionBar isPending={ isFetching }/>
 
             { phase?.phase === 'Verification' && !phase?.hasAnnotations && phases.find(p => p.phase === AnnotationPhaseType.Verification) &&
                 <WarningText message="Your campaign doesn't have any annotations to check"
@@ -171,7 +169,7 @@ export const Route = createFileRoute('/_authenticated/annotation-campaign/$campa
     },
     loaderDeps: ({ search }) => search as AllSpectrogramsFilters,
     loader: async ({ params: { campaignID, phaseType } }) => {
-        const phase = await queryClient.ensureQueryData(AnnotationPhase.API.getQuery({
+        const phase = await ensureValidQueryData(PhaseAPI.getQuery({
             campaignID,
             phase: phaseType,
         }))

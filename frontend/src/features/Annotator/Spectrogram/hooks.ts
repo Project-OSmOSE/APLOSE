@@ -7,7 +7,7 @@ import { useAppSelector } from '@/features/App';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 import { useLoaderData } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
-import { AnnotationSpectrogram } from '@/features';
+import { AnnotationSpectrogramAPI } from '@/features/AnnotationSpectrogram';
 
 export const useDrawSpectrogram = () => {
     const { spectrogram } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
@@ -18,7 +18,7 @@ export const useDrawSpectrogram = () => {
         data: paths,
         refetch,
     } = useQuery({
-        ...AnnotationSpectrogram.API.getPathQuery({
+        ...AnnotationSpectrogramAPI.getPathQuery({
             spectrogramID: spectrogram.id,
             analysisID: selectedAnalysis?.id ?? '',
         }),
@@ -31,8 +31,9 @@ export const useDrawSpectrogram = () => {
     const failedImagesSources = useRef<string[]>([])
 
     useEffect(() => {
+        // Reset images when spectrogram or analysis changes
         images.current = new Map();
-    }, [selectedAnalysis]);
+    }, [ selectedAnalysis, spectrogram ]);
 
     const areAllImagesLoaded = useCallback((): boolean => {
         return images.current.get(zoom)?.filter(i => !!i).length === zoom

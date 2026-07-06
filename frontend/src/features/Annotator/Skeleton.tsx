@@ -5,7 +5,7 @@ import { AnnotationTaskStatus } from '@/api';
 import { useAppDispatch } from '@/features/App';
 import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
 import { PointerProvider } from '@/features/Annotator/Pointer/context';
-import { useLoaderData } from '@tanstack/react-router';
+import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
 import { AnnotatorConfidenceSlice } from '@/features/Annotator/Confidence';
 import { AnnotatorAnalysisProvider } from '@/features/Annotator/Analysis';
 import { AnnotatorLabelSlice } from '@/features/Annotator/Label';
@@ -13,8 +13,10 @@ import { AnnotatorUXSlice } from '@/features/Annotator/UX';
 import { AnnotatorCommentSlice } from '@/features/Annotator/Comment';
 import { cleanGqlList } from '@/api/utils';
 import { AnnotatorAnnotationSlice, convertGqlToAnnotations } from '@/features/Annotator/Annotation';
-import { Note, Progress } from '@/components/base';
+import { Note, Progress, Spinner } from '@/components/base';
 import { AltArrowRight, CheckCircle } from '@solar-icons/react';
+import { useQuery } from '@tanstack/react-query';
+import { AnnotationSpectrogramAPI } from '@/features/AnnotationSpectrogram';
 
 export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
     const { user } = useLoaderData({ from: '/_authenticated' })
@@ -24,8 +26,6 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const {
-        spectrogram,
-        annotations,
         info,
         isEditionAuthorized,
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
@@ -38,6 +38,15 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
     //
     //     }
     // })
+    const {
+        campaignID,
+        phaseType,
+        spectrogramID,
+    } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const search = useSearch({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const { data, isFetching } = useQuery(AnnotationSpectrogramAPI.getQuery({
+        campaignID, phaseType, spectrogramID, ...search, annotatorID: user.id,
+    }))
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -50,9 +59,10 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
     }, [ campaign ]);
 
     useEffect(() => {
+        if (!data) return
         dispatch(AnnotatorUXSlice.actions.initSpectrogram())
 
-        const allAnnotations = convertGqlToAnnotations(annotations, phase.phase, user.id)
+        const allAnnotations = convertGqlToAnnotations(data.annotations, phase.phase, user.id)
         const defaultAnnotation = [ ...allAnnotations ].pop()
         dispatch(AnnotatorConfidenceSlice.actions.initSpectrogram({
             focus: defaultAnnotation?.confidence ?? undefined,
@@ -61,24 +71,26 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
             focus: defaultAnnotation?.label ?? undefined,
         }))
         dispatch(AnnotatorCommentSlice.actions.initSpectrogram({
-            taskComments: cleanGqlList(spectrogram.task?.userComments?.results),
+            taskComments: cleanGqlList(data.spectrogram?.task?.userComments?.results),
         }))
         dispatch(AnnotatorAnnotationSlice.actions.initSpectrogram({
             all: allAnnotations,
             default: defaultAnnotation,
         }))
-    }, [ spectrogram ]);
+    }, [ data ]);
 
     return <PointerProvider>
         <AnnotatorCanvasContextProvider>
             <AnnotatorAnalysisProvider>
                 <div className={ styles.page }>
                     <Navigation.Annotator>
-                        <div className={ styles.info }>
+                        {/*TODO::*/ }
+                        { isFetching && <Spinner/> }
+                        { data?.spectrogram && <div className={ styles.info }>
                             <Note color="medium">
                                 { campaign.name }
                                 <AltArrowRight weight="Linear"
-                                               size={ 20 }/> { spectrogram.filename } { spectrogram.task?.status === AnnotationTaskStatus.Finished &&
+                                               size={ 20 }/> { data.spectrogram.filename } { data.spectrogram.task?.status === AnnotationTaskStatus.Finished &&
                                 <CheckCircle weight="Linear" size={ 20 }/> }
                             </Note>
                             { isEditionAuthorized && info?.totalCount &&
@@ -88,11 +100,11 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
 
                             { campaign.archive ? <Note>You cannot annotate an archived campaign.</Note> :
                                 phase?.endedAt ? <Note>You cannot annotate an ended phase.</Note> :
-                                    !spectrogram.isAssigned ?
+                                    !data.spectrogram.isAssigned ?
                                         <Note>You are not assigned to annotate this file.</Note> :
                                         <Fragment/>
                             }
-                        </div>
+                        </div> }
                     </Navigation.Annotator>
 
                     { children }

@@ -43,5 +43,6 @@ const AnnotationCampaignDetail: React.FC = () => {
 }
 
 export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout')({
+    loader: async ({ parentMatchPromise }) => (await parentMatchPromise).loaderData!,
     component: AnnotationCampaignDetail,
 })

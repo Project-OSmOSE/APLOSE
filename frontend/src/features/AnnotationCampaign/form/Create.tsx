@@ -8,7 +8,7 @@ import { cleanGqlErrors } from '@/api/utils';
 import { Button, ButtonGroup, Checkbox, Field, Fieldset, Form, Link, Note, Spinner, Toast } from '@/components/base';
 
 import { useAppDispatch } from '@/features/App';
-import { Slice as StorageSlice } from '@/features/Storage'
+import { StorageSlice } from '@/features/Storage'
 import { DatasetComponent } from '@/features/Dataset';
 import { AnalysisComponent } from '@/features/SpectrogramAnalysis';
 import { ColormapComponent } from '@/features/Colormap';

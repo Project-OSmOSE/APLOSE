@@ -1,5 +1,5 @@
 import React from 'react';
-import { SiGithub } from 'react-icons/si';
+import { SiDiscord, SiGithub } from 'react-icons/si';
 import { IoMailOutline } from 'react-icons/io5';
 import styles from './styles.module.scss';
 
@@ -9,6 +9,10 @@ export const Footer: React.FC = () => (
             <a className={ styles.link } href="https://github.com/Project-OSmOSE">
                 <SiGithub className={ styles.icon }/>
                 Github
+            </a>
+            <a className={ styles.link } href="https://discord.gg/uqx7ZBcNTy">
+                <SiDiscord className={ styles.icon }/>
+                OSmOSE tools community server
             </a>
             <a className={ styles.link } href="mailto:osmose@ensta.fr" title="Contact OSmOSE">
                 <IoMailOutline className={ styles.icon }/>

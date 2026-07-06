@@ -44,7 +44,7 @@ def get_task(
 
 class AnnotationSpectrogramNode(ExtendedNode):
 
-    duration = graphene.Int(required=True)
+    duration = graphene.Float(required=True)
     annotation_comments = AuthenticatedPaginationConnectionField(AnnotationCommentNode)
 
     class Meta:

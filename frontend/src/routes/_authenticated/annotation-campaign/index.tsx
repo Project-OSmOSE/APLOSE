@@ -6,22 +6,22 @@ import { Head, WarningText } from '@/components/ui';
 import {
     type AllCampaignsQueryVariables,
     AnnotationCampaignListFilterActionBar,
+    CampaignAPI,
     Cards,
 } from '@/features/AnnotationCampaign';
-import { queryClient } from '@/api/queryClient';
-import { AnnotationCampaign } from '@/features';
 import { useQuery } from '@tanstack/react-query';
 import { Content } from '@/components/layout/Content';
 import { Center } from '@/components/layout/Display';
 import { Spinner } from '@/components/base/Spinner';
 import { Page } from '@/components/layout';
+import { ensureValidQueryData } from '@/api/utils';
 
 const AnnotationCampaignList: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useLoaderData({ from: '/_authenticated' })
     const params = Route.useParams()
     const search = Route.useSearch()
-    const { data: campaigns, isFetching } = useQuery(AnnotationCampaign.API.allQuery({ ...search, ...params }))
+    const { data: campaigns, isFetching } = useQuery(CampaignAPI.allQuery({ ...search, ...params }))
 
     const init = useCallback(() => {
         navigate({
@@ -67,12 +67,10 @@ const AnnotationCampaignList: React.FC = () => {
 export const Route = createFileRoute('/_authenticated/annotation-campaign/')({
     validateSearch: (search: Record<string, unknown>) => search as AllCampaignsQueryVariables,
     loaderDeps: ({ search }) => search as AllCampaignsQueryVariables,
-    loader: ({ params, deps }) => {
-        queryClient.ensureQueryData(AnnotationCampaign.API.allQuery({
-            ...deps,
-            ...params,
-        }))
-    },
+    loader: ({ params, deps }) => ensureValidQueryData(CampaignAPI.allQuery({
+        ...deps,
+        ...params,
+    })),
     component: AnnotationCampaignList,
     pendingComponent: () => <Content oneContent>
         <Head title="Annotation campaigns"/>

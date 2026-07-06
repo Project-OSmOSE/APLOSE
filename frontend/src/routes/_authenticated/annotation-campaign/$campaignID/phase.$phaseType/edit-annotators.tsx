@@ -7,13 +7,11 @@ import { Button, ButtonGroup, Combobox, ComboboxSelect, Form, Note, Spinner, Toa
 import { AnnotationFileRangeInput, AnnotationPhaseType } from '@/api';
 import { getNewItemID } from '@/service/function';
 
-import { FileRangeInputRow } from '@/features/AnnotationFileRange';
-import { queryClient } from '@/api/queryClient';
-import { AnnotationFileRange } from '@/features';
+import { FileRangeAPI, FileRangeInputRow } from '@/features/AnnotationFileRange';
 import { UserAPI } from '@/features/User';
 import { useMutation } from '@tanstack/react-query';
 import { Content } from '@/components/layout/Content';
-import { cleanGqlList } from '@/api/utils';
+import { cleanGqlList, ensureValidQueryData } from '@/api/utils';
 import { Page } from '@/components/layout';
 
 type FileRange = Omit<AnnotationFileRangeInput, 'id'> & {
@@ -91,7 +89,7 @@ const EditAnnotators: React.FC = () => {
         isPending: isSubmitting,
         error: errorSubmitting,
         status: submissionStatus,
-    } = useMutation(AnnotationFileRange.API.updateMutation)
+    } = useMutation(FileRangeAPI.updateMutation)
     const [ force, setForce ] = useState<boolean>()
 
     // File ranges
@@ -223,8 +221,8 @@ export const Route = createFileRoute('/_authenticated/annotation-campaign/$campa
             { users, groups },
             allFileRanges,
         ] = await Promise.all([
-            queryClient.ensureQueryData(UserAPI.allQuery),
-            queryClient.ensureQueryData(AnnotationFileRange.API.forPhaseQuery(params)),
+            ensureValidQueryData(UserAPI.allQuery),
+            ensureValidQueryData(FileRangeAPI.forPhaseQuery(params)),
         ])
         return { users, groups, allFileRanges }
     },

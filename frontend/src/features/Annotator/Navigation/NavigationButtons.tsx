@@ -6,9 +6,9 @@ import { useRegisterToKeyDownEvent } from '@/components/ui/Event';
 import { useAnnotatorSubmit } from '@/features/Annotator';
 import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
 import { queryClient } from '@/api/queryClient';
-import { AnnotationSpectrogram } from '@/features';
 import { Popover } from '@/components/base/Popover';
 import { AltArrowLeft, AltArrowRight } from '@solar-icons/react';
+import { AnnotationSpectrogramAPI } from '@/features/AnnotationSpectrogram';
 
 export const NavigationButtons: React.FC = () => {
     const { user } = useLoaderData({ from: '/_authenticated' })
@@ -25,12 +25,12 @@ export const NavigationButtons: React.FC = () => {
     const navPrevious = useCallback(async () => {
         if (isPending) return;
         if (!info?.previousSpectrogramId) return;
-        if (await canNavigate()) openAnnotator(info.previousSpectrogramId)
+        if (await canNavigate()) openAnnotator(info.previousSpectrogramId, { replace: true })
     }, [ openAnnotator, isPending, info, canNavigate ])
     const navNext = useCallback(async () => {
         if (isPending) return;
         if (!info?.nextSpectrogramId) return;
-        if (await canNavigate()) openAnnotator(info.nextSpectrogramId)
+        if (await canNavigate()) openAnnotator(info.nextSpectrogramId, { replace: true })
     }, [ canNavigate, openAnnotator, isPending, info ])
 
     useRegisterToKeyDownEvent([ 'ArrowLeft' ], navPrevious)
@@ -38,7 +38,7 @@ export const NavigationButtons: React.FC = () => {
 
     useEffect(() => {
         if (!info?.nextSpectrogramId) return
-        queryClient.prefetchQuery(AnnotationSpectrogram.API.getQuery({
+        queryClient.prefetchQuery(AnnotationSpectrogramAPI.getQuery({
             ...params,
             ...search,
             annotatorID: user.id,

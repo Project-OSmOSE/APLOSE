@@ -1,0 +1,90 @@
+name: Discord Release Notification
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord notification to OSmOSE team
+        uses: actions/github-script@v7
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.OSMOSE_WEBHOOK_URL }}
+        with:
+          script: |
+            const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+            const { release } = context.payload;
+            const { owner, repo } = context.repo;
+
+            // Truncate body to Discord's embed description limit (4096 chars)
+            const description = (release.body || 'No description provided.').slice(0, 4096);
+
+            const embed = {
+              title: `🚀 New release: ${release.name || release.tag_name}`,
+              description,
+              url: release.html_url,
+              color: 0x57F287, // Discord green
+              fields: [
+                { name: 'Repository',  value: `${owner}/${repo}`,                        inline: true },
+                { name: 'Tag',         value: release.tag_name,                           inline: true },
+                { name: 'Pre-release', value: release.prerelease ? '⚠️ Yes' : '✅ No',   inline: true },
+              ],
+              footer: { text: `Published by ${release.author.login}` },
+              timestamp: release.published_at,
+            };
+
+            const response = await fetch(webhookUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ embeds: [embed] }),
+            });
+
+            if (!response.ok) {
+              const text = await response.text();
+              throw new Error(`Discord webhook error ${response.status}: ${text}`);
+            }
+
+            console.log('Discord notification sent successfully!');
+
+      - name: Send Discord notification to OSmOSE Community
+        uses: actions/github-script@v7
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.COMMUNITY_OSMOSE_WEBHOOK_URL }}
+        with:
+          script: |
+            const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+            const { release } = context.payload;
+            const { owner, repo } = context.repo;
+
+            // Truncate body to Discord's embed description limit (4096 chars)
+            const description = (release.body || 'No description provided.').slice(0, 4096);
+
+            const embed = {
+              title: `🚀 New release: ${release.name || release.tag_name}`,
+              description,
+              url: release.html_url,
+              color: 0x57F287, // Discord green
+              fields: [
+                { name: 'Repository',  value: `${owner}/${repo}`,                        inline: true },
+                { name: 'Tag',         value: release.tag_name,                           inline: true },
+                { name: 'Pre-release', value: release.prerelease ? '⚠️ Yes' : '✅ No',   inline: true },
+              ],
+              footer: { text: `Published by ${release.author.login}` },
+              timestamp: release.published_at,
+            };
+
+            const response = await fetch(webhookUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ embeds: [embed] }),
+            });
+
+            if (!response.ok) {
+              const text = await response.text();
+              throw new Error(`Discord webhook error ${response.status}: ${text}`);
+            }
+
+            console.log('Discord notification sent successfully!');

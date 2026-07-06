@@ -53,7 +53,7 @@ const meta = {
     // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#story-args
     args: {
         items: AnalysisTestSample,
-    } satisfies SelectProps,
+    } satisfies SelectProps<any>,
 } satisfies Meta<typeof Select>;
 export default meta;
 type Story = StoryObj<typeof meta>;

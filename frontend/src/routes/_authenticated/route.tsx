@@ -12,6 +12,7 @@ import { UserAPI } from '@/features/User';
 import { Spinner } from '@/components/base/Spinner';
 import { WarningText } from '@/components/ui';
 import { Center } from '@/components/layout/Display';
+import { ensureValidQueryData } from '@/api/utils';
 
 const Component: React.FC = () => {
     const { status, error, isFetching, data: user } = useQuery(UserAPI.currentQuery)
@@ -38,7 +39,7 @@ const Component: React.FC = () => {
 }
 export const Route = createFileRoute('/_authenticated')({
     loader: async () => {
-        const user = await queryClient.ensureQueryData(UserAPI.currentQuery)
+        const user = await ensureValidQueryData(UserAPI.currentQuery)
         if (user) return { user }
         throw redirect({
             to: '/login',

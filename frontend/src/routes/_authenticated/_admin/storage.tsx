@@ -4,9 +4,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { HelpButton } from '@/components/base/Button';
 import { Head, WarningText } from '@/components/ui';
 
-import { ServerItem, StorageModal } from '@/features/Storage';
-import { Storage } from '@/features';
-import { queryClient } from '@/api/queryClient';
+import { ServerItem, StorageAPI, StorageModal } from '@/features/Storage';
 
 import styles from './storage.module.scss'
 import { Content } from '@/components/layout/Content';
@@ -14,6 +12,7 @@ import { Note } from '@/components/base/Note';
 import { Spinner } from '@/components/base/Spinner';
 import { Center } from '@/components/layout/Display';
 import { Dialog } from '@/components/base/Dialog';
+import { ensureValidQueryData } from '@/api/utils';
 
 const StorageBrowser: React.FC = () => (
     <Content className={ styles.Storage }>
@@ -48,7 +47,7 @@ const StorageBrowser: React.FC = () => (
 )
 
 export const Route = createFileRoute('/_authenticated/_admin/storage')({
-    loader: () => queryClient.ensureQueryData(Storage.API.browseQuery({ path: '' })),
+    loader: () => ensureValidQueryData(StorageAPI.browseQuery({ path: '' })),
     component: StorageBrowser,
     pendingComponent: () => <Content className={ styles.Storage }>
         <Head title="Storage"/>

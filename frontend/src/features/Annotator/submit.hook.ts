@@ -3,7 +3,6 @@ import { Toast } from '@/components/base/Toast';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 import { useRegisterToKeyDownEvent } from '@/components/ui/Event';
-import { AnnotationTask } from '@/features';
 import { convertAnnotationsToPost, selectAllAnnotations } from '@/features/Annotator/Annotation';
 import { convertCommentsToPost, selectTaskComments } from '@/features/Annotator/Comment';
 import { useAppSelector } from '@/features/App';
@@ -12,6 +11,7 @@ import {
     Route,
 } from '@/routes/_authenticated/annotation-campaign/$campaignID/phase.$phaseType/spectrogram/$spectrogramID'
 import { useMutation } from '@tanstack/react-query';
+import { TaskAPI } from '../AnnotationTask';
 
 export const useAnnotatorSubmit = () => {
     const {
@@ -30,9 +30,7 @@ export const useAnnotatorSubmit = () => {
     const navigate = useNavigate()
     const allAnnotations = useAppSelector(selectAllAnnotations)
     const taskComments = useAppSelector(selectTaskComments)
-    const { mutate: submitTask, isSuccess, error, ...submitInfo } = useMutation(
-        AnnotationTask.API.submitMutation,
-    )
+    const { mutate: submitTask, isSuccess, error, ...submitInfo } = useMutation(TaskAPI.submitMutation)
 
     const params = Route.useParams();
     const search = Route.useSearch();
@@ -76,7 +74,7 @@ export const useAnnotatorSubmit = () => {
     useEffect(() => {
         if (!isSuccess) return;
         if (info?.nextSpectrogramId) {
-            openAnnotator(info.nextSpectrogramId);
+            openAnnotator(info.nextSpectrogramId, { replace: true });
         } else {
             navigate({
                 to: '/annotation-campaign/$campaignID/phase/$phaseType',
