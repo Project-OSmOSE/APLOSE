@@ -5,8 +5,9 @@ import { NavigationMenu } from '@/components/base/NavigationMenu';
 import styles from './Navigation.module.scss';
 import logo from '/images/logo/x96.png';
 import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
+import { Spinner } from '@/components/base';
 
-export const Annotator: React.FC<{ className?: string, children: ReactNode }> = ({ className, children }) => {
+export const Annotator: React.FC<{ className?: string, children: ReactNode, loading?: boolean }> = ({ className, children, loading }) => {
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phaseType } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const search = useSearch({ strict: false });
@@ -23,7 +24,9 @@ export const Annotator: React.FC<{ className?: string, children: ReactNode }> = 
 
         { children }
 
-        <NavigationMenu.List>
+        <NavigationMenu.List horizontal>
+            { loading && <Spinner/> }
+
             { campaign.instructionsUrl && <NavigationMenu.Item>
                 <ExternalLink target="_blank"
                               color="medium"

@@ -13,7 +13,7 @@ import { AnnotatorUXSlice } from '@/features/Annotator/UX';
 import { AnnotatorCommentSlice } from '@/features/Annotator/Comment';
 import { cleanGqlList } from '@/api/utils';
 import { AnnotatorAnnotationSlice, convertGqlToAnnotations } from '@/features/Annotator/Annotation';
-import { Note, Progress, Spinner } from '@/components/base';
+import { Note, Progress } from '@/components/base';
 import { AltArrowRight, CheckCircle } from '@solar-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import { AnnotationSpectrogramAPI } from '@/features/AnnotationSpectrogram';
@@ -83,9 +83,7 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
         <AnnotatorCanvasContextProvider>
             <AnnotatorAnalysisProvider>
                 <div className={ styles.page }>
-                    <Navigation.Annotator>
-                        {/*TODO::*/ }
-                        { isFetching && <Spinner/> }
+                    <Navigation.Annotator loading={ isFetching }>
                         { data?.spectrogram && <div className={ styles.info }>
                             <Note color="medium">
                                 { campaign.name }

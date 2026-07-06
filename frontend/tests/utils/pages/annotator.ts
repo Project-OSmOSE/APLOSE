@@ -153,8 +153,8 @@ export class AnnotatorPage {
       return {
         startTime: 2.704,
         endTime: type === 'Box' ? 4.607 : undefined,
-        startFrequency: type === 'Box' ? 0.000 : 63.000,
-        endFrequency: type === 'Box' ? 63.000 : undefined,
+        startFrequency: type === 'Box' ? 0.000 : 55.000,
+        endFrequency: type === 'Box' ? 55.000 : undefined,
       } as Pick<Annotation, 'startTime' | 'startFrequency' | 'endTime' | 'endFrequency'>
     })
   }

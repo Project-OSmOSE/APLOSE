@@ -4,6 +4,11 @@
   margin: 0;
   display: grid;
   gap: 0.5rem;
+
+  &.horizontal {
+    grid-auto-flow: column;
+    align-items: center;
+  }
 }
 
 .Trigger {

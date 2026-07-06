@@ -49,6 +49,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+                allUsers: 'filled'
             })
             await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase }))
 
