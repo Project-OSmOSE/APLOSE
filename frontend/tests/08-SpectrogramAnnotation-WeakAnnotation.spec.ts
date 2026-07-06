@@ -43,7 +43,7 @@ const TEST = {
 
             await test.step('Submit', async () => {
                 const [ request ] = await Promise.all([
-                    page.waitForRequest(gqlURL),
+                    page.waitForGqlRequest('submitTask'),
                     page.annotator.submit({ method }),
                 ])
                 const variables = request.postDataJSON().variables as SubmitTaskMutationVariables;

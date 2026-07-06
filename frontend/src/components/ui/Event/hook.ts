@@ -14,6 +14,7 @@ export const useRegisterToEvent = <T>(signal: Signal<T>, callback: (event: T) =>
 
 export const useRegisterToKeyDownEvent = (keys: string[], callback: (event: KeyboardEvent) => void, filtered = true) => {
     const onKbdEvent = useCallback((event: KeyboardEvent) => {
+        console.debug('onKbdEvent', keys.join(','), event.key)
         if (!keys.includes(event.key)) return
         event.preventDefault();
         callback(event);
