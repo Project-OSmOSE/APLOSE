@@ -51,12 +51,14 @@ export const Search: React.FC<{
     })
 
     const filter = useCallback((itemValue: SearchValue, query: string): boolean => {
-        switch (itemValue.__typename) {
-            case 'UserGroupNode':
-                return contains(itemValue, query, (item: Group) => item.name)
-            case 'UserNode':
-                return contains(itemValue, query, (item: User) => [ item.displayName, item.username ].join(' '))
-        }
+        return contains(itemValue, query, (item: SearchValue) => {
+            switch (itemValue.__typename) {
+                case 'UserGroupNode':
+                    return (item as Group).name
+                case 'UserNode':
+                    return [ (item as User).displayName, (item as User).username ].join(' ')
+            }
+        })
     }, [ contains ])
     return <ComboboxSelect placeholder="Search annotator or group..."
                            items={ items }
