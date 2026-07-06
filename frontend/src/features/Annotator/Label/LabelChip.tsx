@@ -11,7 +11,6 @@ import {
     useUpdateAnnotation,
 } from '@/features/Annotator/Annotation';
 import { AnnotationType } from '@/api';
-import { useRegisterToKeyDownEvent } from '@/components/ui/Event';
 import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { setHiddenLabels } from './slice';
@@ -21,11 +20,10 @@ import { useLoaderData } from '@tanstack/react-router';
 import { Popover } from '@/components/base/Popover';
 import { Chip, type ChipProps, ChipRemove } from '@/components/base';
 import { Eye, EyeClosed, Unread } from '@solar-icons/react';
+import { useHotkeySequence } from '@tanstack/react-hotkeys';
+import type { Hotkey } from '@tanstack/hotkeys/src/hotkey';
 
-export const AlphanumericKeys = [
-    [ '&', 'é', '"', '\'', '(', '-', 'è', '_', 'ç' ],
-    [ '1', '2', '3', '4', '5', '6', '7', '8', '9' ],
-];
+export const AlphanumericKeys = [ 'à', '&', 'é', '"', '\'', '(', '-', 'è', '_', 'ç' ]
 
 export const LabelChip: React.FC<{
     label: string;
@@ -41,8 +39,8 @@ export const LabelChip: React.FC<{
     const getAnnotation = useGetAnnotation()
     const removeAnnotation = useRemoveAnnotation()
     const index = useMemo(() => labels.map(l => l.name).indexOf(label), [ labels, label ])
-    const number = useMemo(() => AlphanumericKeys[1][index], [ index ]);
-    const key = useMemo(() => AlphanumericKeys[0][index], [ index ]);
+    const numberShortcuts = useMemo(() => (index + 1).toString()?.split('') as Hotkey[], [ index ]);
+    const keyShortcuts = useMemo(() => (index + 1).toString()?.split('').map(i => AlphanumericKeys[+i]) as Hotkey[], [ index ]);
     const isUsed = useMemo(() => allAnnotations.some(a => a.label === label), [ allAnnotations, label ])
     const isHidden = useMemo(() => hiddenLabels.includes(label), [ hiddenLabels, label ])
     const dispatch = useAppDispatch()
@@ -56,7 +54,8 @@ export const LabelChip: React.FC<{
         if (weak) return dispatch(focusAnnotation(weak))
         addAnnotation({ ...weakProperties, confidence: defaultConfidence })
     }, [ focusedAnnotation, updateAnnotation, label, getAnnotation, dispatch, addAnnotation, defaultConfidence ])
-    useRegisterToKeyDownEvent([ number, key ], select)
+    useHotkeySequence(numberShortcuts, () => select())
+    useHotkeySequence(keyShortcuts, () => select())
 
     const show = useCallback((event: MouseEvent) => {
         event.stopPropagation();
@@ -84,21 +83,16 @@ export const LabelChip: React.FC<{
               { ...(isUsed ? { annotationColorIndex: index } : { color: 'medium' }) as Partial<ChipProps> }>
             { focusedLabel === label && <Unread weight="Linear" size={ 20 }/> }
 
-            { index >= 9 ?
-                <span>{ label }</span> :
-                <Popover.Root>
-                    <Popover.Trigger render={ <span/> } nativeButton={ false }>
-                        { label }
-                    </Popover.Trigger>
-                    <Popover.Content>
-                        <Popover.Title>Shortcut</Popover.Title>
-                        <Kbd keys={ number } annotationColorIndex={ index }/>
-                        { NBSP }or{ NBSP }
-                        <Kbd keys={ key } annotationColorIndex={ index }/>:
-                        { NBSP }Choose this label
-                    </Popover.Content>
-                </Popover.Root>
-            }
+            <Popover.Root>
+                <Popover.Trigger render={ <span/> } nativeButton={ false }>
+                    { label }
+                </Popover.Trigger>
+                <Popover.Content>
+                    <Popover.Title>Shortcut</Popover.Title>
+                    <Kbd keys={ numberShortcuts } annotationColorIndex={ index }/>:
+                    { NBSP }Choose this label
+                </Popover.Content>
+            </Popover.Root>
 
 
             { isUsed && <Fragment>

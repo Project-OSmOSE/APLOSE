@@ -4,6 +4,8 @@ import { ReactFlowProvider } from '@xyflow/react';
 import { AudioProvider } from '@/features/Audio';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { BaseProvider } from '@/components/base/Provider';
+import { TanStackDevtools } from '@tanstack/react-devtools';
+import { hotkeysDevtoolsPlugin } from '@tanstack/react-hotkeys-devtools';
 
 
 export const Route = createRootRouteWithContext()({
@@ -16,6 +18,9 @@ export const Route = createRootRouteWithContext()({
                     {/* Dev tools */ }
                     <TanStackRouterDevtools position="bottom-right"/>
                     <ReactQueryDevtools initialIsOpen={ false } position="right"/>
+                    <TanStackDevtools plugins={[
+                        hotkeysDevtoolsPlugin(),
+                    ]} />
                 </ReactFlowProvider>
             </AudioProvider>
         </BaseProvider>,

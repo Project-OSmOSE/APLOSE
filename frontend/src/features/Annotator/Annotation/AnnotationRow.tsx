@@ -4,20 +4,13 @@ import { Td, Th, Tr } from '@/components/ui';
 import styles from './styles.module.scss';
 import { AnnotationLabelInfo } from './AnnotationLabelInfo';
 import { AnnotationPhaseType, AnnotationType } from '@/api';
-import {
-    useGetAnnotations,
-    useInvalidateAnnotation,
-    useRemoveAnnotation,
-    useUpdateAnnotation,
-    useValidateAnnotation,
-} from './hooks';
+import { useInvalidateAnnotation, useUpdateAnnotation, useValidateAnnotation } from './hooks';
 import { useFocusCanvasOnTime } from '@/features/Annotator/Canvas';
 import { AnnotationTimeInfo } from './AnnotationTimeInfo';
 import { AnnotationFrequencyInfo } from './AnnotationFrequencyInfo';
 import { AnnotationConfidenceInfo } from '@/features/Annotator/Annotation/AnnotationConfidenceInfo';
 import { RiRobot2Fill, RiUser3Fill } from 'react-icons/ri';
 import { InvalidateAnnotationModal } from '@/features/Annotator/Annotation/InvalidateAnnotationModal';
-import { useRegisterToKeyDownEvent } from '@/components/ui/Event';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 import { useLoaderData } from '@tanstack/react-router';
@@ -31,10 +24,8 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const { annotations } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const focusedAnnotation = useAppSelector(selectAnnotation)
-    const getAnnotations = useGetAnnotations()
     const validate = useValidateAnnotation()
     const invalidate = useInvalidateAnnotation()
-    const removeAnnotation = useRemoveAnnotation()
     const focusTime = useFocusCanvasOnTime()
     const { user } = useLoaderData({ from: '/_authenticated' })
 
@@ -51,8 +42,6 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
         }
         return annotations?.find(a => a.id === annotation.id.toString())
     }, [ annotations, annotation, user, phase ])
-
-    const isActive = useMemo(() => annotation.id === focusedAnnotation?.id ? styles.active : undefined, [ annotation, focusedAnnotation ])
 
     const onClick = useCallback(() => {
         dispatch(focusAnnotation(annotation))
@@ -72,13 +61,6 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
         event.stopPropagation()
         invalidate(annotation)
     }, [ annotation, invalidate ]);
-
-    const remove = useCallback(() => {
-        if (!isActive) return;
-        removeAnnotation(annotation)
-    }, [ annotation, removeAnnotation, isActive, getAnnotations ]);
-    useRegisterToKeyDownEvent([ 'Delete' ], remove);
-
 
     const [ isLabelModalOpen, setIsLabelModalOpen ] = useState<boolean>(false);
     return <Tr className={ annotation.id !== focusedAnnotation?.id ? 'disabled' : '' } onClick={ onClick }>

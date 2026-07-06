@@ -1,13 +1,5 @@
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import {
-    AUX_CLICK_EVENT,
-    CLICK_EVENT,
-    KEY_DOWN_EVENT,
-    MOUSE_DOWN_EVENT,
-    MOUSE_MOVE_EVENT,
-    MOUSE_UP_EVENT,
-    NON_FILTERED_KEY_DOWN_EVENT,
-} from './events';
+import React, { createContext, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { AUX_CLICK_EVENT, CLICK_EVENT, MOUSE_DOWN_EVENT, MOUSE_MOVE_EVENT, MOUSE_UP_EVENT } from './events';
 
 // Based on https://medium.com/@mayankvishwakarma.dev/building-an-Event-provider-in-react-using-context-and-custom-hooks-7c90931de088
 
@@ -27,13 +19,6 @@ export const EventContext = createContext<EventContext>({
     disableShortcuts: () => undefined,
 })
 
-export const useEvent = () => {
-    const context = useContext(EventContext);
-    if (!context) {
-        throw new Error('useEvent must be used within a EventProvider');
-    }
-    return context;
-}
 
 export const EventProvider: React.FC<EventContextProvider> = ({ children }) => {
     const [ areKbdShortcutsEnabled, setAreKbdShortcutsEnabled ] = useState<boolean>(true);
@@ -47,14 +32,6 @@ export const EventProvider: React.FC<EventContextProvider> = ({ children }) => {
         setAreKbdShortcutsEnabled(false)
         areKbdShortcutsEnabledRef.current = false
     }, []);
-
-
-    const onKeyDown = useCallback((event: KeyboardEvent) => {
-        NON_FILTERED_KEY_DOWN_EVENT.emit(event);
-        if (!areKbdShortcutsEnabledRef.current) return;
-
-        KEY_DOWN_EVENT.emit(event);
-    }, [])
 
     const onMouseDown = useCallback((event: MouseEvent) => {
         MOUSE_DOWN_EVENT.emit(event);
@@ -77,7 +54,6 @@ export const EventProvider: React.FC<EventContextProvider> = ({ children }) => {
     }, [])
 
     useEffect(() => {
-        document.addEventListener('keydown', onKeyDown.bind(this));
         document.addEventListener('mousedown', onMouseDown.bind(this));
         document.addEventListener('mousemove', onMouseMove.bind(this));
         document.addEventListener('mouseup', onMouseUp.bind(this));
@@ -85,7 +61,6 @@ export const EventProvider: React.FC<EventContextProvider> = ({ children }) => {
         document.addEventListener('auxclick', onAuxClick.bind(this));
 
         return () => {
-            document.removeEventListener('keydown', onKeyDown.bind(this));
             document.removeEventListener('mousedown', onMouseDown.bind(this));
             document.removeEventListener('mousemove', onMouseMove.bind(this));
             document.removeEventListener('mouseup', onMouseUp.bind(this));

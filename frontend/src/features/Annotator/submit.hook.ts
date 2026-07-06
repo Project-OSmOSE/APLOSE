@@ -2,7 +2,6 @@ import { useCallback, useEffect } from 'react';
 import { Toast } from '@/components/base/Toast';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
-import { useRegisterToKeyDownEvent } from '@/components/ui/Event';
 import { convertAnnotationsToPost, selectAllAnnotations } from '@/features/Annotator/Annotation';
 import { convertCommentsToPost, selectTaskComments } from '@/features/Annotator/Comment';
 import { useAppSelector } from '@/features/App';
@@ -12,6 +11,7 @@ import {
 } from '@/routes/_authenticated/annotation-campaign/$campaignID/phase.$phaseType/spectrogram/$spectrogramID'
 import { useMutation } from '@tanstack/react-query';
 import { TaskAPI } from '../AnnotationTask';
+import { useHotkey } from '@tanstack/react-hotkeys';
 
 export const useAnnotatorSubmit = () => {
     const {
@@ -68,7 +68,7 @@ export const useAnnotatorSubmit = () => {
         }
         realSubmit()
     }, [ toastManager, realSubmit, isEditionAuthorized, allFileIsSeen ])
-    useRegisterToKeyDownEvent([ 'Enter', 'NumpadEnter' ], () => submit())
+    useHotkey('Control+Enter', () => submit())
 
     useEffect(() => {
         if (!isSuccess) return;

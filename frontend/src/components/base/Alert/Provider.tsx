@@ -1,5 +1,4 @@
-import React, { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from 'react';
-import { useEvent } from '@/components/ui/Event';
+import React, { createContext, type ReactNode, useCallback, useContext, useState } from 'react';
 import { Dialog } from '../Dialog';
 import { Alert } from './Alert';
 
@@ -20,17 +19,8 @@ export const useAlertContext = () => {
 }
 
 export const Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const { enableShortcuts, disableShortcuts } = useEvent()
     const [ alert, setAlert ] = useState<Alert<any> | undefined>();
     const [ isOpen, setIsOpen ] = useState(false);
-
-    useEffect(() => {
-        if (alert) {
-            disableShortcuts()
-        } else {
-            enableShortcuts()
-        }
-    }, [ alert ]);
 
     const openAlert = useCallback((node: Alert<any>) => {
         setAlert(node)

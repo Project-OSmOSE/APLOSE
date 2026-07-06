@@ -5,11 +5,11 @@ import { PostgreSQL, sql } from '@codemirror/lang-sql';
 import { keymap } from '@codemirror/view';
 import { defaultKeymap, indentWithTab } from '@codemirror/commands';
 import { Prec } from '@codemirror/state';
+import { useHotkey } from '@tanstack/react-hotkeys';
 
 import { SQLRestAPI } from '@/api/sql';
 import { NBSP } from '@/service/type';
 import { AppStore } from '@/features/App';
-import { useRegisterToCtrlKeyDownEvent } from '@/components/ui/Event';
 
 import { Head, Kbd, Pagination, Table, Tbody, Td, Th, Thead, Tr, WarningText } from '@/components/ui';
 import { Button, ButtonGroup } from '@/components/base/Button';
@@ -34,7 +34,7 @@ const SqlQuery: React.FC = () => {
         if (query) run({ query, page });
     }, [ run, setPage, isLoading ])
     const onEventRunQuery = useCallback(() => runQuery(1), [ runQuery ])
-    useRegisterToCtrlKeyDownEvent([ 'Enter' ], onEventRunQuery)
+    useHotkey('Control+Enter', () => onEventRunQuery)
 
     const setupEditor = useCallback(() => {
         if (!editorContainerRef.current) return;

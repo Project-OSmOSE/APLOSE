@@ -2,13 +2,13 @@ import React, { useCallback, useEffect } from 'react';
 import styles from './styles.module.scss';
 import { Kbd } from '@/components/ui';
 import { useAnnotatorCanNavigate, useOpenAnnotator } from './hooks';
-import { useRegisterToKeyDownEvent } from '@/components/ui/Event';
 import { useAnnotatorSubmit } from '@/features/Annotator';
 import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
 import { queryClient } from '@/api/queryClient';
 import { Popover } from '@/components/base/Popover';
 import { AltArrowLeft, AltArrowRight } from '@solar-icons/react';
 import { AnnotationSpectrogramAPI } from '@/features/AnnotationSpectrogram';
+import { useHotkey } from '@tanstack/react-hotkeys';
 
 export const NavigationButtons: React.FC = () => {
     const { user } = useLoaderData({ from: '/_authenticated' })
@@ -33,8 +33,8 @@ export const NavigationButtons: React.FC = () => {
         if (await canNavigate()) openAnnotator(info.nextSpectrogramId, { replace: true })
     }, [ canNavigate, openAnnotator, isPending, info ])
 
-    useRegisterToKeyDownEvent([ 'ArrowLeft' ], navPrevious)
-    useRegisterToKeyDownEvent([ 'ArrowRight' ], navNext)
+    useHotkey('ArrowLeft', navPrevious)
+    useHotkey('ArrowRight', navNext)
 
     useEffect(() => {
         if (!info?.nextSpectrogramId) return
@@ -69,7 +69,7 @@ export const NavigationButtons: React.FC = () => {
                     </Popover.Trigger>
                     <Popover.Content>
                         <Popover.Title>Shortcut</Popover.Title>
-                        <Kbd keys="enter"/> : Submit & load next recording
+                        <Kbd keys={ [ 'ctrl', 'enter' ] }/> : Submit & load next recording
                     </Popover.Content>
                 </Popover.Root> }
 
