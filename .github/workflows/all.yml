@@ -151,7 +151,7 @@ jobs:
     needs: [changes, generate-graphql-schema]
     if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend == 'true'
     container:
-      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      image: mcr.microsoft.com/playwright:v1.61.0-noble
     steps:
 
       - uses: actions/checkout@v4

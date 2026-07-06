@@ -20,91 +20,94 @@ if (grep.length === 0) grep = undefined;
 
 export default defineConfig({
 
-  testDir: './tests',
-  /* Run tests in files in parallel */
-  fullyParallel: !isCI,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
-  grep,
-  /* Retry on CI only */
-  retries: process.env.CI ? 3 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : 2,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: process.env.CI ? 'list' : 'html',
-  timeout: 60_000,
+    testDir: './tests',
+    /* Run tests in files in parallel */
+    fullyParallel: !isCI,
+    /* Fail the build on CI if you accidentally left test.only in the source code. */
+    forbidOnly: !!process.env.CI,
+    grep,
+    /* Retry on CI only */
+    retries: process.env.CI ? 3 : 0,
+    /* Opt out of parallel tests on CI. */
+    workers: process.env.CI ? 1 : 2,
+    /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+    reporter: [
+        [ 'list', { printFailuresInline: true } ],
+        [ 'html' ],
+    ],
+    timeout: 60_000,
 
-  expect: {
-    timeout: 10_000,
-  },
-
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://127.0.0.1:3000',
-    baseURL: 'http://localhost:5173/app/',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
-    locale: 'fr-FR',
-
-    navigationTimeout: 30_000,
-    actionTimeout: 10_000,
-  },
-
-  /* Configure projects for major browsers */
-  projects: [
-    { name: 'setup', testMatch: /.*\.setup\.ts/ },
-
-    // {
-    //   name: 'chromium',
-    //   use: {
-    //     ...devices['Desktop Chrome'],
-    //   },
-    // },
-
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-      },
+    expect: {
+        timeout: 10_000,
     },
 
-    // {
-    //   name: 'webkit',
-    //   use: {
-    //     ...devices['Desktop Safari'],
-    //   },
-    // },
+    /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+    use: {
+        /* Base URL to use in actions like `await page.goto('/')`. */
+        // baseURL: 'http://127.0.0.1:3000',
+        baseURL: 'http://localhost:5173/app/',
 
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
+        /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+        trace: 'on-first-retry',
+        locale: 'fr-FR',
 
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
-  ],
+        navigationTimeout: 30_000,
+        actionTimeout: 10_000,
+    },
 
-  /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'npx vite',
-    url: 'http://localhost:5173/app/',
-    reuseExistingServer: !process.env.CI,
-    stderr: 'pipe',
-    stdout: 'pipe',
-    timeout: 120_000, // 2min for server startup
-  },
+    /* Configure projects for major browsers */
+    projects: [
+        { name: 'setup', testMatch: /.*\.setup\.ts/ },
+
+        // {
+        //   name: 'chromium',
+        //   use: {
+        //     ...devices['Desktop Chrome'],
+        //   },
+        // },
+
+        {
+            name: 'firefox',
+            use: {
+                ...devices['Desktop Firefox'],
+            },
+        },
+
+        // {
+        //   name: 'webkit',
+        //   use: {
+        //     ...devices['Desktop Safari'],
+        //   },
+        // },
+
+        /* Test against mobile viewports. */
+        // {
+        //   name: 'Mobile Chrome',
+        //   use: { ...devices['Pixel 5'] },
+        // },
+        // {
+        //   name: 'Mobile Safari',
+        //   use: { ...devices['iPhone 12'] },
+        // },
+
+        /* Test against branded browsers. */
+        // {
+        //   name: 'Microsoft Edge',
+        //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+        // },
+        // {
+        //   name: 'Google Chrome',
+        //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+        // },
+    ],
+
+    /* Run your local dev server before starting the tests */
+    webServer: {
+        command: 'npx vite',
+        url: 'http://localhost:5173/app/',
+        reuseExistingServer: !process.env.CI,
+        stderr: 'pipe',
+        stdout: 'pipe',
+        timeout: 120_000, // 2min for server startup
+    },
 });
