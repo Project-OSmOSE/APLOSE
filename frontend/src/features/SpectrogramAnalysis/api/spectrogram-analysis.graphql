@@ -28,3 +28,18 @@ query allSpectrogramAnalysis(
         results { ...SpectrogramAnalysis }
     }
 }
+
+query allSpectrogramAnalysisForDataset($datasetID: ID!) {
+    allSpectrogramAnalysis(
+        orderBy: "name"
+        dataset: $datasetID
+    ) {
+        results {
+            id
+            name
+            colormap {
+                name
+            }
+        }
+    }
+}

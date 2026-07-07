@@ -2,19 +2,10 @@ import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { createFileRoute, notFound } from '@tanstack/react-router'
 
 import { AnnotationPhaseType } from '@/api';
-import { useAppSelector } from '@/features/App';
-import { AudioDownloadButton, CurrentTime, PlaybackRateSelect, PlayPauseButton, useAudio } from '@/features/Audio';
-import { PointerInfo, usePointer } from '@/features/Annotator/Pointer';
+import { CurrentTime, PlaybackRateSelect, PlayPauseButton, useAudio } from '@/features/Audio';
+import { usePointer } from '@/features/Annotator/Pointer';
 import { AnnotatorSkeleton } from '@/features/Annotator/Skeleton';
-import { AnalysisSelect, selectAnalysisID } from '@/features/Annotator/Analysis';
-import {
-    BrightnessSelect,
-    ColormapReverseButton,
-    ColormapSelect,
-    ContrastSelect,
-} from '@/features/Annotator/VisualConfiguration';
-import { ZoomButtons } from '@/features/Annotator/Zoom';
-import { SpectrogramDownloadButton, SpectrogramInfo } from '@/features/Annotator/Spectrogram';
+import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 import { AnnotatorCanvasWindow } from '@/features/Annotator/Canvas';
 import { NavigationButtons } from '@/features/Annotator/Navigation';
 import { FocusedAnnotationBloc } from '@/features/Annotator/Annotation';
@@ -24,23 +15,28 @@ import { CommentBloc } from '@/features/Annotator/Comment';
 import { AnnotationsBloc } from '@/features/Annotator/Annotation/AnnotationsBloc';
 
 import styles from './$spectrogramID.module.scss';
-import { type AllSpectrogramsFilters } from '@/features/AnnotationSpectrogram';
-import { AnnotationCampaign, AnnotationSpectrogram } from '@/features';
-import { useQuery } from '@tanstack/react-query';
+import { type AllSpectrogramsFilters, AnnotationSpectrogramAPI } from '@/features/AnnotationSpectrogram';
 import { ensureValidQueryData } from '@/api/utils';
+import { UserAPI } from '@/features/User';
+import { useQuery } from '@tanstack/react-query';
+import { ConfigBar } from '@/features/Annotator/ConfigBar';
+import { DownloadButtons } from '@/features/Annotator/DownloadButtons';
+import { CampaignAPI } from '@/features/AnnotationCampaign';
 
 const AnnotatorPage: React.FC = () => {
     const campaignID = Route.useParams({ select: ({ campaignID }) => campaignID });
     const { spectrogram, isEditionAuthorized } = Route.useLoaderData()
 
-    const analysisID = useAppSelector(selectAnalysisID)
+    const { selectedAnalysis } = useAnnotatorAnalysis()
     const {
         data: paths,
     } = useQuery({
-        ...AnnotationSpectrogram.API.getPathQuery({
+        ...AnnotationSpectrogramAPI.getPathQuery({
             spectrogramID: spectrogram.id,
-            analysisID: analysisID ?? '',
-        }), enabled: !!analysisID, refetchOnMount: true,
+            analysisID: selectedAnalysis?.id ?? '',
+        }),
+        enabled: !!selectedAnalysis,
+        refetchOnMount: true,
     });
     const audio = useAudio()
 
@@ -76,22 +72,7 @@ const AnnotatorPage: React.FC = () => {
 
                 <div className={ styles.spectrogramContainer }>
 
-                    <div className={ styles.spectrogramData }>
-
-                        <div className={ styles.spectrogramConfiguration }>
-                            <AnalysisSelect/>
-                            <div>
-                                <ColormapSelect/>
-                                <ColormapReverseButton/>
-                            </div>
-                            <BrightnessSelect/>
-                            <ContrastSelect/>
-                            <ZoomButtons/>
-                        </div>
-
-                        <PointerInfo/>
-                        <SpectrogramInfo/>
-                    </div>
+                    <ConfigBar/>
 
                     <AnnotatorCanvasWindow/>
 
@@ -115,10 +96,7 @@ const AnnotatorPage: React.FC = () => {
                     </Fragment> }
                 </div>
 
-                <div className={ styles.downloadButtons }>
-                    <AudioDownloadButton/>
-                    <SpectrogramDownloadButton/>
-                </div>
+                <DownloadButtons/>
             </div>
         </AnnotatorSkeleton>
     }, [ spectrogram, isEditionAuthorized ])
@@ -132,17 +110,16 @@ export const Route = createFileRoute(
         parse: rawParams => rawParams as { campaignID: string, spectrogramID: string, phaseType: AnnotationPhaseType },
     },
     loaderDeps: ({ search }) => search as AllSpectrogramsFilters,
-    loader: async ({ params: { campaignID, phaseType, spectrogramID }, deps, parentMatchPromise }) => {
-        const { user } = (await parentMatchPromise).loaderData!
-
+    loader: async ({ params: { campaignID, phaseType, spectrogramID }, deps }) => {
+        const user = await ensureValidQueryData(UserAPI.currentQuery)
         const [
             { spectrogram, ...data },
-            { analysis }
+            { analysis },
         ] = await Promise.all([
-            ensureValidQueryData(AnnotationSpectrogram.API.getQuery({
-            campaignID, phaseType, spectrogramID, ...deps, annotatorID: user!.id,
-        })),
-            ensureValidQueryData(AnnotationCampaign.API.byIdQuery({ id: campaignID }))
+            ensureValidQueryData(AnnotationSpectrogramAPI.getQuery({
+                campaignID, phaseType, spectrogramID, ...deps, annotatorID: user!.id,
+            })),
+            ensureValidQueryData(CampaignAPI.byIdQuery({ id: campaignID })),
         ])
         if (!spectrogram) throw notFound()
         const baseScaleAnalysis = analysis.find(a =>
@@ -153,7 +130,7 @@ export const Route = createFileRoute(
         const defaultAnalysis = minID ? analysis.find(a => a.id === (baseScaleAnalysis?.id ?? minID)) : undefined
 
         if (defaultAnalysis) {
-            await ensureValidQueryData(AnnotationSpectrogram.API.getPathQuery({
+            await ensureValidQueryData(AnnotationSpectrogramAPI.getPathQuery({
                 spectrogramID: spectrogram.id,
                 analysisID: defaultAnalysis.id,
             }))

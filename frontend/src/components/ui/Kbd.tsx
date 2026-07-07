@@ -23,10 +23,12 @@ type Key =
   | 'space'
   | string
   | number;
+const isMac = navigator.platform.toUpperCase().indexOf('MAC')>=0;
+
 const KEY_MAP: Record<Key, string> = {
   command: '⌘',
   shift: '⇧',
-  ctrl: '⌃',
+  ctrl: isMac ? '⌃' : 'Ctrl',
   option: '⌥',
   enter: '↵',
   delete: '⌫',
@@ -45,7 +47,11 @@ const KEY_MAP: Record<Key, string> = {
   space: '␣',
 };
 
-export const Kbd: React.FC<{ keys: Key | Array<Key> | undefined, className?: string }> = ({ keys, className }) => {
+export const Kbd: React.FC<{
+  keys: Key | Array<Key> | undefined,
+  className?: string
+  annotationColorIndex?: number;
+}> = ({ keys, className, annotationColorIndex }) => {
 
   const content: string[] = useMemo(() => {
     if (!keys) return []
@@ -65,7 +71,13 @@ export const Kbd: React.FC<{ keys: Key | Array<Key> | undefined, className?: str
     })
   }, [ keys ])
 
+  const classes = useMemo(() => {
+    const classes = [styles.kbd, className]
+    if (annotationColorIndex !== undefined) classes.push(styles['index-' + annotationColorIndex%10])
+    return classes;
+  }, [annotationColorIndex, className])
+
   return (
-    <kbd className={ [ className, styles.kbd ].join(' ') }>{ content.map((k, id) => <kbd key={ id }>{ k }</kbd>) }</kbd>
+    <kbd className={ classes.join(' ') }>{ content.map((k, id) => <kbd key={ id }>{ k }</kbd>) }</kbd>
   )
 }

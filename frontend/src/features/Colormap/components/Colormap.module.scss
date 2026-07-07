@@ -1,0 +1,12 @@
+.SelectItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.Colormap {
+  height: 1rem;
+  width: 6rem;
+  border-radius: 0.2rem;
+}

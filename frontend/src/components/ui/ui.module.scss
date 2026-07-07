@@ -1,11 +1,7 @@
-
-.fadedText {
-  color: rgba(var(--ion-color-medium-rgb), 0.5);
-  display: flex;
-  align-items: center;
-  font-size: 0.9rem;
-  font-weight: 400;
-}
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:color';
+@use "@/css/annotation";
 
 .warningText {
   justify-self: center;
@@ -13,38 +9,34 @@
 
   display: grid;
   justify-items: center;
-  color: var(--ion-color-danger);
-  border: 2px solid var(--ion-color-danger);
+  background-color: rgba(var(--color-danger-rgb), 0.05);
+  color: var(--color-danger);
   border-radius: 0.5rem;
   padding: 0.5rem 2rem;
   gap: 0.5rem;
   text-align: center;
-
-  .icon {
-    font-size: 2rem;
-  }
-}
-
-.progress {
-  display: grid;
-  gap: 0.25rem;
-
-  span[class^=ion-color-] {
-    color: var(--ion-color-base);
-  }
 }
 
 .kbd {
-  background: var(--ion-color-light-shade);
-  color: var(--ion-color-light-contrast);
-  padding: 0.1rem 0.25rem;
-  border-radius: 0.25rem;
-  border: 1px solid var(--ion-color-medium-tint);
+  background: var(--color-light);
+  padding: 0.1rem 0.2rem;
+  border-radius: 0.2rem;
   box-shadow: var(--box-shadow);
 
   > kbd {
     background: transparent;
-    color: var(--ion-color-light-contrast);
+    box-shadow: none;
+  }
+
+  @for $index from 0 through 9 {
+    &.index-#{$index} {
+      $color: list.nth(annotation.$colors, $index + 1);
+      color: map.get($color, text);
+
+      &:not([disabled]):hover {
+        background: color.change(map.get($color, base), $alpha: .1);
+      }
+    }
   }
 }
 
@@ -65,50 +57,28 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
-  padding-bottom: 0.25rem
 }
 
 .tabs {
-  border-bottom: 1px solid rgba(var(--ion-color-medium-rgb), 0.25);
+  border-bottom: 1px solid rgba(var(--color-medium-rgb), 0.25);
   display: flex;
   gap: 1rem;
   padding-bottom: 0.5rem;
 
-  ion-button {
-    --padding-bottom: 0.25rem;
-    --padding-top: 0.5rem;
-    --padding-start: 1rem;
-    --padding-end: 1rem;
-    --border-radius: 0rem;
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
-    overflow: hidden;
-    border: 1px solid rgba(var(--ion-color-medium-rgb), 0);
-    border-bottom: none;
-
-    &.active {
-      border-color: rgba(var(--ion-color-medium-rgb), 0.5);
-    }
-  }
-
   .tab {
-    --padding-bottom: 0.25rem;
-    --padding-top: 0.5rem;
-    --padding-start: 1rem;
-    --padding-end: 1rem;
-    --border-radius: 0rem;
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
+    padding: 0.5rem 1rem 0.25rem;
+    border-radius: 0.8rem 0.8rem 0 0;
     overflow: hidden;
-    border: 1px solid rgba(var(--ion-color-medium-rgb), 0);
+    border: 1px solid rgba(var(--color-medium-rgb), 0);
     border-bottom: none;
 
     &.active {
-      border-color: rgba(var(--ion-color-medium-rgb), 0.5);
+      border-color: rgba(var(--color-medium-rgb), 0.5);
+      color: var(--color-primary);
     }
 
-    ion-icon {
-      pointer-events: auto;
+    button {
+      padding: 0;
     }
   }
 }
@@ -122,10 +92,16 @@
     justify-items: center;
     position: relative;
 
-    ion-note {
-      align-items: center;
-      display: grid;
-      grid-auto-flow: column;
+    h2 {
+      font-weight: 400;
+      margin: 0;
+    }
+
+    .BackButton {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
     }
   }
 
@@ -141,38 +117,8 @@
   }
 }
 
-.importRow {
-  display: grid;
-  grid-template-columns: 3rem 1fr;
-  gap: 0.5rem;
-  align-items: center;
-  border-radius: 0.5rem;
-  padding: 0.25rem 0.5rem;
-  background-color: transparent;
-
-  >:first-child {
-    grid-row: 1 / 2;
-    justify-self: center;
-  }
-
-  &.success > :first-child {
-    color: var(--ion-color-success);
-  }
-
-  .importRow {
-    grid-column: 2;
-  }
-
-  &:hover:not(:has(.importRow:hover)) {
-    background-color: rgba(var(--ion-color-primary-rgb), 0.06);
-  }
-  &.error:hover:not(:has(.importRow:hover)) {
-    background-color: rgba(var(--ion-color-danger-rgb), 0.06);
-  }
-}
-
 .bloc {
-  border: 1px solid rgba(var(--ion-color-medium-rgb), 0.15) !important;
+  border: 1px solid rgba(var(--color-medium-rgb), 0.15) !important;
   border-radius: 0.5rem;
   overflow: hidden;
   display: grid;
@@ -180,21 +126,15 @@
   background: white;
   grid-template-rows: auto 1fr;
 
-  .header, .footer {
-    background: var(--ion-color-light-shade);
+  .header {
+    background: var(--color-light-shade);
     text-align: center;
     padding: 0.5rem;
     border: none !important;
-    border-bottom: 1px solid rgba(var(--ion-color-medium-rgb), 0.15) !important;
+    border-bottom: 1px solid rgba(var(--color-medium-rgb), 0.15) !important;
     position: relative;
-
-    &h6, h6 {
-      margin: 0;
-    }
-  }
-
-  .footer {
-    padding: unset;
+    margin: 0;
+    user-select: none;
   }
 
   .body {
@@ -257,12 +197,13 @@
 }
 
 .table {
-  overflow: auto !important;
+  overflow-x: scroll;
   height: 100%;
   display: grid;
   align-content: start;
 
   --spacing: 1rem;
+
   &.spacingSmall {
     --spacing: 0.2rem;
   }
@@ -284,9 +225,9 @@
 
       th {
         font-weight: 400;
-        color: var(--ion-color-dark-tint);
+        color: var(--color-dark-tint);
 
-        &.sortable > div, &.filterable > div {
+        &.sortable > div {
           display: grid;
           grid-template-columns: 1fr auto;
           align-items: center;
@@ -304,7 +245,7 @@
               }
             }
 
-            .active  * {
+            .active * {
               stroke-width: 2.5px;
             }
           }
@@ -312,6 +253,7 @@
 
         &.center {
           text-align: center;
+
           > div {
             justify-content: center;
             grid-template-columns: unset;
@@ -321,15 +263,12 @@
 
         &.start {
           text-align: start;
+
           > div {
             justify-content: start;
             grid-template-columns: unset;
             grid-auto-flow: column;
           }
-        }
-
-        &.sortable.filterable > div {
-          grid-template-columns: 1fr auto auto;
         }
       }
     }
@@ -347,19 +286,20 @@
 
       th, td {
         transition: background 50ms ease-in-out;
-        background: rgba(var(--ion-color-dark-rgb), 0);
+        background: rgba(var(--color-dark-rgb), 0);
       }
 
       th {
         font-weight: 500;
+        text-align: start;
 
-        ion-button {
-          --padding-start: 0;
+        button {
+          text-align: start;
         }
       }
 
       tr {
-        color: var(--ion-color-dark);
+        color: var(--color-dark);
         opacity: 0.8;
         transition: opacity 50ms ease-in-out;
 
@@ -367,11 +307,15 @@
           text-align: center;
         }
 
+        td.top, th.top {
+          vertical-align: baseline;
+        }
+
         &:hover {
           opacity: 1;
 
           th, td {
-            box-shadow: inset 0 0 0 1000rem rgba(var(--ion-color-dark-rgb), 0.025);
+            box-shadow: inset 0 0 0 1000rem rgba(var(--color-dark-rgb), 0.025);
 
             &:first-child {
               border-radius: 0.5rem 0 0 0.5rem;

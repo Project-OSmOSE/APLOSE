@@ -1,23 +1,28 @@
 import React, { useEffect } from 'react';
-import { IonIcon, IonNote } from '@ionic/react';
-import { downloadOutline } from 'ionicons/icons/index.js';
 import { dateToString } from '@/service/function';
-import { Button, Table, Tbody, Td, Th, Thead, Tr, useToast } from '@/components/ui';
+import { Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
+import { Toast } from '@/components/base/Toast';
 import { useDownloadAnalysis } from '@/api/download';
 import type { AllSpectrogramAnalysisQuery } from '@/features/SpectrogramAnalysis/api';
+import { Button } from '@/components/base/Button';
+import { Download } from '@solar-icons/react';
+import { Note } from '@/components/base/Note';
 
 type Analysis = NonNullable<NonNullable<AllSpectrogramAnalysisQuery['allSpectrogramAnalysis']>['results'][number]>
-export const SpectrogramAnalysisTable: React.FC<{ analysis: Analysis[] }> = ({ analysis }) => {
+export const SpectrogramAnalysisTable: React.FC<{
+    analysis: Analysis[],
+    spacing?: 'small' | 'regular'
+}> = ({ analysis, spacing }) => {
     const [ downloadAnalysis, { error: downloadError } ] = useDownloadAnalysis()
-    const toast = useToast()
+    const toastManager = Toast.useToastManager()
 
     useEffect(() => {
-        if (downloadError) toast.raiseError({ error: downloadError })
+        if (downloadError) toastManager.addError({ title: 'Download analysis failed', error: downloadError })
     }, [ downloadError ]);
 
-    if (analysis.length === 0) return <IonNote color="medium">No spectrogram analysis</IonNote>
+    if (analysis.length === 0) return <Note color="medium">No spectrogram analysis</Note>
 
-    return <Table>
+    return <Table spacing={ spacing }>
         <Thead>
             <Tr>
                 <Th scope="col">Name</Th>
@@ -49,11 +54,10 @@ export const SpectrogramAnalysisTable: React.FC<{ analysis: Analysis[] }> = ({ a
                 <Td>{ analysis.fft.windowSize }</Td>
                 <Td>{ analysis.fft.overlap }</Td>
                 <Td>
-                    <Button size="small" color="dark" fill="clear" onClick={ () => downloadAnalysis(analysis) }>
-                        <IonIcon icon={ downloadOutline } slot="icon-only"/>
+                    <Button onClick={ () => downloadAnalysis(analysis) }>
+                        <Download weight="Linear" size={ 20 }/>
                     </Button>
-                    <br/>
-                    { analysis.legacy && <IonNote color="medium">{ 'OSEkit v<0.2.5' }</IonNote> }
+                    { analysis.legacy && <Note color="medium">{ 'OSEkit v<0.2.5' }</Note> }
                 </Td>
             </Tr>) }
         </Tbody>

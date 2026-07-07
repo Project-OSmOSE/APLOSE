@@ -1,26 +1,23 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { EventSlice } from '@/features/UX/Events';
-import { Storage } from '@/features';
 import { gqlAPI } from '@/api/baseGqlApi';
 import { AnnotatorReducer } from '@/features/Annotator/reducer';
 import { restAPI } from '@/api/baseRestApi';
 import { setupListeners } from '@reduxjs/toolkit/query';
+import { StorageSlice } from '../Storage';
 
 export const AppStore = configureStore({
-  reducer: {
-    event: EventSlice.reducer,
+    reducer: {
+        gql: gqlAPI.reducer,
+        [restAPI.reducerPath]: restAPI.reducer,
 
-    [Storage.Slice.reducerPath]: Storage.Slice.reducer,
-    gql: gqlAPI.reducer,
-    [restAPI.reducerPath]: restAPI.reducer,
+        annotator: AnnotatorReducer,
+        [StorageSlice.reducerPath]: StorageSlice.reducer,
+    },
 
-    annotator: AnnotatorReducer,
-  },
-
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware()
-      .concat(gqlAPI.middleware)
-      .concat(restAPI.middleware)
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware()
+            .concat(gqlAPI.middleware)
+            .concat(restAPI.middleware),
 })
 
 export type AppState = ReturnType<typeof AppStore.getState>;

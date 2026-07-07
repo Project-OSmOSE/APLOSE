@@ -1,0 +1,85 @@
+@use "@/css/base";
+
+.Backdrop {
+
+  --backdrop-opacity: 0.7;
+  --bleed: 3rem;
+  position: fixed;
+  min-height: 100dvh;
+  inset: 0;
+  background-image: base.$backdrop-background-image;
+  opacity: calc(var(--backdrop-opacity) * (1 - var(--drawer-swipe-progress)));
+  transition-duration: 450ms;
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* iOS 26+: Ensure the backdrop covers the entire visible viewport. */
+  @supports (-webkit-touch-callout: none) {
+    position: absolute;
+  }
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+  }
+
+  &[data-swiping] {
+    transition-duration: 0ms;
+  }
+
+  &[data-ending-style] {
+    transition-duration: calc(var(--drawer-swipe-strength) * 400ms);
+  }
+}
+
+.Viewport {
+  --viewport-padding: 0px;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--viewport-padding);
+
+  @supports (-webkit-touch-callout: none) {
+    --viewport-padding: 0.625rem;
+  }
+}
+
+.Popup {
+  --bleed: 3rem;
+  box-sizing: border-box;
+  width: calc(20rem + var(--bleed));
+  max-width: calc(100vw - 3rem + var(--bleed));
+  height: 100%;
+  padding: 1.5rem calc(1.5rem + var(--bleed)) 1.5rem 1.5rem;
+  margin-right: calc(-1 * var(--bleed));
+  background-color: white;
+  outline: 0;
+  box-shadow: var(--box-shadow);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: auto;
+  transition: transform 450ms cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform;
+  transform: translateX(var(--drawer-swipe-movement-x));
+
+
+  &[data-swiping] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    transform: translateX(calc(100% - var(--bleed) + var(--viewport-padding) + 2px));
+  }
+
+  &[data-ending-style] {
+    transition-duration: calc(var(--drawer-swipe-strength) * 400ms);
+  }
+
+  @supports (-webkit-touch-callout: none) {
+    --bleed: 0px;
+    margin-right: 0;
+  }
+}

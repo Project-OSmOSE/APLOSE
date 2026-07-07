@@ -6,10 +6,8 @@ import {
     ItemList,
     type StorageAnalysisFragment,
     type StorageItemFragment,
-    Slice as StorageSlice,
-    useStorageSearch
+    StorageSlice,
 } from '@/features/Storage';
-import { IonButton, IonNote, IonSpinner } from '@ionic/react';
 import {
     AltArrowDown,
     AltArrowRight,
@@ -21,11 +19,16 @@ import {
     InfoCircle,
     Unread,
 } from '@solar-icons/react';
-import { CopyErrorStackButton, TooltipOverlay, useToast } from '@/components/ui';
+import { Toast } from '@/components/base/Toast';
 import { DatasetName } from '@/features/Dataset';
 import { importMutation } from '../api'
+import { useStorageSearch } from '../hooks'
 import { useMutation } from '@tanstack/react-query';
 import { useAppDispatch } from '@/features/App';
+import { Button, CopyErrorStackButton } from '@/components/base/Button';
+import { Spinner } from '@/components/base/Spinner';
+import { Note } from '@/components/base/Note';
+import { Popover } from '@/components/base/Popover';
 
 type Props = {
     parentItem?: StorageItemFragment,
@@ -60,7 +63,7 @@ export const Item: React.FC<Props> = ({
     }, [ _setIsOpen, canToggle ])
 
     // Import
-    const toast = useToast()
+    const toastManager = Toast.useToastManager()
     const dispatch = useAppDispatch()
     const { mutateAsync, isPending } = useMutation(importMutation)
     const canImport = useMemo(() => {
@@ -96,9 +99,9 @@ export const Item: React.FC<Props> = ({
             if (!path) return
             dispatch(StorageSlice.actions.invalidatePath(path))
         } catch (error) {
-            toast.raiseError({ error })
+            toastManager.addError({ title: 'Import failed', error })
         }
-    }, [ canImport, item, mutateAsync, parentItem, toast, dispatch ])
+    }, [ canImport, item, mutateAsync, parentItem, toastManager, dispatch ])
 
     return useMemo(() => {
         let rowIcon;
@@ -142,24 +145,29 @@ export const Item: React.FC<Props> = ({
                     : <p>{ item.name }</p> }
 
                 {/* Import Icon */ }
-                { isPending ? <IonSpinner/> : importIcon }
+                { isPending ? <Spinner/> : importIcon }
 
                 {/* Use Icon */ }
-                { usages > 0 && <TooltipOverlay tooltipContent={ `Currently used in ${ usages } campaigns.` }>
-                    <InfoCircle size={ 24 } color="medium"/>
-                </TooltipOverlay> }
+                { usages > 0 && <Popover.Root>
+                    <Popover.Trigger color="medium">
+                        <InfoCircle size={ 24 }/>
+                    </Popover.Trigger>
+                    <Popover.Content>
+                        Currently used in { usages } campaigns
+                    </Popover.Content>
+                </Popover.Root> }
 
                 {/* Open Icon */ }
-                { canToggle && <IonNote>{ isOpen ? <AltArrowDown/> : <AltArrowRight/> }</IonNote> }
+                { canToggle && <Note>{ isOpen ? <AltArrowDown/> : <AltArrowRight/> }</Note> }
 
                 {/* Import button */ }
-                { canImport && <IonButton size="small" fill="outline" onClick={ download }>
+                { canImport && <Button color="primary" onClick={ download }>
                     Import
-                </IonButton> }
+                </Button> }
 
                 {/* Error */ }
                 { item.error && <Fragment>
-                    <IonNote color="danger">{ item.error }</IonNote>
+                    <Note color="danger">{ item.error }</Note>
                     <CopyErrorStackButton stack={ item.stack }/>
                 </Fragment> }
             </div>

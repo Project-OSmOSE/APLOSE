@@ -1,5 +1,3 @@
-export * from './CampaignLabelSetModal'
-export * from './LabelSelect'
-export * from './LabelSetSelect'
-export * from './LabelSetFeaturesSelect'
-export * from '../Annotator/Label/UpdateLabelModal'
+export * as LabelAPI from './api'
+export * as LabelDialog from './dialog'
+export * as LabelComponent from './component'

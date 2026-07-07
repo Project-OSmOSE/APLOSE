@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect } from 'react';
 import styles from './styles.module.scss';
-import { Kbd, TooltipOverlay } from '@/components/ui';
-import { IonButton, IonIcon } from '@ionic/react';
-import { caretBack, caretForward } from 'ionicons/icons/index.js';
+import { Kbd } from '@/components/ui';
 import { useAnnotatorCanNavigate, useOpenAnnotator } from './hooks';
-import { useKeyDownEvent } from '@/features/UX/Events';
 import { useAnnotatorSubmit } from '@/features/Annotator';
 import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
 import { queryClient } from '@/api/queryClient';
-import { AnnotationSpectrogram } from '@/features';
+import { Popover } from '@/components/base/Popover';
+import { AltArrowLeft, AltArrowRight } from '@solar-icons/react';
+import { AnnotationSpectrogramAPI } from '@/features/AnnotationSpectrogram';
+import { useHotkey } from '@tanstack/react-hotkeys';
 
 export const NavigationButtons: React.FC = () => {
     const { user } = useLoaderData({ from: '/_authenticated' })
@@ -33,12 +33,12 @@ export const NavigationButtons: React.FC = () => {
         if (await canNavigate()) openAnnotator(info.nextSpectrogramId, { replace: true })
     }, [ canNavigate, openAnnotator, isPending, info ])
 
-    useKeyDownEvent([ 'ArrowLeft' ], navPrevious)
-    useKeyDownEvent([ 'ArrowRight' ], navNext)
+    useHotkey('ArrowLeft', navPrevious)
+    useHotkey('ArrowRight', navNext)
 
     useEffect(() => {
         if (!info?.nextSpectrogramId) return
-        queryClient.prefetchQuery(AnnotationSpectrogram.API.getQuery({
+        queryClient.prefetchQuery(AnnotationSpectrogramAPI.getQuery({
             ...params,
             ...search,
             annotatorID: user.id,
@@ -48,31 +48,42 @@ export const NavigationButtons: React.FC = () => {
 
     return (
         <div className={ styles.navigation }>
-            <TooltipOverlay title="Shortcut" tooltipContent={ <p><Kbd keys="left"/> : Load previous recording</p> }>
-                <IonButton color="medium" fill="clear" size="small"
-                           disabled={ isPending || !info?.previousSpectrogramId }
-                           onClick={ navPrevious }>
-                    <IonIcon icon={ caretBack } slot="icon-only"/>
-                </IonButton>
-            </TooltipOverlay>
+            <Popover.Root>
+                <Popover.Trigger color="medium"
+                                 disabled={ isPending || !info?.previousSpectrogramId }
+                                 onClick={ navPrevious }>
+                    <AltArrowLeft weight="Linear" size={ 24 }/>
+                </Popover.Trigger>
+                <Popover.Content>
+                    <Popover.Title>Shortcut</Popover.Title>
+                    <Kbd keys="left"/> : Load previous recording
+                </Popover.Content>
+            </Popover.Root>
 
             { isEditionAuthorized &&
-                <TooltipOverlay title="Shortcut"
-                                tooltipContent={ <p><Kbd keys="enter"/> : Submit & load next recording</p> }>
-                    <IonButton color="medium" fill="outline"
-                               disabled={ isPending }
-                               onClick={ submit }>
+                <Popover.Root>
+                    <Popover.Trigger color="medium"
+                                     disabled={ isPending }
+                                     onClick={ submit }>
                         Submit &amp; load next recording
-                    </IonButton>
-                </TooltipOverlay> }
+                    </Popover.Trigger>
+                    <Popover.Content>
+                        <Popover.Title>Shortcut</Popover.Title>
+                        <Kbd keys={ [ 'ctrl', 'enter' ] }/> : Submit & load next recording
+                    </Popover.Content>
+                </Popover.Root> }
 
-            <TooltipOverlay title="Shortcut" tooltipContent={ <p><Kbd keys="right"/> : Load next recording</p> }>
-                <IonButton color="medium" fill="clear" size="small"
-                           disabled={ isPending || !info?.nextSpectrogramId }
-                           onClick={ navNext }>
-                    <IonIcon icon={ caretForward } slot="icon-only"/>
-                </IonButton>
-            </TooltipOverlay>
+            <Popover.Root>
+                <Popover.Trigger color="medium"
+                                 disabled={ isPending || !info?.nextSpectrogramId }
+                                 onClick={ navNext }>
+                    <AltArrowRight weight="Linear" size={ 20 }/>
+                </Popover.Trigger>
+                <Popover.Content>
+                    <Popover.Title>Shortcut</Popover.Title>
+                    <Kbd keys="right"/> : Load next recording
+                </Popover.Content>
+            </Popover.Root>
         </div>
     )
 }

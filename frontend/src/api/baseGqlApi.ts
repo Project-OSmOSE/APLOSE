@@ -59,12 +59,6 @@ export const GqlTags = [
     'Folders',
 ]
 
-export type GqlError = {
-    status: number;
-    statusErrorMessage: string;
-    messages?: string[];
-    original?: any[];
-}
 
 export const gqlAPI = createApi({
     tagTypes: GqlTags,
@@ -74,7 +68,7 @@ export const gqlAPI = createApi({
             client,
             prepareHeaders: prepareGqlHeaders,
             customErrors: ({ response }: ClientError) => {
-                let statusErrorMessage = `GraphQL Error (Code: ${response.status})`
+                let statusErrorMessage = `GraphQL Error (Code: ${ response.status })`
                 switch (response.status) {
                     case 500:
                         statusErrorMessage = 'Internal Server Error';
@@ -84,9 +78,9 @@ export const gqlAPI = createApi({
                     status: response.status,
                     statusErrorMessage,
                     messages: response.errors?.map(e => e.message),
-                    original: response.errors
+                    original: response.errors,
                 }
-            }
+            },
         })(args, api, extraOptions)
         return { ...result, error: result.data?.errors ?? result.error }
     },

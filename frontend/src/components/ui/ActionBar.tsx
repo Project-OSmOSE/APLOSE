@@ -1,22 +1,33 @@
-import React, { ReactNode } from 'react';
-import { Searchbar } from '@/components/form';
+import React, { type FormEvent, ReactNode, useCallback } from 'react';
 import styles from './ui.module.scss';
+import { Input } from '@/components/base/Input';
+import type { BaseUIEvent } from '@base-ui/react';
+import { Form } from '@/components/base/Form';
 
 export const ActionBar: React.FC<{
-  search?: string;
-  searchPlaceholder?: string;
-  onSearchChange(search?: string): void;
-  actionButton: ReactNode;
-  children?: ReactNode;
-}> = ({ search, searchPlaceholder = 'Search', onSearchChange, actionButton, children }) => (
-  <div className={ styles.actionBar }>
-    <Searchbar placeholder={ searchPlaceholder }
-               onChange={ onSearchChange }
-               search={ search }
-               className={ styles.search }/>
+    search?: string;
+    searchPlaceholder?: string;
+    onSearchChange(search?: string): void;
+    actionButton: ReactNode;
+    children?: ReactNode;
+}> = ({ search, searchPlaceholder = 'Search', onSearchChange, actionButton, children }) => {
+    const onSubmit = useCallback((event: BaseUIEvent<FormEvent<HTMLFormElement>>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        onSearchChange(formData.get('search') as string);
+    }, [ onSearchChange ])
 
-    { actionButton }
+    return <div className={ styles.actionBar }>
+        <Form onSubmit={ onSubmit } horizontal>
+            <Input name="search"
+                   defaultValue={ search }
+                   placeholder={ searchPlaceholder }
+                   type="search"
+                   className={ styles.search }/>
+        </Form>
 
-    { children && <div className={ styles.filters }>{ children }</div> }
-  </div>
-)
+        { actionButton }
+
+        { children && <div className={ styles.filters }>{ children }</div> }
+    </div>
+}

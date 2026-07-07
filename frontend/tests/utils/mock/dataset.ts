@@ -1,5 +1,10 @@
 import type { GqlQuery } from './_types';
-import { AllDatasetsQuery, GetDatasetByIdQuery, ListDatasetsWithAnalysisQuery } from '../../../src/features/Dataset';
+import {
+  AllDatasetsQuery,
+  AllDatasetsWithCampaignsQuery,
+  GetDatasetByIdQuery,
+  ListDatasetsWithAnalysisQuery,
+} from '../../../src/features/Dataset';
 import type { Colormap } from '../../../src/features/Colormap';
 import { dataset, deployment, spectrogramAnalysis, USERS } from './types';
 import { ANALYSIS_QUERIES } from './spectrogramAnalysis';
@@ -7,10 +12,29 @@ import { CAMPAIGN_QUERIES } from './campaign';
 
 export const DATASET_QUERIES: {
   allDatasets: GqlQuery<AllDatasetsQuery>,
+  allDatasetsWithCampaigns: GqlQuery<AllDatasetsWithCampaignsQuery>,
   getDatasetByID: GqlQuery<GetDatasetByIdQuery, 'filled' |'dataEmpty'>,
   listDatasetsWithAnalysis: GqlQuery<ListDatasetsWithAnalysisQuery>,
 } = {
   allDatasets: {
+    defaultType: 'filled',
+    empty: {
+      allDatasets: {
+        results: [],
+      },
+    },
+    filled: {
+      allDatasets: {
+        results: [
+          {
+            id: dataset.id,
+            name: dataset.name,
+          },
+        ],
+      },
+    },
+  },
+  allDatasetsWithCampaigns: {
     defaultType: 'filled',
     empty: {
       allDatasets: {

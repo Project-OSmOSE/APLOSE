@@ -1,8 +1,3 @@
-.activeLabel {
-  background: var(--ion-color-base);
-  color: var(--ion-color-contrast);
-}
-
 .labels {
   grid-area: labels;
 
@@ -14,12 +9,7 @@
   }
 }
 
-.labelsButtons {
-  font-size: 1rem;
+.button {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: .5rem;
-  padding-left: .5rem;
+  align-items: center;
 }
-

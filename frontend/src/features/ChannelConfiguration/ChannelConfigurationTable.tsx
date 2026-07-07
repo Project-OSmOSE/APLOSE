@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
-import { IonNote } from '@ionic/react';
 
-import { FadedText, Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
+import { Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
 import { useLoaderData } from '@tanstack/react-router';
+import { Note } from '@/components/base/Note';
 
 export const ChannelConfigurationTable: React.FC = () => {
 
@@ -12,7 +12,7 @@ export const ChannelConfigurationTable: React.FC = () => {
     })
 
     if (allChannelConfigurations.length === 0)
-        return <IonNote color="medium">No acquisition information</IonNote>
+        return <Note color="medium">No acquisition information</Note>
 
     return <Table spacing="small">
         <Thead>
@@ -34,17 +34,17 @@ export const ChannelConfigurationTable: React.FC = () => {
                 <Td>{ c.deployment?.campaign?.name }</Td>
                 { c.recorderSpecification ? <Fragment>
                     <Td>{ c.recorderSpecification?.recorder.model.name }
-                        <FadedText>#{ c.recorderSpecification?.recorder.serialNumber }</FadedText>
+                        <Note color="medium">#{ c.recorderSpecification?.recorder.serialNumber }</Note>
                     </Td>
                     <Td>{ c.recorderSpecification?.hydrophone.model.name }
-                        <FadedText>#{ c.recorderSpecification?.hydrophone.serialNumber }</FadedText></Td>
+                        <Note color="medium">#{ c.recorderSpecification?.hydrophone.serialNumber }</Note></Td>
                 </Fragment> : <Fragment>
                     <Td>-</Td>
                     <Td>-</Td>
                 </Fragment> }
                 { c.detectorSpecification ? <Td>
                     { c.detectorSpecification?.detector.model.name }
-                    <FadedText>#{ c.detectorSpecification?.detector.serialNumber }</FadedText>
+                    <Note color="medium">#{ c.detectorSpecification?.detector.serialNumber }</Note>
                 </Td> : <Td>-</Td> }
             </Tr>) }
         </Tbody>

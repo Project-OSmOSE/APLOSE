@@ -1,0 +1,54 @@
+.Navigation, .InnerNav {
+  display: grid;
+  align-content: space-between;
+  position: sticky;
+  top: 0;
+  background: white;
+  box-shadow: var(--box-shadow);
+
+  &.Public, &.Mobile, &.Annotator {
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+    padding: 0 1rem 0 0;
+    justify-content: space-between;
+  }
+
+  .Title {
+    img {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 16%;
+      color: var(--color-dark-tint);
+      margin: 0;
+    }
+  }
+
+  button {
+    text-wrap: nowrap;
+  }
+}
+
+
+.InnerNav {
+  background: transparent;
+  box-shadow: none;
+  height: 100%;
+
+  ul {
+    justify-items: end;
+  }
+}
+
+.Submenu {
+  display: grid;
+  gap: 0.5re;
+  align-content: start;
+  justify-items: start;
+  user-select: none;
+}

@@ -1,0 +1,44 @@
+@use 'sass:color';
+
+$colors: [
+  (
+  base: #00B1B9,
+  text: color.adjust(#00B1B9, $lightness: -11%),
+  ),
+  (
+  base: #A23B72,
+  text: #A23B72,
+  ),
+  (
+  base: #F18F01,
+  text: color.adjust(#F18F01, $lightness: -16%),
+  ),
+  (
+  base: #C73E1D,
+  text: color.adjust(#C73E1D, $lightness: -1%),
+  ),
+  (
+  base: #BB7E5D,
+  text: color.adjust(#BB7E5D, $lightness: -12%),
+  ),
+  (
+  base: #EAC435,
+  text: color.adjust(#EAC435, $lightness: -27%),
+  ),
+  (
+  base: #98CE00,
+  text: color.adjust(#98CE00, $lightness: -16%),
+  ),
+  (
+  base: #6761A8,
+  text: #6761A8,
+  ),
+  (
+  base: #009B72,
+  text: color.adjust(#009B72, $lightness: -6%),
+  ),
+  (
+  base: #2A2D34,
+  text: #2A2D34,
+  ),
+];

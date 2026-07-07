@@ -1,17 +1,18 @@
-import { queryClient } from './queryClient';
-import type { QueryKey } from '@tanstack/react-query';
-import type { BrowseStorageQueryVariables, SearchStorageQueryVariables } from '@/features/Storage';
-import type { GetDatasetByIdQueryVariables } from '@/features/Dataset';
-import type { FileRangesForPhaseQueryVariables } from '@/features/AnnotationFileRange';
-import type { AllCampaignsQueryVariables, GetCampaignQueryVariables } from '@/features/AnnotationCampaign';
-import type { AllSpectrogramAnalysisQueryVariables } from '@/features/SpectrogramAnalysis';
-import type { GetDetailedSoundByIdQueryVariables, GetDetailedSourceByIdQueryVariables } from '@/features/Ontology';
-import type { GetAnnotationPhaseQueryVariables } from '@/features/AnnotationPhase';
+import type { BrowseStorageQueryVariables, SearchStorageQueryVariables } from '@/features/Storage/api';
+import type { GetDatasetByIdQueryVariables } from '@/features/Dataset/api';
+import type { FileRangesForPhaseQueryVariables } from '@/features/AnnotationFileRange/api';
+import type { AllCampaignsQueryVariables, GetCampaignQueryVariables } from '@/features/AnnotationCampaign/api';
+import type {
+    AllSpectrogramAnalysisForDatasetQueryVariables,
+    AllSpectrogramAnalysisQueryVariables,
+} from '@/features/SpectrogramAnalysis/api';
+import type { GetDetailedSoundByIdQueryVariables, GetDetailedSourceByIdQueryVariables } from '@/features/Ontology/api';
+import type { GetAnnotationPhaseQueryVariables } from '@/features/AnnotationPhase/api';
 import type {
     AllAnnotationSpectrogramsQueryVariables,
     GetAnnotationSpectrogramPathsQueryVariables,
     GetAnnotationSpectrogramQueryVariables,
-} from '@/features/AnnotationSpectrogram';
+} from '@/features/AnnotationSpectrogram/api';
 import type { AnnotationPhaseType } from '@/api/types.gql-generated';
 
 /**
@@ -58,11 +59,13 @@ export const queryKeys = {
     },
     dataset: {
         all: [ 'dataset' ] as const,
+        allWithCampaigns: [ 'dataset', 'campaign' ] as const,
         byId: (variables: GetDatasetByIdQueryVariables) => [ 'dataset', variables.id ] as const,
         listWithAnalysis: [ 'dataset', 'analysis' ] as const,
     },
     analysis: {
         all: (variables: AllSpectrogramAnalysisQueryVariables) => [ 'analysis', variables ] as const,
+        allForDataset: ({ datasetID }: AllSpectrogramAnalysisForDatasetQueryVariables) => [ 'analysis', 'dataset', datasetID ] as const,
     },
     ontology: {
         sound: {
@@ -82,71 +85,13 @@ export const queryKeys = {
         all: [ 'user' ] as const,
         current: [ 'user', 'current' ] as const,
     },
+    label: {
+        allSets: [ 'label', 'set' ] as const,
+    },
+    confidence: {
+        allSets: [ 'confidence', 'set' ] as const,
+    },
+    detector: {
+        all: [ 'detector' ] as const,
+    },
 };
-
-/**
- * Interface standard pour les réponses paginées
- */
-export interface PageInfo {
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-    startCursor: string | null;
-    endCursor: string | null;
-}
-
-/**
- * Invalide tous les caches pour une entité
- */
-export function invalidateEntity(entityKey: QueryKey) {
-    queryClient.invalidateQueries({ queryKey: entityKey });
-}
-
-/**
- * Invalide les caches liés en cascade
- * Exemple : créer un post invalide aussi la liste et l'utilisateur
- */
-export function invalidateRelated(
-    primaryKey: QueryKey,
-    relatedKeys: QueryKey[],
-) {
-    queryClient.invalidateQueries({ queryKey: primaryKey });
-    relatedKeys.forEach((key) => {
-        queryClient.invalidateQueries({ queryKey: key });
-    });
-}
-
-/**
- * Mise à jour optimiste du cache
- * Utile pour les mutations sans refetch
- */
-export function updateCache<T>(
-    key: QueryKey,
-    updater: (old: T) => T,
-): void {
-    const oldData = queryClient.getQueryData<T>(key);
-    if (oldData) {
-        queryClient.setQueryData<T>(key, updater(oldData));
-    }
-}
-
-/**
- * Précharge une requête (useful pour les links au hover)
- */
-export async function prefetchQuery<T>(
-    key: QueryKey,
-    queryFn: () => Promise<T>,
-) {
-    await queryClient.prefetchQuery({
-        queryKey: key,
-        queryFn,
-        staleTime: 1000 * 60 * 5, // 5 minutes
-    });
-}
-
-/**
- * Nettoie le cache complètement
- * Utile au logout
- */
-export function clearCache() {
-    queryClient.clear();
-}

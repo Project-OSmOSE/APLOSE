@@ -1,41 +1,28 @@
-import React, { StrictMode } from 'react';
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
-import './css/bootstrap-4.1.3.min.css';
-import '@ionic/react/css/core.css';
-import './css/ionic-override.css';
-import './css/annotation-colors.css';
-import './css/app.css';
-
-import { IonApp, IonSpinner, setupIonicReact } from '@ionic/react';
+import './css/base.css';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
 import { StoreProvider } from '@/features/App';
-import { useLoadEventService } from '@/features/UX';
 
 import { routeTree } from '@/routeTree.gen';
 import { WarningText } from '@/components/ui';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/api/queryClient';
+import { Center } from '@/components/layout/Display';
+import { Spinner } from '@/components/base/Spinner';
+import { EventProvider } from '@/components/ui/Event';
 
-setupIonicReact({
-    mode: 'md',
-    spinner: 'crescent',
-});
 
-const router = createRouter({
+export const router = createRouter({
     basepath: '/app',
     routeTree,
     defaultPreload: 'intent',
     defaultStaleTime: 5_000,
     scrollRestoration: true,
-    context: {
-        isConnected: undefined!,
-        isAdmin: undefined!,
-        isSuperuser: undefined!,
-    },
-    defaultPendingComponent: IonSpinner,
-    defaultErrorComponent: ({ error }) => <WarningText error={ error }/>,
+    defaultPendingComponent: () => <Center><Spinner/></Center>,
+    defaultErrorComponent: ({ error }) => <Center><WarningText error={ error }/></Center>,
 })
 
 // Register things for typesafety
@@ -45,20 +32,15 @@ declare module '@tanstack/react-router' {
     }
 }
 
-const App: React.FC = () => {
-    useLoadEventService();
-
-    return <QueryClientProvider client={ queryClient }>
-        <RouterProvider router={ router }/>
-    </QueryClientProvider>
-}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <IonApp>
-            <StoreProvider>
-                <App/>
-            </StoreProvider>
-        </IonApp>
+        <StoreProvider>
+            <EventProvider>
+                <QueryClientProvider client={ queryClient }>
+                    <RouterProvider router={ router }/>
+                </QueryClientProvider>
+            </EventProvider>
+        </StoreProvider>
     </StrictMode>,
 )

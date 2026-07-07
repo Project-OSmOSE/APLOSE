@@ -2,6 +2,7 @@
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 100vh;
+  gap: 0.5rem;
   overflow: auto;
 
   .info {
@@ -15,12 +16,41 @@
       align-items: center;
       gap: 1rem;
     }
-
-    .progress {
-      grid-template-columns: auto 1fr;
-      gap: 1rem;
-      align-items: center;
-      width: 20rem;
-    }
   }
+}
+
+.ConfigBar {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-between;
+  align-items: center;
+
+  .Inner {
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+.HorizontalItem {
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+.HorizontalTextItem {
+  display: grid;
+  grid-auto-flow: column;
+  align-items: baseline;
+  gap: 0.2rem;
+}
+
+
+.VerticalItem {
+  display: grid;
+  grid-auto-flow: row;
+  align-items: center;
+  justify-items: center;
+  gap: 0.2rem;
 }

@@ -61,6 +61,7 @@ export const USER_QUERIES: {
         filled: {
             allUsers: {
                 results: Object.values(USERS).map(u => ({
+                    __typename: 'UserNode',
                     id: u.id,
                     username: u.username,
                     displayName: u.displayName,
@@ -69,6 +70,7 @@ export const USER_QUERIES: {
             },
             allUserGroups: {
                 results: [ {
+                    __typename: 'UserGroupNode',
                     id: userGroup.id,
                     name: userGroup.name,
                     users: [ {

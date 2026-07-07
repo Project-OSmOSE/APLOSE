@@ -10,7 +10,7 @@ export class PhaseDetailPage {
   }
 
   get resumeButton(): Locator {
-    return this.page.getByTestId('resume').getByRole('button');
+    return this.page.getByTestId('resume');
   }
 
   get manageButton(): Locator {
@@ -34,7 +34,7 @@ export class PhaseDetailPage {
   }
 
   async searchFile(text: string) {
-    await this.page.getByRole('search').locator('input').fill(text)
+    await this.page.getByRole('searchbox', { name: 'Search filename' }).fill(text)
     await this.page.keyboard.press('Enter')
   }
 }

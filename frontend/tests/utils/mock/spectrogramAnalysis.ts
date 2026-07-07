@@ -1,10 +1,15 @@
-import type { AllSpectrogramAnalysisQuery } from '../../../src/features/SpectrogramAnalysis';
+import type {
+    AllSpectrogramAnalysisForDatasetQuery,
+    AllSpectrogramAnalysisQuery,
+} from '../../../src/features/SpectrogramAnalysis';
 import type { GqlQuery } from './_types';
 import { fft, spectrogramAnalysis } from './types';
+import type { Colormap } from '../../../src/features/Colormap';
 
 
 export const ANALYSIS_QUERIES: {
     allSpectrogramAnalysis: GqlQuery<AllSpectrogramAnalysisQuery>,
+    allSpectrogramAnalysisForDataset: GqlQuery<AllSpectrogramAnalysisForDatasetQuery>,
 } = {
     allSpectrogramAnalysis: {
         defaultType: 'filled',
@@ -29,6 +34,23 @@ export const ANALYSIS_QUERIES: {
                     spectrograms: {
                         totalCount: 99,
                     },
+                } ],
+            },
+        },
+    },
+    allSpectrogramAnalysisForDataset: {
+        defaultType: 'filled',
+        empty: {
+            allSpectrogramAnalysis: null,
+        },
+        filled: {
+            allSpectrogramAnalysis: {
+                results: [ {
+                    id: spectrogramAnalysis.id,
+                    name: spectrogramAnalysis.name,
+                    colormap: {
+                        name: 'Greys' as Colormap
+                    }
                 } ],
             },
         },

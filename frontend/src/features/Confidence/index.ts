@@ -1,2 +1,2 @@
-export * from './ConfidenceSelect'
-export * from './ConfidenceSetSelect'
+export * as ConfidenceAPI from './api'
+export * as ConfidenceComponent from './component'

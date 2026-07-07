@@ -1,56 +1,39 @@
-import React, { Fragment, MouseEvent, useCallback, useMemo } from 'react';
+import React, { Fragment, MouseEvent, useCallback, useMemo, useState } from 'react';
 import { type Annotation, focusAnnotation } from './slice';
-import { Td, Th, Tr, useModal } from '@/components/ui';
+import { Td, Th, Tr } from '@/components/ui';
 import styles from './styles.module.scss';
 import { AnnotationLabelInfo } from './AnnotationLabelInfo';
 import { AnnotationPhaseType, AnnotationType } from '@/api';
-import {
-    useGetAnnotations,
-    useInvalidateAnnotation,
-    useRemoveAnnotation,
-    useUpdateAnnotation,
-    useValidateAnnotation,
-} from './hooks';
+import { useInvalidateAnnotation, useUpdateAnnotation, useValidateAnnotation } from './hooks';
 import { useFocusCanvasOnTime } from '@/features/Annotator/Canvas';
 import { AnnotationTimeInfo } from './AnnotationTimeInfo';
 import { AnnotationFrequencyInfo } from './AnnotationFrequencyInfo';
 import { AnnotationConfidenceInfo } from '@/features/Annotator/Annotation/AnnotationConfidenceInfo';
 import { RiRobot2Fill, RiUser3Fill } from 'react-icons/ri';
-import { IoChatbubbleEllipses, IoChatbubbleOutline } from 'react-icons/io5';
 import { InvalidateAnnotationModal } from '@/features/Annotator/Annotation/InvalidateAnnotationModal';
-import { IonButton, IonIcon } from '@ionic/react';
-import { checkmarkOutline, closeOutline } from 'ionicons/icons/index.js';
-import { useKeyDownEvent } from '@/features/UX';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
-import { UpdateLabelModal } from '@/features/Annotator/Label/UpdateLabelModal';
 import { useLoaderData } from '@tanstack/react-router';
+import { ChatLine, ChatSquare, CheckCircle, CloseCircle } from '@solar-icons/react';
+import { Button, Dialog } from '@/components/base';
+import { LabelDialog } from '@/features/Labels';
+import type { LabelFragment } from '@/features/Labels/api';
 
 export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
-    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { campaign, labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const { annotations } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const focusedAnnotation = useAppSelector(selectAnnotation)
-    const getAnnotations = useGetAnnotations()
     const validate = useValidateAnnotation()
     const invalidate = useInvalidateAnnotation()
-    const removeAnnotation = useRemoveAnnotation()
     const focusTime = useFocusCanvasOnTime()
     const { user } = useLoaderData({ from: '/_authenticated' })
 
     const updateAnnotation = useUpdateAnnotation()
-    const updateLabel = useCallback((label: string) => {
+    const updateLabel = useCallback((label: LabelFragment) => {
         if (!annotation) return;
-        updateAnnotation(annotation, { label })
+        updateAnnotation(annotation, { label: label.name })
     }, [ annotation, updateAnnotation ]);
-    const labelModal = useModal(UpdateLabelModal, {
-        selected: annotation.label,
-        onUpdate: updateLabel,
-    })
-    const invalidateModal = useModal(InvalidateAnnotationModal, {
-        annotation,
-        onAskLabelChange: labelModal.open,
-    })
     const dispatch = useAppDispatch();
 
     const completeInfo = useMemo(() => {
@@ -59,8 +42,6 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
         }
         return annotations?.find(a => a.id === annotation.id.toString())
     }, [ annotations, annotation, user, phase ])
-
-    const isActive = useMemo(() => annotation.id === focusedAnnotation?.id ? styles.active : undefined, [ annotation, focusedAnnotation ])
 
     const onClick = useCallback(() => {
         dispatch(focusAnnotation(annotation))
@@ -78,16 +59,10 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
 
     const onInvalidate = useCallback((event: MouseEvent) => {
         event.stopPropagation()
-        if (annotation.type === 'Weak') invalidate(annotation)
-        else invalidateModal.open()
-    }, [ annotation, invalidate, annotation, invalidateModal ]);
+        invalidate(annotation)
+    }, [ annotation, invalidate ]);
 
-    const remove = useCallback(() => {
-        if (!isActive) return;
-        removeAnnotation(annotation)
-    }, [ annotation, removeAnnotation, isActive, getAnnotations ]);
-    useKeyDownEvent([ 'Delete' ], remove);
-
+    const [ isLabelModalOpen, setIsLabelModalOpen ] = useState<boolean>(false);
     return <Tr className={ annotation.id !== focusedAnnotation?.id ? 'disabled' : '' } onClick={ onClick }>
 
         {/* Label */ }
@@ -109,43 +84,64 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
         { phase.phase === AnnotationPhaseType.Verification && (
             completeInfo?.detectorConfiguration ?
                 <Td>
-                    <RiRobot2Fill/>
-                    <p>{ completeInfo?.detectorConfiguration.detector.name }</p>
+                    <div className={ styles.horizontal }>
+                        <RiRobot2Fill/>
+                        <p>{ completeInfo?.detectorConfiguration.detector.name }</p>
+                    </div>
                 </Td>
                 :
                 <Td className={ completeInfo?.annotator?.id === user.id ? 'disabled' : '' }>
-                    <RiUser3Fill/>
-                    <p>{ completeInfo?.annotator?.displayName } { completeInfo?.annotator?.id === user.id ? '(self)' : '' }</p>
+                    <div className={ styles.horizontal }>
+                        <RiUser3Fill/>
+                        <p>{ completeInfo?.annotator?.displayName } { completeInfo?.annotator?.id === user.id ? '(self)' : '' }</p>
+                    </div>
                 </Td>
         ) }
 
         {/* Comments */ }
         <Td>
-            { annotation.comments && annotation.comments.length > 0 ? <IoChatbubbleEllipses/> : <IoChatbubbleOutline/> }
+            { annotation.comments && annotation.comments.length > 0 ?
+                <ChatLine weight="Bold" size={ 20 }/> :
+                <ChatSquare weight="Linear" size={ 20 }/> }
         </Td>
 
         {/* Validation */ }
         { phase.phase === AnnotationPhaseType.Verification &&
             <Td>
-                { completeInfo?.annotator?.id !== user.id ? <Fragment>
-                    <IonButton className="validate"
-                               data-testid="validate"
-                               color={ annotation.validation?.isValid ? 'success' : 'medium' }
-                               fill={ annotation.validation?.isValid ? 'solid' : 'outline' }
-                               onClick={ onValidate }>
-                        <IonIcon slot="icon-only" icon={ checkmarkOutline }/>
-                    </IonButton>
-                    <IonButton className="invalidate"
-                               data-testid="invalidate"
-                               color={ annotation.validation?.isValid ? 'medium' : 'danger' }
-                               fill={ annotation.validation?.isValid ? 'outline' : 'solid' }
-                               onClick={ onInvalidate }>
-                        <IonIcon slot="icon-only" icon={ closeOutline }/>
-                    </IonButton>
-                </Fragment> : <Fragment/> }
+                <div className={ styles.horizontal }>
+                    { completeInfo?.annotator?.id !== user.id ? <Fragment>
+                        <Button data-testid="validate"
+                                color={ annotation.validation?.isValid ? 'success' : 'medium' }
+                                onClick={ onValidate }>
+                            <CheckCircle weight={ annotation.validation?.isValid ? 'BoldDuotone' : 'LineDuotone' }
+                                         size={ 20 }/>
+                        </Button>
+                        { annotation.type === 'Weak' ? <Button data-testid="invalidate"
+                                                               color={ annotation.validation?.isValid ? 'medium' : 'danger' }
+                                                               onClick={ onInvalidate }>
+                            <CloseCircle weight={ annotation.validation?.isValid ? 'LineDuotone' : 'BoldDuotone' }
+                                         size={ 20 }/>
+                        </Button> : <Dialog.Root>
+                            <Dialog.Trigger data-testid="invalidate"
+                                            color={ annotation.validation?.isValid ? 'medium' : 'danger' }>
+                                <CloseCircle weight={ annotation.validation?.isValid ? 'LineDuotone' : 'BoldDuotone' }
+                                             size={ 20 }/>
+                            </Dialog.Trigger>
+                            <Dialog.Portal>
+                                <InvalidateAnnotationModal annotation={ annotation }
+                                                           onAskLabelChange={ () => setIsLabelModalOpen(true) }/>
+                            </Dialog.Portal>
+                        </Dialog.Root> }
+                    </Fragment> : <Fragment/> }
+                </div>
             </Td> }
 
-        { invalidateModal.element }
-        { labelModal.element }
+        <Dialog.Root open={ isLabelModalOpen } onOpenChange={ setIsLabelModalOpen }>
+            <Dialog.Portal>
+                <LabelDialog.Update availableLabels={ labels }
+                                    selected={ labels.find(l => l.name === annotation.label) }
+                                    onSelect={ updateLabel }/>
+            </Dialog.Portal>
+        </Dialog.Root>
     </Tr>
 }

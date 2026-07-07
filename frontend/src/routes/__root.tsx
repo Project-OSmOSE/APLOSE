@@ -1,32 +1,27 @@
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { ReactFlowProvider } from '@xyflow/react';
-import { AlertProvider } from '@/components/ui';
 import { AudioProvider } from '@/features/Audio';
-import styles from '@/routes/(public)/public.module.scss';
-import { Footer, PublicHeader } from '@/components/layout';
-import { IonNote } from '@ionic/react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { BaseProvider } from '@/components/base/Provider';
+import { TanStackDevtools } from '@tanstack/react-devtools';
+import { hotkeysDevtoolsPlugin } from '@tanstack/react-hotkeys-devtools';
 
 
 export const Route = createRootRouteWithContext()({
     component: () =>
-        <AudioProvider>
-            <AlertProvider>
+        <BaseProvider>
+            <AudioProvider>
                 <ReactFlowProvider>
                     <Outlet/>
 
-                    {/* Dev tools */}
-                    <TanStackRouterDevtools/>
-                    <ReactQueryDevtools initialIsOpen={false} position='right' />
+                    {/* Dev tools */ }
+                    <TanStackRouterDevtools position="bottom-right"/>
+                    <ReactQueryDevtools initialIsOpen={ false } position="right"/>
+                    <TanStackDevtools plugins={[
+                        hotkeysDevtoolsPlugin(),
+                    ]} />
                 </ReactFlowProvider>
-            </AlertProvider>
-        </AudioProvider>,
-
-    notFoundComponent: () =>
-        <div className={ styles.notFoundPage }>
-            <PublicHeader/>
-            <IonNote>Page not found</IonNote>
-            <Footer/>
-        </div>,
+            </AudioProvider>
+        </BaseProvider>,
 })

@@ -32,8 +32,8 @@ fragment UserGroup on UserGroupNode {
 }
 
 query allUsers {
-    allUsers { results { ...User } }
-    allUserGroups { results { ...UserGroup } }
+    allUsers { results { __typename, ...User } }
+    allUserGroups { results { __typename, ...UserGroup } }
 }
 
 # Update email

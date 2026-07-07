@@ -16,7 +16,7 @@ type UXState = {
 const initialState: UXState = {
     updated: false,
     allFileIsSeen: true, // Because initial zoom level == 1
-    isDrawingEnabled: false,
+    isDrawingEnabled: true,
     selectPositionForAnnotation: null,
     start: Date.now(),
 
@@ -27,9 +27,6 @@ export const AnnotatorUXSlice = createSlice({
     name: 'AnnotatorUX',
     initialState,
     reducers: {
-        setIsDrawingEnabled: (state, action: { payload: boolean }) => {
-            state.isDrawingEnabled = action.payload;
-        },
         setAllFileAsSeen: (state) => {
             state.allFileIsSeen = true;
         },
@@ -86,7 +83,6 @@ export const AnnotatorUXSlice = createSlice({
 
 export const {
     setAllFileAsSeen,
-    setIsDrawingEnabled,
 
     // isSelectingAnnotationFrequency
     selectPosition,

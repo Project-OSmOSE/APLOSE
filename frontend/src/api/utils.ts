@@ -1,4 +1,4 @@
-import type { Token } from '@/api/auth';
+import type { Errors } from '@base-ui/react/internals/form-context';
 import type { ErrorType } from '@/api/types.gql-generated';
 import { AppStore } from '@/features/App';
 import type {
@@ -7,13 +7,16 @@ import type {
     QueryActionCreatorResult,
     QueryDefinition,
 } from '@reduxjs/toolkit/query';
-import { queryClient } from '@/api/queryClient';
+import { Token } from './auth/types';
 import type { DefaultError, EnsureQueryDataOptions, QueryKey } from '@tanstack/react-query';
+import { queryClient } from '@/api/queryClient';
+
 
 export function getTokenFromCookie(): Token | undefined {
     const tokenCookie = document.cookie?.split(';').filter((item) => item.trim().startsWith('token='))[0];
     return tokenCookie?.split('=').pop();
 }
+
 export function clearTokenFromCookie(): void {
     document.cookie = 'token=;max-age=0;path=/';
 }
@@ -47,6 +50,14 @@ export async function getLoader<Arguments = any, Result = any>(
 export function cleanGqlList<T>(data?: Array<T | undefined | null> | null): Array<T> {
     return data?.filter(d => !!d).map(d => d!) ?? []
 }
+
+export function cleanGqlErrors(errors?: Array<ErrorType | null> | null): Errors {
+    return cleanGqlList(errors).reduce((prev, current) => ({
+        ...prev,
+        [current.field]: current.messages,
+    }), {})
+}
+
 
 export async function ensureValidQueryData<TQueryFnData, TError = DefaultError, TData = TQueryFnData, TQueryKey extends QueryKey = QueryKey>(options: EnsureQueryDataOptions<TQueryFnData, TError, TData, TQueryKey>): Promise<TData> {
     const data = await queryClient.ensureQueryData(options)

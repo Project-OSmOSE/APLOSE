@@ -4,12 +4,12 @@ import { clearTempAnnotation, setTempAnnotation } from './slice';
 import { selectTempAnnotation } from './selectors';
 import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
 import { AnnotationType } from '@/api';
-import { MOUSE_DOWN_EVENT, MOUSE_MOVE_EVENT, MOUSE_UP_EVENT, useEvent } from '@/features/UX/Events';
+import { MOUSE_DOWN_EVENT, MOUSE_MOVE_EVENT, MOUSE_UP_EVENT, useRegisterToEvent } from '@/components/ui/Event';
 import { useGetFreqTime, useIsHoverCanvas } from '@/features/Annotator/Pointer';
 import { formatTime } from '@/service/function';
 import { selectFocusLabel } from '@/features/Annotator/Label';
 import { selectDefaultConfidence, selectFocusConfidence } from '@/features/Annotator/Confidence';
-import { useToast } from '@/components/ui';
+import { Toast } from '@/components/base/Toast';
 import { useAddAnnotation } from '@/features/Annotator/Annotation';
 import { usePointer } from '@/features/Annotator/Pointer/context';
 import { useLoaderData } from '@tanstack/react-router';
@@ -48,7 +48,7 @@ export const useTempAnnotationsEvents = () => {
     const getFreqTime = useGetFreqTime()
     const isHoverCanvas = useIsHoverCanvas()
     const dispatch = useAppDispatch();
-    const toast = useToast()
+    const toastManager = Toast.useToastManager()
 
     const onStartTempAnnotation = useCallback((e: MouseEvent<HTMLCanvasElement>) => {
         if (!isDrawingEnabled) return;
@@ -64,7 +64,7 @@ export const useTempAnnotationsEvents = () => {
             endFrequency: data.frequency,
         }))
     }, [ isHoverCanvas, getFreqTime, isDrawingEnabled, dispatch ])
-    useEvent(MOUSE_DOWN_EVENT, onStartTempAnnotation);
+    useRegisterToEvent(MOUSE_DOWN_EVENT, onStartTempAnnotation);
 
     const onUpdateTempAnnotation = useCallback((e: PointerEvent<HTMLDivElement>) => {
         const isHover = isHoverCanvas(e)
@@ -81,7 +81,7 @@ export const useTempAnnotationsEvents = () => {
         }
         if (!isHover || !data) pointer.clearPosition()
     }, [ isHoverCanvas, getFreqTime, dispatch, tempAnnotation, pointer ])
-    useEvent(MOUSE_MOVE_EVENT, onUpdateTempAnnotation);
+    useRegisterToEvent(MOUSE_MOVE_EVENT, onUpdateTempAnnotation);
 
     const onEndNewAnnotation = useCallback((e: PointerEvent<HTMLDivElement>) => {
         if (tempAnnotation && focusedLabel) {
@@ -102,15 +102,19 @@ export const useTempAnnotationsEvents = () => {
             annotation.endFrequency = end_frequency;
 
             if (!frequencyScale.isRangeContinuouslyOnScale(start_frequency, end_frequency)) {
-                toast.raiseError({
-                    message: `Be careful, your annotation overlaps a void in the frequency scale.
-         Are you sure your annotation goes from ${ start_frequency.toFixed(0) }Hz to ${ end_frequency.toFixed(0) }Hz?`,
+                toastManager.add({
+                    title: 'Frequency void overlap',
+                    description: `Be careful, your annotation overlaps a void in the frequency scale.
+         Check your annotation really goes from ${ start_frequency.toFixed(0) }Hz to ${ end_frequency.toFixed(0) }Hz.`,
+                    type: 'warning',
                 })
             }
             if (!timeScale.isRangeContinuouslyOnScale(start_time, end_time)) {
-                toast.raiseError({
-                    message: `Be careful, your annotation overlaps a void in the time scale.
-         Are you sure your annotation goes from ${ formatTime(start_time) } to ${ formatTime(end_time) }?`,
+                toastManager.add({
+                    title: 'Time void overlap',
+                    description: `Be careful, your annotation overlaps a void in the time scale.
+         Check your annotation really goes from ${ formatTime(start_time) } to ${ formatTime(end_time) }.`,
+                    type: 'warning',
                 })
             }
             const width = timeScale.valuesToPositionRange(annotation.startTime, annotation.endTime);
@@ -137,8 +141,8 @@ export const useTempAnnotationsEvents = () => {
         }
         dispatch(clearTempAnnotation())
         if (!isHoverCanvas(e)) pointer.clearPosition()
-    }, [ dispatch, pointer, addAnnotation, getFreqTime, isHoverCanvas, toast, timeScale, frequencyScale, campaign, focusedLabel, defaultConfidence, focusedConfidence, tempAnnotation ])
-    useEvent(MOUSE_UP_EVENT, onEndNewAnnotation);
+    }, [ dispatch, pointer, addAnnotation, getFreqTime, isHoverCanvas, toastManager, timeScale, frequencyScale, campaign, focusedLabel, defaultConfidence, focusedConfidence, tempAnnotation ])
+    useRegisterToEvent(MOUSE_UP_EVENT, onEndNewAnnotation);
 
     return { onStartTempAnnotation }
 }

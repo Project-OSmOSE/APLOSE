@@ -1,8 +1,6 @@
 import React, { Fragment, MouseEvent, useCallback, useMemo } from 'react';
-import { IonChip, IonIcon } from '@ionic/react';
-import { checkmarkOutline, closeCircle, eyeOffOutline, eyeOutline } from 'ionicons/icons/index.js';
 import styles from './styles.module.scss';
-import { Kbd, TooltipOverlay } from '@/components/ui';
+import { Kbd } from '@/components/ui';
 import {
     focusAnnotation,
     selectAllAnnotations,
@@ -13,18 +11,19 @@ import {
     useUpdateAnnotation,
 } from '@/features/Annotator/Annotation';
 import { AnnotationType } from '@/api';
-import { useKeyDownEvent } from '@/features/UX';
 import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { setHiddenLabels } from './slice';
 import { selectFocusLabel, selectHiddenLabels } from './selectors';
 import { NBSP } from '@/service/type';
 import { useLoaderData } from '@tanstack/react-router';
+import { Popover } from '@/components/base/Popover';
+import { Chip, type ChipProps, ChipRemove } from '@/components/base';
+import { Eye, EyeClosed, Unread } from '@solar-icons/react';
+import { useHotkeySequence } from '@tanstack/react-hotkeys';
+import type { Hotkey } from '@tanstack/hotkeys/src/hotkey';
 
-export const AlphanumericKeys = [
-    [ '&', 'é', '"', '\'', '(', '-', 'è', '_', 'ç' ],
-    [ '1', '2', '3', '4', '5', '6', '7', '8', '9' ],
-];
+export const AlphanumericKeys = [ 'à', '&', 'é', '"', '\'', '(', '-', 'è', '_', 'ç' ]
 
 export const LabelChip: React.FC<{
     label: string;
@@ -40,16 +39,10 @@ export const LabelChip: React.FC<{
     const getAnnotation = useGetAnnotation()
     const removeAnnotation = useRemoveAnnotation()
     const index = useMemo(() => labels.map(l => l.name).indexOf(label), [ labels, label ])
-    const className = useMemo(() => {
-        return focusedLabel === label ? styles.activeLabel : undefined
-    }, [ label, focusedLabel ])
-    const colorClass = useMemo(() => `ion-color-${ index }`, [ index ])
-    const number = useMemo(() => AlphanumericKeys[1][index], [ index ]);
-    const key = useMemo(() => AlphanumericKeys[0][index], [ index ]);
+    const numberShortcuts = useMemo(() => (index + 1).toString()?.split('') as Hotkey[], [ index ]);
+    const keyShortcuts = useMemo(() => (index + 1).toString()?.split('').map(i => AlphanumericKeys[+i]) as Hotkey[], [ index ]);
     const isUsed = useMemo(() => allAnnotations.some(a => a.label === label), [ allAnnotations, label ])
-    const color = useMemo(() => (index % 10).toString(), [ index ])
     const isHidden = useMemo(() => hiddenLabels.includes(label), [ hiddenLabels, label ])
-    const buttonColor = useMemo(() => focusedLabel === label ? undefined : color, [ color, focusedLabel, label ])
     const dispatch = useAppDispatch()
 
     const select = useCallback(() => {
@@ -61,13 +54,14 @@ export const LabelChip: React.FC<{
         if (weak) return dispatch(focusAnnotation(weak))
         addAnnotation({ ...weakProperties, confidence: defaultConfidence })
     }, [ focusedAnnotation, updateAnnotation, label, getAnnotation, dispatch, addAnnotation, defaultConfidence ])
-    useKeyDownEvent([ number, key ], select)
+    useHotkeySequence(numberShortcuts, () => select())
+    useHotkeySequence(keyShortcuts, () => select())
 
     const show = useCallback((event: MouseEvent) => {
         event.stopPropagation();
         // Hide all but current if ctrlKey pressed
-        if (event.ctrlKey) dispatch(setHiddenLabels(labels.map(l => l.name)))
-        dispatch(setHiddenLabels(hiddenLabels.filter(l => l !== label)))
+        if (event.ctrlKey) dispatch(setHiddenLabels(labels.map(l => l.name).filter(l => l !== label)))
+        else dispatch(setHiddenLabels(hiddenLabels.filter(l => l !== label)))
     }, [ label, hiddenLabels, dispatch, labels ])
 
     const hide = useCallback((event: MouseEvent) => {
@@ -77,56 +71,50 @@ export const LabelChip: React.FC<{
         else dispatch(setHiddenLabels([ ...hiddenLabels, label ]))
     }, [ label, show, dispatch, hiddenLabels ])
 
-    const remove = useCallback((event: MouseEvent) => {
-        event.stopPropagation();
+    const remove = useCallback(() => {
         const annotation = getAnnotation({ label, type: AnnotationType.Weak })
         if (!annotation) return;
         removeAnnotation(annotation)
     }, [ label, getAnnotation, removeAnnotation ])
 
     return (
-        <IonChip outline={ !isUsed }
-                 className={ className }
-                 data-testid="label-chip"
-                 onClick={ select }
-                 color={ color }>
-            { focusedLabel === label && <IonIcon src={ checkmarkOutline }/> }
+        <Chip data-testid="label-chip"
+              onClick={ select }
+              { ...(isUsed ? { annotationColorIndex: index } : { color: 'medium' }) as Partial<ChipProps> }>
+            { focusedLabel === label && <Unread weight="Linear" size={ 20 }/> }
 
-            { index >= 9 ?
-                <p>{ label }</p> :
-                <TooltipOverlay title="Shortcut"
-                                tooltipContent={ <Fragment>
-                                    <p>
-                                        <Kbd keys={ number } className={ colorClass }/>
-                                        { NBSP }or{ NBSP }
-                                        <Kbd keys={ key } className={ colorClass }/>:
-                                        { NBSP }Choose this label
-                                    </p>
-                                </Fragment> }>
-                    <p>{ label }</p>
-                </TooltipOverlay>
-            }
+            <Popover.Root>
+                <Popover.Trigger render={ <span/> } nativeButton={ false }>
+                    { label }
+                </Popover.Trigger>
+                <Popover.Content>
+                    <Popover.Title>Shortcut</Popover.Title>
+                    <Kbd keys={ numberShortcuts } annotationColorIndex={ index }/>:
+                    { NBSP }Choose this label
+                </Popover.Content>
+            </Popover.Root>
 
 
-            { isUsed && <div className={ styles.labelsButtons }>
-                <TooltipOverlay
-                    tooltipContent={ <Fragment>
+            { isUsed && <Fragment>
+                <Popover.Root>
+                    <Popover.Trigger render={ <div/> } nativeButton={ false } className={ styles.button }>
+                        { isHidden ?
+                            <EyeClosed weight="Linear" size={ 20 } onClick={ show }/> :
+                            <Eye weight="Linear" size={ 20 } onClick={ hide }/> }
+                    </Popover.Trigger>
+                    <Popover.Content>
                         <p>{ isHidden ? 'Show' : 'Hide' } corresponding annotations on spectrogram</p>
                         <p>Press <Kbd keys={ 'ctrl' }/> to show only this labels annotations</p>
-                    </Fragment> }>
-                    { isHidden ?
-                        <IonIcon icon={ eyeOffOutline } onClick={ show } color={ buttonColor }/> :
-                        <IonIcon icon={ eyeOutline } onClick={ hide } color={ buttonColor }/> }
-                </TooltipOverlay>
+                    </Popover.Content>
+                </Popover.Root>
 
-                <TooltipOverlay
-                    tooltipContent={ <p>Remove corresponding annotations</p> }>
-                    <IonIcon icon={ closeCircle }
-                             onClick={ remove }
-                             data-testid="remove-label"
-                             color={ buttonColor }/>
-                </TooltipOverlay>
-            </div> }
-        </IonChip>
+                <Popover.Root>
+                    <Popover.Trigger render={ <div/> } nativeButton={ false } className={ styles.button }>
+                        <ChipRemove onClick={ remove } data-testid="remove-label"/>
+                    </Popover.Trigger>
+                    <Popover.Content>Remove corresponding annotations</Popover.Content>
+                </Popover.Root>
+            </Fragment> }
+        </Chip>
     )
 }

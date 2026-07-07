@@ -1,0 +1,42 @@
+@use "@/css/base";
+
+
+.Item {
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  color: var(--color-medium-text);
+  background-color: rgba(var(--color-primary-rgb), 0);
+  cursor: pointer;
+
+  transition: 0.3s;
+
+  &:hover {
+    background-color: rgba(var(--color-primary-rgb), 0.1);
+    color: var(--color-primary-text);
+  }
+
+  &[aria-checked="true"] {
+    background-color: var(--color-primary-text);
+    color: var(--color-light);
+
+    @each $color in base.$colors {
+      &[color=#{$color}] {
+        background-color: var(--color-#{$color}-text);
+        color: var(--color-light);
+      }
+    }
+  }
+}
+
+.Group {
+  border-radius: 0.5rem;
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  display: flex;
+  gap: 0.2rem;
+
+  &[data-disabled] {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}

@@ -1,4 +1,3 @@
-import type { RequestExtendedOptions } from 'graphql-request';
 import { GraphQLClient } from 'graphql-request';
 import { clearTokenFromCookie, getTokenFromCookie } from '@/api/utils';
 
@@ -54,5 +53,3 @@ export const graphqlClient = new GraphQLClient(
         responseMiddleware,
     },
 );
-
-export type RequestOptions = RequestExtendedOptions;

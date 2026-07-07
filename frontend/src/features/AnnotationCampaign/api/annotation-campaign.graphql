@@ -7,12 +7,13 @@ fragment BaseCampaign on AnnotationCampaignNode {
     phases {
         results {
             phase
+            isOpen
+            userTasksCount
+            userCompletedTasksCount
         }
     }
     tasksCount
     completedTasksCount
-    userTasksCount
-    userCompletedTasksCount
 }
 
 query allCampaigns(
@@ -33,6 +34,29 @@ query allCampaigns(
     ) {
         results { ...BaseCampaign }
     }
+}
+
+fragment CampaignAnalysis on SpectrogramAnalysisNode {
+    id
+    name
+    colormap {
+        name
+    }
+    fft {
+        nfft
+        windowSize
+        overlap
+        samplingFrequency
+    }
+    frequencyScaleParts {
+        ratio
+        minValue
+        maxValue
+    }
+    legacyConfiguration {
+        zoomLevel
+    }
+    legacy
 }
 
 query getCampaign($id: ID!) {
@@ -84,6 +108,7 @@ query getCampaign($id: ID!) {
             name
             desc
             confidenceIndicators {
+                id
                 label
                 isDefault
             }
@@ -98,28 +123,7 @@ query getCampaign($id: ID!) {
         }
         analysis {
             edges {
-                node {
-                    id
-                    name
-                    colormap {
-                        name
-                    }
-                    fft {
-                        nfft
-                        windowSize
-                        overlap
-                        samplingFrequency
-                    }
-                    frequencyScaleParts {
-                        ratio
-                        minValue
-                        maxValue
-                    }
-                    legacyConfiguration {
-                        zoomLevel
-                    }
-                    legacy
-                }
+                node { ...CampaignAnalysis }
             }
         }
         spectrogramsCount

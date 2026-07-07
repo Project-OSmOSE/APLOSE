@@ -1,6 +1,6 @@
 import { Fragment, type MouseEvent, type MutableRefObject, useCallback, useEffect, useMemo, useRef } from 'react';
 import type { ExtendedDivEvent, ExtendedDivPosition } from './types';
-import { MOUSE_MOVE_EVENT, MOUSE_UP_EVENT, useEvent } from '@/features/UX';
+import { MOUSE_MOVE_EVENT, MOUSE_UP_EVENT, useRegisterToEvent } from '@/components/ui/Event';
 import styles from './extended.module.scss'
 
 export const useExtendedDiv = ({
@@ -140,7 +140,7 @@ export const useExtendedDiv = ({
             divRef.current!.style.transform = `translate(${ x }px, ${ y }px)`;
         });
     }, [ getCurrentRect, initialPosition, divRef ]);
-    useEvent(MOUSE_MOVE_EVENT, handleMouseMove)
+    useRegisterToEvent(MOUSE_MOVE_EVENT, handleMouseMove)
 
     const handleMouseUp = useCallback((e: MouseEvent) => {
         if (!isEvent.current) return
@@ -153,7 +153,7 @@ export const useExtendedDiv = ({
 
         if (onUpdated) onUpdated(getCurrentRect(e))
     }, [ onUpdated, getCurrentRect ]);
-    useEvent(MOUSE_UP_EVENT, handleMouseUp)
+    useRegisterToEvent(MOUSE_UP_EVENT, handleMouseUp)
 
     return useMemo(() => ({
         initPosition,

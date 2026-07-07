@@ -1,0 +1,95 @@
+.Page {
+  display: grid;
+  min-height: 100vh;
+
+  &.Public {
+    grid-template-rows: auto 1fr auto;
+
+    .Content {
+      display: grid;
+      padding: 2rem 4rem;
+      justify-content: center;
+      line-height: 1.5;
+
+      @media (max-width: 800px) {
+        padding: 2rem 1rem;
+      }
+
+      * {
+        max-width: 48rem;
+      }
+
+      h1, h2, h3 {
+        margin-top: 4rem;
+        margin-bottom: 0;
+        color: var(--color-primary-text);
+
+        @media (max-width: 800px) {
+          margin-top: 2rem;
+        }
+      }
+
+      p {
+        text-align: justify;
+      }
+    }
+  }
+
+  &.Authenticated {
+    display: grid;
+    padding-left: 16rem; // Navbar
+    overflow-x: hidden;
+
+    p {
+      margin: 0;
+    }
+
+    .Nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: calc(100vh - 2rem);
+      width: 14rem;
+      padding: 1rem;
+      z-index: 1;
+    }
+
+    .NavMobile {
+      display: none;
+    }
+
+    .Footer {
+      position: fixed;
+      bottom: 0;
+      left: 16rem;
+      padding-left: 1rem;
+      right: 0;
+    }
+
+    @media (max-width: 800px) {
+      grid-template-columns: unset;
+      grid-template-rows: auto 1fr auto;
+      // Navbar
+      padding: 3.6rem 0 0 0;
+      min-height: calc(100vh - 3.6rem);
+
+      .Nav {
+        display: none;
+      }
+
+      .NavMobile {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        display: grid;
+        z-index: 3;
+      }
+
+      .Footer {
+        grid-column: unset;
+        position: unset;
+      }
+    }
+  }
+}

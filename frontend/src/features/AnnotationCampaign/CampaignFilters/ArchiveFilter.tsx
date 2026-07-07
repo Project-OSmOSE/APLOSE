@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
-import { IonChip, IonIcon } from '@ionic/react';
-import { closeCircle, swapHorizontal } from 'ionicons/icons';
 import { useNavigate, useSearch } from '@tanstack/react-router';
+import { Chip, ChipRemove } from '@/components/base/Chip';
+import { SortHorizontal } from '@solar-icons/react';
 
 export const AnnotationCampaignArchiveFilter: React.FC = () => {
     const filter_isArchived = useSearch({
@@ -23,11 +23,10 @@ export const AnnotationCampaignArchiveFilter: React.FC = () => {
         })
     }, [ navigate ])
 
-    return <IonChip outline={ !exists }
-                    onClick={ toggle }
-                    color={ exists ? 'primary' : 'medium' }>
+    return <Chip onClick={ toggle }
+                 color={ exists ? 'primary' : 'medium' }>
         Archived{ exists && `: ${ filter_isArchived ? 'True' : 'False' }` }
-        { filter_isArchived === false && <IonIcon icon={ swapHorizontal }/> }
-        { filter_isArchived === true && <IonIcon icon={ closeCircle }/> }
-    </IonChip>
+        { filter_isArchived === false && <SortHorizontal weight="Linear" size={ 20 }/> }
+        { filter_isArchived === true && <ChipRemove/> }
+    </Chip>
 }

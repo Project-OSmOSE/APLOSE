@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { useLoaderData, useNavigate, useSearch } from '@tanstack/react-router'
-import { IonChip, IonIcon } from '@ionic/react';
-import { closeCircle } from 'ionicons/icons';
+import { Chip, ChipRemove } from '@/components/base/Chip';
 
 export const AnnotationCampaignAnnotatorFilter: React.FC = () => {
     const filter_annotatorID = useSearch({
@@ -23,10 +22,10 @@ export const AnnotationCampaignAnnotatorFilter: React.FC = () => {
         })
     }, [ user, navigate ])
 
-    return <IonChip outline={ !filter_annotatorID }
-                    onClick={ toggle }
-                    color={ filter_annotatorID ? 'primary' : 'medium' }>
+
+    return <Chip onClick={ toggle }
+                 color={ filter_annotatorID ? 'primary' : 'medium' }>
         My work
-        { filter_annotatorID && <IonIcon icon={ closeCircle } color="primary"/> }
-    </IonChip>
+        { filter_annotatorID && <ChipRemove/> }
+    </Chip>
 }

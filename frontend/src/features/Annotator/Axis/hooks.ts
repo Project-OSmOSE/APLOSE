@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { LinearScaleService, MultiScaleService } from '@/components/ui';
 import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
-import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
+import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 import { useLoaderData } from '@tanstack/react-router';
 
 export const useTimeScale = () => {
@@ -19,7 +19,7 @@ export const useTimeScale = () => {
 }
 
 export const useFrequencyScale = () => {
-    const analysis = useAnnotatorAnalysis()
+    const { selectedAnalysis } = useAnnotatorAnalysis()
     const height = useWindowHeight()
 
     return useMemo(() => {
@@ -28,17 +28,17 @@ export const useFrequencyScale = () => {
             disableValueFloats: true,
             revert: true,
         }
-        if (analysis?.frequencyScaleParts && analysis?.frequencyScaleParts.length) {
+        if (selectedAnalysis?.frequencyScaleParts && selectedAnalysis?.frequencyScaleParts.length) {
             return new MultiScaleService(
                 height,
-                analysis.frequencyScaleParts?.filter(s => s !== null).map(s => s!) ?? [],
+                selectedAnalysis.frequencyScaleParts?.filter(s => s !== null).map(s => s!) ?? [],
                 options,
             )
         }
         return new LinearScaleService(height, {
-            maxValue: (analysis?.fft.samplingFrequency ?? 0) / 2,
+            maxValue: (selectedAnalysis?.fft.samplingFrequency ?? 0) / 2,
             minValue: 0,
             ratio: 1,
         }, options)
-    }, [ analysis, height ]);
+    }, [ selectedAnalysis, height ]);
 }

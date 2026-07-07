@@ -1,14 +1,21 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styles from './styles.module.scss';
-import { IonButton, IonIcon, IonSpinner } from '@ionic/react';
-import { peopleOutline, playOutline, refreshOutline } from 'ionicons/icons/index.js';
-import { ActionBar, Button, Link, Progress, TooltipOverlay, useModal } from '@/components/ui';
-import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
-import { FileRangeProgressModal } from '@/features/AnnotationFileRange';
+import { ActionBar } from '@/components/ui';
+import { PhaseComponent } from '@/features/AnnotationPhase';
+import { FileRangeDialog } from '@/features/AnnotationFileRange';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
-import { analytics } from 'ionicons/icons';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
+import { Button } from '@/components/base/Button';
+import { CourseUp, Play, Restart, UsersGroupRounded } from '@solar-icons/react';
+import { Popover } from '@/components/base/Popover';
+import { Progress } from '@/components/base/Progress';
+import { Dialog } from '@/components/base/Dialog';
+import { useQuery } from '@tanstack/react-query';
+import { Spinner } from '@/components/base';
+import { AnnotationSpectrogramAPI } from '../AnnotationSpectrogram';
+
+const PAGE_SIZE = 20
 
 export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPending }) => {
     const searchParams = Route.useSearch();
@@ -16,9 +23,18 @@ export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPendin
     const navigate = useNavigate();
     const {
         phase,
-        spectrograms,
-        resumeSpectrogramId,
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
+    const { user } = useLoaderData({ from: '/_authenticated' })
+    const search = Route.useSearch()
+    const { campaignID, phaseType } = Route.useParams()
+    const { data } = useQuery(AnnotationSpectrogramAPI.allQuery({
+        campaignID,
+        phaseType,
+        annotatorID: user!.id,
+        limit: PAGE_SIZE,
+        offset: PAGE_SIZE * ((search.page ?? 1) - 1),
+        ...search,
+    }))
     const openAnnotator = useOpenAnnotator()
 
     const updateSearch = useCallback((input: string) => {
@@ -47,16 +63,14 @@ export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPendin
 
     const resumeBtnTooltip: string = useMemo(() => {
         if (hasFilters) return 'Cannot resume if filters are activated'
-        if (!spectrograms || spectrograms.length === 0) return 'No files to annotate'
+        if (!data || data.spectrograms.length === 0) return 'No files to annotate'
         return 'Resume annotation'
-    }, [ hasFilters, spectrograms ])
+    }, [ hasFilters, data ])
 
     const resume = useCallback(() => {
-        if (!resumeSpectrogramId) return;
-        openAnnotator(resumeSpectrogramId, { resume: true })
-    }, [ resumeSpectrogramId, openAnnotator ])
-
-    const progressModal = useModal(FileRangeProgressModal)
+        if (!data || !data.resumeId) return;
+        openAnnotator(data.resumeId, { resume: true })
+    }, [ data, openAnnotator ])
 
     return <Fragment>
         <ActionBar search={ searchParams.search ?? undefined }
@@ -64,58 +78,66 @@ export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPendin
                    onSearchChange={ updateSearch }
                    actionButton={ <div className={ styles.filterButtons }>
 
-                       { isPending && <IonSpinner/> }
+                       { isPending && <Spinner/> }
 
                        { (hasFilters || searchParams.onlyAssigned) &&
-                           <IonButton fill="clear" color="medium" size="small" onClick={ clear }>
-                               <IonIcon icon={ refreshOutline } slot="start"/>
+                           <Button color="medium" onClick={ clear }>
+                               <Restart weight="Linear" size={ 20 }/>
                                Reset
-                           </IonButton> }
+                           </Button> }
 
                        <div className={ styles.progress }>
-                           { phase && phase.userTasksCount && phase.userTasksCount > 0 ?
-                               <Progress label="My progress"
-                                         color="primary"
-                                         value={ phase.userCompletedTasksCount ?? 0 }
-                                         total={ phase.userTasksCount }/> : <Fragment/> }
-                           { phase && phase.tasksCount && phase.tasksCount > 0 ?
-                               <Progress label="Global progress"
-                                         value={ phase.completedTasksCount ?? 0 }
-                                         total={ phase.tasksCount }/> : <Fragment/> }
+                           <Progress color="primary"
+                                     value={ phase.userCompletedTasksCount ?? 0 }
+                                     max={ phase.userTasksCount ?? 0 }>
+                               My progress
+                           </Progress>
+                           <Progress color="medium"
+                                     value={ phase.completedTasksCount ?? 0 }
+                                     max={ phase.tasksCount ?? 0 }>
+                               Global progress
+                           </Progress>
 
-                           <TooltipOverlay tooltipContent={ <p>Annotators progression</p> } anchor="right">
-                               <IonButton fill="clear" color="medium" onClick={ progressModal.toggle }
-                                          data-testid="progress">
-                                   <IonIcon icon={ analytics } slot="icon-only"/>
-                               </IonButton>
-                           </TooltipOverlay>
+                           <Dialog.Root>
+                               <Dialog.Trigger render={ <div/> } nativeButton={ false }>
+                                   <Popover.Root>
+                                       <Popover.Trigger data-testid="progress">
+                                           <CourseUp weight="Linear" size={ 24 }/>
+                                       </Popover.Trigger>
+                                       <Popover.Content>Annotators progression</Popover.Content>
+                                   </Popover.Root>
+                               </Dialog.Trigger>
+                               <Dialog.Portal>
+                                   <FileRangeDialog.Progress/>
+                               </Dialog.Portal>
+                           </Dialog.Root>
                        </div>
 
                        { phase?.isEditable && phase?.isUserAllowedToManage && <Fragment>
                            {/* Manage annotators */ }
-                           <TooltipOverlay tooltipContent={ <p>Manage annotators</p> } anchor="right">
-                               <Link fill="outline" color="medium" data-testid="manage"
-                                     to="/annotation-campaign/$campaignID/phase/$phaseType/edit-annotators"
-                                     params={ routeParams }>
-                                   <IonIcon icon={ peopleOutline } slot="icon-only"/>
-                               </Link>
-                           </TooltipOverlay>
+                           <Popover.Root>
+                               <Popover.TriggerLink data-testid="manage"
+                                                    to="/annotation-campaign/$campaignID/phase/$phaseType/edit-annotators"
+                                                    params={ routeParams }>
+                                   <UsersGroupRounded weight="Linear" size={ 24 }/>
+                               </Popover.TriggerLink>
+                               <Popover.Content>Manage annotators</Popover.Content>
+                           </Popover.Root>
 
                            {/* Import annotations */ }
-                           <ImportAnnotationsButton/>
+                           <PhaseComponent.ImportAnnotationsButton/>
                        </Fragment> }
 
                        {/* Resume */ }
-                       <TooltipOverlay tooltipContent={ <p>{ resumeBtnTooltip }</p> } anchor="right">
-                           <Button color="primary" fill="outline" data-testid="resume"
-                                   disabled={ hasFilters || !(spectrograms && spectrograms.length > 0) || !resumeSpectrogramId }
-                                   style={ { pointerEvents: 'unset' } }
-                                   onClick={ resume }>
-                               <IonIcon icon={ playOutline } slot="icon-only"/>
-                           </Button>
-                       </TooltipOverlay>
+                       <Popover.Root>
+                           <Popover.Trigger color="primary" data-testid="resume"
+                                            disabled={ hasFilters || !data || data.spectrograms.length === 0 || !data.resumeId }
+                                            style={ { pointerEvents: 'unset' } }
+                                            onClick={ resume }>
+                               <Play weight="Bold" size={ 24 }/>
+                           </Popover.Trigger>
+                           <Popover.Content>{ resumeBtnTooltip }</Popover.Content>
+                       </Popover.Root>
                    </div> }/>
-
-        { progressModal.element }
     </Fragment>
 }

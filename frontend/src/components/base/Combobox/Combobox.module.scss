@@ -1,0 +1,134 @@
+@use '@/components/base/Input/Input.module';
+
+$icon-size: 1.5rem;
+
+.InputGroup {
+  position: relative;
+  display: grid;
+
+  .Input {
+    padding-right: #{Input.$horizontal-space};
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+  }
+
+  &:has(.Trigger):has(.Clear) {
+    .Input {
+      padding-right: calc(3 * #{Input.$horizontal-space} + 2 * #{$icon-size});
+    }
+
+    .Trigger {
+      right: #{Input.$horizontal-space};
+    }
+
+    .Clear {
+      right: calc(2 * #{Input.$horizontal-space} + #{$icon-size});
+    }
+  }
+
+  &:has(.Trigger):not(:has(.Clear)),
+  &:has(.Clear):not(:has(.Trigger)) {
+    .Input {
+      padding-right: calc(2 * #{Input.$horizontal-space} + #{$icon-size});
+    }
+
+    .Trigger, .Clear {
+      right: #{Input.$horizontal-space};
+    }
+  }
+}
+
+.Trigger, .Clear {
+  position: absolute;
+  width: #{$icon-size};
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: transparent;
+  border: none;
+  color: var(--color-dark);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+
+  &.Clear {
+    color: var(--color-medium);
+  }
+}
+
+.Trigger[data-popup-open] svg {
+  transform: rotate(-180deg);
+}
+
+.Positioner {
+  outline: 0;
+}
+
+.Popup {
+  box-sizing: border-box;
+  background-color: var(--color-light-shade);
+  min-width: var(--anchor-width);
+  max-width: var(--available-width);
+  max-height: min(var(--available-height), 12rem);
+  overflow-y: auto;
+  transition: opacity 0.1s,
+  transform 0.1s;
+  transform-origin: var(--transform-origin);
+
+  color: var(--color-dark);
+  box-shadow: var(--box-shadow-small);
+  padding: 0.25rem 0.5rem;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+.Item {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  position: relative;
+  padding: 0.25rem 0 0.25rem 2rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+
+  &[data-highlighted] {
+    background-color: rgba(var(--color-primary-rgb), 0.05);
+    color: var(--color-primary-text);
+  }
+}
+
+.ItemIndicator {
+  position: absolute;
+  left: 0.25rem;
+  width: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-primary);
+}
+
+
+.Chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+
+  .Input {
+    width: 100%;
+  }
+}
+
+.Loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--color-medium);
+}

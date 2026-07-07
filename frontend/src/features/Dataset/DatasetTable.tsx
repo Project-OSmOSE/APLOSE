@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import { IonBadge, IonNote } from '@ionic/react';
 
 import { type Order, Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
 import { dateToString } from '@/service/function';
@@ -10,6 +9,7 @@ import { CampaignName } from '@/features/AnnotationCampaign/CampaignInfo';
 import styles from './styles.module.scss'
 import { useLoaderData } from '@tanstack/react-router';
 import type { DatasetFragment } from '@/features/Dataset/api';
+import { Badge, Note } from '@/components/base';
 
 
 type Sort = {
@@ -64,10 +64,10 @@ export const DatasetTable: React.FC = () => {
         })
     }, [ allDatasets, sorting ]);
 
-    if (!sortedDatasets || sortedDatasets.length === 0) return <IonNote color="medium"
-                                                                        style={ { textAlign: 'center' } }>
+    if (!sortedDatasets || sortedDatasets.length === 0) return <Note color="medium"
+                                                                     style={ { textAlign: 'center' } }>
         No datasets
-    </IonNote>
+    </Note>
     return <Table>
         <Thead>
             <Tr>
@@ -76,7 +76,7 @@ export const DatasetTable: React.FC = () => {
                     setOrder={ order => setSorting({ column: 'name', order: order }) }>
                     <div>
                         Name<br/>
-                        <IonNote>Path</IonNote>
+                        <Note>Path</Note>
                     </div>
                 </Th>
 
@@ -102,8 +102,7 @@ export const DatasetTable: React.FC = () => {
             { sortedDatasets.map(d => <tr key={ d.id }>
                 <Th scope="row">
                     <DatasetName { ...d } link/>
-                    <br/>
-                    <p className={ styles.light }>{ d.path }</p>
+                    <Note color="medium">{ d.path }</Note>
                 </Th>
                 <Td>{ dateToString(d.createdAt) }</Td>
                 <Td>
@@ -116,7 +115,7 @@ export const DatasetTable: React.FC = () => {
                     <div className={ styles.campaignList }> { d.annotationCampaigns.edges.map((e) =>
                         e?.node && <CampaignName id={ e.node.id } key={ e.node.id } link>
                             { e.node.name }&nbsp;
-                            { e.node.isArchived && <IonBadge color="medium">Archived</IonBadge> }
+                            { e.node.isArchived && <Badge color="medium">Archived</Badge> }
                         </CampaignName>) }</div>
                 </Td>
             </tr>) }

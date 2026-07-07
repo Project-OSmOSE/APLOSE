@@ -1,9 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
 import { type Annotation, useUpdateAnnotation } from '@/features/Annotator/Annotation';
 import { Td, Th, Tr } from '@/components/ui';
-import { Input } from '@/components/form';
+import { Input, Note } from '@/components/base';
 import styles from './styles.module.scss';
-import { IonNote } from '@ionic/react';
 import { useLoaderData } from '@tanstack/react-router';
 
 export const Duration: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
@@ -27,12 +26,14 @@ export const Duration: React.FC<{ annotation: Annotation }> = ({ annotation }) =
         <Th scope="col">Duration</Th>
         <Td colSpan={ 2 }>
             <div className={ [ styles.inputCell, styles.duration ].join(' ') }>
-                <Input className={ styles.input } value={ duration } type="number"
+                <Input className={ styles.input }
+                       value={ duration }
+                       type="number"
                        step={ 0.001 }
                        min={ 0.01 } max={ spectrogram.duration ?? 0 }
                        disabled={ phase?.phase === 'Verification' }
                        onChange={ e => onDurationUpdate(+e.currentTarget.value) }/>
-                <IonNote>s</IonNote>
+                <Note>s</Note>
             </div>
         </Td>
     </Tr>

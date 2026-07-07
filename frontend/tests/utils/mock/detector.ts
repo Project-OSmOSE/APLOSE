@@ -1,5 +1,5 @@
 import type { GqlQuery } from './_types';
-import type { ListDetectorsQuery } from '../../../src/api/detector/detector.generated';
+import type { ListDetectorsQuery } from '../../../src/features/Detector/api/detector.generated';
 import { detector, detectorConfiguration } from './types';
 
 

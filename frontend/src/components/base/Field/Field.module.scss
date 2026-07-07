@@ -1,0 +1,24 @@
+.Root {
+  display: grid;
+  gap: 0.1rem 1rem;
+  justify-items: stretch;
+  align-items: center;
+  transition: 300ms;
+  width: 100%;
+
+  &.horizontal {
+    grid-auto-flow: column;
+    justify-content: space-between;
+  }
+}
+
+.Label {
+  display: flex;
+  font-size: 0.9rem;
+  font-weight: 300;
+  padding-left: 0.5rem;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+

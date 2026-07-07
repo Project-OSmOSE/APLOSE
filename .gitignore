@@ -102,3 +102,6 @@ venv
 *.gen.ts
 *.generated.ts
 *.gql-generated.ts
+
+*storybook.log
+storybook-static

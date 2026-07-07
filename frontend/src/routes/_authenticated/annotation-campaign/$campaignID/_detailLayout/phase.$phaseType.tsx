@@ -1,36 +1,60 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { createFileRoute, notFound, useLoaderData, useNavigate } from '@tanstack/react-router';
 
-import { Pagination, Table, Tbody, Th, Thead, Tr, useModal, WarningText } from '@/components/ui';
+import { Pagination, Table, Tbody, Th, Thead, Tr, WarningText } from '@/components/ui';
 
 import { AnnotationPhaseType } from '@/api';
 
 import { AnnotationsFilterModal, DateFilterModal, StatusFilterModal } from '@/features/AnnotationTask';
 import { FileRangeActionBar } from '@/features/AnnotationFileRange';
-import { ImportAnnotationsButton } from '@/features/AnnotationPhase';
-import { type AllSpectrogramsFilters, SpectrogramRow } from '@/features/AnnotationSpectrogram';
+import { PhaseAPI, PhaseComponent } from '@/features/AnnotationPhase';
+import { type AllSpectrogramsFilters, AnnotationSpectrogramAPI, SpectrogramRow } from '@/features/AnnotationSpectrogram';
 
 import styles from './phase.$phaseType.module.scss';
-import { AnnotationPhase, AnnotationSpectrogram } from '@/features';
-import { IonNote, IonSpinner } from '@ionic/react';
 import { useQuery } from '@tanstack/react-query';
+import { Note } from '@/components/base/Note';
+import { Center } from '@/components/layout/Display';
+import { Spinner } from '@/components/base/Spinner';
+import { Dialog } from '@/components/base/Dialog';
+import { Filter } from '@solar-icons/react';
 import { ensureValidQueryData } from '@/api/utils';
 
 const PAGE_SIZE = 20
 
-const AnnotationCampaignPhaseDetail: React.FC = () => {
-    const { campaign, phases, user } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const { campaignID, phaseType } = Route.useParams()
+const SpectrogramRows: React.FC = React.memo(() => {
+    const { user } = useLoaderData({ from: '/_authenticated' })
     const search = Route.useSearch()
-    const { data, isFetching } = useQuery(AnnotationSpectrogram.API.allQuery({
+    const { campaignID, phaseType } = Route.useParams()
+    const { data } = useQuery(AnnotationSpectrogramAPI.allQuery({
         campaignID,
         phaseType,
-        annotatorID: user.id,
+        annotatorID: user!.id,
         limit: PAGE_SIZE,
         offset: PAGE_SIZE * ((search.page ?? 1) - 1),
         ...search,
     }))
-    const { data: phase } = useQuery(AnnotationPhase.API.getQuery({
+    return data?.spectrograms.map(s => <SpectrogramRow key={ s!.id }
+                                                       spectrogram={ s! }
+                                                       task={ s!.task }
+                                                       userAnnotations={ s!.task?.userAnnotations }
+                                                       validAnnotationsToCheck={ s!.task?.validAnnotationsToCheck }
+                                                       annotationsToCheck={ s!.task?.annotationsToCheck }/>)
+})
+
+const AnnotationCampaignPhaseDetail: React.FC = () => {
+    const { user } = useLoaderData({ from: '/_authenticated' })
+    const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const search = Route.useSearch()
+    const { campaignID, phaseType } = Route.useParams()
+    const { data, isLoading, isFetching } = useQuery(AnnotationSpectrogramAPI.allQuery({
+        campaignID,
+        phaseType,
+        annotatorID: user!.id,
+        limit: PAGE_SIZE,
+        offset: PAGE_SIZE * ((search.page ?? 1) - 1),
+        ...search,
+    }))
+    const { data: phase } = useQuery(PhaseAPI.getQuery({
         campaignID,
         phase: phaseType,
     }))
@@ -51,18 +75,8 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
         })
     }, [ navigate, campaignID, phaseType ])
 
-    const annotationFilterModal = useModal(AnnotationsFilterModal, {
-        onUpdate: updatePage,
-    })
-
     const hasDateFilter = useMemo(() => !!search.to || !!search.from, [ search ]);
-    const dateFilterModal = useModal(DateFilterModal, {
-        onUpdate: updatePage,
-    })
-
-    const statusFilterModal = useModal(StatusFilterModal, {
-        onUpdate: updatePage,
-    })
+    const hasStatusFilter = useMemo(() => search.status !== undefined || search.onlyAssigned !== undefined, [ search ]);
 
     return <div className={ styles.phase }>
 
@@ -72,43 +86,67 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
 
             { phase?.phase === 'Verification' && !phase?.hasAnnotations && phases.find(p => p.phase === AnnotationPhaseType.Verification) &&
                 <WarningText message="Your campaign doesn't have any annotations to check"
-                             children={ <ImportAnnotationsButton/> }/> }
+                             children={ <PhaseComponent.ImportAnnotationsButton/> }/> }
 
-            <Table spacing="small">
+            { !isLoading && <Table spacing="small">
                 <Thead>
                     <Tr>
                         <Th scope="col">Filename</Th>
-                        <Th scope="col" center filterable
-                            isFiltered={ hasDateFilter }
-                            onFilterClick={ dateFilterModal.open }>
-                            Date
+                        <Th scope="col" center>
+                            <div className={ styles.filterHead }>
+                                Date
+
+                                <Dialog.Root>
+                                    <Dialog.Trigger>
+                                        { hasDateFilter ? <Filter size={ 16 } weight="Bold"/> : <Filter size={ 16 }/> }
+                                    </Dialog.Trigger>
+                                    <Dialog.Portal>
+                                        <DateFilterModal/>
+                                    </Dialog.Portal>
+                                </Dialog.Root>
+                            </div>
                         </Th>
                         <Th scope="col" center>Duration</Th>
-                        <Th scope="col" center filterable
-                            isFiltered={ search.withAnnotations ?? false }
-                            onFilterClick={ annotationFilterModal.open }>
-                            Annotations{ phase?.phase === 'Verification' && <Fragment><br/>to check</Fragment> }
+                        <Th scope="col" center>
+                            <div className={ styles.filterHead }>
+                                Annotations{ phase?.phase === 'Verification' && <Fragment><br/>to check</Fragment> }
+
+                                <Dialog.Root>
+                                    <Dialog.Trigger>
+                                        { search.withAnnotations ? <Filter size={ 16 } weight="Bold"/> :
+                                            <Filter size={ 16 }/> }
+                                    </Dialog.Trigger>
+                                    <Dialog.Portal>
+                                        <AnnotationsFilterModal/>
+                                    </Dialog.Portal>
+                                </Dialog.Root>
+                            </div>
                         </Th>
                         { phase?.phase === 'Verification' && <Th scope="col" center>Validated<br/>annotations</Th> }
-                        <Th scope="col" center filterable
-                            isFiltered={ search.status !== undefined || search.onlyAssigned !== undefined }
-                            onFilterClick={ statusFilterModal.open }>
-                            Status
+                        <Th scope="col" center>
+                            <div className={ styles.filterHead }>
+                                Status
+
+                                <Dialog.Root>
+                                    <Dialog.Trigger>
+                                        { hasStatusFilter ? <Filter size={ 16 } weight="Bold"/> :
+                                            <Filter size={ 16 }/> }
+                                    </Dialog.Trigger>
+                                    <Dialog.Portal>
+                                        <StatusFilterModal/>
+                                    </Dialog.Portal>
+                                </Dialog.Root>
+                            </div>
                         </Th>
                         <Th scope="col">
                             Access
                         </Th>
                     </Tr>
                 </Thead>
-                <Tbody>
-                    { data && data.spectrograms.map(s => <SpectrogramRow key={ s!.id }
-                                                                         spectrogram={ s! }
-                                                                         task={ s!.task }
-                                                                         userAnnotations={ s!.task?.userAnnotations }
-                                                                         validAnnotationsToCheck={ s!.task?.validAnnotationsToCheck }
-                                                                         annotationsToCheck={ s!.task?.annotationsToCheck }/>) }
-                </Tbody>
-            </Table>
+                <Tbody><SpectrogramRows/></Tbody>
+            </Table> }
+
+            { isFetching && <Center><Spinner/></Center> }
 
             { data && data.spectrograms.length > 0 &&
                 <Pagination currentPage={ search.page ?? 1 }
@@ -121,10 +159,6 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
                 (phase?.endedAt && <p>The phase is ended. No more annotation can be done.</p>) }
 
         </div>
-
-        { annotationFilterModal.element }
-        { dateFilterModal.element }
-        { statusFilterModal.element }
     </div>
 }
 
@@ -134,34 +168,16 @@ export const Route = createFileRoute('/_authenticated/annotation-campaign/$campa
         parse: rawParams => rawParams as { campaignID: string, phaseType: AnnotationPhaseType },
     },
     loaderDeps: ({ search }) => search as AllSpectrogramsFilters,
-    loader: async ({ params: { campaignID, phaseType }, deps, parentMatchPromise }) => {
-        const { user } = (await parentMatchPromise).loaderData!
-
-        const [
-            phase,
-            { spectrograms, resumeId },
-        ] = await Promise.all([
-            ensureValidQueryData(AnnotationPhase.API.getQuery({
-                campaignID,
-                phase: phaseType,
-            })),
-            ensureValidQueryData(AnnotationSpectrogram.API.allQuery({
-                campaignID,
-                phaseType,
-                annotatorID: user!.id,
-                limit: PAGE_SIZE,
-                offset: PAGE_SIZE * ((deps.page ?? 1) - 1),
-                ...deps,
-            })),
-        ])
+    loader: async ({ params: { campaignID, phaseType } }) => {
+        const phase = await ensureValidQueryData(PhaseAPI.getQuery({
+            campaignID,
+            phase: phaseType,
+        }))
         if (!phase) throw notFound()
-        return {
-            phase,
-            spectrograms,
-            resumeSpectrogramId: resumeId,
-        }
+        return { phase }
     },
     component: AnnotationCampaignPhaseDetail,
-    pendingComponent: IonSpinner,
-    notFoundComponent: () => <IonNote color="medium">Phase not found</IonNote>,
+    pendingComponent: () => <Center><Spinner/></Center>,
+    errorComponent: ({ error }) => <Center><WarningText error={ error }/></Center>,
+    notFoundComponent: () => <Note color="medium">Phase not found</Note>,
 })

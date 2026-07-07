@@ -1,3 +1,5 @@
+@use "@/components/base/Input/Input.module";
+
 .features {
   position: absolute !important;
   overflow: hidden;
@@ -7,7 +9,7 @@
   left: min(var(--left, 0), calc(100% - 26rem));
   width: 28rem;
   max-height: 32rem;
-  border: 1px solid rgba(var(--ion-color-medium-rgb), 0.15) !important;
+  border: 1px solid rgba(var(--color-medium-rgb), 0.15) !important;
   border-radius: 0.5rem;
   align-self: start;
   background: white;
@@ -36,7 +38,7 @@
       justify-content: start;
     }
 
-    .inputCell  {
+    .inputCell {
       grid-template-columns:6rem 2ch;
 
       &.cellButton {
@@ -50,10 +52,15 @@
 
     .input {
       max-width: 6rem;
+
+      input {
+        width: calc(100% - 2 * #{Input.$horizontal-space});
+      }
     }
 
     .inputCell.duration {
       grid-template-columns:10rem 2ch;
+
       .input {
         max-width: 10rem;
       }
@@ -75,16 +82,12 @@
     gap: 0.5rem;
   }
 
-  ion-note {
-    text-align: start;
-  }
-
   .switch {
     display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: center;
     justify-items: stretch;
-    background: var(--ion-color-light-shade);
+    background: var(--color-light-shade);
     border-radius: 0.5rem;
     overflow: hidden;
 
@@ -94,29 +97,24 @@
     }
 
     .active {
-      background: var(--ion-color-primary);
-      color: var(--ion-color-primary-contrast);
+      background: var(--color-primary);
+      color: var(--color-primary-contrast);
     }
   }
 
-  ion-button {
-    transition: 150ms ease-in-out;
-  }
-
-  .selectedButton {
-    border-radius: 0.5rem;
-    box-shadow: var(--aplose-box-shadow);
-  }
-
   .blocHeader {
-    background: var(--ion-color-light-shade);
+    background: var(--color-light-shade);
     text-align: center;
     padding: 0.5rem;
     border: none !important;
-    border-bottom: 1px solid rgba(var(--ion-color-medium-rgb), 0.15) !important;
+    border-bottom: 1px solid rgba(var(--color-medium-rgb), 0.15) !important;
     position: relative;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
 
-    &h6, h6 {
+    &h5, h5 {
       margin: 0;
     }
 

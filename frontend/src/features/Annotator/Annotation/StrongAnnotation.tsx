@@ -12,7 +12,7 @@ import styles from './styles.module.scss'
 import { formatTime } from '@/service/function';
 import { useUpdateAnnotation } from '@/features/Annotator/Annotation/hooks';
 import { AnnotationHeadContent } from '@/features/Annotator/Annotation/Head';
-import { MOUSE_DOWN_EVENT } from '@/features/UX';
+import { MOUSE_DOWN_EVENT } from '@/components/ui/Event';
 import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
 import { useLoaderData } from '@tanstack/react-router';
 import { useIsDrawingEnabled } from '@/features/Annotator/UX/hooks';
@@ -22,7 +22,10 @@ const POINT_RADIUS = 16; // px
 export const StrongAnnotation: React.FC<{
     annotation: Annotation
 }> = ({ annotation }) => {
-    const { spectrogram, isEditionAuthorized } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const {
+        spectrogram,
+        isEditionAuthorized,
+    } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const { labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const dispatch = useAppDispatch();
     const windowWidth = useWindowWidth()
@@ -115,63 +118,60 @@ export const StrongAnnotation: React.FC<{
         initPosition()
     }, [ timeScale, frequencyScale ]);
 
-    return useMemo(() => {
-        if (!spectrogram) return <Fragment/>
-        if (annotation.type === AnnotationType.Weak) return <Fragment/>
-        if (hiddenLabels.includes(annotation.label)) return <Fragment/>
-        if (!annotation.update && annotation.validation?.isValid == false) return <Fragment/>
+    const index = useMemo(() => {
+        return labels.map(l => l.name).indexOf(annotation.update?.label ?? annotation.label)
+    }, [ labels, annotation ])
 
-        // State
-        const isActive = isEditionAuthorized && annotation.id === focusedAnnotation?.id
+    if (!spectrogram) return <Fragment/>
+    if (annotation.type === AnnotationType.Weak) return <Fragment/>
+    if (hiddenLabels.includes(annotation.label)) return <Fragment/>
+    if (!annotation.update && annotation.validation?.isValid == false) return <Fragment/>
 
-        // Style
-        const colorClass = `ion-color-${ labels.map(l => l.name).indexOf(annotation.update?.label ?? annotation.label) % 10 }`
-        const classes = [ styles.strongAnnotation, colorClass, extendedClassName ]
-        if (!isActive) classes.push(styles.disabled)
-        if (!isDrawingEnabled) classes.push(styles.editDisabled)
-        if (isActive && isSelectingAnnotationFrequency) classes.push(styles.pointerSelect)
-        if (annotation.type === AnnotationType.Box) classes.push(styles.box)
-        if (annotation.type === AnnotationType.Point) classes.push(styles.point)
-        const headerClasses = [ styles.header ]
-        const start = annotation.update?.startTime ?? annotation.startTime!
-        const end = annotation.type === 'Box' ? annotation.update?.endTime ?? annotation.endTime! : start
-        if (start < (spectrogram.duration * 0.1)) headerClasses.push(styles.stickLeft)
-        else if (end > (spectrogram.duration * 0.9)) headerClasses.push(styles.stickRight)
-        if (annotationPosition.y < 24) headerClasses.push(styles.bellow)
-        else headerClasses.push(styles.over)
+    // State
+    const isActive = isEditionAuthorized && annotation.id === focusedAnnotation?.id
 
-        return <div ref={ divRef }
-                    className={ classes.join(' ') }
-                    onMouseEnter={ () => setIsMouseHover(true) }
-                    onMouseMove={ () => setIsMouseHover(true) }
-                    onMouseLeave={ () => setIsMouseHover(false) }>
+    // Style
+    const classes = [ styles.strongAnnotation, extendedClassName ]
+    classes.push(styles['index-' + index % 10])
+    if (!isActive) classes.push(styles.disabled)
+    if (!isDrawingEnabled) classes.push(styles.editDisabled)
+    if (isActive && isSelectingAnnotationFrequency) classes.push(styles.pointerSelect)
+    if (annotation.type === AnnotationType.Box) classes.push(styles.box)
+    if (annotation.type === AnnotationType.Point) classes.push(styles.point)
+    const headerClasses = [ styles.header ]
+    const start = annotation.update?.startTime ?? annotation.startTime!
+    const end = annotation.type === 'Box' ? annotation.update?.endTime ?? annotation.endTime! : start
+    if (start < (spectrogram.duration * 0.1)) headerClasses.push(styles.stickLeft)
+    else if (end > (spectrogram.duration * 0.9)) headerClasses.push(styles.stickRight)
+    if (annotationPosition.y < 24) headerClasses.push(styles.bellow)
+    else headerClasses.push(styles.over)
 
-            <div className={ styles.void }
-                 onMouseDown={ MOUSE_DOWN_EVENT.emit.bind(MOUSE_DOWN_EVENT) }/>
+    return <div ref={ divRef }
+                className={ classes.join(' ') }
+                onMouseEnter={ () => setIsMouseHover(true) }
+                onMouseMove={ () => setIsMouseHover(true) }
+                onMouseLeave={ () => setIsMouseHover(false) }>
 
-            {/* Header */ }
-            { (isMouseHover || isActive) && <div className={ headerClasses.join(' ') }
-                                                 onClick={ focus }
-                                                 onMouseDown={ e => isActive && isDrawingEnabled && handleMouseDown(e, 'drag') }
-                                                 onMouseEnter={ () => setIsMouseHover(true) }
-                                                 onMouseMove={ () => setIsMouseHover(true) }
-                                                 onMouseLeave={ () => setIsMouseHover(false) }>
-                <AnnotationHeadContent annotation={ annotation }/>
-            </div> }
+        <div className={ styles.void }
+             onMouseDown={ MOUSE_DOWN_EVENT.emit.bind(MOUSE_DOWN_EVENT) }/>
 
-            {/* Point cross */ }
-            { annotation.type === AnnotationType.Point && <Fragment>
-                <div className={ styles.vertical }/>
-                <div className={ styles.horizontal }/>
-            </Fragment> }
+        {/* Header */ }
+        { (isMouseHover || isActive) && <div className={ headerClasses.join(' ') }
+                                             onClick={ focus }
+                                             onMouseDown={ e => isActive && isDrawingEnabled && handleMouseDown(e, 'drag') }
+                                             onMouseEnter={ () => setIsMouseHover(true) }
+                                             onMouseMove={ () => setIsMouseHover(true) }
+                                             onMouseLeave={ () => setIsMouseHover(false) }>
+            <AnnotationHeadContent annotation={ annotation } index={ index }/>
+        </div> }
 
-            {/* Handles */ }
-            { isActive && isDrawingEnabled && annotation.type === AnnotationType.Box && handles }
-        </div>
-    }, [
-        isEditionAuthorized, isDrawingEnabled, isSelectingAnnotationFrequency, isMouseHover,
-        extendedClassName, annotationPosition,
-        annotation, hiddenLabels, labels, focusedAnnotation, spectrogram,
-        focus, handleMouseDown,
-    ])
+        {/* Point cross */ }
+        { annotation.type === AnnotationType.Point && <Fragment>
+            <div className={ styles.vertical }/>
+            <div className={ styles.horizontal }/>
+        </Fragment> }
+
+        {/* Handles */ }
+        { isActive && isDrawingEnabled && annotation.type === AnnotationType.Box && handles }
+    </div>
 }

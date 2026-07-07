@@ -1,0 +1,56 @@
+.Footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-family), sans-serif;
+  color: var(--color-dark);
+  background: white;
+  gap: 0.5rem 1rem;
+  padding: 0.2rem 2rem;
+  grid-column: 1 / -1;
+
+  > div {
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+
+    &:first-child {
+      justify-self: start;
+    }
+
+    &:last-child {
+      justify-self: end;
+    }
+  }
+
+  .Owner {
+    img {
+      width: 2rem;
+      height: 2rem;
+      object-fit: contain;
+    }
+  }
+
+  @media (max-width: 1000px) {
+    grid-auto-flow: unset;
+    grid-template-columns: auto auto;
+    gap: 0;
+
+    .Owner {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      justify-self: center;
+    }
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    justify-content: center;
+    justify-items: center;
+
+    > div:first-child, > div:last-child {
+      justify-self: unset;
+    }
+  }
+}

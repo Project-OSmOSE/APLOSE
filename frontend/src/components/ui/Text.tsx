@@ -1,13 +1,8 @@
-import React, { Fragment, ReactNode, useMemo } from 'react';
-import { IoWarningOutline } from 'react-icons/io5';
+import React, { Fragment, ReactNode } from 'react';
 import styles from './ui.module.scss';
 import { getErrorMessage } from '@/service/function';
-import { CopyErrorStackButton } from '@/components/ui/Button';
-import type { GqlError } from '@/api/baseGqlApi';
+import { DangerTriangle } from '@solar-icons/react';
 
-export const FadedText: React.FC<{ children: ReactNode }> = ({ children }) => (
-    <span className={ styles.fadedText }>{ children }</span>
-)
 
 export const WarningText: React.FC<{
     message?: string,
@@ -16,7 +11,7 @@ export const WarningText: React.FC<{
     className?: string
 }> = ({ message, error, children, className }) => (
     <div className={ [ styles.warningText, className ].join(' ') }>
-        <IoWarningOutline className={ styles.icon }/>
+        <DangerTriangle weight="LineDuotone" size={ 24 }/>
         { message && <Fragment>{ message }</Fragment> }
         { message && (error || children) && <br/> }
         { error && <Fragment>{ getErrorMessage(error) }</Fragment> }
@@ -25,26 +20,3 @@ export const WarningText: React.FC<{
     </div>
 )
 
-
-export const GraphQLErrorText: React.FC<{
-    error: GqlError,
-    className?: string
-}> = ({ error, className }) => {
-
-    return useMemo(() => {
-        className = [ styles.warningText, className ].join(' ')
-        if (!error.messages) {
-            return <div className={ className }>
-                <IoWarningOutline className={ styles.icon }/>
-                { error.statusErrorMessage }
-            </div>
-        }
-
-        return <div className={ [ styles.warningText, className ].join(' ') }>
-            <IoWarningOutline className={ styles.icon }/>
-            { error.messages.map((m, k) => <Fragment key={ k }>{ m }</Fragment>) }
-            <CopyErrorStackButton stack={ error.original } withLabel/>
-        </div>
-    }, [ error, className ])
-
-}

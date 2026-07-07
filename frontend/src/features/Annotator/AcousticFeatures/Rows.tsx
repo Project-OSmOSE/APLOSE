@@ -1,14 +1,13 @@
 import React, { Fragment, MouseEvent, useCallback, useMemo, useState } from 'react';
 import { Td, Th } from '@/components/ui';
-import { Input } from '@/components/form';
-import { IonButton, IonCheckbox, IonIcon, IonNote } from '@ionic/react';
+import { Button, Checkbox, Input, Note } from '@/components/base';
 import styles from './styles.module.scss';
-import { createOutline } from 'ionicons/icons';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { endPositionSelection, selectIsSelectingPositionForAnnotation, selectPosition } from '@/features/Annotator/UX';
 import { useGetFreqTime, useIsInAnnotation } from '@/features/Annotator/Pointer';
-import { CLICK_EVENT, useEvent } from '@/features/UX';
+import { CLICK_EVENT, useRegisterToEvent } from '@/components/ui/Event';
 import type { Annotation } from '@/features/Annotator/Annotation';
+import { PenNewSquare } from '@solar-icons/react';
 
 
 export const InputRow: React.FC<{
@@ -72,7 +71,7 @@ export const InputRow: React.FC<{
         if (position) update(position.frequency)
         unselect()
     }, [ getFreqTime, clickable, isSelecting, isInAnnotation, isSelectingAnnotationFrequency, update, annotation, unselect ]);
-    useEvent(CLICK_EVENT, onClick)
+    useRegisterToEvent(CLICK_EVENT, onClick)
 
     return <Fragment>
         <Th scope="row">{ label }</Th>
@@ -81,12 +80,11 @@ export const InputRow: React.FC<{
                 <Input className={ styles.input }
                        value={ value ?? '' } type="number" min={ 0 } max={ max } disabled={ disabled }
                        onChange={ e => update(e.target.valueAsNumber) }/>
-                { unit && <IonNote>{ unit }</IonNote> }
-                { clickable && <IonButton size="small" fill="clear"
-                                          className={ isSelecting ? styles.selectedButton : undefined }
-                                          onClick={ toggleSelection }>
-                    <IonIcon icon={ createOutline } slot="icon-only"/>
-                </IonButton> }
+                { unit && <Note>{ unit }</Note> }
+                { clickable && <Button disabled={ isSelecting }
+                                       onClick={ toggleSelection }>
+                    <PenNewSquare weight="Linear" size={ 20 }/>
+                </Button> }
             </div>
         </Td>
     </Fragment>
@@ -96,7 +94,7 @@ export const BooleanRow: React.FC<{
     label: string,
     checked?: boolean | null,
     columnSpan?: boolean,
-    toggle: () => void,
+    onCheckedChange: (checked: boolean) => void,
 } & (
     {
         value?: number | null,
@@ -105,7 +103,7 @@ export const BooleanRow: React.FC<{
     value?: never,
     onValueChange?: never
 }
-    )> = ({ label, checked, columnSpan, toggle, value, onValueChange }) => {
+    )> = ({ label, checked, columnSpan, onCheckedChange, value, onValueChange }) => {
     const className = useMemo(() => {
         const classes = [ styles.checkCell ]
         if (onValueChange) classes.push(styles.inputCell)
@@ -117,7 +115,7 @@ export const BooleanRow: React.FC<{
         <Th scope="row">{ label }</Th>
         <Td>
             <div className={ className }>
-                <IonCheckbox checked={ checked ?? undefined } onClick={ toggle }/>
+                <Checkbox checked={ checked ?? undefined } onCheckedChange={ onCheckedChange }/>
                 { onValueChange && <Input value={ value ?? '' } type="number" min={ 0 }
                                           className={ styles.input } disabled={ !checked }
                                           onChange={ e => onValueChange(e.target.valueAsNumber) }/> }
@@ -132,6 +130,6 @@ export const NoteRow: React.FC<{
 }> = ({ label, note }) => {
     return <Fragment>
         <Th scope="row">{ label }</Th>
-        <Td><IonNote>{ note }</IonNote></Td>
+        <Td><Note>{ note }</Note></Td>
     </Fragment>
 }

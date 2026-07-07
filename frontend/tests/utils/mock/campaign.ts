@@ -62,7 +62,8 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
       id: confidenceSet.id,
       name: confidenceSet.name,
       desc: confidenceSet.desc,
-      confidenceIndicators: confidenceSet.confidenceIndicators.map(c => ({
+      confidenceIndicators: confidenceSet.confidenceIndicators.map((c, key) => ({
+        id: key.toString(),
         label: c.label,
         isDefault: c.label === CONFIDENCES.sure.label,
       })),
@@ -131,10 +132,13 @@ export const CAMPAIGN_QUERIES: {
             deadline: campaign.deadline,
             tasksCount,
             completedTasksCount,
-            userTasksCount,
-            userCompletedTasksCount,
             phases: {
-              results: [ { phase: AnnotationPhaseType.Annotation } ]
+              results: [ {
+                phase: AnnotationPhaseType.Annotation,
+                isOpen: true,
+                userTasksCount,
+                userCompletedTasksCount,
+              } ]
             },
           },
         ],

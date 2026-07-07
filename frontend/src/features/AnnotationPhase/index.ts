@@ -1,6 +1,4 @@
-export * as API from './api'
-export type * from './api'
+export * as PhaseAPI from './api'
+export * as PhaseComponent from './component'
 
-export * from './ImportAnnotationsButton'
-export * from './PhaseTab'
-export * from './PhaseCreateModal'
+export type * from './api'

@@ -3,10 +3,9 @@ import { createFileRoute, notFound, Outlet, useNavigate } from '@tanstack/react-
 import { Background, Controls, Node, ReactFlow, useOnSelectionChange, useReactFlow } from '@xyflow/react';
 
 import { SoundNode, SourceNode } from '@/api';
-import { NewNode, NODE_ORIGIN, NODE_TYPES, useGetInitialNodes, useOntologyTreeFlow } from '@/features/Ontology';
+import { NewNode, NODE_ORIGIN, NODE_TYPES, OntologyAPI, useGetInitialNodes, useOntologyTreeFlow } from '@/features/Ontology';
 
 import styles from './$type.module.scss';
-import { Ontology } from '@/features';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ensureValidQueryData } from '@/api/utils';
 
@@ -18,15 +17,15 @@ type DataType = Pick<SoundNode | SourceNode, 'id' | 'englishName'> & {
 const OntologyTab: React.FC = () => {
     const type = Route.useParams({ select: ({ type }) => type })
 
-    const { data: initialSources } = useQuery({ ...Ontology.API.allSourcesQuery, enabled: type === 'source' })
-    const { mutateAsync: createSource } = useMutation(Ontology.API.createSourceMutation)
-    const { mutateAsync: updateSource } = useMutation(Ontology.API.updateSourceMutation)
-    const { mutateAsync: removeSource } = useMutation(Ontology.API.deleteSourceMutation)
+    const { data: initialSources } = useQuery({ ...OntologyAPI.allSourcesQuery, enabled: type === 'source' })
+    const { mutateAsync: createSource } = useMutation(OntologyAPI.createSourceMutation)
+    const { mutateAsync: updateSource } = useMutation(OntologyAPI.updateSourceMutation)
+    const { mutateAsync: removeSource } = useMutation(OntologyAPI.deleteSourceMutation)
 
-    const { data: initialSounds } = useQuery({ ...Ontology.API.allSoundsQuery, enabled: type === 'sound' })
-    const { mutateAsync: createSound } = useMutation(Ontology.API.createSoundMutation)
-    const { mutateAsync: updateSound } = useMutation(Ontology.API.updateSoundMutation)
-    const { mutateAsync: removeSound } = useMutation(Ontology.API.deleteSoundMutation)
+    const { data: initialSounds } = useQuery({ ...OntologyAPI.allSoundsQuery, enabled: type === 'sound' })
+    const { mutateAsync: createSound } = useMutation(OntologyAPI.createSoundMutation)
+    const { mutateAsync: updateSound } = useMutation(OntologyAPI.updateSoundMutation)
+    const { mutateAsync: removeSound } = useMutation(OntologyAPI.deleteSoundMutation)
 
     const getInitialNodes = useGetInitialNodes((type === 'source' ? initialSources : type === 'sound' ? initialSounds : undefined) ?? undefined);
     const navigate = useNavigate()
@@ -138,9 +137,9 @@ export const Route = createFileRoute('/_authenticated/_superuser/ontology/$type'
     loader: ({ params: { type } }) => {
         switch (type) {
             case 'source':
-                return ensureValidQueryData(Ontology.API.allSourcesQuery)
+                return ensureValidQueryData(OntologyAPI.allSourcesQuery)
             case 'sound':
-                return ensureValidQueryData(Ontology.API.allSoundsQuery)
+                return ensureValidQueryData(OntologyAPI.allSoundsQuery)
         }
     },
     component: OntologyTab,

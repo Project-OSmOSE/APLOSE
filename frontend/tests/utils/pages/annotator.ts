@@ -69,8 +69,8 @@ export class AnnotatorPage {
   }
 
   async isLabelUsed(label: Label): Promise<boolean> {
-    const outline = await this.getLabelChip(label).getAttribute('outline');
-    return outline !== 'true';
+    const color = await this.getLabelChip(label).getAttribute('data-color');
+    return color !== 'medium';
   }
 
   async isAnnotationValid({ type }: Pick<Params, 'type'>): Promise<boolean> {
@@ -118,7 +118,7 @@ export class AnnotatorPage {
         await this.submitButton.click()
         break;
       case 'shortcut':
-        await this.page.keyboard.press('Enter')
+        await this.page.keyboard.press('Control+Enter')
         break;
     }
   }
@@ -152,8 +152,8 @@ export class AnnotatorPage {
       return {
         startTime: 2.704,
         endTime: type === 'Box' ? 4.607 : undefined,
-        startFrequency: type === 'Box' ? 0.000 : 59.000,
-        endFrequency: type === 'Box' ? 59.000 : undefined,
+        startFrequency: type === 'Box' ? 0.000 : 55.000,
+        endFrequency: type === 'Box' ? 55.000 : undefined,
       } as Pick<Annotation, 'startTime' | 'startFrequency' | 'endTime' | 'endFrequency'>
     })
   }

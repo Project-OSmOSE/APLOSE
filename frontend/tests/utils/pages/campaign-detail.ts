@@ -32,7 +32,7 @@ class LabelModal {
     }
 
     get modal(): Locator {
-        return this.page.getByRole('dialog').first();
+        return this.page.getByRole('dialog', { name: 'Test label set' });
     }
 
     get updateButton(): Locator {
@@ -51,12 +51,10 @@ class LabelModal {
     }
 
     getLabelCheckbox(label: Label): Locator {
-        return this.modal.locator('tr')
-            .filter({ hasText: label.name })
-            .locator('ion-checkbox')
+        return this.modal.getByRole('row', { name: label.name }).getByRole('checkbox')
     }
 
     async hasAcousticFeatures(label: Label): Promise<boolean> {
-        return await this.getLabelCheckbox(label).getAttribute('checked') == 'true'
+        return await this.getLabelCheckbox(label).getAttribute('aria-checked') == 'true'
     }
 }

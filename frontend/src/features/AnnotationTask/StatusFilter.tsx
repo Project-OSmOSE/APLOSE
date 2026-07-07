@@ -1,14 +1,17 @@
-import React, { useCallback } from 'react';
-import styles from './styles.module.scss'
-import { Modal, type ModalProps } from '@/components/ui';
-import { Input, Switch } from '@/components/form';
+import React, { type FormEvent, useCallback } from 'react';
 import { AnnotationTaskStatus } from '@/api';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
+import { Dialog } from '@/components/base/Dialog';
+import type { BaseUIEvent } from '@base-ui/react';
+import type { AllSpectrogramsFilters } from '@/features/AnnotationSpectrogram';
+import { Form } from '@/components/base/Form';
+import { ButtonGroup } from '@/components/base/Button';
+import { Field } from '@/components/base/Field';
+import { Toggle } from '@/components/base/Toggle';
+import { Checkbox } from '@/components/base/Checkbox';
 
-export const StatusFilterModal: React.FC<ModalProps & {
-    onUpdate: () => void
-}> = ({ onUpdate, onClose }) => {
+export const StatusFilterModal: React.FC = () => {
     const { user } = useLoaderData({ from: '/_authenticated' })
     const { status, onlyAssigned } = Route.useSearch({
         select: ({ status, onlyAssigned }) => ({
@@ -19,53 +22,58 @@ export const StatusFilterModal: React.FC<ModalProps & {
     const routeParams = Route.useParams()
     const navigate = useNavigate();
 
-    const setState = useCallback((option: string) => {
-        let status: AnnotationTaskStatus | undefined = undefined;
-        switch (option) {
-            case AnnotationTaskStatus.Created:
-            case AnnotationTaskStatus.Finished:
-                status = option
-                break;
-        }
+    const update = useCallback((data: Pick<AllSpectrogramsFilters, 'onlyAssigned' | 'status'>) => {
         navigate({
             to: Route.to,
             params: routeParams,
             search: (prev) => ({
-                ...prev, status, page: 1,
+                ...prev,
+                ...data,
+                page: 1,
             }),
             replace: true,
         })
-        onUpdate()
-    }, [ navigate, routeParams, onUpdate ])
+    }, [ navigate, routeParams ])
 
-    const onOnlyAssignedChanged = useCallback(() => {
-        navigate({
-            to: Route.to,
-            params: routeParams,
-            search: (prev) => ({
-                ...prev, onlyAssigned: !prev?.onlyAssigned, page: 1,
-            }),
-            replace: true,
+    const onSubmit = useCallback((event: BaseUIEvent<FormEvent<HTMLFormElement>>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        update({
+            status: formData.get('status') as AnnotationTaskStatus || undefined,
+            onlyAssigned: formData.get('onlyAssigned') !== undefined ? formData.get('onlyAssigned') === 'true' : undefined,
         })
-        onUpdate()
-    }, [ navigate, routeParams, onUpdate ])
+    }, [ update ])
 
-    function valueToBooleanOption(value?: AnnotationTaskStatus | null): 'Unset' | 'Created' | 'Finished' {
-        return value ?? 'Unset'
-    }
+    const onReset = useCallback((event: BaseUIEvent<FormEvent<HTMLFormElement>>) => {
+        event.preventDefault();
+        update({
+            status: undefined,
+            onlyAssigned: undefined,
+        })
+    }, [ update ])
 
-    return <Modal className={ styles.filterModal }
-                  onClose={ onClose }>
+    return <Dialog.Content>
+        <Form onSubmit={ onSubmit } onReset={ onReset }>
+            <Field.Root name="status" horizontal>
+                <Field.Label>Status</Field.Label>
+                <Toggle.Group defaultValue={ status ?? null }>
+                    <Toggle.Item color='medium' value={ null }>Unset</Toggle.Item>
+                    <Toggle.Item value={ AnnotationTaskStatus.Created }>Created</Toggle.Item>
+                    <Toggle.Item value={ AnnotationTaskStatus.Finished }>Finished</Toggle.Item>
+                </Toggle.Group>
+            </Field.Root>
 
-        <Switch label="Status" options={ [ 'Unset', 'Created', 'Finished' ] }
-                value={ valueToBooleanOption(status) }
-                onValueSelected={ setState }/>
+            { user.isAdmin &&
+                <Field.Root name="onlyAssigned" horizontal>
+                    <Field.Label>Display only assigned tasks</Field.Label>
 
-        { user.isAdmin &&
-            <Input type="checkbox"
-                   label="Display only assigned tasks"
-                   checked={ onlyAssigned ?? false }
-                   onChange={ onOnlyAssignedChanged }/> }
+                    <Checkbox defaultChecked={ onlyAssigned ?? undefined }/>
+                </Field.Root> }
 
-    </Modal>
+            <ButtonGroup spaceBetween>
+                <Dialog.Close type="reset">Reset</Dialog.Close>
+                <Dialog.Close type="submit" color="primary">Filter</Dialog.Close>
+            </ButtonGroup>
+        </Form>
+    </Dialog.Content>
 }

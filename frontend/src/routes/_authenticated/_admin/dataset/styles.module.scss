@@ -1,0 +1,11 @@
+.InfoBloc {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  margin-top: 3rem;
+
+  h4 {
+    margin: 0.5rem 0;
+    color: var(--color-dark-tint);
+  }
+}

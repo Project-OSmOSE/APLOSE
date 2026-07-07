@@ -24,8 +24,8 @@ export class LoginPage {
   }
 
   async fillForm({ as }: Pick<Params, 'as'>) {
-    await this.page.getByPlaceholder('username').fill(as)
-    await this.page.getByPlaceholder('password').fill(PASSWORD)
+    await this.page.getByLabel('Username').fill(as)
+    await this.page.getByLabel('Password').fill(PASSWORD)
   }
 
   async submit({ method }: Pick<Params, 'method'>): Promise<Request> {

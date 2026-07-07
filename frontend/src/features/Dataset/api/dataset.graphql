@@ -12,6 +12,15 @@ fragment Dataset on DatasetNode {
 }
 
 query allDatasets {
+    allDatasets(orderBy: "name") {
+        results {
+            id
+            name
+        }
+    }
+}
+
+query allDatasetsWithCampaigns {
     allDatasets(orderBy: "-createdAt") {
         results {
             ...Dataset

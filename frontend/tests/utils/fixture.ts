@@ -1,46 +1,45 @@
-import { type Page as PageBase, test as testBase } from '@playwright/test';
-import { type Request, Route } from 'playwright-core';
+import { type Page as PageBase, type Request, type Route, test as testBase } from '@playwright/test';
 import {
-  AccountPage,
-  AnnotatorPage,
-  CampaignCreatePage,
-  CampaignDetailPage,
-  CampaignListPage,
-  DatasetDetailPage,
-  DatasetPage,
-  HomePage,
-  LoginPage,
-  Navbar,
-  PhaseDetailPage,
-  PhaseEditAnnotatorsPage,
-  PhaseImportAnnotationsPage,
-  StoragePage,
+    AccountPage,
+    AnnotatorPage,
+    CampaignCreatePage,
+    CampaignDetailPage,
+    CampaignListPage,
+    DatasetDetailPage,
+    DatasetPage,
+    HomePage,
+    LoginPage,
+    Navbar,
+    PhaseDetailPage,
+    PhaseEditAnnotatorsPage,
+    PhaseImportAnnotationsPage,
+    StoragePage,
 } from './pages';
 import { gqlRegex } from './mock';
 import type { GqlOperations } from './mock/_gql';
 
 interface PageExtension {
-  readonly home: HomePage;
-  readonly login: LoginPage;
-  readonly navbar: Navbar;
-  readonly account: AccountPage;
+    readonly home: HomePage;
+    readonly login: LoginPage;
+    readonly navbar: Navbar;
+    readonly account: AccountPage;
 
-  readonly storage: StoragePage;
+    readonly storage: StoragePage;
 
-  readonly datasets: DatasetPage;
-  readonly datasetDetail: DatasetDetailPage;
+    readonly datasets: DatasetPage;
+    readonly datasetDetail: DatasetDetailPage;
 
-  readonly campaigns: CampaignListPage;
-  readonly campaignDetail: CampaignDetailPage;
-  readonly campaignCreate: CampaignCreatePage;
+    readonly campaigns: CampaignListPage;
+    readonly campaignDetail: CampaignDetailPage;
+    readonly campaignCreate: CampaignCreatePage;
 
-  readonly phaseDetail: PhaseDetailPage;
-  readonly phaseImport: PhaseImportAnnotationsPage;
-  readonly phaseEdit: PhaseEditAnnotatorsPage;
+    readonly phaseDetail: PhaseDetailPage;
+    readonly phaseImport: PhaseImportAnnotationsPage;
+    readonly phaseEdit: PhaseEditAnnotatorsPage;
 
-  readonly annotator: AnnotatorPage;
+    readonly annotator: AnnotatorPage;
 
-  waitForGqlRequest(operationName: keyof GqlOperations, additionalCheck?: (request: Request) => boolean): Promise<Request>;
+    waitForGqlRequest(operationName: keyof GqlOperations, postDataCheck?: (postData: any) => boolean): Promise<Request>;
 }
 
 export interface Page extends PageBase, PageExtension {
@@ -48,46 +47,50 @@ export interface Page extends PageBase, PageExtension {
 
 // Declare the types of your fixtures.
 type Fixture = {
-  page: Page;
+    page: Page;
 };
 
 export * from '@playwright/test';
 export const test = testBase.extend<Fixture>({
-  page: async ({ page }, use) => {
-    // Block all BFF requests from making it through to the 'real'
-    // dependency. If we get this far it means we've forgotten to register a
-    // handler, and (at least locally) we're using a real dependency.
-    await page.route('**/graphql', function (route: Route) {
-      route.abort('blockedbyclient');
-    });
+    page: async ({ page }, use) => {
+        // Block all BFF requests from making it through to the 'real'
+        // dependency. If we get this far it means we've forgotten to register a
+        // handler, and (at least locally) we're using a real dependency.
+        await page.route('**/graphql', (route: Route) => {
+            route.abort('blockedbyclient');
+        });
 
-    const extension: PageExtension = {
-      home: new HomePage(page),
-      login: new LoginPage(page),
-      navbar: new Navbar(page),
-      account: new AccountPage(page),
-      storage: new StoragePage(page),
-      datasets: new DatasetPage(page),
-      datasetDetail: new DatasetDetailPage(page),
-      campaigns: new CampaignListPage(page),
-      campaignDetail: new CampaignDetailPage(page),
-      campaignCreate: new CampaignCreatePage(page),
-      phaseDetail: new PhaseDetailPage(page),
-      phaseImport: new PhaseImportAnnotationsPage(page),
-      phaseEdit: new PhaseEditAnnotatorsPage(page),
-      annotator: new AnnotatorPage(page),
+        page.on('console', (msg) => {
+            console.log(msg);
+        });
 
-      waitForGqlRequest: (operationName: keyof GqlOperations, additionalCheck?: (request: Request) => boolean): Promise<Request> => {
-        return page.waitForRequest((request: Request) => {
-          if (!new RegExp(gqlRegex).test(request.url())) return false;
-          if (request.postDataJSON()?.operationName !== operationName) return false
-          if (additionalCheck) return additionalCheck(request);
-          return true
-        })
-      }
-    }
+        const extension: PageExtension = {
+            home: new HomePage(page),
+            login: new LoginPage(page),
+            navbar: new Navbar(page),
+            account: new AccountPage(page),
+            storage: new StoragePage(page),
+            datasets: new DatasetPage(page),
+            datasetDetail: new DatasetDetailPage(page),
+            campaigns: new CampaignListPage(page),
+            campaignDetail: new CampaignDetailPage(page),
+            campaignCreate: new CampaignCreatePage(page),
+            phaseDetail: new PhaseDetailPage(page),
+            phaseImport: new PhaseImportAnnotationsPage(page),
+            phaseEdit: new PhaseEditAnnotatorsPage(page),
+            annotator: new AnnotatorPage(page),
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    await use(Object.assign(page, extension))
-  },
+            waitForGqlRequest: (operationName: keyof GqlOperations, postDataCheck?: (postData: any) => boolean): Promise<Request> => {
+                return page.waitForRequest((request: Request): boolean => {
+                    if (!new RegExp(gqlRegex).test(request.url())) return false;
+                    if (request.postDataJSON()?.operationName !== operationName) return false;
+                    if (postDataCheck) return postDataCheck(request.postDataJSON())
+                    return true
+                })
+            },
+        }
+
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        await use(Object.assign(page, extension))
+    },
 });

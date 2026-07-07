@@ -85,3 +85,5 @@ export const COLORMAPS: Record<Colormap, ColorStep[]> = {
     'rgb': [ 240, 249, 33 ],
   } ],
 };
+
+export const COLORMAP_LIST: Colormap[] = Object.keys(COLORMAPS) as Colormap[]

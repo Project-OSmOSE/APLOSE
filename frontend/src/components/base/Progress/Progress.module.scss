@@ -1,0 +1,60 @@
+@use "@/css/base";
+
+.Progress {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "label value" "track track";
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 15rem;
+  max-width: 100%;
+
+  &:has(.Value) {
+    grid-template-areas: "track value";
+  }
+
+  &:has(.Label) {
+    grid-template-areas: "label value" "track track";
+  }
+}
+
+.Label {
+  grid-area: label;
+  font-size: 0.9rem;
+  color: var(--color-medium);
+}
+
+.Value {
+  grid-area: value;
+  text-align: right;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.Track {
+  grid-area: track;
+  overflow: hidden;
+  height: 0.25rem;
+  background-color: var(--color-light-shade);
+}
+
+.Indicator {
+  background-color: var(--color-dark-tint);
+  transition: width 500ms;
+}
+
+@each $color in base.$colors {
+  .Progress[color=#{$color}] {
+    .Value {
+      color: var(--color-#{$color}-text);
+    }
+
+    .Indicator {
+      background-color: var(--color-#{$color});
+    }
+  }
+}
+
+.Progress[disabled] {
+  opacity: 0.5;
+}

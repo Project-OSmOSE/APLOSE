@@ -1,53 +1,60 @@
-import React, { Fragment, useMemo } from 'react';
+import React, { Fragment } from 'react';
 import { createFileRoute } from '@tanstack/react-router'
-import { IonNote, IonSpinner } from '@ionic/react';
 
-import { Button, Head, HelpButton, useModal } from '@/components/ui';
+import { HelpButton } from '@/components/base/Button';
+import { Head, WarningText } from '@/components/ui';
 
-import { ImportFromPath, ServerItem } from '@/features/Storage';
-import { Storage } from '@/features';
+import { ServerItem, StorageAPI, StorageModal } from '@/features/Storage';
 
 import styles from './storage.module.scss'
+import { Content } from '@/components/layout/Content';
+import { Note } from '@/components/base/Note';
+import { Spinner } from '@/components/base/Spinner';
+import { Center } from '@/components/layout/Display';
+import { Dialog } from '@/components/base/Dialog';
 import { ensureValidQueryData } from '@/api/utils';
 
-const StorageBrowser: React.FC = () => {
-    const searchModal = useModal(ImportFromPath);
+const StorageBrowser: React.FC = () => (
+    <Content className={ styles.Storage }>
+        <Head title="Storage"
+              buttons={
+                  <Fragment>
+                      <Dialog.Root>
+                          <Dialog.Trigger color="primary">Search path</Dialog.Trigger>
+                          <Dialog.Portal>
+                              <StorageModal.Search/>
+                          </Dialog.Portal>
+                      </Dialog.Root>
+                      <HelpButton url="/doc/user/data/generate">
+                          How to generate a dataset
+                      </HelpButton>
+                  </Fragment>
+              }/>
 
-    return useMemo(() => <Fragment>
-            <Head title="Storage"
-                  buttons={
-                      <Fragment>
-                          <Button fill="clear"
-                                  onClick={ searchModal.toggle }>
-                              Search path
-                          </Button>
-                          <HelpButton url="/doc/user/data/generate"
-                                      label="How to generate a dataset"/>
-                      </Fragment>
-                  }/>
-
-            <div className={ styles.content }>
-                <div className={ styles.inner }>
-                    <ServerItem name="datawork/datasets"/>
-                </div>
+        <div className={ styles.content }>
+            <div className={ styles.inner }>
+                <ServerItem name="datawork/datasets"/>
             </div>
-            <IonNote>
-                Are available for import:
-                <ul>
-                    <li>Datasets made with the legacy OSEkit (v{ '<' }0.2.5)</li>
-                    <li>Dataset and SpectroDataset analysis made with current OSEkit version</li>
-                </ul>
-            </IonNote>
+        </div>
+        <Note color="medium">
+            Are available for import:
+            <ul>
+                <li>Datasets made with the legacy OSEkit (v{ '<' }0.2.5)</li>
+                <li>Dataset and SpectroDataset analysis made with current OSEkit version</li>
+            </ul>
+        </Note>
+    </Content>
+)
 
-            { searchModal.element }
-        </Fragment>,
-        [ searchModal ])
-}
 export const Route = createFileRoute('/_authenticated/_admin/storage')({
-    loader: () => ensureValidQueryData(Storage.API.browseQuery({ path: '' })),
+    loader: () => ensureValidQueryData(StorageAPI.browseQuery({ path: '' })),
     component: StorageBrowser,
-    pendingComponent: () => <Fragment>
+    pendingComponent: () => <Content className={ styles.Storage }>
         <Head title="Storage"/>
-        <IonSpinner/>
-    </Fragment>,
+        <Center><Spinner/></Center>
+    </Content>,
+    errorComponent: (error) => <Content className={ styles.Storage }>
+        <Head title="Storage"/>
+        <Center><WarningText error={ error }/></Center>
+    </Content>,
 })

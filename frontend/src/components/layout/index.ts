@@ -1,4 +1,3 @@
+export * from './Page'
 export * from './Footer'
-export * from './Header'
-export * from './Navbar'
-export * from './Skeleton';
+export * from './Navigation'

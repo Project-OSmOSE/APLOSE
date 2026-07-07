@@ -1,0 +1,46 @@
+$vertical-space: 0.4rem;
+$horizontal-space: 0.8rem;
+$icon-size: 1.2rem;
+
+.Input {
+  border-radius: #{$vertical-space};
+  border: none;
+  background: var(--color-light-shade);
+  padding: #{$vertical-space} #{$horizontal-space};
+  outline-color: var(--color-primary);
+  accent-color: var(--color-primary);
+  font-size: inherit;
+
+  &[data-invalid] {
+    box-shadow: inset 0 0 0 1px var(--color-danger);
+  }
+}
+
+.InputContainer {
+  position: relative;
+  display: grid;
+
+  &:has(.Icon.start) .Input {
+    padding-left: calc(#{$horizontal-space} * 2 + #{$icon-size});
+  }
+  &:has(.Icon.end) .Input {
+    padding-right: calc(#{$horizontal-space} * 2 + #{$icon-size});
+  }
+}
+
+.Icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-medium);
+  width: #{$icon-size};
+  height: #{$icon-size};
+
+  &.start {
+    left: #{$horizontal-space};
+  }
+
+  &.end {
+    right: #{$horizontal-space};
+  }
+}

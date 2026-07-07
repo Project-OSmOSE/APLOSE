@@ -17,14 +17,8 @@ import { useAppDispatch, useAppSelector } from '@/features/App';
 import { setAllFileAsSeen } from '@/features/Annotator/UX/slice';
 import { useDrawCanvas } from '@/features/Annotator/Canvas/hooks';
 import { AnnotationType } from '@/api';
-import {
-    selectBrightness,
-    selectColormap,
-    selectContrast,
-    selectIsColormapReversed,
-} from '@/features/Annotator/VisualConfiguration';
 import { AcousticFeatures } from '@/features/Annotator/AcousticFeatures';
-import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis/hooks';
+import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 import { useLoaderData } from '@tanstack/react-router';
 import { useCanDraw } from '@/features/Annotator/UX/hooks';
 
@@ -77,20 +71,24 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
     // Global updates
     const tempAnnotation = useAppSelector(selectTempAnnotation)
-    const analysis = useAnnotatorAnalysis()
-    const brightness = useAppSelector(selectBrightness);
-    const contrast = useAppSelector(selectContrast);
-    const colormap = useAppSelector(selectColormap);
-    const isColormapReversed = useAppSelector(selectIsColormapReversed);
+    const {
+        selectedAnalysis,
+        brightness,
+        contrast,
+        colormap,
+        isColormapInverted,
+    } = useAnnotatorAnalysis()
     useEffect(() => {
         draw()
     }, [
         // On current newAnnotation changed
         tempAnnotation?.endTime, tempAnnotation?.endFrequency, tempAnnotation,
         // On Spectrogram or analysis changed
-        spectrogram, analysis,
+        spectrogram, selectedAnalysis,
         // On colormap changed
-        colormap, isColormapReversed, brightness, contrast,
+        colormap, isColormapInverted, brightness, contrast,
+        // On window dimensions change
+        containerWidth,
     ])
 
 

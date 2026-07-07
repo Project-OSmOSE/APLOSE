@@ -21,5 +21,5 @@ export const campaign: Campaign = {
   colormapDefault: null,
   colormapInvertedDefault: null,
   createdAt: new Date().toISOString(),
-  instructionsUrl: 'myinstructions.co',
+  instructionsUrl: 'https://myinstructions.co',
 }
