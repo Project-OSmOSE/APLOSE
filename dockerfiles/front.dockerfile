@@ -41,6 +41,8 @@ RUN npm run graphql:generate
 # Used to get git version in React view
 COPY package.json global-package.json
 
+# Increase Node.js heap size limit for the build step
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN PUBLIC_URL=/app npm run build
 
 RUN npm run docs:build

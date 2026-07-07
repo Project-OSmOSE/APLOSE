@@ -11,7 +11,19 @@ server {
   gzip on;
   gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
 
-  location /app {
+  # prevent nginx from turning relative redirects (e.g. "return 301 /app/")
+  # into absolute URLs built from this server's internal scheme/host/port.
+  # Without this, redirects would leak the internal port (8080, plain http)
+  # instead of staying on whatever host:port the client actually used
+  # (e.g. https-portal on 443).
+  absolute_redirect off;
+
+  # exact match on /app (no trailing slash) redirects to /app/
+  # relative redirect (path only) keeps the client on its original host:port,
+  # avoiding leaking the internal 8080 port used behind https-portal
+  location = /app { return 301 /app/; }
+
+  location /app/ {
     root /usr/share/nginx/;
     proxy_intercept_errors on;
     error_page 404 = /app/index.html;
