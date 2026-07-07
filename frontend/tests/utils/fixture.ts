@@ -60,6 +60,10 @@ export const test = testBase.extend<Fixture>({
             route.abort('blockedbyclient');
         });
 
+        page.on('console', (msg) => {
+            console.log(msg);
+        });
+
         const extension: PageExtension = {
             home: new HomePage(page),
             login: new LoginPage(page),

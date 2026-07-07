@@ -49,16 +49,21 @@ export const Search: React.FC<{
         usage: 'search',
         sensitivity: 'base',
     })
+    const [ inputValue, setInputValue ] = useState<string>('');
 
-    const filter = useCallback((itemValue: SearchValue, query: string): boolean => {
-        return contains(itemValue, query, (item: SearchValue) => {
-            return [ (item as Group).name, (item as User).displayName, (item as User).username ].join(' ')
-        })
-    }, [ contains ])
+    const filteredItems = useMemo(() => {
+        return items.filter(i => contains(i, inputValue, (item: SearchValue) => {
+            switch (item.__typename) {
+                case 'UserGroupNode':
+                    return item.name
+                case 'UserNode':
+                    return [ item.displayName, item.username ].join(' ')
+            }
+        }))
+    }, [ items, inputValue, contains ])
     return <ComboboxSelect placeholder="Search annotator or group..."
                            items={ items }
                            itemName="search"
-                           filter={ filter }
                            itemToStringLabel={ item => {
                                switch (item.__typename) {
                                    case 'UserGroupNode':
@@ -67,6 +72,8 @@ export const Search: React.FC<{
                                        return item.displayName ?? item.username
                                }
                            } }
+                           inputValue={ inputValue } onInputValueChange={ setInputValue }
+                           filteredItems={ filteredItems }
                            itemToStringValue={ item => item.id }
                            isItemEqualToValue={ (a, b) => a.id === b.id }
                            multiple
