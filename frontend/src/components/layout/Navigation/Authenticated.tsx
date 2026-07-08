@@ -7,6 +7,7 @@ import styles from './Navigation.module.scss';
 import logo from '/images/logo/x96.png';
 import { useLogout } from '@/api';
 import { useLoaderData } from '@tanstack/react-router';
+import { Mx } from '@/features/Mx';
 
 export const Authenticated: React.FC<{ className?: string }> = ({ className }) => {
     const { logout } = useLogout()
@@ -67,9 +68,12 @@ export const Authenticated: React.FC<{ className?: string }> = ({ className }) =
 
                         <Button color="warning" onClick={ logout }>Logout</Button>
 
-                        { data?.user.isAdmin && <Fragment>
-                            <ExternalLink href="/backend/admin" target="_blank">Admin</ExternalLink>
-                        </Fragment> }
+                        { data?.user.isSuperuser &&
+                            <Mx.Link/> }
+
+                        { data?.user.isAdmin &&
+                            <ExternalLink href="/backend/admin" target="_blank">Admin</ExternalLink> }
+
 
                         <Link to="/account">Account</Link>
 
