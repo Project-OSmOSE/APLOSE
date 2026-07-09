@@ -34,7 +34,7 @@ const SqlQuery: React.FC = () => {
         if (query) run({ query, page });
     }, [ run, setPage, isLoading ])
     const onEventRunQuery = useCallback(() => runQuery(1), [ runQuery ])
-    useHotkey('Control+Enter', () => onEventRunQuery)
+    useHotkey('Control+Enter', onEventRunQuery)
 
     const setupEditor = useCallback(() => {
         if (!editorContainerRef.current) return;
