@@ -1,2 +1,71 @@
-$colors: primary, warning, success, danger, medium, dark;
+@use 'sass:color';
+@use 'sass:map';
+
 $backdrop-background-image: linear-gradient(to bottom, rgba(var(--color-dark-rgb), 15%) 0, rgba(var(--color-dark-rgb), 20%) 50%);
+
+
+$color_bases: (
+    primary: #238583,
+
+    success: #85B14D,
+    warning: #CC8229,
+    danger: #D86045,
+
+    light: #fff,
+    medium: #6C757D,
+    dark: #061D38,
+);
+
+$colors: (
+    primary: (
+        tint: color.adjust(map.get($color_bases, 'primary'), $lightness: +5%),
+        text: color.adjust(map.get($color_bases, 'primary'), $lightness: -1%),
+        text-background: color.change(map.get($color_bases, 'primary'), $lightness: 95%),
+        background: color.adjust(map.get($color_bases, 'primary'), $lightness: -1%),
+        background-contrast: map.get($color_bases, 'light'),
+    ),
+
+    success: (
+        tint: color.adjust(map.get($color_bases, 'success'), $lightness: +5%),
+        text: color.adjust(map.get($color_bases, 'success'), $lightness: -14%),
+        text-background: color.change(map.get($color_bases, 'success'), $lightness: 95%),
+        background: color.adjust(map.get($color_bases, 'success'), $lightness: -14%),
+        background-contrast: map.get($color_bases, 'light'),
+    ),
+    warning: (
+        tint: color.adjust(map.get($color_bases, 'warning'), $lightness: +5%),
+        text: color.adjust(map.get($color_bases, 'warning'), $lightness: -10%),
+        text-background: color.change(map.get($color_bases, 'warning'), $lightness: 95%),
+        background: color.adjust(map.get($color_bases, 'warning'), $lightness: -10%),
+        background-contrast: map.get($color_bases, 'light'),
+    ),
+    danger: (
+        tint: color.adjust(map.get($color_bases, 'danger'), $lightness: +5%),
+        text: color.adjust(map.get($color_bases, 'danger'), $lightness: -7%),
+        text-background: color.change(map.get($color_bases, 'danger'), $lightness: 95%),
+        background: color.adjust(map.get($color_bases, 'danger'), $lightness: -7%),
+        background-contrast: map.get($color_bases, 'light'),
+    ),
+
+    light: (
+        tint: color.adjust(map.get($color_bases, 'light'), $lightness: +5%),
+        text: map.get($color_bases, 'light'),
+        text-background: color.change(map.get($color_bases, 'light'), $lightness: 95%),
+        background: map.get($color_bases, 'light'),
+        background-contrast: map.get($color_bases, 'dark'),
+    ),
+    medium: (
+        tint: color.adjust(map.get($color_bases, 'medium'), $lightness: +5%),
+        text: map.get($color_bases, 'medium'),
+        text-background: color.change(map.get($color_bases, 'medium'), $lightness: 95%),
+        background: map.get($color_bases, 'medium'),
+        background-contrast: map.get($color_bases, 'light'),
+    ),
+    dark: (
+        tint: color.adjust(map.get($color_bases, 'dark'), $lightness: +5%),
+        text: map.get($color_bases, 'dark'),
+        text-background: color.change(map.get($color_bases, 'dark'), $lightness: 95%, $saturation: 20%),
+        background: map.get($color_bases, 'dark'),
+        background-contrast: map.get($color_bases, 'light'),
+    )
+);

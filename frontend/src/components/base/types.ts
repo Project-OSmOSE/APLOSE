@@ -1,5 +1,4 @@
 export const BaseColors = [
-    'default',
     'primary',
     'success',
     'warning',

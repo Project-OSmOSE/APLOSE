@@ -25,22 +25,22 @@ const meta = {
     // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#story-args
     args: {
         children: 'Test badge',
-        color: 'default',
+        color: 'medium',
     } satisfies BadgeProps,
 } satisfies Meta<typeof Badge>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
-export const Default: Story = {};
-
 export const Primary: Story = { args: { color: 'primary' } satisfies Partial<BadgeProps> };
+
+export const Success: Story = { args: { color: 'success' } satisfies Partial<BadgeProps> };
 
 export const Warning: Story = { args: { color: 'warning' } satisfies Partial<BadgeProps> };
 
 export const Danger: Story = { args: { color: 'danger' } satisfies Partial<BadgeProps> };
 
-export const Success: Story = { args: { color: 'success' } satisfies Partial<BadgeProps> };
+export const Light: Story = { args: { color: 'light' } satisfies Partial<BadgeProps> };
 
 export const Medium: Story = { args: { color: 'medium' } satisfies Partial<BadgeProps> };
 

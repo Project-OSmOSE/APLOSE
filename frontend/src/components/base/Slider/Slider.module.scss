@@ -1,4 +1,5 @@
 @use '@/css/base';
+@use 'sass:map';
 
 .Root {
   display: grid;
@@ -25,15 +26,15 @@
   @each $color in base.$colors {
     &[color=#{$color}] {
       .Indicator {
-        background-color: var(--color-#{$color});
+        background-color: map.get(base.$color_bases, $color);
       }
 
       .Thumb {
-        background-color: var(--color-#{$color}-tint);
+        background-color: map.get($map, 'tint');
       }
 
       .Value {
-        color: var(--color-#{$color}-text);
+        color: map.get($map, 'text');
       }
     }
   }

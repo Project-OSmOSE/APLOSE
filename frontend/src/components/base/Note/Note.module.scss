@@ -1,13 +1,14 @@
 @use "@/css/base";
+@use 'sass:map';
 
 .Note {
   font-size: 0.9rem;
   font-weight: 400;
   margin: 0;
 
-  @each $color in base.$colors {
+  @each $color, $map in base.$colors {
     &.#{$color} {
-      color: var(--color-#{$color}-text);
+      color: map.get($map, 'text');
     }
   }
 
