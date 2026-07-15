@@ -226,6 +226,7 @@
       th {
         font-weight: 400;
         color: var(--color-dark-tint);
+        background: rgba(var(--color-medium-rgb), 0.025);
 
         &.sortable > div {
           display: grid;
@@ -277,8 +278,11 @@
       th:first-child, td:first-child {
         position: sticky;
         left: 0;
-        background: white;
         z-index: 2;
+      }
+
+      td:first-child {
+        background: white;
       }
     }
 

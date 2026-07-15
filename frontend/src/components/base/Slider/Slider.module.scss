@@ -23,7 +23,7 @@
     color: var(--color-medium-text);
   }
 
-  @each $color in base.$colors {
+  @each $color, $map in base.$colors {
     &[color=#{$color}] {
       .Indicator {
         background-color: map.get(base.$color_bases, $color);

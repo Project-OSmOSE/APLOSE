@@ -48,8 +48,8 @@
       position: fixed;
       top: 0;
       left: 0;
-      height: calc(100vh - 2rem);
-      width: 14rem;
+      height: 100vh;
+      width: 16rem;
       padding: 1rem;
       z-index: 1;
     }
@@ -68,10 +68,10 @@
 
     @media (max-width: 800px) {
       grid-template-columns: unset;
-      grid-template-rows: auto 1fr auto;
+      grid-template-rows: 1fr auto;
       // Navbar
       padding: 3.6rem 0 0 0;
-      min-height: calc(100vh - 3.6rem);
+      min-height: 100vh;
 
       .Nav {
         display: none;

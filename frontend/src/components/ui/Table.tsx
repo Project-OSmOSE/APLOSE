@@ -60,7 +60,7 @@ export const Th: React.FC<{
                     </div> }
                 </div>
             </th>
-        }, [ children, center, start, setOrder, order, sortable, props ])
+        }, [ children, top, center, start, setOrder, order, sortable, props ])
 
 export const Td: React.FC<Partial<Pick<HTMLTableDataCellElement, 'colSpan' | 'rowSpan'>> &
     { children: ReactNode, center?: boolean, top?: boolean, className?: string }> = ({

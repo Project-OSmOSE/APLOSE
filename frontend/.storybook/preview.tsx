@@ -1,6 +1,7 @@
 import type { Preview } from '@storybook/tanstack-react/dist'
 
 import '../src/css/base.css';
+import '../src/css/base.scss';
 import { Toast } from '../src/components/base';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StoreProvider } from '../src/features/App';

@@ -36,10 +36,9 @@ const AnnotationCampaignInfo: React.FC = () => {
 
                 {/* DATA */ }
                 <div className={ styles.bloc }>
-                    <Note color="medium">Dataset</Note>
+                    <h4>Dataset</h4>
                     <DatasetName name={ campaign.dataset.name } id={ campaign.dataset.id } link/>
-                    {/*<AnnotationCampaignAcquisitionModalButton/>*/ }
-                    <Note color="medium">Analysis</Note>
+                    <h4>Analysis</h4>
                     <SpectrogramAnalysisTable analysis={ analysis } spacing="small"/>
                 </div>
 
@@ -47,7 +46,7 @@ const AnnotationCampaignInfo: React.FC = () => {
                 { phases.length > 0 && <Fragment>
                     <div className={ styles.bloc }>
                         <div>
-                            <Note color="medium">Label set</Note>
+                            <h4>Label set</h4>
                             { campaign.labelSet && <Dialog.Root>
                                 <Dialog.Trigger color="medium" disabled={ !campaign.labelSet }>
                                     { campaign.labelSet?.name ?? 'No label set' }
@@ -61,7 +60,7 @@ const AnnotationCampaignInfo: React.FC = () => {
 
                     <div className={ styles.bloc }>
                         <div>
-                            <Note color="medium">Confidence set</Note>
+                            <h4>Confidence set</h4>
                             { !campaign.confidenceSet && <p>No confidence</p> }{ campaign.confidenceSet &&
                             <p>{ campaign.confidenceSet.name }</p> }
                         </div>
@@ -71,8 +70,9 @@ const AnnotationCampaignInfo: React.FC = () => {
                         </div> }
                     </div>
                     <div className={ styles.bloc }>
-                        <div><Note color="medium">Annotation types</Note><p>Weak,
-                            box{ campaign.allowPointAnnotation ? ', point' : '' }</p>
+                        <div>
+                            <h4>Annotation types</h4>
+                            <p>Weak, box{ campaign.allowPointAnnotation ? ', point' : '' }</p>
                         </div>
                     </div>
                 </Fragment> }

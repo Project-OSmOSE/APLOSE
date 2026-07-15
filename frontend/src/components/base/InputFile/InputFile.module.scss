@@ -8,11 +8,6 @@
   gap: 1rem;
   align-items: center;
   transition: 300ms;
-  max-width: 100%;
-  overflow: hidden;
-
-  text-wrap: wrap;
-  word-wrap: break-word;
 
   &.initial {
     height: 100%;
