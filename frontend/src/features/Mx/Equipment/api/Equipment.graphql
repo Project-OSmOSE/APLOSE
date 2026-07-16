@@ -1,0 +1,19 @@
+# PlatformType
+
+fragment PlatformType on PlatformTypeNode {
+    id
+    name
+}
+
+query allPlatformTypes {
+    allPlatformTypes {
+        results { ...PlatformType }
+    }
+}
+
+mutation createPlatformType($input: PlatformTypeMutationInput!) {
+    platformType(input: $input) {
+        platformType { ...PlatformType }
+        errors { field, messages }
+    }
+}

@@ -101,5 +101,8 @@ export const queryKeys = {
             allTeams: [ 'mx', 'common', 'team' ] as const,
             allPersons: [ 'mx', 'common', 'person' ] as const,
         },
+        equipment: {
+            allPlatformTypes: ['mx', 'equipment', 'platform', 'type'] as const,
+        }
     },
 };

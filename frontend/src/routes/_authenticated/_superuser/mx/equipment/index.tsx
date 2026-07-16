@@ -1,14 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Content } from '@/components/layout/Content';
 import { Head } from '@/components/ui';
+import { Link } from '@/components/base';
 
-export const Route = createFileRoute('/_authenticated/_superuser/mx/acquisition/')({
+export const Route = createFileRoute('/_authenticated/_superuser/mx/equipment/')({
     component: () => (
         <Content oneContent>
-            <Head title="Mx Acquisition" canGoBack/>
+            <Head title="Mx Equipment" canGoBack/>
 
             <div>
-                {/*<Link to='/mx/common/institution'>Institution</Link>*/ }
+                <Link to='/mx/equipment/platform_type'>Platform types</Link>
             </div>
         </Content>
     ),

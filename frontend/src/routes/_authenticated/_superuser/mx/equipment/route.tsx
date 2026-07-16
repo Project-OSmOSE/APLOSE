@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute(
-    '/_authenticated/_superuser/mx/acquisition',
+    '/_authenticated/_superuser/mx/equipment',
 )({
     component: Outlet,
 })
