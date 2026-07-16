@@ -94,4 +94,11 @@ export const queryKeys = {
     detector: {
         all: [ 'detector' ] as const,
     },
+    mx: {
+        common: {
+            allInstitutions: ['mx', 'common', 'institution'],
+            allTeams: ['mx', 'common', 'team'],
+            allPersons: ['mx', 'common', 'person'],
+        }
+    },
 };

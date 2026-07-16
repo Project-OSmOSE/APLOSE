@@ -1,0 +1,64 @@
+fragment Institution on InstitutionNode {
+    __typename
+    id
+    name
+}
+fragment Team on TeamNode {
+    __typename
+    id
+    name
+    institution {
+        name
+    }
+}
+fragment Person on PersonNode {
+    __typename
+    id
+    initialNames
+    firstName
+    lastName
+}
+
+query allInstitutions  { allInstitutions { results { ...Institution } } }
+query allTeams  { allTeams { results { ...Team } } }
+query allPersons  { allPersons { results { ...Person } } }
+
+mutation createContact($input: ContactMutationInput!) {
+    contact(input: $input) {
+        contact { id }
+        errors {
+            field
+            messages
+        }
+    }
+}
+
+mutation createInstitution($input: InstitutionMutationInput!) {
+    institution(input: $input) {
+        institution { ... Institution }
+        errors {
+            field
+            messages
+        }
+    }
+}
+
+mutation createTeam($input: TeamMutationInput!) {
+    team(input: $input) {
+        team { ...Team }
+        errors {
+            field
+            messages
+        }
+    }
+}
+
+mutation createPerson($input: PersonMutationInput!) {
+    person(input: $input) {
+        person { ...Person }
+        errors {
+            field
+            messages
+        }
+    }
+}

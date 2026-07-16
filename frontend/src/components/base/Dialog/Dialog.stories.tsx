@@ -1,6 +1,9 @@
 import { Dialog } from './index.ts';
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
-import { type ReactNode } from 'react';
+import React, { type ReactNode, useEffect, useRef } from 'react';
+// @ts-expect-error: using different ts-config: moduleResolution (see tsconfig.storybook.json)
+import { fn } from 'storybook/test';
+import { ButtonGroup } from '@/components/base';
 
 
 type Props = {
@@ -9,12 +12,12 @@ type Props = {
 const meta = {
     title: 'Base/Dialog',
     component: ({ content }: Props) => (
-        <Dialog.Root open>
+        <Dialog.Root>
             <Dialog.Trigger>
                 Open me
             </Dialog.Trigger>
             <Dialog.Portal>
-            { content }
+                { content }
             </Dialog.Portal>
         </Dialog.Root>
     ),
@@ -40,3 +43,28 @@ type Story = StoryObj<typeof meta>;
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {};
+
+const AwaitedComponent: React.FC = () => {
+    const resolveRef = useRef<(value: string) => void>()
+
+    useEffect(() => {
+        new Promise<string>((resolve) => {
+            resolveRef.current = resolve
+        }).then(fn(console.debug))
+    }, []);
+
+    return <Dialog.Content>
+        <Dialog.Title>Lorem ipsum</Dialog.Title>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        <ButtonGroup end>
+            <Dialog.Close onClick={ () => resolveRef?.current?.('cancel') }>Cancel</Dialog.Close>
+            <Dialog.Close onClick={ () => resolveRef?.current?.('confirm') }>Confirm</Dialog.Close>
+        </ButtonGroup>
+    </Dialog.Content>
+}
+export const Awaited: Story = {
+    args: {
+        open: undefined,
+        content: <AwaitedComponent/>
+    },
+};
