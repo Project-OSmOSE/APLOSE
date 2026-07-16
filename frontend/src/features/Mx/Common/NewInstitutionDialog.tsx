@@ -1,15 +1,15 @@
 import React, { useCallback, useRef } from 'react';
-import { Button, ButtonGroup, CreateDialog, Dialog, Field, Form, Toast } from '@/components/base'
+import { Button, ButtonGroup, CreateDialog, Dialog, Field, Form, Spinner, Toast } from '@/components/base'
 import { useMutation } from '@tanstack/react-query';
 import { getErrorMessage } from '@/service/function';
 import * as API from './api'
 
-export const NewInstitutionDialog: React.FC<CreateDialog.Props<API.InstitutionFragment>> = ({
-                                                                                                onCreate,
-                                                                                                input,
-                                                                                                children,
-                                                                                            }) => {
-    const { data, mutateAsync } = useMutation(API.createInstitution)
+export const NewInstitutionDialog: React.FC<CreateDialog.Props<API.InstitutionFragment, API.CreateInstitutionMutationVariables['input']>> = ({
+                                                                                                                                                 onCreate,
+                                                                                                                                                 input,
+                                                                                                                                                 children,
+                                                                                                                                             }) => {
+    const { data, mutateAsync, isPending } = useMutation(API.createInstitution)
     const toastManager = Toast.useToastManager()
     const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -46,36 +46,37 @@ export const NewInstitutionDialog: React.FC<CreateDialog.Props<API.InstitutionFr
 
             <Field.Root name="name">
                 <Field.Label required>Name</Field.Label>
-                <Field.Control type="text" required defaultValue={ input }/>
+                <Field.Control type="text" required defaultValue={ input?.name }/>
                 <Field.Error/>
             </Field.Root>
 
             <Field.Root name="city">
                 <Field.Label>City</Field.Label>
-                <Field.Control type="text"/>
+                <Field.Control type="text" defaultValue={ input?.city || undefined }/>
                 <Field.Error/>
             </Field.Root>
 
             <Field.Root name="country">
                 <Field.Label>Country</Field.Label>
-                <Field.Control type="text"/>
+                <Field.Control type="text" defaultValue={ input?.country || undefined }/>
                 <Field.Error/>
             </Field.Root>
 
             <Field.Root name="mail">
                 <Field.Label>Mail</Field.Label>
-                <Field.Control type="email"/>
+                <Field.Control type="email" defaultValue={ input?.mail || undefined }/>
                 <Field.Error/>
             </Field.Root>
 
             <Field.Root name="website">
                 <Field.Label>Website</Field.Label>
-                <Field.Control type="url"/>
+                <Field.Control type="url" defaultValue={ input?.website || undefined }/>
                 <Field.Error/>
             </Field.Root>
 
             <ButtonGroup spaceBetween>
                 <Dialog.Close>Cancel</Dialog.Close>
+                { isPending && <Spinner/> }
                 <Button color="primary" type="submit">Submit</Button>
             </ButtonGroup>
         </Form>

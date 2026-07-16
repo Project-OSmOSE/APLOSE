@@ -20,7 +20,7 @@ fragment Person on PersonNode {
 }
 
 query allInstitutions  { allInstitutions { results { ...Institution } } }
-query allTeams  { allTeams { results { ...Team } } }
+query allTeams($institutionId: ID)  { allTeams(institution: $institutionId) { results { ...Team } } }
 query allPersons  { allPersons { results { ...Person } } }
 
 mutation createContact($input: ContactMutationInput!) {
@@ -53,8 +53,8 @@ mutation createTeam($input: TeamMutationInput!) {
     }
 }
 
-mutation createPerson($input: PersonMutationInput!) {
-    person(input: $input) {
+mutation createPerson($input: PersonInput!) {
+    createPerson(input: $input) {
         person { ...Person }
         errors {
             field

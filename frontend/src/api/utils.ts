@@ -97,12 +97,12 @@ export function optimisticMutationOptions<
             const previousData = context.client.getQueryData(mutationKey)
 
             // Optimistic update
-            context.client.setQueryData(mutationKey, (previous: any) => [ ...previous, newData ])
+            context.client.setQueryData(mutationKey, (previous: any) => [ ...(previous || []), newData ])
 
             return { previousData } as any
         },
         onError: (_error, _new, onMutateResult, context) => {
-            context.client.setQueryData(queryKeys.mx.common.allInstitutions, onMutateResult!.previousData)
+            context.client.setQueryData(queryKeys.mx.common.allInstitutions, onMutateResult?.previousData)
         },
         onSettled: (_data, _error, _variables, _onMutateResult, context) =>
             context.client.invalidateQueries({ queryKey: mutationKey }),

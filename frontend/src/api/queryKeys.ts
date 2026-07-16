@@ -96,9 +96,10 @@ export const queryKeys = {
     },
     mx: {
         common: {
-            allInstitutions: ['mx', 'common', 'institution'],
-            allTeams: ['mx', 'common', 'team'],
-            allPersons: ['mx', 'common', 'person'],
-        }
+            allInstitutions: [ 'mx', 'common', 'institution' ] as const,
+            institutionTeams: (institutionID?: string | null) => [ 'mx', 'common', 'institution', institutionID, 'team' ] as const,
+            allTeams: [ 'mx', 'common', 'team' ] as const,
+            allPersons: [ 'mx', 'common', 'person' ] as const,
+        },
     },
 };

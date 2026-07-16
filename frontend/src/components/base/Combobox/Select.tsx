@@ -1,8 +1,17 @@
-import React, { Fragment, type FunctionComponent, type ReactNode, useCallback, useMemo, useState } from 'react';
+import React, {
+    Fragment,
+    type FunctionComponent,
+    type ReactNode,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import type { ComboboxRootProps } from '@base-ui/react/combobox'
 import { Combobox } from './index';
 import { CreateDialog } from '../CreateDialog'
 import styles from './Combobox.module.scss'
+import { Spinner } from '@/components/base';
 
 export type CreateValue = {
     __create: string,
@@ -14,6 +23,7 @@ export type ComboboxSelectProps<Value, Multiple extends boolean | undefined = fa
     ComboboxRootProps<Value, Multiple> & {
     itemName: string
     id?: string
+    loading?: boolean
     placeholder?: string
     'data-testid'?: string,
     itemToElementLabel?: (item: Value) => ReactNode,
@@ -44,31 +54,48 @@ function Portal<Value, Multiple extends boolean | undefined = false>({
     </Combobox.Portal>
 }
 
-type Creatable<Data> = {
-    createDialog: FunctionComponent<CreateDialog.Props<Data>>
+export type ComboboxCreatableProps<Data, InputData extends Record<string, any>> =
+    Omit<ComboboxSelectProps<Data, false>, 'multiple' | 'inputValue' | 'onInputValueChange' | 'onValueChange'> & {
+    createDialog: FunctionComponent<CreateDialog.Props<Data, InputData>>
+    inputKey: keyof InputData,
+    additionalInput?: Partial<InputData>
+    onValueChange?: (value: Data | null) => void
 }
 
-export function ComboboxCreatableSelect<Value>({
-                                                   itemName,
-                                                   id,
-                                                   placeholder,
-                                                   itemToStringLabel,
-                                                   itemToElementLabel,
-                                                   disabled,
-                                                   items,
-                                                   createDialog,
-                                                   ...props
-                                               }: Omit<ComboboxSelectProps<Value, false>, 'multiple' | 'inputValue' | 'onInputValueChange' | 'value' | 'onValueChange'> & Creatable<Value>): React.JSX.Element {
-    const [ query, setQuery ] = useState<string>('');
-    const [ selected, setSelected ] = useState<Value | null>(null);
+export function ComboboxCreatableSelect<Value, InputData extends Record<string, any>>({
+                                                                                          itemName,
+                                                                                          id,
+                                                                                          placeholder,
+                                                                                          itemToStringLabel,
+                                                                                          itemToElementLabel,
+                                                                                          disabled,
+                                                                                          items,
+                                                                                          value,
+                                                                                          createDialog,
+                                                                                          onValueChange,
+                                                                                          inputKey,
+                                                                                          loading,
+                                                                                          additionalInput,
+                                                                                          readOnly,
+                                                                                          ...props
+                                                                                      }: ComboboxCreatableProps<Value, InputData>): React.JSX.Element {
     const createDialogManager = CreateDialog.useManager()
+    const [ query, setQuery ] = useState<string>('');
+    const [ selected, _setSelected ] = useState<Value | null>(value || null);
+    const setSelected = useCallback((data: Value | null) => {
+        onValueChange?.(data)
+        _setSelected(data)
+    }, [ onValueChange ]);
+    useEffect(() => {
+        setSelected(value || null)
+    }, [ value ]);
 
     const itemsForView: readonly (Value | CreateValue)[] = useMemo(() => {
         if (!items) return []
         const trimmed = query.trim();
         if (trimmed === '') return items
         const lowered = trimmed.toLocaleLowerCase();
-        const exactExists = items.some((l: Value) => (itemToStringLabel?.(l) ?? l as string).trim().toLocaleLowerCase() === lowered);
+        const exactExists = items.some((l: Value) => (itemToStringLabel?.(l) ?? JSON.stringify(l)).trim().toLocaleLowerCase() === lowered);
         if (exactExists) return items
         return [ ...items, {
             __create: trimmed,
@@ -80,7 +107,7 @@ export function ComboboxCreatableSelect<Value>({
     const _itemToStringLabel = useCallback((data: Value | CreateValue | null) => {
         if (!data) return '-';
         if ((data as CreateValue).__create) return (data as CreateValue).label;
-        return itemToStringLabel?.(data as Value) ?? data as string
+        return itemToStringLabel?.(data as Value) ?? JSON.stringify(data)
     }, [ itemToStringLabel ])
 
     const _itemToElementLabel = useCallback((data: Value | CreateValue | null) => {
@@ -92,10 +119,13 @@ export function ComboboxCreatableSelect<Value>({
     const _onValueChange = useCallback((data: Value | CreateValue | null) => {
         if (!data) setSelected(data)
         else if ((data as CreateValue).__create) {
-            createDialogManager.create<Value>(createDialog, (data as CreateValue).__create).then(setSelected)
+            createDialogManager.create<Value, InputData>(createDialog, {
+                ...additionalInput,
+                [inputKey]: (data as CreateValue).__create,
+            } as InputData).then(setSelected)
             setQuery('');
         } else setSelected(data as Value | null)
-    }, [ createDialogManager, createDialog, query ])
+    }, [ createDialogManager, createDialog, query, setSelected, inputKey, additionalInput ])
 
     return (
         <Combobox.Root itemToStringLabel={ _itemToStringLabel }
@@ -105,18 +135,18 @@ export function ComboboxCreatableSelect<Value>({
                        value={ selected }
                        onInputValueChange={ setQuery }
                        onValueChange={ _onValueChange }
+                       readOnly={ readOnly }
                        { ...props }>
 
             <Combobox.InputGroup>
                 <Combobox.Input placeholder={ placeholder ? placeholder : `Select or create ${ itemName }` }
                                 id={ id }/>
-                { !disabled && <Fragment>
-                    <Combobox.Clear/>
-                </Fragment> }
-                <Combobox.Trigger/>
-                { _itemToElementLabel && <span className={ styles.Value }>
+                { loading && <Spinner size={ 16 } className={ styles.Spinner }/> }
+                { !disabled && !readOnly && <Combobox.Clear/> }
+                { !readOnly && <Combobox.Trigger/> }
+                <span className={ styles.Value }>
                     <Combobox.Value children={ item => _itemToElementLabel(item) }/>
-                </span> }
+                </span>
             </Combobox.InputGroup>
 
             <Portal itemName={ itemName }

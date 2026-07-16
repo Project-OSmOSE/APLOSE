@@ -3,8 +3,6 @@ import { useMutation } from '@tanstack/react-query';
 import { type BaseUIEvent } from '@base-ui/react';
 import { useNavigate } from '@tanstack/react-router';
 import { InfoCircle } from '@solar-icons/react';
-
-import { cleanGqlErrors } from '@/api/utils';
 import { Button, ButtonGroup, Checkbox, Field, Fieldset, Form, Link, Note, Spinner, Toast } from '@/components/base';
 
 import { useAppDispatch } from '@/features/App';
@@ -75,10 +73,8 @@ export const Create: React.FC = () => {
         }
     }, [ mutateAsync, toastManager, navigate, dispatch ])
 
-    const errors = useMemo(() => cleanGqlErrors(data?.errors), [ data ])
-
     return <Form onSubmit={ submit }
-                 errors={ errors }
+                 gqlErrors={ data?.errors }
                  className={ styles.Create }>
 
         <Fieldset.Root>

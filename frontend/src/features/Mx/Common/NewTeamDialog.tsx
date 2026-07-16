@@ -1,12 +1,12 @@
 import React, { useCallback, useRef } from 'react';
-import { Button, ButtonGroup, CreateDialog, Dialog, Field, Form, Toast } from '@/components/base'
+import { Button, ButtonGroup, CreateDialog, Dialog, Field, Form, Spinner, Toast } from '@/components/base'
 import { useMutation } from '@tanstack/react-query';
 import { getErrorMessage } from '@/service/function';
 import { InstitutionSelect } from './InstitutionSelect'
 import * as API from './api'
 
-export const NewTeamDialog: React.FC<CreateDialog.Props<API.TeamFragment>> = ({ input, onCreate, children }) => {
-    const { data, mutateAsync } = useMutation(API.createTeam)
+export const NewTeamDialog: React.FC<CreateDialog.Props<API.TeamFragment, API.CreateTeamMutationVariables['input']>> = ({ input, onCreate, children }) => {
+    const { data, mutateAsync, isPending } = useMutation(API.createTeam)
     const toastManager = Toast.useToastManager()
     const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -42,30 +42,31 @@ export const NewTeamDialog: React.FC<CreateDialog.Props<API.TeamFragment>> = ({ 
 
             <Field.Root name="name">
                 <Field.Label required>Name</Field.Label>
-                <Field.Control type="text" required defaultValue={ input }/>
+                <Field.Control type="text" required defaultValue={ input?.name }/>
                 <Field.Error/>
             </Field.Root>
 
             <Field.Root name="institution">
                 <Field.Label required>Institution</Field.Label>
-                <InstitutionSelect required creatable/>
+                <InstitutionSelect required creatable fixedValueID={ input?.institution || undefined }/>
                 <Field.Error/>
             </Field.Root>
 
             <Field.Root name="mail">
                 <Field.Label>Mail</Field.Label>
-                <Field.Control type="email"/>
+                <Field.Control type="email" defaultValue={ input?.mail || undefined }/>
                 <Field.Error/>
             </Field.Root>
 
             <Field.Root name="website">
                 <Field.Label>Website</Field.Label>
-                <Field.Control type="url"/>
+                <Field.Control type="url" defaultValue={ input?.website || undefined }/>
                 <Field.Error/>
             </Field.Root>
 
             <ButtonGroup spaceBetween>
                 <Dialog.Close>Cancel</Dialog.Close>
+                { isPending && <Spinner/> }
                 <Button color="primary" type="submit">Submit</Button>
             </ButtonGroup>
         </Form>

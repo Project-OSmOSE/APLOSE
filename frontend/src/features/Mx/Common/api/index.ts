@@ -8,6 +8,7 @@ import {
     type AllPersonsQuery,
     AllTeamsDocument,
     type AllTeamsQuery,
+    type AllTeamsQueryVariables,
     CreateInstitutionDocument,
     type CreateInstitutionMutation,
     type CreateInstitutionMutationVariables,
@@ -35,6 +36,13 @@ export const allTeamsQuery = queryOptions({
         .then(data => cleanGqlList(data.allTeams?.results)),
 })
 
+export const institutionTeamsQuery = (vars: Pick<AllTeamsQueryVariables, 'institutionId'>) => queryOptions({
+    queryKey: queryKeys.mx.common.institutionTeams(vars.institutionId),
+    enabled: !!vars.institutionId,
+    queryFn: () => graphqlClient.request<AllTeamsQuery>(AllTeamsDocument, vars)
+        .then(data => cleanGqlList(data.allTeams?.results)),
+})
+
 export const allPersonsQuery = queryOptions({
     queryKey: queryKeys.mx.common.allPersons,
     queryFn: () => graphqlClient.request<AllPersonsQuery>(AllPersonsDocument, {})
@@ -56,7 +64,7 @@ export const createTeam = optimisticMutationOptions({
 export const createPerson = optimisticMutationOptions({
     mutationKey: queryKeys.mx.common.allPersons,
     mutationFn: (input: CreatePersonMutationVariables['input']) => graphqlClient.request<CreatePersonMutation>(CreatePersonDocument, { input })
-        .then(data => data.person),
+        .then(data => data.createPerson),
 })
 
 export type ContactFragment = InstitutionFragment | TeamFragment | PersonFragment;

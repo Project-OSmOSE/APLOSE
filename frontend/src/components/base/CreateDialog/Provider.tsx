@@ -13,12 +13,12 @@ import type { Props } from './types';
 
 
 type CreateDialogContext = {
-    create: <Data>(element: FunctionComponent<Props<Data>>, input?: string) => Promise<Data | null>;
+    create: <Data, InputData extends Record<string, any>>(element: FunctionComponent<Props<Data, InputData>>, input?: Partial<InputData>) => Promise<Data | null>;
 };
 
-type DialogElement<Data> = {
-    element: FunctionComponent<Props<Data>>;
-    input?: string;
+type DialogElement<Data, InputData extends Record<string, any>> = {
+    element: FunctionComponent<Props<Data, InputData>>;
+    input?: Partial<InputData>;
     resolve: (data: Data | null) => void;
 }
 
@@ -35,8 +35,8 @@ export const useCreateDialogContext = () => {
 }
 
 const Display: React.FC<{
-    dialogs: DialogElement<any>[],
-    onUpdated: (newDialogs: DialogElement<any>[]) => void
+    dialogs: DialogElement<any, any>[],
+    onUpdated: (newDialogs: DialogElement<any, any>[]) => void
 }> = ({ dialogs, onUpdated }) => {
     const current = dialogs[0];
     const others = dialogs.slice(1);
@@ -46,7 +46,7 @@ const Display: React.FC<{
         onUpdated([])
     }, [ onUpdated ])
 
-    const onChildUpdated = useCallback((newDialogs: DialogElement<any>[]) => {
+    const onChildUpdated = useCallback((newDialogs: DialogElement<any, any>[]) => {
         return onUpdated([ current, ...newDialogs ])
     }, [ onUpdated, current ])
 
@@ -63,9 +63,9 @@ const Display: React.FC<{
 }
 
 export const Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [ dialogs, setDialogs ] = useState<DialogElement<any>[]>([]);
+    const [ dialogs, setDialogs ] = useState<DialogElement<any, any>[]>([]);
 
-    const create = useCallback(function <Data>(element: FunctionComponent<Props<Data>>, input?: string) {
+    const create = useCallback(function <Data, InputData extends Record<string, any>>(element: FunctionComponent<Props<Data, InputData>>, input?: Partial<InputData>) {
         return new Promise<Data | null>((resolve) => setDialogs(prev => [ ...prev, { element, input, resolve } ]))
     }, [ dialogs ])
 

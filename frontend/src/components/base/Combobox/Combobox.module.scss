@@ -10,6 +10,13 @@ $icon-size: 1.5rem;
     padding-right: #{Input.$horizontal-space};
   }
 
+  .Spinner {
+    right: #{Input.$horizontal-space};
+    position: absolute;
+    top: 50%;
+    translate: 0 -50%;
+  }
+
   .Value {
     right: #{Input.$horizontal-space};
     left: #{Input.$horizontal-space};
@@ -17,6 +24,7 @@ $icon-size: 1.5rem;
     top: 50%;
     transform: translateY(-50%);
     background: var(--color-light-shade);
+    user-select: none;
   }
 
   &[data-disabled] {
@@ -28,7 +36,7 @@ $icon-size: 1.5rem;
       padding-right: calc(3 * #{Input.$horizontal-space} + 2 * #{$icon-size});
     }
 
-    .Value {
+    .Value, .Spinner {
       right: calc(3 * #{Input.$horizontal-space} + 2 * #{$icon-size});
     }
 
@@ -47,7 +55,7 @@ $icon-size: 1.5rem;
       padding-right: calc(2 * #{Input.$horizontal-space} + #{$icon-size});
     }
 
-    .Value {
+    .Value, .Spinner {
       right: calc(2 * #{Input.$horizontal-space} + #{$icon-size});
     }
 
