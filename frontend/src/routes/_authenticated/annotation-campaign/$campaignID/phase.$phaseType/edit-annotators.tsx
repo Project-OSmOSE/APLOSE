@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'reac
 import { createFileRoute, useLoaderData, useRouter } from '@tanstack/react-router';
 
 import { Head, Table, Tbody, Th, Thead, Tr } from '@/components/ui';
-import { Button, ButtonGroup, Combobox, ComboboxMultiSelect, Form, Note, Spinner, Toast } from '@/components/base';
+import { Button, ButtonGroup, Combobox, ComboboxSelect, Form, Note, Spinner, Toast } from '@/components/base';
 
 import { AnnotationFileRangeInput, AnnotationPhaseType } from '@/api';
 import { getNewItemID } from '@/service/function';
@@ -61,23 +61,24 @@ export const Search: React.FC<{
             }
         }))
     }, [ items, inputValue, contains ])
-    return <ComboboxMultiSelect items={ items }
-                                itemName="search"
-                                itemToStringLabel={ item => {
-                                    switch (item.__typename) {
-                                        case 'UserGroupNode':
-                                            return item.name
-                                        case 'UserNode':
-                                            return item.displayName ?? item.username
-                                    }
-                                } }
-                                inputValue={ inputValue }
-                                onInputValueChange={ setInputValue }
-                                filteredItems={ filteredItems }
-                                itemToStringValue={ item => item.id }
-                                isItemEqualToValue={ (a, b) => a.id === b.id }
-                                value={ [] as SearchValue[] }
-                                onValueChange={ onValueChange }
+    return <ComboboxSelect items={ items }
+                           itemName="search"
+                           itemToStringLabel={ item => {
+                               switch (item.__typename) {
+                                   case 'UserGroupNode':
+                                       return item.name
+                                   case 'UserNode':
+                                       return item.displayName ?? item.username
+                               }
+                           } }
+                           inputValue={ inputValue }
+                           onInputValueChange={ setInputValue }
+                           filteredItems={ filteredItems }
+                           itemToStringValue={ item => item.id }
+                           isItemEqualToValue={ (a, b) => a.id === b.id }
+                           multiple
+                           value={ [] as SearchValue[] }
+                           onValueChange={ onValueChange }
     />
 }
 

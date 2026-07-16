@@ -53,5 +53,5 @@ export const Email: React.FC = () => {
                 </ButtonGroup>
             </Fieldset.Root>
         </Form>,
-        [ isPending, submit, user, errors ])
+        [ isPending, submit, user, data ])
 }
