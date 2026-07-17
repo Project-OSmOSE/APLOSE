@@ -11,6 +11,7 @@ export const Route = createFileRoute('/_authenticated/_superuser/mx/')({
             <div>
                 <Link to='/mx/common'>Mx Common</Link>
                 <Link to='/mx/equipment'>Mx Equipment</Link>
+                <Link to='/mx/acquisition'>Mx Acquisition</Link>
             </div>
         </Content>
     )
