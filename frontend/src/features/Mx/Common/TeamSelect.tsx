@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { type ComboboxSelectProps, ComboboxSelect } from '@/components/base/Combobox'
+import { ComboboxSelect, type ComboboxSelectProps } from '@/components/base/Combobox'
 import { NewTeamDialog } from './NewTeamDialog'
 import * as API from './api'
 
@@ -8,7 +8,7 @@ type Props =
     Omit<ComboboxSelectProps<API.TeamFragment, API.CreateTeamMutationVariables['input']>, 'createDialog' | 'itemName' | 'inputKey'>
 
 export const TeamSelect: React.FC<Props> = ({ creatable, items, ...props }) => {
-    const { data: teams } = useQuery({ ...API.allTeamsQuery, enabled: !items })
+    const { data: teams, isFetching } = useQuery({ ...API.allTeamsQuery, enabled: !items })
 
     return <ComboboxSelect itemName="team"
                            itemToStringLabel={ item => item.name }
@@ -17,6 +17,7 @@ export const TeamSelect: React.FC<Props> = ({ creatable, items, ...props }) => {
                            creatable={ creatable }
                            createDialog={ NewTeamDialog }
                            items={ items || teams }
+                           loading={ isFetching }
                            inputKey="name"
                            { ...props }/>
 }

@@ -11,7 +11,7 @@ type Props =
 }
 
 export const InstitutionSelect: React.FC<Props> = ({ creatable, fixedValueID, ...props }) => {
-    const { data: institutions } = useQuery(API.allInstitutionsQuery)
+    const { data: institutions, isFetching } = useQuery(API.allInstitutionsQuery)
 
     const fixedValue = useMemo(() => {
         return institutions?.find(i => i.id === fixedValueID)
@@ -26,6 +26,7 @@ export const InstitutionSelect: React.FC<Props> = ({ creatable, fixedValueID, ..
                            value={ fixedValue }
                            readOnly={ !!fixedValue }
                            inputKey="name"
+                           loading={ isFetching }
                            createDialog={ NewInstitutionDialog }
                            creatable={ creatable }
                            { ...props }/>
