@@ -9,17 +9,17 @@ import * as API from './api'
 
 type BaseProps<Fragment> = Omit<ComboboxSelectProps<Fragment>, 'items' | 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue' | 'itemName'>
 type ContactSelectProps =
-    ({ type: 'Institution' } & BaseProps<API.InstitutionFragment>) |
-    ({ type: 'Team' } & BaseProps<API.TeamFragment>) |
-    ({ type: 'Person' } & BaseProps<API.PersonFragment>);
+    ({ type: 'institution' } & BaseProps<API.InstitutionFragment>) |
+    ({ type: 'team' } & BaseProps<API.TeamFragment>) |
+    ({ type: 'person' } & BaseProps<API.PersonFragment>);
 
 export const ContactSelect: React.FC<ContactSelectProps> = ({ type, ...props }) => {
     switch (type) {
-        case 'Institution':
+        case 'institution':
             return <InstitutionSelect { ...props as BaseProps<API.InstitutionFragment> }/>
-        case 'Team':
+        case 'team':
             return <TeamSelect { ...props as BaseProps<API.TeamFragment> }/>
-        case 'Person':
+        case 'person':
             return <PersonSelect { ...props as BaseProps<API.PersonFragment> }/>
     }
 }

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 export type Props<Data, InputData extends Record<string, any>> = {
-    children: ReactNode;
+    children?: ReactNode;
     input?: Partial<InputData>;
-    onCreate: (data: Data) => void;
+    onCreate?: (data: Data) => void;
 }

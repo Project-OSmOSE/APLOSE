@@ -62,3 +62,17 @@ mutation createPerson($input: PersonInput!) {
         }
     }
 }
+
+fragment ContactType on ContentTypeNode {
+    id
+    model
+}
+
+query contactTypes {
+    contentTypes(
+        appLabel: "common"
+        model_In: ["institution", "team", "person"]
+    ) {
+        results { ...ContactType }
+    }
+}

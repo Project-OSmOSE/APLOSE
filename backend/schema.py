@@ -1,7 +1,9 @@
 """GraphQL Schema"""
 
 import graphene
+from django.contrib.contenttypes.models import ContentType
 from django_extension.filters import IDFilter
+from django_extension.schema.types import ExtendedNode
 from django_filters import NumberFilter, FilterSet
 from graphene import relay, Field
 from graphene_django.debug import DjangoDebug
@@ -100,6 +102,18 @@ class ChannelConfigurationNode(MxChannelConfigurationNode):
         filterset_class = ChannelConfigurationFilterSet
 
 
+class ContentTypeNode(ExtendedNode):
+    class Meta:
+        model = ContentType
+        fields = "__all__"
+        filter_fields = {
+            "id": ("exact",),
+            "app_label": ("exact",),
+            "model": ("in",),
+        }
+        interfaces = (relay.Node,)
+
+
 class Query(
     StorageQuery,
     APIQuery,
@@ -111,6 +125,8 @@ class Query(
     """Global query"""
 
     debug = graphene.Field(DjangoDebug, name="_debug")
+
+    content_types = DjangoPaginationConnectionField(ContentTypeNode)
 
     all_deployments = DjangoPaginationConnectionField(DeploymentNode)
     all_channel_configurations = DjangoPaginationConnectionField(

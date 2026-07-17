@@ -9,7 +9,8 @@ export const Route = createFileRoute('/_authenticated/_superuser/mx/equipment/')
             <Head title="Mx Equipment" canGoBack/>
 
             <div>
-                <Link to='/mx/equipment/platform_type'>Platform types</Link>
+                <Link to="/mx/equipment/platform_type">Platform types</Link>
+                <Link to="/mx/equipment/platform">Platform</Link>
             </div>
         </Content>
     ),

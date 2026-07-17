@@ -9,6 +9,8 @@ import {
     AllTeamsDocument,
     type AllTeamsQuery,
     type AllTeamsQueryVariables,
+    ContactTypesDocument,
+    type ContactTypesQuery,
     CreateInstitutionDocument,
     type CreateInstitutionMutation,
     type CreateInstitutionMutationVariables,
@@ -47,6 +49,12 @@ export const allPersonsQuery = queryOptions({
     queryKey: queryKeys.mx.common.allPersons,
     queryFn: () => graphqlClient.request<AllPersonsQuery>(AllPersonsDocument, {})
         .then(data => cleanGqlList(data.allPersons?.results)),
+})
+
+export const contactTypesQuery = queryOptions({
+    queryKey: queryKeys.mx.common.contactTypes,
+    queryFn: () => graphqlClient.request<ContactTypesQuery>(ContactTypesDocument, {})
+        .then(data => cleanGqlList(data.contentTypes?.results)),
 })
 
 export const createInstitution = optimisticMutationOptions({

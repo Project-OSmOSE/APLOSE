@@ -17,3 +17,23 @@ mutation createPlatformType($input: PlatformTypeMutationInput!) {
         errors { field, messages }
     }
 }
+
+
+# Platform
+fragment Platform on PlatformNode {
+    id
+    name
+}
+
+query allPlatforms {
+    allPlatforms {
+        results { ...Platform }
+    }
+}
+
+mutation createPlatform($input: PlatformMutationInput!) {
+    platform(input: $input) {
+        platform { ...Platform }
+        errors { field, messages }
+    }
+}
