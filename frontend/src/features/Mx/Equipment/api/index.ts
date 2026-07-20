@@ -65,4 +65,17 @@ export const createEquipmentModel = optimisticMutationOptions({
             .then(data => data.createEquipmentModel),
 })
 
+export const allEquipmentQuery = queryOptions({
+    queryKey: queryKeys.mx.equipment.allEquipments,
+    queryFn: () => graphqlClient.request<AllEquipmentsQuery>(AllEquipmentsDocument, {})
+        .then(data => cleanGqlList(data.allEquipments?.results)),
+})
+
+export const createEquipment = optimisticMutationOptions({
+    mutationKey: queryKeys.mx.equipment.allEquipments,
+    mutationFn: (input: CreateEquipmentMutationVariables['input']) =>
+        graphqlClient.request<CreateEquipmentMutation>(CreateEquipmentDocument, { input })
+            .then(data => data.equipment),
+})
+
 export type * from './Equipment.generated'

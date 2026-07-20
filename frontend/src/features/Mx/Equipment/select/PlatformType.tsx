@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { type ComboboxSelectProps, ComboboxSelect } from '@/components/base/Combobox'
-import { NewPlatformTypeDialog } from './NewPlatformTypeDialog'
-import * as API from './api'
+import { NewPlatformTypeDialog } from '../NewPlatformTypeDialog'
+import * as API from '../api'
 
 type Props =
     Omit<ComboboxSelectProps<API.PlatformTypeFragment, API.CreatePlatformTypeMutationVariables['input']>, 'createDialog' | 'itemName' | 'inputKey'>

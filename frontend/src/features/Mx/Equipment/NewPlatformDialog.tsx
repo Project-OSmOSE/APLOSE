@@ -9,7 +9,7 @@ import {
     type MxCommonAPI,
 } from '@/features/Mx/Common';
 import * as API from './api'
-import { PlatformTypeSelect } from './PlatformTypeSelect';
+import { PlatformTypeSelect } from './select';
 import styles from './styles.module.scss'
 
 const DEFAULT_OWNER_TYPE: ContactType = 'institution'

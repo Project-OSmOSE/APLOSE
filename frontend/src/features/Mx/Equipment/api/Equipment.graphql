@@ -1,5 +1,4 @@
 # PlatformType
-
 fragment PlatformType on PlatformTypeNode {
     id
     name
@@ -43,6 +42,9 @@ mutation createPlatform($input: PlatformMutationInput!) {
 fragment EquipmentModel on EquipmentModelNode {
     id
     name
+    specifications {
+        __typename
+    }
 }
 
 query allEquipmentModels {
