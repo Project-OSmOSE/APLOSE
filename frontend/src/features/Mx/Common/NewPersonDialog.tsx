@@ -1,7 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Button, ButtonGroup, CreateDialog, Dialog, Field, Form, Note, Spinner, Toast } from '@/components/base'
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { getErrorMessage } from '@/service/function';
 import * as API from './api'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
 import { InstitutionSelect } from './InstitutionSelect';
@@ -39,13 +38,8 @@ export const NewPersonDialog: React.FC<CreateDialog.Props<API.PersonFragment, AP
                 onCreate?.(data.person)
                 closeRef.current?.click()
             }
-        } catch (e) {
-            console.error(e)
-            toastManager.add({
-                title: 'Fail creating person',
-                description: getErrorMessage(e),
-                type: 'error',
-            })
+        } catch (error) {
+            toastManager.addError({ error, title: 'Fail creating person' })
         }
     }, [ mutateAsync, toastManager, onCreate, institutionRows ])
 

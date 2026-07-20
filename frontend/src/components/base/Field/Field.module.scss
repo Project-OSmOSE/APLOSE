@@ -13,20 +13,12 @@
 }
 
 .Label {
+  display: flex;
   font-size: 0.9rem;
   font-weight: 300;
   padding-left: 0.5rem;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
   margin: 0;
-
-  text-transform: lowercase;
-  &:first-letter {
-    text-transform: uppercase;
-  }
-
-  > * {
-    margin-left: 0.25rem;
-  }
 }
 

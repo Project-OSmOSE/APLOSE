@@ -4,3 +4,14 @@
   gap: 0.5rem;
   align-items: start;
 }
+
+.UpperLabel {
+  display: block;
+
+  &:first-letter {
+    text-transform: uppercase;
+  }
+  &:not(:first-letter) {
+    text-transform: lowercase;
+  }
+}

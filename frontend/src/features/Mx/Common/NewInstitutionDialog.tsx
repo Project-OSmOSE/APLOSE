@@ -1,7 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import { Button, ButtonGroup, CreateDialog, Dialog, Field, Form, Spinner, Toast } from '@/components/base'
 import { useMutation } from '@tanstack/react-query';
-import { getErrorMessage } from '@/service/function';
 import * as API from './api'
 
 export const NewInstitutionDialog: React.FC<CreateDialog.Props<API.InstitutionFragment, API.CreateInstitutionMutationVariables['input']>> = ({
@@ -29,12 +28,8 @@ export const NewInstitutionDialog: React.FC<CreateDialog.Props<API.InstitutionFr
                 onCreate?.(data.institution)
                 closeRef.current?.click()
             }
-        } catch (e) {
-            toastManager.add({
-                title: 'Fail creating institution',
-                description: getErrorMessage(e),
-                type: 'error',
-            })
+        } catch (error) {
+            toastManager.addError({ error, title: 'Fail creating institution' })
         }
     }, [ mutateAsync, toastManager, onCreate ])
 

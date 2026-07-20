@@ -1,14 +1,13 @@
 import React, { useCallback, useRef } from 'react';
 import { Button, ButtonGroup, Checkbox, CreateDialog, Dialog, Field, Form, Spinner, Toast } from '@/components/base'
 import { useMutation } from '@tanstack/react-query';
-import { getErrorMessage } from '@/service/function';
 import * as API from './api'
 
 export const NewPlatformTypeDialog: React.FC<CreateDialog.Props<API.PlatformTypeFragment, API.CreatePlatformTypeMutationVariables['input']>> = ({
-                                                                                                                                                 onCreate,
-                                                                                                                                                 input,
-                                                                                                                                                 children,
-                                                                                                                                             }) => {
+                                                                                                                                                    onCreate,
+                                                                                                                                                    input,
+                                                                                                                                                    children,
+                                                                                                                                                }) => {
     const { data, mutateAsync, isPending } = useMutation(API.createPlatformType)
     const toastManager = Toast.useToastManager()
     const closeRef = useRef<HTMLButtonElement>(null);
@@ -26,12 +25,8 @@ export const NewPlatformTypeDialog: React.FC<CreateDialog.Props<API.PlatformType
                 onCreate?.(data.platformType)
                 closeRef.current?.click()
             }
-        } catch (e) {
-            toastManager.add({
-                title: 'Fail creating platform type',
-                description: getErrorMessage(e),
-                type: 'error',
-            })
+        } catch (error) {
+            toastManager.addError({ error, title: 'Fail creating platform type' })
         }
     }, [ mutateAsync, toastManager, onCreate ])
 

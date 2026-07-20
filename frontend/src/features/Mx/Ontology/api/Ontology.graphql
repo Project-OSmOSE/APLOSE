@@ -1,0 +1,10 @@
+fragment Label on LabelNode {
+    id
+    displayName
+}
+
+query allLabels {
+    allLabels {
+        results { ...Label }
+    }
+}

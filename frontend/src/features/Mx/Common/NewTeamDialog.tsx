@@ -1,11 +1,14 @@
 import React, { useCallback, useRef } from 'react';
 import { Button, ButtonGroup, CreateDialog, Dialog, Field, Form, Spinner, Toast } from '@/components/base'
 import { useMutation } from '@tanstack/react-query';
-import { getErrorMessage } from '@/service/function';
 import { InstitutionSelect } from './InstitutionSelect'
 import * as API from './api'
 
-export const NewTeamDialog: React.FC<CreateDialog.Props<API.TeamFragment, API.CreateTeamMutationVariables['input']>> = ({ input, onCreate, children }) => {
+export const NewTeamDialog: React.FC<CreateDialog.Props<API.TeamFragment, API.CreateTeamMutationVariables['input']>> = ({
+                                                                                                                            input,
+                                                                                                                            onCreate,
+                                                                                                                            children,
+                                                                                                                        }) => {
     const { data, mutateAsync, isPending } = useMutation(API.createTeam)
     const toastManager = Toast.useToastManager()
     const closeRef = useRef<HTMLButtonElement>(null);
@@ -25,12 +28,8 @@ export const NewTeamDialog: React.FC<CreateDialog.Props<API.TeamFragment, API.Cr
                 onCreate?.(data.team)
                 closeRef.current?.click()
             }
-        } catch (e) {
-            toastManager.add({
-                title: 'Fail creating team',
-                description: getErrorMessage(e),
-                type: 'error',
-            })
+        } catch (error) {
+            toastManager.addError({ error, title: 'Fail creating team' })
         }
     }, [ mutateAsync, toastManager, onCreate ])
 

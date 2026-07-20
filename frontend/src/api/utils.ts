@@ -1,5 +1,5 @@
 import type { Errors } from '@base-ui/react/internals/form-context';
-import type { ErrorType } from '@/api/types.gql-generated';
+import { ByteUnitEnum, type ErrorType, HydrophoneDirectivityEnum } from '@/api/types.gql-generated';
 import { AppStore } from '@/features/App';
 import type {
     ApiEndpointQuery,
@@ -76,6 +76,7 @@ export async function ensureValidQueryData<TQueryFnData, TError = DefaultError, 
 }
 
 type TOnMutateResult<TData> = { previousData: TData }
+
 export function optimisticMutationOptions<
     TData = unknown,
     TError = DefaultError,
@@ -108,3 +109,22 @@ export function optimisticMutationOptions<
             context.client.invalidateQueries({ queryKey: mutationKey }),
     })
 }
+
+export const ByteUnits: Array<ByteUnitEnum> = [
+    ByteUnitEnum.B,
+    ByteUnitEnum.Kb,
+    ByteUnitEnum.Mb,
+    ByteUnitEnum.Gb,
+    ByteUnitEnum.Tb,
+    ByteUnitEnum.Pb,
+    ByteUnitEnum.Eb,
+    ByteUnitEnum.Zb,
+]
+
+export const HydrophoneDirectivities: Array<HydrophoneDirectivityEnum> = [
+    HydrophoneDirectivityEnum.UniDirectional,
+    HydrophoneDirectivityEnum.BiDirectional,
+    HydrophoneDirectivityEnum.OmniDirectional,
+    HydrophoneDirectivityEnum.Cardioid,
+    HydrophoneDirectivityEnum.Supercardioid,
+]

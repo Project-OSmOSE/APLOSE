@@ -3,3 +3,4 @@ export * as Mx from './index.parts.ts';
 
 export * as MxCommon from './Common'
 export * as MxEquipment from './Equipment'
+export * as MxOntology from './Ontology'

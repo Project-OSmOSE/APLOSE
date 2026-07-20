@@ -17,7 +17,7 @@ import { useLoaderData } from '@tanstack/react-router';
 import { ChatLine, ChatSquare, CheckCircle, CloseCircle } from '@solar-icons/react';
 import { Button, Dialog } from '@/components/base';
 import { LabelDialog } from '@/features/Labels';
-import type { LabelFragment } from '@/features/Labels/api';
+import type { AnnotationLabelFragment } from '@/features/Labels/api';
 
 export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
     const { campaign, labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
@@ -30,7 +30,7 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
     const { user } = useLoaderData({ from: '/_authenticated' })
 
     const updateAnnotation = useUpdateAnnotation()
-    const updateLabel = useCallback((label: LabelFragment) => {
+    const updateLabel = useCallback((label: AnnotationLabelFragment) => {
         if (!annotation) return;
         updateAnnotation(annotation, { label: label.name })
     }, [ annotation, updateAnnotation ]);

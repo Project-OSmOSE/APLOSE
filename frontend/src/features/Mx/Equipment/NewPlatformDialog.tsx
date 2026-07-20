@@ -1,6 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { getErrorMessage } from '@/service/function';
 import { Button, ButtonGroup, CreateDialog, Dialog, Field, Form, Spinner, Toast } from '@/components/base'
 import {
     ContactSelect,
@@ -43,12 +42,8 @@ export const NewPlatformDialog: React.FC<CreateDialog.Props<API.PlatformFragment
                 onCreate?.(data.platform)
                 closeRef.current?.click()
             }
-        } catch (e) {
-            toastManager.add({
-                title: 'Fail creating platform',
-                description: getErrorMessage(e),
-                type: 'error',
-            })
+        } catch (error) {
+            toastManager.addError({ error, title: 'Fail creating platform' })
         }
     }, [ mutateAsync, toastManager, onCreate ])
 
@@ -79,7 +74,9 @@ export const NewPlatformDialog: React.FC<CreateDialog.Props<API.PlatformFragment
                     <Field.Error/>
                 </Field.Root>
                 <Field.Root name="ownerId">
-                    <Field.Label>{ ownerType?.model ?? DEFAULT_OWNER_TYPE }</Field.Label>
+                    <Field.Label>
+                        <span className={ styles.UpperLabel }>{ ownerType?.model ?? DEFAULT_OWNER_TYPE }</span>
+                    </Field.Label>
                     <ContactSelect type={ ownerType?.model as ContactType ?? DEFAULT_OWNER_TYPE }/>
                     <Field.Error/>
                 </Field.Root>

@@ -3,10 +3,20 @@ import { queryKeys } from '@/api/queryKeys';
 import { graphqlClient } from '@/api/graphqlClient';
 import { cleanGqlList, optimisticMutationOptions } from '@/api/utils';
 import {
+    AllEquipmentModelsDocument,
+    type AllEquipmentModelsQuery,
+    AllEquipmentsDocument,
+    type AllEquipmentsQuery,
     AllPlatformsDocument,
     type AllPlatformsQuery,
     AllPlatformTypesDocument,
     type AllPlatformTypesQuery,
+    CreateEquipmentDocument,
+    CreateEquipmentModelDocument,
+    type CreateEquipmentModelMutation,
+    type CreateEquipmentModelMutationVariables,
+    type CreateEquipmentMutation,
+    type CreateEquipmentMutationVariables,
     CreatePlatformDocument,
     type CreatePlatformMutation,
     type CreatePlatformMutationVariables,
@@ -40,6 +50,19 @@ export const createPlatform = optimisticMutationOptions({
     mutationFn: (input: CreatePlatformMutationVariables['input']) =>
         graphqlClient.request<CreatePlatformMutation>(CreatePlatformDocument, { input })
             .then(data => data.platform),
+})
+
+export const allEquipmentModelQuery = queryOptions({
+    queryKey: queryKeys.mx.equipment.allEquipmentModels,
+    queryFn: () => graphqlClient.request<AllEquipmentModelsQuery>(AllEquipmentModelsDocument, {})
+        .then(data => cleanGqlList(data.allEquipmentModels?.results)),
+})
+
+export const createEquipmentModel = optimisticMutationOptions({
+    mutationKey: queryKeys.mx.equipment.allEquipmentModels,
+    mutationFn: (input: CreateEquipmentModelMutationVariables['input']) =>
+        graphqlClient.request<CreateEquipmentModelMutation>(CreateEquipmentModelDocument, { input })
+            .then(data => data.createEquipmentModel),
 })
 
 export type * from './Equipment.generated'

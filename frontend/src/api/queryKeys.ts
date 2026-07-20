@@ -100,11 +100,16 @@ export const queryKeys = {
             institutionTeams: (institutionID?: string | null) => [ 'mx', 'common', 'institution', institutionID, 'team' ] as const,
             allTeams: [ 'mx', 'common', 'team' ] as const,
             allPersons: [ 'mx', 'common', 'person' ] as const,
-            contactTypes: ['mx', 'common', 'contact-type'] as const,
+            contactTypes: [ 'mx', 'common', 'contact-type' ] as const,
         },
         equipment: {
-            allPlatformTypes: ['mx', 'equipment', 'platform-type'] as const,
-            allPlatforms: ['mx', 'equipment', 'platform'] as const,
-        }
+            allPlatformTypes: [ 'mx', 'equipment', 'platform-type' ] as const,
+            allPlatforms: [ 'mx', 'equipment', 'platform' ] as const,
+            allEquipmentModels: [ 'mx', 'equipment', 'equipment-model' ] as const,
+            allEquipments: [ 'mx', 'equipment', 'equipment' ] as const,
+        },
+        ontology: {
+            allLabels: [ 'mx', 'ontology', 'label' ] as const,
+        },
     },
 };

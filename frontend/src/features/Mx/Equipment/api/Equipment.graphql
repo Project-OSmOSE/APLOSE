@@ -37,3 +37,43 @@ mutation createPlatform($input: PlatformMutationInput!) {
         errors { field, messages }
     }
 }
+
+
+# Equipment Model
+fragment EquipmentModel on EquipmentModelNode {
+    id
+    name
+}
+
+query allEquipmentModels {
+    allEquipmentModels {
+        results { ...EquipmentModel }
+    }
+}
+
+mutation createEquipmentModel($input: EquipmentModelInput!) {
+    createEquipmentModel(input: $input) {
+        equipmentModel { ...EquipmentModel }
+        errors { field, messages }
+    }
+}
+
+
+# Equipment
+fragment Equipment on EquipmentNode {
+    id
+    name
+}
+
+query allEquipments {
+    allEquipments {
+        results { ...Equipment }
+    }
+}
+
+mutation createEquipment($input: EquipmentMutationInput!) {
+    equipment(input: $input) {
+        equipment { ...Equipment }
+        errors { field, messages }
+    }
+}

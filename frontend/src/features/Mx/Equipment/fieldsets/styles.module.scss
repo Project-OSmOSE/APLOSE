@@ -1,0 +1,18 @@
+
+.WithUnit {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.MinMax {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  align-items: center;
+
+  &.WithUnit {
+    grid-template-columns: 1fr 1fr auto;
+  }
+}
