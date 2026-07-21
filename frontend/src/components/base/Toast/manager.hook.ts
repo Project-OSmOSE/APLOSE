@@ -7,15 +7,23 @@ import type {
 } from '@base-ui/react';
 import type { BaseColor } from '@/components/base/types';
 import { getErrorMessage } from '@/service/function';
+import type { ErrorType } from '@/api';
+import { cleanGqlList } from '@/api/utils';
 
 export type ToastManagerAddOptions<Data extends object = any> = BaseToastManagerAddOptions<Data> & { type?: BaseColor }
 type ToastObject<Data extends object = any> = Omit<BaseToastObject<Data>, 'type'> & { type?: BaseColor }
 type ErrorOptions = Omit<ToastManagerAddOptions<never>, 'type' | 'description'> & { error: any }
+type GqlErrorOptions = Omit<ToastManagerAddOptions<never>, 'type' | 'description'> & {
+    errors: Array<ErrorType | null> | null
+}
 
-type UseToastManagerReturnValue<Data extends object = any> = Omit<BaseUseToastManagerReturnValue<Data>, 'toasts' |'add'> & {
+type UseToastManagerReturnValue<Data extends object = any> =
+    Omit<BaseUseToastManagerReturnValue<Data>, 'toasts' | 'add'>
+    & {
     toasts: ToastObject<Data>[];
     add: <T extends Data = Data>(options: ToastManagerAddOptions<T>) => string;
     addError: (options: ErrorOptions) => string;
+    addGqlError: (options: GqlErrorOptions) => string;
 }
 
 export const useToastManager = <Data extends object = any>(): UseToastManagerReturnValue<Data> => {
@@ -27,11 +35,16 @@ export const useToastManager = <Data extends object = any>(): UseToastManagerRet
         type: 'danger',
         ...options,
     }), [ add ])
+    const addGqlError = useCallback(({ errors, ...options }: GqlErrorOptions) => add({
+        description: cleanGqlList(errors).map(e => `${ e.field }: ${ e.messages.join(' ') }`).join(' '),
+        type: 'danger',
+        ...options,
+    }), [ add ])
 
     return useMemo(() => ({
         add,
         toasts: toasts as ToastObject<Data>[],
-        addError,
+        addError, addGqlError,
         ...baseManagerValue,
-    }), [ add, addError, toasts, baseManagerValue ])
+    }), [ add, addError, addGqlError, toasts, baseManagerValue ])
 }

@@ -1,6 +1,5 @@
 import type { ComboboxRootProps } from '@base-ui/react/combobox';
-import type { FunctionComponent, ReactNode } from 'react';
-import { CreateDialog } from '@/components/base';
+import type { ReactNode } from 'react';
 
 
 export type CreateValue = {
@@ -23,7 +22,7 @@ export type BaseComboboxSelectProps<Value, Multiple extends boolean = false> =
 
 export type FinalValue<Value, Multiple extends boolean = false> = Multiple extends true ? Value[] : (Value | null)
 
-export type ComboboxSelectProps<Value, InputData extends Record<string, any> = Record<string, any>, Multiple extends boolean = false> =
+export type ComboboxSelectProps<Value, Multiple extends boolean = false> = // TODO: check there is no more InputData type precision
     Omit<ComboboxRootProps<Value, Multiple>, 'onValueChange'> & {
     itemName: string
     id?: string
@@ -32,11 +31,11 @@ export type ComboboxSelectProps<Value, InputData extends Record<string, any> = R
     'data-testid'?: string,
     itemToElementLabel?: (item: Value) => ReactNode,
     onValueChange?: (value: FinalValue<Value, Multiple>) => void
-} & Creatable<Value, InputData>
+} & Creatable<Value>
 
-type Creatable<Value, InputData extends Record<string, any> = Record<string, any>> = {
+type Creatable<Value> = {
     creatable?: boolean,
-    createForm?: FunctionComponent<CreateDialog.FormProps<Value, InputData>>
-    inputKey?: keyof InputData,
-    additionalInput?: Partial<InputData>
+    create?: (input: string) => Promise<Value | null | undefined>
 }
+
+// TODO: input = (data as Value | CreateValue as CreateValue).__create

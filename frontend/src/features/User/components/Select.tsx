@@ -5,7 +5,7 @@ import { ComboboxSelect, type ComboboxSelectProps } from '@/components/base/Comb
 type SelectValue = Pick<UserNode, 'id' | 'displayName'>
 export const Select: React.FC<Omit<ComboboxSelectProps<SelectValue>, 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue' | 'itemName'>> = (props) =>
     <ComboboxSelect itemName="user"
-                    itemToStringLabel={ item => item.displayName }
-                    itemToStringValue={ item => item.id }
-                    isItemEqualToValue={ (a, b) => a.id === b.id }
+                    itemToStringLabel={ (item: SelectValue) => item.displayName }
+                    itemToStringValue={ (item: SelectValue) => item.id }
+                    isItemEqualToValue={ (a: SelectValue, b: SelectValue) => a.id === b.id }
                     { ...props }/>

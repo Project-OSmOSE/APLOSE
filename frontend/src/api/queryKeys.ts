@@ -111,5 +111,8 @@ export const queryKeys = {
         ontology: {
             allLabels: [ 'mx', 'ontology', 'label' ] as const,
         },
+        data: {
+            allFormats: ['mx', 'data', 'format'] as const,
+        }
     },
 };

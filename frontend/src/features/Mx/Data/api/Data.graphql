@@ -1,0 +1,19 @@
+# Format
+fragment Format on FileFormatNode {
+    id
+    name
+}
+query allFormats {
+    allFileFormats {
+        results { ...Format }
+    }
+}
+mutation createFormat($input: FileFormatMutationInput!) {
+    fileFormat(input: $input) {
+        fileFormat { ...Format }
+        errors {
+            field
+            messages
+        }
+    }
+}

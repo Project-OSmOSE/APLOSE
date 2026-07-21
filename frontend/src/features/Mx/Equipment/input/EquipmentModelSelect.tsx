@@ -1,30 +1,40 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { type ComboboxSelectProps, ComboboxSelect } from '@/components/base/Combobox'
-import { NewEquipmentModelDialog } from '../NewEquipmentModelDialog'
+import { ComboboxSelect, type ComboboxSelectProps, CreateDialog } from '@/components/base';
+import { NewEquipmentModelForm } from '../form'
 import * as API from '../api'
 
+type Value = API.EquipmentModelFragment
+type Input = API.CreateEquipmentModelMutationVariables['input']
 type Props =
-    Omit<ComboboxSelectProps<API.EquipmentModelFragment, API.CreateEquipmentModelMutationVariables['input']>, 'createForm' | 'itemName' | 'inputKey'>
+    Omit<ComboboxSelectProps<API.EquipmentModelFragment>, 'create' | 'itemName'>
     & {
     fixedValueID?: string;
 }
 
 export const EquipmentModelSelect: React.FC<Props> = ({ creatable, fixedValueID, ...props }) => {
+    const createDialogManager = CreateDialog.useManager()
     const { data: models } = useQuery(API.allEquipmentModelQuery)
 
     const fixedValue = useMemo(() => {
         return models?.find(i => i.id === fixedValueID)
     }, [ models, fixedValueID ])
 
+    const create = useCallback((name: string) => {
+        return createDialogManager.create<Value, Input>({
+            title: `New equipment model`,
+            form: NewEquipmentModelForm,
+            input: { name } as Input,
+        })
+    }, [ createDialogManager ])
+
     return <ComboboxSelect itemName="equipment model"
                            creatable={ creatable }
-                           createForm={ NewEquipmentModelDialog }
+                           create={ create }
                            items={ models }
-                           inputKey="name"
-                           itemToStringLabel={ item => item.name }
-                           itemToStringValue={ item => item.id }
-                           isItemEqualToValue={ (a, b) => a.id === b.id }
+                           itemToStringLabel={ (item: Value) => item.name }
+                           itemToStringValue={ (item: Value) => item.id }
+                           isItemEqualToValue={ (a: Value, b: Value) => a.id === b.id }
                            defaultValue={ fixedValue }
                            value={ fixedValue }
                            readOnly={ !!fixedValue }
