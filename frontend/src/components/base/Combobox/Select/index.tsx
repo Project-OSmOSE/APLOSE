@@ -21,10 +21,10 @@ export function ComboboxSelect<Value, InputData extends Record<string, any> = Re
                                                                                                                                          placeholder,
                                                                                                                                          onValueChange,
                                                                                                                                          value,
-                                                                                                                                         createDialog,
+                                                                                                                                         createForm,
                                                                                                                                          additionalInput,
                                                                                                                                          inputKey,
-    creatable,
+                                                                                                                                         creatable,
                                                                                                                                          ...props
                                                                                                                                      }: ComboboxSelectProps<Value, InputData, Multiple>) {
     const createDialogManager = CreateDialog.useManager()
@@ -53,7 +53,7 @@ export function ComboboxSelect<Value, InputData extends Record<string, any> = Re
 
     const itemsForView: readonly (Value | CreateValue)[] = useMemo(() => {
         if (!items) return []
-        if (!creatable || !createDialog || !inputKey) return items
+        if (!creatable || !createForm || !inputKey) return items
         const trimmed = query.trim();
         if (trimmed === '') return items
         const lowered = trimmed.toLocaleLowerCase();
@@ -64,34 +64,42 @@ export function ComboboxSelect<Value, InputData extends Record<string, any> = Re
             id: `create:${ lowered }`,
             label: `Create "${ trimmed }"`,
         } as CreateValue ];
-    }, [ items, itemToStringLabel, createDialog, inputKey, query, creatable ]);
+    }, [ items, itemToStringLabel, createForm, inputKey, query, creatable ]);
 
     const _onValueChange = useCallback((data: FinalValue<Value | CreateValue, Multiple>) => {
         if (!data || inputKey === undefined) return setSelected(data as FinalValue<Value, Multiple>)
         if (multiple) {
             const initialData = data as Value[]
             const createData = initialData.find(d => (d as CreateValue).__create)
-            if ((createData as CreateValue).__create) {
-                createDialogManager.create<Value, InputData>(createDialog as any, {
-                    ...additionalInput,
-                    [inputKey]: (createData as CreateValue).__create,
-                } as InputData).then(newData => setSelected([ ...selected as Value[], newData ] as FinalValue<Value, Multiple>))
+            if (createForm && (createData as CreateValue).__create) {
+                createDialogManager.create<Value, InputData>({
+                    title: `New ${ itemName }`,
+                    form: createForm,
+                    input: {
+                        ...additionalInput,
+                        [inputKey]: (createData as CreateValue).__create,
+                    } as InputData,
+                }).then(newData => setSelected([ ...selected as Value[], newData ] as FinalValue<Value, Multiple>))
                 setQuery('');
                 return
             }
         }
 
-        if (!multiple && (data as Value | CreateValue as CreateValue).__create) {
-            createDialogManager.create<Value, InputData>(createDialog as any, {
-                ...additionalInput,
-                [inputKey]: (data as Value | CreateValue as CreateValue).__create,
-            } as InputData).then(newData => setSelected(newData as FinalValue<Value, Multiple>))
+        if (!multiple && createForm && (data as Value | CreateValue as CreateValue).__create) {
+            createDialogManager.create<Value, InputData>({
+                title: `New ${ itemName }`,
+                form: createForm,
+                input: {
+                    ...additionalInput,
+                    [inputKey]: (data as Value | CreateValue as CreateValue).__create,
+                } as InputData,
+            }).then(newData => setSelected(newData as FinalValue<Value, Multiple>))
             setQuery('');
             return
         }
 
         setSelected(data as FinalValue<Value, Multiple>)
-    }, [ createDialogManager, createDialog, query, setSelected, inputKey, additionalInput, multiple, selected, ])
+    }, [ createDialogManager, createForm, query, setSelected, itemName, inputKey, additionalInput, multiple, selected ])
 
     return <Combobox.Root multiple={ multiple }
                           itemToStringLabel={ _itemToStringLabel }

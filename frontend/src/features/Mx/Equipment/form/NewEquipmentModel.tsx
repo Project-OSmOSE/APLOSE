@@ -1,25 +1,23 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { Button, ButtonGroup, CreateDialog, Dialog, Field, Form, Spinner, Toast } from '@/components/base'
+import { Button, ButtonGroup, CreateDialog, Field, Form, Spinner, Toast } from '@/components/base'
 import { InstitutionSelect } from '@/features/Mx/Common';
-import * as API from './api'
+import * as API from '../api'
 import {
     AcousticDetectorSpecificationFieldset,
     HydrophoneSpecificationFieldset,
     RecorderSpecificationFieldset,
     StorageSpecificationFieldset,
-} from './fieldsets';
+} from '../fieldset';
 import { ByteUnitEnum, HydrophoneDirectivityEnum } from '@/api/types.gql-generated';
 
 
-export const NewEquipmentModelDialog: React.FC<CreateDialog.Props<API.EquipmentModelFragment, API.CreateEquipmentModelMutationVariables['input']>> = ({
-                                                                                                                                                          onCreate,
-                                                                                                                                                          input,
-                                                                                                                                                          children,
-                                                                                                                                                      }) => {
+export const NewEquipmentModelForm: React.FC<CreateDialog.FormProps<API.EquipmentModelFragment, API.CreateEquipmentModelMutationVariables['input']>> = ({
+                                                                                                                                                            onCreate,
+                                                                                                                                                            input,
+                                                                                                                                                        }) => {
     const { data, mutateAsync, isPending } = useMutation(API.createEquipmentModel)
     const toastManager = Toast.useToastManager()
-    const closeRef = useRef<HTMLButtonElement>(null);
 
     const submit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -100,62 +98,53 @@ export const NewEquipmentModelDialog: React.FC<CreateDialog.Props<API.EquipmentM
             })
             if (data?.equipmentModel) {
                 onCreate?.(data.equipmentModel)
-                closeRef.current?.click()
             }
         } catch (error) {
             toastManager.addError({ error, title: 'Fail creating equipment model' })
         }
     }, [ mutateAsync, toastManager, onCreate ])
 
-    return <Dialog.Content>
-        <Dialog.Title>New equipment model</Dialog.Title>
-        <Dialog.CloseIcon ref={ closeRef }/>
+    return <Form onSubmit={ submit } gqlErrors={ data?.errors }>
 
-        <Form onSubmit={ submit } gqlErrors={ data?.errors }>
+        <Field.Root name="name">
+            <Field.Label required>Name</Field.Label>
+            <Field.Control required type="text" defaultValue={ input?.name || undefined }/>
+            <Field.Error/>
+        </Field.Root>
 
-            <Field.Root name="name">
-                <Field.Label required>Name</Field.Label>
-                <Field.Control required type="text" defaultValue={ input?.name || undefined }/>
-                <Field.Error/>
-            </Field.Root>
+        <Field.Root name="provider">
+            <Field.Label required>Provider institution</Field.Label>
+            <InstitutionSelect required creatable fixedValueID={ input?.provider || undefined }/>
+            <Field.Error/>
+        </Field.Root>
 
-            <Field.Root name="provider">
-                <Field.Label required>Provider institution</Field.Label>
-                <InstitutionSelect required creatable fixedValueID={ input?.provider || undefined }/>
-                <Field.Error/>
-            </Field.Root>
+        <Field.Root name="batteryType">
+            <Field.Label>Battery type</Field.Label>
+            <Field.Control type="text" defaultValue={ input?.batteryType || undefined }/>
+            <Field.Error/>
+        </Field.Root>
 
-            <Field.Root name="batteryType">
-                <Field.Label>Battery type</Field.Label>
-                <Field.Control type="text" defaultValue={ input?.batteryType || undefined }/>
-                <Field.Error/>
-            </Field.Root>
+        <Field.Root name="batterySlotsCount">
+            <Field.Label>Battery slots</Field.Label>
+            <Field.Control type="number" defaultValue={ input?.batterySlotsCount || undefined }/>
+            <Field.Error/>
+        </Field.Root>
 
-            <Field.Root name="batterySlotsCount">
-                <Field.Label>Battery slots</Field.Label>
-                <Field.Control type="number" defaultValue={ input?.batterySlotsCount || undefined }/>
-                <Field.Error/>
-            </Field.Root>
+        <Field.Root name="cables">
+            <Field.Label>Cables</Field.Label>
+            <Field.Control type="textarea" defaultValue={ input?.cables || undefined }/>
+            <Field.Error/>
+        </Field.Root>
 
-            <Field.Root name="cables">
-                <Field.Label>Cables</Field.Label>
-                <Field.Control type="textarea" defaultValue={ input?.cables || undefined }/>
-                <Field.Error/>
-            </Field.Root>
+        <RecorderSpecificationFieldset name="recorderSpecification" input={ input?.recorderSpecification }/>
+        <HydrophoneSpecificationFieldset name="hydrophoneSpecification" input={ input?.hydrophoneSpecification }/>
+        <StorageSpecificationFieldset name="storageSpecification" input={ input?.storageSpecification }/>
+        <AcousticDetectorSpecificationFieldset name="acousticDetectorSpecification"
+                                               input={ input?.acousticDetectorSpecification }/>
 
-            <RecorderSpecificationFieldset name="recorderSpecification" input={ input?.recorderSpecification }/>
-            <HydrophoneSpecificationFieldset name="hydrophoneSpecification" input={ input?.hydrophoneSpecification }/>
-            <StorageSpecificationFieldset name="storageSpecification" input={ input?.storageSpecification }/>
-            <AcousticDetectorSpecificationFieldset name="acousticDetectorSpecification"
-                                                   input={ input?.acousticDetectorSpecification }/>
-
-            <ButtonGroup spaceBetween>
-                <Dialog.Close>Cancel</Dialog.Close>
-                { isPending && <Spinner/> }
-                <Button color="primary" type="submit">Submit</Button>
-            </ButtonGroup>
-        </Form>
-
-        { children }
-    </Dialog.Content>
+        <ButtonGroup end>
+            { isPending && <Spinner/> }
+            <Button color="primary" type="submit">Submit</Button>
+        </ButtonGroup>
+    </Form>
 }

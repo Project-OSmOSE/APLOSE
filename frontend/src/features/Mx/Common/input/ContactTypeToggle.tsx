@@ -1,13 +1,11 @@
 import React, { Fragment, useMemo } from 'react';
 import { Spinner, Toggle } from '@/components/base';
 import { useQuery } from '@tanstack/react-query';
-import * as API from './api'
-
-export type ContactType = 'person' | 'team' | 'institution'
+import * as API from '../api'
 
 type Props =
     Omit<Toggle.RadioGroupProps<API.ContactTypeFragment>, 'items' | 'itemToElementLabel' | 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue' | 'itemName'>
-    & { defaultModel?: ContactType }
+    & { defaultModel?: API.ContactType }
 
 export const ContactTypeToggle: React.FC<Props> = ({ defaultModel, defaultValue, value, ...props }) => {
     const { data: types, isFetching } = useQuery(API.contactTypesQuery)

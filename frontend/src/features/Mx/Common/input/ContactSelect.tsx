@@ -2,10 +2,11 @@ import React from 'react';
 
 import { type ComboboxSelectProps } from '@/components/base/Combobox'
 
+import * as API from '../api'
+
 import { InstitutionSelect } from './InstitutionSelect';
 import { TeamSelect } from './TeamSelect';
 import { PersonSelect } from './PersonSelect';
-import * as API from './api'
 
 type BaseProps<Fragment> = Omit<ComboboxSelectProps<Fragment>, 'items' | 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue' | 'itemName'>
 type ContactSelectProps =

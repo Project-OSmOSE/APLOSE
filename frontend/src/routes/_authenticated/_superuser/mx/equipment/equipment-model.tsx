@@ -11,7 +11,10 @@ const RouteComponent: React.FC = () => {
     const createDialogManager = CreateDialog.useManager()
 
     const add = useCallback(() => {
-        createDialogManager.create(MxEquipment.NewEquipmentModelDialog)
+        createDialogManager.create({
+            title: 'New equipment model',
+            form: MxEquipment.NewEquipmentModelForm,
+        })
     }, [ createDialogManager ])
 
     return <Content oneContent>

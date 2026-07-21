@@ -1,26 +1,26 @@
 import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { type ComboboxSelectProps, ComboboxSelect } from '@/components/base/Combobox'
-import { NewPlatformTypeDialog } from '../NewPlatformTypeDialog'
+import { NewEquipmentModelDialog } from '../NewEquipmentModelDialog'
 import * as API from '../api'
 
 type Props =
-    Omit<ComboboxSelectProps<API.PlatformTypeFragment, API.CreatePlatformTypeMutationVariables['input']>, 'createDialog' | 'itemName' | 'inputKey'>
+    Omit<ComboboxSelectProps<API.EquipmentModelFragment, API.CreateEquipmentModelMutationVariables['input']>, 'createForm' | 'itemName' | 'inputKey'>
     & {
     fixedValueID?: string;
 }
 
-export const PlatformTypeSelect: React.FC<Props> = ({ creatable, fixedValueID, ...props }) => {
-    const { data: types } = useQuery(API.allPlatformTypesQuery)
+export const EquipmentModelSelect: React.FC<Props> = ({ creatable, fixedValueID, ...props }) => {
+    const { data: models } = useQuery(API.allEquipmentModelQuery)
 
     const fixedValue = useMemo(() => {
-        return types?.find(i => i.id === fixedValueID)
-    }, [ types, fixedValueID ])
+        return models?.find(i => i.id === fixedValueID)
+    }, [ models, fixedValueID ])
 
-    return <ComboboxSelect itemName="platform type"
+    return <ComboboxSelect itemName="equipment model"
                            creatable={ creatable }
-                           createDialog={ NewPlatformTypeDialog }
-                           items={ types }
+                           createForm={ NewEquipmentModelDialog }
+                           items={ models }
                            inputKey="name"
                            itemToStringLabel={ item => item.name }
                            itemToStringValue={ item => item.id }

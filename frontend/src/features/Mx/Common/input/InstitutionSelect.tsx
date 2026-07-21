@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ComboboxSelect, type ComboboxSelectProps } from '@/components/base'
-import { NewInstitutionDialog } from './NewInstitutionDialog'
-import * as API from './api'
+import { NewInstitutionForm } from '../form'
+import * as API from '../api'
 
 type Props =
-    Omit<ComboboxSelectProps<API.InstitutionFragment, API.CreateInstitutionMutationVariables['input']>, 'createDialog' | 'itemName' | 'inputKey'>
+    Omit<ComboboxSelectProps<API.InstitutionFragment, API.CreateInstitutionMutationVariables['input']>, 'createForm' | 'itemName' | 'inputKey'>
     & {
     fixedValueID?: string;
 }
@@ -27,7 +27,7 @@ export const InstitutionSelect: React.FC<Props> = ({ creatable, fixedValueID, ..
                            readOnly={ !!fixedValue }
                            inputKey="name"
                            loading={ isFetching }
-                           createDialog={ NewInstitutionDialog }
+                           createForm={ NewInstitutionForm }
                            creatable={ creatable }
                            { ...props }/>
 }

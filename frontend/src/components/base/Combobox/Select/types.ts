@@ -36,7 +36,7 @@ export type ComboboxSelectProps<Value, InputData extends Record<string, any> = R
 
 type Creatable<Value, InputData extends Record<string, any> = Record<string, any>> = {
     creatable?: boolean,
-    createDialog?: FunctionComponent<CreateDialog.Props<Value, InputData>>
+    createForm?: FunctionComponent<CreateDialog.FormProps<Value, InputData>>
     inputKey?: keyof InputData,
     additionalInput?: Partial<InputData>
 }

@@ -76,4 +76,5 @@ export const createPerson = optimisticMutationOptions({
 })
 
 export type ContactFragment = InstitutionFragment | TeamFragment | PersonFragment;
+export type ContactType = 'person' | 'team' | 'institution'
 export type * from './common.generated'
