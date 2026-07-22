@@ -110,6 +110,7 @@ export const queryKeys = {
         },
         ontology: {
             allLabels: [ 'mx', 'ontology', 'label' ] as const,
+            allSources: [ 'mx', 'ontology', 'source' ] as const,
         },
         data: {
             allFormats: ['mx', 'data', 'format'] as const,
