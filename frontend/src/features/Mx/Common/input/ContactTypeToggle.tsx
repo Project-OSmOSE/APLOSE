@@ -1,29 +1,20 @@
-import React, { Fragment, useMemo } from 'react';
-import { Spinner, Toggle } from '@/components/base';
-import { useQuery } from '@tanstack/react-query';
-import * as API from '../api'
+import React from 'react';
+import { Toggle } from '@/components/base';
+import { ContactTypeEnum } from '@/api';
 
 type Props =
-    Omit<Toggle.RadioGroupProps<API.ContactTypeFragment>, 'items' | 'itemToElementLabel' | 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue' | 'itemName'>
-    & { defaultModel?: API.ContactType }
+    Omit<Toggle.RadioGroupProps<ContactTypeEnum>, 'items' | 'itemToElementLabel' | 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue' | 'itemName'>
 
-export const ContactTypeToggle: React.FC<Props> = ({ defaultModel, defaultValue, value, ...props }) => {
-    const { data: types, isFetching } = useQuery(API.contactTypesQuery)
+const ALL_TYPES: ContactTypeEnum[] = [
+    ContactTypeEnum.Institution,
+    ContactTypeEnum.Team,
+    ContactTypeEnum.Person,
+]
 
-    const _defaultValue = useMemo(() => {
-        if (defaultValue) return defaultValue;
-        return types?.find(t => t.model === defaultModel)
-    }, [ defaultModel, defaultValue, types ]);
-
-    if (isFetching) return <Spinner/>;
-    if (defaultModel && !_defaultValue) return <Fragment/>;
-    return <Toggle.Group defaultValue={ _defaultValue }
-                         value={ value || _defaultValue }
-                         { ...props }>
-        { types?.map(t =>
-            <Toggle.Item key={ t.id }
-                         color="primary"
-                         value={ t }
-                         children={ t.model }/>) }
+export const ContactTypeToggle: React.FC<Props> = ({ ...props }) => {
+    return <Toggle.Group { ...props }>
+        { ALL_TYPES.map(t =>
+            <Toggle.Item key={ t } color="primary"
+                         value={ t } children={ t }/>) }
     </Toggle.Group>
 }

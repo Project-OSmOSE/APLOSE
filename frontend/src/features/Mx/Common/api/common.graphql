@@ -23,16 +23,6 @@ query allInstitutions  { allInstitutions { results { ...Institution } } }
 query allTeams($institutionId: ID)  { allTeams(institution: $institutionId) { results { ...Team } } }
 query allPersons  { allPersons { results { ...Person } } }
 
-mutation createContact($input: ContactMutationInput!) {
-    contact(input: $input) {
-        contact { id }
-        errors {
-            field
-            messages
-        }
-    }
-}
-
 mutation createInstitution($input: InstitutionMutationInput!) {
     institution(input: $input) {
         institution { ... Institution }
@@ -60,19 +50,5 @@ mutation createPerson($input: PersonInput!) {
             field
             messages
         }
-    }
-}
-
-fragment ContactType on ContentTypeNode {
-    id
-    model
-}
-
-query contactTypes {
-    contentTypes(
-        appLabel: "common"
-        model_In: ["institution", "team", "person"]
-    ) {
-        results { ...ContactType }
     }
 }
