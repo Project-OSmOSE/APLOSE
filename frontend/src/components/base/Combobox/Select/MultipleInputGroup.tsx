@@ -3,14 +3,15 @@ import { Combobox } from '@/components/base';
 import { BaseComboboxSelectProps } from './types';
 
 type MultipleInputGroupProps<Value> = Pick<BaseComboboxSelectProps<Value, true>, 'id' | 'itemName'>
-    & Required<Pick<BaseComboboxSelectProps<Value, true>, 'itemToElementLabel'>>
+    & Required<Pick<BaseComboboxSelectProps<Value, true>, 'itemToElementLabel'>> & { className?: string }
 
 export function MultipleInputGroup<Value>({
                                               id,
                                               itemName,
                                               itemToElementLabel,
+                                              className,
                                           }: MultipleInputGroupProps<Value>) {
-    return <Combobox.InputGroup>
+    return <Combobox.InputGroup className={ className }>
         <Combobox.Chips>
             <Combobox.Value>
                 { (value: Value[]) => (

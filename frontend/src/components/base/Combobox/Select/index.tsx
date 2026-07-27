@@ -23,6 +23,7 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
                                                                             value,
                                                                             create,
                                                                             creatable,
+                                                                            className,
                                                                             ...props
                                                                         }: ComboboxSelectProps<Value, Multiple>) {
     const [ query, setQuery ] = useState<string>('');
@@ -32,8 +33,9 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
         _setSelected(data)
     }, [ onValueChange ]);
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setSelected(value || (multiple ? [] : null) as FinalValue<Value, Multiple>)
+        if (value !== selected)
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setSelected(value || (multiple ? [] : null) as FinalValue<Value, Multiple>)
     }, [ value ]);
 
     const _itemToStringLabel = useCallback((data: Value | CreateValue | null) => {
@@ -102,9 +104,11 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
                           { ...props as Partial<ComboboxSelectProps<Value | CreateValue, Multiple>> }>
 
         { multiple ? <MultipleInputGroup id={ id }
+                                         className={ className }
                                          itemName={ itemName }
                                          itemToElementLabel={ _itemToElementLabel }/> :
             <SingleInputGroup id={ id }
+                              className={ className }
                               loading={ loading }
                               itemToElementLabel={ _itemToElementLabel }
                               disabled={ disabled }

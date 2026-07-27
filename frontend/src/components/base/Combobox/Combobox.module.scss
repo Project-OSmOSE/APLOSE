@@ -5,6 +5,7 @@ $icon-size: 1.5rem;
 .InputGroup {
   position: relative;
   display: grid;
+  text-align: start;
 
   .Input {
     padding-right: #{Input.$horizontal-space};
@@ -25,6 +26,9 @@ $icon-size: 1.5rem;
     transform: translateY(-50%);
     background: var(--color-light-shade);
     user-select: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
 
   &[data-disabled] {
@@ -93,6 +97,7 @@ $icon-size: 1.5rem;
 }
 
 .Popup {
+  text-align: start;
   box-sizing: border-box;
   background-color: var(--color-light-shade);
   min-width: var(--anchor-width);

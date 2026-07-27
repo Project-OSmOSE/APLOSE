@@ -4,7 +4,7 @@ import styles from '@/components/base/Combobox/Combobox.module.scss';
 
 type SingleInputGroupProps<Value> =
     Pick<BaseComboboxSelectProps<Value, false>, 'id' | 'placeholder' | 'loading' | 'disabled' | 'readOnly' | 'itemName'>
-    & Required<Pick<BaseComboboxSelectProps<Value, false>, 'itemToElementLabel'>>
+    & Required<Pick<BaseComboboxSelectProps<Value, false>, 'itemToElementLabel'>> & { className?: string }
 
 export function SingleInputGroup<Value>({
                                             id,
@@ -14,9 +14,10 @@ export function SingleInputGroup<Value>({
                                             disabled,
                                             readOnly,
                                             loading,
+                                            className,
                                         }: SingleInputGroupProps<Value>) {
 
-    return <Combobox.InputGroup>
+    return <Combobox.InputGroup className={ className }>
         <Combobox.Input placeholder={ placeholder ? placeholder : `Select ${ itemName }` }
                         id={ id }/>
         { loading && <Spinner size={ 16 } className={ styles.Spinner }/> }
