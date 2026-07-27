@@ -14,6 +14,7 @@ import type {
     GetAnnotationSpectrogramQueryVariables,
 } from '@/features/AnnotationSpectrogram/api';
 import type { AnnotationPhaseType } from '@/api/types.gql-generated';
+import type { AllDeploymentsQueryVariables } from '@/features/Mx/Acquisition/Deployment/all.generated';
 
 /**
  * Keys factory pour les requêtes GraphQL
@@ -95,6 +96,15 @@ export const queryKeys = {
         all: [ 'detector' ] as const,
     },
     mx: {
+        acquisition: {
+            project: {
+                all: [ 'mx', 'acquisition', 'project' ] as const,
+                allSelect: [ 'mx', 'acquisition', 'project', 'select' ] as const,
+            },
+            deployments: {
+                all: ({ projectID }: AllDeploymentsQueryVariables) => [ 'mx', 'acquisition', 'deployment', 'timeline', projectID ] as const,
+            },
+        },
         common: {
             allInstitutions: [ 'mx', 'common', 'institution' ] as const,
             institutionTeams: (institutionID?: string | null) => [ 'mx', 'common', 'institution', institutionID, 'team' ] as const,
