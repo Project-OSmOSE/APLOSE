@@ -7,6 +7,7 @@ import {
     type AllEquipmentModelsQuery,
     AllEquipmentsDocument,
     type AllEquipmentsQuery,
+    type AllEquipmentsQueryVariables,
     AllPlatformsDocument,
     type AllPlatformsQuery,
     AllPlatformTypesDocument,
@@ -65,14 +66,14 @@ export const createEquipmentModel = optimisticMutationOptions({
             .then(data => data.createEquipmentModel),
 })
 
-export const allEquipmentQuery = queryOptions({
-    queryKey: queryKeys.mx.equipment.allEquipments,
-    queryFn: () => graphqlClient.request<AllEquipmentsQuery>(AllEquipmentsDocument, {})
+export const allEquipmentQuery = (variables: AllEquipmentsQueryVariables) => queryOptions({
+    queryKey: queryKeys.mx.equipment.allEquipments(variables),
+    queryFn: () => graphqlClient.request<AllEquipmentsQuery>(AllEquipmentsDocument, variables)
         .then(data => cleanGqlList(data.allEquipments?.results)),
 })
 
 export const createEquipment = optimisticMutationOptions({
-    mutationKey: queryKeys.mx.equipment.allEquipments,
+    mutationKey: queryKeys.mx.equipment.allEquipments(),
     mutationFn: (input: CreateEquipmentMutationVariables['input']) =>
         graphqlClient.request<CreateEquipmentMutation>(CreateEquipmentDocument, { input })
             .then(data => data.equipment),

@@ -116,14 +116,21 @@ export const queryKeys = {
             allPlatformTypes: [ 'mx', 'equipment', 'platform-type' ] as const,
             allPlatforms: [ 'mx', 'equipment', 'platform' ] as const,
             allEquipmentModels: [ 'mx', 'equipment', 'equipment-model' ] as const,
-            allEquipments: [ 'mx', 'equipment', 'equipment' ] as const,
+            allEquipments: ({ isRecorder, isStorage, isHydrophone, isDetector }: AllEquipmentsQueryVariables = {}) => {
+                const key = [ 'mx', 'equipment', 'equipment' ]
+                if (isRecorder) key.push('recorder')
+                if (isHydrophone) key.push('hydrophone')
+                if (isDetector) key.push('detector')
+                if (isStorage) key.push('storage')
+                return key
+            },
         },
         ontology: {
             allLabels: [ 'mx', 'ontology', 'label' ] as const,
             allSources: [ 'mx', 'ontology', 'source' ] as const,
         },
         data: {
-            allFormats: ['mx', 'data', 'format'] as const,
-        }
+            allFormats: [ 'mx', 'data', 'format' ] as const,
+        },
     },
 };

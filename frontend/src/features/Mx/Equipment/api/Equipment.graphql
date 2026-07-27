@@ -21,7 +21,7 @@ mutation createPlatformType($input: PlatformTypeMutationInput!) {
 # Platform
 fragment Platform on PlatformNode {
     id
-    name
+    displayName
 }
 
 query allPlatforms {
@@ -64,11 +64,21 @@ mutation createEquipmentModel($input: EquipmentModelInput!) {
 # Equipment
 fragment Equipment on EquipmentNode {
     id
-    name
+    displayName
 }
 
-query allEquipments {
-    allEquipments {
+query allEquipments(
+    $isRecorder: Boolean
+    $isHydrophone: Boolean
+    $isStorage: Boolean
+    $isDetector: Boolean
+) {
+    allEquipments(
+        isRecorder: $isRecorder
+        isHydrophone: $isHydrophone
+        isStorage: $isStorage
+        isDetector: $isDetector
+    ) {
         results { ...Equipment }
     }
 }

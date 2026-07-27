@@ -5,16 +5,17 @@ import { MxCommon } from '@/features/Mx';
 import styles from './styles.module.scss'
 import * as API from '../api'
 import { EquipmentModelSelect } from '../input';
+import { ContactTypeEnum } from '@/api';
 
-const DEFAULT_OWNER_TYPE: MxCommon.API.ContactType = 'institution'
+const DEFAULT_OWNER_TYPE = ContactTypeEnum.Institution
 
 export const NewEquipmentForm: React.FC<CreateDialog.FormProps<API.EquipmentFragment, API.CreateEquipmentMutationVariables['input']>> = ({
-                                                                                                                                               onCreate,
-                                                                                                                                               input,
-                                                                                                                                           }) => {
+                                                                                                                                             onCreate,
+                                                                                                                                             input,
+                                                                                                                                         }) => {
     const { data, mutateAsync, isPending } = useMutation(API.createEquipment)
     const toastManager = Toast.useToastManager()
-    const [ ownerType, setOwnerType ] = useState<MxCommon.API.ContactTypeFragment | undefined>();
+    const [ ownerType, setOwnerType ] = useState<ContactTypeEnum | undefined>();
     const [ model, setModel ] = useState<API.EquipmentModelFragment | undefined | null>();
     const isHydrophone = useMemo(() => {
         return model?.specifications?.find(spec => spec?.__typename === 'HydrophoneSpecificationNode')
@@ -25,14 +26,13 @@ export const NewEquipmentForm: React.FC<CreateDialog.FormProps<API.EquipmentFrag
         const formData = new FormData(event.currentTarget);
         try {
             const ownerId = +(formData.get('ownerId') as string) as number
-            const ownerType = (JSON.parse(formData.get('ownerType') as string) as MxCommon.API.ContactTypeFragment)?.id
             const sensitivity = formData.get('sensitivity') as string | undefined
             const data = await mutateAsync({
                 serialNumber: formData.get('serialNumber') as string,
                 name: formData.get('name') as string | undefined,
                 purchaseDate: formData.get('purchaseDate') as string | undefined || undefined,
                 ownerId,
-                ownerType,
+                ownerType: ownerType!,
                 model: formData.get('model') as string,
                 sensitivity: isHydrophone && sensitivity !== undefined ? +sensitivity : undefined,
             })
@@ -42,7 +42,7 @@ export const NewEquipmentForm: React.FC<CreateDialog.FormProps<API.EquipmentFrag
         } catch (error) {
             toastManager.addError({ error, title: 'Fail creating equipment' })
         }
-    }, [ mutateAsync, toastManager, onCreate, isHydrophone ])
+    }, [ mutateAsync, toastManager, onCreate, isHydrophone, ownerType ])
 
     return <Form onSubmit={ submit } gqlErrors={ data?.errors }>
 
@@ -73,17 +73,16 @@ export const NewEquipmentForm: React.FC<CreateDialog.FormProps<API.EquipmentFrag
         <div className={ styles.Contact }>
             <Field.Root name="ownerType">
                 <Field.Label required>Owner</Field.Label>
-                <MxCommon.ContactTypeToggle required defaultModel={ DEFAULT_OWNER_TYPE }
-                                            value={ ownerType }
+                <MxCommon.ContactTypeToggle required
+                                            value={ ownerType || DEFAULT_OWNER_TYPE }
                                             onValueChange={ setOwnerType }/>
                 <Field.Error/>
             </Field.Root>
             <Field.Root name="ownerId">
                 <Field.Label required>
-                    <span className={ styles.UpperLabel }>{ ownerType?.model ?? DEFAULT_OWNER_TYPE }</span>
+                    <span className={ styles.UpperLabel }>{ ownerType ?? DEFAULT_OWNER_TYPE }</span>
                 </Field.Label>
-                <MxCommon.ContactSelect required
-                                        type={ ownerType?.model as MxCommon.API.ContactType ?? DEFAULT_OWNER_TYPE }/>
+                <MxCommon.ContactSelect required type={ ownerType ?? DEFAULT_OWNER_TYPE }/>
                 <Field.Error/>
             </Field.Root>
         </div>

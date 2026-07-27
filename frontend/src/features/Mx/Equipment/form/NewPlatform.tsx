@@ -5,8 +5,9 @@ import { MxCommon } from '@/features/Mx';
 import * as API from '../api'
 import { PlatformTypeSelect } from '../input';
 import styles from './styles.module.scss'
+import { ContactTypeEnum } from '@/api';
 
-const DEFAULT_OWNER_TYPE: MxCommon.API.ContactType = 'institution'
+const DEFAULT_OWNER_TYPE = ContactTypeEnum.Institution
 
 export const NewPlatformForm: React.FC<CreateDialog.FormProps<API.PlatformFragment, API.CreatePlatformMutationVariables['input']>> = ({
                                                                                                                                           onCreate,
@@ -14,14 +15,13 @@ export const NewPlatformForm: React.FC<CreateDialog.FormProps<API.PlatformFragme
                                                                                                                                       }) => {
     const { data, mutateAsync, isPending } = useMutation(API.createPlatform)
     const toastManager = Toast.useToastManager()
-    const [ ownerType, setOwnerType ] = useState<MxCommon.API.ContactTypeFragment | undefined>();
+    const [ ownerType, setOwnerType ] = useState<ContactTypeEnum | undefined>();
 
     const submit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         try {
             const ownerId = +(formData.get('ownerId') as string) as number | undefined
-            const ownerType = (JSON.parse(formData.get('ownerType') as string) as MxCommon.API.ContactTypeFragment)?.id
             const data = await mutateAsync({
                 ownerId: ownerId && ownerType ? ownerId : undefined,
                 ownerType: ownerId && ownerType ? ownerType : undefined,
@@ -36,7 +36,7 @@ export const NewPlatformForm: React.FC<CreateDialog.FormProps<API.PlatformFragme
         } catch (error) {
             toastManager.addError({ error, title: 'Fail creating platform' })
         }
-    }, [ mutateAsync, toastManager, onCreate ])
+    }, [ mutateAsync, toastManager, onCreate, ownerType ])
 
     return <Form onSubmit={ submit } gqlErrors={ data?.errors }>
 
@@ -55,16 +55,15 @@ export const NewPlatformForm: React.FC<CreateDialog.FormProps<API.PlatformFragme
         <div className={ styles.Contact }>
             <Field.Root name="ownerType">
                 <Field.Label>Owner</Field.Label>
-                <MxCommon.ContactTypeToggle defaultModel={ DEFAULT_OWNER_TYPE }
-                                            value={ ownerType }
+                <MxCommon.ContactTypeToggle value={ ownerType || DEFAULT_OWNER_TYPE }
                                             onValueChange={ setOwnerType }/>
                 <Field.Error/>
             </Field.Root>
             <Field.Root name="ownerId">
                 <Field.Label>
-                    <span className={ styles.UpperLabel }>{ ownerType?.model ?? DEFAULT_OWNER_TYPE }</span>
+                    <span className={ styles.UpperLabel }>{ ownerType ?? DEFAULT_OWNER_TYPE }</span>
                 </Field.Label>
-                <MxCommon.ContactSelect type={ ownerType?.model as MxCommon.API.ContactType ?? DEFAULT_OWNER_TYPE }/>
+                <MxCommon.ContactSelect type={ ownerType ?? DEFAULT_OWNER_TYPE }/>
                 <Field.Error/>
             </Field.Root>
         </div>
