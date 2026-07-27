@@ -20,6 +20,7 @@ $colors: (
     primary: (
         tint: color.adjust(map.get($color_bases, 'primary'), $lightness: +5%),
         text: color.adjust(map.get($color_bases, 'primary'), $lightness: -1%),
+        text-contrast: map.get($color_bases, 'light'),
         text-background: color.change(map.get($color_bases, 'primary'), $lightness: 95%),
         background: color.adjust(map.get($color_bases, 'primary'), $lightness: -1%),
         background-contrast: map.get($color_bases, 'light'),
@@ -29,12 +30,14 @@ $colors: (
         tint: color.adjust(map.get($color_bases, 'success'), $lightness: +5%),
         text: color.adjust(map.get($color_bases, 'success'), $lightness: -14%),
         text-background: color.change(map.get($color_bases, 'success'), $lightness: 95%),
+        text-contrast: map.get($color_bases, 'light'),
         background: color.adjust(map.get($color_bases, 'success'), $lightness: -14%),
         background-contrast: map.get($color_bases, 'light'),
     ),
     warning: (
         tint: color.adjust(map.get($color_bases, 'warning'), $lightness: +5%),
         text: color.adjust(map.get($color_bases, 'warning'), $lightness: -10%),
+        text-contrast: map.get($color_bases, 'light'),
         text-background: color.change(map.get($color_bases, 'warning'), $lightness: 95%),
         background: color.adjust(map.get($color_bases, 'warning'), $lightness: -10%),
         background-contrast: map.get($color_bases, 'light'),
@@ -42,6 +45,7 @@ $colors: (
     danger: (
         tint: color.adjust(map.get($color_bases, 'danger'), $lightness: +5%),
         text: color.adjust(map.get($color_bases, 'danger'), $lightness: -7%),
+        text-contrast: map.get($color_bases, 'light'),
         text-background: color.change(map.get($color_bases, 'danger'), $lightness: 95%),
         background: color.adjust(map.get($color_bases, 'danger'), $lightness: -7%),
         background-contrast: map.get($color_bases, 'light'),
@@ -50,6 +54,7 @@ $colors: (
     light: (
         tint: color.adjust(map.get($color_bases, 'light'), $lightness: +5%),
         text: map.get($color_bases, 'light'),
+        text-contrast: map.get($color_bases, 'medium'),
         text-background: color.change(map.get($color_bases, 'light'), $lightness: 95%),
         background: map.get($color_bases, 'light'),
         background-contrast: map.get($color_bases, 'dark'),
@@ -57,6 +62,7 @@ $colors: (
     medium: (
         tint: color.adjust(map.get($color_bases, 'medium'), $lightness: +5%),
         text: map.get($color_bases, 'medium'),
+        text-contrast: map.get($color_bases, 'light'),
         text-background: color.change(map.get($color_bases, 'medium'), $lightness: 95%),
         background: map.get($color_bases, 'medium'),
         background-contrast: map.get($color_bases, 'light'),
@@ -64,6 +70,7 @@ $colors: (
     dark: (
         tint: color.adjust(map.get($color_bases, 'dark'), $lightness: +5%),
         text: map.get($color_bases, 'dark'),
+        text-contrast: map.get($color_bases, 'light'),
         text-background: color.change(map.get($color_bases, 'dark'), $lightness: 95%, $saturation: 20%),
         background: map.get($color_bases, 'dark'),
         background-contrast: map.get($color_bases, 'light'),

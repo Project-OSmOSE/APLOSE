@@ -4,15 +4,16 @@
 .Badge {
   border-radius: 0.25rem;
   padding: 0.15rem 0.3rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 8%;
   text-transform: uppercase;
   font-size: 0.8rem;
 
   @each $color, $map in base.$colors {
     &[color=#{$color}] {
-      color: map.get($map, 'background-contrast');
-      background: map.get($map, 'background');
+      color: map.get($map, 'text');
+      background: map.get($map, 'text-contrast');
+      border: 1px solid map.get($map, 'tint');
     }
   }
 }

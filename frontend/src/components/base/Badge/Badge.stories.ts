@@ -40,8 +40,6 @@ export const Warning: Story = { args: { color: 'warning' } satisfies Partial<Bad
 
 export const Danger: Story = { args: { color: 'danger' } satisfies Partial<BadgeProps> };
 
-export const Light: Story = { args: { color: 'light' } satisfies Partial<BadgeProps> };
-
 export const Medium: Story = { args: { color: 'medium' } satisfies Partial<BadgeProps> };
 
 export const Dark: Story = { args: { color: 'dark' } satisfies Partial<BadgeProps> };
