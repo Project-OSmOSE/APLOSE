@@ -2,6 +2,7 @@
 @use 'sass:map';
 @use 'sass:color';
 @use "@/css/annotation";
+@use "@/css/base";
 
 .warningText {
   justify-self: center;
@@ -221,12 +222,12 @@
       position: sticky;
       top: 0;
       background: white;
-      z-index: 2;
+      z-index: 3;
 
       th {
         font-weight: 400;
         color: var(--color-dark-tint);
-        background: rgba(var(--color-medium-rgb), 0.025);
+        background: color.change(map.get(base.$color_bases, medium), $lightness: 98%);
 
         &.sortable > div {
           display: grid;
@@ -290,7 +291,7 @@
 
       th, td {
         transition: background 50ms ease-in-out;
-        background: rgba(var(--color-dark-rgb), 0);
+        background: color.change(map.get(base.$color_bases, dark), $lightness: 100%);
       }
 
       th {
@@ -319,7 +320,7 @@
           opacity: 1;
 
           th, td {
-            box-shadow: inset 0 0 0 1000rem rgba(var(--color-dark-rgb), 0.025);
+            background: color.change(map.get(base.$color_bases, dark), $lightness: 98%);
 
             &:first-child {
               border-radius: 0.5rem 0 0 0.5rem;
