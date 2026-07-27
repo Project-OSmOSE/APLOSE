@@ -70,7 +70,11 @@ export const useDrawSpectrogram = () => {
                     }
                     image.onerror = error => {
                         failedImagesSources.current.push(src)
-                        toastManager.addError({ title: `Fail loading spectrogram: ${ image.src }`, error })
+                        toastManager.addError({
+                            title: `Fail loading spectrogram: ${ image.src }`,
+                            error,
+                            timeout: 3_000,
+                        })
                         resolve(undefined);
                     }
                 })
