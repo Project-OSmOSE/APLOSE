@@ -12,7 +12,7 @@ export class CampaignCreatePage {
     }
 
     get nameInput(): Locator {
-        return this.page.getByLabel('Name')
+        return this.page.getByRole('textbox', { name: 'Name' })
     }
 
     get descriptionInput(): Locator {
