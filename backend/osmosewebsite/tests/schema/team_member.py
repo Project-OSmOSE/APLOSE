@@ -14,7 +14,9 @@ query {
                 firstName
                 lastName
                 currentInstitutions {
-                    name
+                    institution {
+                        name
+                    }
                 }
             }
             position
