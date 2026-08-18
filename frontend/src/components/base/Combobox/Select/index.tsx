@@ -107,6 +107,7 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
         { multiple ? <MultipleInputGroup id={ id }
                                          className={ className }
                                          itemName={ itemName }
+                                         placeholder={ placeholder }
                                          itemToElementLabel={ _itemToElementLabel }/> :
             <SingleInputGroup id={ id }
                               className={ className }

@@ -56,8 +56,8 @@ const TEST = {
             const newUser = USERS.superuser
 
             await test.step('Add new annotator', async () => {
-                await page.getByRole('combobox', {name: 'Search annotator or group'}).fill(newUser.firstName);
-                await page.getByTestId('search-select-popup').getByText(newUser.firstName).click();
+                await page.getByRole('combobox', {name: 'Select annotator or group'}).fill(newUser.firstName);
+                await page.getByRole('option', { name: newUser.firstName }).click();
                 await expect(page.phaseEdit.getRow(newUser)).toBeVisible()
             })
 
@@ -68,19 +68,19 @@ const TEST = {
             })
 
             await test.step('Can add known annotator with some files', async () => {
-                await page.getByRole('combobox', {name: 'Search annotator or group'}).fill(newUser.firstName);
-                await page.getByTestId('search-select-popup').getByText(newUser.firstName).click()
+                await page.getByRole('combobox', {name: 'Select annotator or group'}).fill(newUser.firstName);
+                await page.getByRole('option', { name: newUser.firstName }).click();
                 expect(await page.phaseEdit.getRows(newUser).count()).toEqual(2)
             })
 
             await test.step('Cannot add known annotator with all files', async () => {
-                await page.getByRole('combobox', {name: 'Search annotator or group'}).fill(newUser.firstName);
-                await expect(page.getByTestId('search-select-popup').getByText(newUser.firstName)).not.toBeVisible();
+                await page.getByRole('combobox', {name: 'Select annotator or group'}).fill(newUser.firstName);
+                await expect(page.getByRole('option', {name: newUser.firstName})).not.toBeVisible();
             })
 
             await test.step('Add annotator group', async () => {
-                await page.getByRole('combobox', {name: 'Search annotator or group'}).fill(userGroup.name);
-                await page.getByTestId('search-select-popup').getByText(userGroup.name).click();
+                await page.getByRole('combobox', {name: 'Select annotator or group'}).fill(userGroup.name);
+                await page.getByRole('option', { name: userGroup.name }).click();
                 await expect(page.phaseEdit.getRow(USERS.staff)).toBeVisible()
                 await expect(page.phaseEdit.getfirstIndexInput(USERS.staff)).toBeVisible()
                 await expect(page.phaseEdit.getlastIndexInput(USERS.staff)).toBeVisible()

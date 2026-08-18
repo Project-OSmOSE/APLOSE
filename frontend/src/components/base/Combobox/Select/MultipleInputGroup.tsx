@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { Combobox } from '@/components/base';
 import { BaseComboboxSelectProps } from './types';
 
-type MultipleInputGroupProps<Value> = Pick<BaseComboboxSelectProps<Value, true>, 'id' | 'itemName'>
+type MultipleInputGroupProps<Value> = Pick<BaseComboboxSelectProps<Value, true>, 'id' | 'itemName' | 'placeholder'>
     & Required<Pick<BaseComboboxSelectProps<Value, true>, 'itemToElementLabel'>>
     & { className?: string }
 
@@ -11,6 +11,7 @@ export function MultipleInputGroup<Value>({
                                               itemName,
                                               itemToElementLabel,
                                               className,
+                                              placeholder,
                                           }: MultipleInputGroupProps<Value>) {
     return <Combobox.InputGroup className={ className }>
         <Combobox.Chips>
@@ -18,7 +19,7 @@ export function MultipleInputGroup<Value>({
                 { (value: Value[]) => (
                     <Fragment>
                         <Combobox.Input id={ id }
-                                        placeholder={ value.length > 0 ? '' : `Select ${ itemName }` }/>
+                                        placeholder={ placeholder || value.length > 0 ? '' : `Select ${ itemName }` }/>
                         { value.map((item, index) => (
                             <Combobox.Chip key={ index }>{ itemToElementLabel(item) }</Combobox.Chip>
                         )) }

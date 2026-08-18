@@ -62,7 +62,7 @@ export const Search: React.FC<{
         }))
     }, [ items, inputValue, contains ])
     return <ComboboxSelect items={ items }
-                           itemName="search"
+                           itemName="annotator or group"
                            itemToStringLabel={ item => {
                                switch (item.__typename) {
                                    case 'UserGroupNode':
