@@ -85,12 +85,13 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
                 <div className={ styles.page }>
                     <Navigation.Annotator loading={ isFetching }>
                         { data?.spectrogram && <div className={ styles.info }>
-                            <Note color="medium">
-                                { campaign.name }
-                                <AltArrowRight weight="Linear"
-                                               size={ 20 }/> { data.spectrogram.filename } { data.spectrogram.task?.status === AnnotationTaskStatus.Finished &&
-                                <CheckCircle weight="Linear" size={ 20 }/> }
-                            </Note>
+                            <div className={styles.file}>
+                                <Note color="medium">{ campaign.name }</Note>
+                                <Note color="medium"><AltArrowRight weight="Linear" size={ 20 }/></Note>
+                                <Note color="medium">{ data.spectrogram.filename }</Note>
+                                { data.spectrogram.task?.status === AnnotationTaskStatus.Finished &&
+                                    <Note color="medium"><CheckCircle weight="Linear" size={ 20 }/></Note> }
+                            </div>
                             { isEditionAuthorized && info?.totalCount &&
                                 <Progress color="medium"
                                           value={ (info.currentIndex ?? 0) + 1 }
