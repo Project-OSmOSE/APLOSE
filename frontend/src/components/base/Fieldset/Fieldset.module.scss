@@ -13,6 +13,9 @@
   justify-content: stretch;
   grid-template-columns: 1fr auto 1fr;
   padding: 0 1rem;
+  max-width: 40rem;
+  width: 100%;
+  margin: auto;
 
   div {
     height: 1px;

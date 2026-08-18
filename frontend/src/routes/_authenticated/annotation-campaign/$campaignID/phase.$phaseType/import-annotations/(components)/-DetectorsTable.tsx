@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { DetectorAPI } from '@/features/Detector';
 import { cleanGqlList } from '@/api/utils';
 import { NBSP } from '@/service/type';
+import styles from '../styles.module.scss'
 
 type N<T> = NonNullable<T>;
 type Detector = N<N<DetectorAPI.ListDetectorsQuery['allDetectors']>['results'][number]>
@@ -12,7 +13,7 @@ type DetectorConfiguration = N<N<Detector['configurations']>[number]>
 
 export type DetectorsTableProps = { names: string[] }
 export const DetectorsTable: React.FC<DetectorsTableProps> = ({ names }) => {
-    return <Fieldset.Root>
+    return <Fieldset.Root className={ styles.TableFieldSet }>
         <Fieldset.Legend>Detectors</Fieldset.Legend>
 
         <Table>
