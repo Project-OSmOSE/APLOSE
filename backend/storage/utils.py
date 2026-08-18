@@ -18,10 +18,10 @@ def make_path_relative(path: _Path, to: _Path | None = None) -> str:
     to: str = clean_path(to or settings.DATASET_EXPORT_PATH)
     has_storage = to is not None and len(to) > 0 and to != "." and to != "/"
     root = clean_path(settings.VOLUMES_ROOT)
-    if root in path and not has_storage:
+    if root in Path(path).parts and not has_storage:
         # Path should be relative
         return path.split(root).pop().strip("/")
-    if to in path and has_storage:
+    if to in Path(path).parts and has_storage:
         # Path should be relative
         return path.split(to).pop().strip("/")
     return clean_path(path)
