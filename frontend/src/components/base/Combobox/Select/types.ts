@@ -31,7 +31,8 @@ export type ComboboxSelectProps<Value, Multiple extends boolean = false> = // TO
     'data-testid'?: string,
     itemToElementLabel?: (item: Value) => ReactNode,
     className?: string,
-    onValueChange?: (value: FinalValue<Value, Multiple>) => void
+    onValueChange?: (value: FinalValue<Value, Multiple>) => void,
+    valuePopover?: boolean,
 } & Creatable<Value>
 
 type Creatable<Value> = {

@@ -3,7 +3,8 @@ import { Combobox } from '@/components/base';
 import { BaseComboboxSelectProps } from './types';
 
 type MultipleInputGroupProps<Value> = Pick<BaseComboboxSelectProps<Value, true>, 'id' | 'itemName'>
-    & Required<Pick<BaseComboboxSelectProps<Value, true>, 'itemToElementLabel'>> & { className?: string }
+    & Required<Pick<BaseComboboxSelectProps<Value, true>, 'itemToElementLabel'>>
+    & { className?: string }
 
 export function MultipleInputGroup<Value>({
                                               id,

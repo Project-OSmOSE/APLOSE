@@ -3,15 +3,17 @@ import { Combobox, type ComboboxValueProps as BaseProps } from '@base-ui/react/c
 import { Popover } from '../Popover';
 
 
-export type ComboboxValueProps = BaseProps
+export type ComboboxValueProps = BaseProps & { popover?: boolean }
 
-export const Value: React.FC<ComboboxValueProps> = React.memo(({ children, ...props }) => (
-    <Combobox.Value { ...props }>
-        { (value) => typeof children === 'function' ?
-            <Popover.Root>
+export const Value: React.FC<ComboboxValueProps> = React.memo(({ children, popover, ...props }) => {
+    if (popover && typeof children === 'function') {
+        return <Combobox.Value { ...props }>
+            { (value) => <Popover.Root>
                 <Popover.Trigger render={ <div/> } nativeButton={ false }>{ children(value) }</Popover.Trigger>
                 <Popover.Content>{ children(value) }</Popover.Content>
-            </Popover.Root>
-            : children }
-    </Combobox.Value>
-))
+            </Popover.Root> }
+        </Combobox.Value>
+    }
+    return <Combobox.Value { ...props } children={ children }/>
+
+})

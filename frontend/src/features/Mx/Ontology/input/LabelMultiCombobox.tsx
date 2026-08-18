@@ -12,8 +12,9 @@ type Props =
     & {
     id?: string,
     defaultValueIDs?: Maybe<string>[],
+    valuePopover?: boolean,
 }
-export const LabelMultiCombobox: React.FC<Props> = ({ id, defaultValue, defaultValueIDs, ...props }) => {
+export const LabelMultiCombobox: React.FC<Props> = ({ id, defaultValue, defaultValueIDs, valuePopover, ...props }) => {
     const {
         data: labels,
         isPending,
@@ -32,7 +33,7 @@ export const LabelMultiCombobox: React.FC<Props> = ({ id, defaultValue, defaultV
 
             <Combobox.InputGroup>
                 <Combobox.Chips>
-                    <Combobox.Value>
+                    <Combobox.Value popover={ valuePopover }>
                         { (value: API.LabelFragment[]) => (
                             <Fragment>
                                 <Combobox.Input id={ id } placeholder={ value.length > 0 ? '' : 'Select label' }/>

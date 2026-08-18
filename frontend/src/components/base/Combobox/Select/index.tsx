@@ -24,6 +24,7 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
                                                                             create,
                                                                             creatable,
                                                                             className,
+                                                                            valuePopover,
                                                                             ...props
                                                                         }: ComboboxSelectProps<Value, Multiple>) {
     const [ query, setQuery ] = useState<string>('');
@@ -114,6 +115,7 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
                               disabled={ disabled }
                               readOnly={ readOnly }
                               itemName={ itemName }
+                              valuePopover={ valuePopover }
                               placeholder={ placeholder }/> }
 
         <Portal itemName={ itemName }
