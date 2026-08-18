@@ -66,7 +66,7 @@ export const ConfigBar: React.FC = () => {
 
             { campaign.allowImageTuning && <Fragment>
                 <Popover.Root>
-                    <Popover.Trigger color="dark">
+                    <Popover.Trigger delay={ 0 } color="dark">
                         <Sun weight="Linear" size={ 20 }/>
                     </Popover.Trigger>
                     <Popover.Content className={ styles.VerticalItem }>
@@ -82,7 +82,7 @@ export const ConfigBar: React.FC = () => {
                 </Popover.Root>
 
                 <Popover.Root>
-                    <Popover.Trigger color="dark">
+                    <Popover.Trigger delay={ 0 } color="dark">
                         <Stop weight="BoldDuotone" size={ 20 }/>
                     </Popover.Trigger>
                     <Popover.Content className={ styles.VerticalItem }>
