@@ -34,17 +34,15 @@ const TEST = {
                 getCurrentUser: as,
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
             })
-            await test.step(`Navigate`, async () => {
-                await Promise.all([
-                    page.phaseDetail.go({ as, phase }),
-                    page.waitForResponse(response => {
-                        const request = response.request()
-                        const isGraphql = new RegExp(gqlRegex).test(request.url())
-                        const isListTasks = request.postDataJSON()?.operationName == 'allAnnotationSpectrograms' as keyof GqlOperations
-                        return isGraphql && isListTasks
-                    }),
-                ])
-            })
+            await test.step(`Navigate`, () => Promise.all([
+                page.phaseDetail.go({ as, phase }),
+                page.waitForResponse(response => {
+                    const request = response.request()
+                    const isGraphql = new RegExp(gqlRegex).test(request.url())
+                    const isListTasks = request.postDataJSON()?.operationName == 'allAnnotationSpectrograms' as keyof GqlOperations
+                    return isGraphql && isListTasks
+                }, { timeout: 30_000 }), // Timeout required to let time to fully navigate and load
+            ]))
 
             await test.step('Display files', async () => {
                 await expect(page.getByText(spectrogram.filename, { exact: true }).first()).toBeVisible()
@@ -120,7 +118,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
-                allAnnotationSpectrograms: 'filled'
+                allAnnotationSpectrograms: 'filled',
             })
             await test.step(`Navigate`, () => page.phaseDetail.go({ as, phase }))
 
