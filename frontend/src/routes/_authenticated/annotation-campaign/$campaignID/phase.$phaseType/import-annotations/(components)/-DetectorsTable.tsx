@@ -49,7 +49,8 @@ const DetectorRow: React.FC<{
         <Td top>{ name }</Td>
         <Td top>
             <Field.Root name={ `detector-${ name }` }>
-                <DetectorSelect name={ name } known={ known } value={ detector } onValueChange={ setDetector }/>
+                <DetectorSelect name={ name } readOnly={ !!known } value={ known ?? detector }
+                                onValueChange={ setDetector }/>
             </Field.Root>
         </Td>
         <Td top>
@@ -63,24 +64,14 @@ const DetectorRow: React.FC<{
 
 const DetectorSelect: React.FC<{
     name: string,
-    known: Detector | undefined,
+    readOnly?: boolean,
     value: Detector | null,
     onValueChange: (value: Detector | null) => void
-}> = ({ name, value, onValueChange, known }) => {
+}> = ({ name, value, readOnly, onValueChange }) => {
     const { data: allDetectors } = useQuery(DetectorAPI.allQuery)
 
-    if (known) {
-        return <ComboboxSelect itemName="detector" disabled
-                               data-testid={ `select-${ name }-detector` }
-                               placeholder="Create detector"
-                               itemToStringLabel={ item => item.name }
-                               itemToStringValue={ item => item.name }
-                               isItemEqualToValue={ (a, b) => a.name === b.name }
-                               items={ allDetectors }
-                               value={ known }/>
-    }
-
     return <ComboboxSelect itemName="detector"
+                           readOnly={ readOnly }
                            data-testid={ `select-${ name }-detector` }
                            placeholder="Create detector"
                            itemToStringLabel={ item => item.name }

@@ -56,7 +56,11 @@ export class PhaseImportAnnotationsPage {
                 this.page.waitForEvent('filechooser'),
                 this.page.getByText('Import annotations (csv)').click(),
             ])
-            await fileChooser.setFiles(__file);
+            await fileChooser.setFiles({
+                name: 'annotation_results.csv',
+                mimeType: 'text/csv',
+                buffer: fs.readFileSync(__file),
+            });
         })
     }
 

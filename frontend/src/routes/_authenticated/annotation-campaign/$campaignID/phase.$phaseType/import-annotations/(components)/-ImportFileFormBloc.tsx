@@ -2,12 +2,16 @@ import React, { useCallback, useState } from 'react';
 import { useLoaderData } from '@tanstack/react-router';
 import { CloudUpload } from '@solar-icons/react';
 
-import { ACCEPT_CSV_MIME_TYPE, ACCEPT_CSV_SEPARATOR, IMPORT_ANNOTATIONS_COLUMNS } from '@/consts/csv';
+import { IMPORT_ANNOTATIONS_COLUMNS } from '@/consts/csv';
 import { getErrorMessage } from '@/service/function';
 
-import { Fieldset, InputFile, Note, Toast } from '@/components/base';
+import { Fieldset, InputFile, Note, Toast, useSpreadsheetHandler } from '@/components/base';
 
 import { type Annotation } from './-type';
+
+type CsvHeader =
+    typeof IMPORT_ANNOTATIONS_COLUMNS.required[number] |
+    typeof IMPORT_ANNOTATIONS_COLUMNS.optional[number];
 
 export type ImportFileFormBlocProps = {
     onLoaded: (file: File, annotations: Annotation[]) => void;
@@ -20,48 +24,22 @@ export const ImportFileFormBloc: React.FC<ImportFileFormBlocProps> = ({
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const toastManager = Toast.useToastManager()
 
+    const spreadsheetHandler = useSpreadsheetHandler<Record<CsvHeader, string>, CsvHeader>(
+        [ ...IMPORT_ANNOTATIONS_COLUMNS.required, ...IMPORT_ANNOTATIONS_COLUMNS.optional ],
+        [],
+    )
+
     const [ isLoading, setIsLoading ] = useState<boolean>(false);
 
 
-    const handleInput = useCallback(async (file: File | null) => {
-        if (!file) return;
-        setIsLoading(true);
-        if (!ACCEPT_CSV_MIME_TYPE.includes(file.type)) {
-            setIsLoading(false)
-            toastManager.add({
-                type: 'danger', title: 'Invalid file type',
-                description: `Wrong MIME Type, found : ${ file.type } ; but accepted types are: ${ ACCEPT_CSV_MIME_TYPE }`,
-            })
-            return;
-        }
+    const handleInput = useCallback(async (file: File) => {
+        setIsLoading(true)
+        let rows, headers;
 
-        let rows: string[][] = []
         try {
-            rows = await new Promise<string[][]>((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsText(file, 'UTF-8');
-                reader.onerror = () => reject('Error reading file, check the file isn\'t corrupted')
-                reader.onload = (event) => {
-                    const result = event.target?.result;
-                    if (!result || typeof result !== 'string') {
-                        reject('The file is empty or it does not contain a string content.')
-                        return;
-                    }
-
-                    let lines = result.replaceAll('\r', '').split('\n').map(l => [ l ]);
-                    lines = lines.map(l => l.flatMap(l => l.split(ACCEPT_CSV_SEPARATOR))).filter(d => d.length > 1);
-                    if (lines.length === 0) reject('The CSV is empty')
-
-                    const missingColumns = [];
-                    const headers = lines[0]
-                    for (const column of IMPORT_ANNOTATIONS_COLUMNS.required) {
-                        if (!headers.includes(column)) missingColumns.push(column);
-                    }
-                    if (missingColumns.length > 0)
-                        reject(`Missing columns: ${ missingColumns.join(', ') }`);
-                    resolve(lines)
-                }
-            })
+            const data = await spreadsheetHandler.loadFile(file)
+            rows = data.rows;
+            headers = data.headers;
         } catch (error) {
             toastManager.add({
                 type: 'danger', title: 'Fail reading file',
@@ -71,28 +49,35 @@ export const ImportFileFormBloc: React.FC<ImportFileFormBlocProps> = ({
             return
         }
 
-        const contentRows = rows
-        contentRows.reverse()
-        const header = contentRows.pop()!
-        contentRows.reverse()
+        const missingColumns = [];
+        for (const column of IMPORT_ANNOTATIONS_COLUMNS.required) {
+            if (!headers.includes(column)) missingColumns.push(column);
+        }
+        if (missingColumns.length > 0) {
+            toastManager.add({
+                type: 'danger', title: 'Fail reading file',
+                description: `Missing columns: ${ missingColumns.join(', ') }`,
+            })
+            setIsLoading(false)
+            return
+        }
         onLoaded(
             file,
-            contentRows.map(r => {
-                const confidence_indicator: string | undefined = r[header.indexOf('confidence_indicator_level')]
+            rows.map(r => {
+                const confidence_indicator: string | undefined = r.confidence_indicator_level
                 const confidence__level = confidence_indicator?.split('/') ?? []
                 return {
-                    start_datetime: r[header.indexOf('start_datetime')],
-                    end_datetime: r[header.indexOf('end_datetime')],
-                    start_frequency: +r[header.indexOf('start_frequency')],
-                    end_frequency: +r[header.indexOf('end_frequency')],
-                    label__name: r[header.indexOf('annotation')],
-                    confidence__label: r[header.indexOf('confidence_indicator_label')],
+                    ...r,
+                    start_frequency: r.start_frequency !== undefined ? +r.start_frequency : undefined,
+                    end_frequency: r.end_frequency !== undefined ? +r.end_frequency : undefined,
+                    label__name: r.annotation,
+                    confidence__label: r.confidence_indicator_label,
                     confidence__level: confidence__level.length > 0 ? +confidence__level[0] : undefined,
-                    initial__detector__name: r[header.indexOf('annotator')],
+                    initial__detector__name: r.annotator,
                 } as Annotation
             }))
         setIsLoading(false)
-    }, [ toastManager, onLoaded ])
+    }, [ toastManager, onLoaded, spreadsheetHandler ])
 
     return <Fieldset.Root>
 
@@ -100,11 +85,11 @@ export const ImportFileFormBloc: React.FC<ImportFileFormBlocProps> = ({
         <Note color="medium">
             The imported CSV should only contain annotations related to the campaign
             dataset: { campaign.dataset?.name }
-
         </Note>
 
         <InputFile onFileChange={ handleInput }
                    onReset={ onReset }
+                   accept={ [ 'csv' ] }
                    forceLoadingState={ isLoading }>
             <CloudUpload weight="Linear" size={ 20 }/> Import annotations (csv)
         </InputFile>

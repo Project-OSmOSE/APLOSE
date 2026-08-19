@@ -1,25 +1,36 @@
-import React, { DragEvent, Fragment, useCallback, useMemo, useState } from 'react';
+import React, { DragEvent, useCallback, useImperativeHandle, useMemo, useState } from 'react';
 import { Restart } from '@solar-icons/react';
-import { Button, Spinner } from '@/components/base';
+import { Button, Spinner, Toast } from '@/components/base';
 import styles from './InputFile.module.scss';
-import { ACCEPT_CSV_MIME_TYPE } from '@/consts/csv';
+import { type FileType, MIME_TYPES } from '@/consts/csv';
 
+export * from './SpreadsheetHandler'
+
+export type InputFileRef = {
+    reset: () => void;
+}
 export type InputFileProps = {
-    onFileChange: (file: File | null) => void;
+    onFileChange: (file: File) => void;
     onReset: () => void;
     children?: React.ReactNode;
-    forceLoadingState?: boolean
+    forceLoadingState?: boolean;
+    accept: FileType[];
 }
-export const InputFile: React.FC<InputFileProps> = ({
+export const InputFile = React.forwardRef<InputFileRef, InputFileProps>(({
                                                         onFileChange,
                                                         onReset,
                                                         children,
                                                         forceLoadingState,
-                                                    }) => {
+                                                        accept,
+                                                    }, ref) => {
     const [ isDraggingHover, setIsDraggingHover ] = useState<boolean>(false);
     const [ _isLoading, setIsLoading ] = useState<boolean>(false);
     const isLoading = useMemo(() => _isLoading || forceLoadingState, [ _isLoading, forceLoadingState ]);
     const [ file, setFile ] = useState<File | null>(null);
+    const toastManager = Toast.useToastManager()
+    const mimeTypes = useMemo(() => {
+        return accept.map(a => MIME_TYPES[a]).join(', ')
+    }, [ accept ])
 
     const dragNDropClassName = useMemo(() => {
         const l = [ styles.InputFile ]
@@ -34,6 +45,21 @@ export const InputFile: React.FC<InputFileProps> = ({
         return l.join(' ')
     }, [ isLoading, file, isDraggingHover ])
 
+    const onFilesInput = useCallback((files?: FileList | null) => {
+        const _file = files?.item(0) ?? null
+        if (!_file) return
+        if (!mimeTypes.includes(_file.type)) {
+            setIsLoading(false)
+            toastManager.add({
+                type: 'danger', title: 'Invalid file type',
+                description: `Wrong MIME Type, found : ${ _file.type } ; but accepted types are: ${ accept.join(', ') }`,
+            })
+            return;
+        }
+
+        setFile(_file)
+        onFileChange(_file)
+    }, [ onFileChange, toastManager, accept, mimeTypes ])
 
     const reset = useCallback(() => {
         setIsLoading(false)
@@ -41,28 +67,29 @@ export const InputFile: React.FC<InputFileProps> = ({
         onReset()
     }, [ onReset ])
 
+    useImperativeHandle(ref, () => ({
+        reset: () => {
+            setIsLoading(false)
+            setFile(null)
+        }
+    }), [])
+
     const onDragZoneClick = useCallback(() => {
         if (isLoading || !!file) return;
         const input = document.createElement('input');
         input.type = 'file';
-        input.accept = ACCEPT_CSV_MIME_TYPE;
+        input.accept = mimeTypes;
         input.click();
-        input.oninput = () => {
-            const _file = input.files?.item(0) ?? null
-            setFile(_file)
-            onFileChange(_file)
-        }
-    }, [ isLoading, file, onFileChange ])
+        input.oninput = () => onFilesInput(input.files)
+    }, [ isLoading, file, onFilesInput, mimeTypes ])
 
     const onDragZoneDrop = useCallback((event: DragEvent) => {
         event.preventDefault();
         event.stopPropagation();
         if (isLoading || !!file) return;
         setIsDraggingHover(false);
-        const _file = event.dataTransfer.files?.item(0) ?? null
-        setFile(_file)
-        onFileChange(_file)
-    }, [ isLoading, file, onFileChange ])
+        onFilesInput(event.dataTransfer.files)
+    }, [ isLoading, file, onFilesInput ])
 
     const onDragStart = useCallback((event: DragEvent) => {
         setIsDraggingHover(true)
@@ -74,6 +101,16 @@ export const InputFile: React.FC<InputFileProps> = ({
         event.preventDefault();
     }, [])
 
+    if (isLoading)
+        return <div className={ dragNDropClassName }><Spinner/></div>
+    if (file)
+        return <div className={ dragNDropClassName }>
+            <p>{ file.name }</p>
+            <Button onClick={ reset } className="ion-text-wrap">
+                Reset
+                <Restart weight="Linear" size={ 20 }/>
+            </Button>
+        </div>
     return <div className={ dragNDropClassName }
                 onClick={ onDragZoneClick }
                 onDrop={ onDragZoneDrop }
@@ -81,15 +118,6 @@ export const InputFile: React.FC<InputFileProps> = ({
                 onDragEnter={ onDragStart }
                 onDragLeave={ onDragEnd }
                 onDragEnd={ onDragEnd }>
-
-        { !isLoading && !file && children }
-        { isLoading && <Spinner/> }
-        { file && <Fragment>
-            <p>{ file.name }</p>
-            <Button onClick={ reset } className="ion-text-wrap">
-                Reset
-                <Restart weight="Linear" size={ 20 }/>
-            </Button>
-        </Fragment> }
+        { children }
     </div>
-}
+})
