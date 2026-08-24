@@ -242,8 +242,10 @@ export class SpreadsheetFormData<Key extends string> extends FormData {
         return super.get(name) as string | null;
     }
 
-    getBoolean(name: FormDataName<Key>): boolean {
-        return this.get(name) === 'true'
+    getBoolean(name: FormDataName<Key>): boolean | undefined {
+        const data = this.get(name)
+        if (data === null) return undefined
+        return data === 'true'
     }
 
     getNumber(name: FormDataName<Key>): number | undefined {
