@@ -16,8 +16,7 @@ export const RoleSelect: React.FC<Omit<SelectProps<RoleEnum>, 'items' | 'itemToE
     return <Select itemName="role"
                    items={ ALL_ROLES }
                    itemToStringValue={ item => item }
-                   itemToStringLabel={ item => item }
-                   itemToElementLabel={ item => item }
+                   itemToElementLabel={ item => item.replaceAll(/([a-z])([A-Z])/g, '$1 $2') }
                    isItemEqualToValue={ (a, b) => a === b }
                    { ...props }/>
 }

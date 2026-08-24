@@ -20,7 +20,7 @@ export const Select: React.FC<SelectProps> = ({ inverted, ...props }) => {
             { itemToGradient(item) }
             <Note>{ item }</Note>
         </div>
-    ), [itemToGradient])
+    ), [ itemToGradient ])
 
     return (
         <BaseSelect itemName="colormap"

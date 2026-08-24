@@ -5,7 +5,7 @@ import styles from './Select.module.scss'
 import { Note } from '@/components/base';
 
 export type SelectProps<Value, Multiple extends boolean | undefined = false> =
-    Omit<SelectRootProps<Value, Multiple>, 'items' | 'itemToStringValue'>
+    Omit<SelectRootProps<Value, Multiple>, 'items' | 'itemToStringValue' | 'itemToStringLabel'>
     & {
     items: any[],
     itemName: string
