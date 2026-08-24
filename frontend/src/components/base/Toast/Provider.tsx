@@ -26,7 +26,7 @@ const ToastList: React.FC = () => {
         return <Toast.Root key={ toast.id } toast={ toast } className={ rootClasses.join(' ') }>
             <Toast.Content className={ styles.Content }>
                 <Toast.Title className={ styles.Title }/>
-                <Toast.Description className={ styles.Description }/>
+                <Toast.Description render={ <div/> } className={ styles.Description }/>
                 {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */ }
                 <Toast.Action className={ styles.Action } render={ ({ ref, color, ...props }) => <>
                     <Button color={ toast.type } { ...props }/>
