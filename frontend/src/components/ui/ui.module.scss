@@ -287,6 +287,10 @@
       }
     }
 
+    td.top, th.top {
+      vertical-align: baseline;
+    }
+
     tbody {
 
       th, td {
@@ -310,10 +314,6 @@
 
         td.center {
           text-align: center;
-        }
-
-        td.top, th.top {
-          vertical-align: baseline;
         }
 
         &:hover {
