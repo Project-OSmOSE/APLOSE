@@ -1,6 +1,7 @@
 import os
 from io import TextIOWrapper
 from pathlib import PureWindowsPath, Path
+from typing import Optional
 
 from django.conf import settings
 
@@ -12,16 +13,37 @@ def clean_path(path: _Path) -> str:
     return PureWindowsPath(path).as_posix()
 
 
+def path_in(subpath: _Path, path: _Path) -> bool:
+    """Check if subpath is in path"""
+    path_parts = PureWindowsPath(path).parts
+    subpath_parts = PureWindowsPath(subpath).parts
+
+    min_index: Optional[int] = None
+    for k in range(0, len(subpath_parts)):
+        part = subpath_parts[k]
+        try:
+            index = path_parts.index(part)
+        except ValueError:
+            return False
+
+        if min_index is None:
+            min_index = index
+
+        if (index - min_index) != k:
+            return False
+    return True
+
+
 def make_path_relative(path: _Path, to: _Path | None = None) -> str:
     """Clean the path"""
     path: str = clean_path(path)
     to: str = clean_path(to or settings.DATASET_EXPORT_PATH)
     has_storage = to is not None and len(to) > 0 and to != "." and to != "/"
     root = clean_path(settings.VOLUMES_ROOT)
-    if root in Path(path).parts and not has_storage:
+    if path_in(path=path, subpath=root) and not has_storage:
         # Path should be relative
         return path.split(root).pop().strip("/")
-    if to in Path(path).parts and has_storage:
+    if path_in(path=path, subpath=to) and has_storage:
         # Path should be relative
         return path.split(to).pop().strip("/")
     return clean_path(path)
