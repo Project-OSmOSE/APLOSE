@@ -2,7 +2,6 @@ import json
 
 from django_extension.tests import ExtendedTestCase
 from freezegun import freeze_time
-from graphene_django.utils import GraphQLTestCase
 
 from backend.api.models import AnnotationCampaign, Archive
 from backend.api.tests.fixtures import ALL_FIXTURES

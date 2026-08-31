@@ -19,8 +19,7 @@ def path_in(subpath: _Path, path: _Path) -> bool:
     subpath_parts = PureWindowsPath(subpath).parts
 
     min_index: Optional[int] = None
-    for k in range(0, len(subpath_parts)):
-        part = subpath_parts[k]
+    for k, part in enumerate(subpath_parts):
         try:
             index = path_parts.index(part)
         except ValueError:
