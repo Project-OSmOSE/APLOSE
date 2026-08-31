@@ -5,10 +5,9 @@ import { useCanGoBack, useLoaderData, useParams } from '@tanstack/react-router';
 import { mocked } from 'storybook/test';
 
 import { AnnotationPhaseType } from '@/api/types.gql-generated.ts';
-
-import { ImportAnnotations } from './route.tsx';
 import { Toast } from '@/components/base/index.ts';
 import { StoreProvider } from '@/features/App';
+import { ImportAnnotationsPage } from './(components)/-page';
 
 
 const MockDetector = {
@@ -25,7 +24,7 @@ const MockDetector = {
 }
 const meta = {
     title: 'pages/ImportAnnotations',
-    component: ImportAnnotations,
+    component: ImportAnnotationsPage,
     beforeEach: ({ parameters }: any) => {
         mocked(useCanGoBack).mockReturnValue(true)
         mocked(useLoaderData).mockReturnValue({
@@ -38,7 +37,7 @@ const meta = {
         })
 
         mocked(useParams).mockReturnValue({
-            campaignID: "1",
+            campaignID: '1',
             phaseType: AnnotationPhaseType.Verification,
         })
 
@@ -55,10 +54,9 @@ const meta = {
     },
     // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
     tags: [ 'autodocs' ],
-} satisfies Meta<typeof ImportAnnotations>;
+} satisfies Meta<typeof ImportAnnotationsPage>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
-export const Default: Story = {
-};
+export const Default: Story = {};
