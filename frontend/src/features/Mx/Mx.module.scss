@@ -1,0 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+SC:wght@100..900&display=swap');
+
+$font-family: 'Encode Sans SC', sans-serif;
+
+.Link {
+  font-family: #{$font-family};
+}

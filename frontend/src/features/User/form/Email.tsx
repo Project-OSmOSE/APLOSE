@@ -9,7 +9,6 @@ import { Spinner } from '@/components/base/Spinner';
 import * as API from '../api';
 import { updateEmailMutation } from '../api';
 import { Toast } from '@/components/base/Toast';
-import { cleanGqlErrors } from '@/api/utils';
 
 export const Email: React.FC = () => {
     const { data: user } = useQuery(API.currentQuery)
@@ -32,10 +31,8 @@ export const Email: React.FC = () => {
         }
     }, [ mutate, toastManager ])
 
-    const errors = useMemo(() => cleanGqlErrors(data?.currentUserUpdate?.errors), [ data ])
-
     return useMemo(() => <Form onSubmit={ submit }
-                               errors={ errors }>
+                               gqlErrors={ data?.errors }>
             <Fieldset.Root>
                 <Fieldset.Legend>Update email</Fieldset.Legend>
 
@@ -56,5 +53,5 @@ export const Email: React.FC = () => {
                 </ButtonGroup>
             </Fieldset.Root>
         </Form>,
-        [ isPending, submit, user, errors ])
+        [ isPending, submit, user, data ])
 }

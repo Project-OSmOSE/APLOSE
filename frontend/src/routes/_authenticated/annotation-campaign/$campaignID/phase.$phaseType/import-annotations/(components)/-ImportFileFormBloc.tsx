@@ -1,14 +1,17 @@
-import React, { DragEvent, Fragment, useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useLoaderData } from '@tanstack/react-router';
-import { CloudUpload, Restart } from '@solar-icons/react';
+import { CloudUpload } from '@solar-icons/react';
 
-import { ACCEPT_CSV_MIME_TYPE, ACCEPT_CSV_SEPARATOR, IMPORT_ANNOTATIONS_COLUMNS } from '@/consts/csv';
+import { IMPORT_ANNOTATIONS_COLUMNS } from '@/consts/csv';
 import { getErrorMessage } from '@/service/function';
 
-import { Button, Fieldset, Note, Spinner, Toast } from '@/components/base';
+import { Fieldset, InputFile, Note, Toast, useSpreadsheetHandler } from '@/components/base';
 
 import { type Annotation } from './-type';
-import styles from '../styles.module.scss'
+
+type CsvHeader =
+    typeof IMPORT_ANNOTATIONS_COLUMNS.required[number] |
+    typeof IMPORT_ANNOTATIONS_COLUMNS.optional[number];
 
 export type ImportFileFormBlocProps = {
     onLoaded: (file: File, annotations: Annotation[]) => void;
@@ -20,64 +23,23 @@ export const ImportFileFormBloc: React.FC<ImportFileFormBlocProps> = ({
                                                                       }) => {
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const toastManager = Toast.useToastManager()
-    const [ isDraggingHover, setIsDraggingHover ] = useState<boolean>(false);
+
+    const spreadsheetHandler = useSpreadsheetHandler<Record<CsvHeader, string>, CsvHeader>(
+        [ ...IMPORT_ANNOTATIONS_COLUMNS.required, ...IMPORT_ANNOTATIONS_COLUMNS.optional ],
+        [],
+    )
 
     const [ isLoading, setIsLoading ] = useState<boolean>(false);
-    const [ file, setFile ] = useState<File | undefined>();
 
-    const dragNDropClassName = useMemo(() => {
-        const l = [ styles.dragNDropZone ]
-        if (isDraggingHover) l.push(styles.dragging)
-        if (isLoading) {
-            l.push(styles.loading)
-        } else if (file) {
-            l.push(styles.loaded)
-        } else {
-            l.push(styles.initial)
-        }
-        return l.join(' ')
-    }, [ isLoading, file, isDraggingHover ])
 
-    const handleInput = useCallback(async (files?: FileList) => {
-        const _file = files?.item(0);
-        if (!_file) return;
-        setIsLoading(true);
-        if (!ACCEPT_CSV_MIME_TYPE.includes(_file.type)) {
-            setIsLoading(false)
-            toastManager.add({
-                type: 'danger', title: 'Invalid file type',
-                description: `Wrong MIME Type, found : ${ _file.type } ; but accepted types are: ${ ACCEPT_CSV_MIME_TYPE }`,
-            })
-            return;
-        }
+    const handleInput = useCallback(async (file: File) => {
+        setIsLoading(true)
+        let rows, headers;
 
-        let rows: string[][] = []
         try {
-            rows = await new Promise<string[][]>((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsText(_file, 'UTF-8');
-                reader.onerror = () => reject('Error reading file, check the file isn\'t corrupted')
-                reader.onload = (event) => {
-                    const result = event.target?.result;
-                    if (!result || typeof result !== 'string') {
-                        reject('The file is empty or it does not contain a string content.')
-                        return;
-                    }
-
-                    let lines = result.replaceAll('\r', '').split('\n').map(l => [ l ]);
-                    lines = lines.map(l => l.flatMap(l => l.split(ACCEPT_CSV_SEPARATOR))).filter(d => d.length > 1);
-                    if (lines.length === 0) reject('The CSV is empty')
-
-                    const missingColumns = [];
-                    const headers = lines[0]
-                    for (const column of IMPORT_ANNOTATIONS_COLUMNS.required) {
-                        if (!headers.includes(column)) missingColumns.push(column);
-                    }
-                    if (missingColumns.length > 0)
-                        reject(`Missing columns: ${ missingColumns.join(', ') }`);
-                    resolve(lines)
-                }
-            })
+            const data = await spreadsheetHandler.loadFile(file)
+            rows = data.rows;
+            headers = data.headers;
         } catch (error) {
             toastManager.add({
                 type: 'danger', title: 'Fail reading file',
@@ -87,63 +49,35 @@ export const ImportFileFormBloc: React.FC<ImportFileFormBlocProps> = ({
             return
         }
 
-        const contentRows = rows
-        contentRows.reverse()
-        const header = contentRows.pop()!
-        contentRows.reverse()
+        const missingColumns = [];
+        for (const column of IMPORT_ANNOTATIONS_COLUMNS.required) {
+            if (!headers.includes(column)) missingColumns.push(column);
+        }
+        if (missingColumns.length > 0) {
+            toastManager.add({
+                type: 'danger', title: 'Fail reading file',
+                description: `Missing columns: ${ missingColumns.join(', ') }`,
+            })
+            setIsLoading(false)
+            return
+        }
         onLoaded(
-            _file,
-            contentRows.map(r => {
-                const confidence_indicator: string | undefined = r[header.indexOf('confidence_indicator_level')]
+            file,
+            rows.map(r => {
+                const confidence_indicator: string | undefined = r.confidence_indicator_level
                 const confidence__level = confidence_indicator?.split('/') ?? []
                 return {
-                    start_datetime: r[header.indexOf('start_datetime')],
-                    end_datetime: r[header.indexOf('end_datetime')],
-                    start_frequency: +r[header.indexOf('start_frequency')],
-                    end_frequency: +r[header.indexOf('end_frequency')],
-                    label__name: r[header.indexOf('annotation')],
-                    confidence__label: r[header.indexOf('confidence_indicator_label')],
+                    ...r,
+                    start_frequency: r.start_frequency !== undefined ? +r.start_frequency : undefined,
+                    end_frequency: r.end_frequency !== undefined ? +r.end_frequency : undefined,
+                    label__name: r.annotation,
+                    confidence__label: r.confidence_indicator_label,
                     confidence__level: confidence__level.length > 0 ? +confidence__level[0] : undefined,
-                    initial__detector__name: r[header.indexOf('annotator')],
+                    initial__detector__name: r.annotator,
                 } as Annotation
             }))
-        setFile(_file)
         setIsLoading(false)
-    }, [ toastManager, onLoaded ])
-
-    const reset = useCallback(() => {
-        setIsLoading(false)
-        setFile(undefined)
-        onReset()
-    }, [ onReset ])
-
-    const onDragZoneClick = useCallback(() => {
-        if (isLoading || !!file) return;
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = ACCEPT_CSV_MIME_TYPE;
-        input.click();
-        input.oninput = () => handleInput(input.files ?? undefined)
-    }, [ isLoading, file, handleInput ])
-
-    const onDragZoneDrop = useCallback((event: DragEvent) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if (isLoading || !!file) return;
-        setIsDraggingHover(false);
-        handleInput(event.dataTransfer.files)
-    }, [ isLoading, file, handleInput ])
-
-    const onDragStart = useCallback((event: DragEvent) => {
-        setIsDraggingHover(true)
-        event.preventDefault();
-    }, [])
-
-    const onDragEnd = useCallback((event: DragEvent) => {
-        setIsDraggingHover(false)
-        event.preventDefault();
-    }, [])
-
+    }, [ toastManager, onLoaded, spreadsheetHandler ])
 
     return <Fieldset.Root>
 
@@ -151,29 +85,13 @@ export const ImportFileFormBloc: React.FC<ImportFileFormBlocProps> = ({
         <Note color="medium">
             The imported CSV should only contain annotations related to the campaign
             dataset: { campaign.dataset?.name }
-
         </Note>
 
-        {/* Drag N Drop zone */ }
-        <div className={ dragNDropClassName }
-             onClick={ onDragZoneClick }
-             onDrop={ onDragZoneDrop }
-             onDragOver={ onDragStart }
-             onDragEnter={ onDragStart }
-             onDragLeave={ onDragEnd }
-             onDragEnd={ onDragEnd }>
-
-            { !isLoading && !file && <Fragment>
-                <CloudUpload weight="Linear" size={ 20 }/> Import annotations (csv)
-            </Fragment> }
-            { isLoading && <Spinner/> }
-            { file && <Fragment>
-                <p>{ file.name }</p>
-                <Button onClick={ reset } className="ion-text-wrap">
-                    Reset
-                    <Restart weight="Linear" size={ 20 }/>
-                </Button>
-            </Fragment> }
-        </div>
+        <InputFile onFileChange={ handleInput }
+                   onReset={ onReset }
+                   accept={ [ 'csv' ] }
+                   forceLoadingState={ isLoading }>
+            <CloudUpload weight="Linear" size={ 20 }/> Import annotations (csv)
+        </InputFile>
     </Fieldset.Root>
 }

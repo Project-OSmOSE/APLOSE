@@ -34,7 +34,6 @@ const meta = {
     args: {
         onClick: fn(),
         children: 'Test button',
-        color: 'default',
         disabled: false,
     } satisfies ButtonProps,
 } satisfies Meta<typeof Button>;
@@ -46,11 +45,11 @@ export const Default: Story = {};
 
 export const Primary: Story = { args: { color: 'primary' } satisfies Partial<ButtonProps> };
 
+export const Success: Story = { args: { color: 'success' } satisfies Partial<ButtonProps> };
+
 export const Warning: Story = { args: { color: 'warning' } satisfies Partial<ButtonProps> };
 
 export const Danger: Story = { args: { color: 'danger' } satisfies Partial<ButtonProps> };
-
-export const Success: Story = { args: { color: 'success' } satisfies Partial<ButtonProps> };
 
 export const Medium: Story = { args: { color: 'medium' } satisfies Partial<ButtonProps> };
 

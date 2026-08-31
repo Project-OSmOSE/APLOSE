@@ -1,4 +1,5 @@
 @use "@/css/base";
+@use 'sass:map';
 
 .Viewport {
   position: fixed;
@@ -24,8 +25,8 @@
   --shrink: calc(1 - var(--scale));
   --height: var(--toast-frontmost-height, var(--toast-height));
   --offset-y: calc(
-          var(--toast-offset-y) * -1 + (var(--toast-index) * var(--gap) * -1) +
-          var(--toast-swipe-movement-y)
+      var(--toast-offset-y) * -1 + (var(--toast-index) * var(--gap) * -1) +
+      var(--toast-swipe-movement-y)
   );
   position: absolute;
   right: 0;
@@ -50,10 +51,10 @@
   height: var(--height);
   //noinspection CssInvalidFunction
   transform: translateX(var(--toast-swipe-movement-x)) translateY(
-                  calc(
-                          var(--toast-swipe-movement-y) - (var(--toast-index) * var(--peek)) -
-                          (var(--shrink) * var(--height))
-                  )
+          calc(
+              var(--toast-swipe-movement-y) - (var(--toast-index) * var(--peek)) -
+              (var(--shrink) * var(--height))
+          )
   ) scale(var(--scale));
 
   &[data-expanded] {
@@ -108,18 +109,13 @@
     outline-offset: -1px;
   }
 
-  @each $color in base.$colors {
+  @each $color, $map in base.$colors {
     &.#{$color} {
-      background-color: hsl(
-                      var(--color-#{$color}-h),
-                      var(--color-#{$color}-s),
-                      95%
-      );
-      color: var(--color-#{$color}-text);
-
+      background: map.get($map, 'text-background');
+      color: map.get($map, 'text');
 
       * {
-        outline-color: var(--color-#{$color});
+        outline-color: map.get(base.$color_bases, $color);
       }
     }
   }
@@ -170,6 +166,7 @@
   color: inherit;
   cursor: pointer;
   transition: 150ms cubic-bezier(0.22, 1, 0.36, 1);
+
   svg {
     opacity: 0.5;
   }

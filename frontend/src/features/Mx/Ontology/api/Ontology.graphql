@@ -1,0 +1,43 @@
+# Source
+fragment Source on SourceNode {
+    id
+    displayName
+    parent { id }
+}
+query allSources{
+    allSources {
+        results { ...Source }
+    }
+}
+mutation createSource($input: PostSourceMutationInput!) {
+    postSource(input: $input) {
+        source { ...Source }
+        errors { field, messages }
+    }
+}
+
+# Label
+fragment Label on LabelNode {
+    id
+    displayName
+}
+query allLabels {
+    allLabels {
+        results { ...Label }
+    }
+}
+
+# Behavior
+fragment Behavior on BehaviorNode {
+    id
+    name
+}
+query allBehaviors {
+    allBehaviors { results { ...Behavior } }
+}
+mutation createBehavior($input: BehaviorMutationInput!) {
+    behavior(input: $input) {
+        behavior { ...Behavior }
+        errors { field, messages }
+    }
+}

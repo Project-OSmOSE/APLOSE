@@ -1,0 +1,1 @@
+export type DataControlParams = { header: string, rowIndex: number, data: string }

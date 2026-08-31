@@ -1,0 +1,43 @@
+.Root {
+  text-decoration: none;
+  color: unset;
+  background: var(--color-light);
+  box-shadow: var(--box-shadow);
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 1rem;
+
+  .Head {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .Info {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+
+    svg {
+      opacity: 0.5;
+    }
+  }
+}
+
+.Grid {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 300px);
+    gap: 2rem;
+    justify-content: center;
+    align-content: start;
+    overflow: auto;
+    max-height: 100%;
+}

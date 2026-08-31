@@ -17,7 +17,10 @@ class AnnotationTaskAdmin(ExtendedModelAdmin):
         "spectrogram",
     )
 
-    search_fields = ("spectrogram__filename",)
+    search_fields = (
+        "spectrogram__filename",
+        "annotator__username",
+    )
 
     list_filter = (
         "status",

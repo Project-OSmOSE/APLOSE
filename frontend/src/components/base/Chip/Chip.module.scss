@@ -12,12 +12,13 @@
   user-select: none;
   align-items: center;
 
-  background-color: rgba(var(--color-dark-rgb), 0.15);
-  color: var(--color-dark);
-  @each $color in base.$colors {
+  background: map.get(base.$colors, 'dark', 'text-background');
+  color: map.get(base.$colors, 'dark', 'text');
+
+  @each $color, $map in base.$colors {
     &[data-color=#{$color}] {
-      background-color: rgba(var(--color-#{$color}-rgb), 0.15);
-      color: var(--color-#{$color}-text);
+      background: map.get($map, 'text-background');
+      color: map.get($map, 'text');
     }
   }
 

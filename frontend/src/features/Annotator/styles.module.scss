@@ -10,6 +10,13 @@
     justify-items: center;
     align-content: center;
 
+    .file {
+      display: grid;
+      grid-auto-flow: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
     > p {
       display: grid;
       grid-auto-flow: column;

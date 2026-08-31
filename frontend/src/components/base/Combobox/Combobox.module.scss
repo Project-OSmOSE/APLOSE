@@ -5,9 +5,31 @@ $icon-size: 1.5rem;
 .InputGroup {
   position: relative;
   display: grid;
+  text-align: start;
+  width: 100%;
 
   .Input {
     padding-right: #{Input.$horizontal-space};
+  }
+
+  .Spinner {
+    right: #{Input.$horizontal-space};
+    position: absolute;
+    top: 50%;
+    translate: 0 -50%;
+  }
+
+  .Value {
+    right: #{Input.$horizontal-space};
+    left: #{Input.$horizontal-space};
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--color-light-shade);
+    user-select: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
 
   &[data-disabled] {
@@ -17,6 +39,10 @@ $icon-size: 1.5rem;
   &:has(.Trigger):has(.Clear) {
     .Input {
       padding-right: calc(3 * #{Input.$horizontal-space} + 2 * #{$icon-size});
+    }
+
+    .Value, .Spinner {
+      right: calc(3 * #{Input.$horizontal-space} + 2 * #{$icon-size});
     }
 
     .Trigger {
@@ -32,6 +58,10 @@ $icon-size: 1.5rem;
   &:has(.Clear):not(:has(.Trigger)) {
     .Input {
       padding-right: calc(2 * #{Input.$horizontal-space} + #{$icon-size});
+    }
+
+    .Value, .Spinner {
+      right: calc(2 * #{Input.$horizontal-space} + #{$icon-size});
     }
 
     .Trigger, .Clear {
@@ -52,6 +82,7 @@ $icon-size: 1.5rem;
   justify-content: center;
   align-items: center;
   padding: 0;
+  cursor: pointer;
 
   &.Clear {
     color: var(--color-medium);
@@ -67,6 +98,7 @@ $icon-size: 1.5rem;
 }
 
 .Popup {
+  text-align: start;
   box-sizing: border-box;
   background-color: var(--color-light-shade);
   min-width: var(--anchor-width);
@@ -76,6 +108,7 @@ $icon-size: 1.5rem;
   transition: opacity 0.1s,
   transform 0.1s;
   transform-origin: var(--transform-origin);
+  border-radius: 1rem;
 
   color: var(--color-dark);
   box-shadow: var(--box-shadow-small);
@@ -111,7 +144,6 @@ $icon-size: 1.5rem;
   transform: translateY(-50%);
   color: var(--color-primary);
 }
-
 
 .Chips {
   display: flex;

@@ -1,0 +1,7 @@
+# Import short acquisition
+mutation importShortAcquisitions($input: [ChannelConfigurationInput]!) {
+    importShortAcquisition(channelConfiguration: $input) {
+        ok
+        errors { field, messages }
+    }
+}

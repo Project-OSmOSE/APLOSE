@@ -116,7 +116,7 @@ export const StrongAnnotation: React.FC<{
     })
     useEffect(() => {
         initPosition()
-    }, [ timeScale, frequencyScale ]);
+    }, [ timeScale, frequencyScale, hiddenLabels ]);
 
     const index = useMemo(() => {
         return labels.map(l => l.name).indexOf(annotation.update?.label ?? annotation.label)

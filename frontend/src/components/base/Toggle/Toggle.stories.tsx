@@ -8,7 +8,7 @@ type Props = {
 const meta = {
     title: 'Base/Toggle',
     component: ({ options, value }: Props) => (
-        <Toggle.Group defaultValue={ [ options[0] ] } value={ value }>
+        <Toggle.Group defaultValue={ options[0] } value={ value }>
             { options.map((o, k) => <Toggle.Item key={ k } color={ k == 0 ? 'medium' : 'primary' }
                                                  value={ o }>{ o }</Toggle.Item>) }
         </Toggle.Group>

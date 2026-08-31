@@ -1,4 +1,5 @@
 @use "@/css/base";
+@use 'sass:map';
 
 
 .Item {
@@ -20,10 +21,13 @@
     background-color: var(--color-primary-text);
     color: var(--color-light);
 
-    @each $color in base.$colors {
+    @each $color, $map in base.$colors {
       &[color=#{$color}] {
-        background-color: var(--color-#{$color}-text);
-        color: var(--color-light);
+        background: map.get($map, 'background');
+        color: map.get($map, 'background-contrast');
+
+        &:not([disabled]):hover {
+        }
       }
     }
   }
@@ -34,6 +38,7 @@
   background-color: rgba(var(--color-primary-rgb), 0.1);
   display: flex;
   gap: 0.2rem;
+  width: fit-content;
 
   &[data-disabled] {
     pointer-events: none;

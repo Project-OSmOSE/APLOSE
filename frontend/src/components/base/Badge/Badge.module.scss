@@ -1,22 +1,19 @@
 @use "@/css/base";
+@use 'sass:map';
 
 .Badge {
   border-radius: 0.25rem;
   padding: 0.15rem 0.3rem;
-  color: var(--color-light);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 8%;
   text-transform: uppercase;
   font-size: 0.8rem;
 
-  @each $color in base.$colors {
+  @each $color, $map in base.$colors {
     &[color=#{$color}] {
-      background: var(--color-#{$color}-bg);
+      color: map.get($map, 'text');
+      background: map.get($map, 'text-contrast');
+      border: 1px solid map.get($map, 'tint');
     }
-  }
-  
-  &[color=default] {
-    color: var(--color-text);
-    background-color: var(--color-light-shade);
   }
 }

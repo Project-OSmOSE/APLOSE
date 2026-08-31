@@ -20,12 +20,17 @@ export const useAlertContext = () => {
 
 export const Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [ alert, setAlert ] = useState<Alert<any> | undefined>();
-    const [ isOpen, setIsOpen ] = useState(false);
+    const [ isOpen, _setIsOpen ] = useState(false);
 
     const openAlert = useCallback((node: Alert<any>) => {
         setAlert(node)
-        setIsOpen(true)
+        _setIsOpen(true)
     }, [ alert ])
+
+    const setIsOpen = useCallback((isOpen: boolean) => {
+        _setIsOpen(isOpen)
+        if (!isOpen) alert?.onCancel?.()
+    }, [alert])
 
     return (
         <AlertContext.Provider value={ { openAlert } }>

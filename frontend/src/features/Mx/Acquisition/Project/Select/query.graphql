@@ -1,0 +1,10 @@
+fragment ProjectSelect on ProjectNodeOverride {
+    id
+    name
+}
+
+query allProjectSelects {
+    allProjects {
+        results { ...ProjectSelect }
+    }
+}

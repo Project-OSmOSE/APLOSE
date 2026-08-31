@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import './css/base.css';
+import './css/base.scss';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
 import { StoreProvider } from '@/features/App';

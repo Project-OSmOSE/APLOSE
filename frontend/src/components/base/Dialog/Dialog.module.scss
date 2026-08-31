@@ -1,4 +1,5 @@
 @use "@/css/base";
+@use 'sass:map';
 
 .Backdrop {
   position: fixed;
@@ -63,6 +64,7 @@
   &.Alert {
     min-width: unset;
     max-width: 32rem;
+    overflow: auto;
 
     .Title {
       font-weight: 500;
@@ -82,9 +84,9 @@
   line-height: 1.5rem;
   font-weight: 700;
 
-  @each $color in base.$colors {
+  @each $color, $map in base.$colors {
     &.#{$color} {
-      color: var(--color-#{$color}-text);
+      color: map.get($map, 'text');
     }
   }
 }

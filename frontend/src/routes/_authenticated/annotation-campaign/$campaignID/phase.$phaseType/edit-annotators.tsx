@@ -61,9 +61,8 @@ export const Search: React.FC<{
             }
         }))
     }, [ items, inputValue, contains ])
-    return <ComboboxSelect placeholder="Search annotator or group..."
-                           items={ items }
-                           itemName="search"
+    return <ComboboxSelect items={ items }
+                           itemName="annotator or group"
                            itemToStringLabel={ item => {
                                switch (item.__typename) {
                                    case 'UserGroupNode':
@@ -72,7 +71,8 @@ export const Search: React.FC<{
                                        return item.displayName ?? item.username
                                }
                            } }
-                           inputValue={ inputValue } onInputValueChange={ setInputValue }
+                           inputValue={ inputValue }
+                           onInputValueChange={ setInputValue }
                            filteredItems={ filteredItems }
                            itemToStringValue={ item => item.id }
                            isItemEqualToValue={ (a, b) => a.id === b.id }

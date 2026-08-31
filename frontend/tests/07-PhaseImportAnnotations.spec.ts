@@ -1,7 +1,7 @@
 import { essentialTag, expect, test } from './utils';
 import { interceptRequests } from './utils/mock';
 import type { Params } from './utils/types';
-import { detectorConfiguration, type UserType } from './utils/mock/types';
+import { detector, detectorConfiguration, type UserType } from './utils/mock/types';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
 import { REST_MOCK } from './utils/mock/_rest';
 
@@ -85,7 +85,8 @@ const TEST = {
             await page.phaseImport.importFileStep()
 
             await test.step('Display detector as known', async () => {
-                await expect(page.getByRole('row', { name: 'detector1' }).getByRole('combobox', { name: 'Create detector' })).toHaveValue('detector1')
+                await expect(page.getByRole('row', { name: 'detector1' })
+                    .locator('input[name=detector-detector1]')).toHaveValue(detector.id)
             })
 
             await test.step('Select Detector configurations', async () => {

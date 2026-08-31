@@ -12,7 +12,7 @@ export * from './Input'
 export * from './Trigger'
 export * from './Clear'
 export const Icon = Combobox.Icon
-export const Value = Combobox.Value
+export * from './Value'
 export * from './Loader'
 
 export * from './Chips'

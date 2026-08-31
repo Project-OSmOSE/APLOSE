@@ -4,12 +4,13 @@ import { CloseSquare } from '@solar-icons/react';
 import styles from './Dialog.module.scss';
 import { Button } from '@/components/base/Button';
 
-export const CloseIcon: React.FC = () => (
+export const CloseIcon = React.forwardRef<HTMLButtonElement>((_, ref) => (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     <Dialog.Close render={ ({ color: _, ...props }) => <Button { ...props }/> }
-                  data-testid='close-modal'
-                  aria-label='Close dialog'
+                  ref={ ref }
+                  data-testid="close-modal"
+                  aria-label="Close dialog"
                   className={ styles.CloseIcon }>
         <CloseSquare weight="Linear" size={ 24 }/>
     </Dialog.Close>
-)
+))

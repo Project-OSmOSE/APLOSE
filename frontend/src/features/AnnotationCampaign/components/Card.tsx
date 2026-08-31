@@ -1,10 +1,9 @@
 import React from 'react';
-import { Link as RouterLink, type LinkComponentProps } from '@tanstack/react-router'
+import { type LinkComponentProps } from '@tanstack/react-router'
 import { type AllCampaignsQuery } from '../api';
 import { Badge } from '@/features/AnnotationCampaign/components/Badge';
 import { Progress } from '@/components/base/Progress';
-import styles from './Card.module.scss';
-import { Note } from '@/components/base/Note';
+import { Card as BaseCard, Note } from '@/components/base';
 import { PhasesProgress } from './PhasesProgress';
 
 type Campaign = NonNullable<NonNullable<AllCampaignsQuery['allAnnotationCampaigns']>['results'][number]>;
@@ -21,16 +20,15 @@ export const Card: React.FC<CardProps> = ({ campaign }) => {
         params.phaseType = phases[0].phase
     }
 
-    return <RouterLink to={ to }
-                       preload={ false }
-                       params={ params }
-                       data-testid="campaign-card"
-                       className={ styles.Card }>
-        <div className={ styles.Info }>
+    return <BaseCard.Root to={ to }
+                          preload={ false }
+                          params={ params }
+                          data-testid="campaign-card">
+        <BaseCard.Head>
             <Badge campaign={ campaign }/>
             <p>{ campaign.name }</p>
             <Note color="medium">{ campaign.datasetName }</Note>
-        </div>
+        </BaseCard.Head>
 
         <PhasesProgress userRelated campaign={ campaign }/>
 
@@ -43,5 +41,5 @@ export const Card: React.FC<CardProps> = ({ campaign }) => {
                                     color="medium">
                 Campaign progress
             </Progress> }
-    </RouterLink>
+    </BaseCard.Root>
 }

@@ -1,12 +1,10 @@
 import React, { Fragment } from 'react';
-import { Button, ExternalLink, Link } from '@/components/base/Button';
-
-import { NavigationMenu } from '@/components/base/NavigationMenu';
-import { Drawer } from '@/components/base/Drawer';
+import { Button, Drawer, ExternalLink, Link, NavigationMenu } from '@/components/base';
 import styles from './Navigation.module.scss';
 import logo from '/images/logo/x96.png';
 import { useLogout } from '@/api';
 import { useLoaderData } from '@tanstack/react-router';
+import { Mx } from '@/features/Mx';
 
 export const AuthenticatedMobile: React.FC<{ className?: string }> = ({ className }) => {
     const { logout } = useLogout()
@@ -68,12 +66,17 @@ export const AuthenticatedMobile: React.FC<{ className?: string }> = ({ classNam
                                             SQL query
                                         </Link>
                                     </NavigationMenu.Item>
+
+                                    <NavigationMenu.Item>
+                                        <Mx.Link/>
+                                    </NavigationMenu.Item>
                                 </Fragment> }
 
-                                <NavigationMenu.Item>
-                                    { data?.user.isAdmin && <ExternalLink href="/backend/admin"
-                                                                    target="_blank">Admin</ExternalLink> }
-                                </NavigationMenu.Item>
+                                { data?.user.isAdmin &&
+                                    <NavigationMenu.Item>
+                                        <ExternalLink href="/backend/admin"
+                                                      target="_blank">Admin</ExternalLink>
+                                    </NavigationMenu.Item> }
 
                                 <NavigationMenu.Item>
                                     <Link to="/account">Account</Link>

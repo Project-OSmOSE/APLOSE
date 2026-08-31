@@ -1,0 +1,91 @@
+# PlatformType
+fragment PlatformType on PlatformTypeNode {
+    id
+    name
+}
+
+query allPlatformTypes {
+    allPlatformTypes {
+        results { ...PlatformType }
+    }
+}
+
+mutation createPlatformType($input: PlatformTypeMutationInput!) {
+    platformType(input: $input) {
+        platformType { ...PlatformType }
+        errors { field, messages }
+    }
+}
+
+
+# Platform
+fragment Platform on PlatformNode {
+    id
+    displayName
+}
+
+query allPlatforms {
+    allPlatforms {
+        results { ...Platform }
+    }
+}
+
+mutation createPlatform($input: PlatformMutationInput!) {
+    platform(input: $input) {
+        platform { ...Platform }
+        errors { field, messages }
+    }
+}
+
+
+# Equipment Model
+fragment EquipmentModel on EquipmentModelNode {
+    id
+    name
+    specifications {
+        __typename
+    }
+}
+
+query allEquipmentModels {
+    allEquipmentModels {
+        results { ...EquipmentModel }
+    }
+}
+
+mutation createEquipmentModel($input: EquipmentModelInput!) {
+    createEquipmentModel(input: $input) {
+        equipmentModel { ...EquipmentModel }
+        errors { field, messages }
+    }
+}
+
+
+# Equipment
+fragment Equipment on EquipmentNode {
+    id
+    displayName
+}
+
+query allEquipments(
+    $isRecorder: Boolean
+    $isHydrophone: Boolean
+    $isStorage: Boolean
+    $isDetector: Boolean
+) {
+    allEquipments(
+        isRecorder: $isRecorder
+        isHydrophone: $isHydrophone
+        isStorage: $isStorage
+        isDetector: $isDetector
+    ) {
+        results { ...Equipment }
+    }
+}
+
+mutation createEquipment($input: EquipmentMutationInput!) {
+    equipment(input: $input) {
+        equipment { ...Equipment }
+        errors { field, messages }
+    }
+}

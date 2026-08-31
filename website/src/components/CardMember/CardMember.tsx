@@ -17,7 +17,7 @@ export const CardMember: React.FC<{ member: LightTeamMember }> = ({ member }) =>
         if (member.type === TeamMemberTypeEnum.Collaborator) {
             return member.person.currentInstitutions
               ?.filter(i => i !== null)
-              .map(i => i!.name)
+              .map(i => i!.institution.name)
               .join(', ')
         } else return member.position
     }, [ member ])

@@ -1,0 +1,10 @@
+fragment ProjectCard on ProjectNodeOverride {
+    id, name,
+    projectType { name }
+    startDate, endDate
+    accessibility
+}
+
+query allProjectCards {
+    allProjects { results { ...ProjectCard } }
+}

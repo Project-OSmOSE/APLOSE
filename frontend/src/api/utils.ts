@@ -1,5 +1,5 @@
 import type { Errors } from '@base-ui/react/internals/form-context';
-import type { ErrorType } from '@/api/types.gql-generated';
+import { ByteUnitEnum, type ErrorType, HydrophoneDirectivityEnum } from '@/api/types.gql-generated';
 import { AppStore } from '@/features/App';
 import type {
     ApiEndpointQuery,
@@ -8,8 +8,16 @@ import type {
     QueryDefinition,
 } from '@reduxjs/toolkit/query';
 import { Token } from './auth/types';
-import type { DefaultError, EnsureQueryDataOptions, QueryKey } from '@tanstack/react-query';
+import {
+    type DefaultError,
+    type EnsureQueryDataOptions,
+    mutationOptions,
+    type QueryKey,
+    type UseMutationOptions,
+} from '@tanstack/react-query';
 import { queryClient } from '@/api/queryClient';
+import { WithRequired } from '@tanstack/query-core';
+import { queryKeys } from '@/api/queryKeys';
 
 
 export function getTokenFromCookie(): Token | undefined {
@@ -66,3 +74,57 @@ export async function ensureValidQueryData<TQueryFnData, TError = DefaultError, 
     }
     return data
 }
+
+type TOnMutateResult<TData> = { previousData: TData }
+
+export function optimisticMutationOptions<
+    TData = unknown,
+    TError = DefaultError,
+    TVariables = void,
+>(
+    {
+        mutationKey,
+        ...options
+    }: WithRequired<UseMutationOptions<TData, TError, TVariables, TOnMutateResult<TData>>, 'mutationKey'>,
+): WithRequired<UseMutationOptions<TData, TError, TVariables, TOnMutateResult<TData>>, 'mutationKey'> {
+    return mutationOptions({
+        ...options,
+        mutationKey,
+        onMutate: async (newData, context) => {
+            // Cancel ongoing refetch
+            await context.client.cancelQueries({ queryKey: mutationKey })
+
+            // Snapshot previous value
+            const previousData = context.client.getQueryData(mutationKey)
+
+            // Optimistic update
+            context.client.setQueryData(mutationKey, (previous: any) => [ ...(previous || []), newData ])
+
+            return { previousData } as any
+        },
+        onError: (_error, _new, onMutateResult, context) => {
+            context.client.setQueryData(queryKeys.mx.common.allInstitutions, onMutateResult?.previousData)
+        },
+        onSettled: (_data, _error, _variables, _onMutateResult, context) =>
+            context.client.invalidateQueries({ queryKey: mutationKey }),
+    })
+}
+
+export const ByteUnits: Array<ByteUnitEnum> = [
+    ByteUnitEnum.B,
+    ByteUnitEnum.Kb,
+    ByteUnitEnum.Mb,
+    ByteUnitEnum.Gb,
+    ByteUnitEnum.Tb,
+    ByteUnitEnum.Pb,
+    ByteUnitEnum.Eb,
+    ByteUnitEnum.Zb,
+]
+
+export const HydrophoneDirectivities: Array<HydrophoneDirectivityEnum> = [
+    HydrophoneDirectivityEnum.UniDirectional,
+    HydrophoneDirectivityEnum.BiDirectional,
+    HydrophoneDirectivityEnum.OmniDirectional,
+    HydrophoneDirectivityEnum.Cardioid,
+    HydrophoneDirectivityEnum.Supercardioid,
+]

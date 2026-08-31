@@ -1,0 +1,27 @@
+fragment Deployment on DeploymentNode {
+    id
+    displayName
+    campaign {
+        name
+    }
+    site {
+        name
+    }
+    deploymentDate
+    deploymentVessel
+    recoveryDate
+    recoveryVessel
+    channelConfigurations {
+        edges {
+            node {
+                isLost
+            }
+        }
+    }
+}
+
+query allDeployments($projectID: ID!) {
+    projectById(id: $projectID) {
+        deployments { edges { node { ...Deployment } } }
+    }
+}

@@ -6,12 +6,10 @@ export type ChipRemoveProps = {
     onClick?: () => void;
 }
 
-export const ChipRemove: React.FC<ChipRemoveProps> = ({ onClick, ...props }) => (
-    <CloseCircle weight="Bold"
+export const ChipRemove = React.forwardRef<SVGSVGElement, ChipRemoveProps>(({ onClick, ...props }, ref) => (
+    <CloseCircle ref={ ref }
+                 weight="Bold"
                  className={ styles.ChipRemove }
-                 onClick={ event => {
-                     event.stopPropagation();
-                     onClick?.();
-                 }}
+                 onClick={ onClick }
                  { ...props }/>
-)
+))

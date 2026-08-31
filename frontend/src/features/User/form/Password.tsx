@@ -46,7 +46,7 @@ export const Password: React.FC = () => {
     }, [ mutate, toastManager ])
 
     const errors: Errors | undefined = useMemo(() => {
-        const baseErrors = cleanGqlErrors(data?.userUpdatePassword?.errors)
+        const baseErrors = cleanGqlErrors(data?.errors)
         if (newPasswordMismatch)
             baseErrors.newPasswordConfirm = 'The confirmation password does not match the given new password.'
         return baseErrors

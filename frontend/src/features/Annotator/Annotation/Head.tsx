@@ -8,7 +8,7 @@ import { useAppSelector } from '@/features/App';
 import { selectFocusLabel } from '@/features/Annotator/Label';
 import { Dialog, Popover } from '@/components/base';
 import { useLoaderData } from '@tanstack/react-router';
-import type { LabelFragment } from '@/features/Labels/api';
+import type { AnnotationLabelFragment } from '@/features/Labels/api';
 import { ChatLine, ChatSquare, Play, SortHorizontal, TrashBinTrash } from '@solar-icons/react';
 
 export const AnnotationHeadContent: React.FC<{
@@ -25,7 +25,7 @@ export const AnnotationHeadContent: React.FC<{
         audio.play(annotation.startTime ?? undefined, annotation.endTime ?? undefined)
     }, [ audio, annotation ])
 
-    const updateLabel = useCallback((label: LabelFragment) => {
+    const updateLabel = useCallback((label: AnnotationLabelFragment) => {
         updateAnnotation(annotation, { label: label.name })
     }, [ annotation, updateAnnotation ]);
 

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Dialog, Note } from '@/components/base';
-import type { LabelFragment } from '../api';
+import type { AnnotationLabelFragment } from '../api';
 import styles from './styles.module.scss';
 
 export type UpdateProps = {
-    availableLabels: LabelFragment[];
-    selected?: LabelFragment,
-    onSelect: (label: LabelFragment) => void;
+    availableLabels: AnnotationLabelFragment[];
+    selected?: AnnotationLabelFragment,
+    onSelect: (label: AnnotationLabelFragment) => void;
 }
 export const Update: React.FC<UpdateProps> = ({ availableLabels, selected, onSelect }) => {
     return <Dialog.Content>
