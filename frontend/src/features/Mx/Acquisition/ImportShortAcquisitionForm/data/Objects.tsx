@@ -3,7 +3,7 @@ import { useImportShortAcquisitionContext } from '../Root';
 import type { DataControlParams } from './type';
 import type { ComboboxSelectProps } from '@/components/base';
 
-export const useObjectSelect = ({ header, rowIndex, data, name }: DataControlParams) => {
+export const useObjectSelect = ({ header, rowIndex, data }: DataControlParams) => {
     const {
         getDefaultValue,
         setDefaultValue,
@@ -25,6 +25,5 @@ export const useObjectSelect = ({ header, rowIndex, data, name }: DataControlPar
         onValueChange: setValue,
         creatable: true,
         valuePopover: true,
-        name,
-    } satisfies Partial<ComboboxSelectProps<any>>), [ value, defaultValue, data, setValue, name ])
+    } satisfies Partial<ComboboxSelectProps<any>>), [ value, defaultValue, data, setValue ])
 }

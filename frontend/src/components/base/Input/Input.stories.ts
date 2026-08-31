@@ -1,6 +1,8 @@
 import { Input, InputProps } from './Input.tsx';
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
 import type { HTMLInputTypeAttribute } from 'react';
+// @ts-expect-error: using different ts-config: moduleResolution (see tsconfig.storybook.json)
+import { fn } from 'storybook/test';
 import { Magnifer } from '@solar-icons/react';
 
 const meta = {
@@ -29,6 +31,8 @@ const meta = {
         type: 'text',
         placeholder: 'Write something',
         disabled: false,
+        onChange: fn(),
+        onInput: fn(),
     } satisfies InputProps,
 } satisfies Meta<typeof Input>;
 export default meta;

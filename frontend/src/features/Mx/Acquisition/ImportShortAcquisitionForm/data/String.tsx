@@ -22,6 +22,7 @@ export const StringInput: React.FC<DataControlParams & Partial<FieldControlProps
     const defaultValue = useMemo(() => {
         const defaultValue = getDefaultValue(header, data) ?? data
         switch (getKeyForRaw(header)) {
+            case 'extraInformation':
             case 'deployment-description':
             case 'visualObservations-additionalInformation':
                 if (defaultValue) return `${ header }: ${ defaultValue }`

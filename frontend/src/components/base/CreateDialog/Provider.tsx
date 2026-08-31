@@ -47,9 +47,10 @@ const Display: React.FC<{
     const others = dialogs.slice(1);
 
     const onOpenChange = useCallback((open: boolean) => {
-        if (open) return;
+        if (open) return
+        current.resolve(null);
         onUpdated([])
-    }, [ onUpdated ])
+    }, [ onUpdated, current ])
 
     const onChildUpdated = useCallback((newDialogs: DialogElement<any, any>[]) => {
         return onUpdated([ current, ...newDialogs ])
@@ -58,7 +59,7 @@ const Display: React.FC<{
     const onFormCreation = useCallback((data: any) => {
         current.resolve(data)
         onOpenChange(false)
-    }, [current, onOpenChange])
+    }, [ current, onOpenChange ])
 
     if (dialogs.length === 0) return <Fragment/>
     return <Dialog.Root open onOpenChange={ onOpenChange }>

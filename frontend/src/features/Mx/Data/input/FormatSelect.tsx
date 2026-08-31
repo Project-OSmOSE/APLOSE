@@ -12,7 +12,7 @@ export function FormatSelect<Multiple extends boolean = false>(props: Props<Mult
 
     const create = useCallback(async (name: string) => {
         const data = await mutateAsync({ name })
-        if (data?.errors)
+        if (data?.errors?.length)
             toastManager.addGqlError({ errors: data.errors })
         if (data?.fileFormat)
             return data?.fileFormat

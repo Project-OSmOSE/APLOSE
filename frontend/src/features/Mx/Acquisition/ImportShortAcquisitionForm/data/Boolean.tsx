@@ -12,7 +12,7 @@ function anyToBool(data: any): boolean | null {
     return null
 }
 
-export const BooleanCheckbox: React.FC<DataControlParams> = ({ header, rowIndex, data, name }) => {
+export const BooleanCheckbox: React.FC<DataControlParams> = ({ header, rowIndex, data }) => {
 
     const {
         getDefaultValue,
@@ -30,11 +30,10 @@ export const BooleanCheckbox: React.FC<DataControlParams> = ({ header, rowIndex,
     }, [ getDefaultValue, header, data, rowIndex ])
 
     return <Checkbox checked={ value === undefined ? defaultValue : value }
-                     name={ name }
                      onCheckedChange={ setValue }/>
 }
 
-export const BooleanToggle: React.FC<DataControlParams> = ({ header, rowIndex, data, name }) => {
+export const BooleanToggle: React.FC<DataControlParams> = ({ header, rowIndex, data }) => {
 
     const {
         getDefaultValue,
@@ -52,7 +51,6 @@ export const BooleanToggle: React.FC<DataControlParams> = ({ header, rowIndex, d
     }, [ setDefaultValue, _setValue, header, data, rowIndex ])
 
     return <Toggle.Group value={ value === undefined ? defaultValue : value }
-                         name={ name }
                          onValueChange={ setValue }>
         <Toggle.Item value={ null }>I don't known</Toggle.Item>
         <Toggle.Item value={ false }>No</Toggle.Item>

@@ -1,10 +1,10 @@
-import type { ComboboxSelectProps, FinalValue } from '@/components/base/Combobox/Select/types';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Combobox } from '@/components/base';
+
+import { type ComboboxSelectProps, CreateValue, type FinalValue } from './types'
 import { MultipleInputGroup } from './MultipleInputGroup'
 import { SingleInputGroup } from './SingleInputGroup'
 import { Portal } from './Portal'
-import { CreateValue } from './types'
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 export * from './types'
 
@@ -91,6 +91,7 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
                     if (!newData) return;
                     setSelected([ ...(selected ?? []) as Value[], newData ] as FinalValue<Value, Multiple>)
                 }).finally(() => {
+                    console.debug('create finally')
                     setIsCreating(false)
                 })
                 setQuery('');
@@ -104,6 +105,7 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
                 if (!newData) return;
                 setSelected(newData as FinalValue<Value, Multiple>)
             }).finally(() => {
+                console.debug('create finally')
                 setIsCreating(false)
             })
             setQuery('');
@@ -153,7 +155,6 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
                           disabled={ disabled || loading }
                           items={ itemsForView }
                           inputValue={ query }
-                          defaultValue={ _fixedValue ?? _defaultValue }
                           value={ finalValue }
                           onInputValueChange={ setQuery }
                           onValueChange={ _onValueChange }

@@ -184,116 +184,113 @@ export const Root: React.FC<Pick<HTMLProps<HTMLDivElement>, 'children'>> = ({ ch
         }
 
         // Actual send
-        try {
-            const inputData = spreadsheetHandler.rows.map((_row, index) => {
-                const contactTypes = formData.getAll(`contacts-contactType`) as string[];
-                const roles = formData.getAll(`contacts-role`) as string[];
-                const contactIds = sheetFormData.getAll(`${ index }-contacts-contactId`);
-                const contacts = Array.from(new Array(contactIds.length)).map((_, index) => ({
-                    role: roles[index],
-                    contactId: contactIds[index],
-                    contactType: contactTypes[index],
-                } as ContactInput))
+        const inputData = spreadsheetHandler.rows.map((_row, index) => {
+            const contactTypes = formData.getAll(`contacts-contactType`) as string[];
+            const roles = formData.getAll(`contacts-role`) as string[];
+            const contactIds = sheetFormData.getAll(`${ index }-contacts-contactId`);
+            const contacts = Array.from(new Array(contactIds.length)).map((_, index) => ({
+                role: roles[index],
+                contactId: contactIds[index],
+                contactType: contactTypes[index],
+            } as ContactInput))
 
-                const recordStartDate = sheetFormData.getUTCDate(`${ index }-recordStartDate`);
-                const recordEndDate = sheetFormData.getUTCDate(`${ index }-recordEndDate`);
+            const recordStartDate = sheetFormData.getUTCDate(`${ index }-recordStartDate`);
+            const recordEndDate = sheetFormData.getUTCDate(`${ index }-recordEndDate`);
 
-                const visualObsIndexes = [ ...new Set(visualObservationIndex.values()) ]
+            const visualObsIndexes = [ ...new Set(visualObservationIndex.values()) ]
 
-                const visualObservations = visualObsIndexes.map((obsIndex) => {
-                    const source = sheetFormData.get(`${ index }-visualObservations-source-${ obsIndex }`)
-                    console.debug('> obs', obsIndex, source, sheetFormData)
-                    if (!source) return null
-                    return {
-                        source,
-                        // Specific to source
-                        startDatetime: (sheetFormData.getUTCDate(`${ index }-visualObservations-startDatetime-${ obsIndex }`) ?? recordStartDate)!,
-                        endDatetime: (sheetFormData.getUTCDate(`${ index }-visualObservations-endDatetime-${ obsIndex }`) ?? recordEndDate)!,
-                        countMin: sheetFormData.getNumber(`${ index }-visualObservations-countMin-${ obsIndex }`),
-                        countMax: sheetFormData.getNumber(`${ index }-visualObservations-countMax-${ obsIndex }`),
-                        startDistanceMin: sheetFormData.getNumber(`${ index }-visualObservations-startDistanceMin-${ obsIndex }`),
-                        startDistanceMax: sheetFormData.getNumber(`${ index }-visualObservations-startDistanceMax-${ obsIndex }`),
-                        endDistanceMin: sheetFormData.getNumber(`${ index }-visualObservations-endDistanceMin-${ obsIndex }`),
-                        endDistanceMax: sheetFormData.getNumber(`${ index }-visualObservations-endDistanceMax-${ obsIndex }`),
-                        behaviors: sheetFormData.getAll(`${ index }-visualObservations-behaviors-${ obsIndex }`),
-                        reactionsToBoat: sheetFormData.getAll(`${ index }-visualObservations-reactionsToBoat-${ obsIndex }`),
-                        youngPresence: sheetFormData.getBoolean(`${ index }-visualObservations-youngPresence-${ obsIndex }`),
-                        // Specific to source & global to all observations
-                        additionalInformation: sheetFormData.getAllJoined(
-                            `${ index }-visualObservations-additionalInformation`,
-                            `${ index }-visualObservations-additionalInformation-${ obsIndex }`,
-                        ),
-                        // Global to all observations
-                        otherHumanActivityPresence: sheetFormData.getBoolean(`${ index }-visualObservations-otherHumanActivityPresence`),
-                    } satisfies VisualObservationInput
-                }).filter(info => info !== null)
-                console.debug('> obs', visualObsIndexes, visualObservations)
+            const visualObservations = visualObsIndexes.map((obsIndex) => {
+                const source = sheetFormData.get(`${ index }-visualObservations-source-${ obsIndex }`)
+                if (!source) return null
                 return {
-                    continuous: sheetFormData.getBoolean(`${ index }-continuous`),
-                    dutyCycleOff: sheetFormData.getNumber(`${ index }-dutyCycleOff`),
-                    dutyCycleOn: sheetFormData.getNumber(`${ index }-dutyCycleOn`),
-                    instrumentDepth: sheetFormData.getNumber(`${ index }-instrumentDepth`),
-                    extraInformation: sheetFormData.getAllJoined(`${ index }-extraInformation`),
-                    isLost: sheetFormData.getBoolean(`${ index }-isLost`),
-                    recordStartDate, recordEndDate,
-                    timezone: sheetFormData.get(`${ index }-timezone`),
-                    storages: sheetFormData.getAll(`${ index }-storages`),
-                    deployment: {
-                        project: formData.get('project') as string,
-                        bathymetricDepth: sheetFormData.getNumber(`${ index }-deployment-bathymetricDepth`),
-                        campaign: sheetFormData.get(`${ index }-deployment-campaign`),
-                        site: sheetFormData.get(`${ index }-deployment-site`),
-                        deploymentDate: sheetFormData.get(`${ index }-deployment-deploymentDate`),
-                        deploymentVessel: sheetFormData.get(`${ index }-deployment-deploymentVessel`),
-                        recoveryDate: sheetFormData.get(`${ index }-deployment-recoveryDate`),
-                        recoveryVessel: sheetFormData.get(`${ index }-deployment-recoveryVessel`),
-                        description: sheetFormData.getAllJoined(`${ index }-deployment-description`),
-                        name: sheetFormData.get(`${ index }-deployment-name`),
-                        platform: sheetFormData.get(`${ index }-deployment-platform`),
-                        latitude: sheetFormData.getNumber(`${ index }-deployment-latitude`)!,
-                        longitude: sheetFormData.getNumber(`${ index }-deployment-longitude`)!,
-                        contacts,
-                        visualObservations,
-                    },
-                    recorderSpecification: hasRecorderSpecification ? {
-                        channelName: sheetFormData.get(`${ index }-recorderSpec-channelName`),
-                        gain: sheetFormData.getNumber(`${ index }-recorderSpec-gain`)!,
-                        sampleDepth: sheetFormData.getNumber(`${ index }-recorderSpec-sampleDepth`)!,
-                        samplingFrequency: sheetFormData.getNumber(`${ index }-recorderSpec-samplingFrequency`)!,
-                        hydrophone: sheetFormData.getAll(`${ index }-recorderSpec-hydrophone`).filter(data => !!data)[0],
-                        recorder: sheetFormData.getAll(`${ index }-recorderSpec-recorder`).filter(data => !!data)[0],
-                        recordingFormats: sheetFormData.getAll(`${ index }-recorderSpec-recordingFormats`),
-                    } : undefined,
-                    detectorSpecification: hasDetectorSpecification ? {
-                        configuration: sheetFormData.get(`${ index }-detectorSpec-configuration`),
-                        filter: sheetFormData.get(`${ index }-detectorSpec-filter`),
-                        detector: sheetFormData.get(`${ index }-detectorSpec-detector`)!,
-                        labels: sheetFormData.getAll(`${ index }-detectorSpec-labels`),
-                        outputFormats: sheetFormData.getAll(`${ index }-detectorSpec-outputFormats`),
-                        maxFrequency: sheetFormData.getNumber(`${ index }-detectorSpec-maxFrequency`),
-                        minFrequency: sheetFormData.getNumber(`${ index }-detectorSpec-minFrequency`),
-                    } : undefined,
-                }
-            })
-            console.debug(inputData)
+                    source,
+                    // Specific to source
+                    startDatetime: (sheetFormData.getUTCDate(`${ index }-visualObservations-startDatetime-${ obsIndex }`) ?? recordStartDate)!,
+                    endDatetime: (sheetFormData.getUTCDate(`${ index }-visualObservations-endDatetime-${ obsIndex }`) ?? recordEndDate)!,
+                    countMin: sheetFormData.getNumber(`${ index }-visualObservations-countMin-${ obsIndex }`),
+                    countMax: sheetFormData.getNumber(`${ index }-visualObservations-countMax-${ obsIndex }`),
+                    startDistanceMin: sheetFormData.getNumber(`${ index }-visualObservations-startDistanceMin-${ obsIndex }`),
+                    startDistanceMax: sheetFormData.getNumber(`${ index }-visualObservations-startDistanceMax-${ obsIndex }`),
+                    endDistanceMin: sheetFormData.getNumber(`${ index }-visualObservations-endDistanceMin-${ obsIndex }`),
+                    endDistanceMax: sheetFormData.getNumber(`${ index }-visualObservations-endDistanceMax-${ obsIndex }`),
+                    behaviors: sheetFormData.getAll(`${ index }-visualObservations-behaviors-${ obsIndex }`),
+                    reactionsToBoat: sheetFormData.getAll(`${ index }-visualObservations-reactionsToBoat-${ obsIndex }`),
+                    youngPresence: sheetFormData.getBoolean(`${ index }-visualObservations-youngPresence-${ obsIndex }`),
+                    // Specific to source & global to all observations
+                    additionalInformation: sheetFormData.getAllJoined(
+                        `${ index }-visualObservations-additionalInformation`,
+                        `${ index }-visualObservations-additionalInformation-${ obsIndex }`,
+                    ),
+                    // Global to all observations
+                    otherHumanActivityPresence: sheetFormData.getBoolean(`${ index }-visualObservations-otherHumanActivityPresence`),
+                } satisfies VisualObservationInput
+            }).filter(info => info !== null)
+            return {
+                continuous: sheetFormData.getBoolean(`${ index }-continuous`),
+                dutyCycleOff: sheetFormData.getNumber(`${ index }-dutyCycleOff`),
+                dutyCycleOn: sheetFormData.getNumber(`${ index }-dutyCycleOn`),
+                instrumentDepth: sheetFormData.getNumber(`${ index }-instrumentDepth`),
+                extraInformation: sheetFormData.getAllJoined(`${ index }-extraInformation`),
+                isLost: sheetFormData.getBoolean(`${ index }-isLost`),
+                recordStartDate, recordEndDate,
+                timezone: sheetFormData.get(`${ index }-timezone`),
+                storages: sheetFormData.getAll(`${ index }-storages`),
+                deployment: {
+                    project: formData.get('project') as string,
+                    bathymetricDepth: sheetFormData.getNumber(`${ index }-deployment-bathymetricDepth`),
+                    campaign: sheetFormData.get(`${ index }-deployment-campaign`),
+                    site: sheetFormData.get(`${ index }-deployment-site`),
+                    deploymentDate: sheetFormData.get(`${ index }-deployment-deploymentDate`),
+                    deploymentVessel: sheetFormData.get(`${ index }-deployment-deploymentVessel`),
+                    recoveryDate: sheetFormData.get(`${ index }-deployment-recoveryDate`),
+                    recoveryVessel: sheetFormData.get(`${ index }-deployment-recoveryVessel`),
+                    description: sheetFormData.getAllJoined(`${ index }-deployment-description`),
+                    name: sheetFormData.get(`${ index }-deployment-name`),
+                    platform: sheetFormData.get(`${ index }-deployment-platform`),
+                    latitude: sheetFormData.getNumber(`${ index }-deployment-latitude`)!,
+                    longitude: sheetFormData.getNumber(`${ index }-deployment-longitude`)!,
+                    contacts,
+                    visualObservations,
+                },
+                recorderSpecification: hasRecorderSpecification ? {
+                    channelName: sheetFormData.get(`${ index }-recorderSpec-channelName`),
+                    gain: sheetFormData.getNumber(`${ index }-recorderSpec-gain`)!,
+                    sampleDepth: sheetFormData.getNumber(`${ index }-recorderSpec-sampleDepth`)!,
+                    samplingFrequency: sheetFormData.getNumber(`${ index }-recorderSpec-samplingFrequency`)!,
+                    hydrophone: sheetFormData.getAll(`${ index }-recorderSpec-hydrophone`).filter(data => !!data)[0],
+                    recorder: sheetFormData.getAll(`${ index }-recorderSpec-recorder`).filter(data => !!data)[0],
+                    recordingFormats: sheetFormData.getAll(`${ index }-recorderSpec-recordingFormats`),
+                } : undefined,
+                detectorSpecification: hasDetectorSpecification ? {
+                    configuration: sheetFormData.get(`${ index }-detectorSpec-configuration`),
+                    filter: sheetFormData.get(`${ index }-detectorSpec-filter`),
+                    detector: sheetFormData.get(`${ index }-detectorSpec-detector`)!,
+                    labels: sheetFormData.getAll(`${ index }-detectorSpec-labels`),
+                    outputFormats: sheetFormData.getAll(`${ index }-detectorSpec-outputFormats`),
+                    maxFrequency: sheetFormData.getNumber(`${ index }-detectorSpec-maxFrequency`),
+                    minFrequency: sheetFormData.getNumber(`${ index }-detectorSpec-minFrequency`),
+                } : undefined,
+            }
+        })
+        try {
             const data = await mutateAsync(inputData)
             if (data.importShortAcquisition?.ok) {
                 toastManager.add({ type: 'success', title: 'Channel configuration import succeed', timeout: 0 })
-            } else if (data.importShortAcquisition?.errors && data.importShortAcquisition.errors.length > 0)
-                console.debug('got', data.importShortAcquisition?.errors)
-            alertManager.present({
-                color: 'danger',
-                title: 'Channel configuration import failed',
-                message: <Fragment>
-                    Following errors occurred:
-                    <ul>
-                        { data.importShortAcquisition!.errors!
-                            .map((error, key) => <li key={ key }>
-                                <Note>{ error?.field }</Note>: { error?.messages.join(' ') }
-                            </li>) }
-                    </ul>
-                </Fragment>,
-            })
+            } else if (data.importShortAcquisition?.errors && data.importShortAcquisition.errors.length > 0) {
+                alertManager.present({
+                    color: 'danger',
+                    title: 'Channel configuration import failed',
+                    message: <Fragment>
+                        Following errors occurred:
+                        <ul>
+                            { data.importShortAcquisition!.errors!
+                                .map((error, key) => <li key={ key }>
+                                    <Note>{ error?.field }</Note>: { error?.messages.join(' ') }
+                                </li>) }
+                        </ul>
+                    </Fragment>,
+                })
+            }
         } catch (error) {
             console.debug('catch', error)
             alertManager.present({

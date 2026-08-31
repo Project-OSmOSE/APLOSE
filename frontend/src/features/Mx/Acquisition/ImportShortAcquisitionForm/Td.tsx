@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Td } from '@/components/ui';
 import { Field, Note } from '@/components/base';
 import { useImportShortAcquisitionContext } from './Root';
@@ -40,14 +40,14 @@ export const DeploymentTd: React.FC<{ header: string, rowIndex: number }> = ({ h
         return name
     }, [ rowIndex, key, header, getVisualObservationIndex ])
 
-    const objectSelect = useObjectSelect({ header, rowIndex, data, name: fieldName })
+    const objectSelect = useObjectSelect({ header, rowIndex, data })
 
     const contactType = useMemo(() => {
         return getContactTypeForRaw(header)
     }, [ getContactTypeForRaw, header ])
 
     const control = useMemo(() => {
-        const params: DataControlParams = { header, rowIndex, data, name: fieldName }
+        const params: DataControlParams = { header, rowIndex, data }
         const multipleDefaultStringLabel = objectSelect.defaultStringLabel?.split(',').map(d => d.trim())
         switch (key as Key) {
             case 'continuous':
@@ -110,14 +110,6 @@ export const DeploymentTd: React.FC<{ header: string, rowIndex: number }> = ({ h
                 return <MxEquipment.EquipmentSelect { ...objectSelect } isRecorder/>
             case 'recorderSpec-hydrophone':
                 return <MxEquipment.EquipmentSelect { ...objectSelect } isHydrophone/>
-            case 'recorderSpec-recorderAndHydrophone':
-                return <Fragment>
-                    <MxEquipment.EquipmentSelect { ...objectSelect } isHydrophone isRecorder
-                                                 name={ `${ rowIndex }-recorderSpec-hydrophone` }/>
-                    <MxEquipment.EquipmentSelect { ...objectSelect } isHydrophone isRecorder
-                                                 className={ styles.Hidden }
-                                                 name={ `${ rowIndex }-recorderSpec-recorder` }/>
-                </Fragment>
             case 'contacts-contactId':
                 switch (contactType) {
                     case 'person':
@@ -150,10 +142,26 @@ export const DeploymentTd: React.FC<{ header: string, rowIndex: number }> = ({ h
     if (key === undefined)
         return <Td top><p/></Td>
 
-    return <Td top>
-        <Field.Root>
-            <Field.Label>{ data || <Note color="medium">Empty</Note> }</Field.Label>
-            { control }
-        </Field.Root>
-    </Td>
+    switch (key as Key | undefined) {
+        case undefined:
+            return <Td top><p/></Td>
+        case 'recorderSpec-recorderAndHydrophone':
+            return <Td top>
+                <Field.Root name={ `${ rowIndex }-recorderSpec-hydrophone` }>
+                    <Field.Label>{ data || <Note color="medium">-</Note> }</Field.Label>
+                    <MxEquipment.EquipmentSelect { ...objectSelect } isHydrophone isRecorder/>
+                </Field.Root>
+                <Field.Root name={ `${ rowIndex }-recorderSpec-recorder` }>
+                    <MxEquipment.EquipmentSelect { ...objectSelect } isHydrophone isRecorder
+                                                 className={ styles.Hidden }/>
+                </Field.Root>
+            </Td>
+        default:
+            return <Td top>
+                <Field.Root name={ fieldName }>
+                    <Field.Label>{ data || <Note color="medium">-</Note> }</Field.Label>
+                    { control }
+                </Field.Root>
+            </Td>
+    }
 }

@@ -238,24 +238,28 @@ export type FormDataName<Key extends string> = `${ number }-${ Key }`
 
 export class SpreadsheetFormData<Key extends string> extends FormData {
 
+    isNull(data: string | null): boolean {
+        return data === null || data === ''
+    }
+
     get(name: FormDataName<Key>): string | null {
         return super.get(name) as string | null;
     }
 
     getBoolean(name: FormDataName<Key>): boolean | undefined {
         const data = this.get(name)
-        if (data === null) return undefined
+        if (this.isNull(data)) return undefined
         return data === 'true'
     }
 
     getNumber(name: FormDataName<Key>): number | undefined {
         const data = this.get(name)
-        return data === null ? undefined : +data
+        return this.isNull(data) ? undefined : +data!
     }
 
     getUTCDate(name: FormDataName<Key>): string | undefined {
         const data = this.get(name)
-        return data === null ? undefined : new Date(data + 'Z').toISOString()
+        return this.isNull(data) ? undefined : new Date(data + 'Z').toISOString()
     }
 
     getAll(name: FormDataName<Key>): string[] {
@@ -263,6 +267,6 @@ export class SpreadsheetFormData<Key extends string> extends FormData {
     }
 
     getAllJoined(...names: FormDataName<Key>[]): string {
-        return names.flatMap(this.getAll).filter(d => !!d).join('\n');
+        return names.flatMap(this.getAll.bind(this)).filter(d => !!d).join('\n');
     }
 }
