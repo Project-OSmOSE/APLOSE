@@ -8,8 +8,7 @@ import { CreateDialog } from '@/components/base';
 type Value = API.PersonFragment
 type Input = API.CreatePersonMutationVariables['input']
 
-type Props =
-    Omit<ComboboxSelectProps<API.PersonFragment>, 'create' | 'itemName'>
+type Props = Omit<ComboboxSelectProps<API.PersonFragment>, 'create' | 'itemName'>
 
 export const PersonSelect: React.FC<Props> = ({ creatable, items, ...props }) => {
     const createDialogManager = CreateDialog.useManager()

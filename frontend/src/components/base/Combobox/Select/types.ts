@@ -20,6 +20,7 @@ export type BaseComboboxSelectProps<Value, Multiple extends boolean = false> =
 }
 
 
+export type ComboboxValueType<Value, Multiple extends boolean | undefined> = Multiple extends true ? Value[] : Value;
 export type FinalValue<Value, Multiple extends boolean = false> = Multiple extends true ? Value[] : (Value | null)
 
 export type ComboboxSelectProps<Value, Multiple extends boolean = false> = // TODO: check there is no more InputData type precision
@@ -33,6 +34,10 @@ export type ComboboxSelectProps<Value, Multiple extends boolean = false> = // TO
     className?: string,
     onValueChange?: (value: FinalValue<Value, Multiple>) => void,
     valuePopover?: boolean,
+    fixedValue?: ComboboxValueType<Value, Multiple>,
+    fixedValueString?: Multiple extends true ? string[] : string;
+    defaultStringLabel?: Multiple extends true ? string[] : string;
+    defaultValueString?: Multiple extends true ? string[] : string;
 } & Creatable<Value>
 
 type Creatable<Value> = {

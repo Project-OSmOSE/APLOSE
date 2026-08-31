@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ComboboxSelect, type ComboboxSelectProps } from '@/components/base/Combobox'
 import { CreateDialog } from '@/components/base';
@@ -7,19 +7,11 @@ import * as API from '../api'
 
 type Value = API.SourceFragment
 type Input = API.CreateSourceMutationVariables['input']
-type Props =
-    Omit<ComboboxSelectProps<Value>, 'create' | 'itemName'>
-    & {
-    fixedValueID?: string;
-}
+type Props = Omit<ComboboxSelectProps<Value>, 'create' | 'itemName'>
 
-export const SourceSelect: React.FC<Props> = ({ creatable, fixedValueID, ...props }) => {
+export const SourceSelect: React.FC<Props> = ({ creatable, value, ...props }) => {
     const createDialogManager = CreateDialog.useManager()
-    const { data: sources } = useQuery(API.allSources)
-
-    const fixedValue = useMemo(() => {
-        return sources?.find(i => i.id === fixedValueID)
-    }, [ sources, fixedValueID ])
+    const { data: sources, isFetching } = useQuery(API.allSources)
 
     const create = useCallback((englishName: string) => {
         return createDialogManager.create<Value, Input>({
@@ -29,15 +21,14 @@ export const SourceSelect: React.FC<Props> = ({ creatable, fixedValueID, ...prop
         })
     }, [ createDialogManager ])
 
-    return <ComboboxSelect itemName="platform type"
+    return <ComboboxSelect itemName="source"
                            creatable={ creatable }
                            create={ create }
                            items={ sources }
+                           loading={ isFetching }
                            itemToStringLabel={ (item: Value) => item.displayName }
                            itemToStringValue={ (item: Value) => item.id }
                            isItemEqualToValue={ (a: Value, b: Value) => a.id === b.id }
-                           defaultValue={ fixedValue }
-                           value={ fixedValue }
-                           readOnly={ !!fixedValue }
+                           value={ value }
                            { ...props }/>
 }

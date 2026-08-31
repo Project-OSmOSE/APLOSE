@@ -9,7 +9,7 @@ import { cleanGqlList } from '@/api/utils';
 import { AllProjectSelectsDocument, type AllProjectSelectsQuery, ProjectSelectFragment } from './query.generated'
 
 export const ProjectSelect: React.FC<Omit<ComboboxSelectProps<ProjectSelectFragment>, 'items' | 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue' | 'itemName'>> = (props) => {
-    const { data: projects } = useQuery({
+    const { data: projects, isFetching } = useQuery({
         queryKey: queryKeys.mx.acquisition.project.allSelect,
         queryFn: () => graphqlClient.request<AllProjectSelectsQuery>(AllProjectSelectsDocument, {})
             .then(data => cleanGqlList(data.allProjects?.results)),
@@ -19,5 +19,6 @@ export const ProjectSelect: React.FC<Omit<ComboboxSelectProps<ProjectSelectFragm
                            itemToStringLabel={ item => item.name }
                            itemToStringValue={ item => item.id }
                            isItemEqualToValue={ (a, b) => a.id === b.id }
+                           loading={ isFetching }
                            { ...props }/>
 }

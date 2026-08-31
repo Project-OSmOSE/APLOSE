@@ -38,6 +38,7 @@
   background-color: rgba(var(--color-primary-rgb), 0.1);
   display: flex;
   gap: 0.2rem;
+  width: fit-content;
 
   &[data-disabled] {
     pointer-events: none;

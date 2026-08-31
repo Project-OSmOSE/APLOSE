@@ -3,12 +3,14 @@ import { Checkbox, Field, Fieldset, Note } from '@/components/base';
 import { type AcousticDetectorSpecificationInput } from '@/api/types.gql-generated';
 import { MxOntology } from '@/features/Mx';
 import styles from './styles.module.scss'
+import { cleanGqlList } from '@/api/utils';
 
 export const AcousticDetectorSpecificationFieldset: React.FC<{
     name: string,
     input?: AcousticDetectorSpecificationInput | null
 }> = ({ name, input }) => {
     const [ isDetector, setIsDetector ] = useState<boolean>(!!input);
+
     return <Fieldset.Root>
         <Fieldset.Legend>Acoustic detector</Fieldset.Legend>
 
@@ -28,7 +30,7 @@ export const AcousticDetectorSpecificationFieldset: React.FC<{
 
             <Field.Root name={ `${ name }-detectedLabels` }>
                 <Field.Label>Detected labels</Field.Label>
-                <MxOntology.LabelMultiCombobox defaultValueIDs={ input?.detectedLabels || undefined }/>
+                <MxOntology.LabelMultiCombobox defaultValueString={ cleanGqlList(input?.detectedLabels) ?? undefined }/>
                 <Field.Error/>
             </Field.Root>
 

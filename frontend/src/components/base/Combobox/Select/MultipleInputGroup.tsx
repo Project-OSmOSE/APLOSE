@@ -1,10 +1,12 @@
-import { Fragment } from 'react';
-import { Combobox } from '@/components/base';
+import React from 'react';
+import { Combobox, Spinner } from '@/components/base';
 import { BaseComboboxSelectProps } from './types';
+import comboboxStyles from '@/components/base/Combobox/Combobox.module.scss';
 
-type MultipleInputGroupProps<Value> = Pick<BaseComboboxSelectProps<Value, true>, 'id' | 'itemName' | 'placeholder'>
+type MultipleInputGroupProps<Value> =
+    Pick<BaseComboboxSelectProps<Value, true>, 'id' | 'itemName' | 'placeholder' | 'name' | 'disabled' | 'readOnly'>
     & Required<Pick<BaseComboboxSelectProps<Value, true>, 'itemToElementLabel'>>
-    & { className?: string }
+    & { className?: string, loading?: boolean }
 
 export function MultipleInputGroup<Value>({
                                               id,
@@ -12,18 +14,28 @@ export function MultipleInputGroup<Value>({
                                               itemToElementLabel,
                                               className,
                                               placeholder,
+                                              loading,
+                                              name,
+                                              disabled,
+                                              readOnly,
                                           }: MultipleInputGroupProps<Value>) {
     return <Combobox.InputGroup className={ className }>
         <Combobox.Chips>
             <Combobox.Value>
                 { (value: Value[]) => (
-                    <Fragment>
-                        <Combobox.Input id={ id }
-                                        placeholder={ placeholder || value.length > 0 ? '' : `Select ${ itemName }` }/>
+                    <React.Fragment>
+                        <div className={ comboboxStyles.InputGroup }>
+                            <Combobox.Input id={ id } name={ name }
+                                            placeholder={ placeholder || value.length > 0 ? '' : `Select ${ itemName }` }/>
+
+                            { loading && <Spinner size={ 16 } className={ comboboxStyles.Spinner }/> }
+                            { !disabled && !readOnly && <Combobox.Clear/> }
+                            { !readOnly && <Combobox.Trigger/> }
+                        </div>
                         { value.map((item, index) => (
                             <Combobox.Chip key={ index }>{ itemToElementLabel(item) }</Combobox.Chip>
                         )) }
-                    </Fragment>
+                    </React.Fragment>
                 ) }
             </Combobox.Value>
         </Combobox.Chips>

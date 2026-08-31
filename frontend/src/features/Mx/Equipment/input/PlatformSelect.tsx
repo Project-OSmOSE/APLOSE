@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ComboboxSelect, type ComboboxSelectProps } from '@/components/base/Combobox'
 import { NewPlatformForm } from '../form'
@@ -7,19 +7,11 @@ import { CreateDialog } from '@/components/base';
 
 type Value = API.PlatformFragment
 type Input = API.CreatePlatformMutationVariables['input']
-type Props =
-    Omit<ComboboxSelectProps<Value>, 'create' | 'itemName'>
-    & {
-    fixedValueID?: string;
-}
+type Props = Omit<ComboboxSelectProps<Value>, 'create' | 'itemName'>
 
-export const PlatformSelect: React.FC<Props> = ({ creatable, fixedValueID, ...props }) => {
+export const PlatformSelect: React.FC<Props> = ({ creatable, ...props }) => {
     const createDialogManager = CreateDialog.useManager()
     const { data: platforms, isFetching } = useQuery(API.allPlatformQuery)
-
-    const fixedValue = useMemo(() => {
-        return platforms?.find(i => i.id === fixedValueID)
-    }, [ platforms, fixedValueID ])
 
     const create = useCallback((name: string) => {
         return createDialogManager.create<Value, Input>({
@@ -36,9 +28,6 @@ export const PlatformSelect: React.FC<Props> = ({ creatable, fixedValueID, ...pr
                            itemToStringLabel={ (item: Value) => item.displayName }
                            itemToStringValue={ (item: Value) => item.id }
                            isItemEqualToValue={ (a: Value, b: Value) => a.id === b.id }
-                           defaultValue={ fixedValue }
                            loading={ isFetching }
-                           value={ fixedValue }
-                           readOnly={ !!fixedValue }
                            { ...props }/>
 }

@@ -6,6 +6,7 @@ $icon-size: 1.5rem;
   position: relative;
   display: grid;
   text-align: start;
+  width: 100%;
 
   .Input {
     padding-right: #{Input.$horizontal-space};

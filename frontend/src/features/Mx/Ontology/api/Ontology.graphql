@@ -26,3 +26,18 @@ query allLabels {
         results { ...Label }
     }
 }
+
+# Behavior
+fragment Behavior on BehaviorNode {
+    id
+    name
+}
+query allBehaviors {
+    allBehaviors { results { ...Behavior } }
+}
+mutation createBehavior($input: BehaviorMutationInput!) {
+    behavior(input: $input) {
+        behavior { ...Behavior }
+        errors { field, messages }
+    }
+}

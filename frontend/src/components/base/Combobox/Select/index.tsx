@@ -4,7 +4,7 @@ import { MultipleInputGroup } from './MultipleInputGroup'
 import { SingleInputGroup } from './SingleInputGroup'
 import { Portal } from './Portal'
 import { CreateValue } from './types'
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 export * from './types'
 
@@ -13,6 +13,7 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
                                                                             items,
                                                                             itemName,
                                                                             itemToStringLabel,
+                                                                            itemToStringValue,
                                                                             itemToElementLabel,
                                                                             multiple,
                                                                             loading,
@@ -25,10 +26,17 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
                                                                             creatable,
                                                                             className,
                                                                             valuePopover,
+                                                                            defaultValue,
+                                                                            defaultStringLabel,
+                                                                            defaultValueString,
+                                                                            fixedValue,
+                                                                            fixedValueString,
+                                                                            name,
                                                                             ...props
                                                                         }: ComboboxSelectProps<Value, Multiple>) {
     const [ query, setQuery ] = useState<string>('');
-    const [ selected, _setSelected ] = useState<FinalValue<Value, Multiple>>(value || (multiple ? [] : null) as FinalValue<Value, Multiple>);
+    const [ isCreating, setIsCreating ] = useState<boolean>(false);
+    const [ selected, _setSelected ] = useState<FinalValue<Value, Multiple> | undefined>(value ?? undefined);
     const setSelected = useCallback((data: FinalValue<Value, Multiple>) => {
         onValueChange?.(data)
         _setSelected(data)
@@ -36,8 +44,14 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
     useEffect(() => {
         if (value !== selected)
             // eslint-disable-next-line react-hooks/set-state-in-effect
-            setSelected(value || (multiple ? [] : null) as FinalValue<Value, Multiple>)
+            _setSelected(value ?? undefined)
     }, [ value ]);
+
+
+    const _itemToStringValue = useCallback((data: Value | CreateValue) => {
+        if ((data as CreateValue).__create) return (data as CreateValue).id;
+        return itemToStringValue?.(data as Value) ?? JSON.stringify(data)
+    }, [ itemToStringValue ])
 
     const _itemToStringLabel = useCallback((data: Value | CreateValue | null) => {
         if (!data) return '-';
@@ -71,20 +85,26 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
         if (multiple) {
             const initialData = data as Value[]
             const createData = initialData.find(d => (d as CreateValue).__create)
-            if ((createData as CreateValue).__create) {
+            if ((createData as CreateValue)?.__create) {
+                setIsCreating(true)
                 create((createData as CreateValue).__create).then(newData => {
                     if (!newData) return;
-                    setSelected([ ...selected as Value[], newData ] as FinalValue<Value, Multiple>)
+                    setSelected([ ...(selected ?? []) as Value[], newData ] as FinalValue<Value, Multiple>)
+                }).finally(() => {
+                    setIsCreating(false)
                 })
                 setQuery('');
                 return
             }
         }
 
-        if (!multiple && (data as Value | CreateValue as CreateValue).__create) {
+        if (!multiple && (data as Value | CreateValue as CreateValue)?.__create) {
+            setIsCreating(true)
             create((data as Value | CreateValue as CreateValue).__create).then(newData => {
                 if (!newData) return;
                 setSelected(newData as FinalValue<Value, Multiple>)
+            }).finally(() => {
+                setIsCreating(false)
             })
             setQuery('');
             return
@@ -93,25 +113,66 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
         setSelected(data as FinalValue<Value, Multiple>)
     }, [ create, query, setSelected, itemName, multiple, selected ])
 
+    const _defaultValue = useMemo(() => {
+        if (defaultValue) return defaultValue
+        if (defaultValueString) {
+            if (multiple) return items?.filter(i => defaultValueString.includes(itemToStringValue?.(i) || i))
+            return items?.find(i => (itemToStringValue?.(i) || i) === defaultValueString) ?? null
+        }
+        if (defaultStringLabel) {
+            if (multiple) return items?.filter(i => defaultStringLabel.includes(itemToStringLabel?.(i) || i))
+            return items?.find(i => (itemToStringLabel?.(i) || i) === defaultStringLabel) ?? null
+        }
+    }, [ items, defaultStringLabel, defaultValue, itemToStringLabel, multiple, defaultValueString, itemToStringValue ])
+
+    const _fixedValue = useMemo(() => {
+        if (fixedValue) return fixedValue
+        if (fixedValueString) {
+            if (multiple) {
+                const data = items?.filter(i => fixedValueString.includes(itemToStringValue?.(i) || i))
+                if (data && data.length > 0) return data
+                return undefined
+            }
+            return items?.find(i => (itemToStringValue?.(i) || i) === fixedValueString)
+        }
+    }, [ items, fixedValueString, fixedValue, itemToStringValue ])
+
+    const finalValue = useMemo(() => {
+        if (_fixedValue !== undefined) return _fixedValue
+        if (selected !== undefined) return selected
+        if (_defaultValue !== undefined) return _defaultValue
+
+        // Default value is never undefined:
+        // It is always controlled, at least by this component
+        return (multiple ? [] : null)
+    }, [ multiple, _fixedValue, selected, _defaultValue, multiple ])
+
     return <Combobox.Root multiple={ multiple }
                           itemToStringLabel={ _itemToStringLabel }
-                          readOnly={ readOnly }
-                          disabled={ disabled }
+                          readOnly={ !!_fixedValue || readOnly }
+                          disabled={ disabled || loading }
                           items={ itemsForView }
                           inputValue={ query }
-                          value={ selected as any }
+                          defaultValue={ _fixedValue ?? _defaultValue }
+                          value={ finalValue }
                           onInputValueChange={ setQuery }
                           onValueChange={ _onValueChange }
+                          itemToStringValue={ itemToStringValue ? _itemToStringValue : undefined }
                           { ...props as Partial<ComboboxSelectProps<Value | CreateValue, Multiple>> }>
 
         { multiple ? <MultipleInputGroup id={ id }
+                                         name={ name }
+                                         loading={ loading || isCreating }
                                          className={ className }
                                          itemName={ itemName }
                                          placeholder={ placeholder }
+                                         disabled={ disabled }
+                                         readOnly={ readOnly }
                                          itemToElementLabel={ _itemToElementLabel }/> :
             <SingleInputGroup id={ id }
+                              name={ name }
                               className={ className }
-                              loading={ loading }
+                              loading={ loading || isCreating }
                               itemToElementLabel={ _itemToElementLabel }
                               disabled={ disabled }
                               readOnly={ readOnly }

@@ -12,7 +12,12 @@ type Props = Omit<ComboboxSelectProps<API.TeamFragment>, 'create' | 'itemName'> 
     additionalInput?: Partial<Input>
 }
 
-export const TeamSelect: React.FC<Props> = ({ creatable, items, additionalInput, ...props }) => {
+export const TeamSelect: React.FC<Props> = ({
+                                                creatable,
+                                                items,
+                                                additionalInput,
+                                                ...props
+                                            }) => {
     const createDialogManager = CreateDialog.useManager()
     const { data: teams, isFetching } = useQuery({ ...API.allTeamsQuery, enabled: !items })
 

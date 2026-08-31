@@ -114,7 +114,7 @@ export const NewEquipmentModelForm: React.FC<CreateDialog.FormProps<API.Equipmen
 
         <Field.Root name="provider">
             <Field.Label required>Provider institution</Field.Label>
-            <InstitutionSelect required creatable fixedValueID={ input?.provider || undefined }/>
+            <InstitutionSelect required creatable fixedValueString={ input?.provider || undefined }/>
             <Field.Error/>
         </Field.Root>
 

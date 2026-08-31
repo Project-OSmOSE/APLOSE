@@ -7,20 +7,23 @@ import * as API from '../api'
 import { InstitutionSelect } from './InstitutionSelect';
 import { TeamSelect } from './TeamSelect';
 import { PersonSelect } from './PersonSelect';
+import { ContactTypeEnum } from '@/api';
 
-type BaseProps<Fragment> = Omit<ComboboxSelectProps<Fragment>, 'items' | 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue' | 'itemName'>
+type BaseProps<Fragment> = Omit<ComboboxSelectProps<Fragment>, 'items' | 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue' | 'itemName'> & {
+    defaultStringValue?: string;
+}
 type ContactSelectProps =
-    ({ type: 'institution' } & BaseProps<API.InstitutionFragment>) |
-    ({ type: 'team' } & BaseProps<API.TeamFragment>) |
-    ({ type: 'person' } & BaseProps<API.PersonFragment>);
+    ({ type: ContactTypeEnum.Institution } & BaseProps<API.InstitutionFragment>) |
+    ({ type: ContactTypeEnum.Team } & BaseProps<API.TeamFragment>) |
+    ({ type: ContactTypeEnum.Person } & BaseProps<API.PersonFragment>);
 
 export const ContactSelect: React.FC<ContactSelectProps> = ({ type, ...props }) => {
     switch (type) {
-        case 'institution':
+        case ContactTypeEnum.Institution:
             return <InstitutionSelect { ...props as BaseProps<API.InstitutionFragment> }/>
-        case 'team':
+        case ContactTypeEnum.Team:
             return <TeamSelect { ...props as BaseProps<API.TeamFragment> }/>
-        case 'person':
+        case ContactTypeEnum.Person:
             return <PersonSelect { ...props as BaseProps<API.PersonFragment> }/>
     }
 }

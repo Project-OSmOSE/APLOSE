@@ -42,7 +42,7 @@ export const NewPlatformForm: React.FC<CreateDialog.FormProps<API.PlatformFragme
 
         <Field.Root name="type">
             <Field.Label required>Type</Field.Label>
-            <PlatformTypeSelect required creatable fixedValueID={ input?.type || undefined }/>
+            <PlatformTypeSelect required creatable fixedValueString={ input?.type || undefined }/>
             <Field.Error/>
         </Field.Root>
 
@@ -70,7 +70,7 @@ export const NewPlatformForm: React.FC<CreateDialog.FormProps<API.PlatformFragme
 
         <Field.Root name="provider">
             <Field.Label>Provider institution</Field.Label>
-            <MxCommon.InstitutionSelect creatable fixedValueID={ input?.provider || undefined }/>
+            <MxCommon.InstitutionSelect creatable fixedValueString={ input?.provider || undefined }/>
             <Field.Error/>
         </Field.Root>
 

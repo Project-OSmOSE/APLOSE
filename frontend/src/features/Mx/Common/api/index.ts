@@ -18,6 +18,9 @@ import {
     CreateTeamDocument,
     type CreateTeamMutation,
     type CreateTeamMutationVariables,
+    type InstitutionFragment,
+    type PersonFragment,
+    type TeamFragment,
 } from './common.generated';
 import { cleanGqlList, optimisticMutationOptions } from '@/api/utils';
 
@@ -64,4 +67,5 @@ export const createPerson = optimisticMutationOptions({
         .then(data => data.createPerson),
 })
 
+export type ContactFragment = PersonFragment | TeamFragment | InstitutionFragment
 export type * from './common.generated'

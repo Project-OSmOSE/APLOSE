@@ -66,7 +66,7 @@ export const NewSourceForm: React.FC<CreateDialog.FormProps<API.SourceFragment, 
 
         <Field.Root name="parent">
             <Field.Label>Parent</Field.Label>
-            <SourceSelect creatable fixedValueID={ input?.parent || undefined }/>
+            <SourceSelect creatable fixedValueString={ input?.parent || undefined }/>
             <Field.Error/>
         </Field.Root>
 

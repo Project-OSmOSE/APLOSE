@@ -1,0 +1,25 @@
+.Table {
+  max-width: unset;
+}
+
+.Horizontal {
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.Number {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.Hidden {
+  display: none;
+}
+
+.Info {
+  overflow: auto;
+}

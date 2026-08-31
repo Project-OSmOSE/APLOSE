@@ -40,7 +40,7 @@ export const NewTeamForm: React.FC<CreateDialog.FormProps<API.TeamFragment, API.
 
         <Field.Root name="institution">
             <Field.Label required>Institution</Field.Label>
-            <InstitutionSelect required creatable fixedValueID={ input?.institution || undefined }/>
+            <InstitutionSelect required creatable fixedValueString={ input?.institution || undefined }/>
             <Field.Error/>
         </Field.Root>
 

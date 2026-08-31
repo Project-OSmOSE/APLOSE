@@ -64,6 +64,7 @@
   &.Alert {
     min-width: unset;
     max-width: 32rem;
+    overflow: auto;
 
     .Title {
       font-weight: 500;

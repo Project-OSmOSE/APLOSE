@@ -5,13 +5,11 @@ import { Chip as BaseChip, ChipRemove as BaseChipRemove } from '@/components/bas
 export type ComboboxChipProps = Omit<BaseComboboxChipProps, 'style' | 'className'>
 
 export const Chip: React.FC<ComboboxChipProps> = ({ children, 'aria-label': ariaLabel, ...props }) => (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    <Combobox.Chip aria-label={ ariaLabel }
-                   { ...props }>
+    <Combobox.Chip aria-label={ ariaLabel } { ...props }>
         <BaseChip color="primary">
             { children }
-            {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */ }
-            <Combobox.ChipRemove render={ ({ ref, ...props }) => <BaseChipRemove { ...(props as any) }/> }
+            <Combobox.ChipRemove render={ <BaseChipRemove/> }
+                                 nativeButton={ false }
                                  aria-label={ `Remove ${ ariaLabel }` }/>
         </BaseChip>
     </Combobox.Chip>

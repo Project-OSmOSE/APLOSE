@@ -230,7 +230,7 @@ export const useSpreadsheetHandler = <
                 prev.set(`${ header } ${ data }`, value)
                 return new Map(prev)
             })
-        }, [ setDefaultValues ]),
+        }, [ setDefaultValues, defaultValues ]),
     }
 }
 
@@ -260,5 +260,9 @@ export class SpreadsheetFormData<Key extends string> extends FormData {
 
     getAll(name: FormDataName<Key>): string[] {
         return super.getAll(name) as string[];
+    }
+
+    getAllJoined(...names: FormDataName<Key>[]): string {
+        return names.flatMap(this.getAll).filter(d => !!d).join('\n');
     }
 }
