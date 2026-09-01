@@ -10,7 +10,7 @@ import {
 } from '@/features/Annotator/Annotation';
 import { useWindowContainerWidth, useWindowHeight, useWindowWidth, Y_AXIS_WIDTH } from './window.hooks';
 import { useGetCoords, useGetFreqTime, useIsHoverCanvas, usePointer } from '@/features/Annotator/Pointer';
-import { selectZoom, selectZoomOrigin, useZoomIn, useZoomOut } from '@/features/Annotator/Zoom';
+import { Zoom } from '@/features/Annotator/Zoom';
 import { useAudio } from '@/features/Audio';
 import { useAnnotatorCanvasContext } from '@/features/Annotator/Canvas/context';
 import { useAppDispatch, useAppSelector } from '@/features/App';
@@ -21,6 +21,7 @@ import { AcousticFeatures } from '@/features/Annotator/AcousticFeatures';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 import { useLoaderData } from '@tanstack/react-router';
 import { useCanDraw } from '@/features/Annotator/UX/hooks';
+import type { OnZoomInfoCallback } from '@/features/Annotator/Zoom/Root';
 
 export const AnnotatorCanvasWindow: React.FC = () => {
     const { spectrogram } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
@@ -31,8 +32,13 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     const { onStartTempAnnotation } = useTempAnnotationsEvents()
     const getFreqTime = useGetFreqTime()
     const getCoords = useGetCoords()
-    const zoomIn = useZoomIn()
-    const zoomOut = useZoomOut()
+    const {
+        zoomLevel,
+        zoomType,
+        zoomIn,
+        zoomOut,
+        onZoomUpdatedSignal,
+    } = Zoom.useContext()
     const canDraw = useCanDraw()
     const { seek } = useAudio()
     const allAnnotations = useAppSelector(selectAllAnnotations)
@@ -112,27 +118,22 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
 
     // Zoom update
-    const zoom = useAppSelector(selectZoom)
-    const zoomOrigin = useAppSelector(selectZoomOrigin)
-    const oldZoom = useRef<number>(1)
     const isHoverCanvas = useIsHoverCanvas()
-    useEffect(() => {
+    const onZoomUpdated: OnZoomInfoCallback = useCallback(({ previousLevel, level, origin }) => {
         const mainBounds = mainCanvasRef?.current?.getBoundingClientRect()
         if (!window || !spectrogram || !mainBounds) return;
 
-        // If zoom factor has changed
-        if (zoom === oldZoom.current) return;
         // New timePxRatio
-        const newTimePxRatio: number = containerWidth * zoom / spectrogram.duration;
+        const newTimePxRatio: number = containerWidth * level / spectrogram.duration;
 
         // Compute new center (before resizing)
         let newCenter: number;
-        if (zoomOrigin) {
+        if (origin) {
             // x-coordinate has been given, center on it
-            newCenter = (zoomOrigin.x - mainBounds.left) * zoom / oldZoom.current;
+            newCenter = (origin.x - mainBounds.left) * level / previousLevel;
             const coords = {
-                clientX: zoomOrigin.x,
-                clientY: zoomOrigin.y,
+                clientX: origin.x,
+                clientY: origin.y,
             }
             if (isHoverCanvas(coords)) {
                 const data = getFreqTime(coords);
@@ -143,12 +144,21 @@ export const AnnotatorCanvasWindow: React.FC = () => {
             newCenter = oldTime.current * newTimePxRatio;
         }
         window.scrollTo({ left: Math.floor(newCenter - containerWidth / 2) })
-        oldZoom.current = zoom;
         draw()
-    }, [
-        // On zoom updated
-        zoom, spectrogram?.duration,
-    ]);
+    }, [ draw, isHoverCanvas, pointer, getFreqTime, mainCanvasRef, spectrogram, containerWidth ])
+    useEffect(() => {
+        onZoomUpdatedSignal.add(onZoomUpdated)
+        return () => {
+            onZoomUpdatedSignal.remove(onZoomUpdated)
+        }
+    }, [ onZoomUpdatedSignal ]);
+    useEffect(() => {
+        onZoomUpdated({
+            previousLevel: zoomLevel,
+            level: zoomLevel,
+            type: zoomType,
+        })
+    }, [ spectrogram?.duration ]);
 
     return <div className={ styles.spectrogramWindow }
                 ref={ windowCanvasRef }

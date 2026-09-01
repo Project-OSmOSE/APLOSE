@@ -1,5 +1,4 @@
-import { useAppSelector } from '@/features/App';
-import { selectZoom } from '@/features/Annotator/Zoom';
+import { Zoom } from '@/features/Annotator/Zoom';
 import { useLayoutEffect, useMemo, useState } from 'react';
 
 const SPECTRO_HEIGHT: number = 512;
@@ -28,10 +27,10 @@ export const useWindowContainerWidth = () => {
 }
 
 export const useWindowWidth = () => {
-    const zoom = useAppSelector(selectZoom)
+    const { zoomLevel } = Zoom.useContext()
     const containerWidth = useWindowContainerWidth()
 
-    return useMemo(() => containerWidth * zoom, [ containerWidth, zoom ])
+    return useMemo(() => containerWidth * zoomLevel, [ containerWidth, zoomLevel ])
 }
 
 export const useWindowHeight = () => {

@@ -1,3 +1,1 @@
-export * from './slice'
-export * from './selectors'
-export * from './hooks'
+export * as Zoom from './index.parts'

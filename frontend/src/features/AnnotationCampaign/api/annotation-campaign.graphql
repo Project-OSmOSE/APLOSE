@@ -74,6 +74,7 @@ query getCampaign($id: ID!) {
         allowImageTuning
         colormapDefault
         colormapInvertedDefault
+        allowNumericZoom
         dataset {
             id
             name

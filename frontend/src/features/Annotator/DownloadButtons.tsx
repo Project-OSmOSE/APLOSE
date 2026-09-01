@@ -4,13 +4,12 @@ import { useAudio } from '@/features/Audio';
 import { useLoaderData } from '@tanstack/react-router';
 import { Download } from '@solar-icons/react';
 import { useDownloadCanvas } from '@/features/Annotator/Canvas';
-import { useAppSelector } from '@/features/App';
-import { selectZoom } from '@/features/Annotator/Zoom';
+import { Zoom } from '@/features/Annotator/Zoom';
 
 export const DownloadButtons: React.FC = () => {
     const { user } = useLoaderData({ from: '/_authenticated' })
     const audio = useAudio()
-    const zoom = useAppSelector(selectZoom)
+    const { zoomLevel } = Zoom.useContext()
     const download = useDownloadCanvas();
     const { spectrogram } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
 
@@ -19,11 +18,11 @@ export const DownloadButtons: React.FC = () => {
         if (!spectrogram) return;
         setIsDownloadingSpectrogram(true);
         try {
-            await download(`${ spectrogram.filename }-x${ zoom }.png`)
+            await download(`${ spectrogram.filename }-x${ zoomLevel }.png`)
         } finally {
             setIsDownloadingSpectrogram(false);
         }
-    }, [ download, spectrogram, zoom ])
+    }, [ download, spectrogram, zoomLevel ])
 
     if (!user.isAdmin) return <Fragment/>
     return <ButtonGroup center>
@@ -38,7 +37,7 @@ export const DownloadButtons: React.FC = () => {
                                  disabled={ isDownloadingSpectrogram }
                                  onClick={ downloadSpectrogram }>
             <Download weight="Linear" size={ 20 }/>
-            Download spectrogram (zoom x{ zoom })
+            Download spectrogram (zoom x{ zoomLevel })
         </Button> }
 
         { isDownloadingSpectrogram && <Spinner/> }

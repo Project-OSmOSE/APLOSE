@@ -7,3 +7,5 @@ export type Paginated<T> = {
 }
 
 export const NBSP = '\u00A0'
+
+export type Point = { x: number; y: number }

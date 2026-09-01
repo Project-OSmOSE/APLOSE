@@ -1,0 +1,24 @@
+.Buttons {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.5rem;
+  align-items: center;
+
+  .Inner {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 0.2rem;
+    align-items: center;
+
+    .Button {
+      position: relative;
+
+      .NumericNote {
+        position: absolute;
+        top: 0.2rem;
+        right: 0.2rem;
+        text-box: trim-both cap alphabetic;
+      }
+    }
+  }
+}

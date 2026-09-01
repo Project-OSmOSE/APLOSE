@@ -2,22 +2,11 @@ import React, { createElement, Fragment } from 'react';
 import styles from './styles.module.scss'
 import { AnalysisComponent } from '../SpectrogramAnalysis';
 import { useLoaderData } from '@tanstack/react-router';
-import { useAppSelector } from '@/features/App';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 import { ColormapComponent } from '@/features/Colormap';
 import { Button, Note, Popover, Slider } from '@/components/base';
-import {
-    CalendarMinimalistic,
-    MagniferZoomIn,
-    MagniferZoomOut,
-    MirrorLeft,
-    MirrorRight,
-    Restart,
-    Stop,
-    Sun,
-    Target,
-} from '@solar-icons/react';
-import { selectZoom, useZoomIn, useZoomInLevel, useZoomOut, useZoomOutLevel } from '@/features/Annotator/Zoom';
+import { CalendarMinimalistic, MirrorLeft, MirrorRight, Restart, Stop, Sun, Target } from '@solar-icons/react';
+import { Zoom } from '@/features/Annotator/Zoom';
 import { usePointer } from '@/features/Annotator/Pointer';
 import { formatTime } from '@/service/function';
 
@@ -37,13 +26,6 @@ export const ConfigBar: React.FC = () => {
         brightness, setBrightness, resetBrightness,
         contrast, setContrast, resetContrast,
     } = useAnnotatorAnalysis()
-
-    // Zoom
-    const zoom = useAppSelector(selectZoom)
-    const zoomOutLevel = useZoomOutLevel()
-    const zoomOut = useZoomOut()
-    const zoomInLevel = useZoomInLevel()
-    const zoomIn = useZoomIn()
 
     // Pointer
     const pointer = usePointer()
@@ -98,15 +80,7 @@ export const ConfigBar: React.FC = () => {
                 </Popover.Root>
             </Fragment> }
 
-            { (zoomInLevel || zoomOutLevel) && <div className={ styles.HorizontalItem }>
-                <Button onClick={ () => zoomOut() } disabled={ !zoomOutLevel }>
-                    <MagniferZoomOut weight="Linear" size={ 20 }/>
-                </Button>
-                <Button onClick={ () => zoomIn() } disabled={ !zoomInLevel }>
-                    <MagniferZoomIn weight="Linear" size={ 20 }/>
-                </Button>
-                <Note color="medium">{ zoom }x</Note>
-            </div> }
+            <Zoom.Buttons/>
         </div>
 
         { pointer.position && <div className={ styles.HorizontalItem }>
