@@ -41,7 +41,6 @@ export const Create: React.FC = () => {
     const submit = useCallback(async (event: BaseUIEvent<React.FormEvent<HTMLFormElement>>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        [ ...formData.entries() ].forEach(data => console.log(...data))
 
         try {
             const data = await mutateAsync({
@@ -59,6 +58,7 @@ export const Create: React.FC = () => {
                 allowColormapTuning: formData.get('allowColormapTuning') === 'true',
                 colormapDefault: formData.get('colormapDefault') as string,
                 colormapInvertedDefault: formData.get('colormapInvertedDefault') === 'true',
+                allowNumericZoom: formData.get('allowNumericZoom') === 'true',
             })
             if (!data) return
             if (!data?.annotationCampaign) return
@@ -134,7 +134,15 @@ export const Create: React.FC = () => {
         </Fieldset.Root>
 
         <Fieldset.Root>
-            <Fieldset.Legend>Spectrogram Tuning</Fieldset.Legend>
+            <Fieldset.Legend>Spectrogram display</Fieldset.Legend>
+
+            <Field.Root name="allowNumericZoom">
+                <Field.Label>
+                    <Checkbox/>
+                    Allow numeric zoom
+                </Field.Label>
+                <Field.Error/>
+            </Field.Root>
 
             <Field.Root name="allowImageTuning">
                 <Field.Label>

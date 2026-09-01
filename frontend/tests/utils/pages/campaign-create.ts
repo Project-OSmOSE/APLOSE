@@ -39,6 +39,10 @@ export class CampaignCreatePage {
         return this.page.getByRole('checkbox', { name: 'Invert default colormap' })
     }
 
+    get numericZoomCheckBox(): Locator {
+        return this.page.getByRole('checkbox', { name: 'Allow numeric zoom' })
+    }
+
     constructor(private page: Page,
                 private list = new CampaignListPage(page)) {
     }

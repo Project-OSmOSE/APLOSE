@@ -148,6 +148,7 @@ mutation createCampaign(
     $allowColormapTuning: Boolean
     $colormapDefault: String
     $colormapInvertedDefault: Boolean
+    $allowNumericZoom: Boolean
     $datasetID: ID!
     $analysisIDs: [ID]!
 ) {
@@ -160,6 +161,7 @@ mutation createCampaign(
         allowColormapTuning: $allowColormapTuning
         colormapDefault: $colormapDefault
         colormapInvertedDefault: $colormapInvertedDefault
+        allowNumericZoom: $allowNumericZoom
         dataset: $datasetID
         analysis: $analysisIDs
     }) {
