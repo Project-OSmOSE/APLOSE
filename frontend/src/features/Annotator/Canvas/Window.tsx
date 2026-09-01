@@ -46,8 +46,21 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     const dispatch = useAppDispatch()
     const pointer = usePointer()
 
+    const preventDefault = useCallback((e: Event) => {
+        e = e || window.event
+        if (e.preventDefault) {
+            e.preventDefault()
+        }
+        e.returnValue = false
+    }, [])
+    const disableScroll = useCallback(() => {
+        document.addEventListener('wheel', preventDefault, { passive: false })
+    }, [ pointer ]);
     const clearPointer = useCallback(() => {
         pointer.clearPosition()
+
+        // Enable scroll
+        document.removeEventListener('wheel', preventDefault, false)
     }, [ pointer ]);
 
     const [ scrollLeft, setScrollLeft ] = useState<number>(0);
@@ -62,8 +75,6 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     const onWheel = useCallback((event: WheelEvent) => {
         // Disable zoom if the user wants horizontal scroll
         if (event.shiftKey) return;
-        // Prevent page scrolling
-        event.stopPropagation();
 
         const origin = getCoords(event);
         if (!origin) return;
@@ -170,6 +181,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
         <div className={ styles.spectrogram }
              onWheel={ onWheel }
+             onPointerEnter={ disableScroll }
              onPointerLeave={ clearPointer }
              onMouseDown={ e => e.stopPropagation() }>
 
