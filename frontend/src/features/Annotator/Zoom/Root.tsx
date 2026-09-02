@@ -23,6 +23,7 @@ type ZoomContext = {
     zoomOutLevel: number | null;
     zoomOut: (origin?: Point) => void;
 
+    maxPreProcessedZoomLevel: number;
     onZoomUpdatedSignal: Signal<ZoomInfo>;
 }
 const ZoomContext = createContext<ZoomContext>({
@@ -34,6 +35,7 @@ const ZoomContext = createContext<ZoomContext>({
     zoomInLevel: null,
     zoomLevel: 0,
     zoomOutLevel: null,
+    maxPreProcessedZoomLevel: 0,
     zoomType: 'preprocessed',
 })
 
@@ -128,6 +130,7 @@ export const ZoomRoot: React.FC<Props> = ({ children, campaign, analysis }) => {
         zoomOutLevel,
         zoomOut,
 
+        maxPreProcessedZoomLevel,
         onZoomUpdatedSignal: signal,
     } } children={ children }/>
 }

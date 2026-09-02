@@ -1,6 +1,5 @@
 import { useAnnotatorCanvasContext } from './context';
 import { useCallback } from 'react';
-import { useDrawSpectrogram } from '@/features/Annotator/Spectrogram';
 import { useApplyColormap, useApplyFilter } from '@/features/Annotator/VisualConfiguration';
 import { useDrawTempAnnotation } from '@/features/Annotator/Annotation';
 import {
@@ -29,7 +28,6 @@ export const useDrawCanvas = () => {
     const width = useWindowWidth()
     const height = useWindowHeight()
 
-    const drawSpectrogram = useDrawSpectrogram()
     const drawTempAnnotation = useDrawTempAnnotation()
     const applyFilter = useApplyFilter()
     const applyColormap = useApplyColormap()
@@ -37,17 +35,14 @@ export const useDrawCanvas = () => {
     const { mainCanvasRef } = useAnnotatorCanvasContext()
 
     return useCallback(async () => {
-        const context = mainCanvasRef?.current?.getContext('2d', { alpha: false });
+        const context = mainCanvasRef?.current?.getContext('2d');
         if (!context) return;
 
         // Reset
         context.clearRect(0, 0, width, height);
 
-        applyFilter(context)
-        await drawSpectrogram(context)
-        applyColormap(context)
         drawTempAnnotation(context)
-    }, [ width, height, drawSpectrogram, applyFilter, applyColormap, drawTempAnnotation, mainCanvasRef ]);
+    }, [ width, height, applyFilter, applyColormap, drawTempAnnotation, mainCanvasRef ]);
 }
 
 export const useDownloadCanvas = () => {

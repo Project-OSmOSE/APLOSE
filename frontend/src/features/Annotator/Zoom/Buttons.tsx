@@ -39,7 +39,7 @@ export const ZoomButtons: React.FC = () => {
         <div className={ styles.Inner }>
             {/* Inline width specification to avoir small visual glitch due to a non mono font */ }
             <Note color="medium" style={ { width: `${ zoomLevel.toString().length + 1 }ch` } }>{ zoomLevel }x</Note>
-            { zoomType === 'digital' && <Note color="warning" small>Digital</Note> }
+            { zoomType === 'digital' && <Note color="danger">Digital</Note> }
         </div>
     </div>
 }

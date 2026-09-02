@@ -1,1 +1,1 @@
-export * from './hooks'
+export * as Spectrogram from './index.parts'

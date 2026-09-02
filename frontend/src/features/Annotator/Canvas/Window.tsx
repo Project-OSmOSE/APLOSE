@@ -6,6 +6,7 @@ import {
     selectAllAnnotations,
     selectTempAnnotation,
     StrongAnnotation,
+    useDrawTempAnnotation,
     useTempAnnotationsEvents,
 } from '@/features/Annotator/Annotation';
 import { useWindowContainerWidth, useWindowHeight, useWindowWidth, Y_AXIS_WIDTH } from './window.hooks';
@@ -15,13 +16,13 @@ import { useAudio } from '@/features/Audio';
 import { useAnnotatorCanvasContext } from '@/features/Annotator/Canvas/context';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { setAllFileAsSeen } from '@/features/Annotator/UX/slice';
-import { useDrawCanvas } from '@/features/Annotator/Canvas/hooks';
 import { AnnotationType } from '@/api';
 import { AcousticFeatures } from '@/features/Annotator/AcousticFeatures';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 import { useLoaderData } from '@tanstack/react-router';
 import { useCanDraw } from '@/features/Annotator/UX/hooks';
 import type { OnZoomInfoCallback } from '@/features/Annotator/Zoom/Root';
+import { Spectrogram } from '../Spectrogram';
 
 export const AnnotatorCanvasWindow: React.FC = () => {
     const { spectrogram } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
@@ -42,16 +43,24 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     const canDraw = useCanDraw()
     const { seek } = useAudio()
     const allAnnotations = useAppSelector(selectAllAnnotations)
-    const draw = useDrawCanvas()
+    const drawTempAnnotation = useDrawTempAnnotation()
     const dispatch = useAppDispatch()
     const pointer = usePointer()
 
+    const refreshInteractionCanvas = useCallback(() => {
+        const context = mainCanvasRef?.current?.getContext('2d');
+        if (!context) return;
+
+        // Reset
+        context.clearRect(0, 0, width, height);
+        drawTempAnnotation(context)
+    }, [ drawTempAnnotation, width, height, mainCanvasRef ]);
+
     const preventDefault = useCallback((e: Event) => {
-        e = e || window.event
-        if (e.preventDefault) {
-            e.preventDefault()
+        const event = (e || window.event) as unknown as WheelEvent
+        if (!event.shiftKey && event.preventDefault) {
+            event.preventDefault()
         }
-        e.returnValue = false
     }, [])
     const disableScroll = useCallback(() => {
         document.addEventListener('wheel', preventDefault, { passive: false })
@@ -96,7 +105,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         isColormapInverted,
     } = useAnnotatorAnalysis()
     useEffect(() => {
-        draw()
+        refreshInteractionCanvas()
     }, [
         // On current newAnnotation changed
         tempAnnotation?.endTime, tempAnnotation?.endFrequency, tempAnnotation,
@@ -155,8 +164,8 @@ export const AnnotatorCanvasWindow: React.FC = () => {
             newCenter = oldTime.current * newTimePxRatio;
         }
         window.scrollTo({ left: Math.floor(newCenter - containerWidth / 2) })
-        draw()
-    }, [ draw, isHoverCanvas, pointer, getFreqTime, mainCanvasRef, spectrogram, containerWidth ])
+        refreshInteractionCanvas()
+    }, [ refreshInteractionCanvas, isHoverCanvas, pointer, getFreqTime, mainCanvasRef, spectrogram, containerWidth ])
     useEffect(() => {
         onZoomUpdatedSignal.add(onZoomUpdated)
         return () => {
@@ -185,7 +194,11 @@ export const AnnotatorCanvasWindow: React.FC = () => {
              onPointerLeave={ clearPointer }
              onMouseDown={ e => e.stopPropagation() }>
 
-            <canvas className={ canDraw ? styles.drawable : '' }
+            { spectrogram && selectedAnalysis &&
+                <Spectrogram.Display spectrogram={ spectrogram }
+                                     analysis={ selectedAnalysis }
+                                     left={ scrollLeft }/> }
+            <canvas className={ [ styles.interaction, canDraw ? styles.drawable : '' ].join(' ') }
                     data-testid="drawable-canvas"
                     ref={ mainCanvasRef }
                     height={ height }
