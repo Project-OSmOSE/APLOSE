@@ -40,6 +40,10 @@
   width: 100%;
   justify-content: start;
 
+  &.smallGap {
+    gap: 0.2rem;
+  }
+
   &.spaceBetween {
     justify-content: space-between;
   }

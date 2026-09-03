@@ -4,22 +4,23 @@ import { ConfigBar } from './ConfigBar';
 import { mocked } from 'storybook/test';
 import { useLoaderData } from '@tanstack/react-router';
 import { AnalysisTestSample } from '@/features/SpectrogramAnalysis/components/Select.stories';
-import type { GetCampaignQuery } from '@/features/AnnotationCampaign';
 import type { GetAnnotationSpectrogramQuery } from '@/features/AnnotationSpectrogram';
+import { ImageSettingsRoot } from '@/features/Annotator/ImageSettings/Root';
 
 const meta = {
     title: 'Annotator/ConfigBar',
     component: ConfigBar,
+    decorators: [
+        (Story: any) => <ImageSettingsRoot allowColormapChange
+                                           allowImageTuning
+                                           children={ <Story/> }/>,
+    ],
     beforeEach: () => {
         mocked(useLoaderData).mockReturnValue({
             analysis: AnalysisTestSample,
-            campaign: {
-                allowColormapTuning: true,
-                allowImageTuning: true,
-            } as NonNullable<GetCampaignQuery['annotationCampaignById']>,
             spectrogram: {
                 start: new Date().toISOString(),
-            } as NonNullable<GetAnnotationSpectrogramQuery['annotationSpectrogramById']>
+            } as NonNullable<GetAnnotationSpectrogramQuery['annotationSpectrogramById']>,
         })
     },
     parameters: {

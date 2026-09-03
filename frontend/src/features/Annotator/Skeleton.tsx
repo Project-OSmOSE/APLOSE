@@ -1,4 +1,4 @@
-import React, { Fragment, type HTMLProps, ReactNode, useCallback, useEffect } from 'react';
+import React, { Fragment, type HTMLProps, ReactNode, useCallback, useEffect, useMemo } from 'react';
 import { Footer, Navigation } from '@/components/layout';
 import styles from './styles.module.scss';
 import { AnnotationTaskStatus } from '@/api';
@@ -19,6 +19,8 @@ import { useQuery } from '@tanstack/react-query';
 import { AnnotationSpectrogramAPI } from '@/features/AnnotationSpectrogram';
 import { Zoom } from './Zoom';
 import type { OnZoomInfoCallback } from '@/features/Annotator/Zoom/Root';
+import { ImageSettings } from './ImageSettings';
+import type { Colormap } from '@/features/Colormap';
 
 export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
     const { user } = useLoaderData({ from: '/_authenticated' })
@@ -50,6 +52,7 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
         campaignID, phaseType, spectrogramID, ...search, annotatorID: user.id,
     }))
     const { zoomLevel, onZoomUpdatedSignal } = Zoom.useContext()
+    const { setColormap, setIsColormapInverted } = ImageSettings.useContext()
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -58,6 +61,10 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
             default: confidences?.find(c => c?.isDefault) ?? confidences.length ? confidences[0].label : undefined,
         }))
         dispatch(AnnotatorLabelSlice.actions.initCampaign())
+
+        // Set default colormap & inversion
+        setColormap((campaign.colormapDefault ?? null) as Colormap | null)
+        setIsColormapInverted(campaign.colormapInvertedDefault ?? false)
     }, [ campaign ]);
 
     useEffect(() => {
@@ -130,7 +137,25 @@ const ZoomProvider: React.FC<Pick<HTMLProps<HTMLDivElement>, 'children'>> = ({ c
         select: ({ campaign }) => ({ campaign }),
     })
     const { selectedAnalysis } = useAnnotatorAnalysis()
-    return <Zoom.Root campaign={ campaign } analysis={ selectedAnalysis } children={ children }/>
+    return <Zoom.Root campaign={ campaign }
+                      analysis={ selectedAnalysis }
+                      children={ children }/>
+}
+
+const ImageSettingsProvider: React.FC<Pick<HTMLProps<HTMLDivElement>, 'children'>> = ({ children }) => {
+    const { campaign } = useLoaderData({
+        from: '/_authenticated/annotation-campaign/$campaignID',
+        select: ({ campaign }) => ({ campaign }),
+    })
+    const { selectedAnalysis } = useAnnotatorAnalysis()
+
+    const allowColormapChange = useMemo(() => {
+        if (!campaign.allowColormapTuning) return false;
+        return selectedAnalysis?.colormap.name === 'Greys' as Colormap
+    }, [ campaign, selectedAnalysis ])
+    return <ImageSettings.Root allowColormapChange={ allowColormapChange }
+                               allowImageTuning={ campaign.allowImageTuning }
+                               children={ children }/>
 }
 
 const AllProviders: React.FC<Pick<HTMLProps<HTMLDivElement>, 'children'>> = ({ children }) => (
@@ -138,7 +163,9 @@ const AllProviders: React.FC<Pick<HTMLProps<HTMLDivElement>, 'children'>> = ({ c
         <AnnotatorCanvasContextProvider>
             <AnnotatorAnalysisProvider>
                 <ZoomProvider>
-                    { children }
+                    <ImageSettingsProvider>
+                        { children }
+                    </ImageSettingsProvider>
                 </ZoomProvider>
             </AnnotatorAnalysisProvider>
         </AnnotatorCanvasContextProvider>

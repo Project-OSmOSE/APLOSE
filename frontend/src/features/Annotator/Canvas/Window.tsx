@@ -97,13 +97,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
     // Global updates
     const tempAnnotation = useAppSelector(selectTempAnnotation)
-    const {
-        selectedAnalysis,
-        brightness,
-        contrast,
-        colormap,
-        isColormapInverted,
-    } = useAnnotatorAnalysis()
+    const { selectedAnalysis } = useAnnotatorAnalysis()
     useEffect(() => {
         refreshInteractionCanvas()
     }, [
@@ -111,8 +105,6 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         tempAnnotation?.endTime, tempAnnotation?.endFrequency, tempAnnotation,
         // On Spectrogram or analysis changed
         spectrogram, selectedAnalysis,
-        // On colormap changed
-        colormap, isColormapInverted, brightness, contrast,
         // On window dimensions change
         containerWidth,
     ])
