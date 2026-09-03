@@ -1,5 +1,6 @@
 import React, {
-    createContext, type Dispatch,
+    createContext,
+    type Dispatch,
     type HTMLProps,
     type SetStateAction,
     useCallback,
@@ -29,7 +30,7 @@ type ImageSettingsContext = {
     resetContrast: () => void,
 
     canvasFilter: string;
-    applyColormap: (context: CanvasRenderingContext2D) => void,
+    applyImageToCanvas: (canvas: HTMLCanvasElement, image: HTMLImageElement, dx: number, dy: number, width: number, height: number) => Promise<void>,
 }
 const ImageSettingsContext = createContext<ImageSettingsContext>({
     allowColormapChange: false,
@@ -51,7 +52,7 @@ const ImageSettingsContext = createContext<ImageSettingsContext>({
     resetContrast: () => null,
 
     canvasFilter: '',
-    applyColormap: () => undefined,
+    applyImageToCanvas: async () => undefined,
 })
 
 /** Zoom.useContext
@@ -96,21 +97,44 @@ export const ImageSettingsRoot: React.FC<Props> = ({ children, allowColormapChan
         return `brightness(${ compBrightness.toFixed() }%) contrast(${ compContrast.toFixed() }%)`;
     }, [ brightness, contrast ])
 
-    const applyColormap = useCallback((context: CanvasRenderingContext2D) => {
-        if (!allowColormapChange || !colormap) return;
+    // TODO: try optimize process using WebGL (GPU instead of CPU) to process the image
+    const applyImageToCanvas = useCallback(async (canvas: HTMLCanvasElement, image: HTMLImageElement, dx: number, dy: number, width: number, height: number) => {
+        const context = canvas.getContext('2d', { alpha: false });
+        if (!context) return;
+        if (allowColormapChange && colormap) {
+            // 1. Get ImageData from HTMLImageElement
+            const imgCanvas = document.createElement('canvas');
+            const imgContext = imgCanvas.getContext('2d')!
+            imgCanvas.width = width;
+            imgCanvas.height = height;
+            imgContext.drawImage(image, 0, 0, width, height);
+            const imgData = imgContext.getImageData(0, 0, width, height);
 
-        const imgData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
-        const data = imgData.data;
-        const colormapObj = createColormap({ colormap: COLORMAPS[colormap], nshades: 256 });
+            //  2. Apply new colormap
+            const colormapObj = createColormap({ colormap: COLORMAPS[colormap], nshades: 256 });
+            for (let i = 0; i < imgData.data.length; i += 4) {
+                const newColor = isColormapInverted ? colormapObj[255 - imgData.data[i]] : colormapObj[imgData.data[i]];
+                imgData.data[i] = newColor[0];
+                imgData.data[i + 1] = newColor[1];
+                imgData.data[i + 2] = newColor[2];
+            }
 
-        for (let i = 0; i < data.length; i += 4) {
-            const newColor = isColormapInverted ? colormapObj[255 - data[i]] : colormapObj[data[i]];
-            data[i] = newColor[0];
-            data[i + 1] = newColor[1];
-            data[i + 2] = newColor[2];
+            // 3. Recover HTMLImageElement from ImageData
+            const coloredImgCanvas = document.createElement('canvas');
+            const coloredImgContext = coloredImgCanvas.getContext('2d')!
+            coloredImgCanvas.width = width;
+            coloredImgCanvas.height = height;
+            coloredImgContext.putImageData(imgData, dx, dy)
+            const loadPromise = new Promise((resolve, reject) => {
+                image.onload = () => resolve(image);
+                image.onerror = () => reject(`Could not resolve dataURL: ${ colormap }`);
+            });
+            image.src = coloredImgCanvas.toDataURL();
+            await loadPromise
         }
-        context.putImageData(imgData, 0, 0);
-    }, [ allowColormapChange, colormap, isColormapInverted ])
+        context.drawImage(image, dx, dy, width, height)
+        context.filter = canvasFilter
+    }, [ allowColormapChange, colormap, isColormapInverted, canvasFilter ])
 
     return <ImageSettingsContext.Provider value={ {
         allowColormapChange, allowImageTuning,
@@ -118,6 +142,6 @@ export const ImageSettingsRoot: React.FC<Props> = ({ children, allowColormapChan
         isColormapInverted, setIsColormapInverted, revertColormap,
         brightness, setBrightness, resetBrightness,
         contrast, setContrast, resetContrast,
-        canvasFilter, applyColormap,
+        canvasFilter, applyImageToCanvas,
     } } children={ children }/>
 }
