@@ -1,13 +1,13 @@
-import React, { Fragment, useCallback, useId, useMemo, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import React, { Fragment, useCallback, useEffect, useId, useMemo, useState } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { type BaseUIEvent } from '@base-ui/react';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import { InfoCircle } from '@solar-icons/react';
 import { Button, ButtonGroup, Checkbox, Field, Fieldset, Form, Link, Note, Spinner, Toast } from '@/components/base';
 
 import { useAppDispatch } from '@/features/App';
 import { StorageSlice } from '@/features/Storage'
-import { DatasetComponent } from '@/features/Dataset';
+import { DatasetAPI, DatasetComponent } from '@/features/Dataset';
 import { AnalysisComponent } from '@/features/SpectrogramAnalysis';
 import { ColormapComponent } from '@/features/Colormap';
 
@@ -18,7 +18,9 @@ export const Create: React.FC = () => {
     const dispatch = useAppDispatch();
     const toastManager = Toast.useToastManager()
     const navigate = useNavigate();
+    const { dataset_id } = useSearch({ from: '/_authenticated/_admin/annotation-campaign/new' })
 
+    const { data: datasets } = useQuery(DatasetAPI.allQuery)
     const datasetSelectID = useId()
     const [ dataset, _setDataset ] = useState<DatasetComponent.SelectValue | null>(null);
     const analysisSelectID = useId()
@@ -31,6 +33,12 @@ export const Create: React.FC = () => {
     const [ allowColormapTuning, setAllowColormapTuning ] = useState<boolean>(false);
     const toggleAllowColormapTuning = useCallback(() => setAllowColormapTuning(prev => !prev), [ setAllowColormapTuning ])
     const colormapSelectID = useId()
+
+    useEffect(() => {
+        if (datasets && dataset_id)
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setDataset(datasets.find(d => d.id === dataset_id) ?? null)
+    }, [datasets, dataset_id]);
 
     const {
         data,
@@ -113,6 +121,7 @@ export const Create: React.FC = () => {
             <Field.Root name="datasetID">
                 <Field.Label htmlFor={ datasetSelectID }>Dataset</Field.Label>
                 <DatasetComponent.Select id={ datasetSelectID }
+                                         defaultValueString={ dataset_id }
                                          required
                                          onValueChange={ setDataset }/>
                 <Field.Error/>
