@@ -7,20 +7,18 @@ import { useTimeScale } from '@/features/Annotator/Axis';
 export const useFocusCanvasOnTime = () => {
     const timeScale = useTimeScale()
     const containerWidth = useWindowContainerWidth()
-    const {
-        mainCanvasRef,
-    } = useAnnotatorCanvasContext()
+    const { windowCanvasRef } = useAnnotatorCanvasContext()
 
     return useCallback((time: number) => {
         const left = timeScale.valueToPosition(time) - containerWidth / 2;
-        mainCanvasRef?.current?.parentElement?.scrollTo({ left })
-    }, [ timeScale, containerWidth, mainCanvasRef ])
+        windowCanvasRef?.current?.scrollTo({ left })
+    }, [ timeScale, containerWidth, windowCanvasRef ])
 } 
 
 export const useDownloadCanvas = () => {
     const height = useWindowHeight()
 
-    const { mainCanvasRef, xAxisCanvasRef, yAxisCanvasRef } = useAnnotatorCanvasContext()
+    const { displayCanvasRef, xAxisCanvasRef, yAxisCanvasRef } = useAnnotatorCanvasContext()
 
     return useCallback(async (filename: string) => {
         const link = document.createElement('a');
@@ -29,7 +27,7 @@ export const useDownloadCanvas = () => {
         if (!context) throw new Error('Cannot get fake canvas 2D context');
 
         // Get spectro images
-        const spectroDataURL = mainCanvasRef?.current?.toDataURL('image/png');
+        const spectroDataURL = displayCanvasRef?.current?.toDataURL('image/png');
         if (!spectroDataURL) throw new Error('Cannot recover spectro dataURL');
         const spectroImg = new Image();
 
@@ -87,5 +85,5 @@ export const useDownloadCanvas = () => {
         link.target = '_blank';
         link.download = filename;
         link.click();
-    }, [ height, mainCanvasRef, xAxisCanvasRef, yAxisCanvasRef ])
+    }, [ height, displayCanvasRef, xAxisCanvasRef, yAxisCanvasRef ])
 }

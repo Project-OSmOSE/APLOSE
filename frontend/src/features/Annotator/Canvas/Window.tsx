@@ -29,7 +29,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     const width = useWindowWidth()
     const height = useWindowHeight()
     const containerWidth = useWindowContainerWidth()
-    const { mainCanvasRef, windowCanvasRef } = useAnnotatorCanvasContext()
+    const { interactionCanvasRef, windowCanvasRef } = useAnnotatorCanvasContext()
     const { onStartTempAnnotation } = useTempAnnotationsEvents()
     const getFreqTime = useGetFreqTime()
     const getCoords = useGetCoords()
@@ -48,13 +48,13 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     const pointer = usePointer()
 
     const refreshInteractionCanvas = useCallback(() => {
-        const context = mainCanvasRef?.current?.getContext('2d');
+        const context = interactionCanvasRef?.current?.getContext('2d');
         if (!context) return;
 
         // Reset
         context.clearRect(0, 0, width, height);
         drawTempAnnotation(context)
-    }, [ drawTempAnnotation, width, height, mainCanvasRef ]);
+    }, [ drawTempAnnotation, width, height, interactionCanvasRef ]);
 
     const preventDefault = useCallback((e: Event) => {
         const event = (e || window.event) as unknown as WheelEvent
@@ -132,7 +132,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     // Zoom update
     const isHoverCanvas = useIsHoverCanvas()
     const onZoomUpdated: OnZoomInfoCallback = useCallback(({ previousLevel, level, origin }) => {
-        const mainBounds = mainCanvasRef?.current?.getBoundingClientRect()
+        const mainBounds = interactionCanvasRef?.current?.getBoundingClientRect()
         if (!window || !spectrogram || !mainBounds) return;
 
         // New timePxRatio
@@ -157,7 +157,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         }
         window.scrollTo({ left: Math.floor(newCenter - containerWidth / 2) })
         refreshInteractionCanvas()
-    }, [ refreshInteractionCanvas, isHoverCanvas, pointer, getFreqTime, mainCanvasRef, spectrogram, containerWidth ])
+    }, [ refreshInteractionCanvas, isHoverCanvas, pointer, getFreqTime, interactionCanvasRef, spectrogram, containerWidth ])
     useEffect(() => {
         onZoomUpdatedSignal.add(onZoomUpdated)
         return () => {
@@ -192,7 +192,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
                                      left={ scrollLeft }/> }
             <canvas className={ [ styles.interaction, canDraw ? styles.drawable : '' ].join(' ') }
                     data-testid="drawable-canvas"
-                    ref={ mainCanvasRef }
+                    ref={ interactionCanvasRef }
                     height={ height }
                     width={ width }
                     onMouseDown={ onStartTempAnnotation }
