@@ -18,7 +18,7 @@ mutation (
     $allowColormapTuning: Boolean
     $colormapDefault: String
     $colormapInvertedDefault: Boolean
-    $allowNumericZoom: Boolean
+    $allowDigitalZoom: Boolean
     $datasetID: ID!
     $analysisIDs: [ID]!
 ) {
@@ -31,7 +31,7 @@ mutation (
         allowColormapTuning: $allowColormapTuning
         colormapDefault: $colormapDefault
         colormapInvertedDefault: $colormapInvertedDefault
-        allowNumericZoom: $allowNumericZoom
+        allowDigitalZoom: $allowDigitalZoom
         dataset: $datasetID
         analysis: $analysisIDs
     }) {
@@ -51,7 +51,7 @@ BASE_VARIABLES = {
     "deadline": "2022-01-30",
     "datasetID": 1,
     "analysisIDs": [1],
-    "allowNumericZoom": True,
+    "allowDigitalZoom": True,
 }
 
 
@@ -89,7 +89,7 @@ class CreateAnnotationCampaignTestCase(ExtendedTestCase):
         self.assertIsNone(campaign.label_set)
         self.assertIsNone(campaign.archive)
         self.assertFalse(campaign.allow_point_annotation)
-        self.assertTrue(campaign.allow_numeric_zoom)
+        self.assertTrue(campaign.allow_digital_zoom)
         self.assertEqual(campaign.created_at.isoformat(), "2012-01-14T00:00:00+00:00")
 
     def test_connected_post_only_required(self):

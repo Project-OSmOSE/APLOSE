@@ -34,7 +34,7 @@ const STEP = {
 
     fillSpectrogramInformation: (page: Page) =>
         test.step('Fill spectrogram information', async () => {
-            await page.campaignCreate.numericZoomCheckBox.click()
+            await page.campaignCreate.digitalZoomCheckBox.click()
             await page.campaignCreate.brightnessContrastCheckBox.click()
             await page.campaignCreate.colormapCheckBox.click()
             await page.campaignCreate.selectColormap('hsv')
@@ -71,7 +71,7 @@ const TEST = {
                     allowColormapTuning: false,
                     colormapDefault: null,
                     colormapInvertedDefault: false,
-                    allowNumericZoom: false,
+                    allowDigitalZoom: false,
                 } as CreateCampaignMutationVariables)
             })
         }),
@@ -105,7 +105,7 @@ const TEST = {
                     allowColormapTuning: true,
                     colormapDefault: 'hsv',
                     colormapInvertedDefault: true,
-                    allowNumericZoom: true,
+                    allowDigitalZoom: true,
                 } as CreateCampaignMutationVariables)
             })
         }),

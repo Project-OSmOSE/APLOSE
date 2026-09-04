@@ -9,7 +9,7 @@ const meta = {
     component: ZoomButtons,
     decorators: [
         (Story: any) => <ZoomRoot
-            campaign={ { allowNumericZoom: true } as NonNullable<GetCampaignQuery['annotationCampaignById']> }
+            campaign={ { allowDigitalZoom: true } as NonNullable<GetCampaignQuery['annotationCampaignById']> }
             analysis={ {
                 legacyConfiguration: { zoomLevel: 2 },
             } as CampaignAnalysisFragment | null }
@@ -29,10 +29,10 @@ type Story = StoryObj<typeof meta>;
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {};
 
-export const NoNumeric: Story = {
+export const NoDigital: Story = {
     decorators: [
         (Story: any) => <ZoomRoot
-            campaign={ { allowNumericZoom: false } as NonNullable<GetCampaignQuery['annotationCampaignById']> }
+            campaign={ { allowDigitalZoom: false } as NonNullable<GetCampaignQuery['annotationCampaignById']> }
             analysis={ {
                 legacyConfiguration: { zoomLevel: 2 },
             } as CampaignAnalysisFragment | null }
@@ -43,16 +43,16 @@ export const NoNumeric: Story = {
 export const NoPreprocessed: Story = {
     decorators: [
         (Story: any) => <ZoomRoot
-            campaign={ { allowNumericZoom: true } as NonNullable<GetCampaignQuery['annotationCampaignById']> }
+            campaign={ { allowDigitalZoom: true } as NonNullable<GetCampaignQuery['annotationCampaignById']> }
             analysis={ {} as CampaignAnalysisFragment | null }
             children={ <Story/> }/>,
     ],
 };
 
-export const NoNumericNorPreprocessed: Story = {
+export const NoDigitalNorPreprocessed: Story = {
     decorators: [
         (Story: any) => <ZoomRoot
-            campaign={ { allowNumericZoom: false } as NonNullable<GetCampaignQuery['annotationCampaignById']> }
+            campaign={ { allowDigitalZoom: false } as NonNullable<GetCampaignQuery['annotationCampaignById']> }
             analysis={ {} as CampaignAnalysisFragment | null }
             children={ <Story/> }/>,
     ],

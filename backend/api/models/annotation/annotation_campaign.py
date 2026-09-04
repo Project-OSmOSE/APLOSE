@@ -91,7 +91,7 @@ class AnnotationCampaign(models.Model):
     allow_colormap_tuning = models.BooleanField(blank=False, default=False)
     colormap_default = models.TextField(null=True, blank=True)
     colormap_inverted_default = models.BooleanField(blank=True, null=True)
-    allow_numeric_zoom = models.BooleanField(blank=False, default=False)
+    allow_digital_zoom = models.BooleanField(blank=False, default=False)
 
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
 

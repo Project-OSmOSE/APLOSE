@@ -27,13 +27,13 @@ export const ZoomButtons: React.FC = () => {
                     disabled={ !canZoomOut } className={ styles.Button }>
                 <MagniferZoomOut weight="Linear" size={ 20 }/>
                 { canZoomOut === 'digital' &&
-                    <Note color="warning" small className={ styles.NumericNote }>D</Note> }
+                    <Note color="warning" small className={ styles.DigitalNote }>D</Note> }
             </Button>
             <Button onClick={ () => zoomIn() } aria-label="Zoom out"
                     disabled={ !canZoomIn } className={ styles.Button }>
                 <MagniferZoomIn weight="Linear" size={ 20 }/>
                 { canZoomIn === 'digital' &&
-                    <Note color="warning" small className={ styles.NumericNote }>D</Note> }
+                    <Note color="warning" small className={ styles.DigitalNote }>D</Note> }
             </Button>
         </div>
         <div className={ styles.Inner }>

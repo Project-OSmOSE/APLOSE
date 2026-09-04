@@ -66,7 +66,7 @@ export const Create: React.FC = () => {
                 allowColormapTuning: formData.get('allowColormapTuning') === 'true',
                 colormapDefault: formData.get('colormapDefault') as string,
                 colormapInvertedDefault: formData.get('colormapInvertedDefault') === 'true',
-                allowNumericZoom: formData.get('allowNumericZoom') === 'true',
+                allowDigitalZoom: formData.get('allowDigitalZoom') === 'true',
             })
             if (!data) return
             if (!data?.annotationCampaign) return
@@ -145,10 +145,10 @@ export const Create: React.FC = () => {
         <Fieldset.Root>
             <Fieldset.Legend>Spectrogram display</Fieldset.Legend>
 
-            <Field.Root name="allowNumericZoom">
+            <Field.Root name="allowDigitalZoom">
                 <Field.Label>
                     <Checkbox/>
-                    Allow numeric zoom
+                    Allow digital zoom
                 </Field.Label>
                 <Field.Error/>
             </Field.Root>

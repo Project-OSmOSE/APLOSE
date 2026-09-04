@@ -73,8 +73,8 @@ export const ZoomRoot: React.FC<Props> = ({ children, campaign, analysis }) => {
         const maxPreProcessed = analysis?.legacyConfiguration?.zoomLevel ?? 0;
         return 2 ** maxPreProcessed;
     }, [ analysis ])
-    const isNumericZoomAllowed: boolean = useMemo(() => {
-        return campaign.allowNumericZoom
+    const isDigitalZoomAllowed: boolean = useMemo(() => {
+        return campaign.allowDigitalZoom
     }, [ campaign ])
 
     const zoomInLevel: number | null = useMemo(() => {
@@ -83,11 +83,11 @@ export const ZoomRoot: React.FC<Props> = ({ children, campaign, analysis }) => {
         if (nextZoomLevel <= maxPreProcessedZoomLevel)
             return nextZoomLevel
 
-        if (isNumericZoomAllowed && nextZoomLevel <= ABSOLUTE_MAX_ZOOM_LEVEL)
+        if (isDigitalZoomAllowed && nextZoomLevel <= ABSOLUTE_MAX_ZOOM_LEVEL)
             return nextZoomLevel
 
         return null
-    }, [ maxPreProcessedZoomLevel, zoomLevel, isNumericZoomAllowed ])
+    }, [ maxPreProcessedZoomLevel, zoomLevel, isDigitalZoomAllowed ])
     const zoomOutLevel: number | null = useMemo(() => {
         const nextZoomLevel = zoomLevel / 2;
 
@@ -120,7 +120,7 @@ export const ZoomRoot: React.FC<Props> = ({ children, campaign, analysis }) => {
 
     return <ZoomContext.Provider value={ {
         zoomLevel,
-        zoomType: isNumericZoomAllowed && zoomLevel > maxPreProcessedZoomLevel ? 'digital' : 'preprocessed',
+        zoomType: isDigitalZoomAllowed && zoomLevel > maxPreProcessedZoomLevel ? 'digital' : 'preprocessed',
 
         canZoomIn: zoomInLevel === null ? false : zoomInLevel > maxPreProcessedZoomLevel ? 'digital' : true,
         zoomInLevel,

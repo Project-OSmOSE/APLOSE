@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="annotationcampaign",
-            name="allow_numeric_zoom",
+            name="allow_digital_zoom",
             field=models.BooleanField(default=False),
         ),
     ]
