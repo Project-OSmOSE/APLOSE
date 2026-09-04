@@ -23,6 +23,8 @@ type ZoomContext = {
     zoomOutLevel: number | null;
     zoomOut: (origin?: Point) => void;
 
+    resetZoom: () => void;
+
     maxPreProcessedZoomLevel: number;
     onZoomUpdatedSignal: Signal<ZoomInfo>;
 }
@@ -32,6 +34,7 @@ const ZoomContext = createContext<ZoomContext>({
     onZoomUpdatedSignal: new Signal<ZoomInfo>(),
     zoomIn: () => undefined,
     zoomOut: () => undefined,
+    resetZoom: () => undefined,
     zoomInLevel: null,
     zoomLevel: 0,
     zoomOutLevel: null,
@@ -118,6 +121,16 @@ export const ZoomRoot: React.FC<Props> = ({ children, campaign, analysis }) => {
         setZoomLevel(zoomOutLevel)
     }, [ zoomLevel, zoomOutLevel, signal, maxPreProcessedZoomLevel ])
 
+    const resetZoom = useCallback(() => {
+        console.debug('resetZoom to 1')
+        signal.emit({
+            previousLevel: zoomLevel,
+            level: 1,
+            type: 'preprocessed',
+        })
+        setZoomLevel(1)
+    }, [ signal, zoomLevel ])
+
     return <ZoomContext.Provider value={ {
         zoomLevel,
         zoomType: isDigitalZoomAllowed && zoomLevel > maxPreProcessedZoomLevel ? 'digital' : 'preprocessed',
@@ -129,6 +142,8 @@ export const ZoomRoot: React.FC<Props> = ({ children, campaign, analysis }) => {
         canZoomOut: zoomOutLevel === null ? false : zoomOutLevel > maxPreProcessedZoomLevel ? 'digital' : true,
         zoomOutLevel,
         zoomOut,
+
+        resetZoom,
 
         maxPreProcessedZoomLevel,
         onZoomUpdatedSignal: signal,

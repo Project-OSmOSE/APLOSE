@@ -22,7 +22,21 @@ import type { OnZoomInfoCallback } from '@/features/Annotator/Zoom/Root';
 import { ImageSettings } from './ImageSettings';
 import type { Colormap } from '@/features/Colormap';
 
-export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
+export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => (
+    <PointerProvider>
+        <AnnotatorCanvasContextProvider>
+            <AnnotatorAnalysisProvider>
+                <ZoomProvider>
+                    <ImageSettingsProvider>
+                        <InnerAnnotatorSkeleton children={ children }/>
+                    </ImageSettingsProvider>
+                </ZoomProvider>
+            </AnnotatorAnalysisProvider>
+        </AnnotatorCanvasContextProvider>
+    </PointerProvider>
+)
+
+export const InnerAnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
     const { user } = useLoaderData({ from: '/_authenticated' })
     const {
         campaign,
@@ -51,7 +65,11 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
     const { data, isFetching } = useQuery(AnnotationSpectrogramAPI.getQuery({
         campaignID, phaseType, spectrogramID, ...search, annotatorID: user.id,
     }))
-    const { zoomLevel, onZoomUpdatedSignal } = Zoom.useContext()
+    const {
+        zoomLevel,
+        resetZoom,
+        onZoomUpdatedSignal,
+    } = Zoom.useContext()
     const {
         setColormap, setIsColormapInverted,
         resetBrightness, resetContrast,
@@ -72,6 +90,7 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
 
     useEffect(() => {
         // On spectrogram updated
+        console.debug('spectro updated', data)
         if (!data) return
         dispatch(AnnotatorUXSlice.actions.initSpectrogram({ zoomLevel }))
 
@@ -92,6 +111,8 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
         }))
         resetBrightness()
         resetContrast()
+        console.debug('will call resetZoom')
+        resetZoom()
     }, [ data ]);
 
     // Handle zoom updates
@@ -105,36 +126,34 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
         }
     }, [ onZoomUpdatedSignal ]);
 
-    return <AllProviders>
-        <div className={ styles.page }>
-            <Navigation.Annotator loading={ isFetching }>
-                { data?.spectrogram && <div className={ styles.info }>
-                    <div className={ styles.file }>
-                        <Note color="medium">{ campaign.name }</Note>
-                        <Note color="medium"><AltArrowRight weight="Linear" size={ 20 }/></Note>
-                        <Note color="medium">{ data.spectrogram.filename }</Note>
-                        { data.spectrogram.task?.status === AnnotationTaskStatus.Finished &&
-                            <Note color="medium"><CheckCircle weight="Linear" size={ 20 }/></Note> }
-                    </div>
-                    { isEditionAuthorized && info?.totalCount &&
-                        <Progress color="medium"
-                                  value={ (info.currentIndex ?? 0) + 1 }
-                                  max={ info.totalCount }/> }
+    return <div className={ styles.page }>
+        <Navigation.Annotator loading={ isFetching }>
+            { data?.spectrogram && <div className={ styles.info }>
+                <div className={ styles.file }>
+                    <Note color="medium">{ campaign.name }</Note>
+                    <Note color="medium"><AltArrowRight weight="Linear" size={ 20 }/></Note>
+                    <Note color="medium">{ data.spectrogram.filename }</Note>
+                    { data.spectrogram.task?.status === AnnotationTaskStatus.Finished &&
+                        <Note color="medium"><CheckCircle weight="Linear" size={ 20 }/></Note> }
+                </div>
+                { isEditionAuthorized && info?.totalCount &&
+                    <Progress color="medium"
+                              value={ (info.currentIndex ?? 0) + 1 }
+                              max={ info.totalCount }/> }
 
-                    { campaign.archive ? <Note>You cannot annotate an archived campaign.</Note> :
-                        phase?.endedAt ? <Note>You cannot annotate an ended phase.</Note> :
-                            !data.spectrogram.isAssigned ?
-                                <Note>You are not assigned to annotate this file.</Note> :
-                                <Fragment/>
-                    }
-                </div> }
-            </Navigation.Annotator>
+                { campaign.archive ? <Note>You cannot annotate an archived campaign.</Note> :
+                    phase?.endedAt ? <Note>You cannot annotate an ended phase.</Note> :
+                        !data.spectrogram.isAssigned ?
+                            <Note>You are not assigned to annotate this file.</Note> :
+                            <Fragment/>
+                }
+            </div> }
+        </Navigation.Annotator>
 
-            { children }
+        { children }
 
-            <Footer/>
-        </div>
-    </AllProviders>
+        <Footer/>
+    </div>
 }
 
 const ZoomProvider: React.FC<Pick<HTMLProps<HTMLDivElement>, 'children'>> = ({ children }) => {
@@ -163,17 +182,3 @@ const ImageSettingsProvider: React.FC<Pick<HTMLProps<HTMLDivElement>, 'children'
                                allowImageTuning={ campaign.allowImageTuning }
                                children={ children }/>
 }
-
-const AllProviders: React.FC<Pick<HTMLProps<HTMLDivElement>, 'children'>> = ({ children }) => (
-    <PointerProvider>
-        <AnnotatorCanvasContextProvider>
-            <AnnotatorAnalysisProvider>
-                <ZoomProvider>
-                    <ImageSettingsProvider>
-                        { children }
-                    </ImageSettingsProvider>
-                </ZoomProvider>
-            </AnnotatorAnalysisProvider>
-        </AnnotatorCanvasContextProvider>
-    </PointerProvider>
-)
