@@ -5,11 +5,10 @@ import type { GetAnnotationSpectrogramQuery } from '@/features/AnnotationSpectro
 import { useAnnotatorCanvasContext, useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
 
 export const SpectrogramDisplay: React.FC<{
-    left: number,
     spectrogram: GetAnnotationSpectrogramQuery['annotationSpectrogramById'],
     analysis: CampaignAnalysisFragment | null,
-}> = ({ spectrogram, analysis, left }) => {
-    const { displayCanvasRef } = useAnnotatorCanvasContext()
+}> = ({ spectrogram, analysis }) => {
+    const { displayCanvasRef, left } = useAnnotatorCanvasContext()
     const width = useWindowWidth()
     const height = useWindowHeight()
 

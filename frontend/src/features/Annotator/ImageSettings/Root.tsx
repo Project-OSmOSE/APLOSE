@@ -31,6 +31,9 @@ type ImageSettingsContext = {
 
     canvasFilter: string;
     applyImageToCanvas: (canvas: HTMLCanvasElement, image: HTMLImageElement, dx: number, dy: number, width: number, height: number) => Promise<void>,
+
+    isUpdating: boolean,
+    setIsUpdating: Dispatch<SetStateAction<boolean>>,
 }
 const ImageSettingsContext = createContext<ImageSettingsContext>({
     allowColormapChange: false,
@@ -53,6 +56,9 @@ const ImageSettingsContext = createContext<ImageSettingsContext>({
 
     canvasFilter: '',
     applyImageToCanvas: async () => undefined,
+
+    isUpdating: false,
+    setIsUpdating: () => null,
 })
 
 /** Zoom.useContext
@@ -86,6 +92,7 @@ export const ImageSettingsRoot: React.FC<Props> = ({ children, allowColormapChan
     const [ isColormapInverted, setIsColormapInverted ] = useState<boolean>(false);
     const [ brightness, setBrightness ] = useState<number>(50);
     const [ contrast, setContrast ] = useState<number>(50);
+    const [ isUpdating, setIsUpdating ] = useState<boolean>(false)
 
     const revertColormap = useCallback(() => setIsColormapInverted(prev => !prev), [])
     const resetBrightness = useCallback(() => setBrightness(50), [])
@@ -145,5 +152,6 @@ export const ImageSettingsRoot: React.FC<Props> = ({ children, allowColormapChan
         brightness, setBrightness, resetBrightness,
         contrast, setContrast, resetContrast,
         canvasFilter, applyImageToCanvas,
+        isUpdating, setIsUpdating,
     } } children={ children }/>
 }

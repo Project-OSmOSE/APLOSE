@@ -1,4 +1,4 @@
-import React, { MouseEvent, UIEvent, useCallback, useEffect, useRef, useState, WheelEvent } from 'react';
+import React, { MouseEvent, UIEvent, useCallback, useEffect, useRef, WheelEvent } from 'react';
 import styles from './styles.module.scss';
 import { FrequencyAxis, TimeAxis } from '@/features/Annotator/Axis';
 import { TimeBar } from './TimeBar';
@@ -29,7 +29,10 @@ export const AnnotatorCanvasWindow: React.FC = () => {
     const width = useWindowWidth()
     const height = useWindowHeight()
     const containerWidth = useWindowContainerWidth()
-    const { interactionCanvasRef, windowCanvasRef } = useAnnotatorCanvasContext()
+    const {
+        interactionCanvasRef, windowCanvasRef,
+        setLeft,
+    } = useAnnotatorCanvasContext()
     const { onStartTempAnnotation } = useTempAnnotationsEvents()
     const getFreqTime = useGetFreqTime()
     const getCoords = useGetCoords()
@@ -72,14 +75,13 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         document.removeEventListener('wheel', preventDefault, false)
     }, [ pointer ]);
 
-    const [ scrollLeft, setScrollLeft ] = useState<number>(0);
     const onFileScrolled = useCallback((event: UIEvent<HTMLDivElement>) => {
         if (event.type !== 'scroll') return;
         const div = event.currentTarget;
         const left = div.scrollWidth - div.scrollLeft - div.clientWidth;
         if (left <= 0) dispatch(setAllFileAsSeen())
-        setScrollLeft(div.scrollLeft)
-    }, [ dispatch ])
+        setLeft(div.scrollLeft)
+    }, [ dispatch, setLeft ])
 
     const onWheel = useCallback((event: WheelEvent) => {
         // Disable zoom if the user wants horizontal scroll
@@ -188,8 +190,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
             { spectrogram && selectedAnalysis &&
                 <Spectrogram.Display spectrogram={ spectrogram }
-                                     analysis={ selectedAnalysis }
-                                     left={ scrollLeft }/> }
+                                     analysis={ selectedAnalysis }/> }
             <canvas className={ [ styles.interaction, canDraw ? styles.drawable : '' ].join(' ') }
                     data-testid="drawable-canvas"
                     ref={ interactionCanvasRef }
@@ -204,7 +205,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
                 key={ annotation.id } annotation={ annotation }/>) }
         </div>
 
-        <AcousticFeatures scrollLeft={ scrollLeft }/>
+        <AcousticFeatures/>
 
     </div>
 }

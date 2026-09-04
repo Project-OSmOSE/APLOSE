@@ -32,7 +32,10 @@ export const ConfigBar: React.FC = () => {
 
             <ImageSettings.ColormapButtons/>
             <ImageSettings.ImageTuningButtons/>
+
             <Zoom.Buttons/>
+
+            <ImageSettings.UpdateSpinner/>
         </ButtonGroup>
 
         { pointer.position && <ButtonGroup smallGap>

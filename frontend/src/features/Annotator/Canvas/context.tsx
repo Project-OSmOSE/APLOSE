@@ -1,4 +1,12 @@
-import React, { createContext, type MutableRefObject, ReactNode, useContext, useRef } from 'react';
+import React, {
+    createContext,
+    type Dispatch,
+    type MutableRefObject,
+    ReactNode,
+    type SetStateAction,
+    useContext,
+    useRef, useState,
+} from 'react';
 
 type AnnotatorCanvasContext = {
     windowCanvasRef?: MutableRefObject<HTMLDivElement | null>,
@@ -6,9 +14,14 @@ type AnnotatorCanvasContext = {
     interactionCanvasRef?: MutableRefObject<HTMLCanvasElement | null>,
     xAxisCanvasRef?: MutableRefObject<HTMLCanvasElement | null>,
     yAxisCanvasRef?: MutableRefObject<HTMLCanvasElement | null>,
+
+    left: number;
+    setLeft: Dispatch<SetStateAction<number>>;
 }
 
-export const AnnotatorCanvasContext = createContext<AnnotatorCanvasContext>({})
+export const AnnotatorCanvasContext = createContext<AnnotatorCanvasContext>({
+    left: 0, setLeft: () => undefined,
+})
 
 export const useAnnotatorCanvasContext = () => {
     const context = useContext(AnnotatorCanvasContext);
@@ -25,6 +38,8 @@ export const AnnotatorCanvasContextProvider: React.FC<{ children: ReactNode }> =
     const xAxisCanvasRef = useRef<HTMLCanvasElement | null>(null)
     const yAxisCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
+    const [ left, setLeft ] = useState<number>(0);
+
     return <AnnotatorCanvasContext.Provider children={ children }
                                             value={ {
                                                 windowCanvasRef,
@@ -32,5 +47,7 @@ export const AnnotatorCanvasContextProvider: React.FC<{ children: ReactNode }> =
                                                 interactionCanvasRef,
                                                 xAxisCanvasRef,
                                                 yAxisCanvasRef,
+
+                                                left, setLeft,
                                             } }/>;
 }

@@ -13,12 +13,13 @@ import { Trend } from './Trend';
 import { Duration } from '@/features/Annotator/AcousticFeatures/Duration';
 import { NonLinearPhenomena } from '@/features/Annotator/AcousticFeatures/NonLinearPhenomena';
 import { Checks } from '@/features/Annotator/AcousticFeatures/Checks';
-import { useWindowWidth } from '@/features/Annotator/Canvas';
+import { useAnnotatorCanvasContext, useWindowWidth } from '@/features/Annotator/Canvas';
 import { useLoaderData } from '@tanstack/react-router';
 import { MinusCircle } from '@solar-icons/react';
 import { Button } from '@/components/base';
 
-export const AcousticFeatures: React.FC<{ scrollLeft: number }> = ({ scrollLeft }) => {
+export const AcousticFeatures: React.FC = () => {
+    const { left } = useAnnotatorCanvasContext()
     const focusedAnnotation = useAppSelector(selectAnnotation)
     const getAnnotation = useGetAnnotation()
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
@@ -43,14 +44,14 @@ export const AcousticFeatures: React.FC<{ scrollLeft: number }> = ({ scrollLeft 
             y: 128,
         }
         if (!focusedAnnotation?.endTime) return position
-        position.x = timeScale.valueToPosition(focusedAnnotation.endTime) + 80 - scrollLeft;
+        position.x = timeScale.valueToPosition(focusedAnnotation.endTime) + 80 - left;
         if (position.x > initialLeft) {
-            const otherSideLeft = timeScale.valueToPosition(focusedAnnotation.endTime) - 80 - 500 - scrollLeft;
+            const otherSideLeft = timeScale.valueToPosition(focusedAnnotation.endTime) - 80 - 500 - left;
             if (otherSideLeft > 0) position.x = otherSideLeft
             if (otherSideLeft > initialLeft) position.x = initialLeft;
         }
         return position
-    }, [ focusedAnnotation, timeScale, scrollLeft ])
+    }, [ focusedAnnotation, timeScale, left ])
 
     const {
         className: extendedClassName,

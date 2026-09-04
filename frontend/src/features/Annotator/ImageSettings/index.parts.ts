@@ -2,3 +2,4 @@ export { ImageSettingsRoot as Root, useImageSettingsContext as useContext } from
 
 export * from './ColormapButtons'
 export * from './ImageTuningButtons'
+export { ImageSettingsUpdateSpinner as UpdateSpinner } from './UpdateSpinner'
