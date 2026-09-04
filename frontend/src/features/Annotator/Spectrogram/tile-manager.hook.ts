@@ -2,7 +2,7 @@ import { type MutableRefObject, useCallback, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AnnotationSpectrogramAPI, type GetAnnotationSpectrogramQuery } from '@/features/AnnotationSpectrogram';
 import type { CampaignAnalysisFragment } from '@/features/AnnotationCampaign';
-import { useWindowContainerWidth, useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
+import { SPECTRO_WIDTH, useWindowContainerWidth, useWindowHeight } from '@/features/Annotator/Canvas';
 import { Zoom } from '../Zoom';
 import { ImageSettings } from '../ImageSettings';
 
@@ -33,7 +33,6 @@ export const useTileManager = ({ canvasRef, analysis, spectrogram, left: _left }
         canvasFilter,
         applyImageToCanvas,
     } = ImageSettings.useContext()
-    const _tileWidth = useWindowWidth()
     const getZoomLevelToLoad = useCallback((baseLevel: number) => {
         if (zoomType === 'preprocessed') return baseLevel
         else return maxPreProcessedZoomLevel
@@ -41,13 +40,13 @@ export const useTileManager = ({ canvasRef, analysis, spectrogram, left: _left }
     const tileHeight = useWindowHeight()
 
     const loadingTileIndexesRef = useRef<number[]>([])
-    const loadedTileIndexesRef = useRef<number[]>([])
+    const loadedTileIndexesRef = useRef<Map<number, HTMLImageElement>>(new Map())
 
     const analysisRef = useRef<CampaignAnalysisFragment | null>(null)
     const spectrogramRef = useRef<GetAnnotationSpectrogramQuery['annotationSpectrogramById']>(null)
     const spectrogramPathRef = useRef<string | null | undefined>()
 
-    const zoomRef = useRef<number>(0)
+    const zoomRef = useRef<number>(1)
     const leftRef = useRef<number>(0)
 
     const clearCanvas = useCallback((): void => {
@@ -56,24 +55,19 @@ export const useTileManager = ({ canvasRef, analysis, spectrogram, left: _left }
         context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
     }, [ canvasRef ])
 
-    const displayTile = useCallback(async (url: string, index: number): Promise<void> => {
-        // const context = canvasRef.current?.getContext('2d', { alpha: false });
+    const displayTile = useCallback(async (index: number): Promise<void> => {
         if (!canvasRef.current) return;
-        const image = new Image();
-        const loadPromise = new Promise((resolve, reject) => {
-            image.onload = () => resolve(image);
-            image.onerror = () => reject(`Could not resolve url: ${ url } [${ index }]`);
-        });
-        image.src = url;
-        await loadPromise;
-        const tileWidth = zoomType === 'preprocessed' ? _tileWidth : (_tileWidth * (zoomLevel / maxPreProcessedZoomLevel))
+        const baseImage = loadedTileIndexesRef.current.get(index)
+        if (!baseImage) return;
 
+        const tileWidth = zoomType === 'preprocessed' ? SPECTRO_WIDTH : (SPECTRO_WIDTH * (zoomLevel / maxPreProcessedZoomLevel))
         await applyImageToCanvas(
-            canvasRef.current, image,
+            canvasRef.current, baseImage,
             index * tileWidth, 0,
             tileWidth, tileHeight,
         )
-    }, [ canvasRef, _tileWidth, tileHeight, zoomLevel, maxPreProcessedZoomLevel, zoomType, applyImageToCanvas ])
+    }, [ canvasRef, tileHeight, zoomLevel, maxPreProcessedZoomLevel, zoomType, applyImageToCanvas ])
+
     const getTileURL = useCallback((index: number): string => {
         if (!analysisRef.current) throw Error('Missing analysis');
         if (!spectrogramRef.current) throw Error('Missing spectrogram');
@@ -85,52 +79,63 @@ export const useTileManager = ({ canvasRef, analysis, spectrogram, left: _left }
         }
         return src
     }, [ analysisRef, spectrogramRef, zoomRef, loadedTileIndexesRef, getZoomLevelToLoad ])
-    const updateTile = useCallback(async (index: number, options?: { forceRedraw?: boolean }): Promise<void> => {
-        if (loadedTileIndexesRef.current.some(i => i === index) && !options?.forceRedraw) return;
-        const tilesCount = getZoomLevelToLoad(zoomRef.current)
-        if (index < 0 || index >= tilesCount) return;
+
+    const loadBaseImage = useCallback(async (index: number): Promise<void> => {
+        if (loadedTileIndexesRef.current.has(index)) return;
         try {
-            const url = getTileURL(index)
-            if (!url) return;
-            displayTile(url, index)
-            loadedTileIndexesRef.current.push(index)
+            const url = getTileURL(index);
+            const image = new Image();
+            const loadPromise = new Promise((resolve, reject) => {
+                image.onload = () => resolve(image);
+                image.onerror = () => reject(`Could not resolve url: ${ url } [${ index }]`);
+            });
+            image.src = url;
+            await loadPromise;
+            loadedTileIndexesRef.current.set(index, image);
         } catch (error) {
             console.error(`Failed to load tile ${ zoomRef.current }-${ index }:`, error);
             throw error;
         }
-    }, [ zoomRef, loadedTileIndexesRef, getTileURL, displayTile, getZoomLevelToLoad ])
-    const update = useCallback(async (options?: { forceRedraw?: boolean }): Promise<void> => {
-        const tilesCount = zoomRef.current
+    }, [ analysisRef, spectrogramRef, zoomRef, loadedTileIndexesRef, getZoomLevelToLoad, getTileURL ])
 
-        const tileWidth = zoomType === 'preprocessed' ? _tileWidth : (_tileWidth * (zoomLevel / maxPreProcessedZoomLevel))
+    const update = useCallback(async (options?: { displayAllTiles?: boolean }): Promise<void> => {
+        const tileWidth = zoomType === 'preprocessed' ? SPECTRO_WIDTH : (SPECTRO_WIDTH * (zoomLevel / maxPreProcessedZoomLevel))
+        const tilesCount = zoomType === 'preprocessed' ? zoomRef.current : maxPreProcessedZoomLevel
+
         const startTileIdx = Math.floor(leftRef.current / tileWidth);
         const endTileIdx = Math.ceil((leftRef.current + tileWidth) / tileWidth);
 
-        const visible = Array.from(
+        const visible = new Set(Array.from(
             { length: endTileIdx - startTileIdx + 1 },
             (_, i) => Math.min(startTileIdx + i, tilesCount - 1),
-        );
+        ));
 
         const min = Math.min(...visible);
         const max = Math.max(...visible);
-        const preloaded = [
+        let preload = new Set([
             Math.max(0, min - PRELOAD_MARGIN),
             Math.min(tilesCount - 1, max + PRELOAD_MARGIN),
-        ].filter(index => !visible.includes(index))
-
-        const newTiles = [ ...visible, ...preloaded ].filter(index => !loadedTileIndexesRef.current.includes(index) && !loadingTileIndexesRef.current.includes(index));
-        loadingTileIndexesRef.current = [ ...new Set([ ...loadingTileIndexesRef.current, ...newTiles ]) ];
-        for (const index of loadingTileIndexesRef.current) {
-            await updateTile(index, options)
+        ].filter(index => !visible.has(index)))
+        if (options?.displayAllTiles) {
+            preload = new Set(Array.from(
+                { length: tilesCount },
+                (_, i) => i,
+            ));
         }
 
-        // setCanvasFilter()
-    }, [ leftRef, zoomRef, _tileWidth, canvasRef, loadedTileIndexesRef, loadingTileIndexesRef, updateTile, maxPreProcessedZoomLevel, zoomType, zoomLevel ])
+        const newTiles = new Set([ ...visible, ...preload ].filter(index => !loadedTileIndexesRef.current.has(index) && !loadingTileIndexesRef.current.includes(index)));
+        for (const index of newTiles) {
+            await loadBaseImage(index)
+        }
+        for (const index of visible) {
+            await displayTile(index)
+        }
+    }, [ leftRef, zoomRef, canvasRef, loadedTileIndexesRef, loadingTileIndexesRef, loadBaseImage, displayTile, maxPreProcessedZoomLevel, zoomType, zoomLevel ])
 
     // Check either the manager need to be reinitiated
     const init = useCallback(() => {
         loadingTileIndexesRef.current = [];
-        loadedTileIndexesRef.current = [];
+        loadedTileIndexesRef.current = new Map<number, HTMLImageElement>();
         clearCanvas()
         update()
     }, [ loadingTileIndexesRef, loadedTileIndexesRef, update, clearCanvas ])
@@ -144,11 +149,8 @@ export const useTileManager = ({ canvasRef, analysis, spectrogram, left: _left }
     // On zoom updated
     useEffect(() => {
         if (zoomRef.current === zoomLevel) return;
-        loadingTileIndexesRef.current = []
-        loadedTileIndexesRef.current = []
         zoomRef.current = Math.max(0, zoomLevel)
-        clearCanvas()
-        update()
+        init()
     }, [ zoomLevel ]);
 
     // On left updated
@@ -160,7 +162,7 @@ export const useTileManager = ({ canvasRef, analysis, spectrogram, left: _left }
 
     const containerWidth = useWindowContainerWidth()
     useEffect(() => {
-        update({ forceRedraw: true })
+        update()
     }, [
         canvasFilter, // brightness or contrast updated
         colormap, isColormapInverted, // colormap updated

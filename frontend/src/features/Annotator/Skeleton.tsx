@@ -52,7 +52,10 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
         campaignID, phaseType, spectrogramID, ...search, annotatorID: user.id,
     }))
     const { zoomLevel, onZoomUpdatedSignal } = Zoom.useContext()
-    const { setColormap, setIsColormapInverted } = ImageSettings.useContext()
+    const {
+        setColormap, setIsColormapInverted,
+        resetBrightness, resetContrast,
+    } = ImageSettings.useContext()
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -68,6 +71,7 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
     }, [ campaign ]);
 
     useEffect(() => {
+        // On spectrogram updated
         if (!data) return
         dispatch(AnnotatorUXSlice.actions.initSpectrogram({ zoomLevel }))
 
@@ -86,6 +90,8 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
             all: allAnnotations,
             default: defaultAnnotation,
         }))
+        resetBrightness()
+        resetContrast()
     }, [ data ]);
 
     // Handle zoom updates

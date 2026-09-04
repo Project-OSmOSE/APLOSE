@@ -101,6 +101,7 @@ export const ImageSettingsRoot: React.FC<Props> = ({ children, allowColormapChan
     const applyImageToCanvas = useCallback(async (canvas: HTMLCanvasElement, image: HTMLImageElement, dx: number, dy: number, width: number, height: number) => {
         const context = canvas.getContext('2d', { alpha: false });
         if (!context) return;
+        let finalImage = image;
         if (allowColormapChange && colormap) {
             // 1. Get ImageData from HTMLImageElement
             const imgCanvas = document.createElement('canvas');
@@ -124,15 +125,16 @@ export const ImageSettingsRoot: React.FC<Props> = ({ children, allowColormapChan
             const coloredImgContext = coloredImgCanvas.getContext('2d')!
             coloredImgCanvas.width = width;
             coloredImgCanvas.height = height;
-            coloredImgContext.putImageData(imgData, dx, dy)
+            coloredImgContext.putImageData(imgData, 0, 0)
+            finalImage = new Image()
             const loadPromise = new Promise((resolve, reject) => {
-                image.onload = () => resolve(image);
-                image.onerror = () => reject(`Could not resolve dataURL: ${ colormap }`);
+                finalImage.onload = () => resolve(finalImage);
+                finalImage.onerror = () => reject(`Could not resolve dataURL: ${ colormap }`);
             });
-            image.src = coloredImgCanvas.toDataURL();
+            finalImage.src = coloredImgCanvas.toDataURL();
             await loadPromise
         }
-        context.drawImage(image, dx, dy, width, height)
+        context.drawImage(finalImage, dx, dy, width, height)
         context.filter = canvasFilter
     }, [ allowColormapChange, colormap, isColormapInverted, canvasFilter ])
 

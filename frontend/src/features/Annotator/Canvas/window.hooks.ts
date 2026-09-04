@@ -2,7 +2,7 @@ import { Zoom } from '@/features/Annotator/Zoom';
 import { useLayoutEffect, useMemo, useState } from 'react';
 
 const SPECTRO_HEIGHT: number = 512;
-const SPECTRO_WIDTH: number = 1813;
+export const SPECTRO_WIDTH: number = 1813;
 export const Y_AXIS_WIDTH: number = 35;
 export const X_AXIS_HEIGHT: number = 30;
 
