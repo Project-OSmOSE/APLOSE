@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode, useEffect } from 'react';
+import React, { Fragment, type HTMLProps, ReactNode, useCallback, useEffect, useMemo } from 'react';
 import { Footer, Navigation } from '@/components/layout';
 import styles from './styles.module.scss';
 import { AnnotationTaskStatus } from '@/api';
@@ -7,7 +7,7 @@ import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
 import { PointerProvider } from '@/features/Annotator/Pointer/context';
 import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
 import { AnnotatorConfidenceSlice } from '@/features/Annotator/Confidence';
-import { AnnotatorAnalysisProvider } from '@/features/Annotator/Analysis';
+import { AnnotatorAnalysisProvider, useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 import { AnnotatorLabelSlice } from '@/features/Annotator/Label';
 import { AnnotatorUXSlice } from '@/features/Annotator/UX';
 import { AnnotatorCommentSlice } from '@/features/Annotator/Comment';
@@ -17,8 +17,26 @@ import { Note, Progress } from '@/components/base';
 import { AltArrowRight, CheckCircle } from '@solar-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import { AnnotationSpectrogramAPI } from '@/features/AnnotationSpectrogram';
+import { Zoom } from './Zoom';
+import type { OnZoomInfoCallback } from '@/features/Annotator/Zoom/Root';
+import { ImageSettings } from './ImageSettings';
+import type { Colormap } from '@/features/Colormap';
 
-export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
+export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => (
+    <PointerProvider>
+        <AnnotatorCanvasContextProvider>
+            <AnnotatorAnalysisProvider>
+                <ZoomProvider>
+                    <ImageSettingsProvider>
+                        <InnerAnnotatorSkeleton children={ children }/>
+                    </ImageSettingsProvider>
+                </ZoomProvider>
+            </AnnotatorAnalysisProvider>
+        </AnnotatorCanvasContextProvider>
+    </PointerProvider>
+)
+
+export const InnerAnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }) => {
     const { user } = useLoaderData({ from: '/_authenticated' })
     const {
         campaign,
@@ -47,20 +65,34 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
     const { data, isFetching } = useQuery(AnnotationSpectrogramAPI.getQuery({
         campaignID, phaseType, spectrogramID, ...search, annotatorID: user.id,
     }))
+    const {
+        zoomLevel,
+        resetZoom,
+        onZoomUpdatedSignal,
+    } = Zoom.useContext()
+    const {
+        setColormap, setIsColormapInverted,
+        resetBrightness, resetContrast,
+    } = ImageSettings.useContext()
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        dispatch(AnnotatorUXSlice.actions.initCampaign())
         dispatch(AnnotatorAnnotationSlice.actions.initCampaign())
         dispatch(AnnotatorConfidenceSlice.actions.initCampaign({
             default: confidences?.find(c => c?.isDefault) ?? confidences.length ? confidences[0].label : undefined,
         }))
         dispatch(AnnotatorLabelSlice.actions.initCampaign())
+
+        // Set default colormap & inversion
+        setColormap((campaign.colormapDefault ?? null) as Colormap | null)
+        setIsColormapInverted(campaign.colormapInvertedDefault ?? false)
     }, [ campaign ]);
 
     useEffect(() => {
+        // On spectrogram updated
+        console.debug('spectro updated', data)
         if (!data) return
-        dispatch(AnnotatorUXSlice.actions.initSpectrogram())
+        dispatch(AnnotatorUXSlice.actions.initSpectrogram({ zoomLevel }))
 
         const allAnnotations = convertGqlToAnnotations(data.annotations, phase.phase, user.id)
         const defaultAnnotation = [ ...allAnnotations ].pop()
@@ -77,40 +109,76 @@ export const AnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children
             all: allAnnotations,
             default: defaultAnnotation,
         }))
+        resetBrightness()
+        resetContrast()
+        console.debug('will call resetZoom')
+        resetZoom()
     }, [ data ]);
 
-    return <PointerProvider>
-        <AnnotatorCanvasContextProvider>
-            <AnnotatorAnalysisProvider>
-                <div className={ styles.page }>
-                    <Navigation.Annotator loading={ isFetching }>
-                        { data?.spectrogram && <div className={ styles.info }>
-                            <div className={styles.file}>
-                                <Note color="medium">{ campaign.name }</Note>
-                                <Note color="medium"><AltArrowRight weight="Linear" size={ 20 }/></Note>
-                                <Note color="medium">{ data.spectrogram.filename }</Note>
-                                { data.spectrogram.task?.status === AnnotationTaskStatus.Finished &&
-                                    <Note color="medium"><CheckCircle weight="Linear" size={ 20 }/></Note> }
-                            </div>
-                            { isEditionAuthorized && info?.totalCount &&
-                                <Progress color="medium"
-                                          value={ (info.currentIndex ?? 0) + 1 }
-                                          max={ info.totalCount }/> }
+    // Handle zoom updates
+    const onZoomUpdated: OnZoomInfoCallback = useCallback(({ level }) => {
+        if (level === 1) dispatch(AnnotatorUXSlice.actions.setAllFileAsSeen())
+    }, [ dispatch ])
+    useEffect(() => {
+        onZoomUpdatedSignal.add(onZoomUpdated)
+        return () => {
+            onZoomUpdatedSignal.remove(onZoomUpdated)
+        }
+    }, [ onZoomUpdatedSignal ]);
 
-                            { campaign.archive ? <Note>You cannot annotate an archived campaign.</Note> :
-                                phase?.endedAt ? <Note>You cannot annotate an ended phase.</Note> :
-                                    !data.spectrogram.isAssigned ?
-                                        <Note>You are not assigned to annotate this file.</Note> :
-                                        <Fragment/>
-                            }
-                        </div> }
-                    </Navigation.Annotator>
-
-                    { children }
-
-                    <Footer/>
+    return <div className={ styles.page }>
+        <Navigation.Annotator loading={ isFetching }>
+            { data?.spectrogram && <div className={ styles.info }>
+                <div className={ styles.file }>
+                    <Note color="medium">{ campaign.name }</Note>
+                    <Note color="medium"><AltArrowRight weight="Linear" size={ 20 }/></Note>
+                    <Note color="medium">{ data.spectrogram.filename }</Note>
+                    { data.spectrogram.task?.status === AnnotationTaskStatus.Finished &&
+                        <Note color="medium"><CheckCircle weight="Linear" size={ 20 }/></Note> }
                 </div>
-            </AnnotatorAnalysisProvider>
-        </AnnotatorCanvasContextProvider>
-    </PointerProvider>
+                { isEditionAuthorized && info?.totalCount &&
+                    <Progress color="medium"
+                              value={ (info.currentIndex ?? 0) + 1 }
+                              max={ info.totalCount }/> }
+
+                { campaign.archive ? <Note>You cannot annotate an archived campaign.</Note> :
+                    phase?.endedAt ? <Note>You cannot annotate an ended phase.</Note> :
+                        !data.spectrogram.isAssigned ?
+                            <Note>You are not assigned to annotate this file.</Note> :
+                            <Fragment/>
+                }
+            </div> }
+        </Navigation.Annotator>
+
+        { children }
+
+        <Footer/>
+    </div>
+}
+
+const ZoomProvider: React.FC<Pick<HTMLProps<HTMLDivElement>, 'children'>> = ({ children }) => {
+    const { campaign } = useLoaderData({
+        from: '/_authenticated/annotation-campaign/$campaignID',
+        select: ({ campaign }) => ({ campaign }),
+    })
+    const { selectedAnalysis } = useAnnotatorAnalysis()
+    return <Zoom.Root campaign={ campaign }
+                      analysis={ selectedAnalysis }
+                      children={ children }/>
+}
+
+const ImageSettingsProvider: React.FC<Pick<HTMLProps<HTMLDivElement>, 'children'>> = ({ children }) => {
+    const { campaign } = useLoaderData({
+        from: '/_authenticated/annotation-campaign/$campaignID',
+        select: ({ campaign }) => ({ campaign }),
+    })
+    const { selectedAnalysis } = useAnnotatorAnalysis()
+
+    const allowColormapChange = useMemo(() => {
+        if (!campaign.allowColormapTuning) return false;
+        return selectedAnalysis?.colormap.name === 'Greys' as Colormap
+    }, [ campaign, selectedAnalysis ])
+    return <ImageSettings.Root allowColormapChange={ allowColormapChange }
+                               allowImageTuning={ campaign.allowImageTuning }
+                               children={ children }/>
 }

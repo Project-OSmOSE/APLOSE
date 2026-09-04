@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { addAnnotation, removeAnnotation, updateAnnotation } from '@/features/Annotator/Annotation/slice';
-import { setZoom } from '@/features/Annotator/Zoom';
 import { addTaskComment, removeTaskComment, updateTaskComment } from '@/features/Annotator/Comment/slice';
 
 type UXState = {
@@ -9,8 +8,6 @@ type UXState = {
     isDrawingEnabled: boolean;
     selectPositionForAnnotation: string | number | null; // ID
     start: number;
-
-    _zoom: number;
 }
 
 const initialState: UXState = {
@@ -19,8 +16,6 @@ const initialState: UXState = {
     isDrawingEnabled: true,
     selectPositionForAnnotation: null,
     start: Date.now(),
-
-    _zoom: 1,
 }
 
 export const AnnotatorUXSlice = createSlice({
@@ -37,12 +32,9 @@ export const AnnotatorUXSlice = createSlice({
             state.selectPositionForAnnotation = null
         },
 
-        initCampaign: (state) => {
-            state._zoom = initialState._zoom // See AnnotatorZoomSlice
-        },
-        initSpectrogram: (state) => {
+        initSpectrogram: (state, action: { payload: { zoomLevel: number } }) => {
             state.updated = false
-            state.allFileIsSeen = state._zoom === 1
+            state.allFileIsSeen = action.payload.zoomLevel === 1
             state.isDrawingEnabled = true
             state.selectPositionForAnnotation = null
             state.start = Date.now()
@@ -66,10 +58,6 @@ export const AnnotatorUXSlice = createSlice({
         })
         builder.addCase(removeTaskComment, (state: UXState) => {
             state.updated = true
-        })
-        builder.addCase(setZoom, (state: UXState, action: { payload: number }) => {
-            if (action.payload === 1) state.allFileIsSeen = true;
-            state._zoom = action.payload
         })
     },
     selectors: {

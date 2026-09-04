@@ -38,6 +38,7 @@ class AnnotationCampaignAdmin(ExtendedModelAdmin):
         "confidence_set",
         "image_tuning",
         "colormap_tuning",
+        "allow_digital_zoom",
     )
     inlines = (AnnotationCampaignAnalysisRelationInline,)
 

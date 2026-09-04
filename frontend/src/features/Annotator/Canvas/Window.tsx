@@ -1,4 +1,4 @@
-import React, { MouseEvent, UIEvent, useCallback, useEffect, useRef, useState, WheelEvent } from 'react';
+import React, { MouseEvent, UIEvent, useCallback, useEffect, useRef, WheelEvent } from 'react';
 import styles from './styles.module.scss';
 import { FrequencyAxis, TimeAxis } from '@/features/Annotator/Axis';
 import { TimeBar } from './TimeBar';
@@ -6,58 +6,86 @@ import {
     selectAllAnnotations,
     selectTempAnnotation,
     StrongAnnotation,
+    useDrawTempAnnotation,
     useTempAnnotationsEvents,
 } from '@/features/Annotator/Annotation';
 import { useWindowContainerWidth, useWindowHeight, useWindowWidth, Y_AXIS_WIDTH } from './window.hooks';
 import { useGetCoords, useGetFreqTime, useIsHoverCanvas, usePointer } from '@/features/Annotator/Pointer';
-import { selectZoom, selectZoomOrigin, useZoomIn, useZoomOut } from '@/features/Annotator/Zoom';
+import { Zoom } from '@/features/Annotator/Zoom';
 import { useAudio } from '@/features/Audio';
 import { useAnnotatorCanvasContext } from '@/features/Annotator/Canvas/context';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { setAllFileAsSeen } from '@/features/Annotator/UX/slice';
-import { useDrawCanvas } from '@/features/Annotator/Canvas/hooks';
 import { AnnotationType } from '@/api';
 import { AcousticFeatures } from '@/features/Annotator/AcousticFeatures';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 import { useLoaderData } from '@tanstack/react-router';
 import { useCanDraw } from '@/features/Annotator/UX/hooks';
+import type { OnZoomInfoCallback } from '@/features/Annotator/Zoom/Root';
+import { Spectrogram } from '../Spectrogram';
 
 export const AnnotatorCanvasWindow: React.FC = () => {
     const { spectrogram } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const width = useWindowWidth()
     const height = useWindowHeight()
     const containerWidth = useWindowContainerWidth()
-    const { mainCanvasRef, windowCanvasRef } = useAnnotatorCanvasContext()
+    const {
+        interactionCanvasRef, windowCanvasRef,
+        setLeft,
+    } = useAnnotatorCanvasContext()
     const { onStartTempAnnotation } = useTempAnnotationsEvents()
     const getFreqTime = useGetFreqTime()
     const getCoords = useGetCoords()
-    const zoomIn = useZoomIn()
-    const zoomOut = useZoomOut()
+    const {
+        zoomLevel,
+        zoomType,
+        zoomIn,
+        zoomOut,
+        onZoomUpdatedSignal,
+    } = Zoom.useContext()
     const canDraw = useCanDraw()
     const { seek } = useAudio()
     const allAnnotations = useAppSelector(selectAllAnnotations)
-    const draw = useDrawCanvas()
+    const drawTempAnnotation = useDrawTempAnnotation()
     const dispatch = useAppDispatch()
     const pointer = usePointer()
 
+    const refreshInteractionCanvas = useCallback(() => {
+        const context = interactionCanvasRef?.current?.getContext('2d');
+        if (!context) return;
+
+        // Reset
+        context.clearRect(0, 0, width, height);
+        drawTempAnnotation(context)
+    }, [ drawTempAnnotation, width, height, interactionCanvasRef ]);
+
+    const preventDefault = useCallback((e: Event) => {
+        const event = (e || window.event) as unknown as WheelEvent
+        if (!event.shiftKey && event.preventDefault) {
+            event.preventDefault()
+        }
+    }, [])
+    const disableScroll = useCallback(() => {
+        document.addEventListener('wheel', preventDefault, { passive: false })
+    }, [ pointer ]);
     const clearPointer = useCallback(() => {
         pointer.clearPosition()
+
+        // Enable scroll
+        document.removeEventListener('wheel', preventDefault, false)
     }, [ pointer ]);
 
-    const [ scrollLeft, setScrollLeft ] = useState<number>(0);
     const onFileScrolled = useCallback((event: UIEvent<HTMLDivElement>) => {
         if (event.type !== 'scroll') return;
         const div = event.currentTarget;
         const left = div.scrollWidth - div.scrollLeft - div.clientWidth;
         if (left <= 0) dispatch(setAllFileAsSeen())
-        setScrollLeft(div.scrollLeft)
-    }, [ dispatch ])
+        setLeft(div.scrollLeft)
+    }, [ dispatch, setLeft ])
 
     const onWheel = useCallback((event: WheelEvent) => {
         // Disable zoom if the user wants horizontal scroll
         if (event.shiftKey) return;
-        // Prevent page scrolling
-        event.stopPropagation();
 
         const origin = getCoords(event);
         if (!origin) return;
@@ -71,22 +99,14 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
     // Global updates
     const tempAnnotation = useAppSelector(selectTempAnnotation)
-    const {
-        selectedAnalysis,
-        brightness,
-        contrast,
-        colormap,
-        isColormapInverted,
-    } = useAnnotatorAnalysis()
+    const { selectedAnalysis } = useAnnotatorAnalysis()
     useEffect(() => {
-        draw()
+        refreshInteractionCanvas()
     }, [
         // On current newAnnotation changed
         tempAnnotation?.endTime, tempAnnotation?.endFrequency, tempAnnotation,
         // On Spectrogram or analysis changed
         spectrogram, selectedAnalysis,
-        // On colormap changed
-        colormap, isColormapInverted, brightness, contrast,
         // On window dimensions change
         containerWidth,
     ])
@@ -112,27 +132,22 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
 
     // Zoom update
-    const zoom = useAppSelector(selectZoom)
-    const zoomOrigin = useAppSelector(selectZoomOrigin)
-    const oldZoom = useRef<number>(1)
     const isHoverCanvas = useIsHoverCanvas()
-    useEffect(() => {
-        const mainBounds = mainCanvasRef?.current?.getBoundingClientRect()
+    const onZoomUpdated: OnZoomInfoCallback = useCallback(({ previousLevel, level, origin }) => {
+        const mainBounds = interactionCanvasRef?.current?.getBoundingClientRect()
         if (!window || !spectrogram || !mainBounds) return;
 
-        // If zoom factor has changed
-        if (zoom === oldZoom.current) return;
         // New timePxRatio
-        const newTimePxRatio: number = containerWidth * zoom / spectrogram.duration;
+        const newTimePxRatio: number = containerWidth * level / spectrogram.duration;
 
         // Compute new center (before resizing)
         let newCenter: number;
-        if (zoomOrigin) {
+        if (origin) {
             // x-coordinate has been given, center on it
-            newCenter = (zoomOrigin.x - mainBounds.left) * zoom / oldZoom.current;
+            newCenter = (origin.x - mainBounds.left) * level / previousLevel;
             const coords = {
-                clientX: zoomOrigin.x,
-                clientY: zoomOrigin.y,
+                clientX: origin.x,
+                clientY: origin.y,
             }
             if (isHoverCanvas(coords)) {
                 const data = getFreqTime(coords);
@@ -143,12 +158,21 @@ export const AnnotatorCanvasWindow: React.FC = () => {
             newCenter = oldTime.current * newTimePxRatio;
         }
         window.scrollTo({ left: Math.floor(newCenter - containerWidth / 2) })
-        oldZoom.current = zoom;
-        draw()
-    }, [
-        // On zoom updated
-        zoom, spectrogram?.duration,
-    ]);
+        refreshInteractionCanvas()
+    }, [ refreshInteractionCanvas, isHoverCanvas, pointer, getFreqTime, interactionCanvasRef, spectrogram, containerWidth ])
+    useEffect(() => {
+        onZoomUpdatedSignal.add(onZoomUpdated)
+        return () => {
+            onZoomUpdatedSignal.remove(onZoomUpdated)
+        }
+    }, [ onZoomUpdatedSignal ]);
+    useEffect(() => {
+        onZoomUpdated({
+            previousLevel: zoomLevel,
+            level: zoomLevel,
+            type: zoomType,
+        })
+    }, [ spectrogram?.duration ]);
 
     return <div className={ styles.spectrogramWindow }
                 ref={ windowCanvasRef }
@@ -160,12 +184,16 @@ export const AnnotatorCanvasWindow: React.FC = () => {
 
         <div className={ styles.spectrogram }
              onWheel={ onWheel }
+             onPointerEnter={ disableScroll }
              onPointerLeave={ clearPointer }
              onMouseDown={ e => e.stopPropagation() }>
 
-            <canvas className={ canDraw ? styles.drawable : '' }
+            { spectrogram && selectedAnalysis &&
+                <Spectrogram.Display spectrogram={ spectrogram }
+                                     analysis={ selectedAnalysis }/> }
+            <canvas className={ [ styles.interaction, canDraw ? styles.drawable : '' ].join(' ') }
                     data-testid="drawable-canvas"
-                    ref={ mainCanvasRef }
+                    ref={ interactionCanvasRef }
                     height={ height }
                     width={ width }
                     onMouseDown={ onStartTempAnnotation }
@@ -177,7 +205,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
                 key={ annotation.id } annotation={ annotation }/>) }
         </div>
 
-        <AcousticFeatures scrollLeft={ scrollLeft }/>
+        <AcousticFeatures/>
 
     </div>
 }

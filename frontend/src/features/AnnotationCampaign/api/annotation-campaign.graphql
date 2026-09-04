@@ -74,6 +74,7 @@ query getCampaign($id: ID!) {
         allowImageTuning
         colormapDefault
         colormapInvertedDefault
+        allowDigitalZoom
         dataset {
             id
             name
@@ -148,6 +149,7 @@ mutation createCampaign(
     $allowColormapTuning: Boolean
     $colormapDefault: String
     $colormapInvertedDefault: Boolean
+    $allowDigitalZoom: Boolean
     $datasetID: ID!
     $analysisIDs: [ID]!
 ) {
@@ -160,6 +162,7 @@ mutation createCampaign(
         allowColormapTuning: $allowColormapTuning
         colormapDefault: $colormapDefault
         colormapInvertedDefault: $colormapInvertedDefault
+        allowDigitalZoom: $allowDigitalZoom
         dataset: $datasetID
         analysis: $analysisIDs
     }) {

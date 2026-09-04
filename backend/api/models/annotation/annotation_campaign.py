@@ -91,6 +91,7 @@ class AnnotationCampaign(models.Model):
     allow_colormap_tuning = models.BooleanField(blank=False, default=False)
     colormap_default = models.TextField(null=True, blank=True)
     colormap_inverted_default = models.BooleanField(blank=True, null=True)
+    allow_digital_zoom = models.BooleanField(blank=False, default=False)
 
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
 
@@ -156,7 +157,7 @@ class AnnotationCampaign(models.Model):
                 old_label_set = self.label_set
                 self.label_set = LabelSet.create_for_campaign(
                     campaign=self,
-                    labels=old_label_set.labels,
+                    labels=old_label_set.labels.all(),
                 )
                 self.save()
             self.label_set.labels.add(label)

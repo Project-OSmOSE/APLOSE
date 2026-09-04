@@ -26,34 +26,6 @@
   }
 }
 
-.ConfigBar {
-  display: grid;
-  grid-auto-flow: column;
-  justify-content: space-between;
-  align-items: center;
-
-  .Inner {
-    display: grid;
-    grid-auto-flow: column;
-    align-items: center;
-    gap: 1rem;
-  }
-}
-
-.HorizontalItem {
-  display: grid;
-  grid-auto-flow: column;
-  align-items: center;
-  gap: 0.2rem;
-}
-.HorizontalTextItem {
-  display: grid;
-  grid-auto-flow: column;
-  align-items: baseline;
-  gap: 0.2rem;
-}
-
-
 .VerticalItem {
   display: grid;
   grid-auto-flow: row;

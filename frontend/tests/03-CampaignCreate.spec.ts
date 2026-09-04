@@ -32,8 +32,9 @@ const STEP = {
             ])
         }),
 
-    fillColormapInformation: (page: Page) =>
-        test.step('Fill colormap information', async () => {
+    fillSpectrogramInformation: (page: Page) =>
+        test.step('Fill spectrogram information', async () => {
+            await page.campaignCreate.digitalZoomCheckBox.click()
             await page.campaignCreate.brightnessContrastCheckBox.click()
             await page.campaignCreate.colormapCheckBox.click()
             await page.campaignCreate.selectColormap('hsv')
@@ -70,6 +71,7 @@ const TEST = {
                     allowColormapTuning: false,
                     colormapDefault: null,
                     colormapInvertedDefault: false,
+                    allowDigitalZoom: false,
                 } as CreateCampaignMutationVariables)
             })
         }),
@@ -81,7 +83,7 @@ const TEST = {
 
             await STEP.fillAllGlobalInformation(page)
             await STEP.fillDataInformation(page)
-            await STEP.fillColormapInformation(page)
+            await STEP.fillSpectrogramInformation(page)
 
             await test.step('Submit', async () => {
                 const [ request ] = await Promise.all([
@@ -103,6 +105,7 @@ const TEST = {
                     allowColormapTuning: true,
                     colormapDefault: 'hsv',
                     colormapInvertedDefault: true,
+                    allowDigitalZoom: true,
                 } as CreateCampaignMutationVariables)
             })
         }),
@@ -117,7 +120,7 @@ const TEST = {
 
             await STEP.fillAllGlobalInformation(page)
             await STEP.fillDataInformation(page)
-            await STEP.fillColormapInformation(page)
+            await STEP.fillSpectrogramInformation(page)
 
             await test.step('Submit', () => Promise.all([
                 page.waitForGqlRequest('createCampaign'),

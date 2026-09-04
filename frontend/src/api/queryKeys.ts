@@ -58,6 +58,7 @@ export const queryKeys = {
                       spectrogramID,
                       analysisID,
                   }: GetAnnotationSpectrogramPathsQueryVariables) => [ 'spectrogram', 'path', spectrogramID, analysisID ] as const,
+        allPaths: [ 'spectrogram', 'path' ] as const,
     },
     dataset: {
         all: [ 'dataset' ] as const,

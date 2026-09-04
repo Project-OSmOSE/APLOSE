@@ -2,7 +2,6 @@ import json
 
 from django_extension.tests import ExtendedTestCase
 from freezegun import freeze_time
-from graphene_django.utils import GraphQLTestCase
 
 from backend.api.models import AnnotationCampaign
 from backend.api.tests.fixtures import ALL_FIXTURES
@@ -18,6 +17,7 @@ mutation (
     $allowColormapTuning: Boolean
     $colormapDefault: String
     $colormapInvertedDefault: Boolean
+    $allowDigitalZoom: Boolean
     $datasetID: ID!
     $analysisIDs: [ID]!
 ) {
@@ -30,6 +30,7 @@ mutation (
         allowColormapTuning: $allowColormapTuning
         colormapDefault: $colormapDefault
         colormapInvertedDefault: $colormapInvertedDefault
+        allowDigitalZoom: $allowDigitalZoom
         dataset: $datasetID
         analysis: $analysisIDs
     }) {
@@ -49,6 +50,7 @@ BASE_VARIABLES = {
     "deadline": "2022-01-30",
     "datasetID": 1,
     "analysisIDs": [1],
+    "allowDigitalZoom": True,
 }
 
 
@@ -86,6 +88,7 @@ class CreateAnnotationCampaignTestCase(ExtendedTestCase):
         self.assertIsNone(campaign.label_set)
         self.assertIsNone(campaign.archive)
         self.assertFalse(campaign.allow_point_annotation)
+        self.assertTrue(campaign.allow_digital_zoom)
         self.assertEqual(campaign.created_at.isoformat(), "2012-01-14T00:00:00+00:00")
 
     def test_connected_post_only_required(self):

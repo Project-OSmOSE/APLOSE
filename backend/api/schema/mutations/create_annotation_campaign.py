@@ -20,6 +20,7 @@ class CreateAnnotationCampaignForm(forms.ModelForm):
             "colormap_inverted_default",
             "dataset",
             "analysis",
+            "allow_digital_zoom",
         )
 
 
