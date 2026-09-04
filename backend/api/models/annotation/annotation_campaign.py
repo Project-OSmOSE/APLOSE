@@ -157,7 +157,7 @@ class AnnotationCampaign(models.Model):
                 old_label_set = self.label_set
                 self.label_set = LabelSet.create_for_campaign(
                     campaign=self,
-                    labels=old_label_set.labels,
+                    labels=old_label_set.labels.all(),
                 )
                 self.save()
             self.label_set.labels.add(label)
