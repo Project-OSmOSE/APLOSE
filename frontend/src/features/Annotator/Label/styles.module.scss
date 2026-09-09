@@ -1,3 +1,9 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:color';
+@use "@/css/base";
+@use "@/css/annotation";
+
 .labels {
   grid-area: labels;
 
@@ -6,6 +12,22 @@
     right: 1rem;
     top: 50%;
     transform: translateY(-50%);
+  }
+
+  @for $index from 0 through 9 {
+    .colorIndicator-#{$index} {
+      $color: list.nth(annotation.$colors, $index + 1);
+      background: map.get($color, base);
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 0.5rem;
+    }
+    // Not just this class, it feels messy and unclear
+    //.unused-#{$index} {
+    //  $color: list.nth(annotation.$colors, $index + 1);
+    //  background: color.change(map.get($color, base), $alpha: .08);
+    //  color: color.change(map.get(base.$colors, medium, text), $alpha: 1);
+    //}
   }
 }
 
