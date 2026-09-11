@@ -8,3 +8,5 @@ from .archive_annotation_campaign import ArchiveAnnotationCampaignMutation
 from .update_annotation_comments import UpdateAnnotationCommentsMutation
 from .update_annotations import UpdateAnnotationsMutation
 from .submit_annotation_task import SubmitAnnotationTaskMutation
+
+from .file_range import AnnotationFileRangeMutation
