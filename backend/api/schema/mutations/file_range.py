@@ -19,13 +19,37 @@ class AnnotationFileRangeInput(graphene.InputObjectType):
     last_file_index = graphene.Int(required=True)
 
 
-class AnnotationFileRangeForm(forms.ModelForm):
+class AnnotationFileRangeUpdateForm(forms.ModelForm):
     """Form for annotation file range"""
 
     class Meta:
         model = AnnotationFileRange
         fields = (
             "id",
+            "first_file_index",
+            "last_file_index",
+        )
+
+    def _set_index_validators(self, phase: AnnotationPhase):
+        # Add validators to avoir file indexes to get higher than actual spectrogram count
+        max_count = phase.annotation_campaign.spectrograms.count() - 1
+        self.fields["first_file_index"].validators.append(MaxValueValidator(max_count))
+        self.fields["last_file_index"].validators.append(MaxValueValidator(max_count))
+        self.fields["last_file_index"].validators.append(
+            MinValueValidator(self.data["first_file_index"]),
+        )
+
+    def _clean_fields(self):
+        self._set_index_validators(self.instance.phase)
+        return super()._clean_fields()
+
+
+class AnnotationFileRangeCreateForm(AnnotationFileRangeUpdateForm):
+    """Form for annotation file range"""
+
+    class Meta:
+        model = AnnotationFileRange
+        fields = (
             "annotator",
             "annotation_phase",
             "first_file_index",
@@ -33,32 +57,37 @@ class AnnotationFileRangeForm(forms.ModelForm):
         )
 
     def _clean_fields(self):
-        # Add validators to avoir file indexes to get higher than actual spectrogram count
-
         try:
             phase: AnnotationPhase = AnnotationPhase.objects.get(
                 pk=self.data["annotation_phase"]
             )
         except AnnotationPhase.DoesNotExist:
             return super().clean()
+        self._set_index_validators(phase)
 
-        max_count = phase.annotation_campaign.spectrograms.count() - 1
-        self.fields["first_file_index"].validators.append(MaxValueValidator(max_count))
-        self.fields["last_file_index"].validators.append(MaxValueValidator(max_count))
-        self.fields["last_file_index"].validators.append(
-            MinValueValidator(self.data["first_file_index"]),
-        )
         return super()._clean_fields()
 
 
-class AnnotationFileRangeMutation(DjangoModelFormMutation):
+class AnnotationFileRangeCreateMutation(DjangoModelFormMutation):
     """Create/Update annotation file range"""
 
     class Meta:
-        form_class = AnnotationFileRangeForm
+        form_class = AnnotationFileRangeCreateForm
 
-    class Arguments:
-        force = graphene.Boolean()
+
+class AnnotationFileRangeUpdateMutation(DjangoModelFormMutation):
+    """Create/Update annotation file range"""
+
+    class Meta:
+        form_class = AnnotationFileRangeUpdateForm
+
+    @classmethod
+    def Field(cls, *args, **kwargs):
+        # Build the field normally (id + form-derived arguments)
+        field = super().Field(*args, **kwargs)
+        # Inject the extra argument directly into the resulting Field's args
+        field.args["force"] = graphene.Argument(graphene.Boolean, default_value=False)
+        return field
 
     @classmethod
     def get_form_kwargs(cls, root, info, **input):
@@ -107,7 +136,7 @@ class AnnotationFileRangeDeleteMutation(graphene.Mutation):
         force = graphene.Boolean()
 
     ok = graphene.Boolean(required=True)
-    error = ErrorType()
+    error = graphene.Field(ErrorType)
 
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     def mutate(

@@ -33,7 +33,9 @@ from .mutations import (
     UpdateAnnotationCommentsMutation,
     UpdateAnnotationsMutation,
     SubmitAnnotationTaskMutation,
-    AnnotationFileRangeMutation,
+    AnnotationFileRangeCreateMutation,
+    AnnotationFileRangeUpdateMutation,
+    AnnotationFileRangeDeleteMutation,
 )
 
 
@@ -53,7 +55,9 @@ class APIMutation(graphene.ObjectType):
     end_annotation_phase = EndAnnotationPhaseMutation.Field()
 
     # File ranges
-    file_range = AnnotationFileRangeMutation.Field()
+    create_file_range = AnnotationFileRangeCreateMutation.Field()
+    update_file_range = AnnotationFileRangeUpdateMutation.Field()
+    delete_file_range = AnnotationFileRangeDeleteMutation.Field()
 
     # Annotation
     update_annotations = UpdateAnnotationsMutation.Field()
