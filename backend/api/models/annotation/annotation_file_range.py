@@ -100,12 +100,22 @@ class AnnotationFileRange(models.Model):
         related_name="annotation_file_ranges",
     )
 
-    def save(self, *args, **kwargs):
+    def _check_finished_tasks(
+        self, tasks: QuerySet[AnnotationTask], force: bool = False
+    ):
+        if force:
+            return
+        if tasks.filter(status=AnnotationTask.Status.FINISHED).exists():
+            self.refresh_from_db()
+            raise AnnotationTask.CannotDeleteFinished()
+
+    def save(self, force: bool = False, **kwargs):
         # pylint: disable=no-member
 
         self.files_count = self.last_file_index - self.first_file_index + 1
 
         files = self.annotation_phase.annotation_campaign.spectrograms
+        initial_tasks = self.tasks
 
         from_datetime = files[self.first_file_index].start
         to_datetime = files[self.last_file_index].end
@@ -113,8 +123,19 @@ class AnnotationFileRange(models.Model):
             self.from_datetime, self.to_datetime = to_datetime, from_datetime
         else:
             self.from_datetime, self.to_datetime = from_datetime, to_datetime
+        final_tasks = self.tasks
 
-        super().save(*args, **kwargs)
+        removed_tasks: QuerySet[AnnotationTask] = initial_tasks.filter(
+            ~Q(id__in=final_tasks.values_list("id", flat=True))
+        )
+        self._check_finished_tasks(removed_tasks, force)
+
+        super().save(**kwargs)
+
+    def delete(self, force: bool = False, using=None, keep_parents=False):
+        self._check_finished_tasks(self.tasks, force)
+
+        return super().delete(using, keep_parents)
 
     @property
     def tasks(self) -> QuerySet[AnnotationTask]:
