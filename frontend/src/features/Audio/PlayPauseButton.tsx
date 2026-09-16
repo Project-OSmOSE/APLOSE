@@ -2,7 +2,7 @@ import React, { Fragment, useCallback } from 'react';
 import { Kbd } from '@/components/ui';
 import { useAudio } from './context';
 import { Popover } from '@/components/base/Popover';
-import { Pause, Play } from '@solar-icons/react';
+import { PauseBoldIcon, PlayBoldIcon } from '@solar-icons/react';
 import { useHotkey } from '@tanstack/react-hotkeys';
 
 export const PlayPauseButton: React.FC = () => {
@@ -23,8 +23,8 @@ export const PlayPauseButton: React.FC = () => {
     if (!audio.source) return <Fragment/>
     return <Popover.Root>
         <Popover.Trigger color="primary" onClick={ toggle }>
-            { audio.state === 'pause' && <Play weight="Bold" size={ 20 }/> }
-            { audio.state === 'play' && <Pause weight="Bold" size={ 20 }/> }
+            { audio.state === 'pause' && <PlayBoldIcon size={ 20 }/> }
+            { audio.state === 'play' && <PauseBoldIcon size={ 20 }/> }
         </Popover.Trigger>
         <Popover.Content>
             <Popover.Title>Shortcut</Popover.Title>

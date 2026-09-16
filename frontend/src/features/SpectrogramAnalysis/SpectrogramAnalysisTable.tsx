@@ -5,7 +5,7 @@ import { Toast } from '@/components/base/Toast';
 import { useDownloadAnalysis } from '@/api/download';
 import type { AllSpectrogramAnalysisQuery } from '@/features/SpectrogramAnalysis/api';
 import { Button } from '@/components/base/Button';
-import { Download } from '@solar-icons/react';
+import { DownloadLinearIcon } from '@solar-icons/react';
 import { Note } from '@/components/base/Note';
 
 type Analysis = NonNullable<NonNullable<AllSpectrogramAnalysisQuery['allSpectrogramAnalysis']>['results'][number]>
@@ -55,7 +55,7 @@ export const SpectrogramAnalysisTable: React.FC<{
                 <Td>{ analysis.fft.overlap }</Td>
                 <Td>
                     <Button onClick={ () => downloadAnalysis(analysis) }>
-                        <Download weight="Linear" size={ 20 }/>
+                        <DownloadLinearIcon size={ 20 }/>
                     </Button>
                     { analysis.legacy && <Note color="medium">{ 'OSEkit v<0.2.5' }</Note> }
                 </Td>

@@ -1,8 +1,8 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
+import { RestartLinearIcon } from '@solar-icons/react';
 import { type AllCampaignsQueryVariables } from '../api';
 import { Route } from '@/routes/_authenticated/annotation-campaign';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
-import { Restart } from '@solar-icons/react';
 import { Button } from '@/components/base/Button';
 
 export const AnnotationCampaignResetFiltersButton: React.FC = () => {
@@ -29,7 +29,7 @@ export const AnnotationCampaignResetFiltersButton: React.FC = () => {
 
     if (!canReset) return <Fragment/>
     return <Button color="medium" onClick={ resetFilters }>
-        <Restart weight="Linear" size={ 20 }/>
+        <RestartLinearIcon size={ 20 }/>
         Reset
     </Button>
 }

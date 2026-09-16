@@ -1,4 +1,5 @@
 import React, { Fragment, MouseEvent, useCallback, useMemo, useState } from 'react';
+import { PenNewSquareLinearIcon } from '@solar-icons/react';
 import { Td, Th } from '@/components/ui';
 import { Button, Checkbox, Input, Note } from '@/components/base';
 import styles from './styles.module.scss';
@@ -7,7 +8,6 @@ import { endPositionSelection, selectIsSelectingPositionForAnnotation, selectPos
 import { useGetFreqTime, useIsInAnnotation } from '@/features/Annotator/Pointer';
 import { CLICK_EVENT, useRegisterToEvent } from '@/components/ui/Event';
 import type { Annotation } from '@/features/Annotator/Annotation';
-import { PenNewSquare } from '@solar-icons/react';
 
 
 export const InputRow: React.FC<{
@@ -83,7 +83,7 @@ export const InputRow: React.FC<{
                 { unit && <Note>{ unit }</Note> }
                 { clickable && <Button disabled={ isSelecting }
                                        onClick={ toggleSelection }>
-                    <PenNewSquare weight="Linear" size={ 20 }/>
+                    <PenNewSquareLinearIcon size={ 20 }/>
                 </Button> }
             </div>
         </Td>

@@ -1,8 +1,8 @@
-import { Popover } from './index.ts';
-import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
 import React from 'react';
-import { InfoCircle } from '@solar-icons/react';
+import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
+import { InfoCircleLinearIcon } from '@solar-icons/react';
 import { Note } from '@/components/base/Note';
+import { Popover } from './index.ts';
 
 type Props = {
     content: string,
@@ -53,7 +53,7 @@ export const Default: Story = {};
 
 export const Icon: Story = {
     args: {
-        trigger: <Note color="medium"><InfoCircle size={ 20 }/></Note>,
+        trigger: <Note color="medium"><InfoCircleLinearIcon size={ 20 }/></Note>,
     },
 };
 

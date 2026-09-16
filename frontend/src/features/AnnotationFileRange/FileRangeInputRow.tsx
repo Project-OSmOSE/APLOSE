@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import { useLoaderData } from '@tanstack/react-router';
-import { Lock, TrashBinTrash } from '@solar-icons/react';
+import { LockLinearIcon, TrashBinTrashLinearIcon } from '@solar-icons/react';
 
 import { AnnotationFileRangeInput, ErrorType, UserNode } from '@/api';
 import { Td, Th, Tr } from '@/components/ui';
@@ -67,7 +67,7 @@ export const FileRangeInputRow: React.FC<{
                 <Dialog.Trigger render={ <div/> } nativeButton={ false }>
                     <Popover.Root>
                         <Popover.Trigger color="medium" data-testid="unlock">
-                            <Lock weight="Linear" size={ 20 }/>
+                            <LockLinearIcon size={ 20 }/>
                         </Popover.Trigger>
                         <Popover.Content>This user has already started to annotate</Popover.Content>
                     </Popover.Root>
@@ -86,7 +86,7 @@ export const FileRangeInputRow: React.FC<{
                     </Dialog.Content>
                 </Dialog.Portal>
             </Dialog.Root> : <Button color="danger" data-testid="remove" onClick={ () => onDelete(range) }>
-                <TrashBinTrash weight="Linear" size={ 20 }/>
+                <TrashBinTrashLinearIcon size={ 20 }/>
             </Button> }
         </Td>
     </Tr>

@@ -6,7 +6,7 @@ import { useAnnotatorSubmit } from '@/features/Annotator';
 import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
 import { queryClient } from '@/api/queryClient';
 import { Popover } from '@/components/base/Popover';
-import { AltArrowLeft, AltArrowRight } from '@solar-icons/react';
+import { AltArrowLeftLinearIcon, AltArrowRightLinearIcon } from '@solar-icons/react';
 import { AnnotationSpectrogramAPI } from '@/features/AnnotationSpectrogram';
 import { useHotkey } from '@tanstack/react-hotkeys';
 
@@ -52,7 +52,7 @@ export const NavigationButtons: React.FC = () => {
                 <Popover.Trigger color="medium"
                                  disabled={ isPending || !info?.previousSpectrogramId }
                                  onClick={ navPrevious }>
-                    <AltArrowLeft weight="Linear" size={ 24 }/>
+                    <AltArrowLeftLinearIcon size={ 24 }/>
                 </Popover.Trigger>
                 <Popover.Content>
                     <Popover.Title>Shortcut</Popover.Title>
@@ -77,7 +77,7 @@ export const NavigationButtons: React.FC = () => {
                 <Popover.Trigger color="medium"
                                  disabled={ isPending || !info?.nextSpectrogramId }
                                  onClick={ navNext }>
-                    <AltArrowRight weight="Linear" size={ 20 }/>
+                    <AltArrowRightLinearIcon size={ 20 }/>
                 </Popover.Trigger>
                 <Popover.Content>
                     <Popover.Title>Shortcut</Popover.Title>

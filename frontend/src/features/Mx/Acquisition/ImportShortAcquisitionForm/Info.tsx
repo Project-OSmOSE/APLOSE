@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { InfoCircle } from '@solar-icons/react';
+import { InfoCircleLinearIcon } from '@solar-icons/react';
 import { Dialog, Note } from '@/components/base';
 import { Key, KEYS, useFormatKey } from './keys';
 import styles from './styles.module.scss'
@@ -7,7 +7,7 @@ import styles from './styles.module.scss'
 export const InfoDialog = React.memo(() =>
     <Dialog.Root>
         <Dialog.Trigger>
-            <InfoCircle weight="Linear" size={ 16 }/> All fields
+            <InfoCircleLinearIcon size={ 16 }/> All fields
         </Dialog.Trigger>
         <Dialog.Portal>
             <Dialog.Content>

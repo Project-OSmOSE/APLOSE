@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useLoaderData } from '@tanstack/react-router';
-import { CloudUpload } from '@solar-icons/react';
+import { CloudUploadLinearIcon } from '@solar-icons/react';
 
 import { IMPORT_ANNOTATIONS_COLUMNS } from '@/consts/csv';
 import { getErrorMessage } from '@/service/function';
@@ -91,7 +91,7 @@ export const ImportFileFormBloc: React.FC<ImportFileFormBlocProps> = ({
                    onReset={ onReset }
                    accept={ [ 'csv' ] }
                    forceLoadingState={ isLoading }>
-            <CloudUpload weight="Linear" size={ 20 }/> Import annotations (csv)
+            <CloudUploadLinearIcon size={ 20 }/> Import annotations (csv)
         </InputFile>
     </Fieldset.Root>
 }

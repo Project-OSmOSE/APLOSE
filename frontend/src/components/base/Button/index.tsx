@@ -1,6 +1,6 @@
 import React, { type ReactNode, useCallback, useMemo } from 'react';
+import { CopyLinearIcon, HelpLinearIcon } from '@solar-icons/react';
 import { ExternalLink } from './ExternalLink';
-import { Copy, Help } from '@solar-icons/react';
 import { Button } from './Button';
 import { Toast } from '@/components/base/Toast';
 
@@ -17,7 +17,7 @@ export const DocumentationButton: React.FC = React.memo(() => (
 export const HelpButton: React.FC<{ url: string, children?: ReactNode }> = ({ url, children }) => {
     return <ExternalLink color="warning" target="_blank" href={ url }>
         { children ?? 'Help' }
-        <Help weight="Linear" size={ 20 }/>
+        <HelpLinearIcon size={ 20 }/>
     </ExternalLink>
 }
 
@@ -35,7 +35,7 @@ export const CopyErrorStackButton: React.FC<{ stack: any, withLabel?: boolean }>
 
     return useMemo(() =>
             <Button color="danger" onClick={ copy }>
-                <Copy weight="Linear" size={ 24 }/>
+                <CopyLinearIcon size={ 24 }/>
                 { withLabel && 'Copy error stack trace' }
             </Button>
         , [ copy, withLabel ])

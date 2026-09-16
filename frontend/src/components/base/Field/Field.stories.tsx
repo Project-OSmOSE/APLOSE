@@ -1,9 +1,9 @@
-import { Field } from './index.ts';
-import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
 import type { HTMLInputTypeAttribute } from 'react';
-import type { FieldControlProps } from '@/components/base/Field/Control';
 import type { FieldRootProps } from '@base-ui/react';
-import { Magnifer } from '@solar-icons/react';
+import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
+import { MagnifierLinearIcon } from '@solar-icons/react';
+import { Field } from './index.ts';
+import type { FieldControlProps } from '@/components/base/Field/Control';
 
 type Props = Pick<FieldRootProps, 'disabled'>
     & Pick<FieldControlProps, 'type' | 'required' | 'startIcon' | 'placeholder'>
@@ -65,7 +65,7 @@ export const Required: Story = {
 export const Search: Story = {
     args: {
         label: 'Search',
-        startIcon: Magnifer,
+        startIcon: MagnifierLinearIcon,
         placeholder: 'Search something...',
     } satisfies Partial<Props>,
 };

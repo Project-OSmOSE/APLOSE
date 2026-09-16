@@ -1,6 +1,6 @@
 import React, { type AnchorHTMLAttributes, Fragment } from 'react';
+import { SquareTopDownLinearIcon } from '@solar-icons/react';
 import { Button, type ButtonProps } from './Button';
-import { SquareTopDown } from '@solar-icons/react';
 import { NBSP } from '@/service/type';
 import styles from './Button.module.scss';
 
@@ -22,9 +22,9 @@ export const ExternalLink: React.FC<ExternalLinkProps> = React.memo(({
        rel={ rel ?? target === '_blank' ? 'noopener noreferrer' : undefined }
        className={ [ styles.ExternalLink, inText ? styles.Text : '', className ].join(' ') }>
         { inText ? <Fragment>
-            { children }{ target === '_blank' && <Fragment>{ NBSP }<SquareTopDown weight="Linear"/></Fragment> }
+            { children }{ target === '_blank' && <Fragment>{ NBSP }<SquareTopDownLinearIcon/></Fragment> }
         </Fragment> : <Button { ...props }>
-            { children }{ target === '_blank' && <Fragment>{ NBSP }<SquareTopDown weight="Linear"/></Fragment> }
+            { children }{ target === '_blank' && <Fragment>{ NBSP }<SquareTopDownLinearIcon/></Fragment> }
         </Button> }
     </a>
 ))

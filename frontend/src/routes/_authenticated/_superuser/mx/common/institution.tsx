@@ -5,7 +5,7 @@ import { Head } from '@/components/ui';
 import { Center } from '@/components/layout/Display';
 import { MxCommon } from '@/features/Mx';
 import { Button, CreateDialog } from '@/components/base';
-import { AddSquare } from '@solar-icons/react';
+import { AddSquareLinearIcon } from '@solar-icons/react';
 
 const RouteComponent: React.FC = () => {
     const createDialogManager = CreateDialog.useManager()
@@ -21,7 +21,7 @@ const RouteComponent: React.FC = () => {
         <Head title="Institutions" canGoBack>
             <Center>
                 <Button onClick={ add }>
-                    <AddSquare weight="Linear" size={ 20 }/>
+                    <AddSquareLinearIcon size={ 20 }/>
                     Add institution
                 </Button>
             </Center>

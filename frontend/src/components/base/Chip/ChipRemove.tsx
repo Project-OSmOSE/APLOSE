@@ -1,5 +1,5 @@
 import React from 'react';
-import { CloseCircle } from '@solar-icons/react';
+import { CloseCircleBoldIcon } from '@solar-icons/react';
 import styles from './Chip.module.scss'
 
 export type ChipRemoveProps = {
@@ -7,9 +7,8 @@ export type ChipRemoveProps = {
 }
 
 export const ChipRemove = React.forwardRef<SVGSVGElement, ChipRemoveProps>(({ onClick, ...props }, ref) => (
-    <CloseCircle ref={ ref }
-                 weight="Bold"
-                 className={ styles.ChipRemove }
-                 onClick={ onClick }
-                 { ...props }/>
+    <CloseCircleBoldIcon ref={ ref }
+                         className={ styles.ChipRemove }
+                         onClick={ onClick }
+                         { ...props }/>
 ))

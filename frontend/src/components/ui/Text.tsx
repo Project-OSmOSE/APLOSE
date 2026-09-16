@@ -1,7 +1,7 @@
 import React, { Fragment, ReactNode } from 'react';
+import { DangerTriangleLineDuotoneIcon } from '@solar-icons/react';
 import styles from './ui.module.scss';
 import { getErrorMessage } from '@/service/function';
-import { DangerTriangle } from '@solar-icons/react';
 
 
 export const WarningText: React.FC<{
@@ -11,7 +11,7 @@ export const WarningText: React.FC<{
     className?: string
 }> = ({ message, error, children, className }) => (
     <div className={ [ styles.warningText, className ].join(' ') }>
-        <DangerTriangle weight="LineDuotone" size={ 24 }/>
+        <DangerTriangleLineDuotoneIcon size={ 24 }/>
         { message && <Fragment>{ message }</Fragment> }
         { message && (error || children) && <br/> }
         { error && <Fragment>{ getErrorMessage(error) }</Fragment> }

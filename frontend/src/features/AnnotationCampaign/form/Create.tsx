@@ -1,8 +1,8 @@
 import React, { Fragment, useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { type BaseUIEvent } from '@base-ui/react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { InfoCircle } from '@solar-icons/react';
+import { type BaseUIEvent } from '@base-ui/react';
+import { InfoCircleLinearIcon } from '@solar-icons/react';
 import { Button, ButtonGroup, Checkbox, Field, Fieldset, Form, Link, Note, Spinner, Toast } from '@/components/base';
 
 import { useAppDispatch } from '@/features/App';
@@ -38,7 +38,7 @@ export const Create: React.FC = () => {
         if (datasets && dataset_id)
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setDataset(datasets.find(d => d.id === dataset_id) ?? null)
-    }, [datasets, dataset_id]);
+    }, [ datasets, dataset_id ]);
 
     const {
         data,
@@ -126,8 +126,8 @@ export const Create: React.FC = () => {
                                          onValueChange={ setDataset }/>
                 <Field.Error/>
                 <Note color="medium">
-                    <InfoCircle weight="Linear"/> You can import new datasets in the <Link inText
-                                                                                           to="/storage">Storage</Link> section
+                    <InfoCircleLinearIcon/> You can import new datasets in the <Link inText
+                                                                                     to="/storage">Storage</Link> section
                 </Note>
             </Field.Root>
 

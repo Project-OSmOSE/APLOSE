@@ -4,7 +4,7 @@ import { Content } from '@/components/layout/Content';
 import { Head } from '@/components/ui';
 import { Button, CreateDialog } from '@/components/base';
 import { Center } from '@/components/layout/Display';
-import { AddSquare } from '@solar-icons/react';
+import { AddSquareLinearIcon } from '@solar-icons/react';
 import { MxCommon } from '@/features/Mx';
 
 const RouteComponent: React.FC = () => {
@@ -21,7 +21,7 @@ const RouteComponent: React.FC = () => {
         <Head title="Persons" canGoBack>
             <Center>
                 <Button onClick={ add }>
-                    <AddSquare weight="Linear" size={ 20 }/>
+                    <AddSquareLinearIcon size={ 20 }/>
                     Add person
                 </Button>
             </Center>

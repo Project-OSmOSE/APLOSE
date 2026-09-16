@@ -1,5 +1,5 @@
 import React from 'react';
-import { WidgetAdd } from '@solar-icons/react';
+import { WidgetAddLinearIcon } from '@solar-icons/react';
 
 import { Link } from '@/components/base/Button';
 import { ActionBar } from '@/components/ui';
@@ -32,7 +32,7 @@ export const AnnotationCampaignListFilterActionBar: React.FC = () => {
                           replace: true,
                       }) }
                       actionButton={ user.isAdmin && <Link color="primary" to="/annotation-campaign/new">
-                          <WidgetAdd weight="Linear" size={ 20 }/>
+                          <WidgetAddLinearIcon size={ 20 }/>
                           New annotation campaign
                       </Link> }>
         <AnnotationCampaignAnnotatorFilter/>

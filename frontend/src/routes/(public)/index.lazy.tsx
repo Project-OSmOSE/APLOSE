@@ -1,12 +1,12 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
 import React, { Fragment, useCallback, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { SiDiscord } from 'react-icons/si';
+import { createLazyFileRoute } from '@tanstack/react-router'
+import { AltArrowLeftBoldIcon, AltArrowRightBoldIcon } from '@solar-icons/react';
 import { Button, ButtonGroup, DocumentationButton, ExternalLink } from '@/components/base/Button';
 import { useHomeCollaborators } from '@/api/collaborator';
 import logo from '/images/ode_logo_192x192.png';
 import styles from './public.module.scss';
-import { AltArrowLeft, AltArrowRight } from '@solar-icons/react';
-import { SiDiscord } from 'react-icons/si';
 
 
 const Home = React.memo(() => <Fragment>
@@ -140,7 +140,7 @@ const Carousel: React.FC<{
         <div className={ styles.carousel } onClick={ e => e.stopPropagation() }>
             <Button className={ styles.previousBtn }
                     onClick={ () => onIndexChange(index - 1) }>
-                <AltArrowLeft weight="Bold" size={ 24 }/>
+                <AltArrowLeftBoldIcon size={ 24 }/>
             </Button>
             { trainingImages.map((id) => (
                 <img key={ id }
@@ -152,7 +152,7 @@ const Carousel: React.FC<{
             )) }
             <Button className={ styles.nextBtn }
                     onClick={ () => onIndexChange(index + 1) }>
-                <AltArrowRight weight="Bold" size={ 24 }/>
+                <AltArrowRightBoldIcon size={ 24 }/>
             </Button>
         </div>
     </div>

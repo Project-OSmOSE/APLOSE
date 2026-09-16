@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
+import { TagLinearIcon } from '@solar-icons/react';
 import type { Annotation } from './slice';
 import styles from './styles.module.scss';
 import { AnnotationType } from '@/api';
-import { Tag } from '@solar-icons/react';
 
 export const AnnotationLabelInfo: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
 
@@ -12,7 +12,7 @@ export const AnnotationLabelInfo: React.FC<{ annotation: Annotation }> = ({ anno
     }, [ annotation ])
 
     return <div className={ styles.info }>
-        <Tag weight="Linear" size={ 20 } className={ styles.mainIcon }/>
+        <TagLinearIcon size={ 20 } className={ styles.mainIcon }/>
 
         <span className={ correctedLabel ? 'disabled' : undefined }>
       { annotation.label }

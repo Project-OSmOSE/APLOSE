@@ -3,7 +3,7 @@ import { selectAnnotation, useUpdateAnnotation } from '@/features/Annotator/Anno
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectFocusConfidence } from '@/features/Annotator/Confidence/selectors';
 import { focusConfidence } from '@/features/Annotator/Confidence/slice';
-import { Unread } from '@solar-icons/react';
+import { UnreadLinearIcon } from '@solar-icons/react';
 import { Chip } from '@/components/base';
 import styles from './styles.module.scss'
 
@@ -23,7 +23,7 @@ export const ConfidenceChip: React.FC<{ confidence: string }> = ({ confidence })
                  className={ styles.chip }
                  onClick={ select }
                  data-testid="confidence-chip">
-        { isActive && <Unread weight="Linear" size={ 20 }/> }
+        { isActive && <UnreadLinearIcon size={ 20 }/> }
         { confidence }
     </Chip>
 }

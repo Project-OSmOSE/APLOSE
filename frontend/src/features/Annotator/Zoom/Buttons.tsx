@@ -1,5 +1,5 @@
 import React from 'react';
-import { MagniferZoomIn, MagniferZoomOut } from '@solar-icons/react';
+import { MagnifierZoomInLinearIcon, MagnifierZoomOutLinearIcon } from '@solar-icons/react';
 import { Button, Note } from '@/components/base';
 import { useZoomContext } from './Root'
 import styles from './styles.module.scss';
@@ -25,13 +25,13 @@ export const ZoomButtons: React.FC = () => {
         <div className={ styles.Inner }>
             <Button onClick={ () => zoomOut() } aria-label="Zoom in"
                     disabled={ !canZoomOut } className={ styles.Button }>
-                <MagniferZoomOut weight="Linear" size={ 20 }/>
+                <MagnifierZoomOutLinearIcon size={ 20 }/>
                 { canZoomOut === 'digital' &&
                     <Note color="warning" small className={ styles.DigitalNote }>D</Note> }
             </Button>
             <Button onClick={ () => zoomIn() } aria-label="Zoom out"
                     disabled={ !canZoomIn } className={ styles.Button }>
-                <MagniferZoomIn weight="Linear" size={ 20 }/>
+                <MagnifierZoomInLinearIcon size={ 20 }/>
                 { canZoomIn === 'digital' &&
                     <Note color="warning" small className={ styles.DigitalNote }>D</Note> }
             </Button>

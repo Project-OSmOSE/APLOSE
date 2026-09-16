@@ -1,4 +1,5 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
+import { CourseUpLinearIcon, PlayBoldIcon, RestartLinearIcon, UsersGroupRoundedLinearIcon } from '@solar-icons/react';
 import styles from './styles.module.scss';
 import { ActionBar } from '@/components/ui';
 import { PhaseComponent } from '@/features/AnnotationPhase';
@@ -7,7 +8,6 @@ import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/base/Button';
-import { CourseUp, Play, Restart, UsersGroupRounded } from '@solar-icons/react';
 import { Popover } from '@/components/base/Popover';
 import { Progress } from '@/components/base/Progress';
 import { Dialog } from '@/components/base/Dialog';
@@ -82,7 +82,7 @@ export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPendin
 
                        { (hasFilters || searchParams.onlyAssigned) &&
                            <Button color="medium" onClick={ clear }>
-                               <Restart weight="Linear" size={ 20 }/>
+                               <RestartLinearIcon size={ 20 }/>
                                Reset
                            </Button> }
 
@@ -102,7 +102,7 @@ export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPendin
                                <Dialog.Trigger render={ <div/> } nativeButton={ false }>
                                    <Popover.Root>
                                        <Popover.Trigger data-testid="progress">
-                                           <CourseUp weight="Linear" size={ 24 }/>
+                                           <CourseUpLinearIcon size={ 24 }/>
                                        </Popover.Trigger>
                                        <Popover.Content>Annotators progression</Popover.Content>
                                    </Popover.Root>
@@ -119,7 +119,7 @@ export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPendin
                                <Popover.TriggerLink data-testid="manage"
                                                     to="/annotation-campaign/$campaignID/phase/$phaseType/edit-annotators"
                                                     params={ routeParams }>
-                                   <UsersGroupRounded weight="Linear" size={ 24 }/>
+                                   <UsersGroupRoundedLinearIcon size={ 24 }/>
                                </Popover.TriggerLink>
                                <Popover.Content>Manage annotators</Popover.Content>
                            </Popover.Root>
@@ -134,7 +134,7 @@ export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPendin
                                             disabled={ hasFilters || !data || data.spectrograms.length === 0 || !data.resumeId }
                                             style={ { pointerEvents: 'unset' } }
                                             onClick={ resume }>
-                               <Play weight="Bold" size={ 24 }/>
+                               <PlayBoldIcon size={ 24 }/>
                            </Popover.Trigger>
                            <Popover.Content>{ resumeBtnTooltip }</Popover.Content>
                        </Popover.Root>

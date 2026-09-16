@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useMemo } from 'react';
 import { Th } from '@/components/ui';
 import { Button, ButtonGroup, ComboboxSelect, Field } from '@/components/base';
 import { useImportShortAcquisitionContext } from './Root';
-import { TrashBinTrash } from '@solar-icons/react';
+import { TrashBinTrashLinearIcon } from '@solar-icons/react';
 import { type Key, useFormatKey } from './keys'
 import { MxCommon } from '@/features/Mx';
 import { ContactTypeEnum } from '@/api';
@@ -90,7 +90,7 @@ export const ChoosableTh: React.FC<{ header: string }> = ({ header }) => {
             <ButtonGroup spaceBetween>
                 <Field.Label>{ header }</Field.Label>
                 <Button color="warning" aria-label={ `Remove ${ header }` } onClick={ remove }>
-                    <TrashBinTrash weight="Linear" size={ 20 }/>
+                    <TrashBinTrashLinearIcon size={ 20 }/>
                 </Button>
             </ButtonGroup>
             <ComboboxSelect itemName={ `column` }

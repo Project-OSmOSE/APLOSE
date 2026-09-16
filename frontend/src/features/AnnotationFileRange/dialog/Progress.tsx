@@ -1,4 +1,5 @@
 import React, { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
+import { DownloadLinearIcon } from '@solar-icons/react';
 import { type Order, Table, Tbody, Td, Th, Thead, Tr, WarningText } from '@/components/ui';
 import { Toast } from '@/components/base/Toast';
 import { Progress as BaseProgress } from '@/components/base/Progress';
@@ -9,7 +10,6 @@ import { useQuery } from '@tanstack/react-query';
 import { UserAPI } from '@/features/User';
 import { useLoaderData } from '@tanstack/react-router';
 import { Button, ButtonGroup } from '@/components/base/Button';
-import { Download } from '@solar-icons/react';
 import { Note } from '@/components/base/Note';
 import { Dialog } from '@/components/base/Dialog';
 import { Spinner } from '@/components/base/Spinner';
@@ -164,12 +164,12 @@ export const Progress: React.FC = () => {
                 <ButtonGroup spaceBetween>
                     { progress.length > 0 && <Fragment>
                         <Button onClick={ downloadAnnotations }>
-                            <Download weight="Linear" size={ 20 }/>
+                            <DownloadLinearIcon size={ 20 }/>
                             Results (csv)
                         </Button>
 
                         <Button onClick={ downloadProgress }>
-                            <Download weight="Linear" size={ 20 }/>
+                            <DownloadLinearIcon size={ 20 }/>
                             Status (csv)
                         </Button>
                     </Fragment> }

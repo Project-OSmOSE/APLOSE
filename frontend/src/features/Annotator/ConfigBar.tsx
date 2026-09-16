@@ -3,7 +3,7 @@ import { AnalysisComponent } from '../SpectrogramAnalysis';
 import { useLoaderData } from '@tanstack/react-router';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 import { ButtonGroup, Note } from '@/components/base';
-import { CalendarMinimalistic, Target } from '@solar-icons/react';
+import { CalendarMinimalisticBoldDuotoneIcon, TargetBoldDuotoneIcon } from '@solar-icons/react';
 import { Zoom } from '@/features/Annotator/Zoom';
 import { usePointer } from '@/features/Annotator/Pointer';
 import { formatTime } from '@/service/function';
@@ -39,13 +39,13 @@ export const ConfigBar: React.FC = () => {
         </ButtonGroup>
 
         { pointer.position && <ButtonGroup>
-            <Note color="medium" flex><Target weight="BoldDuotone" size={ 16 }/></Note>
+            <Note color="medium" flex><TargetBoldDuotoneIcon size={ 16 }/></Note>
             <Note data color="dark">{ pointer.position.frequency.toFixed(2) }Hz
                 / { formatTime(pointer.position.time, (spectrogram?.duration ?? 0) < 60) }</Note>
         </ButtonGroup> }
 
         <ButtonGroup>
-            <Note color="medium" flex><CalendarMinimalistic weight="BoldDuotone" size={ 16 }/></Note>
+            <Note color="medium" flex><CalendarMinimalisticBoldDuotoneIcon size={ 16 }/></Note>
             <Note color="dark">{ new Date(spectrogram.start).toUTCString() }</Note>
         </ButtonGroup>
 

@@ -20,7 +20,7 @@ import { NBSP } from '@/service/type';
 import { useLoaderData } from '@tanstack/react-router';
 import { Popover } from '@/components/base/Popover';
 import { Chip, type ChipProps, ChipRemove } from '@/components/base';
-import { Eye, EyeClosed, Unread } from '@solar-icons/react';
+import { EyeClosedLinearIcon, EyeLinearIcon, UnreadLinearIcon } from '@solar-icons/react';
 import { useHotkeySequence } from '@tanstack/react-hotkeys';
 import type { Hotkey } from '@tanstack/hotkeys/src/hotkey';
 
@@ -107,7 +107,7 @@ export const LabelChip: React.FC<{
         <Chip data-testid="label-chip"
               onClick={ select }
               { ...(isUsed ? { annotationColorIndex: index } : { color: 'medium' }) as Partial<ChipProps> }>
-            { focusedLabel === label && <Unread weight="Linear" size={ 20 }/> }
+            { focusedLabel === label && <UnreadLinearIcon size={ 20 }/> }
 
             <Popover.Root>
                 <Popover.Trigger render={ <span/> } nativeButton={ false }>
@@ -125,8 +125,8 @@ export const LabelChip: React.FC<{
                 <Popover.Root>
                     <Popover.Trigger render={ <div/> } nativeButton={ false } className={ styles.button }>
                         { isHidden ?
-                            <EyeClosed weight="Linear" size={ 20 } onClick={ show }/> :
-                            <Eye weight="Linear" size={ 20 } onClick={ hide }/> }
+                            <EyeClosedLinearIcon size={ 20 } onClick={ show }/> :
+                            <EyeLinearIcon size={ 20 } onClick={ hide }/> }
                     </Popover.Trigger>
                     <Popover.Content>
                         <p>{ isHidden ? 'Show' : 'Hide' } corresponding annotations on spectrogram</p>

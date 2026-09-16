@@ -1,8 +1,8 @@
 import React, { type ReactNode } from 'react';
 import { Toast } from '@base-ui/react'
+import { CloseSquareBoldIcon } from '@solar-icons/react';
 import { useToastManager } from './manager.hook'
 import styles from './Toast.module.scss'
-import { CloseSquare } from '@solar-icons/react';
 import { Button } from '@/components/base/Button';
 
 
@@ -32,7 +32,7 @@ const ToastList: React.FC = () => {
                     <Button color={ toast.type } { ...props }/>
                 </> }/>
                 <Toast.Close className={ styles.Close }>
-                    <CloseSquare weight="Bold" size={ 20 }/>
+                    <CloseSquareBoldIcon size={ 20 }/>
                 </Toast.Close>
             </Toast.Content>
         </Toast.Root>
