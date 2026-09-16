@@ -202,6 +202,7 @@
   height: 100%;
   display: grid;
   align-content: start;
+  border-radius: 0.5rem;
 
   --spacing: 1rem;
 
@@ -210,9 +211,9 @@
   }
 
   table {
-    border-collapse: separate;
-    border-spacing: 0 var(--spacing);
-    margin-top: calc(-1 * var(--spacing));
+    border-spacing: 0;
+    border-radius: 0.5rem;
+    border: 1px solid map.get(base.$colors, medium, line);
 
     th, td {
       padding: 0.25rem 0.5rem;
@@ -226,8 +227,10 @@
 
       th {
         font-weight: 400;
-        color: var(--color-dark-tint);
-        background: color.change(map.get(base.$color_bases, medium), $lightness: 98%);
+        //color: var(--color-dark-tint);
+        //background: color.change(map.get(base.$color_bases, medium), $lightness: 98%);
+        color: map.get(base.$colors, medium, text);
+        background: map.get(base.$colors, light, text-background);
 
         &.sortable > div {
           display: grid;
@@ -296,6 +299,7 @@
       th, td {
         transition: background 50ms ease-in-out;
         background: color.change(map.get(base.$color_bases, dark), $lightness: 100%);
+        border-top: 1px solid map.get(base.$colors, medium, line);
       }
 
       th {

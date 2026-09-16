@@ -66,6 +66,7 @@ $colors: (
         text-background: color.change(map.get($color_bases, 'medium'), $lightness: 95%),
         background: map.get($color_bases, 'medium'),
         background-contrast: map.get($color_bases, 'light'),
+        line: color.change(map.get($color_bases, 'medium'), $lightness: 90%),
     ),
     dark: (
         tint: color.adjust(map.get($color_bases, 'dark'), $lightness: +5%),
