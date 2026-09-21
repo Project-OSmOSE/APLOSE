@@ -2,7 +2,7 @@ import { type MutableRefObject, useCallback, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AnnotationSpectrogramAPI, type GetAnnotationSpectrogramQuery } from '@/features/AnnotationSpectrogram';
 import type { CampaignAnalysisFragment } from '@/features/AnnotationCampaign';
-import { SPECTRO_WIDTH, useWindowContainerWidth, useWindowHeight } from '@/features/Annotator/Canvas';
+import { useWindowContainerWidth, useWindowHeight } from '@/features/Annotator/Canvas';
 import { Zoom } from '../Zoom';
 import { ImageSettings } from '../ImageSettings';
 
@@ -48,6 +48,7 @@ export const useTileManager = ({
         if (zoomType === 'preprocessed') return baseLevel
         else return maxPreProcessedZoomLevel
     }, [ maxPreProcessedZoomLevel, zoomType ])
+    const windowContainerWidth = useWindowContainerWidth()
     const tileHeight = useWindowHeight()
 
     const loadingTileIndexesRef = useRef<number[]>([])
@@ -71,13 +72,13 @@ export const useTileManager = ({
         const baseImage = loadedTileIndexesRef.current.get(index)
         if (!baseImage) return;
 
-        const tileWidth = zoomType === 'preprocessed' ? SPECTRO_WIDTH : (SPECTRO_WIDTH * (zoomLevel / maxPreProcessedZoomLevel))
+        const tileWidth = zoomType === 'preprocessed' ? windowContainerWidth : (windowContainerWidth * (zoomLevel / maxPreProcessedZoomLevel))
         await applyImageToCanvas(
             canvasRef.current, baseImage,
             index * tileWidth, 0,
             tileWidth, tileHeight,
         )
-    }, [ canvasRef, tileHeight, zoomLevel, maxPreProcessedZoomLevel, zoomType, applyImageToCanvas ])
+    }, [ canvasRef, tileHeight, zoomLevel, maxPreProcessedZoomLevel, zoomType, windowContainerWidth, applyImageToCanvas ])
 
     const getTileURL = useCallback((index: number): string => {
         if (!analysisRef.current) throw Error('Missing analysis');
@@ -110,7 +111,7 @@ export const useTileManager = ({
 
     const update = useCallback(async (options?: { displayAllTiles?: boolean }): Promise<void> => {
         setIsUpdating(true)
-        const tileWidth = zoomType === 'preprocessed' ? SPECTRO_WIDTH : (SPECTRO_WIDTH * (zoomLevel / maxPreProcessedZoomLevel))
+        const tileWidth = zoomType === 'preprocessed' ? windowContainerWidth : (windowContainerWidth * (zoomLevel / maxPreProcessedZoomLevel))
         const tilesCount = zoomType === 'preprocessed' ? zoomRef.current : maxPreProcessedZoomLevel
 
         const startTileIdx = Math.floor(leftRef.current / tileWidth);
@@ -148,7 +149,7 @@ export const useTileManager = ({
             await displayTile(index)
         }
         setIsUpdating(false)
-    }, [ leftRef, zoomRef, canvasRef, loadedTileIndexesRef, loadingTileIndexesRef, loadBaseImage, displayTile, maxPreProcessedZoomLevel, zoomType, zoomLevel, setIsUpdating ])
+    }, [ leftRef, zoomRef, canvasRef, loadedTileIndexesRef, loadingTileIndexesRef, windowContainerWidth, loadBaseImage, displayTile, maxPreProcessedZoomLevel, zoomType, zoomLevel, setIsUpdating ])
 
     // Check either the manager need to be reinitiated
     const init = useCallback(() => {
