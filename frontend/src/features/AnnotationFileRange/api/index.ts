@@ -78,7 +78,11 @@ export const updateMultipleMutation = mutationOptions({
 export const listFileRanges = (variables: ListFileRangesQueryVariables) => queryOptions({
     queryKey: queryKeys.fileRange.list(variables),
     queryFn: () => graphqlClient.request<ListFileRangesQuery>(ListFileRangesDocument, variables)
-        .then(data => cleanGqlList(data.allAnnotationFileRanges?.results)),
+        .then(data => cleanGqlList(data.allAnnotationFileRanges?.results).map(data => ({
+            ...data,
+            lastFileIndex: data.lastFileIndex + 1,
+            firstFileIndex: data.firstFileIndex + 1,
+        }))),
 })
 
 export const createMutation = mutationOptions({
@@ -89,12 +93,18 @@ export const createMutation = mutationOptions({
         input: Omit<CreateFileRangeMutationVariables['input'], 'annotator' | 'annotationPhase'>
     }) => graphqlClient.request<CreateFileRangeMutation>(CreateFileRangeDocument, {
         input: {
-            ...variables.input,
             annotator: variables.annotatorID,
             annotationPhase: variables.phaseID,
+            firstFileIndex: variables.input.firstFileIndex - 1,
+            lastFileIndex: variables.input.lastFileIndex - 1,
         },
     }),
-    onMutate: async ({ phaseID, input: { firstFileIndex, lastFileIndex }, annotatorID, annotatorDisplayName }, context) => {
+    onMutate: async ({
+                         phaseID,
+                         input: { firstFileIndex, lastFileIndex },
+                         annotatorID,
+                         annotatorDisplayName,
+                     }, context) => {
         const queryKey = queryKeys.fileRange.list({ phaseID })
         // Cancel any outgoing refetches
         // (so they don't overwrite our optimistic update)
@@ -106,12 +116,12 @@ export const createMutation = mutationOptions({
         // Optimistically update to the new value
         context.client.setQueryData(queryKey, (old: FileRangeFragment[]) => [ ...old, {
             id: '-1',
-            firstFileIndex,
-            lastFileIndex,
+            firstFileIndex: firstFileIndex - 1,
+            lastFileIndex: lastFileIndex - 1,
             filesCount: lastFileIndex - firstFileIndex,
             annotator: {
                 id: annotatorID,
-                displayName: annotatorDisplayName
+                displayName: annotatorDisplayName,
             },
         } satisfies FileRangeFragment ])
 
@@ -131,7 +141,13 @@ export const updateMutation = mutationOptions({
     mutationFn: (variables: UpdateFileRangeMutationVariables & {
         phaseID: string
         annotatorID: string
-    }) => graphqlClient.request<UpdateFileRangeMutation>(UpdateFileRangeDocument, variables),
+    }) => graphqlClient.request<UpdateFileRangeMutation>(UpdateFileRangeDocument, {
+        input: {
+            id: variables.input.id,
+            firstFileIndex: variables.input.firstFileIndex - 1,
+            lastFileIndex: variables.input.lastFileIndex - 1,
+        }
+    }),
     onMutate: async ({ phaseID, input: { id: fileRangeID, firstFileIndex, lastFileIndex } }, context) => {
         const queryKey = queryKeys.fileRange.list({ phaseID })
         // Cancel any outgoing refetches
@@ -144,8 +160,8 @@ export const updateMutation = mutationOptions({
         // Optimistically update to the new value
         context.client.setQueryData(queryKey, (old: FileRangeFragment[]) => old.map(fr => fr.id === fileRangeID ? {
             ...fr,
-            firstFileIndex,
-            lastFileIndex,
+            firstFileIndex: firstFileIndex - 1,
+            lastFileIndex: lastFileIndex - 1,
         } : fr))
 
         // Return a result with the snapshotted value

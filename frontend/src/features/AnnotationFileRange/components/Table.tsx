@@ -38,14 +38,14 @@ export const FileRangeTable: React.FC<FileRangeTableProps> = ({ campaign, phase,
             return prev
         }, new Map<string, AnnotatorData>()).entries() ?? [] ]
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            .sort(([_a, dataA], [_b, dataB]) => dataA.annotator.displayName.localeCompare(dataB.annotator.displayName))
+            .sort(([ _a, dataA ], [ _b, dataB ]) => dataA.annotator.displayName.localeCompare(dataB.annotator.displayName))
     }, [ data ])
 
     const filteredFileRanges: [ string, AnnotatorData ][] = useMemo(() => {
         if (!filterAnnotator) return groupedFileRanges
         const filtered = groupedFileRanges.filter(([ annotatorID ]) => annotatorID === filterAnnotator.id)
         if (filtered.length > 0) return filtered
-        return [[ filterAnnotator.id, { annotator: filterAnnotator, fileRanges: [] } satisfies AnnotatorData ]]
+        return [ [ filterAnnotator.id, { annotator: filterAnnotator, fileRanges: [] } satisfies AnnotatorData ] ]
     }, [ groupedFileRanges, filterAnnotator ]);
 
     if (isPending) return <Center><Spinner/></Center>
@@ -68,6 +68,9 @@ export const FileRangeTable: React.FC<FileRangeTableProps> = ({ campaign, phase,
                 <Th scope="col"></Th>
             </Tr>
         </Thead>
+        { filteredFileRanges && filteredFileRanges.length === 0 && <Tbody>
+            <Note color="medium">No annotators</Note>
+        </Tbody> }
         { filteredFileRanges?.map(([ id, data ]) =>
             <FileRangeRow campaign={ campaign }
                           phase={ phase }
@@ -140,10 +143,18 @@ const FileRangeRow: React.FC<FileRangeRowProps> = ({ campaign, phase, fileRanges
                 : <Fragment>
 
                     {/* First file */ }
-                    <Td center><Note data>{ row.firstFileIndex }</Note></Td>
+                    <Td center>
+                        <Note data data-testid="firstFileIndex">
+                            { row.firstFileIndex }
+                        </Note>
+                    </Td>
 
                     {/* Last file */ }
-                    <Td center><Note data>{ row.lastFileIndex }</Note></Td>
+                    <Td center>
+                        <Note data data-testid="lastFileIndex">
+                            { row.lastFileIndex }
+                        </Note>
+                    </Td>
 
                     {/* Progress */ }
                     <Td center>
@@ -262,10 +273,14 @@ const FileRangeAction: React.FC<FileRangeActionProps> = ({ fileRange, allFileRan
 
     return <Fragment>
         <Spinner hidden={ !isActionInProgress }/>
-        <Button color="primary" disabled={ isActionInProgress } onClick={ onEdit }>
+        <Button color="primary" disabled={ isActionInProgress }
+                onClick={ onEdit }
+                data-testid="edit">
             <PenNewSquareLinearIcon size={ 20 }/>
         </Button>
-        <Button color="danger" disabled={ isActionInProgress } onClick={ onRemove }>
+        <Button color="danger" disabled={ isActionInProgress }
+                onClick={ onRemove }
+                data-testid="remove">
             <TrashBinMinimalistic2LinearIcon size={ 20 }/>
         </Button>
 

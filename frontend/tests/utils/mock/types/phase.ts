@@ -3,7 +3,7 @@ import { type AnnotationPhaseNode } from '../../../../src/api/types.gql-generate
 export type Phase =
   Omit<AnnotationPhaseNode, 'annotationComments' | 'annotationFileRanges' | 'createdBy' | 'annotationTasks' |
     'annotations' | 'annotationCampaign' | 'endedBy' | 'annotationCampaignId' | 'phase' | 'isEditable' |
-      'isUserAllowedToManage' | 'tasksCount' | 'userTasksCount' | 'userCompletedTasksCount' | 'completedTasksCount'
+      'isUserAllowedToManage' | 'tasksCount' | 'userTasksCount' | 'userCompletedTasksCount' | 'completedTasksCount' | 'annotators'
   >
 
 export const phase: Phase = {
