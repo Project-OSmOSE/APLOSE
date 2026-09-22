@@ -40,16 +40,13 @@ const DialogSkeleton: React.FC<{ children: ReactNode }> = ({ children }) => (
 )
 
 export const Progress: React.FC = () => {
-    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
     const { data, isLoading: isLoadingUsers, error: userError } = useQuery(UserAPI.allQuery)
     const {
         data: allFileRanges,
         isFetching: isLoadingFileRanges,
         error: fileRangeError,
-    } = useQuery(FileRangeAPI.forPhaseQuery({
-        campaignID: campaign.id, phaseType: phase.phase,
-    }));
+    } = useQuery(FileRangeAPI.listFileRanges({ phaseID: phase.id }));
     const { downloadAnnotations, error: downloadAnnotationsError } = useDownloadAnnotations()
     const { downloadProgress, error: downloadProgressError } = useDownloadProgress()
     const toastManager = Toast.useToastManager()

@@ -10,70 +10,13 @@ import {
     type DeleteFileRangeMutation,
     type DeleteFileRangeMutationVariables,
     type FileRangeFragment,
-    FileRangesForPhaseDocument,
-    type FileRangesForPhaseQuery,
-    type FileRangesForPhaseQueryVariables,
-    GetFileRangesDocument,
-    type GetFileRangesQuery,
-    type GetFileRangesQueryVariables,
     ListFileRangesDocument,
     type ListFileRangesQuery,
     type ListFileRangesQueryVariables,
     UpdateFileRangeDocument,
     type UpdateFileRangeMutation,
     type UpdateFileRangeMutationVariables,
-    UpdateFileRangesDocument,
-    type UpdateFileRangesMutation,
-    type UpdateFileRangesMutationVariables,
 } from './annotation-file-range.generated'
-import { queryClient } from '@/api/queryClient';
-
-// TODO: remove
-export const forPhaseQuery = (variables: FileRangesForPhaseQueryVariables) => queryOptions({
-    queryKey: queryKeys.fileRange.forPhase(variables),
-    queryFn: () => graphqlClient.request<FileRangesForPhaseQuery>(FileRangesForPhaseDocument, variables)
-        .then(data => cleanGqlList(data.allAnnotationFileRanges?.results).map(f => ({
-            ...f,
-            firstFileIndex: f.firstFileIndex + 1,
-            lastFileIndex: f.lastFileIndex + 1,
-        }))),
-})
-
-// TODO: remove
-export const getFileRanges = (variables: GetFileRangesQueryVariables) => queryOptions({
-    queryKey: queryKeys.fileRange.get(variables),
-    queryFn: () => graphqlClient.request<GetFileRangesQuery>(GetFileRangesDocument, variables)
-        .then(data => cleanGqlList(data.allAnnotationFileRanges?.results).map(f => {
-            const total = f.lastFileIndex - f.firstFileIndex;
-            return {
-                ...f,
-                firstFileIndex: f.firstFileIndex + 1,
-                lastFileIndex: f.lastFileIndex + 1,
-                total,
-                completionPercentage: (f.completedAnnotationTasks?.totalCount ?? 0) / total * 100,
-            }
-        })),
-})
-
-// TODO: remove
-export const updateMultipleMutation = mutationOptions({
-    mutationFn: (variables: UpdateFileRangesMutationVariables) => graphqlClient.request<UpdateFileRangesMutation>(UpdateFileRangesDocument, {
-        ...variables,
-        fileRanges: variables.fileRanges.map(f => ({
-            id: (f.id && +f.id > -1) ? f.id : undefined,
-            annotatorId: f.annotatorId,
-            lastFileIndex: f.lastFileIndex - 1,
-            firstFileIndex: f.firstFileIndex - 1,
-        })),
-    }),
-    onSuccess: (_data, { campaignID, phaseType }) => {
-        queryClient.invalidateQueries({ queryKey: queryKeys.fileRange.forPhase({ campaignID, phaseType }) })
-        queryClient.invalidateQueries({ queryKey: queryKeys.campaign.byId({ id: campaignID }) })
-        queryClient.invalidateQueries({ queryKey: queryKeys.phase.get({ campaignID, phase: phaseType }) })
-        queryClient.invalidateQueries({ queryKey: queryKeys.campaign.base })
-        queryClient.invalidateQueries({ queryKey: queryKeys.spectrogram.baseForPhase({ campaignID, phaseType }) })
-    },
-})
 
 export const listFileRanges = (variables: ListFileRangesQueryVariables) => queryOptions({
     queryKey: queryKeys.fileRange.list(variables),
@@ -146,7 +89,7 @@ export const updateMutation = mutationOptions({
             id: variables.input.id,
             firstFileIndex: variables.input.firstFileIndex - 1,
             lastFileIndex: variables.input.lastFileIndex - 1,
-        }
+        },
     }),
     onMutate: async ({ phaseID, input: { id: fileRangeID, firstFileIndex, lastFileIndex } }, context) => {
         const queryKey = queryKeys.fileRange.list({ phaseID })
