@@ -22,6 +22,7 @@ from .nodes import (
 from .queries import (
     AnnotationPhaseByCampaignPhase,
     AnnotationLabelsForDeploymentIdField,
+    AnnotationPhaseByID,
 )
 from .mutations import (
     CreateAnnotationCampaignMutation,
@@ -100,6 +101,7 @@ class APIQuery(graphene.ObjectType):
     )
     all_annotation_phases = AuthenticatedPaginationConnectionField(AnnotationPhaseNode)
     annotation_phase_by_campaign_phase = AnnotationPhaseByCampaignPhase
+    annotation_phase_by_id = AnnotationPhaseByID
 
     # Annotation related items
     all_annotation_file_ranges = AuthenticatedPaginationConnectionField(

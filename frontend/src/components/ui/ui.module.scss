@@ -214,6 +214,7 @@
     border-spacing: 0;
     border-radius: 0.5rem;
     border: 1px solid map.get(base.$colors, medium, line);
+    border-top: none;
 
     th, td {
       padding: 0.25rem 0.5rem;
@@ -227,10 +228,10 @@
 
       th {
         font-weight: 400;
-        //color: var(--color-dark-tint);
-        //background: color.change(map.get(base.$color_bases, medium), $lightness: 98%);
         color: map.get(base.$colors, medium, text);
         background: map.get(base.$colors, light, text-background);
+        border-top: 1px solid map.get(base.$colors, medium, line);
+        border-bottom: 1px solid map.get(base.$colors, medium, line);
 
         &.sortable > div {
           display: grid;
@@ -300,6 +301,17 @@
         transition: background 50ms ease-in-out;
         background: color.change(map.get(base.$color_bases, dark), $lightness: 100%);
         border-top: 1px solid map.get(base.$colors, medium, line);
+        opacity: 0.8;
+      }
+
+      &:first-of-type {
+        th, td {
+          border-top: none; // Avoid duplication with thead
+        }
+      }
+
+      tr:not(:has(th)) td {
+        border-top: 1px solid color.change(map.get(base.$colors, medium, line), $alpha: 0.5);
       }
 
       th {
@@ -313,27 +325,33 @@
 
       tr {
         color: var(--color-dark);
-        opacity: 0.8;
         transition: opacity 50ms ease-in-out;
 
         td.center {
           text-align: center;
         }
+      }
 
-        &:hover {
+      $hover-bg: color.change(map.get(base.$colors, light, text-background), $alpha: 50%);
+
+      /* Hovering on a <td> with rowspan should highlight the entire tbody */
+      &:has(td[rowspan]:hover),
+      &:has(th[rowspan]:hover),
+        /* Hovering on a <td> without rowspan, means its a sub-row. Thus, just that row should be highlighted.*/
+      tr:has(td:not([rowspan]):hover),
+      tr:has(th:not([rowspan]):hover) {
+        th, td {
           opacity: 1;
+          background-color: #{$hover-bg};
+        }
+      }
 
-          th, td {
-            background: color.change(map.get(base.$color_bases, dark), $lightness: 98%);
-
-            &:first-child {
-              border-radius: 0.5rem 0 0 0.5rem;
-            }
-
-            &:last-child {
-              border-radius: 0 0.5rem 0.5rem 0;
-            }
-          }
+      /* Finally, the rowspan columns should be highlighted if the non-rowspan columns are hovered*/
+      &:has(td:not([rowspan]):hover),
+      &:has(th:not([rowspan]):hover) {
+        td[rowspan], th[rowspan] {
+          opacity: 1;
+          background-color: #{$hover-bg};
         }
       }
     }

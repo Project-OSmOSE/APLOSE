@@ -29,7 +29,7 @@ const ToastList: React.FC = () => {
                 <Toast.Description render={ <div/> } className={ styles.Description }/>
                 {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */ }
                 <Toast.Action className={ styles.Action } render={ ({ ref, color, ...props }) => <>
-                    <Button color={ toast.type } { ...props }/>
+                    <Button color={ color || toast.type } { ...props }/>
                 </> }/>
                 <Toast.Close className={ styles.Close }>
                     <CloseSquareBoldIcon size={ 20 }/>

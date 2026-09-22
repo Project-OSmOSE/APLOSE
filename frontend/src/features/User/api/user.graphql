@@ -17,6 +17,7 @@ query getCurrentUser {
 # List users
 
 fragment User on UserNode {
+    __typename
     id
     displayName
     username
@@ -24,6 +25,7 @@ fragment User on UserNode {
 }
 
 fragment UserGroup on UserGroupNode {
+    __typename
     id
     name
     users {

@@ -36,6 +36,18 @@
   }
 }
 
+.ProgressNote {
+  display: grid;
+  grid-template-columns: auto 20px; // 20px = icon size
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+
+  .Icon {
+    color: map.get(base.$color_bases, success);
+  }
+}
+
 .Label {
   grid-area: label;
   font-size: 0.9rem;

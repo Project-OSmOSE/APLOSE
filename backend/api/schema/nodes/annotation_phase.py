@@ -6,6 +6,8 @@ from django_extension.schema.types import ExtendedNode
 from backend.api.models import AnnotationPhase, AnnotationTask
 from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationPhaseFilterSet
+from backend.aplose.models import User
+from backend.aplose.schema import UserNode
 
 
 class AnnotationPhaseNode(ExtendedNode):
@@ -82,3 +84,14 @@ class AnnotationPhaseNode(ExtendedNode):
         return self.annotation_tasks.filter(
             annotator=info.context.user.id, status=AnnotationTask.Status.FINISHED
         ).count()
+
+    annotators = graphene.List(graphene.NonNull(UserNode), required=True)
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_annotators(self: AnnotationPhase, info):
+        return UserNode.resolve_queryset(
+            User.objects.filter(
+                annotation_file_ranges__annotation_phase=self
+            ).distinct(),
+            info,
+        )

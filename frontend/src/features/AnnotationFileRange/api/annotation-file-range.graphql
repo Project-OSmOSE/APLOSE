@@ -1,3 +1,19 @@
+fragment FileRange on AnnotationFileRangeNode {
+    id
+    firstFileIndex
+    lastFileIndex
+    filesCount
+
+    annotator {
+        id
+        displayName
+    }
+
+    completedAnnotationTasks: annotationTasks(status: Finished) {
+        totalCount
+    }
+}
+
 query fileRangesForPhase(
     $campaignID: ID!
     $phaseType: AnnotationPhaseType!
@@ -6,21 +22,7 @@ query fileRangesForPhase(
         annotationPhase_AnnotationCampaign: $campaignID
         annotationPhase_Phase: $phaseType
     ) {
-        results {
-            id
-            firstFileIndex
-            lastFileIndex
-            filesCount
-
-            annotator {
-                id
-                displayName
-            }
-
-            completedAnnotationTasks: annotationTasks(status: Finished) {
-                totalCount
-            }
-        }
+        results { ...FileRange }
     }
 }
 
@@ -39,6 +41,53 @@ mutation updateFileRanges(
         errors {
             messages
             field
+        }
+    }
+}
+
+query getFileRanges($phase: ID!, $annotator: ID!) {
+    allAnnotationFileRanges(
+        annotationPhase: $phase,
+        annotator: $annotator,
+        orderBy: "firstFileIndex"
+    ) {
+        results { ...FileRange }
+    }
+}
+
+
+
+query listFileRanges($phaseID: ID) {
+    allAnnotationFileRanges(annotationPhase: $phaseID) {
+        results { ...FileRange }
+    }
+}
+
+mutation createFileRange($input: AnnotationFileRangeCreateMutationInput!) {
+    createFileRange(input: $input) {
+        annotationFileRange { ...FileRange }
+        errors {
+            messages
+            field
+        }
+    }
+}
+
+mutation updateFileRange($input: AnnotationFileRangeUpdateMutationInput!) {
+    updateFileRange(input: $input) {
+        annotationFileRange { ...FileRange }
+        errors {
+            field
+            messages
+        }
+    }
+}
+
+mutation deleteFileRange($id: ID!, $force: Boolean) {
+    deleteFileRange(id: $id, force: $force) {
+        error {
+            field
+            messages
         }
     }
 }

@@ -117,7 +117,7 @@ export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPendin
                            {/* Manage annotators */ }
                            <Popover.Root>
                                <Popover.TriggerLink data-testid="manage"
-                                                    to="/annotation-campaign/$campaignID/phase/$phaseType/edit-annotators"
+                                                    to="/annotation-campaign/$campaignID/phase/$phaseType/annotators"
                                                     params={ routeParams }>
                                    <UsersGroupRoundedLinearIcon size={ 24 }/>
                                </Popover.TriggerLink>

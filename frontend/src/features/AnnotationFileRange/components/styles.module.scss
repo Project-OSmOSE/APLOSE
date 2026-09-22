@@ -1,0 +1,88 @@
+@use "@/css/base";
+@use 'sass:map';
+
+.assignedProgress {
+  display: grid;
+  gap: 0 0.5rem;
+  align-items: center;
+  justify-content: center;
+
+  > *:first-child {
+    text-align: end;
+  }
+
+  > *:last-child {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+
+  .success {
+    color: map.get(base.$color_bases, success);
+  }
+}
+
+.DistributionContainer {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.2rem 0.5rem;
+
+  .Label {
+    grid-column: 1 / -1;
+  }
+
+  .Distribution {
+    height: 0.5rem;
+    border-radius: 0.2rem;
+    background-color: map.get(base.$colors, light, text-background);
+    overflow: hidden;
+    position: relative;
+
+    .Range {
+      border-radius: 0.2rem;
+      height: 100%;
+      padding: 0;
+      position: absolute;
+
+      @each $color, $hex in base.$color_bases {
+        &[color=#{$color}] {
+          background: $hex;
+        }
+      }
+
+      @each $color, $map in base.$colors {
+        &[color=#{$color}]:hover {
+          background: map.get($map, tint);
+        }
+      }
+    }
+  }
+}
+
+.RangeInput {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.Table {
+  colgroup {
+    col:nth-child(2) {
+      width: 16rem;
+    }
+
+    col:nth-child(3),
+    col:nth-child(4) {
+      width: 8rem;
+    }
+
+    col:nth-child(5) {
+      width: 12rem;
+    }
+
+    col:nth-child(6) {
+      width: 14rem;
+    }
+  }
+}

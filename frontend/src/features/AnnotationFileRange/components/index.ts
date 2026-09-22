@@ -1,0 +1,1 @@
+export { FileRangeTable as Table } from './Table'

@@ -1,3 +1,5 @@
 export * from './Page'
+export * from './Content'
+export * from './Display'
 export * from './Footer'
 export * from './Navigation'

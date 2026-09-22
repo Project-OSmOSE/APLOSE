@@ -115,7 +115,9 @@ class AnnotationFileRange(models.Model):
         self.files_count = self.last_file_index - self.first_file_index + 1
 
         files = self.annotation_phase.annotation_campaign.spectrograms
-        initial_tasks = self.tasks
+        initial_tasks = AnnotationTask.objects.none()
+        if self.from_datetime and self.to_datetime:
+            initial_tasks = self.tasks
 
         from_datetime = files[self.first_file_index].start
         to_datetime = files[self.last_file_index].end

@@ -93,7 +93,7 @@ const EditAnnotators: React.FC = () => {
         isPending: isSubmitting,
         error: errorSubmitting,
         status: submissionStatus,
-    } = useMutation(FileRangeAPI.updateMutation)
+    } = useMutation(FileRangeAPI.updateMultipleMutation)
     const [ force, setForce ] = useState<boolean>()
 
     // File ranges

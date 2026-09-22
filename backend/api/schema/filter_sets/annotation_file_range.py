@@ -1,4 +1,5 @@
 from django_extension.filters import ExtendedFilterSet
+from django_filters import OrderingFilter
 from graphene_django.filter import TypedFilter
 
 from backend.api.models import AnnotationFileRange
@@ -19,5 +20,8 @@ class AnnotationFileRangeFilterSet(ExtendedFilterSet):
         model = AnnotationFileRange
         fields = {
             "annotator": ("exact",),
+            "annotation_phase": ("exact",),
             "annotation_phase__annotation_campaign": ("exact",),
         }
+
+    order_by = OrderingFilter(fields=(("first_file_index", "first_file_index"),))

@@ -40,7 +40,11 @@ class AnnotationFileRangeUpdateForm(forms.ModelForm):
         )
 
     def _clean_fields(self):
-        self._set_index_validators(self.instance.phase)
+        if self.instance.annotation_phase_id:
+            phase = self.instance.annotation_phase
+        else:
+            phase = AnnotationPhase.objects.get(pk=self.data["annotation_phase"])
+        self._set_index_validators(phase)
         return super()._clean_fields()
 
 
@@ -82,14 +86,6 @@ class AnnotationFileRangeUpdateMutation(DjangoModelFormMutation):
         form_class = AnnotationFileRangeUpdateForm
 
     @classmethod
-    def Field(cls, *args, **kwargs):
-        # Build the field normally (id + form-derived arguments)
-        field = super().Field(*args, **kwargs)
-        # Inject the extra argument directly into the resulting Field's args
-        field.args["force"] = graphene.Argument(graphene.Boolean, default_value=False)
-        return field
-
-    @classmethod
     def get_form_kwargs(cls, root, info, **input):
         kwargs = super().get_form_kwargs(root, info, **input)
         pk = input.get("id")
@@ -106,26 +102,24 @@ class AnnotationFileRangeUpdateMutation(DjangoModelFormMutation):
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     def mutate_and_get_payload(cls, root, info, **input):
         form_kwargs = cls.get_form_kwargs(root, info, **input)
-        force = input.pop("force", None)
         form = cls._meta.form_class(**form_kwargs)
 
-        is_valid = form.is_valid()
+        form.is_valid()
 
-        if is_valid or force:
-            # Build the instance without persisting yet, so we control save()
-            instance = form.save(commit=False)
+        if form.errors:
+            return cls(errors=ErrorType.from_errors(form.errors))
+        # Build the instance without persisting yet, so we control save()
+        instance = form.save(commit=False)
 
-            # Pass force through to your custom save() method
-            instance.save(force=force)
+        # Pass force through to your custom save() method
+        instance.save(force=True)
 
-            # If the form has many-to-many fields, save them too
-            if hasattr(form, "save_m2m"):
-                form.save_m2m()
+        # If the form has many-to-many fields, save them too
+        if hasattr(form, "save_m2m"):
+            form.save_m2m()
 
-            # noinspection PyArgumentList
-            return cls(errors=[], **{cls._meta.return_field_name: instance})
         # noinspection PyArgumentList
-        return cls(errors=ErrorType.from_errors(form.errors))
+        return cls(errors=[], **{cls._meta.return_field_name: instance})
 
 
 class AnnotationFileRangeDeleteMutation(graphene.Mutation):
