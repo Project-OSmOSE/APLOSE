@@ -27,7 +27,6 @@ from .queries import (
 from .mutations import (
     CreateAnnotationCampaignMutation,
     UpdateAnnotationCampaignMutation,
-    UpdateAnnotationPhaseFileRangesMutation,
     EndAnnotationPhaseMutation,
     CreateAnnotationPhase,
     ArchiveAnnotationCampaignMutation,
@@ -50,9 +49,6 @@ class APIMutation(graphene.ObjectType):
 
     # Annotation phase
     create_annotation_phase = CreateAnnotationPhase.Field()
-    update_annotation_phase_file_ranges = (
-        UpdateAnnotationPhaseFileRangesMutation.Field()
-    )
     end_annotation_phase = EndAnnotationPhaseMutation.Field()
 
     # File ranges
