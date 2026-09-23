@@ -1,6 +1,9 @@
 @use 'sass:color';
 @use 'sass:map';
 
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
 $backdrop-background-image: linear-gradient(to bottom, rgba(var(--color-dark-rgb), 15%) 0, rgba(var(--color-dark-rgb), 20%) 50%);
 
 $fonts: (
@@ -66,6 +69,7 @@ $colors: (
         text-background: color.change(map.get($color_bases, 'medium'), $lightness: 95%),
         background: map.get($color_bases, 'medium'),
         background-contrast: map.get($color_bases, 'light'),
+        line: color.change(map.get($color_bases, 'medium'), $lightness: 90%),
     ),
     dark: (
         tint: color.adjust(map.get($color_bases, 'dark'), $lightness: +5%),

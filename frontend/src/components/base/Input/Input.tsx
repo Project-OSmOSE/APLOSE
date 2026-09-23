@@ -1,7 +1,7 @@
 import React, { Fragment, type HTMLInputTypeAttribute, type HTMLProps, useCallback, useMemo, useState } from 'react';
 import { Input as BaseInput, type InputProps as BaseInputProps } from '@base-ui/react'
+import { EyeClosedLinearIcon, EyeLinearIcon } from '@solar-icons/react';
 import styles from './Input.module.scss'
-import { Eye, EyeClosed } from '@solar-icons/react';
 
 export type InputProps = Omit<BaseInputProps, 'type' | 'render'> & {
     startIcon?: any
@@ -27,9 +27,8 @@ export const Input: React.FC<InputProps> = ({ className, type, startIcon: _start
     const endIcon = useMemo(() => {
         if (type !== 'password') return <Fragment/>;
         return React.createElement(
-            pwdType === 'password' ? Eye : EyeClosed,
+            pwdType === 'password' ? EyeLinearIcon : EyeClosedLinearIcon,
             {
-                weight: 'Linear',
                 className: [ styles.Icon, styles.end ].join(' '),
                 onClick: togglePwdType,
             },

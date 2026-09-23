@@ -1,44 +1,51 @@
-query fileRangesForPhase(
-    $campaignID: ID!
-    $phaseType: AnnotationPhaseType!
-) {
-    allAnnotationFileRanges(
-        annotationPhase_AnnotationCampaign: $campaignID
-        annotationPhase_Phase: $phaseType
-    ) {
-        results {
-            id
-            firstFileIndex
-            lastFileIndex
-            filesCount
+fragment FileRange on AnnotationFileRangeNode {
+    id
+    firstFileIndex
+    lastFileIndex
+    filesCount
 
-            annotator {
-                id
-                displayName
-            }
+    annotator {
+        id
+        displayName
+    }
 
-            completedAnnotationTasks: annotationTasks(status: Finished) {
-                totalCount
-            }
+    completedAnnotationTasks: annotationTasks(status: Finished) {
+        totalCount
+    }
+}
+
+
+query listFileRanges($phaseID: ID) {
+    allAnnotationFileRanges(annotationPhase: $phaseID) {
+        results { ...FileRange }
+    }
+}
+
+mutation createFileRange($input: AnnotationFileRangeCreateMutationInput!) {
+    createFileRange(input: $input) {
+        annotationFileRange { ...FileRange }
+        errors {
+            messages
+            field
         }
     }
 }
 
-mutation updateFileRanges(
-    $campaignID: ID!
-    $phaseType: AnnotationPhaseType!
-    $fileRanges: [AnnotationFileRangeInput!]!
-    $force: Boolean
-) {
-    updateAnnotationPhaseFileRanges(
-        campaignId: $campaignID
-        phaseType: $phaseType
-        fileRanges: $fileRanges
-        force: $force
-    ) {
+mutation updateFileRange($input: AnnotationFileRangeUpdateMutationInput!) {
+    updateFileRange(input: $input) {
+        annotationFileRange { ...FileRange }
         errors {
-            messages
             field
+            messages
+        }
+    }
+}
+
+mutation deleteFileRange($id: ID!) {
+    deleteFileRange(id: $id) {
+        error {
+            field
+            messages
         }
     }
 }

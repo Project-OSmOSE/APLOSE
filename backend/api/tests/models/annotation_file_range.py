@@ -20,27 +20,55 @@ class AnnotationFileRangeTestCase(TestCase):
         self.assertEqual(file_range.files_count, files_count - 1)
         self.assertEqual(AnnotationTask.objects.count(), 12)
 
-    def test_delete_also_delete_tasks(self):
-        self.assertEqual(AnnotationFileRange.objects.count(), 6)
-        self.assertEqual(AnnotationTask.objects.count(), 13)
-        AnnotationFileRange.objects.get(pk=1).delete()
-        self.assertEqual(AnnotationFileRange.objects.count(), 5)
-        self.assertEqual(AnnotationTask.objects.count(), 7)
-
-    def test_delete_also_delete_tasks_except_overlapping(self):
+    def test_update_fails_if_task_is_finished(self):
         file_range = AnnotationFileRange.objects.get(pk=1)
         self.assertEqual(AnnotationTask.objects.count(), 13)
         self.assertEqual(AnnotationFileRange.objects.count(), 6)
 
-        AnnotationFileRange.objects.create(
-            first_file_index=file_range.first_file_index,
-            last_file_index=file_range.last_file_index,
-            from_datetime=file_range.from_datetime,
-            to_datetime=file_range.to_datetime,
-            annotation_phase_id=file_range.annotation_phase_id,
-            annotator_id=file_range.annotator_id,
-        )
-        self.assertEqual(AnnotationFileRange.objects.count(), 7)
-        file_range.delete()
+        files_count = file_range.files_count
+        file_range.first_file_index = 1
+        self.assertRaises(AnnotationTask.CannotDeleteFinished, file_range.save)
+
+        self.assertEqual(AnnotationFileRange.objects.count(), 6)
+        self.assertEqual(file_range.files_count, files_count)
+        self.assertEqual(AnnotationTask.objects.count(), 13)
+
+    def test_update_forced_doesnt_fails_if_task_is_finished(self):
+        file_range = AnnotationFileRange.objects.get(pk=1)
+        self.assertEqual(AnnotationTask.objects.count(), 13)
+        self.assertEqual(AnnotationFileRange.objects.count(), 6)
+
+        files_count = file_range.files_count
+        file_range.first_file_index = 1
+        file_range.save(force=True)
+
+        self.assertEqual(AnnotationFileRange.objects.count(), 6)
+        self.assertEqual(file_range.files_count, files_count - 1)
+        self.assertEqual(AnnotationTask.objects.count(), 12)
+
+    def test_delete_also_delete_tasks(self):
         self.assertEqual(AnnotationFileRange.objects.count(), 6)
         self.assertEqual(AnnotationTask.objects.count(), 13)
+        AnnotationFileRange.objects.get(pk=3).delete()
+        self.assertEqual(AnnotationFileRange.objects.count(), 5)
+        self.assertEqual(AnnotationTask.objects.count(), 9)
+
+    def test_delete_fails_if_task_is_finished(self):
+        file_range = AnnotationFileRange.objects.get(pk=1)
+        self.assertEqual(AnnotationTask.objects.count(), 13)
+        self.assertEqual(AnnotationFileRange.objects.count(), 6)
+
+        self.assertRaises(AnnotationTask.CannotDeleteFinished, file_range.delete)
+
+        self.assertEqual(AnnotationFileRange.objects.count(), 6)
+        self.assertEqual(AnnotationTask.objects.count(), 13)
+
+    def test_delete_forced_doesnt_fails_if_task_is_finished(self):
+        file_range = AnnotationFileRange.objects.get(pk=1)
+        self.assertEqual(AnnotationTask.objects.count(), 13)
+        self.assertEqual(AnnotationFileRange.objects.count(), 6)
+
+        file_range.delete(force=True)
+
+        self.assertEqual(AnnotationFileRange.objects.count(), 5)
+        self.assertEqual(AnnotationTask.objects.count(), 7)

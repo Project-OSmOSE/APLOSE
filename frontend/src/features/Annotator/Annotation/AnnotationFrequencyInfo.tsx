@@ -1,9 +1,9 @@
 import React, { Fragment, useMemo } from 'react';
+import { AltArrowRightLinearIcon, CourseUpLinearIcon } from '@solar-icons/react';
 import type { Annotation } from './slice';
 import styles from './styles.module.scss';
 import { AnnotationType } from '@/api';
 import { NBSP } from '@/service/type';
-import { AltArrowRight, CourseUp } from '@solar-icons/react';
 
 export const AnnotationFrequencyInfo: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
 
@@ -21,19 +21,19 @@ export const AnnotationFrequencyInfo: React.FC<{ annotation: Annotation }> = ({ 
 
     if (annotation.type === AnnotationType.Weak) return <Fragment/>
     return <div className={ styles.info }>
-        <CourseUp weight="Linear" size={ 20 } className={ styles.mainIcon }/>
+        <CourseUpLinearIcon size={ 20 } className={ styles.mainIcon }/>
 
         <span className={ isCorrected ? 'disabled' : undefined }>
       { annotation.startFrequency!.toFixed(2) }Hz
             { annotation.type === AnnotationType.Box && <Fragment>
-                { NBSP }<AltArrowRight weight="Linear" size={ 16 }/> { annotation.endFrequency!.toFixed(2) }Hz
+                { NBSP }<AltArrowRightLinearIcon size={ 16 }/> { annotation.endFrequency!.toFixed(2) }Hz
             </Fragment> }
     </span>
 
         { isCorrected && <span>
       { (correctedStartFrequency ?? annotation.startFrequency!).toFixed(2) }Hz
             { annotation.type === AnnotationType.Box && <Fragment>
-                { NBSP }<AltArrowRight weight="Linear"
+                { NBSP }<AltArrowRightLinearIcon
                                        size={ 16 }/> { (correctedEndFrequency ?? annotation.endFrequency!).toFixed(2) }Hz
             </Fragment> }
     </span> }

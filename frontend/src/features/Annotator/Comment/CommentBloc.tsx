@@ -7,7 +7,7 @@ import { selectFocusedComment } from './selectors';
 import { blur, selectAnnotation } from '@/features/Annotator/Annotation';
 import { useLoaderData } from '@tanstack/react-router';
 import { Button, Input } from '@/components/base';
-import { SortHorizontal, TrashBinTrash } from '@solar-icons/react';
+import { SortHorizontalLinearIcon, TrashBinTrashLinearIcon } from '@solar-icons/react';
 
 export const CommentBloc: React.FC = () => {
     const focusedAnnotation = useAppSelector(selectAnnotation)
@@ -43,14 +43,14 @@ export const CommentBloc: React.FC = () => {
                     disabled={ !focusedComment }
                     onClick={ () => focusedComment && remove(focusedComment) }>
                 Remove
-                <TrashBinTrash weight="Linear" size={ 20 }/>
+                <TrashBinTrashLinearIcon size={ 20 }/>
             </Button>
 
             <Button color="medium"
                     className={ styles.taskCommentButton }
                     disabled={ !focusedAnnotation }
                     onClick={ onSelectTask }>
-                <SortHorizontal weight="Linear" size={ 20 }/>
+                <SortHorizontalLinearIcon size={ 20 }/>
                 Task comment
             </Button>
         </Bloc.Content>

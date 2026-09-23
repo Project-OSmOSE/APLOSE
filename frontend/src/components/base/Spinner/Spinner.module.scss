@@ -23,6 +23,11 @@
     //background: hsl(var(--color-primary-h), var(--color-primary-s), 95%);
     background: white;
   }
+
+  &[hidden] {
+    opacity: 0;
+    animation: none;
+  }
 }
 
 @keyframes rotation {

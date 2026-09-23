@@ -1,12 +1,17 @@
 import { type GqlQuery } from './_types';
-import type { FileRangesForPhaseQuery, UpdateFileRangesMutation } from '../../../src/features/AnnotationFileRange/';
+import type {
+  CreateFileRangeMutation,
+  DeleteFileRangeMutation,
+  ListFileRangesQuery,
+  UpdateFileRangeMutation,
+} from '../../../src/features/AnnotationFileRange/';
 import { fileRange, USERS } from './types';
 
 
 export const FILE_RANGE_QUERIES: {
-  fileRangesForPhase: GqlQuery<FileRangesForPhaseQuery>,
+  listFileRanges: GqlQuery<ListFileRangesQuery>,
 } = {
-  fileRangesForPhase: {
+  listFileRanges: {
     defaultType: 'filled',
     empty: {
       allAnnotationFileRanges: null,
@@ -32,9 +37,19 @@ export const FILE_RANGE_QUERIES: {
 }
 
 export const FILE_RANGE_MUTATIONS: {
-  updateFileRanges: GqlQuery<UpdateFileRangesMutation, never>,
+  createFileRange: GqlQuery<CreateFileRangeMutation, never>,
+  updateFileRange: GqlQuery<UpdateFileRangeMutation, never>,
+  deleteFileRange: GqlQuery<DeleteFileRangeMutation, never>,
 } = {
-  updateFileRanges: {
+  createFileRange: {
+    defaultType: 'empty',
+    empty: {},
+  },
+  updateFileRange: {
+    defaultType: 'empty',
+    empty: {},
+  },
+  deleteFileRange: {
     defaultType: 'empty',
     empty: {},
   },

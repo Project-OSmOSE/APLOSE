@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from '@tanstack/react-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { AddCircle, CloseCircle } from '@solar-icons/react';
+import { AddCircleLineDuotoneIcon, CloseCircleLineDuotoneIcon } from '@solar-icons/react';
 
 import { AnnotationPhaseType } from '@/api';
 import { queryClient } from '@/api/queryClient';
@@ -72,7 +72,7 @@ export const Tab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: p
         if (phase.completedTasksCount < phase.tasksCount) {
             return <Dialog.Root actionsRef={ dialogRootRef }>
                 <Dialog.Trigger>
-                    <CloseCircle weight="LineDuotone" size={ 20 }/>
+                    <CloseCircleLineDuotoneIcon size={ 20 }/>
                 </Dialog.Trigger>
                 <Dialog.Portal>
                     <Dialog.Content alert>
@@ -89,7 +89,7 @@ export const Tab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: p
             </Dialog.Root>
         }
 
-        return <CloseCircle weight="LineDuotone" size={ 20 } onClick={ end }/>
+        return <CloseCircleLineDuotoneIcon size={ 20 } onClick={ end }/>
     }, [ data, phase, currentPhaseType, end ])
 
     // Phase exists
@@ -114,7 +114,7 @@ export const Tab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: p
                 <Dialog.Root actionsRef={ dialogRootRef }>
                     <Dialog.Trigger disabled={ isFetching }>
                         Annotation
-                        <AddCircle weight="LineDuotone" size={ 20 }/>
+                        <AddCircleLineDuotoneIcon size={ 20 }/>
                     </Dialog.Trigger>
                     <Dialog.Portal>
                         <CreateAnnotationModal closeOnCreate={ onAnnotationPhaseCreated }/>
@@ -126,7 +126,7 @@ export const Tab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: p
                 <Dialog.Root actionsRef={ dialogRootRef }>
                     <Dialog.Trigger disabled={ isFetching }>
                         Verification
-                        <AddCircle weight="LineDuotone" size={ 20 }/>
+                        <AddCircleLineDuotoneIcon size={ 20 }/>
                     </Dialog.Trigger>
                     <Dialog.Portal>
                         <CreateVerificationModal closeOnCreate={ onVerificationPhaseCreated }/>

@@ -1,4 +1,11 @@
 import React, { Fragment, useCallback } from 'react';
+import {
+    ChatSquareLinearIcon,
+    ChatSquareLineBoldIcon,
+    PlayLinearIcon,
+    SortHorizontalLinearIcon,
+    TrashBinTrashLinearIcon,
+} from '@solar-icons/react';
 import { Kbd } from '@/components/ui';
 import { useAudio } from '@/features/Audio';
 import { LabelDialog } from '@/features/Labels';
@@ -9,7 +16,6 @@ import { selectFocusLabel } from '@/features/Annotator/Label';
 import { Dialog, Popover } from '@/components/base';
 import { useLoaderData } from '@tanstack/react-router';
 import type { AnnotationLabelFragment } from '@/features/Labels/api';
-import { ChatLine, ChatSquare, Play, SortHorizontal, TrashBinTrash } from '@solar-icons/react';
 
 export const AnnotationHeadContent: React.FC<{
     annotation: Annotation,
@@ -37,15 +43,15 @@ export const AnnotationHeadContent: React.FC<{
         {/* Play annotation button */ }
         <Popover.Root>
             <Popover.Trigger annotationColorIndex={ index } onClick={ play }>
-                <Play weight="Linear" size={ 20 }/>
+                <PlayLinearIcon size={ 20 }/>
             </Popover.Trigger>
             <Popover.Content>Play the audio of the annotation</Popover.Content>
         </Popover.Root>
 
         {/* Comment info */ }
         { (annotation.comments && annotation.comments.length > 0) ?
-            <ChatLine weight="Bold" size={ 20 }/> :
-            <ChatSquare weight="Linear" size={ 20 }/> }
+            <ChatSquareLineBoldIcon size={ 20 }/> :
+            <ChatSquareLinearIcon size={ 20 }/> }
 
         {/* Label */ }
         <p>{ annotation.update?.label ?? annotation.label }</p>
@@ -55,7 +61,7 @@ export const AnnotationHeadContent: React.FC<{
             <Dialog.Trigger render={ <div/> } nativeButton={ false }>
                 <Popover.Root>
                     <Popover.Trigger annotationColorIndex={ index } data-testid="update-box">
-                        <SortHorizontal weight="Linear" size={ 20 }/>
+                        <SortHorizontalLinearIcon size={ 20 }/>
                     </Popover.Trigger>
                     <Popover.Content>Update the label</Popover.Content>
                 </Popover.Root>
@@ -73,7 +79,7 @@ export const AnnotationHeadContent: React.FC<{
                              data-testid="remove-box"
                              onMouseDown={ e => e.stopPropagation() }
                              onClick={ remove }>
-                <TrashBinTrash weight="Linear" size={ 20 }/>
+                <TrashBinTrashLinearIcon size={ 20 }/>
             </Popover.Trigger>
             <Popover.Content><Kbd keys="delete"/> Remove the annotation</Popover.Content>
         </Popover.Root>

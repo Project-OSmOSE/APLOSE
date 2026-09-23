@@ -1,5 +1,5 @@
 import React, { DragEvent, useCallback, useImperativeHandle, useMemo, useState } from 'react';
-import { Restart } from '@solar-icons/react';
+import { RestartLinearIcon } from '@solar-icons/react';
 import { Button, Spinner, Toast } from '@/components/base';
 import styles from './InputFile.module.scss';
 import { type FileType, MIME_TYPES } from '@/consts/csv';
@@ -108,7 +108,7 @@ export const InputFile = React.forwardRef<InputFileRef, InputFileProps>(({
             <p>{ file.name }</p>
             <Button onClick={ reset } className="ion-text-wrap">
                 Reset
-                <Restart weight="Linear" size={ 20 }/>
+                <RestartLinearIcon size={ 20 }/>
             </Button>
         </div>
     return <div className={ dragNDropClassName }

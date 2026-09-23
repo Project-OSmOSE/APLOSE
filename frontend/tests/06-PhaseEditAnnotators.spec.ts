@@ -1,8 +1,12 @@
 import { essentialTag, expect, test } from './utils';
 import { gqlURL, interceptRequests } from './utils/mock';
-import { campaign, dataset, fileRange, userGroup, USERS, type UserType } from './utils/mock/types';
+import { fileRange, phase, USERS, type UserType } from './utils/mock/types';
 import { AnnotationPhaseType } from '../src/api/types.gql-generated';
-import type { UpdateFileRangesMutationVariables } from '../src/features/AnnotationFileRange';
+import type {
+    CreateFileRangeMutationVariables,
+    DeleteFileRangeMutationVariables,
+    UpdateFileRangeMutationVariables,
+} from '../src/features/AnnotationFileRange';
 import type { Params } from './utils/types';
 
 // Utils
@@ -15,7 +19,7 @@ const TEST = {
                 getCurrentUser: as,
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
                 allSpectrogramAnalysis: 'empty',
-                fileRangesForPhase: 'empty',
+                listFileRanges: 'empty',
                 allAnnotationSpectrograms: 'empty',
                 allUsers: 'empty',
             })
@@ -35,8 +39,8 @@ const TEST = {
 
             await test.step('Display existing ranges', async () => {
                 await expect(page.phaseEdit.getRow(USERS.annotator)).toBeVisible()
-                await expect(page.phaseEdit.getfirstIndexInput(USERS.annotator)).toHaveValue((fileRange.firstFileIndex + 1).toString())
-                await expect(page.phaseEdit.getlastIndexInput(USERS.annotator)).toHaveValue((fileRange.lastFileIndex + 1).toString())
+                await expect(page.phaseEdit.getfirstIndexInput(USERS.annotator)).toHaveText((fileRange.firstFileIndex + 1).toString())
+                await expect(page.phaseEdit.getlastIndexInput(USERS.annotator)).toHaveText((fileRange.lastFileIndex + 1).toString())
 
                 await expect(page.phaseEdit.getRow(USERS.creator)).not.toBeVisible()
                 await expect(page.phaseEdit.getRow(USERS.staff)).not.toBeVisible()
@@ -44,114 +48,92 @@ const TEST = {
             })
         }),
 
-    addAnnotator: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
-        test(`Add annotator as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+    addFileRange: ({ as, phase: phaseType, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+        test(`Add file range as ${ as } for "${ phaseType }" phase`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
-                getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
-                allUsers: 'filled'
+                getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phaseType }`,
+                allUsers: 'filled',
             })
-            await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase }))
+            await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase: phaseType }))
 
             const newUser = USERS.superuser
 
             await test.step('Add new annotator', async () => {
-                await page.getByRole('combobox', {name: 'Select annotator or group'}).fill(newUser.firstName);
+                await page.phaseEdit.searchbar.fill(newUser.firstName);
                 await page.getByRole('option', { name: newUser.firstName }).click();
-                await expect(page.phaseEdit.getRow(newUser)).toBeVisible()
-            })
-
-            await test.step('Edit new annotator range', async () => {
-                await page.phaseEdit.getfirstIndexInput(newUser).fill('5')
-                await page.phaseEdit.getlastIndexInput(newUser).fill('15')
-                await expect(page.phaseEdit.getRemoveButton(newUser)).toBeEnabled()
-            })
-
-            await test.step('Can add known annotator with some files', async () => {
-                await page.getByRole('combobox', {name: 'Select annotator or group'}).fill(newUser.firstName);
-                await page.getByRole('option', { name: newUser.firstName }).click();
-                expect(await page.phaseEdit.getRows(newUser).count()).toEqual(2)
-            })
-
-            await test.step('Cannot add known annotator with all files', async () => {
-                await page.getByRole('combobox', {name: 'Select annotator or group'}).fill(newUser.firstName);
-                await expect(page.getByRole('option', {name: newUser.firstName})).not.toBeVisible();
-            })
-
-            await test.step('Add annotator group', async () => {
-                await page.getByRole('combobox', {name: 'Select annotator or group'}).fill(userGroup.name);
-                await page.getByRole('option', { name: userGroup.name }).click();
-                await expect(page.phaseEdit.getRow(USERS.staff)).toBeVisible()
-                await expect(page.phaseEdit.getfirstIndexInput(USERS.staff)).toBeVisible()
-                await expect(page.phaseEdit.getlastIndexInput(USERS.staff)).toBeVisible()
-            })
-
-            await test.step('Can submit', async () => {
+                await page.phaseEdit.getRow(newUser).getByRole('button', { name: 'Add file range' }).click()
+                await page.getByRole('spinbutton', { name: 'First file index *' }).fill('5')
+                await page.getByRole('spinbutton', { name: 'Last file index *' }).fill('15')
                 const [ request ] = await Promise.all([
                     page.waitForRequest(gqlURL),
-                    page.getByRole('button', { name: 'Update annotators' }).click(),
+                    page.getByRole('button', { name: 'Save' }).click(),
                 ])
-                const variables: UpdateFileRangesMutationVariables = await request.postDataJSON().variables
-                expect(variables.campaignID).toEqual(campaign.id)
-                expect(variables.phaseType).toEqual(AnnotationPhaseType.Annotation)
-                const expectedRanges: UpdateFileRangesMutationVariables['fileRanges'] = [
-                    {
-                        id: fileRange.id,
-                        annotatorId: USERS.annotator.id,
-                        firstFileIndex: fileRange.firstFileIndex,
-                        lastFileIndex: fileRange.lastFileIndex,
-                    }, {
-                        annotatorId: USERS.superuser.id,
-                        firstFileIndex: 4,
-                        lastFileIndex: 14,
-                    }, {
-                        annotatorId: USERS.superuser.id,
-                        firstFileIndex: 0,
-                        lastFileIndex: dataset.spectrogramCount - 1,
-                    }, {
-                        annotatorId: USERS.staff.id,
-                        firstFileIndex: 0,
-                        lastFileIndex: dataset.spectrogramCount - 1,
-                    },
-                ]
-                expect(variables.fileRanges).toEqual(expectedRanges)
+                const variables: CreateFileRangeMutationVariables = await request.postDataJSON().variables
+                expect(variables.input.annotator).toEqual(newUser.id)
+                expect(variables.input.annotationPhase).toEqual(phase.id)
+                expect(variables.input.firstFileIndex).toEqual(4)
+                expect(variables.input.lastFileIndex).toEqual(14)
             })
+
+            // TODO: handle groups in UI
+            // await test.step('Add annotator group', async () => {
+            //     await page.getByRole('combobox', { name: 'Select annotator or group' }).fill(userGroup.name);
+            //     await page.getByRole('option', { name: userGroup.name }).click();
+            //     await expect(page.phaseEdit.getRow(USERS.staff)).toBeVisible()
+            //     await expect(page.phaseEdit.getfirstIndexInput(USERS.staff)).toBeVisible()
+            //     await expect(page.phaseEdit.getlastIndexInput(USERS.staff)).toBeVisible()
+            // })
         }),
 
-    editExistingAnnotator: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
-        test(`Edit existing annotator as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+    editFileRange: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+        test(`Edit file range as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
             })
             await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase }))
 
-            await test.step('Cannot edit or remove annotator with finished tasks', async () => {
-                await expect(page.phaseEdit.getfirstIndexInput(USERS.annotator)).toBeDisabled()
-                await expect(page.phaseEdit.getlastIndexInput(USERS.annotator)).toBeDisabled()
+            await test.step('Warn if edit file range with finished tasks', async () => {
+                await page.phaseEdit.getRow(USERS.annotator).getByTestId('edit').click()
+                await expect(page.getByRole('heading', { name: 'File range already started' })).toBeVisible()
             })
 
-            await test.step('Unlock range with finished tasks', async () => {
-                await page.phaseEdit.getUnlockButton(USERS.annotator).click()
-                await page.getByRole('dialog').first().getByRole('button', { name: 'Update file range' }).click()
+            await test.step('Edit range with finished tasks', async () => {
+                await page.getByRole('button', { name: 'Update and risk annotation loss' }).click()
+                await page.getByRole('spinbutton', { name: 'First file index *' }).fill('6')
+                await page.getByRole('spinbutton', { name: 'Last file index *' }).fill('16')
+                const [ request ] = await Promise.all([
+                    page.waitForRequest(gqlURL),
+                    page.getByRole('button', { name: 'Save' }).click(),
+                ])
+                const variables: UpdateFileRangeMutationVariables = await request.postDataJSON().variables
+                expect(variables.input.id).toEqual(fileRange.id)
+                expect(variables.input.firstFileIndex).toEqual(5)
+                expect(variables.input.lastFileIndex).toEqual(15)
+            })
+        }),
 
-                await expect(page.phaseEdit.getfirstIndexInput(USERS.annotator)).toBeEnabled()
-                await expect(page.phaseEdit.getlastIndexInput(USERS.annotator)).toBeEnabled()
+    removeFileRange: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+        test(`Removefile range as ${ as } for "${ phase }" phase`, { tag }, async ({ page }) => {
+            await interceptRequests(page, {
+                getCurrentUser: as,
+                getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
+            })
+            await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase }))
+
+            await test.step('Warn if remove file range with finished tasks', async () => {
+                await page.phaseEdit.getRow(USERS.annotator).getByTestId('remove').click()
+                await expect(page.getByRole('heading', { name: 'File range already started' })).toBeVisible()
             })
 
             await test.step('Remove range with finished tasks', async () => {
-                await page.phaseEdit.getRemoveButton(USERS.annotator).click()
-            })
-
-            await test.step('Can submit', async () => {
                 const [ request ] = await Promise.all([
                     page.waitForRequest(gqlURL),
-                    page.getByRole('button', { name: 'Update annotators' }).click(),
+                    page.getByRole('button', { name: 'Remove and lost annotations' }).click(),
                 ])
-                const variables: UpdateFileRangesMutationVariables = await request.postDataJSON().variables
-                expect(variables.campaignID).toEqual(campaign.id)
-                expect(variables.phaseType).toEqual(AnnotationPhaseType.Annotation)
-                expect(variables.fileRanges).toEqual([])
+                const variables: DeleteFileRangeMutationVariables = await request.postDataJSON().variables
+                expect(variables.id).toEqual(fileRange.id)
             })
         }),
 
@@ -172,8 +154,8 @@ test.describe('/annotation-campaign/:campaignID/phase/:phaseType/edit-annotators
         TEST.displayData({ as, phase: AnnotationPhaseType.Verification })
     })
 
-    TEST.addAnnotator({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
-
-    TEST.editExistingAnnotator({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+    TEST.addFileRange({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+    TEST.editFileRange({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+    TEST.removeFileRange({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
 
 })

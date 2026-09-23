@@ -14,7 +14,14 @@ import { InvalidateAnnotationModal } from '@/features/Annotator/Annotation/Inval
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 import { useLoaderData } from '@tanstack/react-router';
-import { ChatLine, ChatSquare, CheckCircle, CloseCircle } from '@solar-icons/react';
+import {
+    ChatSquareLinearIcon,
+    ChatSquareLineBoldIcon,
+    CheckCircleBoldDuotoneIcon,
+    CheckCircleLineDuotoneIcon,
+    CloseCircleBoldDuotoneIcon,
+    CloseCircleLineDuotoneIcon,
+} from '@solar-icons/react';
 import { Button, Dialog } from '@/components/base';
 import { LabelDialog } from '@/features/Labels';
 import type { AnnotationLabelFragment } from '@/features/Labels/api';
@@ -100,9 +107,9 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
 
         {/* Comments */ }
         <Td>
-            { annotation.comments && annotation.comments.length > 0 ?
-                <ChatLine weight="Bold" size={ 20 }/> :
-                <ChatSquare weight="Linear" size={ 20 }/> }
+            { annotation.comments && annotation.comments.length > 0
+                ? <ChatSquareLineBoldIcon size={ 20 }/>
+                : <ChatSquareLinearIcon size={ 20 }/> }
         </Td>
 
         {/* Validation */ }
@@ -113,19 +120,22 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
                         <Button data-testid="validate"
                                 color={ annotation.validation?.isValid ? 'success' : 'medium' }
                                 onClick={ onValidate }>
-                            <CheckCircle weight={ annotation.validation?.isValid ? 'BoldDuotone' : 'LineDuotone' }
-                                         size={ 20 }/>
+                            { annotation.validation?.isValid
+                                ? <CheckCircleBoldDuotoneIcon size={ 20 }/>
+                                : <CheckCircleLineDuotoneIcon size={ 20 }/> }
                         </Button>
                         { annotation.type === 'Weak' ? <Button data-testid="invalidate"
                                                                color={ annotation.validation?.isValid ? 'medium' : 'danger' }
                                                                onClick={ onInvalidate }>
-                            <CloseCircle weight={ annotation.validation?.isValid ? 'LineDuotone' : 'BoldDuotone' }
-                                         size={ 20 }/>
+                            { annotation.validation?.isValid
+                                ? <CloseCircleLineDuotoneIcon size={ 20 }/>
+                                : <CloseCircleBoldDuotoneIcon size={ 20 }/> }
                         </Button> : <Dialog.Root>
                             <Dialog.Trigger data-testid="invalidate"
                                             color={ annotation.validation?.isValid ? 'medium' : 'danger' }>
-                                <CloseCircle weight={ annotation.validation?.isValid ? 'LineDuotone' : 'BoldDuotone' }
-                                             size={ 20 }/>
+                                { annotation.validation?.isValid
+                                    ? <CloseCircleLineDuotoneIcon size={ 20 }/>
+                                    : <CloseCircleBoldDuotoneIcon size={ 20 }/> }
                             </Dialog.Trigger>
                             <Dialog.Portal>
                                 <InvalidateAnnotationModal annotation={ annotation }

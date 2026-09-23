@@ -1,8 +1,8 @@
+import { Fragment } from 'react';
+import { AltArrowRightLinearIcon, InfoCircleLinearIcon } from '@solar-icons/react';
 import { Note, NoteProps } from './index.tsx';
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
 import type { BaseColor } from '@/components/base/types';
-import { Fragment } from 'react';
-import { AltArrowRight, InfoCircle } from '@solar-icons/react';
 import { Link } from '../Button/Link.tsx';
 
 const meta = {
@@ -47,7 +47,7 @@ export const Paragraph: Story = {
 export const Icon: Story = {
     args: {
         color: 'medium',
-        children: <AltArrowRight weight="Linear" size={ 20 }/>,
+        children: <AltArrowRightLinearIcon size={ 20 }/>,
     } satisfies NoteProps,
 };
 
@@ -55,7 +55,7 @@ export const IconAndLink: Story = {
     args: {
         color: 'medium',
         children: <Fragment>
-            <InfoCircle weight="Linear"/> You can import new datasets in the <Link inText
+            <InfoCircleLinearIcon/> You can import new datasets in the <Link inText
                                                                                    to="/storage">Storage</Link> section
         </Fragment>,
     } satisfies NoteProps,

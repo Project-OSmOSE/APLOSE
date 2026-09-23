@@ -18,6 +18,7 @@ export const campaign: Campaign = {
   allowColormapTuning: false,
   allowImageTuning: false,
   allowPointAnnotation: false,
+  allowDigitalZoom: false,
   colormapDefault: null,
   colormapInvertedDefault: null,
   createdAt: new Date().toISOString(),

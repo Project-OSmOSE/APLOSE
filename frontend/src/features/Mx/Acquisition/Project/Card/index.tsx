@@ -6,7 +6,7 @@ import { graphqlClient } from '@/api/graphqlClient';
 import { queryKeys } from '@/api/queryKeys';
 import { cleanGqlList } from '@/api/utils';
 import { ProjectAccessibilityBadge } from '@/features/Mx/Acquisition/Project/AccessibilityBadge';
-import { Calendar } from '@solar-icons/react';
+import { CalendarLinearIcon } from '@solar-icons/react';
 import { NBSP } from '@/service/type';
 
 export const ProjectCards: React.FC = () => {
@@ -51,7 +51,7 @@ export const ProjectCard: React.FC<ProjectCardFragment> = ({
         </Card.Head>
 
         <Card.Info>
-            <Calendar weight="Linear" size={ 20 }/>
+            <CalendarLinearIcon size={ 20 }/>
             { startYear ?? '...' } - { endYear ?? '...' }
         </Card.Info>
 

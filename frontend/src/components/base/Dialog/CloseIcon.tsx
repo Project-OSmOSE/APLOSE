@@ -1,6 +1,6 @@
 import React from 'react';
+import { CloseSquareLinearIcon } from '@solar-icons/react';
 import { Dialog } from '@base-ui/react/dialog';
-import { CloseSquare } from '@solar-icons/react';
 import styles from './Dialog.module.scss';
 import { Button } from '@/components/base/Button';
 
@@ -11,6 +11,6 @@ export const CloseIcon = React.forwardRef<HTMLButtonElement>((_, ref) => (
                   data-testid="close-modal"
                   aria-label="Close dialog"
                   className={ styles.CloseIcon }>
-        <CloseSquare weight="Linear" size={ 24 }/>
+        <CloseSquareLinearIcon size={ 24 }/>
     </Dialog.Close>
 ))

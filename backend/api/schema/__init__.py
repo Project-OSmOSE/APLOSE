@@ -22,17 +22,20 @@ from .nodes import (
 from .queries import (
     AnnotationPhaseByCampaignPhase,
     AnnotationLabelsForDeploymentIdField,
+    AnnotationPhaseByID,
 )
 from .mutations import (
     CreateAnnotationCampaignMutation,
     UpdateAnnotationCampaignMutation,
-    UpdateAnnotationPhaseFileRangesMutation,
     EndAnnotationPhaseMutation,
     CreateAnnotationPhase,
     ArchiveAnnotationCampaignMutation,
     UpdateAnnotationCommentsMutation,
     UpdateAnnotationsMutation,
     SubmitAnnotationTaskMutation,
+    AnnotationFileRangeCreateMutation,
+    AnnotationFileRangeUpdateMutation,
+    AnnotationFileRangeDeleteMutation,
 )
 
 
@@ -46,10 +49,12 @@ class APIMutation(graphene.ObjectType):
 
     # Annotation phase
     create_annotation_phase = CreateAnnotationPhase.Field()
-    update_annotation_phase_file_ranges = (
-        UpdateAnnotationPhaseFileRangesMutation.Field()
-    )
     end_annotation_phase = EndAnnotationPhaseMutation.Field()
+
+    # File ranges
+    create_file_range = AnnotationFileRangeCreateMutation.Field()
+    update_file_range = AnnotationFileRangeUpdateMutation.Field()
+    delete_file_range = AnnotationFileRangeDeleteMutation.Field()
 
     # Annotation
     update_annotations = UpdateAnnotationsMutation.Field()
@@ -92,6 +97,7 @@ class APIQuery(graphene.ObjectType):
     )
     all_annotation_phases = AuthenticatedPaginationConnectionField(AnnotationPhaseNode)
     annotation_phase_by_campaign_phase = AnnotationPhaseByCampaignPhase
+    annotation_phase_by_id = AnnotationPhaseByID
 
     # Annotation related items
     all_annotation_file_ranges = AuthenticatedPaginationConnectionField(

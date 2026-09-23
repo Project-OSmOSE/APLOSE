@@ -1,6 +1,6 @@
 import React, { type HTMLAttributes, ReactNode, useMemo } from 'react';
+import { AltArrowDownLinearIcon, AltArrowUpLinearIcon } from '@solar-icons/react';
 import styles from './ui.module.scss'
-import { AltArrowDown, AltArrowUp } from '@solar-icons/react';
 
 export const Table: React.FC<Pick<HTMLAttributes<HTMLTableRowElement>, 'children' | 'className'> & {
     spacing?: 'small' | 'regular'
@@ -31,7 +31,7 @@ export type Order = 'asc' | 'desc';
 export const Th: React.FC<{
     children?: ReactNode;
 } & Partial<Pick<HTMLTableCellElement, 'scope' | 'colSpan' | 'rowSpan'>> &
-    {top?: boolean} &
+    { top?: boolean } &
     ({ center?: false, start?: false } | { center: true, start?: false } | { center?: false, start: true }) &
     ({ sortable?: false, order?: never, setOrder?: never } | {
         sortable: true,
@@ -51,23 +51,23 @@ export const Th: React.FC<{
                     { children }
 
                     { sortable && <div className={ styles.btn }>
-                        <AltArrowUp size={ 16 }
-                                    className={ order === 'asc' ? styles.active : '' }
-                                    onClick={ () => setOrder('asc') }/>
-                        <AltArrowDown size={ 16 }
-                                      className={ order === 'desc' ? styles.active : '' }
-                                      onClick={ () => setOrder('desc') }/>
+                        <AltArrowUpLinearIcon size={ 16 }
+                                              className={ order === 'asc' ? styles.active : '' }
+                                              onClick={ () => setOrder('asc') }/>
+                        <AltArrowDownLinearIcon size={ 16 }
+                                                className={ order === 'desc' ? styles.active : '' }
+                                                onClick={ () => setOrder('desc') }/>
                     </div> }
                 </div>
             </th>
         }, [ children, top, center, start, setOrder, order, sortable, props ])
 
 export const Td: React.FC<Partial<Pick<HTMLTableDataCellElement, 'colSpan' | 'rowSpan'>> &
-    { children: ReactNode, center?: boolean, top?: boolean, className?: string }> = ({
-                                                                          center,
-                                                                          className,
-    top,
-                                                                          ...props
-                                                                      }) =>
+    { children?: ReactNode, center?: boolean, top?: boolean, className?: string }> = ({
+                                                                                         center,
+                                                                                         className,
+                                                                                         top,
+                                                                                         ...props
+                                                                                     }) =>
     useMemo(() => <td
-        className={ [ className, center ? styles.center : '' , top ? styles.top : '' ].join(' ') } { ...props }/>, [ props, center, className ])
+        className={ [ className, center ? styles.center : '', top ? styles.top : '' ].join(' ') } { ...props }/>, [ props, center, className ])

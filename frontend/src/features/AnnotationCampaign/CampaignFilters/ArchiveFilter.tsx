@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
+import { SortHorizontalLinearIcon } from '@solar-icons/react';
 import { Chip, ChipRemove } from '@/components/base/Chip';
-import { SortHorizontal } from '@solar-icons/react';
 
 export const AnnotationCampaignArchiveFilter: React.FC = () => {
     const filter_isArchived = useSearch({
@@ -26,7 +26,7 @@ export const AnnotationCampaignArchiveFilter: React.FC = () => {
     return <Chip onClick={ toggle }
                  color={ exists ? 'primary' : 'medium' }>
         Archived{ exists && `: ${ filter_isArchived ? 'True' : 'False' }` }
-        { filter_isArchived === false && <SortHorizontal weight="Linear" size={ 20 }/> }
+        { filter_isArchived === false && <SortHorizontalLinearIcon size={ 20 }/> }
         { filter_isArchived === true && <ChipRemove/> }
     </Chip>
 }

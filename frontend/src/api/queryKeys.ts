@@ -1,6 +1,6 @@
 import type { BrowseStorageQueryVariables, SearchStorageQueryVariables } from '@/features/Storage/api';
 import type { GetDatasetByIdQueryVariables } from '@/features/Dataset/api';
-import type { FileRangesForPhaseQueryVariables } from '@/features/AnnotationFileRange/api';
+import type { ListFileRangesQueryVariables } from '@/features/AnnotationFileRange/api';
 import type { AllCampaignsQueryVariables, GetCampaignQueryVariables } from '@/features/AnnotationCampaign/api';
 import type {
     AllSpectrogramAnalysisForDatasetQueryVariables,
@@ -31,7 +31,7 @@ export const queryKeys = {
         get: ({ campaignID, phase }: GetAnnotationPhaseQueryVariables) => [ 'phase', campaignID, phase ] as const,
     },
     fileRange: {
-        forPhase: (variables: FileRangesForPhaseQueryVariables) => [ 'file-range', 'for phase', variables.campaignID, variables.phaseType ] as const,
+        list: (variables: ListFileRangesQueryVariables) => [ 'file-range', `phase-${ variables.phaseID }` ] as const,
     },
     spectrogram: {
         base: [ 'spectrogram' ],

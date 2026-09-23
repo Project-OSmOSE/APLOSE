@@ -1,12 +1,12 @@
 import React from 'react';
-import { InfoCircle } from '@solar-icons/react';
+import { InfoCircleLinearIcon } from '@solar-icons/react';
 import { Dialog, HelpButton } from '@/components/base';
 import { ACCEPT_CSV_SEPARATOR, IMPORT_ANNOTATIONS_COLUMNS } from '@/consts/csv';
 
 export const Guidelines: React.FC = () => (
     <Dialog.Root>
         <Dialog.Trigger>
-            Guidelines <InfoCircle weight="Linear" size={ 20 }/>
+            Guidelines <InfoCircleLinearIcon size={ 20 }/>
         </Dialog.Trigger>
         <Dialog.Portal>
             <Dialog.Content alert>

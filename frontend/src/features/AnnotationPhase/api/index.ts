@@ -43,4 +43,9 @@ export const createVerificationMutation = mutationOptions({
     },
 })
 
-export type * from './annotation-phase.generated'
+export type {
+    GetAnnotationPhaseQueryVariables,
+    EndPhaseMutationVariables,
+    CreateVerificationPhaseMutationVariables,
+    CreateAnnotationPhaseMutationVariables,
+} from './annotation-phase.generated'

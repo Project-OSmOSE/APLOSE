@@ -9,15 +9,15 @@ import {
     StorageSlice,
 } from '@/features/Storage';
 import {
-    AltArrowDown,
-    AltArrowRight,
-    CheckRead,
-    FileFavourite,
-    Folder as FolderIcon,
-    FolderFavouriteStar,
-    FolderOpen,
-    InfoCircle,
-    Unread,
+    AltArrowDownLinearIcon,
+    AltArrowRightLinearIcon,
+    CheckReadLinearIcon,
+    FileFavoriteBoldDuotoneIcon,
+    FolderFavoriteStarBoldDuotoneIcon,
+    FolderLinearIcon,
+    FolderOpenLinearIcon,
+    InfoCircleLinearIcon,
+    UnreadLinearIcon,
 } from '@solar-icons/react';
 import { Toast } from '@/components/base/Toast';
 import { DatasetName } from '@/features/Dataset';
@@ -109,15 +109,15 @@ export const Item: React.FC<Props> = ({
         if (!item) return <Fragment/>
         switch (item.__typename) {
             case 'FolderNode':
-                rowIcon = isOpen ? <FolderOpen size={ 24 } weight="Linear"/> : <FolderIcon size={ 24 } weight="Linear"/>
+                rowIcon = isOpen ? <FolderOpenLinearIcon size={ 24 }/> : <FolderLinearIcon size={ 24 }/>
                 className = styles.folder
                 break;
             case 'DatasetStorageNode':
-                rowIcon = <FolderFavouriteStar size={ 24 } weight="BoldDuotone"/>
+                rowIcon = <FolderFavoriteStarBoldDuotoneIcon size={ 24 }/>
                 className = styles.dataset
                 break;
             case 'AnalysisStorageNode':
-                rowIcon = <FileFavourite size={ 24 } weight="BoldDuotone"/>
+                rowIcon = <FileFavoriteBoldDuotoneIcon size={ 24 }/>
                 className = styles.analysis
                 break;
         }
@@ -126,10 +126,10 @@ export const Item: React.FC<Props> = ({
         if (item.__typename !== 'FolderNode') {
             switch (item.importStatus) {
                 case ImportStatusEnum.Imported:
-                    importIcon = <CheckRead color="success" size={ 24 }/>
+                    importIcon = <CheckReadLinearIcon color="success" size={ 24 }/>
                     break;
                 case ImportStatusEnum.Partial:
-                    importIcon = <Unread color="success" size={ 24 }/>
+                    importIcon = <UnreadLinearIcon color="success" size={ 24 }/>
                     break;
             }
             usages = (item as StorageAnalysisFragment).model?.annotationCampaigns.edges
@@ -150,7 +150,7 @@ export const Item: React.FC<Props> = ({
                 {/* Use Icon */ }
                 { usages > 0 && <Popover.Root>
                     <Popover.Trigger color="medium">
-                        <InfoCircle size={ 24 }/>
+                        <InfoCircleLinearIcon size={ 24 }/>
                     </Popover.Trigger>
                     <Popover.Content>
                         Currently used in { usages } campaigns
@@ -158,7 +158,7 @@ export const Item: React.FC<Props> = ({
                 </Popover.Root> }
 
                 {/* Open Icon */ }
-                { canToggle && <Note>{ isOpen ? <AltArrowDown/> : <AltArrowRight/> }</Note> }
+                { canToggle && <Note>{ isOpen ? <AltArrowDownLinearIcon/> : <AltArrowRightLinearIcon/> }</Note> }
 
                 {/* Import button */ }
                 { canImport && <Button color="primary" onClick={ download }>

@@ -1,6 +1,6 @@
 import { type ReactNode, useCallback } from 'react';
 import { Select as BaseSelect, type SelectRootProps } from '@base-ui/react/select';
-import { AltArrowDown, Unread } from '@solar-icons/react';
+import { AltArrowDownLinearIcon, UnreadLinearIcon } from '@solar-icons/react';
 import styles from './Select.module.scss'
 import { Note } from '@/components/base';
 
@@ -34,7 +34,7 @@ export function Select<Value, Multiple extends boolean = false>({
             <BaseSelect.Value className={ styles.Value }
                               children={ _valueItemToElementLabel }/>
             <BaseSelect.Icon className={ styles.ChevronIcon }>
-                <AltArrowDown weight="Linear" size={ 20 }/>
+                <AltArrowDownLinearIcon size={ 20 }/>
             </BaseSelect.Icon>
         </BaseSelect.Trigger>
         <BaseSelect.Portal>
@@ -44,7 +44,7 @@ export function Select<Value, Multiple extends boolean = false>({
                         { items && items.map((item, key) => (
                             <BaseSelect.Item key={ key } value={ item } className={ styles.Item }>
                                 <BaseSelect.ItemIndicator className={ styles.ItemIndicator }>
-                                    <Unread weight="Linear" size={ 24 }/>
+                                    <UnreadLinearIcon size={ 24 }/>
                                 </BaseSelect.ItemIndicator>
                                 <BaseSelect.ItemText
                                     className={ styles.ItemText }>{ itemToElementLabel(item) }</BaseSelect.ItemText>

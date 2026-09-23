@@ -1,4 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useRef } from 'react';
+import { MinusCircleLinearIcon } from '@solar-icons/react';
 import styles from './styles.module.scss';
 import { type ExtendedDivPosition, Table, Tbody, useExtendedDiv } from '@/components/ui';
 import { AnnotationType } from '@/api';
@@ -15,7 +16,6 @@ import { NonLinearPhenomena } from '@/features/Annotator/AcousticFeatures/NonLin
 import { Checks } from '@/features/Annotator/AcousticFeatures/Checks';
 import { useAnnotatorCanvasContext, useWindowWidth } from '@/features/Annotator/Canvas';
 import { useLoaderData } from '@tanstack/react-router';
-import { MinusCircle } from '@solar-icons/react';
 import { Button } from '@/components/base';
 
 export const AcousticFeatures: React.FC = () => {
@@ -82,7 +82,7 @@ export const AcousticFeatures: React.FC = () => {
                  className={ [ styles.blocHeader, extendedClassName ].join(' ') }>
                 <h5>Acoustic features </h5>
                 <Button onClick={ quit }>
-                    <MinusCircle weight="Linear" size={ 20 }/>
+                    <MinusCircleLinearIcon size={ 20 }/>
                 </Button>
             </div>
             <div className={ styles.body }>

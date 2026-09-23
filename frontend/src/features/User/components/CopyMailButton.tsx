@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { UserNode } from '@/api';
-import { Letter } from '@solar-icons/react';
+import { LetterLinearIcon } from '@solar-icons/react';
 import { Toast } from '@/components/base/Toast';
 import { Popover } from '@/components/base/Popover';
 
@@ -20,7 +20,7 @@ export const CopyMailButton: React.FC<CopyMailButtonProps> = ({ user }) => {
 
     return <Popover.Root>
         <Popover.Trigger aria-label={ `Copy ${ user.email }` } onClick={ copy }>
-            <Letter weight="Linear" size={ 20 }/>
+            <LetterLinearIcon size={ 20 }/>
         </Popover.Trigger>
         <Popover.Content>
             Copy { user.email }

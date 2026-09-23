@@ -148,7 +148,7 @@ async function readXLSX(file: File, openAlert: (alert: Alert<any>) => void): Pro
             if (columnLetters === undefined) return returnArray
             const columnIndex = columnLetters.split('')
                 .map((letter, index) => index === (columnLetters.length - 1) ? charCode(letter) : ((charCode(letter) + 1) * (charCode('Z') + 1)))
-                .reduce((a,b) => a+b, 0)
+                .reduce((a, b) => a + b, 0)
             if (columnIndex !== undefined) {
                 const rowIndex = cellName.match(/\d+/g)?.pop()
                 if (rowIndex !== undefined) {
@@ -209,7 +209,7 @@ export const useSpreadsheetHandler = <
         setRawHeader(headers)
         setRawRows(rows)
         headerManager.selectRaws(headers)
-        return {rows: formatRows<Data>(headers, rows), headers}
+        return { rows: formatRows<Data>(headers, rows), headers }
     }, [ readFile, headerManager ])
 
     const reset = useCallback((): void => {
@@ -236,37 +236,39 @@ export const useSpreadsheetHandler = <
 
 export type FormDataName<Key extends string> = `${ number }-${ Key }`
 
-export class SpreadsheetFormData<Key extends string> extends FormData {
-
+export class EnhancedFormData<Key extends string> extends FormData {
     isNull(data: string | null): boolean {
         return data === null || data === ''
     }
 
-    get(name: FormDataName<Key>): string | null {
+    get(name: Key): string | null {
         return super.get(name) as string | null;
     }
 
-    getBoolean(name: FormDataName<Key>): boolean | undefined {
+    getBoolean(name: Key): boolean | undefined {
         const data = this.get(name)
         if (this.isNull(data)) return undefined
         return data === 'true'
     }
 
-    getNumber(name: FormDataName<Key>): number | undefined {
+    getNumber(name: Key): number | undefined {
         const data = this.get(name)
         return this.isNull(data) ? undefined : +data!
     }
 
-    getUTCDate(name: FormDataName<Key>): string | undefined {
+    getUTCDate(name: Key): string | undefined {
         const data = this.get(name)
         return this.isNull(data) ? undefined : new Date(data + 'Z').toISOString()
     }
 
-    getAll(name: FormDataName<Key>): string[] {
+    getAll(name: Key): string[] {
         return super.getAll(name) as string[];
     }
 
-    getAllJoined(...names: FormDataName<Key>[]): string {
+    getAllJoined(...names: Key[]): string {
         return names.flatMap(this.getAll.bind(this)).filter(d => !!d).join('\n');
     }
+}
+
+export class SpreadsheetFormData<Key extends string> extends EnhancedFormData<FormDataName<Key>> {
 }

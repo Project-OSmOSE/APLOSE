@@ -1,3 +1,5 @@
+import React, { Fragment, useMemo } from 'react';
+import { AltArrowRightLinearIcon, CheckCircleBoldIcon, RecordLinearIcon } from '@solar-icons/react';
 import {
     AnnotationNodeNodeConnection,
     AnnotationPhaseType,
@@ -6,14 +8,12 @@ import {
     AnnotationTaskStatus,
     type Maybe,
 } from '@/api';
-import React, { Fragment, useMemo } from 'react';
 import { Td, Th, Tr } from '@/components/ui';
 import { useOpenAnnotator } from '@/features/Annotator/Navigation';
 import { formatTime } from '@/service/function';
 import styles from './styles.module.scss'
 import { useLoaderData } from '@tanstack/react-router';
 import { Button } from '@/components/base/Button';
-import { AltArrowRight, CheckCircle, Record } from '@solar-icons/react';
 
 export const SpectrogramRow: React.FC<{
     spectrogram: Pick<AnnotationSpectrogramNode, 'id' | 'filename' | 'duration' | 'start' | 'isAssigned'>,
@@ -49,17 +49,15 @@ export const SpectrogramRow: React.FC<{
         { phase?.phase == 'Verification' && <Td center>{ spectrogram.isAssigned ? validAnnotationsCount : '-' }</Td> }
         <Td center>
             { spectrogram.isAssigned ? <Fragment>
-                { submitted &&
-                    <CheckCircle weight="Bold" size={ 16 } className={ styles.iconPrimary }/> }
-                { !submitted &&
-                    <Record weight="Linear" size={ 16 } className={ styles.iconMedium }/> }
+                { submitted && <CheckCircleBoldIcon size={ 16 } className={ styles.iconPrimary }/> }
+                { !submitted && <RecordLinearIcon size={ 16 } className={ styles.iconMedium }/> }
             </Fragment> : '-' }
         </Td>
         <Td>
             <Button color="primary"
                     data-testid="access-button"
                     onClick={ () => openAnnotator(spectrogram.id) }>
-                <AltArrowRight weight="Linear" size={ 24 }/>
+                <AltArrowRightLinearIcon size={ 24 }/>
             </Button>
         </Td>
     </Tr>

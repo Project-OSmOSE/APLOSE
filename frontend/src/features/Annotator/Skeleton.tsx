@@ -1,4 +1,5 @@
 import React, { Fragment, type HTMLProps, ReactNode, useCallback, useEffect, useMemo } from 'react';
+import { AltArrowRightLinearIcon, CheckCircleLinearIcon } from '@solar-icons/react';
 import { Footer, Navigation } from '@/components/layout';
 import styles from './styles.module.scss';
 import { AnnotationTaskStatus } from '@/api';
@@ -14,7 +15,6 @@ import { AnnotatorCommentSlice } from '@/features/Annotator/Comment';
 import { cleanGqlList } from '@/api/utils';
 import { AnnotatorAnnotationSlice, convertGqlToAnnotations } from '@/features/Annotator/Annotation';
 import { Note, Progress } from '@/components/base';
-import { AltArrowRight, CheckCircle } from '@solar-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import { AnnotationSpectrogramAPI } from '@/features/AnnotationSpectrogram';
 import { Zoom } from './Zoom';
@@ -157,10 +157,10 @@ const InnerAnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }
             { data?.spectrogram && <div className={ styles.info }>
                 <div className={ styles.file }>
                     <Note color="medium">{ campaign.name }</Note>
-                    <Note color="medium"><AltArrowRight weight="Linear" size={ 20 }/></Note>
+                    <Note color="medium"><AltArrowRightLinearIcon size={ 20 }/></Note>
                     <Note color="medium">{ data.spectrogram.filename }</Note>
                     { data.spectrogram.task?.status === AnnotationTaskStatus.Finished &&
-                        <Note color="medium"><CheckCircle weight="Linear" size={ 20 }/></Note> }
+                        <Note color="medium"><CheckCircleLinearIcon size={ 20 }/></Note> }
                 </div>
                 { isEditionAuthorized && info?.totalCount &&
                     <Progress color="medium"

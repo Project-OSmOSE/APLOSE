@@ -1,6 +1,6 @@
 import React, { ReactNode, useCallback } from 'react';
 import { useCanGoBack, useRouter } from '@tanstack/react-router';
-import { AltArrowLeft } from '@solar-icons/react';
+import { AltArrowLeftLinearIcon } from '@solar-icons/react';
 import { Button, Note, SkeletonText } from '@/components/base';
 import styles from './ui.module.scss'
 
@@ -24,7 +24,7 @@ export const Head: React.FC<{
 
             { canGoBack && _canGoBack && <Button className={ styles.BackButton }
                                                  onClick={ back }>
-                <AltArrowLeft weight="Linear" size={ 24 }/>
+                <AltArrowLeftLinearIcon size={ 24 }/>
                 Back
             </Button> }
         </div>

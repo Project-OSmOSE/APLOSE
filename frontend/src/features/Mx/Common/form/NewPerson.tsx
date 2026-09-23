@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { AddSquare, TrashBinTrash } from '@solar-icons/react';
+import { AddSquareLinearIcon, TrashBinTrashLinearIcon } from '@solar-icons/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Button, ButtonGroup, CreateDialog, Field, Form, Note, Spinner, Toast } from '@/components/base'
 import { Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
@@ -88,7 +88,7 @@ export const NewPersonForm: React.FC<CreateDialog.FormProps<API.PersonFragment, 
                     </Th>
                     <Td colSpan={ 4 }>
                         <Button onClick={ addInstitution }>
-                            <AddSquare weight="Linear" size={ 20 }/>
+                            <AddSquareLinearIcon size={ 20 }/>
                             Add institution/team
                         </Button>
                     </Td>
@@ -145,7 +145,7 @@ const InstitutionRelationRowForm: React.FC<{ id: number, onRemove: () => void }>
         </Td>
         <Td>
             <Button color="danger" onClick={ onRemove }>
-                <TrashBinTrash weight="Linear" size={ 20 }/>
+                <TrashBinTrashLinearIcon size={ 20 }/>
             </Button>
         </Td>
     </Tr>

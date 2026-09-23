@@ -5,40 +5,45 @@ import type { Params } from '../types';
 
 export class PhaseEditAnnotatorsPage {
 
-  get title(): Locator {
-    return this.page.getByRole('heading', { name: 'Manage annotators' })
-  }
+    get title(): Locator {
+        return this.page.getByRole('heading', { name: 'Annotators' })
+    }
+
+    get searchbar(): Locator {
+        return this.page.getByRole('combobox', {name: 'Select user'})
+    }
 
 
-  constructor(private page: Page,
-              private detail = new PhaseDetailPage(page)) {
-  }
+    constructor(private page: Page,
+                private detail = new PhaseDetailPage(page)) {
+    }
 
-  async go({ as, phase }: Pick<Params, 'as' | 'phase'>) {
-    await this.detail.go({ as, phase })
-    await this.detail.manageButton.click();
-  }
+    async go({ as, phase }: Pick<Params, 'as' | 'phase'>) {
+        await this.detail.go({ as, phase })
+        await this.detail.manageButton.click();
+    }
 
-  getRows(user: User): Locator {
-    return this.page.locator('tr').filter({hasText: `${user.firstName} ${user.lastName}`})
-  }
-  getRow(user: User): Locator {
-    return this.getRows(user).first()
-  }
+    getRows(user: User): Locator {
+        return this.page.locator('tr').filter({ hasText: `${ user.firstName } ${ user.lastName }` })
+    }
 
-  getfirstIndexInput(user: User): Locator {
-    return this.getRow(user).getByTestId('firstFileIndex')
-  }
+    getRow(user: User): Locator {
+        return this.getRows(user).first()
+    }
 
-  getlastIndexInput(user: User): Locator {
-    return this.getRow(user).getByTestId('lastFileIndex')
-  }
+    getfirstIndexInput(user: User): Locator {
+        return this.getRow(user).getByTestId('firstFileIndex')
+    }
 
-  getUnlockButton(user: User): Locator {
-    return this.getRow(user).getByTestId('unlock')
-  }
+    getlastIndexInput(user: User): Locator {
+        return this.getRow(user).getByTestId('lastFileIndex')
+    }
 
-  getRemoveButton(user: User): Locator {
-    return this.getRow(user).getByTestId('remove')
-  }
+    getUnlockButton(user: User): Locator {
+        return this.getRow(user).getByTestId('unlock')
+    }
+
+    getRemoveButton(user: User): Locator {
+        return this.getRow(user).getByTestId('remove')
+    }
 }

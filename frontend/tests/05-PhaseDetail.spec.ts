@@ -15,7 +15,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
-                fileRangesForPhase: 'empty',
+                listFileRanges: 'empty',
                 allSpectrogramAnalysis: 'empty',
                 allAnnotationSpectrograms: 'empty',
             })
@@ -181,7 +181,7 @@ const TEST = {
 
             await test.step('Access manage annotators', async () => {
                 await Promise.all([
-                    page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ phase }/edit-annotators`),
+                    page.waitForURL(`**/annotation-campaign/${ campaign.id }/phase/${ phase }/annotators`),
                     await page.phaseDetail.manageButton.click(),
                 ])
                 await expect(page.phaseEdit.title).toBeVisible()

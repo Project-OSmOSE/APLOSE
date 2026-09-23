@@ -1,6 +1,8 @@
 """Annotation task model"""
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
+from graphene_django.types import ErrorType
 
 from ..common import Session
 from ..data import Spectrogram
@@ -17,6 +19,16 @@ class AnnotationTask(models.Model):
 
         CREATED = ("C", "Created")
         FINISHED = ("F", "Finished")
+
+    class CannotDeleteFinished(ValidationError):
+        MESSAGE = "Cannot delete finished task"
+
+        def __init__(self, message=MESSAGE):
+            super().__init__(message=message)
+
+        @classmethod
+        def gql_type(cls) -> ErrorType:
+            return ErrorType(field=None, messages=[cls.MESSAGE])
 
     class Meta:
         ordering = ["spectrogram__start", "id"]

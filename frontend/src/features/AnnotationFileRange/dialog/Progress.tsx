@@ -1,4 +1,5 @@
 import React, { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
+import { DownloadLinearIcon } from '@solar-icons/react';
 import { type Order, Table, Tbody, Td, Th, Thead, Tr, WarningText } from '@/components/ui';
 import { Toast } from '@/components/base/Toast';
 import { Progress as BaseProgress } from '@/components/base/Progress';
@@ -9,7 +10,6 @@ import { useQuery } from '@tanstack/react-query';
 import { UserAPI } from '@/features/User';
 import { useLoaderData } from '@tanstack/react-router';
 import { Button, ButtonGroup } from '@/components/base/Button';
-import { Download } from '@solar-icons/react';
 import { Note } from '@/components/base/Note';
 import { Dialog } from '@/components/base/Dialog';
 import { Spinner } from '@/components/base/Spinner';
@@ -40,16 +40,13 @@ const DialogSkeleton: React.FC<{ children: ReactNode }> = ({ children }) => (
 )
 
 export const Progress: React.FC = () => {
-    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
     const { data, isLoading: isLoadingUsers, error: userError } = useQuery(UserAPI.allQuery)
     const {
         data: allFileRanges,
         isFetching: isLoadingFileRanges,
         error: fileRangeError,
-    } = useQuery(FileRangeAPI.forPhaseQuery({
-        campaignID: campaign.id, phaseType: phase.phase,
-    }));
+    } = useQuery(FileRangeAPI.listFileRanges({ phaseID: phase.id }));
     const { downloadAnnotations, error: downloadAnnotationsError } = useDownloadAnnotations()
     const { downloadProgress, error: downloadProgressError } = useDownloadProgress()
     const toastManager = Toast.useToastManager()
@@ -164,12 +161,12 @@ export const Progress: React.FC = () => {
                 <ButtonGroup spaceBetween>
                     { progress.length > 0 && <Fragment>
                         <Button onClick={ downloadAnnotations }>
-                            <Download weight="Linear" size={ 20 }/>
+                            <DownloadLinearIcon size={ 20 }/>
                             Results (csv)
                         </Button>
 
                         <Button onClick={ downloadProgress }>
-                            <Download weight="Linear" size={ 20 }/>
+                            <DownloadLinearIcon size={ 20 }/>
                             Status (csv)
                         </Button>
                     </Fragment> }

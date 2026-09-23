@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { MagnifierLinearIcon } from '@solar-icons/react';
 import { useAppDispatch } from '@/features/App';
 import { gqlAPI } from '@/api/baseGqlApi';
 import { WarningText } from '@/components/ui';
@@ -11,7 +12,6 @@ import { Form } from '@/components/base/Form';
 import { Field } from '@/components/base/Field';
 import { Spinner } from '@/components/base/Spinner';
 import { Note } from '@/components/base/Note';
-import { Magnifer } from '@solar-icons/react';
 import type { BaseUIEvent } from '@base-ui/react';
 
 export const Search: React.FC = () => {
@@ -57,7 +57,7 @@ export const Search: React.FC = () => {
             <Form horizontal onSubmit={ submit }>
                 <Field.Root name="search">
                     <Field.Control required
-                                   startIcon={ Magnifer }
+                                   startIcon={ MagnifierLinearIcon }
                                    placeholder="Enter exact path"
                                    type="search"/>
                     <Field.Error/>

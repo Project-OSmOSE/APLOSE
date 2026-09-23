@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { useLoaderData, useParams } from '@tanstack/react-router';
-import { CloudUpload } from '@solar-icons/react';
+import { CloudUploadLinearIcon } from '@solar-icons/react';
 
 import { AnnotationPhaseType } from '@/api';
 import { Popover } from '@/components/base';
@@ -16,7 +16,7 @@ export const ImportAnnotationsButton: React.FC = () => {
         <Popover.TriggerLink to="/annotation-campaign/$campaignID/phase/$phaseType/import-annotations"
                              params={ { campaignID: campaign.id, phaseType: AnnotationPhaseType.Verification } }
                              data-testid="import">
-            <CloudUpload weight="Linear" size={ 24 }/>
+            <CloudUploadLinearIcon size={ 24 }/>
         </Popover.TriggerLink>
         <Popover.Content>
             Import annotations for verification

@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
 import type { HTMLInputTypeAttribute } from 'react';
 // @ts-expect-error: using different ts-config: moduleResolution (see tsconfig.storybook.json)
 import { fn } from 'storybook/test';
-import { Magnifer } from '@solar-icons/react';
+import { MagnifierLinearIcon } from '@solar-icons/react';
 
 const meta = {
     title: 'Base/Input',
@@ -61,6 +61,6 @@ export const Password: Story = {
 
 export const StartIcon: Story = {
     args: {
-        startIcon: Magnifer,
+        startIcon: MagnifierLinearIcon,
     } satisfies Partial<InputProps>,
 };

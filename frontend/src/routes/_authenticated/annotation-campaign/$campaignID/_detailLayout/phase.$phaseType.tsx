@@ -1,5 +1,6 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { createFileRoute, notFound, useLoaderData, useNavigate } from '@tanstack/react-router';
+import { FilterLinearIcon, FilterBoldIcon } from '@solar-icons/react';
 
 import { Pagination, Table, Tbody, Th, Thead, Tr, WarningText } from '@/components/ui';
 
@@ -8,7 +9,11 @@ import { AnnotationPhaseType } from '@/api';
 import { AnnotationsFilterModal, DateFilterModal, StatusFilterModal } from '@/features/AnnotationTask';
 import { FileRangeActionBar } from '@/features/AnnotationFileRange';
 import { PhaseAPI, PhaseComponent } from '@/features/AnnotationPhase';
-import { type AllSpectrogramsFilters, AnnotationSpectrogramAPI, SpectrogramRow } from '@/features/AnnotationSpectrogram';
+import {
+    type AllSpectrogramsFilters,
+    AnnotationSpectrogramAPI,
+    SpectrogramRow,
+} from '@/features/AnnotationSpectrogram';
 
 import styles from './phase.$phaseType.module.scss';
 import { useQuery } from '@tanstack/react-query';
@@ -16,7 +21,6 @@ import { Note } from '@/components/base/Note';
 import { Center } from '@/components/layout/Display';
 import { Spinner } from '@/components/base/Spinner';
 import { Dialog } from '@/components/base/Dialog';
-import { Filter } from '@solar-icons/react';
 import { ensureValidQueryData } from '@/api/utils';
 
 const PAGE_SIZE = 20
@@ -98,7 +102,9 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
 
                                 <Dialog.Root>
                                     <Dialog.Trigger>
-                                        { hasDateFilter ? <Filter size={ 16 } weight="Bold"/> : <Filter size={ 16 }/> }
+                                        { hasDateFilter
+                                            ? <FilterBoldIcon size={ 16 }/>
+                                            : <FilterLinearIcon size={ 16 }/> }
                                     </Dialog.Trigger>
                                     <Dialog.Portal>
                                         <DateFilterModal/>
@@ -113,8 +119,9 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
 
                                 <Dialog.Root>
                                     <Dialog.Trigger>
-                                        { search.withAnnotations ? <Filter size={ 16 } weight="Bold"/> :
-                                            <Filter size={ 16 }/> }
+                                        { search.withAnnotations
+                                            ? <FilterBoldIcon size={ 16 }/>
+                                            : <FilterLinearIcon size={ 16 }/> }
                                     </Dialog.Trigger>
                                     <Dialog.Portal>
                                         <AnnotationsFilterModal/>
@@ -129,8 +136,9 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
 
                                 <Dialog.Root>
                                     <Dialog.Trigger>
-                                        { hasStatusFilter ? <Filter size={ 16 } weight="Bold"/> :
-                                            <Filter size={ 16 }/> }
+                                        { hasStatusFilter
+                                            ? <FilterBoldIcon size={ 16 }/>
+                                            : <FilterLinearIcon size={ 16 }/> }
                                     </Dialog.Trigger>
                                     <Dialog.Portal>
                                         <StatusFilterModal/>
