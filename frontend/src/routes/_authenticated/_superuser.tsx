@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { createFileRoute, Outlet, redirect, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query';
-import { UserAPI } from '@/features/User';
+import { User } from '@/features/User';
 import { Page } from '@/components/layout';
 
 const Component: React.FC = () => {
-    const { data: user } = useQuery(UserAPI.currentQuery)
+    const { data: user } = useQuery(User.currentQuery)
 
     const navigate = useNavigate();
     useEffect(() => {

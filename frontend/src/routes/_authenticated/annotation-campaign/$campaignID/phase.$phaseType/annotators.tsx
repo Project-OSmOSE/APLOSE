@@ -5,14 +5,14 @@ import { Content, Page } from '@/components/layout';
 import { CampaignAPI } from '@/features/AnnotationCampaign';
 import { Phase } from '@/features/AnnotationPhase';
 import { FileRange, FileRangeAPI } from '@/features/AnnotationFileRange';
-import { UserAPI, UserComponent } from '@/features/User';
+import { User } from '@/features/User';
 import { ensureValidQueryData } from '@/api/utils';
 import { ButtonGroup } from '@/components/base';
 
 const AnnotatorsPage: React.FC = () => {
     const { campaign, phase } = Route.useLoaderData()
 
-    const [ search, setSearch ] = useState<UserAPI.UserFragment | null | undefined>();
+    const [ search, setSearch ] = useState<User.Fragment | null | undefined>();
 
     return <Page.Authenticated>
         <Content oneContent>
@@ -23,7 +23,7 @@ const AnnotatorsPage: React.FC = () => {
 
             <Content oneContent inner>
                 <ButtonGroup>
-                    <UserComponent.Select onValueChange={ setSearch }/>
+                    <User.Select onValueChange={ setSearch }/>
                 </ButtonGroup>
 
                 <FileRange.Table campaign={ campaign }

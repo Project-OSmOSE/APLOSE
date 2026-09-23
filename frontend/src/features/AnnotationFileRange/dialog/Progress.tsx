@@ -7,7 +7,7 @@ import { AnnotationFileRangeNode, AnnotationTaskNodeNodeConnection, Maybe, UserN
 import { useDownloadAnnotations, useDownloadProgress } from '@/api/download';
 import { NBSP } from '@/service/type';
 import { useQuery } from '@tanstack/react-query';
-import { UserAPI } from '@/features/User';
+import { User } from '@/features/User';
 import { useLoaderData } from '@tanstack/react-router';
 import { Button, ButtonGroup } from '@/components/base/Button';
 import { Note } from '@/components/base/Note';
@@ -41,7 +41,7 @@ const DialogSkeleton: React.FC<{ children: ReactNode }> = ({ children }) => (
 
 export const Progress: React.FC = () => {
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
-    const { data, isLoading: isLoadingUsers, error: userError } = useQuery(UserAPI.allQuery)
+    const { data: users, isLoading: isLoadingUsers, error: userError } = useQuery(User.allQuery)
     const {
         data: allFileRanges,
         isFetching: isLoadingFileRanges,
@@ -68,14 +68,14 @@ export const Progress: React.FC = () => {
     const [ sort, setSort ] = useState<Sort>({ entry: 'Progress', sort: 'desc' });
 
     const progress = useMemo(() => {
-        if (!allFileRanges || !data || data.users.length === 0) return [];
+        if (!allFileRanges || !users || users.length === 0) return [];
         const progression = new Array<Progression>();
         for (const range of allFileRanges) {
             let progress: Progression | undefined = progression.find(p => p.user?.id === range!.annotator?.id);
             if (progress) {
                 progress.ranges.push(range!);
             } else {
-                const user = data.users.find(u => u!.id == range!.annotator?.id)!
+                const user = users.find(u => u!.id == range!.annotator?.id)!
                 progress = {
                     user,
                     ranges: [ range! ],
@@ -89,7 +89,7 @@ export const Progress: React.FC = () => {
             const total = p.ranges.reduce((v, r) => v + (r.filesCount ?? 0), 0);
             return { ...p, progress: total > 0 ? Math.trunc(100 * totalFinished / total) : 0 }
         })
-    }, [ allFileRanges, data ]);
+    }, [ allFileRanges, users ]);
 
     const sortedProgress = useMemo(() => {
         const collator = new Intl.Collator(undefined, {
@@ -157,7 +157,7 @@ export const Progress: React.FC = () => {
                 </Tbody>
             </Table>
 
-            { phase?.isUserAllowedToManage && data && allFileRanges && (
+            { phase?.isUserAllowedToManage && users && allFileRanges && (
                 <ButtonGroup spaceBetween>
                     { progress.length > 0 && <Fragment>
                         <Button onClick={ downloadAnnotations }>

@@ -3,7 +3,7 @@ import { createLazyFileRoute, useLoaderData } from '@tanstack/react-router';
 
 import { Head } from '@/components/ui';
 
-import { UserForm } from '@/features/User';
+import { User } from '@/features/User';
 import { Field } from '@/components/base/Field';
 import { Form } from '@/components/base/Form';
 import { Content } from '@/components/layout/Content';
@@ -25,9 +25,9 @@ const Account: React.FC = () => {
                 </Field.Root>
             </Form>
 
-            <UserForm.Email/>
+            <User.EmailForm/>
 
-            <UserForm.Password/>
+            <User.PasswordForm/>
         </Content>
     </Page.Authenticated>
 }

@@ -16,7 +16,7 @@ import { AnnotationsBloc } from '@/features/Annotator/Annotation/AnnotationsBloc
 import styles from './$spectrogramID.module.scss';
 import { type AllSpectrogramsFilters, AnnotationSpectrogramAPI } from '@/features/AnnotationSpectrogram';
 import { ensureValidQueryData } from '@/api/utils';
-import { UserAPI } from '@/features/User';
+import { User } from '@/features/User';
 import { ConfigBar } from '@/features/Annotator/ConfigBar';
 import { DownloadButtons } from '@/features/Annotator/DownloadButtons';
 import { CampaignAPI } from '@/features/AnnotationCampaign';
@@ -91,7 +91,7 @@ export const Route = createFileRoute(
     },
     loaderDeps: ({ search }) => search as AllSpectrogramsFilters,
     loader: async ({ params: { campaignID, phaseType, spectrogramID }, deps }) => {
-        const user = await ensureValidQueryData(UserAPI.currentQuery)
+        const user = await ensureValidQueryData(User.currentQuery)
         const [
             { spectrogram, ...data },
             { analysis },

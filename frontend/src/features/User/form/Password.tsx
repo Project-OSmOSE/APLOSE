@@ -17,7 +17,7 @@ const PWD_CONSTRAINTS: Omit<Partial<FieldControlProps>, 'required' | 'autoComple
     minLength: 8,
 }
 
-export const Password: React.FC = () => {
+export const PasswordForm: React.FC = () => {
     const { data: user } = useQuery(API.currentQuery)
     const [ newPasswordMismatch, setNewPasswordMismatch ] = useState<boolean>(false);
     const toastManager = Toast.useToastManager()

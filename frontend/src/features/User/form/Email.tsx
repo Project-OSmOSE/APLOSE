@@ -10,7 +10,7 @@ import * as API from '../api';
 import { updateEmailMutation } from '../api';
 import { Toast } from '@/components/base/Toast';
 
-export const Email: React.FC = () => {
+export const EmailForm: React.FC = () => {
     const { data: user } = useQuery(API.currentQuery)
     const toastManager = Toast.useToastManager()
     const {

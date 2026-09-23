@@ -1,9 +1,9 @@
 import type { GqlQuery } from './_types';
-import type { AllUsersQuery, GetCurrentUserQuery } from '../../../src/features/User';
+import { User } from '../../../src/features/User';
 import { userGroup, USERS, type UserType } from './types';
 
 
-export const GET_CURRENT_USER_QUERY: { [key in UserType | 'empty']: GetCurrentUserQuery } = {
+export const GET_CURRENT_USER_QUERY: { [key in UserType | 'empty']: User.GetCurrentQuery } = {
     annotator: {
         currentUser: {
             id: USERS.annotator.id,
@@ -50,7 +50,7 @@ export const GET_CURRENT_USER_QUERY: { [key in UserType | 'empty']: GetCurrentUs
 }
 
 export const USER_QUERIES: {
-    allUsers: GqlQuery<AllUsersQuery>,
+    allUsers: GqlQuery<User.AllQuery>,
 } = {
     allUsers: {
         defaultType: 'filled',

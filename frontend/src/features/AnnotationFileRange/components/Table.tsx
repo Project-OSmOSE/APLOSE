@@ -8,7 +8,7 @@ import { Center } from '@/components/layout';
 import * as API from '../api'
 import { FileRangeForm } from './Form'
 import styles from './styles.module.scss'
-import type { UserFragment } from '@/features/User';
+import { User } from '@/features/User';
 
 type CampaignType = Pick<AnnotationCampaignNode, 'spectrogramsCount'>
 type PhaseType = Pick<AnnotationPhaseNode, 'id'>
@@ -16,7 +16,7 @@ type PhaseType = Pick<AnnotationPhaseNode, 'id'>
 type FileRangeTableProps = {
     campaign: CampaignType;
     phase: PhaseType,
-    filterAnnotator?: Pick<UserFragment, 'id' | 'displayName'> | null,
+    filterAnnotator?: Pick<User.Fragment, 'id' | 'displayName'> | null,
 }
 type AnnotatorData = {
     annotator: API.FileRangeFragment['annotator'],
