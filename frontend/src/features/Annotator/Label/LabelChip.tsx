@@ -107,7 +107,10 @@ export const LabelChip: React.FC<{
         <Chip data-testid="label-chip"
               onClick={ select }
               { ...(isUsed ? { annotationColorIndex: index } : { color: 'medium' }) as Partial<ChipProps> }>
+
             { focusedLabel === label && <UnreadLinearIcon size={ 20 }/> }
+
+            <div className={ styles['colorIndicator-' + index%10] }/>
 
             <Popover.Root>
                 <Popover.Trigger render={ <span/> } nativeButton={ false }>
