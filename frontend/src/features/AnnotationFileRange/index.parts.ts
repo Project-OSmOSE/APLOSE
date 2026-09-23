@@ -6,4 +6,3 @@ export type * from './api'
 export * from './components'
 
 export * from './FileRangeActionBar'
-export * from './FileRangeInputRow'

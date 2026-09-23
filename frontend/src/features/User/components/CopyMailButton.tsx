@@ -1,8 +1,9 @@
 import React, { useCallback } from 'react';
-import { UserNode } from '@/api';
 import { LetterLinearIcon } from '@solar-icons/react';
+import { UserNode } from '@/api/types.gql-generated.ts';
 import { Toast } from '@/components/base/Toast';
 import { Popover } from '@/components/base/Popover';
+
 
 export type CopyMailButtonProps = { user: Pick<UserNode, 'email' | 'displayName'> }
 
