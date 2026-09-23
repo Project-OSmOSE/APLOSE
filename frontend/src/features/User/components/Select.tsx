@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Combobox, ComboboxSelect, type ComboboxSelectProps } from '@/components/base/Combobox';
 import { useQuery } from '@tanstack/react-query';
-import * as API from '@/features/User/api';
+import * as API from '../api';
 
 export const Select: React.FC<Omit<ComboboxSelectProps<API.Fragment>, 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue' | 'itemName' | 'filter'>> =
     ({ items, loading, ...props }) => {
