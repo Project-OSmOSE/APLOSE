@@ -15,6 +15,8 @@ class LabelSetAdmin(ExtendedModelAdmin):
         "show_labels",
     )
 
+    filter_horizontal = ("labels",)
+
     @admin.display(description="Labels")
     def show_labels(self, obj):
         """show_labels"""
