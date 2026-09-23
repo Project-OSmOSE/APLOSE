@@ -42,6 +42,8 @@ class AnnotationCampaignAdmin(ExtendedModelAdmin):
     )
     inlines = (AnnotationCampaignAnalysisRelationInline,)
 
+    filter_horizontal = ("labels_with_acoustic_features",)
+
     search_fields = (
         "name",
         "dataset__name",
