@@ -12,4 +12,5 @@ export const Tab: React.FC<Omit<LinkProps, 'replace' | 'ref'> & { active?: boole
                                                                                              ...props
                                                                                          }) =>
     <Link { ...props } replace
+          nativeButton={ false } render={ <div/> }
           className={ [ styles.tab, active ? styles.active : '', className ].join(' ') }/>

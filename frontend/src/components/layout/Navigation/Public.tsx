@@ -3,12 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from '@/components/base/Button';
 
 import { NavigationMenu } from '@/components/base/NavigationMenu';
-import { UserAPI } from '@/features/User';
+import { User } from '@/features/User';
 import styles from './Navigation.module.scss';
 import logo from '/images/logo/x96.png';
 
 export const Public: React.FC = () => {
-    const { data: user } = useQuery(UserAPI.currentQuery)
+    const { data: user } = useQuery(User.currentQuery)
 
     return <NavigationMenu.Root className={ [ styles.Navigation, styles.Public ].join(' ') }>
         <NavigationMenu.List>

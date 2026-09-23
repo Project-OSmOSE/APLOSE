@@ -5,14 +5,14 @@ import { Content, Page } from '@/components/layout';
 import { CampaignAPI } from '@/features/AnnotationCampaign';
 import { Phase } from '@/features/AnnotationPhase';
 import { FileRange, FileRangeAPI } from '@/features/AnnotationFileRange';
-import { UserAPI, UserComponent } from '@/features/User';
+import { User } from '@/features/User';
 import { ensureValidQueryData } from '@/api/utils';
 import { ButtonGroup } from '@/components/base';
 
 const AnnotatorsPage: React.FC = () => {
     const { campaign, phase } = Route.useLoaderData()
 
-    const [ search, setSearch ] = useState<UserAPI.UserFragment | null | undefined>();
+    const [ search, setSearch ] = useState<User.Fragment | null | undefined>();
 
     return <Page.Authenticated>
         <Content oneContent>
@@ -23,7 +23,7 @@ const AnnotatorsPage: React.FC = () => {
 
             <Content oneContent inner>
                 <ButtonGroup>
-                    <UserComponent.Search onSearch={ setSearch }/>
+                    <User.Select onValueChange={ setSearch }/>
                 </ButtonGroup>
 
                 <FileRange.Table campaign={ campaign }
@@ -51,10 +51,7 @@ export const Route = createFileRoute(
         ])
         if (!campaign) throw notFound()
         if (!phase) throw notFound()
-        const [ { users, groups }, allFileRanges ] = await Promise.all([
-            ensureValidQueryData(UserAPI.allQuery),
-            ensureValidQueryData(FileRangeAPI.listFileRanges({ phaseID: phase.id })),
-        ])
-        return { users, groups, allFileRanges, phase, campaign }
+        const allFileRanges = await ensureValidQueryData(FileRangeAPI.listFileRanges({ phaseID: phase.id }))
+        return { allFileRanges, phase, campaign }
     },
 })

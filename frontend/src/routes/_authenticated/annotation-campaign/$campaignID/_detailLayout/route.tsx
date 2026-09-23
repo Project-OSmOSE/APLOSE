@@ -4,7 +4,7 @@ import React, { Fragment } from 'react';
 import { Head, Tab, Tabs } from '@/components/ui';
 import { dateToString } from '@/service/function';
 import { NBSP } from '@/service/type';
-import { UserComponent } from '@/features/User';
+import { User } from '@/features/User';
 import { PhaseComponent } from '@/features/AnnotationPhase';
 import { Content } from '@/components/layout/Content';
 import { Page } from '@/components/layout';
@@ -20,7 +20,7 @@ const AnnotationCampaignDetail: React.FC = () => {
                   subtitle={ <Fragment>
                       Created on { dateToString(campaign.createdAt) } by { campaign.owner.displayName }
                       { campaign.owner.email &&
-                          <Fragment>{ NBSP }<UserComponent.CopyMailButton user={ campaign.owner }/>
+                          <Fragment>{ NBSP }<User.CopyMailButton user={ campaign.owner }/>
                           </Fragment> }
                   </Fragment> }/>
 

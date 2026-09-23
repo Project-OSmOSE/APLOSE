@@ -3,7 +3,7 @@ import { AnnotationPhaseType } from '@/api';
 import { ConfidenceComponent } from '@/features/Confidence';
 import { LabelComponent } from '@/features/Labels';
 import { DetectorComponent } from '@/features/Detector';
-import { UserComponent } from '@/features/User';
+import { User } from '@/features/User';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { Dialog } from '@/components/base/Dialog';
@@ -63,7 +63,6 @@ export const AnnotationsFilterModal: React.FC = () => {
     const onSubmit = useCallback((event: BaseUIEvent<FormEvent<HTMLFormElement>>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        console.debug([...formData.entries()])
         if (tmpWithAnnotations == true) {
             const withAcousticFeatures = formData.get('withAcousticFeatures') as string || undefined
             update({
@@ -138,9 +137,9 @@ export const AnnotationsFilterModal: React.FC = () => {
 
                 <Field.Root name="annotationAnnotator" horizontal>
                     <Field.Label>Filter by annotator</Field.Label>
-                    <UserComponent.Select items={ cleanGqlList(campaign.annotators) }
-                                          disabled={ tmpWithAnnotations !== true }
-                                          defaultValueString={ annotationAnnotator ?? undefined }/>
+                    <User.Select items={ cleanGqlList(campaign.annotators) }
+                                 disabled={ tmpWithAnnotations !== true }
+                                 defaultValueString={ annotationAnnotator ?? undefined }/>
                 </Field.Root>
 
             </Fragment> }

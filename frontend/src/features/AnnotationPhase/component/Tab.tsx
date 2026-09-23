@@ -96,7 +96,8 @@ export const Tab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: p
     if (data?.campaign && phase) {
         return <BaseTab to="/annotation-campaign/$campaignID/phase/$phaseType"
                         disabled={ isFetching }
-                        params={ { campaignID, phaseType } } active={ currentPhaseType === phaseType }>
+                        params={ { campaignID, phaseType } }
+                        active={ currentPhaseType === phaseType }>
 
             { phaseType }
 

@@ -1,7 +1,7 @@
 import React from 'react';
-import type { UserNode } from '@/api';
 import { Avatar as BaseAvatar } from '@/components/base/Avatar'
+import * as API from '../api'
 
-export const Avatar: React.FC<{ user: Pick<UserNode, 'displayName'> }> = ({ user }) => {
+export const Avatar: React.FC<{ user: Pick<API.Fragment, 'displayName'> }> = ({ user }) => {
     return <BaseAvatar name={ user.displayName }/>
 }
