@@ -51,12 +51,12 @@ export const GET_CURRENT_USER_QUERY: { [key in UserType | 'empty']: User.GetCurr
 
 export const USER_QUERIES: {
     allUsers: GqlQuery<User.AllQuery>,
+    allUserGroups: GqlQuery<User.AllGroupsQuery, 'filled' | 'staff'>,
 } = {
     allUsers: {
         defaultType: 'filled',
         empty: {
             allUsers: null,
-            allUserGroups: null,
         },
         filled: {
             allUsers: {
@@ -68,11 +68,31 @@ export const USER_QUERIES: {
                     expertise: u.expertise,
                 })),
             },
+        },
+    },
+    allUserGroups: {
+        defaultType: 'filled',
+        empty: {
+            allUserGroups: null,
+        },
+        filled: {
             allUserGroups: {
                 results: [ {
                     __typename: 'UserGroupNode',
                     id: userGroup.id,
                     name: userGroup.name,
+                    users: [ {
+                        id: USERS.staff.id,
+                    } ],
+                } ],
+            },
+        },
+        staff: {
+            allUserGroups: {
+                results: [ {
+                    __typename: 'UserGroupNode',
+                    id: '2',
+                    name: 'Staff group',
                     users: [ {
                         id: USERS.staff.id,
                     } ],

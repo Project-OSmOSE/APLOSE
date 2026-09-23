@@ -54,13 +54,14 @@ const TEST = {
                 getCurrentUser: as,
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phaseType }`,
                 allUsers: 'filled',
+                allUserGroups: 'staff',
             })
             await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase: phaseType }))
 
             const newUser = USERS.superuser
 
             await test.step('Add new annotator', async () => {
-                await page.phaseEdit.searchbar.fill(newUser.firstName);
+                await page.phaseEdit.userSelect.fill(newUser.firstName);
                 await page.getByRole('option', { name: newUser.firstName }).click();
                 await page.phaseEdit.getRow(newUser).getByRole('button', { name: 'Add file range' }).click()
                 await page.getByRole('spinbutton', { name: 'First file index *' }).fill('5')
@@ -75,15 +76,24 @@ const TEST = {
                 expect(variables.input.firstFileIndex).toEqual(4)
                 expect(variables.input.lastFileIndex).toEqual(14)
             })
+        }),
 
-            // TODO: handle groups in UI
-            // await test.step('Add annotator group', async () => {
-            //     await page.getByRole('combobox', { name: 'Select annotator or group' }).fill(userGroup.name);
-            //     await page.getByRole('option', { name: userGroup.name }).click();
-            //     await expect(page.phaseEdit.getRow(USERS.staff)).toBeVisible()
-            //     await expect(page.phaseEdit.getfirstIndexInput(USERS.staff)).toBeVisible()
-            //     await expect(page.phaseEdit.getlastIndexInput(USERS.staff)).toBeVisible()
-            // })
+    filterGroup: ({ as, phase: phaseType, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
+        test(`Filter group as ${ as } for "${ phaseType }" phase`, { tag }, async ({ page }) => {
+            await interceptRequests(page, {
+                getCurrentUser: as,
+                getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phaseType }`,
+                allUsers: 'filled',
+                allUserGroups: 'staff',
+            })
+            await test.step(`Navigate`, () => page.phaseEdit.go({ as, phase: phaseType }))
+
+            await test.step('Add annotator group', async () => {
+                await page.phaseEdit.userGroupSelect.fill('Staff group');
+                await page.getByRole('option', { name: 'Staff group' }).click();
+                await expect(page.phaseEdit.getRow(USERS.annotator)).not.toBeVisible()
+                await expect(page.phaseEdit.getRow(USERS.staff)).toBeVisible()
+            })
         }),
 
     editFileRange: ({ as, phase, tag }: Pick<Params, 'as' | 'phase' | 'tag'>) =>
@@ -157,5 +167,6 @@ test.describe('/annotation-campaign/:campaignID/phase/:phaseType/edit-annotators
     TEST.addFileRange({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
     TEST.editFileRange({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
     TEST.removeFileRange({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
+    TEST.filterGroup({ as, phase: AnnotationPhaseType.Annotation, tag: essentialTag })
 
 })
