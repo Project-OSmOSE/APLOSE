@@ -2,6 +2,8 @@ import { mutationOptions, queryOptions } from '@tanstack/react-query';
 import { queryKeys } from '@/api/queryKeys';
 import { graphqlClient } from '@/api/graphqlClient';
 import {
+    AllUserGroupsDocument,
+    type AllUserGroupsQuery,
     AllUsersDocument,
     type AllUsersQuery,
     GetCurrentUserDocument,
@@ -30,10 +32,13 @@ export const currentQuery = queryOptions({
 export const allQuery = queryOptions({
     queryKey: queryKeys.user.all,
     queryFn: () => graphqlClient.request<AllUsersQuery>(AllUsersDocument, {})
-        .then(data => ({
-            users: cleanGqlList(data.allUsers?.results),
-            groups: cleanGqlList(data.allUserGroups?.results),
-        })),
+        .then(data => cleanGqlList(data.allUsers?.results)),
+})
+
+export const allGroupsQuery = queryOptions({
+    queryKey: queryKeys.user.allGroups,
+    queryFn: () => graphqlClient.request<AllUserGroupsQuery>(AllUserGroupsDocument, {})
+        .then(data => cleanGqlList(data.allUserGroups?.results)),
 })
 
 export const updateEmailMutation = mutationOptions({

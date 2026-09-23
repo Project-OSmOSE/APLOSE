@@ -38,8 +38,8 @@ export const FileRangeForm: React.FC<FileRangeFormProps> = ({
         setIsPending?.(isUpdating || isCreating)
     }, [ isUpdating, isCreating ]);
 
-    const [ firstFileIndex, setFirstFileIndex ] = useState<number>(fileRange?.firstFileIndex ?? 0);
-    const [ lastFileIndex, setLastFileIndex ] = useState<number>(fileRange?.lastFileIndex ?? 0);
+    const [ firstFileIndex, setFirstFileIndex ] = useState<number>(fileRange?.firstFileIndex ?? 1);
+    const [ lastFileIndex, setLastFileIndex ] = useState<number>(fileRange?.lastFileIndex ?? campaign.spectrogramsCount);
 
     const otherFileRanges = useMemo(() => {
         return allFileRanges.filter(fr => fr.id !== fileRange?.id)
@@ -100,7 +100,7 @@ export const FileRangeForm: React.FC<FileRangeFormProps> = ({
             <Field.Root name="firstFileIndex">
                 <Field.Label required>First file index</Field.Label>
                 <Field.Control type="number"
-                               required min={ 0 } max={ campaign.spectrogramsCount }
+                               required min={ 1 } max={ campaign.spectrogramsCount }
                                value={ firstFileIndex }
                                onValueChange={ value => setFirstFileIndex(+value) }/>
                 <Field.Error/>
@@ -109,7 +109,7 @@ export const FileRangeForm: React.FC<FileRangeFormProps> = ({
             <Field.Root name="lastFileIndex">
                 <Field.Label required>Last file index</Field.Label>
                 <Field.Control type="number"
-                               required min={ 0 } max={ campaign.spectrogramsCount }
+                               required min={ 1 } max={ campaign.spectrogramsCount }
                                value={ lastFileIndex }
                                onValueChange={ value => setLastFileIndex(+value) }/>
                 <Field.Error/>

@@ -237,9 +237,8 @@ const FileRangeAction: React.FC<FileRangeActionProps> = ({ fileRange, allFileRan
     }, [ fileRange, alert ])
 
     const onRemove = useCallback(async () => {
-        let force: boolean | null = false;
         if (fileRange.completedAnnotationTasks?.totalCount) {
-            force = await alert.present({
+            const force = await alert.present({
                 title: 'File range already started',
                 message: 'The annotator already start annotating this file range. By removing it you will lost all associated annotations.',
                 buttons: [
@@ -261,7 +260,6 @@ const FileRangeAction: React.FC<FileRangeActionProps> = ({ fileRange, allFileRan
                 id: fileRange.id,
                 phaseID: phase.id,
                 annotatorID: fileRange.annotator.id,
-                force,
             })
         } catch (error) {
             toast.addError({

@@ -86,6 +86,7 @@ export const queryKeys = {
     },
     user: {
         all: [ 'user' ] as const,
+        allGroups: [ 'user-group' ] as const,
         current: [ 'user', 'current' ] as const,
     },
     label: {

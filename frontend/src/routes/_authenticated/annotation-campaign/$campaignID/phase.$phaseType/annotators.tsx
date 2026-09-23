@@ -23,7 +23,7 @@ const AnnotatorsPage: React.FC = () => {
 
             <Content oneContent inner>
                 <ButtonGroup>
-                    <UserComponent.Search onSearch={ setSearch }/>
+                    <UserComponent.Select onValueChange={ setSearch }/>
                 </ButtonGroup>
 
                 <FileRange.Table campaign={ campaign }
@@ -51,10 +51,7 @@ export const Route = createFileRoute(
         ])
         if (!campaign) throw notFound()
         if (!phase) throw notFound()
-        const [ { users, groups }, allFileRanges ] = await Promise.all([
-            ensureValidQueryData(UserAPI.allQuery),
-            ensureValidQueryData(FileRangeAPI.listFileRanges({ phaseID: phase.id })),
-        ])
-        return { users, groups, allFileRanges, phase, campaign }
+        const allFileRanges = await ensureValidQueryData(FileRangeAPI.listFileRanges({ phaseID: phase.id }))
+        return { allFileRanges, phase, campaign }
     },
 })
