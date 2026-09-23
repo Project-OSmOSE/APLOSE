@@ -16,19 +16,26 @@ type PhaseType = Pick<AnnotationPhaseNode, 'id'>
 type FileRangeTableProps = {
     campaign: CampaignType;
     phase: PhaseType,
-    filterAnnotator?: Pick<User.Fragment, 'id' | 'displayName'> | null,
+    filterAnnotators?: Pick<User.Fragment, 'id' | 'displayName'>[],
 }
 type AnnotatorData = {
     annotator: API.FileRangeFragment['annotator'],
     fileRanges: API.FileRangeFragment[]
 }
-export const FileRangeTable: React.FC<FileRangeTableProps> = ({ campaign, phase, filterAnnotator }) => {
+type Row = [ string, AnnotatorData ]
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function rowAlphabeticalSort([ _a, dataA ]: Row, [ _b, dataB ]: Row): number {
+    return dataA.annotator.displayName.localeCompare(dataB.annotator.displayName)
+}
+
+export const FileRangeTable: React.FC<FileRangeTableProps> = ({ campaign, phase, filterAnnotators }) => {
     const {
         data,
         isPending,
     } = useQuery(API.listFileRanges({ phaseID: phase.id }))
 
-    const groupedFileRanges: [ string, AnnotatorData ][] = useMemo(() => {
+    const groupedFileRanges: Row[] = useMemo(() => {
         return [ ...data?.reduce((prev, fileRange) => {
             const prevFileRanges = prev.get(fileRange.annotator.id)?.fileRanges ?? [];
             prev.set(fileRange.annotator.id, {
@@ -37,16 +44,16 @@ export const FileRangeTable: React.FC<FileRangeTableProps> = ({ campaign, phase,
             });
             return prev
         }, new Map<string, AnnotatorData>()).entries() ?? [] ]
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            .sort(([ _a, dataA ], [ _b, dataB ]) => dataA.annotator.displayName.localeCompare(dataB.annotator.displayName))
+            .sort(rowAlphabeticalSort)
     }, [ data ])
 
-    const filteredFileRanges: [ string, AnnotatorData ][] = useMemo(() => {
-        if (!filterAnnotator) return groupedFileRanges
-        const filtered = groupedFileRanges.filter(([ annotatorID ]) => annotatorID === filterAnnotator.id)
-        if (filtered.length > 0) return filtered
-        return [ [ filterAnnotator.id, { annotator: filterAnnotator, fileRanges: [] } satisfies AnnotatorData ] ]
-    }, [ groupedFileRanges, filterAnnotator ]);
+    const filteredFileRanges: Row[] = useMemo(() => {
+        if (!filterAnnotators) return groupedFileRanges
+        return filterAnnotators.map(annotator =>
+            groupedFileRanges.find(([ annotatorID ]) => annotator.id === annotatorID)
+            ?? [ annotator.id, { annotator, fileRanges: [] } satisfies AnnotatorData ] satisfies Row
+        ).sort(rowAlphabeticalSort)
+    }, [ groupedFileRanges, filterAnnotators ]);
 
     if (isPending) return <Center><Spinner/></Center>
     return <Table className={ styles.Table }>
@@ -127,7 +134,8 @@ const FileRangeRow: React.FC<FileRangeRowProps> = ({ campaign, phase, fileRanges
             { i === 0 && <Td rowSpan={ rows.length }>
                 <div className={ styles.assignedProgress }>
                     <ProgressNote value={ globalProgress }/>
-                    <Note color="medium" data>{ assignedCount }/{ campaign.spectrogramsCount } assigned</Note>
+                    <Note color={ assignedCount === 0 ? 'danger' : 'medium' }
+                          data>{ assignedCount }/{ campaign.spectrogramsCount } assigned</Note>
                 </div>
             </Td> }
 

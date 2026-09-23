@@ -1,4 +1,5 @@
-import { ExpertiseLevelType, type UserGroupNode, type UserNode } from '../../../../src/api/types.gql-generated';
+import { ExpertiseLevelType, type UserNode } from '../../../../src/api/types.gql-generated';
+import { User as UserFeature } from '../../../../src/features/User';
 
 export type User = Omit<UserNode, '__typename'
   | 'annotationcampaignSet'
@@ -43,8 +44,12 @@ export const USERS: { [key in UserType]: User } = {
   superuser: getUser('superuser', 4),
 }
 
-export type UserGroup = Omit<UserGroupNode, 'users'>
+export type UserGroup = UserFeature.GroupFragment
 export const userGroup: UserGroup = {
+  __typename: 'UserGroupNode',
   id: '1',
   name: 'Test group',
+  users: [
+    USERS.annotator,
+  ]
 }

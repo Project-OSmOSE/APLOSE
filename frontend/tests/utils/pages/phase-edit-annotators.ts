@@ -9,8 +9,13 @@ export class PhaseEditAnnotatorsPage {
         return this.page.getByRole('heading', { name: 'Annotators' })
     }
 
-    get searchbar(): Locator {
-        return this.page.getByRole('combobox', {name: 'Select user'})
+    get userSelect(): Locator {
+        return this.page.getByRole('combobox', { name: 'Select user', exact: true })
+    }
+
+
+    get userGroupSelect(): Locator {
+        return this.page.getByRole('combobox', { name: 'Select user group', exact: true })
     }
 
 

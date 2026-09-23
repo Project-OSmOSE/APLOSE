@@ -18,8 +18,7 @@ export class HomePage {
   }
 
   async go() {
-    await this.page.goto('/');
-    await this.page.waitForLoadState('domcontentloaded');
+    await this.page.goto('/', { waitUntil: 'domcontentloaded' });
   }
 
 }
