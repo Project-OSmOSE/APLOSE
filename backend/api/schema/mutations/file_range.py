@@ -78,6 +78,15 @@ class AnnotationFileRangeCreateMutation(DjangoModelFormMutation):
     class Meta:
         form_class = AnnotationFileRangeCreateForm
 
+    @classmethod
+    @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
+    def mutate_and_get_payload(cls, root, info, **input):
+        AnnotationPhase.objects.get_editable_or_fail(
+            user=info.context.user,
+            id=input["annotation_phase"],
+        )
+        return super().mutate_and_get_payload(root, info, **input)
+
 
 class AnnotationFileRangeUpdateMutation(DjangoModelFormMutation):
     """Create/Update annotation file range"""
@@ -86,21 +95,11 @@ class AnnotationFileRangeUpdateMutation(DjangoModelFormMutation):
         form_class = AnnotationFileRangeUpdateForm
 
     @classmethod
-    def get_form_kwargs(cls, root, info, **input):
-        kwargs = super().get_form_kwargs(root, info, **input)
-        pk = input.get("id")
-
-        if pk:
-            # Restrict which rows can be updated
-            kwargs["instance"] = AnnotationFileRange.objects.get_editable_or_fail(
-                user=info.context.user, pk=pk
-            )
-
-        return kwargs
-
-    @classmethod
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     def mutate_and_get_payload(cls, root, info, **input):
+        AnnotationFileRange.objects.get_editable_or_fail(
+            user=info.context.user, pk=input["id"]
+        )
         form_kwargs = cls.get_form_kwargs(root, info, **input)
         form = cls._meta.form_class(**form_kwargs)
 
@@ -127,7 +126,6 @@ class AnnotationFileRangeDeleteMutation(graphene.Mutation):
 
     class Arguments:
         id = graphene.ID(required=True)
-        force = graphene.Boolean()
 
     ok = graphene.Boolean(required=True)
     error = graphene.Field(ErrorType)
@@ -137,14 +135,13 @@ class AnnotationFileRangeDeleteMutation(graphene.Mutation):
         self,
         info,
         id: int,
-        force: bool = False,
     ):
         file_range = AnnotationFileRange.objects.get_editable_or_fail(
             user=info.context.user,
             id=id,
         )
         try:
-            file_range.delete(force=force)
+            file_range.delete(force=True)
         except AnnotationTask.CannotDeleteFinished as e:
             # noinspection PyArgumentList
             return AnnotationFileRangeDeleteMutation(ok=False, error=e.gql_type())

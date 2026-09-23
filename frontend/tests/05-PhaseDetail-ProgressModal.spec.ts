@@ -13,7 +13,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getAnnotationPhase: `${ as === 'annotator' ? '' : 'manager' }${ phase }`,
-                fileRangesForPhase: 'empty',
+                listFileRanges: 'empty',
                 allSpectrogramAnalysis: 'empty',
                 allAnnotationSpectrograms: 'empty',
             })

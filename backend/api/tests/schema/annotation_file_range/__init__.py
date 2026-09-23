@@ -1,2 +1,5 @@
 """API annotation annotation_file_range GraphQL tests"""
 from .all_annotation_file_ranges import AllAnnotationFileRangesTestCase
+from .create_file_range import CreateAnnotationFileRangeTestCase
+from .delete_file_range import DeleteAnnotationFileRangeTestCase
+from .update_file_range import UpdateAnnotationFileRangeTestCase

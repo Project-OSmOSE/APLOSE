@@ -82,6 +82,12 @@ class AnnotationFileRange(models.Model):
         #      ),
         #  )
 
+    def __str__(self):
+        return (
+            f"[Phase-{self.annotation_phase_id} | Annotator-{self.annotator_id}] "
+            f"{self.first_file_index}-{self.last_file_index}"
+        )
+
     first_file_index = models.PositiveIntegerField(validators=[MinValueValidator(0)])
     last_file_index = models.PositiveIntegerField(validators=[MinValueValidator(0)])
 
@@ -176,84 +182,71 @@ class AnnotationFileRange(models.Model):
     #          )
     #      )
 
-    @staticmethod
-    def get_connected_ranges(data):
+    def get_connected_ranges(self) -> QuerySet["AnnotationFileRange"]:
         """Recover connected ranges"""
         return (
             AnnotationFileRange.objects.filter(
-                annotator_id=data.annotator,
-                annotation_phase_id=data.annotation_phase,
+                annotator_id=self.annotator,
+                annotation_phase_id=self.annotation_phase_id,
             )
-            .exclude(id=data.id)
+            .exclude(id=self.id)
             .filter(
                 # get bigger
                 Q(
-                    first_file_index__lte=data.first_file_index,
-                    last_file_index__gte=data.last_file_index,
+                    first_file_index__lte=self.first_file_index,
+                    last_file_index__gte=self.last_file_index,
                 )
                 # get littler
                 | Q(
-                    first_file_index__gte=data.first_file_index,
-                    last_file_index__lte=data.last_file_index,
+                    first_file_index__gte=self.first_file_index,
+                    last_file_index__lte=self.last_file_index,
                 )
                 # get mixed
                 | Q(
-                    first_file_index__lte=data.first_file_index,
-                    last_file_index__gte=data.first_file_index,
-                    last_file_index__lte=data.last_file_index,
+                    first_file_index__lte=self.first_file_index,
+                    last_file_index__gte=self.first_file_index,
+                    last_file_index__lte=self.last_file_index,
                 )
                 | Q(
-                    first_file_index__gte=data.first_file_index,
-                    first_file_index__lte=data.last_file_index,
-                    last_file_index__gte=data.last_file_index,
+                    first_file_index__gte=self.first_file_index,
+                    first_file_index__lte=self.last_file_index,
+                    last_file_index__gte=self.last_file_index,
                 )
                 # get siblings
-                | Q(first_file_index=data.last_file_index + 1)
-                | Q(last_file_index=data.first_file_index - 1)
+                | Q(first_file_index=self.last_file_index + 1)
+                | Q(last_file_index=self.first_file_index - 1)
             )
         )
 
-    @staticmethod
-    def clean_connected_ranges(data: list[dict]):
+    def clean_connected_ranges(self):
         """Clean connected ranges to limit the number of different items"""
-        ids = [file_range["id"] for file_range in data]
-        return_ids = []
-        for range_id in ids:
-            queryset = AnnotationFileRange.objects.filter(id=range_id)
-            if not queryset.exists():
-                continue
-            item = queryset.first()
-            connected_ranges = AnnotationFileRange.get_connected_ranges(item)
-            if connected_ranges.exists():
-                # update connected
-                min_first_index = min(
-                    connected_ranges.order_by("first_file_index")
-                    .first()
-                    .first_file_index,
-                    item.first_file_index,
-                )
-                max_last_index = max(
-                    connected_ranges.order_by("-last_file_index")
-                    .first()
-                    .last_file_index,
-                    item.last_file_index,
-                )
-                instance = connected_ranges.order_by("id").first()
-                duplicates = AnnotationFileRange.objects.filter(
-                    annotator_id=instance.annotator_id,
-                    annotation_phase_id=instance.annotation_phase_id,
-                    first_file_index=min_first_index,
-                    last_file_index=max_last_index,
-                )
-                if duplicates.exists():
-                    instance = duplicates.first()
-                else:
-                    instance.first_file_index = min_first_index
-                    instance.last_file_index = max_last_index
-                    instance.save()
-                return_ids.append(instance.id)
-                connected_ranges.exclude(id=instance.id).delete()
-        return AnnotationFileRange.objects.filter(id__in=return_ids)
+        connected_ranges = self.get_connected_ranges()
+        if not connected_ranges.exists():
+            return
+
+        # update connected
+        min_first_index = min(
+            connected_ranges.order_by("first_file_index").first().first_file_index,
+            self.first_file_index,
+        )
+        max_last_index = max(
+            connected_ranges.order_by("-last_file_index").first().last_file_index,
+            self.last_file_index,
+        )
+        kept_instance = connected_ranges.order_by("id").first()
+        duplicates = AnnotationFileRange.objects.filter(
+            annotator_id=kept_instance.annotator_id,
+            annotation_phase_id=kept_instance.annotation_phase_id,
+            first_file_index=min_first_index,
+            last_file_index=max_last_index,
+        )
+        if duplicates.exists():
+            kept_instance = duplicates.first()
+        else:
+            kept_instance.first_file_index = min_first_index
+            kept_instance.last_file_index = max_last_index
+        kept_instance.get_connected_ranges().delete()
+        kept_instance.save()
 
     @staticmethod
     def get_finished_task_count_query() -> Subquery:
@@ -290,6 +283,7 @@ def clean_orphan_tasks():
 @receiver(signal=signals.post_save, sender=AnnotationFileRange)
 def after_save(**kwargs):
     """After file range saved"""
+    kwargs.get("instance").clean_connected_ranges()
     clean_orphan_tasks()
 
 

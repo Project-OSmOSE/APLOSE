@@ -41,8 +41,8 @@ mutation updateFileRange($input: AnnotationFileRangeUpdateMutationInput!) {
     }
 }
 
-mutation deleteFileRange($id: ID!, $force: Boolean) {
-    deleteFileRange(id: $id, force: $force) {
+mutation deleteFileRange($id: ID!) {
+    deleteFileRange(id: $id) {
         error {
             field
             messages
