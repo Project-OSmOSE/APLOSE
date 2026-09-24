@@ -2478,14 +2478,14 @@ files = [
 
 [[package]]
 name = "osekit"
-version = "1.0.1"
+version = "1.2.0"
 description = "OSEkit"
 optional = false
 python-versions = ">=3.12"
 groups = ["main"]
 files = [
-    {file = "osekit-1.0.1-py3-none-any.whl", hash = "sha256:f4056c2964104617528eca72d51ff15c987063c73d35614dc2b1fba1fc279dcf"},
-    {file = "osekit-1.0.1.tar.gz", hash = "sha256:bbb326d00e70c31f5235eb34dd73cec3d22784dfd7d710db363d6e3177abf25b"},
+    {file = "osekit-1.2.0-py3-none-any.whl", hash = "sha256:0e06806b30decbde0c49626d4f0016f6229523b4451ce0016eb2b344c0a68ab4"},
+    {file = "osekit-1.2.0.tar.gz", hash = "sha256:b206989f1ae13d361eddf08f2cb6151bf4b29ed240472039df694695a96a41c8"},
 ]
 
 [package.dependencies]
@@ -4079,4 +4079,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "cbcad2b92652c25f288ef9aede83f2fb1c21325894d8f3d8b5245d2e2f8a6fac"
+content-hash = "d333927e144b72b829a91f9f7981bdd91f355652e26ecc88713f4b83a7ffd466"

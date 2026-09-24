@@ -1,5 +1,7 @@
 #!/usr/bin bash
 #
+# /!\ Must hase LF line ending to run correctly on windows /!\
+#
 # check_forbidden_hash.sh
 #
 # Recursively searches a directory tree for "Math_Symbol.js" and "math_init.js",
