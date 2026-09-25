@@ -215,6 +215,11 @@
     border-radius: 0.5rem;
     border: 1px solid map.get(base.$colors, medium, line);
     border-top: none;
+    border-left: none;
+
+    th:first-child {
+      border-left: 1px solid map.get(base.$colors, medium, line);
+    }
 
     th, td {
       padding: 0.25rem 0.5rem;
@@ -280,7 +285,7 @@
     }
 
     tr {
-      th:first-child, td:first-child {
+      th:first-child {
         position: sticky;
         left: 0;
         z-index: 2;
@@ -293,6 +298,10 @@
 
     td.top, th.top {
       vertical-align: baseline;
+    }
+
+    td.bottom, th.bottom {
+      vertical-align: bottom;
     }
 
     tbody {

@@ -1,13 +1,19 @@
-import React from 'react';
-import { AnalysisComponent } from '../SpectrogramAnalysis';
+import React, { useMemo } from 'react';
+import {
+    CalendarMinimalisticBoldDuotoneIcon,
+    TargetBoldDuotoneIcon,
+    TelescopeBoldDuotoneIcon
+} from '@solar-icons/react';
 import { useLoaderData } from '@tanstack/react-router';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
-import { ButtonGroup, Note } from '@/components/base';
-import { CalendarMinimalisticBoldDuotoneIcon, TargetBoldDuotoneIcon } from '@solar-icons/react';
+import { ButtonGroup, Dialog, Note, Popover } from '@/components/base';
 import { Zoom } from '@/features/Annotator/Zoom';
 import { usePointer } from '@/features/Annotator/Pointer';
 import { formatTime } from '@/service/function';
+import { AnalysisComponent } from '@/features/SpectrogramAnalysis';
 import { ImageSettings } from './ImageSettings';
+import { MxData } from "../Mx";
+import { cleanGqlList } from "@/api/utils.ts";
 
 export const ConfigBar: React.FC = () => {
     const {
@@ -22,6 +28,8 @@ export const ConfigBar: React.FC = () => {
 
     // Pointer
     const pointer = usePointer()
+
+    const obs = useMemo(() => cleanGqlList(spectrogram.visualObservations), [ spectrogram ])
 
     return <ButtonGroup spaceBetween>
 
@@ -45,8 +53,27 @@ export const ConfigBar: React.FC = () => {
         </ButtonGroup> }
 
         <ButtonGroup>
-            <Note color="medium" flex><CalendarMinimalisticBoldDuotoneIcon size={ 16 }/></Note>
-            <Note color="dark">{ new Date(spectrogram.start).toUTCString() }</Note>
+            { obs.length > 0 && <Dialog.Root>
+                <Popover.Root>
+                    <Popover.Trigger render={ <div/> } nativeButton={ false }>
+                        <Dialog.Trigger color='primary'><TelescopeBoldDuotoneIcon size={ 20 }/></Dialog.Trigger>
+                    </Popover.Trigger>
+                    <Popover.Content>
+                        Visual observations
+                    </Popover.Content>
+                </Popover.Root>
+                <Dialog.Portal>
+                    <Dialog.Content>
+                        <Dialog.Title>Visual observations</Dialog.Title>
+                        <Dialog.CloseIcon/>
+                        <MxData.VisualObservationTable obs={ obs }/>
+                    </Dialog.Content>
+                </Dialog.Portal>
+            </Dialog.Root> }
+            <ButtonGroup smallGap>
+                <Note color="medium" flex><CalendarMinimalisticBoldDuotoneIcon size={ 16 }/></Note>
+                <Note color="dark">{ new Date(spectrogram.start).toUTCString() }</Note>
+            </ButtonGroup>
         </ButtonGroup>
 
     </ButtonGroup>

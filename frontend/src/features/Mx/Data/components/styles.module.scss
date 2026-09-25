@@ -1,0 +1,49 @@
+@use "@/css/base";
+@use 'sass:map';
+
+.Table {
+
+  table {
+    table-layout: fixed;
+
+    colgroup {
+      col.Source {
+        min-width: 12rem;
+      }
+
+      col.Count,
+      col.Distance,
+      col.YoungPresence,
+      col.Other {
+        width: 6rem;
+      }
+      col.OtherHumanActivity {
+        width: 10rem;
+      }
+      col.Time,
+      col.Behavior,
+      col.ReactionToBoat {
+        width: 16rem;
+      }
+    }
+  }
+
+  .Chips {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.2rem 0.4rem;
+  }
+
+  .successIcon {
+    color: map.get(base.$color_bases, success);
+  }
+}
+
+.OtherNote {
+  display: block;
+  max-width: 42rem;
+  max-height: 12rem;
+  overflow: auto;
+}

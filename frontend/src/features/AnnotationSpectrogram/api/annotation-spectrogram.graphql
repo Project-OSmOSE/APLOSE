@@ -106,6 +106,25 @@ query allAnnotationSpectrograms(
     }
 }
 
+fragment VisualObservation on VisualObservationNode {
+    source {
+        displayName
+    }
+    startDatetime
+    endDatetime
+    countMin
+    countMax
+    startDistanceMin
+    startDistanceMax
+    endDistanceMin
+    endDistanceMax
+    youngPresence
+    otherHumanActivityPresence
+    behaviors { name }
+    reactionsToBoat { name }
+    additionalInformation
+}
+
 query getAnnotationSpectrogram(
     $spectrogramID: ID!
     $annotatorID: ID!
@@ -266,6 +285,8 @@ query getAnnotationSpectrogram(
                 }
             }
         }
+
+        visualObservations { ...VisualObservation }
     }
 
     allAnnotationSpectrograms(
