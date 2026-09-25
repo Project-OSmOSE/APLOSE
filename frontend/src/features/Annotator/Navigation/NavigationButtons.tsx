@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect } from 'react';
 import styles from './styles.module.scss';
 import { Kbd } from '@/components/ui';
-import { useAnnotatorCanNavigate, useOpenAnnotator } from './hooks';
+import { useAnnotatorCanNavigate, useOpenAnnotatorParams } from './hooks';
 import { useAnnotatorSubmit } from '@/features/Annotator';
-import { useLoaderData, useParams, useSearch } from '@tanstack/react-router';
+import { useLoaderData, useNavigate, useParams, useSearch } from '@tanstack/react-router';
 import { queryClient } from '@/api/queryClient';
 import { Popover } from '@/components/base/Popover';
 import { AltArrowLeftLinearIcon, AltArrowRightLinearIcon } from '@solar-icons/react';
@@ -18,20 +18,20 @@ export const NavigationButtons: React.FC = () => {
         info,
         isEditionAuthorized,
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const navigate = useNavigate()
     const canNavigate = useAnnotatorCanNavigate()
-    const openAnnotator = useOpenAnnotator()
+    const prevAnnotatorParams = useOpenAnnotatorParams(info?.previousSpectrogramId)
+    const nextAnnotatorParams = useOpenAnnotatorParams(info?.nextSpectrogramId)
     const { submit, isPending } = useAnnotatorSubmit()
 
     const navPrevious = useCallback(async () => {
-        if (isPending) return;
         if (!info?.previousSpectrogramId) return;
-        if (await canNavigate()) openAnnotator(info.previousSpectrogramId)
-    }, [ openAnnotator, isPending, info, canNavigate ])
+        if (await canNavigate()) navigate(prevAnnotatorParams)
+    }, [ canNavigate, navigate, prevAnnotatorParams, info ])
     const navNext = useCallback(async () => {
-        if (isPending) return;
         if (!info?.nextSpectrogramId) return;
-        if (await canNavigate()) openAnnotator(info.nextSpectrogramId)
-    }, [ canNavigate, openAnnotator, isPending, info ])
+        if (await canNavigate()) navigate(nextAnnotatorParams)
+    }, [ canNavigate, navigate, nextAnnotatorParams, info ])
 
     useHotkey('ArrowLeft', navPrevious)
     useHotkey('ArrowRight', navNext)

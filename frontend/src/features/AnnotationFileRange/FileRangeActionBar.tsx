@@ -1,19 +1,15 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { CourseUpLinearIcon, PlayBoldIcon, RestartLinearIcon, UsersGroupRoundedLinearIcon } from '@solar-icons/react';
-import styles from './styles.module.scss';
+import { Button, Dialog, Link, Popover, Progress, Spinner } from '@/components/base';
 import { ActionBar } from '@/components/ui';
 import { PhaseComponent } from '@/features/AnnotationPhase';
 import { FileRangeDialog } from '@/features/AnnotationFileRange';
-import { useOpenAnnotator } from '@/features/Annotator/Navigation';
+import { useOpenAnnotatorParams } from '@/features/Annotator/Navigation';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
-import { useLoaderData, useNavigate } from '@tanstack/react-router';
-import { Button } from '@/components/base/Button';
-import { Popover } from '@/components/base/Popover';
-import { Progress } from '@/components/base/Progress';
-import { Dialog } from '@/components/base/Dialog';
-import { useQuery } from '@tanstack/react-query';
-import { Spinner } from '@/components/base';
 import { AnnotationSpectrogramAPI } from '../AnnotationSpectrogram';
+import styles from './styles.module.scss';
 
 const PAGE_SIZE = 20
 
@@ -35,7 +31,7 @@ export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPendin
         offset: PAGE_SIZE * ((search.page ?? 1) - 1),
         ...search,
     }))
-    const openAnnotator = useOpenAnnotator()
+    const resumeAnnotatorParams = useOpenAnnotatorParams(data?.resumeId, { resume: true })
 
     const updateSearch = useCallback((input: string) => {
         navigate({
@@ -66,11 +62,6 @@ export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPendin
         if (!data || data.spectrograms.length === 0) return 'No files to annotate'
         return 'Resume annotation'
     }, [ hasFilters, data ])
-
-    const resume = useCallback(() => {
-        if (!data || !data.resumeId) return;
-        openAnnotator(data.resumeId, { resume: true })
-    }, [ data, openAnnotator ])
 
     return <Fragment>
         <ActionBar search={ searchParams.search ?? undefined }
@@ -130,11 +121,13 @@ export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPendin
 
                        {/* Resume */ }
                        <Popover.Root>
-                           <Popover.Trigger color="primary" data-testid="resume"
-                                            disabled={ hasFilters || !data || data.spectrograms.length === 0 || !data.resumeId }
-                                            style={ { pointerEvents: 'unset' } }
-                                            onClick={ resume }>
-                               <PlayBoldIcon size={ 24 }/>
+                           <Popover.Trigger render={ <div/> } nativeButton={ false }>
+                               <Link color="primary"
+                                     data-testid="resume"
+                                     disabled={ hasFilters || !data || data.spectrograms.length === 0 || !data.resumeId }
+                                     { ...resumeAnnotatorParams }>
+                                   <PlayBoldIcon size={ 24 }/>
+                               </Link>
                            </Popover.Trigger>
                            <Popover.Content>{ resumeBtnTooltip }</Popover.Content>
                        </Popover.Root>

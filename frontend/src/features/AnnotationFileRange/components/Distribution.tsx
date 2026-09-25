@@ -20,7 +20,7 @@ export const FileRangeDistribution: React.FC<UpdateFileRangeDialogProps> = ({
     <div className={ styles.DistributionContainer }>
         { label && <Note className={ styles.Label } color={ color }>{ label }</Note> }
 
-        <Note data color="medium">0</Note>
+        <Note data color="medium">1</Note>
 
         <div className={ styles.Distribution }>
             { fileRanges.map(({ firstFileIndex, lastFileIndex }, index) =>
@@ -28,11 +28,11 @@ export const FileRangeDistribution: React.FC<UpdateFileRangeDialogProps> = ({
                     <Popover.Trigger className={ styles.Range }
                                      color={ color }
                                      style={ {
-                                         left: `${ firstFileIndex / spectrogramsCount * 100 }%`,
-                                         width: `${ (lastFileIndex - firstFileIndex) / spectrogramsCount * 100 }%`,
+                                         left: `${ (firstFileIndex - 1) / (spectrogramsCount) * 100 }%`,
+                                         width: `${ (lastFileIndex - (firstFileIndex - 1)) / (spectrogramsCount) * 100 }%`,
                                      } }/>
                     <Popover.Content>
-                        <Note data color="medium">{ firstFileIndex } - { lastFileIndex }</Note>
+                        <Note data color="medium">{ (firstFileIndex - 1) } - { lastFileIndex - 1 }</Note>
                     </Popover.Content>
                 </Popover.Root>,
             ) }

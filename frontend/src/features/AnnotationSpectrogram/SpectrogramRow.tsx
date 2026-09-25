@@ -1,4 +1,5 @@
 import React, { Fragment, useMemo } from 'react';
+import { useLoaderData } from '@tanstack/react-router';
 import { AltArrowRightLinearIcon, CheckCircleBoldIcon, RecordLinearIcon } from '@solar-icons/react';
 import {
     AnnotationNodeNodeConnection,
@@ -7,13 +8,12 @@ import {
     AnnotationTaskNode,
     AnnotationTaskStatus,
     type Maybe,
-} from '@/api';
+} from '@/api/types.gql-generated.ts';
 import { Td, Th, Tr } from '@/components/ui';
-import { useOpenAnnotator } from '@/features/Annotator/Navigation';
+import { Link } from '@/components/base';
+import { useOpenAnnotatorParams } from '@/features/Annotator/Navigation';
 import { formatTime } from '@/service/function';
 import styles from './styles.module.scss'
-import { useLoaderData } from '@tanstack/react-router';
-import { Button } from '@/components/base/Button';
 
 export const SpectrogramRow: React.FC<{
     spectrogram: Pick<AnnotationSpectrogramNode, 'id' | 'filename' | 'duration' | 'start' | 'isAssigned'>,
@@ -23,7 +23,7 @@ export const SpectrogramRow: React.FC<{
     validAnnotationsToCheck?: Maybe<Pick<AnnotationNodeNodeConnection, 'totalCount'>>;
 }> = ({ spectrogram, task, userAnnotations, annotationsToCheck, validAnnotationsToCheck }) => {
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
-    const openAnnotator = useOpenAnnotator()
+    const openAnnotatorParams = useOpenAnnotatorParams(spectrogram.id)
 
     const submitted = useMemo(() => task?.status === AnnotationTaskStatus.Finished, [ task ])
     const start = useMemo(() => new Date(spectrogram.start), [ spectrogram ])
@@ -54,11 +54,11 @@ export const SpectrogramRow: React.FC<{
             </Fragment> : '-' }
         </Td>
         <Td>
-            <Button color="primary"
-                    data-testid="access-button"
-                    onClick={ () => openAnnotator(spectrogram.id) }>
+            <Link color="primary"
+                  data-testid="access-button"
+                  { ...openAnnotatorParams }>
                 <AltArrowRightLinearIcon size={ 24 }/>
-            </Button>
+            </Link>
         </Td>
     </Tr>
 }

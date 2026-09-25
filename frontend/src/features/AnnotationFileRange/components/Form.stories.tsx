@@ -27,6 +27,7 @@ const meta = {
                        ] }
                        setIsPending={ fn() }
                        onCancel={ fn() }
+                       onSuccess={ fn() }
         />
     ),
     parameters: {
