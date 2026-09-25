@@ -199,6 +199,7 @@ const FileRangeRow: React.FC<FileRangeRowProps> = ({ campaign, phase, fileRanges
                                    annotator={ annotator }
                                    campaign={ campaign }
                                    onCancel={ () => setIsCreateOpen(false) }
+                                   onSuccess={ () => setIsCreateOpen(false) }
                                    setIsPending={ setIsCreating }/>
                 </Dialog.Content>
             </Dialog.Portal>
@@ -302,6 +303,7 @@ const FileRangeAction: React.FC<FileRangeActionProps> = ({ fileRange, allFileRan
                                    annotator={ fileRange.annotator }
                                    campaign={ campaign }
                                    onCancel={ () => setIsUpdateOpen(false) }
+                                   onSuccess={ () => setIsUpdateOpen(false) }
                                    setIsPending={ setIsUpdating }/>
                 </Dialog.Content>
             </Dialog.Portal>

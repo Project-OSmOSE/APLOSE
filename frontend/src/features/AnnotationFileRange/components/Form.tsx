@@ -15,6 +15,7 @@ type FileRangeFormProps = {
     allFileRanges?: Pick<API.FileRangeFragment, 'id' | 'firstFileIndex' | 'lastFileIndex'>[],
     setIsPending?: (state: boolean) => void,
     onCancel: () => void,
+    onSuccess: () => void,
 }
 export const FileRangeForm: React.FC<FileRangeFormProps> = ({
                                                                 campaign,
@@ -24,6 +25,7 @@ export const FileRangeForm: React.FC<FileRangeFormProps> = ({
                                                                 allFileRanges = [],
                                                                 setIsPending,
                                                                 onCancel,
+                                                                onSuccess,
                                                             }) => {
     const {
         mutateAsync: updateMutationAsync,
@@ -59,7 +61,8 @@ export const FileRangeForm: React.FC<FileRangeFormProps> = ({
         } catch (error) {
             toast.addError({ error, title: 'Error while creating file range' })
         }
-    }, [ firstFileIndex, lastFileIndex, annotator, phase, createMutationAsync, toast ])
+        onSuccess()
+    }, [ firstFileIndex, lastFileIndex, annotator, phase, createMutationAsync, onSuccess, toast ])
 
     const update = useCallback(async () => {
         if (!fileRange) return
@@ -76,7 +79,8 @@ export const FileRangeForm: React.FC<FileRangeFormProps> = ({
         } catch (error) {
             toast.addError({ error, title: 'Error while updating file range' })
         }
-    }, [ firstFileIndex, lastFileIndex, annotator, fileRange, phase, updateMutationAsync, toast ])
+        onSuccess()
+    }, [ firstFileIndex, lastFileIndex, annotator, fileRange, phase, updateMutationAsync, onSuccess, toast ])
 
     const submit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
