@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { Toast } from '@/components/base/Toast';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
-import { useOpenAnnotator } from '@/features/Annotator/Navigation';
+import { useOpenAnnotatorParams } from '@/features/Annotator/Navigation';
 import { convertAnnotationsToPost, selectAllAnnotations } from '@/features/Annotator/Annotation';
 import { convertCommentsToPost, selectTaskComments } from '@/features/Annotator/Comment';
 import { useAppSelector } from '@/features/App';
@@ -25,7 +25,7 @@ export const useAnnotatorSubmit = () => {
         info,
         isEditionAuthorized,
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
-    const openAnnotator = useOpenAnnotator()
+    const openAnnotatorParams = useOpenAnnotatorParams(info?.nextSpectrogramId)
     const toastManager = Toast.useToastManager()
     const navigate = useNavigate()
     const allAnnotations = useAppSelector(selectAllAnnotations)
@@ -73,7 +73,7 @@ export const useAnnotatorSubmit = () => {
     useEffect(() => {
         if (!isSuccess) return;
         if (info?.nextSpectrogramId) {
-            openAnnotator(info.nextSpectrogramId);
+            navigate(openAnnotatorParams);
         } else {
             navigate({
                 to: '/annotation-campaign/$campaignID/phase/$phaseType',
