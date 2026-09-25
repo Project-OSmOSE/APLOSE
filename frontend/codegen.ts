@@ -11,7 +11,7 @@ const config: CodegenConfig = {
     schema: 'schema.graphql',
     ignoreNoDocuments: true,
     generates: {
-        // 1️⃣ Generic TypeScript types (unique source)
+        // 1️⃣  Generic TypeScript types (unique source)
         'src/api/types.gql-generated.ts': {
             documents: 'src/api/**/*.graphql',
             plugins: [ 'typescript' ],

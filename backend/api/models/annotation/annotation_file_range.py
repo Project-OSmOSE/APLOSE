@@ -191,22 +191,27 @@ class AnnotationFileRange(models.Model):
             )
             .exclude(id=self.id)
             .filter(
-                # get bigger
+                # A |-------|
+                # B   |--|
                 Q(
                     first_file_index__lte=self.first_file_index,
                     last_file_index__gte=self.last_file_index,
                 )
-                # get littler
+                # A   |--|
+                # B |-------|
                 | Q(
                     first_file_index__gte=self.first_file_index,
                     last_file_index__lte=self.last_file_index,
                 )
-                # get mixed
+                # A |----|
+                # B   |-----|
                 | Q(
                     first_file_index__lte=self.first_file_index,
                     last_file_index__gte=self.first_file_index,
                     last_file_index__lte=self.last_file_index,
                 )
+                # A   |-----|
+                # B |----|
                 | Q(
                     first_file_index__gte=self.first_file_index,
                     first_file_index__lte=self.last_file_index,

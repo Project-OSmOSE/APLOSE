@@ -6,6 +6,7 @@ from django_extension.schema.errors import NotFoundError
 from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 from django_extension.schema.types import ExtendedNode
 from graphql import GraphQLResolveInfo
+from metadatax.data.schema import VisualObservationNode
 
 from backend.api.models import (
     Spectrogram,
@@ -94,6 +95,7 @@ class AnnotationSpectrogramNode(ExtendedNode):
         phase=AnnotationPhaseType(required=True),
     )
 
+    @graphene_django_optimizer.resolver_hints()
     def resolve_task(
         self: Spectrogram,
         info: GraphQLResolveInfo,
@@ -118,3 +120,5 @@ class AnnotationSpectrogramNode(ExtendedNode):
                     phase=phase.value,
                 ),
             )
+
+    visual_observations = graphene.List(VisualObservationNode)
