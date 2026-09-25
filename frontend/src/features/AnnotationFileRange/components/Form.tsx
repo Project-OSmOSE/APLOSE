@@ -58,10 +58,10 @@ export const FileRangeForm: React.FC<FileRangeFormProps> = ({
                     lastFileIndex,
                 },
             })
+            onSuccess()
         } catch (error) {
             toast.addError({ error, title: 'Error while creating file range' })
         }
-        onSuccess()
     }, [ firstFileIndex, lastFileIndex, annotator, phase, createMutationAsync, onSuccess, toast ])
 
     const update = useCallback(async () => {
@@ -76,10 +76,10 @@ export const FileRangeForm: React.FC<FileRangeFormProps> = ({
                     lastFileIndex,
                 },
             })
+            onSuccess()
         } catch (error) {
             toast.addError({ error, title: 'Error while updating file range' })
         }
-        onSuccess()
     }, [ firstFileIndex, lastFileIndex, annotator, fileRange, phase, updateMutationAsync, onSuccess, toast ])
 
     const submit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {

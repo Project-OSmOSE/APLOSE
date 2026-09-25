@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { Toast } from '@/components/base/Toast';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { useOpenAnnotatorParams } from '@/features/Annotator/Navigation';
@@ -30,25 +30,37 @@ export const useAnnotatorSubmit = () => {
     const navigate = useNavigate()
     const allAnnotations = useAppSelector(selectAllAnnotations)
     const taskComments = useAppSelector(selectTaskComments)
-    const { mutate: submitTask, isSuccess, error, ...submitInfo } = useMutation(TaskAPI.submitMutation)
+    const { mutateAsync: submitTask, ...submitInfo } = useMutation(TaskAPI.submitMutation)
 
     const params = Route.useParams();
     const search = Route.useSearch();
     const allFileIsSeen = useAppSelector(selectAllFileIsSeen)
     const start = useAppSelector(selectStart)
 
-    const realSubmit = useCallback(() => {
+    const realSubmit = useCallback(async () => {
         if (!isEditionAuthorized) return;
-        submitTask({
-            campaignID: campaign.id,
-            spectrogramID: spectrogram.id,
-            phase: phase.phase,
-            annotations: convertAnnotationsToPost(allAnnotations),
-            taskComments: convertCommentsToPost(taskComments),
-            startedAt: start.toISOString(),
-            endedAt: new Date().toISOString(),
-        })
-    }, [ isEditionAuthorized, allAnnotations, submitTask, start, taskComments, campaign, phase, spectrogram ])
+        try {
+            await submitTask({
+                campaignID: campaign.id,
+                spectrogramID: spectrogram.id,
+                phase: phase.phase,
+                annotations: convertAnnotationsToPost(allAnnotations),
+                taskComments: convertCommentsToPost(taskComments),
+                startedAt: start.toISOString(),
+                endedAt: new Date().toISOString(),
+            })
+            if (info?.nextSpectrogramId) {
+                navigate(openAnnotatorParams);
+            } else {
+                navigate({
+                    to: '/annotation-campaign/$campaignID/phase/$phaseType',
+                    params, search, replace: true
+                })
+            }
+        } catch (error) {
+            toastManager.addError({ title: 'Submission failed', error })
+        }
+    }, [ isEditionAuthorized, allAnnotations, submitTask, navigate, info, params, search, openAnnotatorParams, start, taskComments, campaign, phase, spectrogram, toastManager ])
     const submit = useCallback(() => {
         if (!isEditionAuthorized) return;
         if (!allFileIsSeen) {
@@ -70,21 +82,5 @@ export const useAnnotatorSubmit = () => {
     }, [ toastManager, realSubmit, isEditionAuthorized, allFileIsSeen ])
     useHotkey('Enter', () => submit())
 
-    useEffect(() => {
-        if (!isSuccess) return;
-        if (info?.nextSpectrogramId) {
-            navigate(openAnnotatorParams);
-        } else {
-            navigate({
-                to: '/annotation-campaign/$campaignID/phase/$phaseType',
-                params, search, replace: true
-            })
-        }
-    }, [ isSuccess, navigate ]);
-
-    useEffect(() => {
-        if (error) toastManager.addError({ title: 'Submission failed', error })
-    }, [ error ]);
-
-    return { submit, isSuccess, error, ...submitInfo }
+    return { submit, ...submitInfo }
 }
