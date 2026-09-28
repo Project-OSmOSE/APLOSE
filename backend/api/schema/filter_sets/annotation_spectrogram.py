@@ -1,4 +1,6 @@
-from django.db.models import QuerySet, Exists, OuterRef, Subquery
+from typing import Optional
+
+from django.db.models import QuerySet, OuterRef, Q, Exists
 from django_extension.filters import ExtendedFilterSet, IDFilter
 from django_filters import OrderingFilter, filters
 from graphene_django import filter
@@ -8,8 +10,11 @@ from backend.api.models import (
     AnnotationFileRange,
     AnnotationTask,
     Annotation,
-    AnnotationPhase,
     AnnotationCampaign,
+    Confidence,
+    Label,
+    Detector,
+    AnnotationPhase,
 )
 from backend.api.schema.enums import AnnotationPhaseType, AnnotationTaskStatus
 from backend.aplose.models import User
@@ -46,152 +51,147 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
         return queryset
 
     def filter_queryset(self, queryset: QuerySet[Spectrogram]):
-        queryset = super().filter_queryset(queryset)
+        queryset: QuerySet[Spectrogram] = super().filter_queryset(queryset)
 
-        queryset, file_ranges, tasks, annotations = self._get_querysets_for_filter(
-            queryset, only_assigned=self.data.get("only_assigned", False)
+        # Filter: phase [AnnotationPhase.Type]
+        filter_phase: Optional[AnnotationPhase.Type] = self.data.get("phase")
+        # Filter: annotation_campaign [ID]
+        filter_annotation_campaign: Optional[
+            AnnotationCampaign
+        ] = AnnotationCampaign.objects.filter(
+            id=self.data.get("annotation_campaign")
+        ).first()
+        # Filter: annotator [ID]
+        filter_annotator: Optional[User] = User.objects.filter(
+            id=self.data.get("annotator")
+        ).first()
+
+        # Filter: annotation_tasks__status [AnnotationTaskStatus]
+        filter_annotation_tasks__status: Optional[AnnotationTaskStatus] = self.data.get(
+            "annotation_tasks__status"
         )
 
+        # Filter: annotations__exists [bool]
+        filter_annotations__exists: Optional[bool] = self.data.get(
+            "annotations__exists"
+        )
+        # Filter: annotations__confidence [ID]
+        filter_annotations__confidence: Optional[
+            Confidence
+        ] = Confidence.objects.filter(
+            pk=self.data.get("annotations__confidence")
+        ).first()
+        # Filter: annotations__label [ID]
+        filter_annotations__label: Optional[Label] = Label.objects.filter(
+            pk=self.data.get("annotations__label")
+        ).first()
+        # Filter: annotations__acoustic_features__exists [bool]
+        filter_annotations__acoustic_features__exists: Optional[bool] = self.data.get(
+            "annotations__acoustic_features__exists"
+        )
+        # Filter: annotations__detector [ID]
+        filter_annotations__detector: Optional[Detector] = Detector.objects.filter(
+            pk=self.data.get("annotations__detector")
+        ).first()
+        # Filter: annotations__annotator [ID]
+        filter_annotations__annotator: Optional[User] = User.objects.filter(
+            pk=self.data.get("annotations__annotator")
+        ).first()
+
+        # Filter: only_assigned [bool]
+        filter_only_assigned: bool = (
+            self.data.get("only_assigned", False) is not False
+            or filter_annotations__exists is not None
+            or filter_annotation_tasks__status is not None
+        )
+
+        # => QuerySet[AnnotationFileRange] & QuerySet[Annotation]
+        file_ranges: QuerySet[AnnotationFileRange] = AnnotationFileRange.objects.all()
+        annotations: QuerySet[Annotation] = Annotation.objects.all()
+        if filter_annotator:
+            file_ranges = AnnotationFileRange.objects.filter_viewable_by(
+                user=filter_annotator
+            )
+        if filter_annotation_campaign:
+            file_ranges = file_ranges.filter(
+                annotation_phase__annotation_campaign=filter_annotation_campaign
+            )
+            annotations = annotations.filter(
+                annotation_phase__annotation_campaign=filter_annotation_campaign
+            )
+            queryset = queryset.filter(
+                analysis__annotation_campaigns=filter_annotation_campaign
+            )
+        if filter_phase:
+            file_ranges = file_ranges.filter(annotation_phase__phase=filter_phase)
+            if filter_phase == AnnotationPhase.Type.ANNOTATION:
+                annotations = annotations.filter(annotation_phase__phase=filter_phase)
+                if filter_annotator:
+                    annotations = annotations.filter(annotator=filter_annotator)
+            elif filter_annotator:
+                annotations = annotations.filter(
+                    ~Q(
+                        annotator=filter_annotator,
+                        annotation_phase__phase=AnnotationPhase.Type.ANNOTATION,
+                    )
+                )
+
+        # Filter assigned spectrograms
+        if filter_only_assigned:
+            queryset = queryset.filter(
+                Exists(
+                    file_ranges.filter(
+                        from_datetime__lte=OuterRef("start"),
+                        to_datetime__gte=OuterRef("end"),
+                    )
+                )
+            )
+
         # Filter on task status
-        status = self.data.get("annotation_tasks__status")
-        if status:
-            # Filter through existing file range - only assigned tasks have status
-            queryset = queryset.filter(
-                Exists(
-                    file_ranges.filter(
-                        from_datetime__lte=OuterRef("start"),
-                        to_datetime__gte=OuterRef("end"),
+        if filter_annotation_tasks__status:
+            tasks_ids = []
+            for fr in file_ranges:
+                tasks_ids += fr.tasks.values_list("id", flat=True)
+            tasks: QuerySet[AnnotationTask] = AnnotationTask.objects.filter(
+                id__in=tasks_ids
+            )
+            finished_task_spectrogram_ids = tasks.filter(
+                status=AnnotationTask.Status.FINISHED
+            ).values_list("spectrogram_id", flat=True)
+            query = Q(id__in=finished_task_spectrogram_ids)
+            if filter_annotation_tasks__status == AnnotationTask.Status.FINISHED:
+                queryset = queryset.filter(query)
+            if filter_annotation_tasks__status == AnnotationTask.Status.CREATED:
+                queryset = queryset.filter(~query)  # Created task may not exist at all
+
+        if filter_annotations__exists is not None:
+            if filter_annotations__exists:
+                if filter_annotations__label:
+                    annotations = annotations.filter(label=filter_annotations__label)
+                if filter_annotations__confidence:
+                    annotations = annotations.filter(
+                        confidence=filter_annotations__confidence
                     )
-                )
-            )
-            q = Exists(
-                tasks.filter(
-                    status=AnnotationTask.Status.FINISHED, spectrogram_id=OuterRef("id")
-                )
-            )
-            if status == AnnotationTask.Status.FINISHED:
-                queryset = queryset.filter(q)
-            if status == AnnotationTask.Status.CREATED:
-                queryset = queryset.filter(~q)
-
-        # Filter on annotations status
-        if self.data.get("annotations__exists") is not None:
-            # Filter through existing file range - only assigned tasks can have annotations - or not
-            queryset = queryset.filter(
-                Exists(
-                    file_ranges.filter(
-                        from_datetime__lte=OuterRef("start"),
-                        to_datetime__gte=OuterRef("end"),
+                if filter_annotations__annotator:
+                    annotations = annotations.filter(
+                        annotator=filter_annotations__annotator
                     )
-                )
-            )
-
-            label = self.data.get("annotations__label")
-            if label:
-                annotations = annotations.filter(label__id=label)
-
-            confidence = self.data.get("annotations__confidence")
-            if confidence:
-                annotations = annotations.filter(confidence__id=confidence)
-
-            features_exists = self.data.get("annotations__acoustic_features__exists")
-            if features_exists:
-                annotations = annotations.filter(
-                    acoustic_features__isnull=not features_exists
-                )
-
-            detector = self.data.get("annotations__detector")
-            if detector:
-                annotations = annotations.filter(
-                    detector_configuration__detector_id=detector
-                )
-
-            a_annotator = self.data.get("annotations__annotator")
-            if a_annotator:
-                annotations = annotations.filter(annotator_id=a_annotator)
-
-            q = Exists(
-                Subquery(
-                    annotations.filter(
-                        spectrogram_id=OuterRef("id"),
+                if filter_annotations__detector:
+                    annotations = annotations.filter(
+                        detector_configuration__detector=filter_annotations__detector
                     )
-                )
-            )
-            if self.data.get("annotations__exists"):
-                queryset = queryset.filter(q)
+                if filter_annotations__acoustic_features__exists is not None:
+                    annotations = annotations.filter(
+                        acoustic_features__isnull=not filter_annotations__acoustic_features__exists
+                    )
+
+                annotations_spectrogram_ids = annotations.values_list(
+                    "spectrogram_id", flat=True
+                ).distinct()
+                queryset = queryset.filter(id__in=annotations_spectrogram_ids)
             else:
-                queryset = queryset.filter(~q)
+                queryset = queryset.filter(
+                    ~Q(id__in=annotations.values_list("spectrogram_id", flat=True))
+                )
 
         return queryset.distinct()
-
-    def _get_querysets_for_filter(
-        self, queryset: QuerySet[Spectrogram], only_assigned=False
-    ) -> tuple[
-        QuerySet[Spectrogram],
-        QuerySet[AnnotationFileRange],
-        QuerySet[AnnotationTask],
-        QuerySet[Annotation],
-    ]:
-        can_see_unassigned = False
-
-        spectrograms = queryset
-        file_ranges = AnnotationFileRange.objects.all()
-        tasks = AnnotationTask.objects.all()
-        annotations = Annotation.objects.all()
-
-        phase_type = self.data.get("phase")
-        if phase_type:
-            file_ranges = file_ranges.filter(annotation_phase__phase=phase_type)
-            tasks = tasks.filter(annotation_phase__phase=phase_type)
-
-        campaign_id = self.data.get("annotation_campaign")
-        if campaign_id:
-            file_ranges = file_ranges.filter(
-                annotation_phase__annotation_campaign_id=campaign_id
-            )
-            tasks = tasks.filter(annotation_phase__annotation_campaign_id=campaign_id)
-            annotations = annotations.filter(
-                annotation_phase__annotation_campaign_id=campaign_id
-            )
-            spectrograms = spectrograms.filter(
-                analysis__annotation_campaigns__id=campaign_id
-            )
-
-        if phase_type and campaign_id:
-            if phase_type == AnnotationPhase.Type.ANNOTATION:
-                annotations = annotations.filter(
-                    annotation_phase__phase=phase_type,
-                    annotation_phase__annotation_campaign_id=campaign_id,
-                )
-
-        annotator_id = self.data.get("annotator")
-        if annotator_id:
-            user = User.objects.get(pk=annotator_id)
-            file_ranges = file_ranges.filter(annotator=user)
-            tasks = tasks.filter(annotator=user)
-            if phase_type == AnnotationPhase.Type.ANNOTATION:
-                annotations = annotations.filter(annotator=user)
-            if user.is_superuser or user.is_staff:
-                can_see_unassigned = True
-            if campaign_id:
-                campaign = AnnotationCampaign.objects.get(pk=campaign_id)
-                if campaign.owner_id == user.id:
-                    can_see_unassigned = True
-                if (
-                    phase_type
-                    and campaign.phases.get(phase=phase_type).created_by_id == user.id
-                ):
-                    can_see_unassigned = True
-
-        if only_assigned or not can_see_unassigned:
-            # Filter through existing file range
-            spectrograms = spectrograms.filter(
-                Exists(
-                    file_ranges.filter(
-                        from_datetime__lte=OuterRef("start"),
-                        to_datetime__gte=OuterRef("end"),
-                    )
-                )
-            )
-
-        return spectrograms, file_ranges, tasks, annotations

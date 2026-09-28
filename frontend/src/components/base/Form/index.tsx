@@ -12,15 +12,15 @@ export type FormProps = Omit<BaseProps, 'className'> & {
     gqlErrors?: (ErrorType | null)[] | null
 };
 
-export const Form: React.FC<FormProps> = React.memo(({
-                                                         className,
-                                                         horizontal,
-                                                         center,
-                                                         gqlErrors,
-                                                         errors,
-                                                         children,
-                                                         ...props
-                                                     }) => {
+export const Form = React.forwardRef<HTMLFormElement, FormProps>(({
+                                                               className,
+                                                               horizontal,
+                                                               center,
+                                                               gqlErrors,
+                                                               errors,
+                                                               children,
+                                                               ...props
+                                                           }, ref) => {
     const computedErrors = useMemo(() => errors || cleanGqlErrors(gqlErrors), [ errors, gqlErrors ])
 
     const classes = useMemo(() => {
@@ -31,7 +31,8 @@ export const Form: React.FC<FormProps> = React.memo(({
         return classes
     }, [ className, horizontal, center ])
 
-    return <BaseForm className={ classes.join(' ') }
+    return <BaseForm ref={ ref }
+                     className={ classes.join(' ') }
                      errors={ computedErrors }
                      { ...props }>
         { children }

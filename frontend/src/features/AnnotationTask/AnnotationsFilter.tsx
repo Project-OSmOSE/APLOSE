@@ -1,4 +1,4 @@
-import React, { type FormEvent, Fragment, useCallback, useState } from 'react';
+import React, { type FormEvent, Fragment, useCallback, useRef, useState } from 'react';
 import { AnnotationPhaseType } from '@/api';
 import { ConfidenceComponent } from '@/features/Confidence';
 import { LabelComponent } from '@/features/Labels';
@@ -41,10 +41,13 @@ export const AnnotationsFilterModal: React.FC = () => {
             withAcousticFeatures,
         }),
     });
+    const { user } = useLoaderData({from: '/_authenticated'})
+    const formRef = useRef<HTMLFormElement | null>(null)
     const routeParams = Route.useParams()
     const navigate = useNavigate();
     const { campaign, labels, confidences } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
 
+    const [ tmpWithAF, setTmpWithAF ] = useState<boolean | null>(withAcousticFeatures ?? null);
     const [ tmpWithAnnotations, setTmpWithAnnotations ] = useState<boolean | null>(withAnnotations ?? null);
 
     const update = useCallback((data: Pick<AllSpectrogramsFilters, 'withAnnotations' | 'withAcousticFeatures' | 'annotationLabel' | 'annotationConfidence' | 'annotationDetector' | 'annotationAnnotator'>) => {
@@ -60,18 +63,18 @@ export const AnnotationsFilterModal: React.FC = () => {
         })
     }, [ navigate, routeParams ])
 
-    const onSubmit = useCallback((event: BaseUIEvent<FormEvent<HTMLFormElement>>) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
+    const onSubmitRef = useCallback(() => {
+        if (!formRef.current) return
+        const formData = new FormData(formRef.current);
         if (tmpWithAnnotations == true) {
             const withAcousticFeatures = formData.get('withAcousticFeatures') as string || undefined
             update({
                 withAnnotations: true,
                 withAcousticFeatures: withAcousticFeatures === undefined ? undefined : withAcousticFeatures === 'true',
-                annotationLabel: formData.get('annotationLabel') as string,
-                annotationConfidence: formData.get('annotationConfidence') as string,
-                annotationDetector: formData.get('annotationDetector') as string,
-                annotationAnnotator: formData.get('annotationAnnotator') as string,
+                annotationLabel: formData.get('annotationLabel') as string || undefined,
+                annotationConfidence: formData.get('annotationConfidence') as string || undefined,
+                annotationDetector: formData.get('annotationDetector') as string || undefined,
+                annotationAnnotator: formData.get('annotationAnnotator') as string || undefined,
             })
         } else {
             update({
@@ -83,9 +86,10 @@ export const AnnotationsFilterModal: React.FC = () => {
                 annotationAnnotator: undefined,
             })
         }
-    }, [ update, labels, tmpWithAnnotations, confidences ])
+    }, [ update, labels, tmpWithAnnotations, confidences, formRef ])
 
     const onReset = useCallback((event: BaseUIEvent<FormEvent<HTMLFormElement>>) => {
+        console.debug('onReset!!!')
         event.preventDefault();
         update({
             withAnnotations: undefined,
@@ -98,13 +102,12 @@ export const AnnotationsFilterModal: React.FC = () => {
     }, [ update ])
 
     return <Dialog.Content>
-        <Form onSubmit={ onSubmit } onReset={ onReset }>
+        <Form ref={ formRef } onReset={ onReset }>
 
             <Field.Root name="withAnnotations" horizontal>
                 <Field.Label>With annotations</Field.Label>
-                <Toggle.Group defaultValue={ withAnnotations ?? null }
-                              onValueChange={ setTmpWithAnnotations }
-                              value={ tmpWithAnnotations }>
+                <Toggle.Group value={ tmpWithAnnotations }
+                              onValueChange={ setTmpWithAnnotations }>
                     <Toggle.Item color="medium" value={ null }>Unset</Toggle.Item>
                     <Toggle.Item value={ true }>With</Toggle.Item>
                     <Toggle.Item value={ false }>Without</Toggle.Item>
@@ -137,7 +140,7 @@ export const AnnotationsFilterModal: React.FC = () => {
 
                 <Field.Root name="annotationAnnotator" horizontal>
                     <Field.Label>Filter by annotator</Field.Label>
-                    <User.Select items={ cleanGqlList(campaign.annotators) }
+                    <User.Select items={ cleanGqlList(campaign.annotators).filter(a => a.id !== user.id) }
                                  disabled={ tmpWithAnnotations !== true }
                                  defaultValueString={ annotationAnnotator ?? undefined }/>
                 </Field.Root>
@@ -146,7 +149,8 @@ export const AnnotationsFilterModal: React.FC = () => {
 
             <Field.Root name="withAcousticFeatures" horizontal>
                 <Field.Label>Acoustic features</Field.Label>
-                <Toggle.Group defaultValue={ withAcousticFeatures ?? null }
+                <Toggle.Group value={ tmpWithAF ?? null }
+                              onValueChange={ setTmpWithAF }
                               disabled={ tmpWithAnnotations !== true }>
                     <Toggle.Item color="medium" value={ null }>Unset</Toggle.Item>
                     <Toggle.Item value={ true }>With</Toggle.Item>
@@ -156,7 +160,7 @@ export const AnnotationsFilterModal: React.FC = () => {
 
             <ButtonGroup spaceBetween>
                 <Dialog.Close type="reset">Reset</Dialog.Close>
-                <Dialog.Close type="submit" color="primary">Filter</Dialog.Close>
+                <Dialog.Close onClick={ onSubmitRef } color="primary">Filter</Dialog.Close>
             </ButtonGroup>
         </Form>
     </Dialog.Content>
