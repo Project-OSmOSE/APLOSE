@@ -102,10 +102,11 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
 
         # Filter: only_assigned [bool]
         filter_only_assigned: bool = (
-            filter_data["only_assigned"] is not False
+            filter_data['only_assigned']
             or filter_data["annotations__exists"] is not None
             or filter_data["annotation_tasks__status"] is not None
         )
+        annotator_can_see_all = filter_data['annotator'].is_staff or filter_data['annotator'].is_superuser
 
         # => QuerySet[AnnotationFileRange] & QuerySet[Annotation]
         file_ranges: QuerySet[AnnotationFileRange] = AnnotationFileRange.objects.all()
@@ -114,7 +115,10 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
             file_ranges = AnnotationFileRange.objects.filter_viewable_by(
                 user=filter_data["annotator"]
             )
+            if filter_only_assigned:
+                file_ranges = file_ranges.filter(annotator=filter_data['annotator'])
         if filter_data["annotation_campaign"]:
+            annotator_can_see_all = annotator_can_see_all or filter_data['annotation_campaign'].owner_id == filter_data['annotator'].id
             file_ranges = file_ranges.filter(
                 annotation_phase__annotation_campaign=filter_data["annotation_campaign"]
             )
@@ -128,6 +132,10 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
             file_ranges = file_ranges.filter(
                 annotation_phase__phase=filter_data["phase"]
             )
+            if filter_data['annotation_campaign']:
+                phase = filter_data['annotation_campaign'].phases.filter(phase=filter_data["phase"]).first()
+                if phase:
+                    annotator_can_see_all = annotator_can_see_all or phase.created_by_id == filter_data['annotator'].id
             if filter_data["phase"] == AnnotationPhase.Type.ANNOTATION:
                 annotations = annotations.filter(
                     annotation_phase__phase=filter_data["phase"]
@@ -143,7 +151,7 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
                 )
 
         # Filter assigned spectrograms
-        if filter_only_assigned:
+        if filter_only_assigned or not annotator_can_see_all:
             queryset = queryset.filter(
                 Exists(
                     file_ranges.filter(
