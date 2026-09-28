@@ -48,7 +48,7 @@ In the `docker-compose.yml` file:
 
 To access the audio files and spectrogram, APLOSE mount the volume where the data is located inside its containers (see `osmose_back` and `osmose_front` services volumes).
 
-For development purpose we use a `/volumes/datawork` folder in the project root folder. This can be changed at any moment. Just be sure to update it both in front and back services.
+For development purpose we use a `/volumes/datawork/dataset` folder in the project root folder. This can be changed at any moment. Just be sure to update it both in front and back services.
 
 ::: info Note
 The format for volume mount is [local mount]:[container mount], only the local mount should be changed.
