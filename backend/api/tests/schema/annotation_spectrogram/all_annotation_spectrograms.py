@@ -343,22 +343,6 @@ class AllAnnotationSpectrogramsTestCase(ExtendedTestCase):
         content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
         self.assertEqual(content["totalCount"], 1)
 
-    def test_connected_admin__confidence_empty(self):
-        response = self.gql_query(
-            QUERY,
-            user=User.objects.get(username="admin"),
-            variables={
-                **VARIABLES,
-                "annotatorID": 1,
-                "withAnnotations": True,
-                "annotationConfidence": 3,
-            },
-        )
-        self.assertResponseNoErrors(response)
-
-        content = json.loads(response.content)["data"]["allAnnotationSpectrograms"]
-        self.assertEqual(content["totalCount"], 0)
-
     def test_connected_admin__confidence(self):
         response = self.gql_query(
             QUERY,

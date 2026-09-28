@@ -119,7 +119,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
 
                                 <Dialog.Root>
                                     <Dialog.Trigger>
-                                        { search.withAnnotations
+                                        { search.withAnnotations !== undefined && search.withAnnotations !== null
                                             ? <FilterBoldIcon size={ 16 }/>
                                             : <FilterLinearIcon size={ 16 }/> }
                                     </Dialog.Trigger>
