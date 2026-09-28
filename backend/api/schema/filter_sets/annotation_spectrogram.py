@@ -96,17 +96,20 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
             "only_assigned": self.data.get("only_assigned"),
         }
 
-    def filter_queryset(self, queryset: QuerySet[Spectrogram]):
-        queryset: QuerySet[Spectrogram] = super().filter_queryset(queryset)
+    def filter_on_file_ranges(
+        self, queryset: QuerySet[Spectrogram]
+    ) -> tuple[QuerySet[Spectrogram], QuerySet[Annotation]]:
         filter_data = self.get_filter_data()
 
         # Filter: only_assigned [bool]
         filter_only_assigned: bool = (
-            filter_data['only_assigned']
+            filter_data["only_assigned"]
             or filter_data["annotations__exists"] is not None
             or filter_data["annotation_tasks__status"] is not None
         )
-        annotator_can_see_all = filter_data['annotator'].is_staff or filter_data['annotator'].is_superuser
+        annotator_can_see_all = (
+            filter_data["annotator"].is_staff or filter_data["annotator"].is_superuser
+        )
 
         # => QuerySet[AnnotationFileRange] & QuerySet[Annotation]
         file_ranges: QuerySet[AnnotationFileRange] = AnnotationFileRange.objects.all()
@@ -116,9 +119,13 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
                 user=filter_data["annotator"]
             )
             if filter_only_assigned:
-                file_ranges = file_ranges.filter(annotator=filter_data['annotator'])
+                file_ranges = file_ranges.filter(annotator=filter_data["annotator"])
         if filter_data["annotation_campaign"]:
-            annotator_can_see_all = annotator_can_see_all or filter_data['annotation_campaign'].owner_id == filter_data['annotator'].id
+            annotator_can_see_all = (
+                annotator_can_see_all
+                or filter_data["annotation_campaign"].owner_id
+                == filter_data["annotator"].id
+            )
             file_ranges = file_ranges.filter(
                 annotation_phase__annotation_campaign=filter_data["annotation_campaign"]
             )
@@ -132,10 +139,17 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
             file_ranges = file_ranges.filter(
                 annotation_phase__phase=filter_data["phase"]
             )
-            if filter_data['annotation_campaign']:
-                phase = filter_data['annotation_campaign'].phases.filter(phase=filter_data["phase"]).first()
+            if filter_data["annotation_campaign"]:
+                phase = (
+                    filter_data["annotation_campaign"]
+                    .phases.filter(phase=filter_data["phase"])
+                    .first()
+                )
                 if phase:
-                    annotator_can_see_all = annotator_can_see_all or phase.created_by_id == filter_data['annotator'].id
+                    annotator_can_see_all = (
+                        annotator_can_see_all
+                        or phase.created_by_id == filter_data["annotator"].id
+                    )
             if filter_data["phase"] == AnnotationPhase.Type.ANNOTATION:
                 annotations = annotations.filter(
                     annotation_phase__phase=filter_data["phase"]
@@ -180,6 +194,13 @@ class AnnotationSpectrogramFilterSet(ExtendedFilterSet):
                 queryset = queryset.filter(query)
             if filter_data["annotation_tasks__status"] == AnnotationTask.Status.CREATED:
                 queryset = queryset.filter(~query)  # Created task may not exist at all
+
+        return queryset, annotations
+
+    def filter_queryset(self, queryset: QuerySet[Spectrogram]):
+        queryset: QuerySet[Spectrogram] = super().filter_queryset(queryset)
+        queryset, annotations = self.filter_on_file_ranges(queryset)
+        filter_data = self.get_filter_data()
 
         if filter_data["annotations__exists"] is not None:
             if filter_data["annotations__exists"]:
