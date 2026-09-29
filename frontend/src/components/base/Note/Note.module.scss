@@ -5,6 +5,7 @@
   font-size: 0.9rem;
   font-weight: 400;
   margin: 0;
+  white-space: pre-wrap;
 
   @each $color, $map in base.$colors {
     &.#{$color} {

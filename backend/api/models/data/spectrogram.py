@@ -5,6 +5,7 @@ from typing import TypedDict
 
 from django.db import models
 from django.db.models import Q, F, QuerySet
+from metadatax.data.models import VisualObservation
 from osekit.core.spectro_data import SpectroData
 from osekit.core.spectro_dataset import SpectroDataset
 
@@ -12,6 +13,7 @@ from backend.storage.utils import make_static_url, join, clean_path
 from .__abstract_file import AbstractFile
 from .__abstract_time_segment import TimeSegment
 from .spectrogram_analysis import SpectrogramAnalysis
+from .dataset import Dataset
 
 
 class SpectrogramManager(models.Manager):
@@ -57,6 +59,45 @@ class Spectrogram(AbstractFile, TimeSegment, models.Model):
         related_name="spectrograms",
         through="SpectrogramAnalysisRelation",
     )
+
+    @property
+    def visual_observations(self) -> QuerySet[VisualObservation]:
+        datasets = Dataset.objects.filter(
+            id__in=self.analysis.values_list("dataset_id", flat=True),
+        )
+        deployment_ids = []
+        dataset: Dataset
+        for dataset in datasets:
+            deployment_ids += dataset.related_channel_configurations.values_list(
+                "deployment_id", flat=True
+            )
+        return VisualObservation.objects.filter(
+            deployment_id__in=deployment_ids
+        ).filter(
+            # A |-------|
+            # B   |--|
+            Q(start_datetime__lte=self.start, end_datetime__gte=self.end)
+            |
+            # A   |--|
+            # B |-------|
+            Q(start_datetime__gte=self.start, end_datetime__lte=self.end)
+            |
+            # A |----|
+            # B   |-----|
+            Q(
+                start_datetime__lte=self.start,
+                end_datetime__lte=self.end,
+                end_datetime__gte=self.start,
+            )
+            |
+            # A   |-----|
+            # B |----|
+            Q(
+                start_datetime__gte=self.start,
+                start_datetime__lte=self.end,
+                end_datetime__gte=self.end,
+            )
+        )
 
 
 class Paths(TypedDict):

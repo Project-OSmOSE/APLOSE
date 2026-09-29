@@ -30,7 +30,7 @@ export type Order = 'asc' | 'desc';
 
 export const Th: React.FC<{
     children?: ReactNode;
-} & Partial<Pick<HTMLTableCellElement, 'scope' | 'colSpan' | 'rowSpan'>> &
+} & Partial<Pick<HTMLTableCellElement, 'scope' | 'colSpan' | 'rowSpan' | 'className'>> &
     { top?: boolean } &
     ({ center?: false, start?: false } | { center: true, start?: false } | { center?: false, start: true }) &
     ({ sortable?: false, order?: never, setOrder?: never } | {
@@ -38,9 +38,9 @@ export const Th: React.FC<{
         order?: Order | false,
         setOrder: (order: Order) => void
     })> =
-    ({ children, center, start, sortable, order, setOrder, top, ...props }) =>
+    ({ children, center, start, sortable, order, setOrder, top, className, ...props }) =>
         useMemo(() => {
-            const classes = []
+            const classes = [ className ]
             if (center) classes.push(styles.center)
             if (start) classes.push(styles.start)
             if (top) classes.push(styles.top)
@@ -60,14 +60,15 @@ export const Th: React.FC<{
                     </div> }
                 </div>
             </th>
-        }, [ children, top, center, start, setOrder, order, sortable, props ])
+        }, [ children, top, center, start, setOrder, order, sortable, props, className ])
 
 export const Td: React.FC<Partial<Pick<HTMLTableDataCellElement, 'colSpan' | 'rowSpan'>> &
-    { children?: ReactNode, center?: boolean, top?: boolean, className?: string }> = ({
-                                                                                         center,
-                                                                                         className,
-                                                                                         top,
-                                                                                         ...props
-                                                                                     }) =>
+    { children?: ReactNode, center?: boolean, top?: boolean, bottom?: boolean, className?: string }> = ({
+                                                                                          center,
+                                                                                          className,
+                                                                                          top,
+                                                                                          bottom,
+                                                                                          ...props
+                                                                                      }) =>
     useMemo(() => <td
-        className={ [ className, center ? styles.center : '', top ? styles.top : '' ].join(' ') } { ...props }/>, [ props, center, className ])
+        className={ [ className, center ? styles.center : '', top ? styles.top : '', bottom ? styles.bottom : '' ].join(' ') } { ...props }/>, [ props, center, className ])

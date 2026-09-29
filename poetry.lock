@@ -2018,6 +2018,18 @@ files = [
 ]
 
 [[package]]
+name = "legacy-cgi"
+version = "2.6.4"
+description = "Fork of the standard library cgi and cgitb modules removed in Python 3.13"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "legacy_cgi-2.6.4-py3-none-any.whl", hash = "sha256:7e235ce58bf1e25d1fc9b2d299015e4e2cd37305eccafec1e6bac3fc04b878cd"},
+    {file = "legacy_cgi-2.6.4.tar.gz", hash = "sha256:abb9dfc7835772f7c9317977c63253fd22a7484b5c9bbcdca60a29dcce97c577"},
+]
+
+[[package]]
 name = "markupsafe"
 version = "3.0.3"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -2227,13 +2239,13 @@ files = [
 
 [[package]]
 name = "metadatax"
-version = "0.6.3"
+version = "0.6.4"
 description = "PAM acquisition metadata"
 optional = false
 python-versions = ">=3.9,<4.0"
 groups = ["main"]
 files = [
-    {file = "v0.6.3.tar.gz", hash = "sha256:57c7322a34bbf6e099f15e03d248da0b7d30609676b93fb29faece8ead8e6a64"},
+    {file = "v0.6.4.tar.gz", hash = "sha256:559f30114d507f36893b356c220cecc8d549f8f62c022609b44e69cb22ce2c3f"},
 ]
 
 [package.dependencies]
@@ -2253,7 +2265,7 @@ python-dotenv = ">=1.0.1,<2.0.0"
 
 [package.source]
 type = "url"
-url = "https://github.com/PAM-Standardization/metadatax/archive/refs/tags/v0.6.3.tar.gz"
+url = "https://github.com/PAM-Standardization/metadatax/archive/refs/tags/v0.6.4.tar.gz"
 
 [[package]]
 name = "mistune"
@@ -4079,4 +4091,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "d333927e144b72b829a91f9f7981bdd91f355652e26ecc88713f4b83a7ffd466"
+content-hash = "cbac94afa9731d96e9824a11a77d861dcdbe981db9445a6adb84814cc75a5be1"
