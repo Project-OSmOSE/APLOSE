@@ -59,7 +59,10 @@ export const ConfigBar: React.FC = () => {
                         <Dialog.Trigger color='primary'><TelescopeBoldDuotoneIcon size={ 20 }/></Dialog.Trigger>
                     </Popover.Trigger>
                     <Popover.Content>
-                        Visual observations
+                        Visual observations:
+                        <ul>
+                            { obs.map(o => <li>{ o.source.displayName }</li>) }
+                        </ul>
                     </Popover.Content>
                 </Popover.Root>
                 <Dialog.Portal>
