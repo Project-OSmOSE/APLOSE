@@ -65,7 +65,7 @@ export const OurToolsPage: React.FC = () => {
                 <a className={ styles.link } target="_blank" href="https://osmose.ifremer.fr/app/"
                    rel="noreferrer">
                     <IoGlobeOutline/>
-                    OSmOSE instance
+                    Our instance
                 </a>
             </div>
         </div>
