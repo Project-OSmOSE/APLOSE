@@ -1,5 +1,7 @@
 """API data dataset administration"""
 from django.contrib import admin
+from django.core.handlers.wsgi import WSGIRequest
+from django.db.models import QuerySet
 from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.models import Dataset
@@ -11,6 +13,7 @@ class DatasetAdmin(ExtendedModelAdmin):
 
     actions = [
         "export",
+        "archive",
     ]
 
     list_display = (
@@ -33,6 +36,12 @@ class DatasetAdmin(ExtendedModelAdmin):
     filter_horizontal = [
         "related_channel_configurations",
     ]
+
+    @admin.action(description="Archive")
+    def archive(self, request: WSGIRequest, queryset: QuerySet[Dataset]):
+        """Archive dataset"""
+        for dataset in queryset:
+            dataset.archive(user=request.user)
 
     @admin.display(description="Metadatax channel configurations")
     def show_channel_configuration(self, dataset: Dataset) -> str:

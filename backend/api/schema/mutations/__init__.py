@@ -3,6 +3,9 @@ from .archive_annotation_campaign import ArchiveAnnotationCampaignMutation
 from .create_annotation_campaign import CreateAnnotationCampaignMutation
 from .create_annotation_phase import CreateAnnotationPhase
 from .end_annotation_phase import EndAnnotationPhaseMutation
+from .dataset import (
+    DatasetArchiveMutation,
+)
 from .file_range import (
     AnnotationFileRangeCreateMutation,
     AnnotationFileRangeUpdateMutation,

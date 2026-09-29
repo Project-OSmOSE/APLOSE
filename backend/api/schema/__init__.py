@@ -24,23 +24,14 @@ from .queries import (
     AnnotationLabelsForDeploymentIdField,
     AnnotationPhaseByID,
 )
-from .mutations import (
-    CreateAnnotationCampaignMutation,
-    UpdateAnnotationCampaignMutation,
-    EndAnnotationPhaseMutation,
-    CreateAnnotationPhase,
-    ArchiveAnnotationCampaignMutation,
-    UpdateAnnotationCommentsMutation,
-    UpdateAnnotationsMutation,
-    SubmitAnnotationTaskMutation,
-    AnnotationFileRangeCreateMutation,
-    AnnotationFileRangeUpdateMutation,
-    AnnotationFileRangeDeleteMutation,
-)
+from .mutations import *
 
 
 class APIMutation(graphene.ObjectType):
     """API GraphQL mutations"""
+
+    # Dataset
+    archive_dataset = DatasetArchiveMutation.Field()
 
     # Annotation campaign
     create_annotation_campaign = CreateAnnotationCampaignMutation.Field()
