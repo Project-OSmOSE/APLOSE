@@ -25,3 +25,10 @@ class AbstractAnalysis(AbstractDataset, models.Model):
         on_delete=models.CASCADE,
         related_name="spectrogram_analysis",
     )
+    archived_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="archived_analysis"
+    )

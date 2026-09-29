@@ -19,5 +19,15 @@ class AbstractDataset(models.Model):
 
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
+    archived = models.BooleanField(default=False)
+    archived_at = models.DateTimeField(null=True, blank=True)
+    archived_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="archived_datasets"
+    )
+
     # @deprecated("Do not use this field with the recent version of OSEkit")
     legacy = models.BooleanField(default=False)

@@ -19,12 +19,16 @@ class DatasetAdmin(ExtendedModelAdmin):
         "created_at",
         "path",
         "legacy",
+        "archived",
         "owner",
         "show_spectrogram_analysis",
         "show_channel_configuration",
     )
 
     search_fields = ["name", "related_channel_configurations__deployment__name"]
+    list_filter = [
+        'archived',
+    ]
 
     filter_horizontal = [
         "related_channel_configurations",
