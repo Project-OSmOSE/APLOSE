@@ -12,6 +12,7 @@ fragment StorageDataset on DatasetStorageNode {
     importStatus
     model {
         id
+        archived
         annotationCampaigns {
             edges {
                 node {

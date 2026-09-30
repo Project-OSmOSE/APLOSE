@@ -78,6 +78,7 @@ query getCampaign($id: ID!) {
         dataset {
             id
             name
+            archived
         }
         labelSet {
             id

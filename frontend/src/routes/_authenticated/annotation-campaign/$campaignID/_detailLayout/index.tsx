@@ -4,7 +4,7 @@ import { dateToString, pluralize } from '@/service/function';
 
 import { LabelDialog } from '@/features/Labels';
 import { CampaignComponents } from '@/features/AnnotationCampaign';
-import { DatasetName } from '@/features/Dataset';
+import { Dataset } from '@/features/Dataset';
 import { AnalysisAPI, SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 
 import styles from './index.module.scss';
@@ -37,7 +37,7 @@ const AnnotationCampaignInfo: React.FC = () => {
                 {/* DATA */ }
                 <div className={ styles.bloc }>
                     <h4>Dataset</h4>
-                    <DatasetName name={ campaign.dataset.name } id={ campaign.dataset.id } link/>
+                    <Dataset.Name dataset={ campaign.dataset } link/>
                     <h4>Analysis</h4>
                     <SpectrogramAnalysisTable analysis={ analysis } spacing="small"/>
                 </div>

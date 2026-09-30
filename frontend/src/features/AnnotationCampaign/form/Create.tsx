@@ -7,7 +7,7 @@ import { Button, ButtonGroup, Checkbox, Field, Fieldset, Form, Link, Note, Spinn
 
 import { useAppDispatch } from '@/features/App';
 import { StorageSlice } from '@/features/Storage'
-import { DatasetAPI, DatasetComponent } from '@/features/Dataset';
+import { Dataset } from '@/features/Dataset';
 import { AnalysisComponent } from '@/features/SpectrogramAnalysis';
 import { ColormapComponent } from '@/features/Colormap';
 
@@ -20,12 +20,12 @@ export const Create: React.FC = () => {
     const navigate = useNavigate();
     const { dataset_id } = useSearch({ from: '/_authenticated/_admin/annotation-campaign/new' })
 
-    const { data: datasets } = useQuery(DatasetAPI.allQuery)
+    const { data: datasets } = useQuery(Dataset.allQuery({ archived: false }))
     const datasetSelectID = useId()
-    const [ dataset, _setDataset ] = useState<DatasetComponent.SelectValue | null>(null);
+    const [ dataset, _setDataset ] = useState<Dataset.SelectValue | null>(null);
     const analysisSelectID = useId()
     const [ analysis, setAnalysis ] = useState<AnalysisComponent.ComboboxSelectValue[]>([]);
-    const setDataset = useCallback((value: DatasetComponent.SelectValue | null) => {
+    const setDataset = useCallback((value: Dataset.SelectValue | null) => {
         _setDataset(value)
         setAnalysis([])
     }, [ setAnalysis, _setDataset ])
@@ -120,10 +120,11 @@ export const Create: React.FC = () => {
 
             <Field.Root name="datasetID">
                 <Field.Label htmlFor={ datasetSelectID }>Dataset</Field.Label>
-                <DatasetComponent.Select id={ datasetSelectID }
-                                         defaultValueString={ dataset_id }
-                                         required
-                                         onValueChange={ setDataset }/>
+                <Dataset.Select id={ datasetSelectID }
+                                archived={ false }
+                                defaultValueString={ dataset_id }
+                                required
+                                onValueChange={ setDataset }/>
                 <Field.Error/>
                 <Note color="medium">
                     <InfoCircleLinearIcon/> You can import new datasets in the <Link inText

@@ -1,15 +1,15 @@
 import React, { useMemo, useState } from 'react';
+import { useLoaderData } from '@tanstack/react-router';
 
 import { type Order, Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
+import { Badge, Note } from '@/components/base';
 import { dateToString } from '@/service/function';
 
-import { DatasetName } from './DatasetInfo';
 import { CampaignName } from '@/features/AnnotationCampaign/CampaignInfo';
 
+import * as API from '../api';
+import { DatasetName } from './Name.tsx';
 import styles from './styles.module.scss'
-import { useLoaderData } from '@tanstack/react-router';
-import type { DatasetFragment } from '@/features/Dataset/api';
-import { Badge, Note } from '@/components/base';
 
 
 type Sort = {
@@ -17,7 +17,7 @@ type Sort = {
     order: Order
 }
 
-type Dataset = DatasetFragment & {
+type Dataset = API.Fragment & {
     annotationCampaigns: {
         edges: Array<{
             node?: {
@@ -101,7 +101,7 @@ export const DatasetTable: React.FC = () => {
         <Tbody>
             { sortedDatasets.map(d => <tr key={ d.id }>
                 <Th scope="row">
-                    <DatasetName { ...d } link/>
+                    <DatasetName dataset={ d } link/>
                     <Note color="medium">{ d.path }</Note>
                 </Th>
                 <Td>{ dateToString(d.createdAt) }</Td>

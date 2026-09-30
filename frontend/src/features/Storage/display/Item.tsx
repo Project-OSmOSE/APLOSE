@@ -20,7 +20,7 @@ import {
     UnreadLinearIcon,
 } from '@solar-icons/react';
 import { Toast } from '@/components/base/Toast';
-import { DatasetName } from '@/features/Dataset';
+import { Dataset } from '@/features/Dataset';
 import { importMutation } from '../api'
 import { useStorageSearch } from '../hooks'
 import { useMutation } from '@tanstack/react-query';
@@ -141,7 +141,11 @@ export const Item: React.FC<Props> = ({
             <div onClick={ toggleOpen } className={ className }>
                 { rowIcon }
                 { item.__typename === 'DatasetStorageNode' ?
-                    <DatasetName name={ item.name } id={ item.model?.id } link/>
+                    <Dataset.Name dataset={ {
+                        name: item.name,
+                        id: item.model?.id,
+                        archived: item.model?.archived ?? false
+                    } }  link/>
                     : <p>{ item.name }</p> }
 
                 {/* Import Icon */ }

@@ -2,28 +2,27 @@ import React from 'react';
 import { createFileRoute, type ErrorComponentProps, notFound } from '@tanstack/react-router'
 import { CalendarLinearIcon, DownloadLinearIcon, WidgetAddLinearIcon } from '@solar-icons/react';
 
+import { ensureValidQueryData } from '@/api/utils';
 import { Head, WarningText } from '@/components/ui';
+import { Badge, ButtonGroup, Dialog, Link, Note, Spinner } from '@/components/base';
+import { Content } from '@/components/layout/Content';
+import { Center } from '@/components/layout/Display';
+import { datetimeToString, dateToString } from '@/service/function';
 
 import { StorageModal } from '@/features/Storage';
 import { ChannelConfigurationTable } from '@/features/ChannelConfiguration';
 import { SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 import { Cards } from '@/features/AnnotationCampaign';
-import { DatasetAPI } from '@/features/Dataset';
-import { ButtonGroup, Link } from '@/components/base/Button';
-import { Dialog } from '@/components/base/Dialog';
-import { Content } from '@/components/layout/Content';
-import { Note } from '@/components/base/Note';
-import { datetimeToString, dateToString } from '@/service/function';
-import { Center } from '@/components/layout/Display';
-import { Spinner } from '@/components/base/Spinner';
+import { Dataset } from '@/features/Dataset';
 import styles from './styles.module.scss'
-import { ensureValidQueryData } from '@/api/utils';
 
 const DatasetDetail: React.FC = () => {
     const { dataset, campaigns, analysis } = Route.useLoaderData()
 
     return <Content oneContent>
-        <Head title={ dataset.name } subtitle={ dataset.path } canGoBack/>
+        <Head title={ dataset.name } subtitle={ dataset.path } canGoBack>
+            { dataset.archived && <Center><Badge color='medium'>Archived</Badge></Center> }
+        </Head>
 
         <div style={ { overflow: 'auto' } }>
             <div className={ styles.InfoBloc }>
@@ -31,7 +30,7 @@ const DatasetDetail: React.FC = () => {
                 { dataset.description && <Note color="medium">{ dataset.description }</Note> }
                 <Note color="medium">
                     <CalendarLinearIcon
-                              size={ 16 }/> { datetimeToString(dataset.start) } - { datetimeToString(dataset.end) }
+                        size={ 16 }/> { datetimeToString(dataset.start) } - { datetimeToString(dataset.end) }
                 </Note>
                 <Note color="medium">
                     Dataset imported on { dateToString(new Date(dataset.createdAt)) } by { dataset.owner.displayName }
@@ -88,7 +87,7 @@ const ErrorComponent: React.FC<ErrorComponentProps> = ({ error }) => {
 
 export const Route = createFileRoute(`/_authenticated/_admin/dataset/$datasetID`)({
     loader: async ({ params: { datasetID } }) => {
-        const { dataset, ...data } = await ensureValidQueryData(DatasetAPI.byIdQuery({ id: datasetID }))
+        const { dataset, ...data } = await ensureValidQueryData(Dataset.byIdQuery({ id: datasetID }))
         if (!dataset) throw notFound()
         return { dataset, ...data }
     },

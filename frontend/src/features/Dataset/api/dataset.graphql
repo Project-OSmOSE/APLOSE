@@ -9,10 +9,14 @@ fragment Dataset on DatasetNode {
     spectrogramCount
     start
     end
+    archived
 }
 
-query allDatasets {
-    allDatasets(orderBy: "name") {
+query allDatasets($archived: Boolean) {
+    allDatasets(
+        orderBy: "name",
+        archived: $archived
+    ) {
         results {
             id
             name
@@ -93,23 +97,5 @@ query getDatasetByID($id: ID!) {
         orderBy: "name"
     ) {
         results { ...BaseCampaign }
-    }
-}
-
-query listDatasetsWithAnalysis {
-    allDatasets(orderBy: "name") {
-        results {
-            id
-            name
-            spectrogramAnalysis(orderBy: "name") {
-                results {
-                    id
-                    name
-                    colormap {
-                        name
-                    }
-                }
-            }
-        }
     }
 }

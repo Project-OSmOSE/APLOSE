@@ -4,19 +4,18 @@ import { graphqlClient } from '@/api/graphqlClient';
 import {
     AllDatasetsDocument,
     type AllDatasetsQuery,
+    AllDatasetsQueryVariables,
     AllDatasetsWithCampaignsDocument,
     type AllDatasetsWithCampaignsQuery,
     GetDatasetByIdDocument,
     type GetDatasetByIdQuery,
     type GetDatasetByIdQueryVariables,
-    ListDatasetsWithAnalysisDocument,
-    type ListDatasetsWithAnalysisQuery,
 } from './dataset.generated';
 import { cleanGqlList } from '@/api/utils';
 
-export const allQuery = queryOptions({
-    queryKey: queryKeys.dataset.all,
-    queryFn: () => graphqlClient.request<AllDatasetsQuery>(AllDatasetsDocument, {})
+export const allQuery = (variables: AllDatasetsQueryVariables) => queryOptions({
+    queryKey: queryKeys.dataset.all(variables),
+    queryFn: () => graphqlClient.request<AllDatasetsQuery>(AllDatasetsDocument, variables)
         .then(data => cleanGqlList(data.allDatasets?.results)),
 })
 
@@ -37,10 +36,9 @@ export const byIdQuery = (variables: GetDatasetByIdQueryVariables) => queryOptio
         })),
 })
 
-export const listWithAnalysisQuery = queryOptions({
-    queryKey: queryKeys.dataset.listWithAnalysis,
-    queryFn: () => graphqlClient.request<ListDatasetsWithAnalysisQuery>(ListDatasetsWithAnalysisDocument, {})
-        .then(data => cleanGqlList(data.allDatasets?.results)),
-})
+export type {
+    AllDatasetsQuery as AllQuery,
+    AllDatasetsQueryVariables as AllQueryVariables,
 
-export type * from './dataset.generated'
+    DatasetFragment as Fragment,
+} from './dataset.generated.ts'
