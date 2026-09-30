@@ -54,7 +54,7 @@ export const ArchiveButton: React.FC = () => {
         archiveCampaign(campaign)
     }, [ phases, archiveCampaign, campaign, alert ]);
 
-    if (campaign.isArchived || !campaign.isEditable || !campaign.isUserAllowedToManage) return <Fragment/>
+    if (campaign.archived || !campaign.isEditable || !campaign.isUserAllowedToManage) return <Fragment/>
     return <Fragment>
         <Button color="medium" onClick={ archive }>
             <ArchiveLinearIcon size={ 20 }/>

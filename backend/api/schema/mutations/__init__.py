@@ -1,5 +1,5 @@
 """API GQL queries"""
-from .archive_annotation_campaign import ArchiveAnnotationCampaignMutation
+from .archive_annotation_campaign import AnnotationCampaignArchiveMutation
 from .create_annotation_campaign import CreateAnnotationCampaignMutation
 from .create_annotation_phase import CreateAnnotationPhase
 from .end_annotation_phase import EndAnnotationPhaseMutation

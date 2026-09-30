@@ -134,7 +134,7 @@ export const Item: React.FC<Props> = ({
             }
             usages = (item as StorageAnalysisFragment).model?.annotationCampaigns.edges
                 .map(e => e?.node)
-                .filter(n => !!n && !n.isArchived).length ?? 0
+                .filter(n => !!n && !n.archived).length ?? 0
         }
 
         return <div className={ styles.item }>

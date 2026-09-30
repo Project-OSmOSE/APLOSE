@@ -167,7 +167,7 @@ const InnerAnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }
                               value={ (info.currentIndex ?? 0) + 1 }
                               max={ info.totalCount }/> }
 
-                { campaign.archive ? <Note>You cannot annotate an archived campaign.</Note> :
+                { campaign.archived ? <Note>You cannot annotate an archived campaign.</Note> :
                     phase?.endedAt ? <Note>You cannot annotate an ended phase.</Note> :
                         !data.spectrogram.isAssigned ?
                             <Note>You are not assigned to annotate this file.</Note> :

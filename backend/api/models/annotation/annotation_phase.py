@@ -32,7 +32,7 @@ class AnnotationPhaseQuerySet(ExtendedQuerySet):
 
         # Only open phases can be edited
         open_phases = qs.filter(
-            annotation_campaign__archive__isnull=True,
+            annotation_campaign__archived=False,
             ended_at__isnull=True,
             ended_by__isnull=True,
         )

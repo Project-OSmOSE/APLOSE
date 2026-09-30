@@ -25,9 +25,9 @@ const AnnotationCampaignInfo: React.FC = () => {
                 {/* GLOBAL */ }
                 <CampaignComponents.ArchiveButton/>
                 <CampaignComponents.InstructionsButton instructionsUrl={ campaign.instructionsUrl }/>
-                { campaign.archive && <Note color="medium">
+                { campaign.archived && <Note color="medium">
                     Archived
-                    on { dateToString(campaign.archive.date) } by { campaign.archive.byUser?.displayName }
+                    on { dateToString(campaign.archivedAt) } by { campaign.archivedBy?.displayName }
                 </Note> }
                 { campaign.deadline && <div>
                     <Note color="medium">Deadline</Note>

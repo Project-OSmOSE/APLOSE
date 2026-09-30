@@ -2,7 +2,7 @@ fragment BaseCampaign on AnnotationCampaignNode {
     id
     name
     deadline
-    isArchived
+    archived
     datasetName
     phases {
         results {
@@ -24,7 +24,7 @@ query allCampaigns(
     $filter_annotatorID: ID
 ) {
     allAnnotationCampaigns(
-        isArchived: $filter_isArchived
+        archived: $filter_isArchived
         phases_Phase: $filter_phase
         ownerId: $filter_ownerID
         phases_AnnotationFileRanges_AnnotatorId: $filter_annotatorID
@@ -66,7 +66,11 @@ query getCampaign($id: ID!) {
         createdAt
         instructionsUrl
         deadline
-        isArchived
+        archived
+        archivedAt
+        archivedBy {
+            displayName
+        }
         isEditable
         isUserAllowedToManage
         allowPointAnnotation
@@ -99,12 +103,6 @@ query getCampaign($id: ID!) {
             email
         }
         description
-        archive {
-            date
-            byUser {
-                displayName
-            }
-        }
         confidenceSet {
             id
             name
@@ -183,6 +181,10 @@ mutation createCampaign(
 mutation archiveCampaign($id: ID!) {
     archiveAnnotationCampaign(id: $id) {
         ok
+        error {
+            field
+            messages
+        }
     }
 }
 

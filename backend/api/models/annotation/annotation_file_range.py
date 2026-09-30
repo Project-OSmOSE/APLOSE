@@ -36,7 +36,7 @@ class AnnotationFileRangeQuerySet(ExtendedQuerySet):
                 annotation_phase__ended_at__isnull=True,
                 annotation_phase__ended_by__isnull=True,
                 # Open campaigns
-                annotation_phase__annotation_campaign__archive__isnull=True,
+                annotation_phase__annotation_campaign__archived=False,
             )
         )
 
@@ -46,7 +46,7 @@ class AnnotationFileRangeQuerySet(ExtendedQuerySet):
         # Only open campaign and phase file ranges can be edited
         open_campaigns = qs.filter(
             # Open campaigns
-            annotation_phase__annotation_campaign__archive__isnull=True,
+            annotation_phase__annotation_campaign__archived=False,
             # Open phase
             annotation_phase__ended_at__isnull=True,
             annotation_phase__ended_by__isnull=True,

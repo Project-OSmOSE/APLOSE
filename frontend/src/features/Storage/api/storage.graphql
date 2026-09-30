@@ -16,7 +16,7 @@ fragment StorageDataset on DatasetStorageNode {
         annotationCampaigns {
             edges {
                 node {
-                    isArchived
+                    archived
                 }
             }
         }
@@ -33,7 +33,7 @@ fragment StorageAnalysis on AnalysisStorageNode {
         annotationCampaigns {
             edges {
                 node {
-                    isArchived
+                    archived
                 }
             }
         }

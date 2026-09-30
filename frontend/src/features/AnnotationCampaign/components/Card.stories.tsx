@@ -24,7 +24,7 @@ const meta = {
             id: '293',
             name: 'ASTROLABE 2025',
             deadline: null,
-            isArchived: false,
+            archived: false,
             datasetName: 'APOCADO_C4D6_ST336363566',
             phases: {
                 results: [

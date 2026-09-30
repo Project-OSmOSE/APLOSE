@@ -8,14 +8,14 @@ from backend.aplose.models import User
 
 QUERY = """
 query (
-    $isArchived: Boolean
+    $archived: Boolean
     $phase: AnnotationPhaseType
     $ownerID: ID
     $annotatorID: ID
     $search: String
 ) {
     allAnnotationCampaigns(
-        isArchived: $isArchived
+        archived: $archived
         phases_Phase: $phase
         ownerId: $ownerID
         phases_AnnotationFileRanges_AnnotatorId: $annotatorID
@@ -28,13 +28,13 @@ query (
             name
             datasetName
             deadline
-            isArchived
+            archived
         }
     }
 }
 """
 VARIABLES = {
-    "isArchived": None,
+    "archived": None,
     "phase": None,
     "ownerID": None,
     "annotatorID": None,
@@ -151,7 +151,7 @@ class AllAnnotationCampaignsTestCase(ExtendedTestCase):
         response = self.gql_query(
             QUERY,
             user=User.objects.get(username="admin"),
-            variables={**VARIABLES, "isArchived": True},
+            variables={**VARIABLES, "archived": True},
         )
         self.assertResponseNoErrors(response)
 

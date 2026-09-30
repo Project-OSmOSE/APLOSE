@@ -21,7 +21,7 @@ const meta = {
     args: {
         campaign: {
             deadline: null,
-            isArchived: false,
+            archived: false,
         },
     } satisfies BadgeProps,
 } satisfies Meta<typeof Badge>;
@@ -35,7 +35,7 @@ export const DueDate: Story = {
     args: {
         campaign: {
             deadline: new Date(2026, 5, 13).toISOString(),
-            isArchived: false,
+            archived: false,
         },
     } satisfies BadgeProps,
 };
@@ -44,7 +44,7 @@ export const DueDateWithinWeek: Story = {
     args: {
         campaign: {
             deadline: new Date(NOW + 7 * DAY).toISOString(),
-            isArchived: false,
+            archived: false,
         },
     } satisfies BadgeProps,
 };
@@ -53,7 +53,7 @@ export const Archived: Story = {
     args: {
         campaign: {
             deadline: new Date(2026, 5, 13).toISOString(),
-            isArchived: true,
+            archived: true,
         },
     } satisfies BadgeProps,
 };

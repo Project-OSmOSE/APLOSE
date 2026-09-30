@@ -28,7 +28,6 @@ from backend.api.schema.filter_sets import AnnotationCampaignFilterSet
 from backend.aplose.models import User
 from backend.aplose.schema import UserNode
 from .annotation_phase import AnnotationPhaseNode
-from .archive import ArchiveNode
 from .detector import DetectorNode
 from .label import AnnotationLabelNode
 
@@ -36,8 +35,6 @@ from .label import AnnotationLabelNode
 class AnnotationCampaignNode(ExtendedNode):
     """AnnotationCampaign schema"""
 
-    archive = ArchiveNode()
-    is_archived = graphene.Boolean(required=True)
     is_editable = graphene.Boolean(required=True)
     is_user_allowed_to_manage = graphene.Boolean(required=True)
 
@@ -111,12 +108,8 @@ class AnnotationCampaignNode(ExtendedNode):
             .prefetch_related("phases")
             .annotate(
                 dataset_name=F("dataset__name"),
-                is_archived=ExpressionWrapper(
-                    Q(archive__isnull=False),
-                    output_field=models.BooleanField(),
-                ),
                 is_editable=ExpressionWrapper(
-                    Q(archive__isnull=True),
+                    Q(archived=False),
                     output_field=models.BooleanField(),
                 ),
                 is_user_allowed_to_manage=ExpressionWrapper(

@@ -9,38 +9,50 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('api', '0008_annotationcampaign_allow_digital_zoom'),
+        ("api", "0008_annotationcampaign_allow_digital_zoom"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='dataset',
-            name='archived',
+            model_name="dataset",
+            name="archived",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='dataset',
-            name='archived_at',
+            model_name="dataset",
+            name="archived_at",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='dataset',
-            name='archived_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='archived_datasets', to=settings.AUTH_USER_MODEL),
+            model_name="dataset",
+            name="archived_by",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="archived_datasets",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='spectrogramanalysis',
-            name='archived',
+            model_name="spectrogramanalysis",
+            name="archived",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='spectrogramanalysis',
-            name='archived_at',
+            model_name="spectrogramanalysis",
+            name="archived_at",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='spectrogramanalysis',
-            name='archived_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='archived_analysis', to=settings.AUTH_USER_MODEL),
+            model_name="spectrogramanalysis",
+            name="archived_by",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="archived_analysis",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

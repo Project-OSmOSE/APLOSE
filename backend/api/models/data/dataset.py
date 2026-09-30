@@ -8,6 +8,7 @@ from metadatax.acquisition.models import ChannelConfiguration
 from typing_extensions import deprecated
 
 from backend.aplose.models import User
+from backend.api.models.common.__abstract_archivable import AbstractArchivable
 from .__abstract_dataset import AbstractDataset
 
 
@@ -36,7 +37,7 @@ class DatasetManager(models.Manager):
         )
 
 
-class Dataset(AbstractDataset, models.Model):
+class Dataset(AbstractDataset, AbstractArchivable, models.Model):
     """Dataset"""
 
     objects = DatasetManager()
@@ -54,6 +55,16 @@ class Dataset(AbstractDataset, models.Model):
     related_channel_configurations = models.ManyToManyField(
         ChannelConfiguration, related_name="datasets"
     )
+    archived_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="archived_datasets",
+    )
+
+    def archive(self, user: "User"):
+        super().archive(user, force=user.id == self.owner_id)
 
     @deprecated("Related to old OSEkit")
     def get_config_folder(self) -> str:

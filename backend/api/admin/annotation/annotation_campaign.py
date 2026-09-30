@@ -1,11 +1,13 @@
 """API annotation annotation campaign administration"""
 from django.contrib import admin
-from django.contrib import messages
 from django.utils.safestring import SafeString
 from django_extension.admin import ExtendedModelAdmin
 
+from backend.api.admin.common.__abstract_archivable import (
+    admin_archive,
+    admin_unarchive,
+)
 from backend.api.models import AnnotationCampaign
-from ..common import IsArchivedFilter
 from ...models.annotation.annotation_campaign import AnnotationCampaignAnalysis
 
 
@@ -19,14 +21,14 @@ class AnnotationCampaignAnalysisRelationInline(admin.TabularInline):
 class AnnotationCampaignAdmin(ExtendedModelAdmin):
     """AnnotationCampaign presentation in DjangoAdmin"""
 
-    readonly_fields = ("archive",)
+    readonly_fields = ("archived",)
 
     list_display = (
         "id",
         "name",
         "description",
         "created_at",
-        "archive",
+        "archived",
         "instructions_url",
         "deadline",
         "label_set",
@@ -51,54 +53,11 @@ class AnnotationCampaignAdmin(ExtendedModelAdmin):
 
     list_filter = (
         "phases__phase",
-        IsArchivedFilter,
+        "archived",
         "allow_point_annotation",
     )
 
-    actions = [
-        "archive",
-        "unarchive",
-    ]
-
-    @admin.action(description="Archive")
-    def archive(self, request, queryset):
-        """Hide selected collaborators on HomePage"""
-        archived_campaigns = []
-        campaign: AnnotationCampaign
-        for campaign in queryset:
-            if campaign.archive is None:
-                campaign.do_archive(request.user)
-            else:
-                archived_campaigns.append(campaign.name)
-        if len(archived_campaigns) > 0:
-            messages.warning(
-                request,
-                f"The following campaigns were already archived: {', '.join(archived_campaigns)}",
-            )
-
-    @admin.action(description="/!\\ Unarchive /!\\")
-    def unarchive(self, request, queryset):
-        """Hide selected collaborators on HomePage"""
-        not_archived_campaigns = []
-        unarchived_campaigns = []
-        campaign: AnnotationCampaign
-        for campaign in queryset:
-            if campaign.archive is not None:
-                campaign.archive.delete()
-                unarchived_campaigns.append(campaign.name)
-            else:
-                not_archived_campaigns.append(campaign.name)
-        if len(unarchived_campaigns) > 0:
-            messages.error(
-                request,
-                f"Be careful, the dataset files of the unarchived campaigns may no longer exists:"
-                f" {', '.join(unarchived_campaigns)}",
-            )
-        if len(not_archived_campaigns) > 0:
-            messages.warning(
-                request,
-                f"The following campaigns were not archived: {', '.join(not_archived_campaigns)}",
-            )
+    actions = [admin_archive, admin_unarchive]
 
     @admin.display(description="Labels for acoustic features")
     def get_labels_with_acoustic_features(self, obj: AnnotationCampaign):

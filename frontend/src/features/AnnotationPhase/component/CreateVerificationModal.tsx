@@ -93,7 +93,7 @@ export const CreateVerificationModal: React.FC<{
         }
     }, [ annotationPhaseExists, create, createAndImport, rootRef ])
 
-    if (campaign.isArchived) return <Fragment/>
+    if (campaign.archived) return <Fragment/>
     return <Dialog.Content>
         <Dialog.Title>New verification phase</Dialog.Title>
         <Dialog.CloseIcon/>

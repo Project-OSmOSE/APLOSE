@@ -45,7 +45,7 @@ export const CreateAnnotationModal: React.FC<{ closeOnCreate: () => void }> = ({
         }
     }, [ mutateAsync, campaign, labelsWithAcousticFeatures, closeOnCreate, toastManager ])
 
-    if (campaign.isArchived) return <Fragment/>
+    if (campaign.archived) return <Fragment/>
     return <Dialog.Content>
         <Dialog.Title>New annotation phase</Dialog.Title>
         <Dialog.CloseIcon/>

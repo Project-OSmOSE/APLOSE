@@ -69,7 +69,7 @@ export const Set: React.FC = () => {
 
 
             <ButtonGroup spaceBetween>
-                { campaign!.isEditable && campaign!.isUserAllowedToManage && !campaign!.isArchived && (
+                { campaign!.isEditable && campaign!.isUserAllowedToManage && !campaign!.archived && (
                     <Button onClick={ toggleDisabled }
                             disabled={ isSubmitting || !disabled }>
                         Update labels with features

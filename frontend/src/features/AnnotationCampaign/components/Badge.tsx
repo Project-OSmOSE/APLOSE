@@ -6,7 +6,7 @@ import { Badge as BaseBadge } from '@/components/base/Badge';
 
 type Campaign = NonNullable<NonNullable<AllCampaignsQuery['allAnnotationCampaigns']>['results'][number]>;
 
-export type BadgeProps = { campaign: Pick<Campaign, 'deadline' | 'isArchived'> }
+export type BadgeProps = { campaign: Pick<Campaign, 'deadline' | 'archived'> }
 
 export const Badge: React.FC<BadgeProps> = ({ campaign }) => {
     const info = useCampaignState(campaign)

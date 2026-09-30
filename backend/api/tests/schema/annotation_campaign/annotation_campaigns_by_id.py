@@ -13,7 +13,7 @@ query ($id: ID!) {
         createdAt
         instructionsUrl
         deadline
-        isArchived
+        archived
         isEditable
         isUserAllowedToManage
         allowPointAnnotation
@@ -35,11 +35,9 @@ query ($id: ID!) {
             email
         }
         description
-        archive {
-            date
-            byUser {
-                displayName
-            }
+        archived
+        archivedBy {
+            displayName
         }
         spectrogramsCount
         confidenceSet {
@@ -120,7 +118,7 @@ class AnnotationCampaignsByIDTestCase(ExtendedTestCase):
         self.assertEqual(content["dataset"]["id"], "1")
         self.assertEqual(content["labelsWithAcousticFeatures"], [])
         self.assertEqual(content["owner"]["email"], "user1@osmose.xyz")
-        self.assertIsNone(content["archive"])
+        self.assertFalse(content["archived"])
         self.assertEqual(content["confidenceSet"]["name"], "Confidence/NoConfidence")
         self.assertEqual(content["labelSet"]["name"], "Test SPM campaign")
         self.assertEqual(len(content["annotators"]), 2)
@@ -138,7 +136,7 @@ class AnnotationCampaignsByIDTestCase(ExtendedTestCase):
         content = json.loads(response.content)["data"]["annotationCampaignById"]
         self.assertEqual(content["name"], "Test RTF campaign")
         self.assertEqual(content["owner"]["email"], "user1@osmose.xyz")
-        self.assertIsNotNone(content["archive"])
+        self.assertTrue(content["archived"])
 
     def test_not_connected(self):
         response = self.gql_query(QUERY, variables=VARIABLES)

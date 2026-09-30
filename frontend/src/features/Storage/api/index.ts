@@ -29,7 +29,7 @@ export const searchQuery = (variables: SearchStorageQueryVariables) => queryOpti
 
 export const importMutation = mutationOptions({
     mutationFn: (variables: ImportDatasetFromStorageMutationVariables) => graphqlClient.request<ImportDatasetFromStorageMutation>(ImportDatasetFromStorageDocument, variables),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.dataset.all }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.dataset.all({}) }),
 
     // TODO: try to invalidate browse and search keys with given path?
 })

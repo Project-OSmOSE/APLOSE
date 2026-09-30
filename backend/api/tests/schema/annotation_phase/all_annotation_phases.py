@@ -8,7 +8,7 @@ from backend.aplose.models import User
 
 QUERY = """
 query (
-    $isArchived: Boolean
+    $archived: Boolean
     $phase: AnnotationPhaseType
     $campaignID: ID
     $ownerID: ID
@@ -17,7 +17,7 @@ query (
 ) {
     allAnnotationPhases(
         annotationCampaignId: $campaignID
-        isCampaignArchived: $isArchived
+        isCampaignArchived: $archived
         phase: $phase
         annotationCampaign_OwnerId: $ownerID
         annotationFileRanges_AnnotatorId: $annotatorID
@@ -36,7 +36,7 @@ query (
 }
 """
 VARIABLES = {
-    "isArchived": None,
+    "archived": None,
     "phase": None,
     "ownerID": None,
     "annotatorID": None,
@@ -126,7 +126,7 @@ class AllAnnotationPhasesTestCase(ExtendedTestCase):
             user=User.objects.get(username="admin"),
             variables={
                 **VARIABLES,
-                "isArchived": True,
+                "archived": True,
             },
         )
         self.assertResponseNoErrors(response)

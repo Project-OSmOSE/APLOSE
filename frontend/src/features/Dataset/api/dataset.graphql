@@ -33,7 +33,7 @@ query allDatasetsWithCampaigns {
                     node {
                         id
                         name
-                        isArchived
+                        archived
                     }
                 }
             }

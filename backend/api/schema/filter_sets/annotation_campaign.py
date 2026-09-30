@@ -1,6 +1,6 @@
 from django.db.models import Q
 from django_extension.filters import ExtendedFilterSet
-from django_filters import BooleanFilter, CharFilter, OrderingFilter
+from django_filters import CharFilter, OrderingFilter
 from graphene_django.filter import TypedFilter
 
 from backend.api.models import AnnotationCampaign
@@ -10,9 +10,6 @@ from backend.api.schema.enums import AnnotationPhaseType
 class AnnotationCampaignFilterSet(ExtendedFilterSet):
     """AnnotationCampaign filters"""
 
-    is_archived = BooleanFilter(
-        field_name="archive", lookup_expr="isnull", exclude=True
-    )
     phases__phase = TypedFilter(
         input_type=AnnotationPhaseType,
         field_name="phases__phase",
@@ -25,6 +22,7 @@ class AnnotationCampaignFilterSet(ExtendedFilterSet):
         fields = {
             "phases__annotation_file_ranges__annotator_id": ("exact",),
             "owner_id": ("exact",),
+            "archived": ("exact",),
             "analysis__dataset_id": ("exact",),
         }
 

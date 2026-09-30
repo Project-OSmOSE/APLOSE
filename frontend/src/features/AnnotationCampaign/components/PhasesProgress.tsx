@@ -10,7 +10,7 @@ import {
 
 type Props = {
     userRelated?: false,
-    campaign: Pick<AnnotationCampaignNode, 'isArchived' | 'deadline'> & {
+    campaign: Pick<AnnotationCampaignNode, 'archived' | 'deadline'> & {
         phases?: Maybe<{
             results: Array<Maybe<{
                 phase: AnnotationPhaseType,
@@ -22,7 +22,7 @@ type Props = {
     }
 } | {
     userRelated: true,
-    campaign: Pick<AnnotationCampaignNode, 'isArchived' | 'deadline'> & {
+    campaign: Pick<AnnotationCampaignNode, 'archived' | 'deadline'> & {
         phases?: Maybe<{
             results: Array<Maybe<{
                 phase: AnnotationPhaseType,

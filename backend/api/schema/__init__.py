@@ -36,7 +36,7 @@ class APIMutation(graphene.ObjectType):
     # Annotation campaign
     create_annotation_campaign = CreateAnnotationCampaignMutation.Field()
     update_annotation_campaign = UpdateAnnotationCampaignMutation.Field()
-    archive_annotation_campaign = ArchiveAnnotationCampaignMutation.Field()
+    archive_annotation_campaign = AnnotationCampaignArchiveMutation.Field()
 
     # Annotation phase
     create_annotation_phase = CreateAnnotationPhase.Field()

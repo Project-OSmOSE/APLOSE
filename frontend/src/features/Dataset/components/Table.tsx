@@ -21,7 +21,7 @@ type Dataset = API.Fragment & {
     annotationCampaigns: {
         edges: Array<{
             node?: {
-                isArchived: boolean
+                archived: boolean
             } | null
         } | null>
     }
@@ -53,8 +53,8 @@ export const DatasetTable: React.FC = () => {
                         const aCampaigns = a.annotationCampaigns.edges.map(e => e?.node).filter(n => !!n)
                         const bCampaigns = b.annotationCampaigns.edges.map(e => e?.node).filter(n => !!n)
 
-                        const openCompare = bCampaigns.filter(c => !c.isArchived).length - aCampaigns.filter(c => !c.isArchived).length
-                        const archiveCompare = bCampaigns.filter(c => c.isArchived).length - aCampaigns.filter(c => c.isArchived).length
+                        const openCompare = bCampaigns.filter(c => !c.archived).length - aCampaigns.filter(c => !c.archived).length
+                        const archiveCompare = bCampaigns.filter(c => c.archived).length - aCampaigns.filter(c => c.archived).length
                         if (openCompare !== 0) return openCompare
                         return archiveCompare
                     }
@@ -115,7 +115,7 @@ export const DatasetTable: React.FC = () => {
                     <div className={ styles.campaignList }> { d.annotationCampaigns.edges.map((e) =>
                         e?.node && <CampaignName id={ e.node.id } key={ e.node.id } link>
                             { e.node.name }&nbsp;
-                            { e.node.isArchived && <Badge color="medium">Archived</Badge> }
+                            { e.node.archived && <Badge color="medium">Archived</Badge> }
                         </CampaignName>) }</div>
                 </Td>
             </tr>) }

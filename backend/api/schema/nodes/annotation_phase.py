@@ -41,7 +41,7 @@ class AnnotationPhaseNode(ExtendedNode):
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_is_editable(self: AnnotationPhase, info):
-        return self.is_open and self.annotation_campaign.archive is None
+        return self.is_open and not self.annotation_campaign.archived
 
     is_user_allowed_to_manage = graphene.Boolean(required=True)
 
