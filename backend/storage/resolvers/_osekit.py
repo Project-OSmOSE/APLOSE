@@ -1,6 +1,7 @@
 """OSEkit resolver"""
 from pathlib import PureWindowsPath, Path
 
+from django.conf import settings
 from metadatax.data.models import FileFormat
 from osekit.core.spectro_dataset import SpectroDataset
 from osekit.public.project import Project
@@ -70,7 +71,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
                     dataset=dataset,
                     relative_path=make_path_relative(
                         PureWindowsPath(info["dataset"]).parent.as_posix(),
-                        to=osekit_project.folder,
+                        to=join(settings.DATASET_EXPORT_PATH,make_path_relative(osekit_project.folder)),
                     ),
                     detailed=detailed,
                 )
@@ -93,7 +94,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
                 continue
             path = make_path_relative(
                 PureWindowsPath(info["dataset"]).parent.as_posix(),
-                to=osekit_dataset.folder,
+                to=join(settings.DATASET_EXPORT_PATH,make_path_relative(osekit_dataset.folder)),
             )
             if path == relative_path:
                 if not detailed:
