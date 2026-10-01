@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { DatasetAPI } from '@/features/Dataset';
-import { CampaignForm } from '@/features/AnnotationCampaign';
+import { Dataset } from '@/features/Dataset';
+import { Campaign } from '@/features/AnnotationCampaign';
 import { Head, WarningText } from '@/components/ui';
 import { Center } from '@/components/layout/Display';
 import { Content } from '@/components/layout/Content';
@@ -11,10 +11,10 @@ export const Route = createFileRoute('/_authenticated/_admin/annotation-campaign
     validateSearch: (search: Record<string, unknown>) => ({
         dataset_id: search['dataset_id'] as string,
     }),
-    loader: () => ensureValidQueryData(DatasetAPI.listWithAnalysisQuery),
+    loader: () => ensureValidQueryData(Dataset.allQuery({ archived: false })),
     component: () => <Content oneContent>
         <Head title="Create Annotation Campaign"/>
-        <CampaignForm.Create/>
+        <Campaign.CreateForm/>
     </Content>,
     pendingComponent: () => <Content oneContent>
         <Head title="Create Annotation Campaign"/>

@@ -1,8 +1,11 @@
 """API GQL queries"""
-from .archive_annotation_campaign import ArchiveAnnotationCampaignMutation
+from .archive_annotation_campaign import AnnotationCampaignArchiveMutation
 from .create_annotation_campaign import CreateAnnotationCampaignMutation
 from .create_annotation_phase import CreateAnnotationPhase
-from .end_annotation_phase import EndAnnotationPhaseMutation
+from .archive_annotation_phase import AnnotationCampaignPhaseMutation
+from .dataset import (
+    DatasetArchiveMutation,
+)
 from .file_range import (
     AnnotationFileRangeCreateMutation,
     AnnotationFileRangeUpdateMutation,

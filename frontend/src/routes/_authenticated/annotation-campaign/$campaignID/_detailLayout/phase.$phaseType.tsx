@@ -65,7 +65,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
 
     const navigate = useNavigate();
 
-    const isEmpty = useMemo(() => data && data.spectrograms.length === 0 || campaign.isArchived, [ data, campaign ])
+    const isEmpty = useMemo(() => data && data.spectrograms.length === 0 || campaign.archived, [ data, campaign ])
 
     const updatePage = useCallback((page?: number) => {
         navigate({
@@ -163,8 +163,8 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
 
             { data && data.spectrograms.length === 0 &&
                 <p>You have no files to annotate.</p> }
-            { campaign.isArchived ? <p>The campaign is archived. No more annotation can be done.</p> :
-                (phase?.endedAt && <p>The phase is ended. No more annotation can be done.</p>) }
+            { campaign.archived ? <p>The campaign is archived. No more annotation can be done.</p> :
+                (phase?.archived && <p>The phase is ended. No more annotation can be done.</p>) }
 
         </div>
     </div>

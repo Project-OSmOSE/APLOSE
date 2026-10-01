@@ -1,10 +1,10 @@
 """Phase model"""
 from django.conf import settings
-from django.db import models, transaction
-from django.db.models import Q
-from django.utils import timezone
+from django.db import models
+from django.db.models import Q, CheckConstraint
 from django_extension.models import ExtendedEnum, ExtendedQuerySet
 
+from backend.api.models.common.__abstract_archivable import AbstractArchivable
 from backend.aplose.models import User
 
 
@@ -32,9 +32,8 @@ class AnnotationPhaseQuerySet(ExtendedQuerySet):
 
         # Only open phases can be edited
         open_phases = qs.filter(
-            annotation_campaign__archive__isnull=True,
-            ended_at__isnull=True,
-            ended_by__isnull=True,
+            annotation_campaign__archived=False,
+            archived=False,
         )
 
         # Admin can edit all phases
@@ -45,7 +44,7 @@ class AnnotationPhaseQuerySet(ExtendedQuerySet):
         return open_phases.filter(annotation_campaign__owner_id=user.id)
 
 
-class AnnotationPhase(models.Model):
+class AnnotationPhase(AbstractArchivable, models.Model):
     """Annotation campaign phase"""
 
     objects = models.Manager.from_queryset(AnnotationPhaseQuerySet)()
@@ -58,6 +57,15 @@ class AnnotationPhase(models.Model):
 
     class Meta:
         unique_together = (("phase", "annotation_campaign"),)
+        constraints = [
+            CheckConstraint(
+                name="phase_archive_info",
+                check=Q(
+                    archived=True, archived_at__isnull=False, archived_by__isnull=False
+                )
+                | Q(archived=False, archived_at__isnull=True, archived_by__isnull=True),
+            )
+        ]
 
     def __str__(self):
         return f"{self.annotation_campaign} - {self.Type(self.phase).label}"
@@ -76,25 +84,18 @@ class AnnotationPhase(models.Model):
         related_name="created_phases",
     )
 
-    ended_at = models.DateTimeField(blank=True, null=True)
-    ended_by = models.ForeignKey(
+    # pylint: disable=duplicate-code
+    archived_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="ended_phases",
-        blank=True,
+        on_delete=models.SET_NULL,
         null=True,
+        blank=True,
+        related_name="archived_phases",
     )
 
-    @property
-    def is_open(self) -> bool:
-        """Get open state of the phase"""
-        if not self.ended_at or not self.ended_by:
-            return True
-        return False
-
-    @transaction.atomic
-    def end(self, user: User):
-        """End the phase"""
-        self.ended_at = timezone.now()
-        self.ended_by = user
-        self.save()
+    def has_change_permission(self, user: "User") -> bool:
+        return (
+            super().has_change_permission(user)
+            or user.id == self.created_by_id
+            or user.id == self.annotation_campaign.owner_id
+        )

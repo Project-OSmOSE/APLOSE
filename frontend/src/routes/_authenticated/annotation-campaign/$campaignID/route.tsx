@@ -5,7 +5,7 @@ import { Head, WarningText } from '@/components/ui';
 import { Center } from '@/components/layout/Display';
 import { Spinner } from '@/components/base/Spinner';
 import React from 'react';
-import { CampaignAPI } from '@/features/AnnotationCampaign';
+import { Campaign } from '@/features/AnnotationCampaign';
 
 const ErrorComponent: React.FC<ErrorComponentProps> = ({ error }) => {
     const { campaignID } = Route.useParams()
@@ -25,7 +25,7 @@ export const Route = createFileRoute(
             analysis,
             confidences,
             labels,
-        } = await ensureValidQueryData(CampaignAPI.byIdQuery({ id: campaignID }))
+        } = await ensureValidQueryData(Campaign.byIdQuery({ id: campaignID }))
         if (!campaign) throw notFound()
         return { campaign, phases, analysis, confidences, labels }
     },

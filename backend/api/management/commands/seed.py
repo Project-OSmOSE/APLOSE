@@ -21,7 +21,6 @@ from backend.api.models import (
     ConfidenceIndicatorSetIndicator,
     AnnotationCampaign,
     AnnotationPhase,
-    Archive,
     AnnotationFileRange,
     AnnotationTask,
     AnnotationComment,
@@ -386,7 +385,6 @@ class Command(management.BaseCommand):
         campaigns = []
         campaign_analysis_rels = []
         phases = []
-        archives = []
         file_ranges = []
 
         dataset: Dataset
@@ -417,8 +415,9 @@ class Command(management.BaseCommand):
 
             # Create archive
             if dataset.name == "Test archived":
-                c.archive = Archive(by_user=self.admin)
-                archives.append(c.archive)
+                c.archived = True
+                c.archived_by = self.admin
+                c.archived_at = timezone.now()
 
             # Add analysis
             for analysis in dataset.spectrogram_analysis.all():
@@ -446,7 +445,6 @@ class Command(management.BaseCommand):
 
             campaigns.append(c)
 
-        Archive.objects.bulk_create(archives)
         AnnotationCampaign.objects.bulk_create(campaigns)
         AnnotationPhase.objects.bulk_create(phases)
         AnnotationCampaignAnalysis.objects.bulk_create(campaign_analysis_rels)

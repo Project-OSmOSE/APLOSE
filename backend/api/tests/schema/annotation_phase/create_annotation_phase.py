@@ -85,7 +85,7 @@ class CreateAnnotationPhaseTestCase(ExtendedTestCase):
         self.assertResponseNoErrors(response)
         pk = json.loads(response.content)["data"]["createAnnotationPhase"]["id"]
         phase = AnnotationPhase.objects.get(pk=pk)
-        self.assertTrue(phase.is_open)
+        self.assertFalse(phase.archived)
         self.assertEqual(phase.phase, "A")
         self.assertEqual(phase.created_at.isoformat(), "2012-01-14T00:00:00+00:00")
         self.assertEqual(phase.created_by.username, username)
@@ -98,7 +98,7 @@ class CreateAnnotationPhaseTestCase(ExtendedTestCase):
         self.assertResponseNoErrors(response)
         pk = json.loads(response.content)["data"]["createAnnotationPhase"]["id"]
         phase = AnnotationPhase.objects.get(pk=pk)
-        self.assertTrue(phase.is_open)
+        self.assertFalse(phase.archived)
         self.assertEqual(phase.phase, "V")
         self.assertEqual(phase.created_at.isoformat(), "2012-01-14T00:00:00+00:00")
         self.assertEqual(phase.created_by.username, username)

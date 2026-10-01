@@ -1,22 +1,24 @@
-import { queryOptions } from '@tanstack/react-query';
+import { mutationOptions, queryOptions } from '@tanstack/react-query';
 import { queryKeys } from '@/api/queryKeys';
 import { graphqlClient } from '@/api/graphqlClient';
 import {
     AllDatasetsDocument,
     type AllDatasetsQuery,
+    AllDatasetsQueryVariables,
     AllDatasetsWithCampaignsDocument,
     type AllDatasetsWithCampaignsQuery,
+    ArchiveDatasetDocument,
+    type ArchiveDatasetMutation,
+    type ArchiveDatasetMutationVariables,
     GetDatasetByIdDocument,
     type GetDatasetByIdQuery,
     type GetDatasetByIdQueryVariables,
-    ListDatasetsWithAnalysisDocument,
-    type ListDatasetsWithAnalysisQuery,
 } from './dataset.generated';
 import { cleanGqlList } from '@/api/utils';
 
-export const allQuery = queryOptions({
-    queryKey: queryKeys.dataset.all,
-    queryFn: () => graphqlClient.request<AllDatasetsQuery>(AllDatasetsDocument, {})
+export const allQuery = (variables: AllDatasetsQueryVariables) => queryOptions({
+    queryKey: queryKeys.dataset.all(variables),
+    queryFn: () => graphqlClient.request<AllDatasetsQuery>(AllDatasetsDocument, variables)
         .then(data => cleanGqlList(data.allDatasets?.results)),
 })
 
@@ -37,10 +39,16 @@ export const byIdQuery = (variables: GetDatasetByIdQueryVariables) => queryOptio
         })),
 })
 
-export const listWithAnalysisQuery = queryOptions({
-    queryKey: queryKeys.dataset.listWithAnalysis,
-    queryFn: () => graphqlClient.request<ListDatasetsWithAnalysisQuery>(ListDatasetsWithAnalysisDocument, {})
-        .then(data => cleanGqlList(data.allDatasets?.results)),
+export const archiveMutation = mutationOptions({
+    mutationFn: (variables: ArchiveDatasetMutationVariables) =>
+        graphqlClient.request<ArchiveDatasetMutation>(ArchiveDatasetDocument, variables),
+    onSuccess: (_data, _variables, _onMutateResult, context) =>
+        context.client.invalidateQueries({ queryKey: queryKeys.dataset.base }),
 })
 
-export type * from './dataset.generated'
+export type {
+    AllDatasetsQuery as AllQuery,
+    AllDatasetsQueryVariables as AllQueryVariables,
+
+    DatasetFragment as Fragment,
+} from './dataset.generated.ts'

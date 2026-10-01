@@ -86,7 +86,7 @@ class CreateAnnotationCampaignTestCase(ExtendedTestCase):
         self.assertEqual(list(campaign.analysis.values_list("id", flat=True)), [1])
         self.assertIsNone(campaign.confidence_set)
         self.assertIsNone(campaign.label_set)
-        self.assertIsNone(campaign.archive)
+        self.assertFalse(campaign.archived)
         self.assertFalse(campaign.allow_point_annotation)
         self.assertTrue(campaign.allow_digital_zoom)
         self.assertEqual(campaign.created_at.isoformat(), "2012-01-14T00:00:00+00:00")
@@ -113,7 +113,7 @@ class CreateAnnotationCampaignTestCase(ExtendedTestCase):
         self.assertEqual(list(campaign.analysis.values_list("id", flat=True)), [1])
         self.assertIsNone(campaign.confidence_set)
         self.assertIsNone(campaign.label_set)
-        self.assertIsNone(campaign.archive)
+        self.assertFalse(campaign.archived)
         self.assertFalse(campaign.allow_point_annotation)
         self.assertEqual(campaign.created_at.isoformat(), "2012-01-14T00:00:00+00:00")
 

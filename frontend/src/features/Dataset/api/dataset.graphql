@@ -9,10 +9,14 @@ fragment Dataset on DatasetNode {
     spectrogramCount
     start
     end
+    archived
 }
 
-query allDatasets {
-    allDatasets(orderBy: "name") {
+query allDatasets($archived: Boolean) {
+    allDatasets(
+        orderBy: "name",
+        archived: $archived
+    ) {
         results {
             id
             name
@@ -29,7 +33,7 @@ query allDatasetsWithCampaigns {
                     node {
                         id
                         name
-                        isArchived
+                        archived
                     }
                 }
             }
@@ -43,6 +47,11 @@ query getDatasetByID($id: ID!) {
         owner {
             displayName
         }
+        archivedAt
+        archivedBy {
+            displayName
+        }
+        hasChangePermission
     }
     allChannelConfigurations(datasetId: $id) {
         results {
@@ -92,24 +101,37 @@ query getDatasetByID($id: ID!) {
         analysis_DatasetId: $id
         orderBy: "name"
     ) {
-        results { ...BaseCampaign }
-    }
-}
-
-query listDatasetsWithAnalysis {
-    allDatasets(orderBy: "name") {
         results {
             id
             name
-            spectrogramAnalysis(orderBy: "name") {
+            archived
+            datasetName
+            tasksCount
+            completedTasksCount
+            hasChangePermission
+            deadline
+            phases {
                 results {
                     id
-                    name
-                    colormap {
-                        name
-                    }
+                    phase
+                    archived
+                    tasksCount
+                    completedTasksCount
+                    userTasksCount
+                    userCompletedTasksCount
                 }
             }
         }
     }
 }
+
+mutation archiveDataset($id: ID!) {
+    archiveDataset(id: $id) {
+        ok
+        error {
+            field
+            messages
+        }
+    }
+}
+

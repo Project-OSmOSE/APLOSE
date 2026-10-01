@@ -5,7 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { AnnotationPhaseType } from '@/api';
 import { Button, ButtonGroup, Dialog, Spinner, Toast } from '@/components/base';
 
-import { CampaignAPI } from '@/features/AnnotationCampaign';
+import { Campaign } from '@/features/AnnotationCampaign';
 
 import { createVerificationMutation } from '../api'
 import { CreateAnnotationModal } from './CreateAnnotationModal';
@@ -14,7 +14,7 @@ export const CreateVerificationModal: React.FC<{
     closeOnCreate: (shouldImport: boolean) => void
 }> = ({ closeOnCreate }) => {
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const { data } = useQuery(CampaignAPI.byIdQuery({ id: campaign?.id }))
+    const { data } = useQuery(Campaign.byIdQuery({ id: campaign?.id }))
     const {
         isPending,
         mutateAsync: createVerificationPhase,
@@ -93,7 +93,7 @@ export const CreateVerificationModal: React.FC<{
         }
     }, [ annotationPhaseExists, create, createAndImport, rootRef ])
 
-    if (campaign.isArchived) return <Fragment/>
+    if (campaign.archived) return <Fragment/>
     return <Dialog.Content>
         <Dialog.Title>New verification phase</Dialog.Title>
         <Dialog.CloseIcon/>

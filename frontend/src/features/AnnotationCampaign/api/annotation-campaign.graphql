@@ -2,12 +2,12 @@ fragment BaseCampaign on AnnotationCampaignNode {
     id
     name
     deadline
-    isArchived
+    archived
     datasetName
     phases {
         results {
             phase
-            isOpen
+            archived
             userTasksCount
             userCompletedTasksCount
         }
@@ -24,7 +24,7 @@ query allCampaigns(
     $filter_annotatorID: ID
 ) {
     allAnnotationCampaigns(
-        isArchived: $filter_isArchived
+        archived: $filter_isArchived
         phases_Phase: $filter_phase
         ownerId: $filter_ownerID
         phases_AnnotationFileRanges_AnnotatorId: $filter_annotatorID
@@ -66,9 +66,12 @@ query getCampaign($id: ID!) {
         createdAt
         instructionsUrl
         deadline
-        isArchived
-        isEditable
-        isUserAllowedToManage
+        archived
+        archivedAt
+        archivedBy {
+            displayName
+        }
+        hasChangePermission
         allowPointAnnotation
         allowColormapTuning
         allowImageTuning
@@ -78,6 +81,7 @@ query getCampaign($id: ID!) {
         dataset {
             id
             name
+            archived
         }
         labelSet {
             id
@@ -98,12 +102,6 @@ query getCampaign($id: ID!) {
             email
         }
         description
-        archive {
-            date
-            byUser {
-                displayName
-            }
-        }
         confidenceSet {
             id
             name
@@ -132,7 +130,8 @@ query getCampaign($id: ID!) {
             results {
                 id
                 phase
-                isOpen
+                archived
+                hasChangePermission
                 tasksCount
                 completedTasksCount
             }
@@ -182,6 +181,10 @@ mutation createCampaign(
 mutation archiveCampaign($id: ID!) {
     archiveAnnotationCampaign(id: $id) {
         ok
+        error {
+            field
+            messages
+        }
     }
 }
 

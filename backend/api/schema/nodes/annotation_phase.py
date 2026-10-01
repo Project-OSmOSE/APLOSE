@@ -8,9 +8,10 @@ from backend.api.schema.enums import AnnotationPhaseType
 from backend.api.schema.filter_sets import AnnotationPhaseFilterSet
 from backend.aplose.models import User
 from backend.aplose.schema import UserNode
+from .__abstract_permission import AbstractPermissionNode
 
 
-class AnnotationPhaseNode(ExtendedNode):
+class AnnotationPhaseNode(AbstractPermissionNode, ExtendedNode):
     """AnnotationPhase schema"""
 
     annotation_campaign_id = graphene.Field(
@@ -18,9 +19,6 @@ class AnnotationPhaseNode(ExtendedNode):
     )
 
     phase = graphene.NonNull(AnnotationPhaseType)
-
-    is_completed = graphene.Boolean(required=True)
-    is_open = graphene.Boolean(required=True)
 
     class Meta:
         model = AnnotationPhase
@@ -36,21 +34,6 @@ class AnnotationPhaseNode(ExtendedNode):
         return self.annotation_campaign.phases.get(
             phase=AnnotationPhase.Type.ANNOTATION
         ).annotations.exists()
-
-    is_editable = graphene.Boolean(required=True)
-
-    @graphene_django_optimizer.resolver_hints()
-    def resolve_is_editable(self: AnnotationPhase, info):
-        return self.is_open and self.annotation_campaign.archive is None
-
-    is_user_allowed_to_manage = graphene.Boolean(required=True)
-
-    @graphene_django_optimizer.resolver_hints()
-    def resolve_is_user_allowed_to_manage(self: AnnotationPhase, info):
-        if info.context.user.is_staff or info.context.user.is_superuser:
-            return True
-
-        return self.annotation_campaign.owner_id == info.context.user.id
 
     tasks_count = graphene.Int(required=True)
 

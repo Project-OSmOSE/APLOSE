@@ -1,10 +1,10 @@
-import { Badge, type BadgeProps } from './Badge.tsx';
+import { CampaignBadge, type BadgeProps } from './Badge.tsx';
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
 import { DAY, NOW } from '@/features/AnnotationCampaign/hooks';
 
 const meta = {
     title: 'Features/AnnotationCampaign/Badge',
-    component: Badge,
+    component: CampaignBadge,
     parameters: {
         // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
         layout: 'centered',
@@ -21,10 +21,10 @@ const meta = {
     args: {
         campaign: {
             deadline: null,
-            isArchived: false,
+            archived: false,
         },
     } satisfies BadgeProps,
-} satisfies Meta<typeof Badge>;
+} satisfies Meta<typeof CampaignBadge>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 
@@ -35,7 +35,7 @@ export const DueDate: Story = {
     args: {
         campaign: {
             deadline: new Date(2026, 5, 13).toISOString(),
-            isArchived: false,
+            archived: false,
         },
     } satisfies BadgeProps,
 };
@@ -44,7 +44,7 @@ export const DueDateWithinWeek: Story = {
     args: {
         campaign: {
             deadline: new Date(NOW + 7 * DAY).toISOString(),
-            isArchived: false,
+            archived: false,
         },
     } satisfies BadgeProps,
 };
@@ -53,7 +53,7 @@ export const Archived: Story = {
     args: {
         campaign: {
             deadline: new Date(2026, 5, 13).toISOString(),
-            isArchived: true,
+            archived: true,
         },
     } satisfies BadgeProps,
 };

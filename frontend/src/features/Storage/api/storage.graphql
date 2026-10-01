@@ -12,10 +12,11 @@ fragment StorageDataset on DatasetStorageNode {
     importStatus
     model {
         id
+        archived
         annotationCampaigns {
             edges {
                 node {
-                    isArchived
+                    archived
                 }
             }
         }
@@ -32,7 +33,7 @@ fragment StorageAnalysis on AnalysisStorageNode {
         annotationCampaigns {
             edges {
                 node {
-                    isArchived
+                    archived
                 }
             }
         }

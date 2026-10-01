@@ -31,7 +31,7 @@ class AnnotationFileRangeUpdateForm(forms.ModelForm):
         )
 
     def _set_index_validators(self, phase: AnnotationPhase):
-        # Add validators to avoir file indexes to get higher than actual spectrogram count
+        # Add validators to avoid file indexes to get higher than actual spectrogram count
         max_count = phase.annotation_campaign.spectrograms.count() - 1
         self.fields["first_file_index"].validators.append(MaxValueValidator(max_count))
         self.fields["last_file_index"].validators.append(MaxValueValidator(max_count))

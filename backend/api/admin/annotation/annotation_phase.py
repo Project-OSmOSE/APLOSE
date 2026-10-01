@@ -2,6 +2,7 @@
 from django.contrib import admin
 from django_extension.admin import ExtendedModelAdmin
 
+from backend.api.admin.common.__abstract_archivable import admin_unarchive
 from backend.api.models import AnnotationPhase
 
 
@@ -15,7 +16,12 @@ class AnnotationPhaseAdmin(ExtendedModelAdmin):
         "phase",
         "created_at",
         "created_by",
-        "ended_at",
-        "ended_by",
+        "archived",
     )
     search_fields = ("annotation_campaign__name",)
+
+    list_filter = ("archived",)
+
+    actions = [
+        admin_unarchive,
+    ]

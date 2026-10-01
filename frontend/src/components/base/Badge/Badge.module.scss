@@ -8,6 +8,8 @@
   letter-spacing: 8%;
   text-transform: uppercase;
   font-size: 0.8rem;
+  user-select: none;
+  width: fit-content;
 
   @each $color, $map in base.$colors {
     &[color=#{$color}] {

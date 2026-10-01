@@ -12,9 +12,7 @@ from backend.api.schema.enums import AnnotationPhaseType
 class AnnotationPhaseFilterSet(ExtendedFilterSet):
     """AnnotationPhase filters"""
 
-    is_campaign_archived = BooleanFilter(
-        field_name="annotation_campaign__archive", lookup_expr="isnull", exclude=True
-    )
+    is_campaign_archived = BooleanFilter(field_name="annotation_campaign__archived")
 
     phase = TypedFilter(
         input_type=AnnotationPhaseType,

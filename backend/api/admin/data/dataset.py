@@ -2,6 +2,9 @@
 from django.contrib import admin
 from django_extension.admin import ExtendedModelAdmin
 
+from backend.api.admin.common.__abstract_archivable import (
+    admin_unarchive,
+)
 from backend.api.models import Dataset
 
 
@@ -9,9 +12,9 @@ from backend.api.models import Dataset
 class DatasetAdmin(ExtendedModelAdmin):
     """Dataset presentation in DjangoAdmin"""
 
-    actions = [
-        "export",
-    ]
+    readonly_fields = ("archived",)
+
+    actions = ["export", admin_unarchive]
 
     list_display = (
         "name",
@@ -19,12 +22,16 @@ class DatasetAdmin(ExtendedModelAdmin):
         "created_at",
         "path",
         "legacy",
+        "archived",
         "owner",
         "show_spectrogram_analysis",
         "show_channel_configuration",
     )
 
     search_fields = ["name", "related_channel_configurations__deployment__name"]
+    list_filter = [
+        "archived",
+    ]
 
     filter_horizontal = [
         "related_channel_configurations",

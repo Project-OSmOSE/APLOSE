@@ -22,5 +22,4 @@ all_fixtures = [
     "annotation_validation",
     "acoustic_features",
     "session",
-    "archive",
 ]

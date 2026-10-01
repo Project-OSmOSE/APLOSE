@@ -1,6 +1,6 @@
 import React, { createContext, type HTMLProps, useCallback, useContext, useMemo, useState } from 'react';
 import { Signal } from 'signal-ts';
-import type { CampaignAnalysisFragment, GetCampaignQuery } from '@/features/AnnotationCampaign';
+import type { Campaign } from '@/features/AnnotationCampaign';
 import type { TimeFreqPosition } from '@/features/Annotator/Pointer';
 
 type ZoomInfo = {
@@ -64,8 +64,8 @@ export const useZoomContext = () => {
 const ABSOLUTE_MAX_ZOOM_LEVEL = 16
 
 type Props = Pick<HTMLProps<HTMLDivElement>, 'children'> & {
-    campaign: NonNullable<GetCampaignQuery['annotationCampaignById']>;
-    analysis: CampaignAnalysisFragment | null
+    campaign: NonNullable<Campaign.GetQuery['annotationCampaignById']>;
+    analysis: Campaign.AnalysisFragment | null
 }
 export const ZoomRoot: React.FC<Props> = ({ children, campaign, analysis }) => {
     const [ signal ] = useState(new Signal<ZoomInfo>())

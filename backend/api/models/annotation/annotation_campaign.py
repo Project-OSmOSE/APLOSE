@@ -1,21 +1,22 @@
 """Campaign model"""
+# pylint: disable=duplicate-code
 from typing import Optional
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.db.models import signals, Q, QuerySet, Exists, OuterRef
+from django.db.models import signals, Q, QuerySet, Exists, OuterRef, CheckConstraint
 from django.dispatch import receiver
 from django.utils import timezone
 from django_extension.models import ExtendedQuerySet
 
 from backend.aplose.models import User
+from backend.api.models.common.__abstract_archivable import AbstractArchivable
 from .annotation_phase import AnnotationPhase
 from .confidence import Confidence
 from .confidence_set import ConfidenceSet, ConfidenceIndicatorSetIndicator
 from .label import Label
 from .label_set import LabelSet
-from ..common import Archive
 from ..data import Dataset, SpectrogramAnalysis, Spectrogram
 
 
@@ -45,7 +46,7 @@ class AnnotationCampaignQuerySet(ExtendedQuerySet):
         qs = super().filter_viewable_by(user, **kwargs)
 
         # Only open campaigns can be edited
-        open_campaigns = qs.filter(archive__isnull=True)
+        open_campaigns = qs.filter(archived=False)
 
         # Admin can edit all campaigns
         if user.is_staff or user.is_superuser:
@@ -55,13 +56,22 @@ class AnnotationCampaignQuerySet(ExtendedQuerySet):
         return open_campaigns.filter(owner_id=user.id)
 
 
-class AnnotationCampaign(models.Model):
+class AnnotationCampaign(AbstractArchivable, models.Model):
     """Campaign to make annotation on the designated dataset with the given label set and confidence indicator set"""
 
     objects = models.Manager.from_queryset(AnnotationCampaignQuerySet)()
 
     class Meta:
         ordering = ["name"]
+        constraints = [
+            CheckConstraint(
+                name="campaign_archive_info",
+                check=Q(
+                    archived=True, archived_at__isnull=False, archived_by__isnull=False
+                )
+                | Q(archived=False, archived_at__isnull=True, archived_by__isnull=True),
+            )
+        ]
 
     def __str__(self):
         return str(self.name)
@@ -98,22 +108,22 @@ class AnnotationCampaign(models.Model):
     confidence_set = models.ForeignKey(
         ConfidenceSet, on_delete=models.SET_NULL, null=True, blank=True
     )
-    archive = models.OneToOneField(
-        Archive,
-        related_name="annotation_campaign",
+
+    archived_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
+        related_name="archived_campaigns",
     )
 
-    @transaction.atomic
-    def do_archive(self, user: User):
-        """Archive current campaign"""
-        if self.archive is not None:
-            return
-        self.archive = Archive.objects.create(by_user=user)
-        self.save()
+    def has_change_permission(self, user: "User") -> bool:
+        return super().has_change_permission(user) or user.id == self.owner_id
+
+    def archive(self, user: "User"):
+        super().archive(user)
         for phase in self.phases.all():
-            phase.end(user)
+            phase.archive(user)
 
     def get_sorted_files(self) -> QuerySet[Spectrogram]:
         """Return sorted dataset files"""

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
 import { ZoomButtons } from './Buttons';
 import { ZoomRoot } from './Root'
-import type { CampaignAnalysisFragment, GetCampaignQuery } from '@/features/AnnotationCampaign';
+import type { Campaign } from '@/features/AnnotationCampaign';
 
 
 const meta = {
@@ -9,10 +9,10 @@ const meta = {
     component: ZoomButtons,
     decorators: [
         (Story: any) => <ZoomRoot
-            campaign={ { allowDigitalZoom: true } as NonNullable<GetCampaignQuery['annotationCampaignById']> }
+            campaign={ { allowDigitalZoom: true } as NonNullable<Campaign.GetQuery['annotationCampaignById']> }
             analysis={ {
                 legacyConfiguration: { zoomLevel: 2 },
-            } as CampaignAnalysisFragment | null }
+            } as Campaign.AnalysisFragment | null }
             children={ <Story/> }/>,
 
     ],
@@ -32,10 +32,10 @@ export const Default: Story = {};
 export const NoDigital: Story = {
     decorators: [
         (Story: any) => <ZoomRoot
-            campaign={ { allowDigitalZoom: false } as NonNullable<GetCampaignQuery['annotationCampaignById']> }
+            campaign={ { allowDigitalZoom: false } as NonNullable<Campaign.GetQuery['annotationCampaignById']> }
             analysis={ {
                 legacyConfiguration: { zoomLevel: 2 },
-            } as CampaignAnalysisFragment | null }
+            } as Campaign.AnalysisFragment | null }
             children={ <Story/> }/>,
     ],
 };
@@ -43,8 +43,8 @@ export const NoDigital: Story = {
 export const NoPreprocessed: Story = {
     decorators: [
         (Story: any) => <ZoomRoot
-            campaign={ { allowDigitalZoom: true } as NonNullable<GetCampaignQuery['annotationCampaignById']> }
-            analysis={ {} as CampaignAnalysisFragment | null }
+            campaign={ { allowDigitalZoom: true } as NonNullable<Campaign.GetQuery['annotationCampaignById']> }
+            analysis={ {} as  Campaign.AnalysisFragment | null }
             children={ <Story/> }/>,
     ],
 };
@@ -52,8 +52,8 @@ export const NoPreprocessed: Story = {
 export const NoDigitalNorPreprocessed: Story = {
     decorators: [
         (Story: any) => <ZoomRoot
-            campaign={ { allowDigitalZoom: false } as NonNullable<GetCampaignQuery['annotationCampaignById']> }
-            analysis={ {} as CampaignAnalysisFragment | null }
+            campaign={ { allowDigitalZoom: false } as NonNullable<Campaign.GetQuery['annotationCampaignById']> }
+            analysis={ {} as  Campaign.AnalysisFragment | null }
             children={ <Story/> }/>,
     ],
 };

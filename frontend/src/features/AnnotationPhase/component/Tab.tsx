@@ -9,7 +9,7 @@ import { queryKeys } from '@/api/queryKeys';
 import { Tab as BaseTab } from '@/components/ui';
 import { Button, ButtonGroup, Dialog } from '@/components/base';
 
-import { CampaignAPI } from '@/features/AnnotationCampaign';
+import { Campaign } from '@/features/AnnotationCampaign';
 
 import { endMutation } from '../api'
 import { CreateAnnotationModal } from './CreateAnnotationModal';
@@ -18,7 +18,7 @@ import { CreateVerificationModal } from './CreateVerificationModal';
 export const Tab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: phaseType }) => {
     const { phaseType: currentPhaseType } = useParams({ strict: false });
     const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const { data, isFetching } = useQuery(CampaignAPI.byIdQuery({ id: campaignID }))
+    const { data, isFetching } = useQuery(Campaign.byIdQuery({ id: campaignID }))
     const navigate = useNavigate()
     const phase = useMemo(() => data?.phases?.find(p => p.phase === phaseType), [ data, phaseType ])
     const dialogRootRef = useRef<Dialog.RootActions | null>(null);
@@ -64,9 +64,10 @@ export const Tab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: p
 
     const endButton = useMemo(() => {
         if (!data?.campaign || !phase) return <Fragment/>
-        if (!data.campaign.isEditable) return <Fragment/>
-        if (!data.campaign.isUserAllowedToManage) return <Fragment/>
-        if (!phase.isOpen) return <Fragment/>
+        if (data.campaign.archived) return <Fragment/>
+        if (!data.campaign.hasChangePermission) return <Fragment/>
+        if (phase.archived) return <Fragment/>
+        if (!phase.hasChangePermission) return <Fragment/>
         if (currentPhaseType !== phaseType) return <Fragment/>
 
         if (phase.completedTasksCount < phase.tasksCount) {
@@ -106,7 +107,7 @@ export const Tab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: p
     }
 
     // Phase does not exist -or- User cannot create
-    if (!data?.campaign?.isEditable || !data?.campaign?.isUserAllowedToManage) return <Fragment/>
+    if (data?.campaign?.archived || !data?.campaign?.hasChangePermission) return <Fragment/>
 
     // Create phase
     switch (phaseType) {

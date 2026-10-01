@@ -8,7 +8,9 @@ DATA_FIXTURES = [
     "spectrogram_analysis",
 ]
 
-COMMON_FIXTURES = ["archive", "session"]
+COMMON_FIXTURES = [
+    "session",
+]
 
 ANNOTATION_FIXTURES = [
     "acoustic_features",

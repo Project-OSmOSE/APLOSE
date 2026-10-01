@@ -1,15 +1,15 @@
 import React, { useMemo, useState } from 'react';
+import { useQuery } from "@tanstack/react-query";
 
 import { type Order, Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
+import { Note } from '@/components/base';
 import { dateToString } from '@/service/function';
 
-import { DatasetName } from './DatasetInfo';
-import { CampaignName } from '@/features/AnnotationCampaign/CampaignInfo';
+import { Campaign } from "@/features/AnnotationCampaign";
 
+import * as API from '../api';
 import styles from './styles.module.scss'
-import { useLoaderData } from '@tanstack/react-router';
-import type { DatasetFragment } from '@/features/Dataset/api';
-import { Badge, Note } from '@/components/base';
+import { DatasetName } from './Name.tsx';
 
 
 type Sort = {
@@ -17,18 +17,18 @@ type Sort = {
     order: Order
 }
 
-type Dataset = DatasetFragment & {
+type Dataset = API.Fragment & {
     annotationCampaigns: {
         edges: Array<{
             node?: {
-                isArchived: boolean
+                archived: boolean
             } | null
         } | null>
     }
 }
 
 export const DatasetTable: React.FC = () => {
-    const allDatasets = useLoaderData({ from: '/_authenticated/_admin/dataset/' })
+    const { data: allDatasets } = useQuery(API.allWithCampaignsQuery)
 
     const [ sorting, setSorting ] = useState<Sort>({ column: 'createdAt', order: 'desc' });
 
@@ -53,8 +53,8 @@ export const DatasetTable: React.FC = () => {
                         const aCampaigns = a.annotationCampaigns.edges.map(e => e?.node).filter(n => !!n)
                         const bCampaigns = b.annotationCampaigns.edges.map(e => e?.node).filter(n => !!n)
 
-                        const openCompare = bCampaigns.filter(c => !c.isArchived).length - aCampaigns.filter(c => !c.isArchived).length
-                        const archiveCompare = bCampaigns.filter(c => c.isArchived).length - aCampaigns.filter(c => c.isArchived).length
+                        const openCompare = bCampaigns.filter(c => !c.archived).length - aCampaigns.filter(c => !c.archived).length
+                        const archiveCompare = bCampaigns.filter(c => c.archived).length - aCampaigns.filter(c => c.archived).length
                         if (openCompare !== 0) return openCompare
                         return archiveCompare
                     }
@@ -101,7 +101,7 @@ export const DatasetTable: React.FC = () => {
         <Tbody>
             { sortedDatasets.map(d => <tr key={ d.id }>
                 <Th scope="row">
-                    <DatasetName { ...d } link/>
+                    <DatasetName dataset={ d } link/>
                     <Note color="medium">{ d.path }</Note>
                 </Th>
                 <Td>{ dateToString(d.createdAt) }</Td>
@@ -113,10 +113,9 @@ export const DatasetTable: React.FC = () => {
                 <Td>{ d.spectrogramCount ?? 0 }</Td>
                 <Td>
                     <div className={ styles.campaignList }> { d.annotationCampaigns.edges.map((e) =>
-                        e?.node && <CampaignName id={ e.node.id } key={ e.node.id } link>
-                            { e.node.name }&nbsp;
-                            { e.node.isArchived && <Badge color="medium">Archived</Badge> }
-                        </CampaignName>) }</div>
+                        e?.node && <Campaign.Name campaign={ e.node }
+                                                  key={ e.node.id }
+                                                  link/>) }</div>
                 </Td>
             </tr>) }
 

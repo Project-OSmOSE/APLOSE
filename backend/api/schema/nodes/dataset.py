@@ -6,10 +6,11 @@ from graphql import GraphQLResolveInfo
 
 from backend.api.models import Dataset
 from backend.api.schema.filter_sets import DatasetFilterSet
+from .__abstract_permission import AbstractPermissionNode
 from .spectrogram_analysis import SpectrogramAnalysisNode
 
 
-class DatasetNode(ExtendedNode):
+class DatasetNode(AbstractPermissionNode, ExtendedNode):
     """Dataset schema"""
 
     spectrogram_analysis = AuthenticatedPaginationConnectionField(

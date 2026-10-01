@@ -1,7 +1,7 @@
 import { type AnnotationPhaseNode } from '../../../../src/api/types.gql-generated';
 
 export type Phase =
-  Omit<AnnotationPhaseNode, 'annotationComments' | 'annotationFileRanges' | 'createdBy' | 'annotationTasks' |
+  Omit<AnnotationPhaseNode, 'hasChangePermission' | 'annotationComments' | 'annotationFileRanges' | 'createdBy' | 'annotationTasks' |
     'annotations' | 'annotationCampaign' | 'endedBy' | 'annotationCampaignId' | 'phase' | 'isEditable' |
       'isUserAllowedToManage' | 'tasksCount' | 'userTasksCount' | 'userCompletedTasksCount' | 'completedTasksCount' | 'annotators'
   >
@@ -9,18 +9,14 @@ export type Phase =
 export const phase: Phase = {
   id: '1',
   createdAt: new Date().toISOString(),
-  endedAt: null,
+  archived: false,
   hasAnnotations: true,
-  isOpen: true,
-  isCompleted: false,
 }
 export const otherPhase: Phase = {
   id: '2',
   createdAt: new Date().toISOString(),
-  endedAt: null,
+  archived: false,
   hasAnnotations: true,
-  isOpen: true,
-  isCompleted: false,
 }
 export const completedTasksCount = 50;
 export const tasksCount = 100;

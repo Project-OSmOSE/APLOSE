@@ -8,7 +8,11 @@ class DatasetFilterSet(FilterSet):
 
     class Meta:
         model = Dataset
-        fields = {}
+        fields = {
+            "archived": [
+                "exact",
+            ]
+        }
 
     order_by = OrderingFilter(
         fields=(

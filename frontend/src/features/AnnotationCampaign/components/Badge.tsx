@@ -1,22 +1,22 @@
 import React from 'react';
-import { type AllCampaignsQuery } from '../api';
-import { useCampaignState } from '../hooks';
+import { AnnotationCampaignNode } from "@/api/types.gql-generated.ts";
 import { dateToString } from '@/service/function';
-import { Badge as BaseBadge } from '@/components/base/Badge';
+import { Badge } from '@/components/base';
+import { Campaign } from '@/features/AnnotationCampaign';
 
-type Campaign = NonNullable<NonNullable<AllCampaignsQuery['allAnnotationCampaigns']>['results'][number]>;
+export type BadgeProps = {
+    campaign: Pick<AnnotationCampaignNode, 'deadline' | 'archived'>
+}
 
-export type BadgeProps = { campaign: Pick<Campaign, 'deadline' | 'isArchived'> }
-
-export const Badge: React.FC<BadgeProps> = ({ campaign }) => {
-    const info = useCampaignState(campaign)
+export const CampaignBadge: React.FC<BadgeProps> = ({ campaign }) => {
+    const info = Campaign.useState(campaign)
 
     switch (info.state) {
         case 'Due date':
-            return <BaseBadge color={ info.color }>
+            return <Badge color={ info.color }>
                 Due date: { dateToString(info.dueDate) }
-            </BaseBadge>
+            </Badge>
         default:
-            return <BaseBadge color={ info.color }>{ info.state }</BaseBadge>
+            return <Badge color={ info.color }>{ info.state }</Badge>
     }
 }

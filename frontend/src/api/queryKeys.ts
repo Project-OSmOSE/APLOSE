@@ -1,7 +1,10 @@
 import type { BrowseStorageQueryVariables, SearchStorageQueryVariables } from '@/features/Storage/api';
-import type { GetDatasetByIdQueryVariables } from '@/features/Dataset/api';
+import { AllDatasetsQueryVariables, GetDatasetByIdQueryVariables } from '@/features/Dataset/api/dataset.generated.ts';
 import type { ListFileRangesQueryVariables } from '@/features/AnnotationFileRange/api';
-import type { AllCampaignsQueryVariables, GetCampaignQueryVariables } from '@/features/AnnotationCampaign/api';
+import type {
+    AllCampaignsQueryVariables,
+    GetCampaignQueryVariables
+} from '@/features/AnnotationCampaign/api/annotation-campaign.generated.ts';
 import type {
     AllSpectrogramAnalysisForDatasetQueryVariables,
     AllSpectrogramAnalysisQueryVariables,
@@ -61,10 +64,10 @@ export const queryKeys = {
         allPaths: [ 'spectrogram', 'path' ] as const,
     },
     dataset: {
-        all: [ 'dataset' ] as const,
+        base: [ 'dataset' ] as const,
+        all: (variables: AllDatasetsQueryVariables) => [ 'dataset', ...Object.entries(variables).map(e => e.join('-')) ] as const,
         allWithCampaigns: [ 'dataset', 'campaign' ] as const,
         byId: (variables: GetDatasetByIdQueryVariables) => [ 'dataset', variables.id ] as const,
-        listWithAnalysis: [ 'dataset', 'analysis' ] as const,
     },
     analysis: {
         all: (variables: AllSpectrogramAnalysisQueryVariables) => [ 'analysis', variables ] as const,

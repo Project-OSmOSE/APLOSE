@@ -34,7 +34,9 @@
     deadline: 2010-11-02
     label_set: 1
     owner: 3
-    archive: 1
+    archived: true
+    archived_at: 2010-11-02 00:00:00+00:00
+    archived_by: 1
     dataset: 1
     analysis:
     - 1

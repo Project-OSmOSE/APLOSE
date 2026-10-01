@@ -19,7 +19,7 @@ import { ensureValidQueryData } from '@/api/utils';
 import { User } from '@/features/User';
 import { ConfigBar } from '@/features/Annotator/ConfigBar';
 import { DownloadButtons } from '@/features/Annotator/DownloadButtons';
-import { CampaignAPI } from '@/features/AnnotationCampaign';
+import { Campaign } from '@/features/AnnotationCampaign';
 import { useAppDispatch } from '@/features/App';
 
 const AnnotatorPage: React.FC = () => {
@@ -99,7 +99,7 @@ export const Route = createFileRoute(
             ensureValidQueryData(AnnotationSpectrogramAPI.getQuery({
                 campaignID, phaseType, spectrogramID, ...deps, annotatorID: user!.id,
             })),
-            ensureValidQueryData(CampaignAPI.byIdQuery({ id: campaignID })),
+            ensureValidQueryData(Campaign.byIdQuery({ id: campaignID })),
         ])
         if (!spectrogram) throw notFound()
         const baseScaleAnalysis = analysis.find(a =>

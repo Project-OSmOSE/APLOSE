@@ -13,8 +13,8 @@ type StateReturnType = {
     state: CampaignState & ('Archived' | 'Open')
     color: BaseColor
 };
-export const useCampaignState = (campaign: Pick<AnnotationCampaignNode, 'isArchived' | 'deadline'>): StateReturnType => {
-    if (campaign.isArchived) return { state: 'Archived', color: 'medium' }
+export const useCampaignState = (campaign: Pick<AnnotationCampaignNode, 'archived' | 'deadline'>): StateReturnType => {
+    if (campaign.archived) return { state: 'Archived', color: 'medium' }
 
     const dueDate = campaign.deadline ? new Date(campaign.deadline) : undefined;
     if (dueDate) {

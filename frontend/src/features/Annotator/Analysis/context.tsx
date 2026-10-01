@@ -1,12 +1,12 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { useLoaderData } from '@tanstack/react-router';
-import type { CampaignAnalysisFragment } from '@/features/AnnotationCampaign';
+import type { Campaign } from '@/features/AnnotationCampaign';
 
 
 type AnnotatorAnalysisContext = {
-    allAnalysis: CampaignAnalysisFragment[],
-    selectedAnalysis: CampaignAnalysisFragment | null,
-    setSelectedAnalysis: (value: CampaignAnalysisFragment | null) => void,
+    allAnalysis: Campaign.AnalysisFragment[],
+    selectedAnalysis: Campaign.AnalysisFragment | null,
+    setSelectedAnalysis: (value: Campaign.AnalysisFragment | null) => void,
 };
 
 type AnnotatorAnalysisContextProvider = {
@@ -28,7 +28,7 @@ export const AnnotatorAnalysisProvider: React.FC<AnnotatorAnalysisContextProvide
         defaultAnalysis,
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
 
-    const [ selectedAnalysis, setSelectedAnalysis ] = useState<CampaignAnalysisFragment | null>(defaultAnalysis ?? null);
+    const [ selectedAnalysis, setSelectedAnalysis ] = useState<Campaign.AnalysisFragment | null>(defaultAnalysis ?? null);
 
     return (
         <AnnotatorAnalysisContext.Provider value={ {

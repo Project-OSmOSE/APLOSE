@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Head } from '@/components/ui';
 
-import { DatasetTable, DatasetAPI } from '@/features/Dataset';
+import { Dataset } from '@/features/Dataset';
 import { ensureValidQueryData } from '@/api/utils';
 import { Link } from '@/components/base/Button';
 import { Content } from '@/components/layout/Content';
@@ -19,7 +19,7 @@ const Skeleton: React.FC<{ children: ReactNode }> = ({ children }) => (
 )
 
 export const Route = createFileRoute('/_authenticated/_admin/dataset/')({
-    loader: () => ensureValidQueryData(DatasetAPI.allWithCampaignsQuery),
-    component: () => <Skeleton children={ <DatasetTable/> }/>,
+    loader: () => ensureValidQueryData(Dataset.allWithCampaignsQuery),
+    component: () => <Skeleton children={ <Dataset.Table/> }/>,
     pendingComponent: () => <Skeleton children={ <Center><Spinner/></Center> }/>,
 })

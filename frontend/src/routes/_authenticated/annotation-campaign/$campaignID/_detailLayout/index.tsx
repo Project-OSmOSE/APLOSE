@@ -3,8 +3,8 @@ import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 import { dateToString, pluralize } from '@/service/function';
 
 import { LabelDialog } from '@/features/Labels';
-import { CampaignComponents } from '@/features/AnnotationCampaign';
-import { DatasetName } from '@/features/Dataset';
+import { Campaign } from '@/features/AnnotationCampaign';
+import { Dataset } from '@/features/Dataset';
 import { AnalysisAPI, SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 
 import styles from './index.module.scss';
@@ -23,11 +23,11 @@ const AnnotationCampaignInfo: React.FC = () => {
                 </div> }
 
                 {/* GLOBAL */ }
-                <CampaignComponents.ArchiveButton/>
-                <CampaignComponents.InstructionsButton instructionsUrl={ campaign.instructionsUrl }/>
-                { campaign.archive && <Note color="medium">
+                <Campaign.ArchiveButton campaign={ campaign } phases={ phases }/>
+                <Campaign.InstructionsButton campaign={ campaign }/>
+                { campaign.archived && <Note color="medium">
                     Archived
-                    on { dateToString(campaign.archive.date) } by { campaign.archive.byUser?.displayName }
+                    on { dateToString(campaign.archivedAt) } by { campaign.archivedBy?.displayName }
                 </Note> }
                 { campaign.deadline && <div>
                     <Note color="medium">Deadline</Note>
@@ -37,7 +37,7 @@ const AnnotationCampaignInfo: React.FC = () => {
                 {/* DATA */ }
                 <div className={ styles.bloc }>
                     <h4>Dataset</h4>
-                    <DatasetName name={ campaign.dataset.name } id={ campaign.dataset.id } link/>
+                    <Dataset.Name dataset={ campaign.dataset } link/>
                     <h4>Analysis</h4>
                     <SpectrogramAnalysisTable analysis={ analysis } spacing="small"/>
                 </div>
@@ -78,7 +78,7 @@ const AnnotationCampaignInfo: React.FC = () => {
                 </Fragment> }
 
                 {/* PROGRESS */ }
-                <CampaignComponents.PhasesProgress campaign={ campaign }/>
+                <Campaign.PhasesProgress campaign={ campaign } phases={ phases }/>
 
             </div>
         }, [ campaign, phases, analysis ],

@@ -35,10 +35,9 @@ class AnnotationQuerySet(ExtendedQuerySet):
                 # Task is open
                 Q(
                     # Campaign is open
-                    annotation_phase__annotation_campaign__archive__isnull=True,
+                    annotation_phase__annotation_campaign__archived=False,
                     # Phase is open
-                    annotation_phase__ended_by__isnull=True,
-                    annotation_phase__ended_at__isnull=True,
+                    annotation_phase__archived=False,
                 )
                 & (
                     (

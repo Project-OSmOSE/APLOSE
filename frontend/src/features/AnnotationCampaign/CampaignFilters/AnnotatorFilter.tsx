@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useLoaderData, useNavigate, useSearch } from '@tanstack/react-router'
-import { Chip, ChipRemove } from '@/components/base/Chip';
+import { Chip, ChipRemove } from '@/components/base';
 
 export const AnnotationCampaignAnnotatorFilter: React.FC = () => {
     const filter_annotatorID = useSearch({

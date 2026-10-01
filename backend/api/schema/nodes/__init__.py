@@ -8,7 +8,6 @@ from .annotation_phase import AnnotationPhaseNode
 from .annotation_spectrogram import AnnotationSpectrogramNode
 from .annotation_task import AnnotationTaskNode
 from .annotation_validation import AnnotationValidationNode
-from .archive import ArchiveNode
 from .colormap import ColormapNode
 from .confidence import ConfidenceNode
 from .confidence_set import ConfidenceSetNode

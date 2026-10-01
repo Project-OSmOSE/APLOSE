@@ -1,1 +1,1 @@
-export * from './Create'
+export { CampaignCreateForm as CreateForm } from './Create'
