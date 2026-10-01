@@ -46,7 +46,13 @@ export const Header: React.FC = () => {
                         <li className="mx-5 mx-md-4 nav-item">
                             <Link to="/our-tools" className="nav-link navigation-link">Our tools</Link>
                         </li>
-
+                        <li className="mx-5 mx-md-4 nav-item">
+                            <a className="nav-link navigation-link"
+                               href="https://osmose.ifremer.fr/app/"
+                               target="_blank" rel="noreferrer">
+                                APLOSE
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
