@@ -3,7 +3,6 @@ from django.contrib import admin
 from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.admin.common.__abstract_archivable import (
-    admin_archive,
     admin_unarchive,
 )
 from backend.api.models import Dataset
@@ -15,7 +14,7 @@ class DatasetAdmin(ExtendedModelAdmin):
 
     readonly_fields = ("archived",)
 
-    actions = ["export", admin_archive, admin_unarchive]
+    actions = ["export", admin_unarchive]
 
     list_display = (
         "name",

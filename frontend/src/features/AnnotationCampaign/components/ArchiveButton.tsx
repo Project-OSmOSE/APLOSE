@@ -1,17 +1,21 @@
 import React, { Fragment, useCallback } from 'react';
 import { ArchiveLinearIcon } from '@solar-icons/react';
-import { useLoaderData } from '@tanstack/react-router';
 import { useMutation } from '@tanstack/react-query';
-import { Button } from '@/components/base/Button';
-import { Alert } from '@/components/base';
+import { Alert, Button, Spinner, Toast } from '@/components/base';
 import type { AlertButton } from '@/components/base/Alert/Alert';
 import { archiveMutation } from '../api';
+import { AnnotationCampaignNode, AnnotationPhaseNode } from "@/api/types.gql-generated.ts";
 
-export const ArchiveButton: React.FC = () => {
-    const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const { mutate: archiveCampaign } = useMutation(archiveMutation)
+
+export type ArchiveCampaignButtonProps = {
+    campaign: Pick<AnnotationCampaignNode, 'id' | 'archived' | 'hasChangePermission'>
+    phases: Pick<AnnotationPhaseNode, 'id' | 'archived' | 'completedTasksCount' | 'tasksCount'>[]
+}
+export const ArchiveCampaignButton: React.FC<ArchiveCampaignButtonProps> = ({ campaign, phases }) => {
+    const { mutateAsync: archiveCampaign, isPending } = useMutation(archiveMutation)
 
     const alert = Alert.useManager()
+    const toast = Toast.useManager()
 
     const archive = useCallback(async () => {
         const buttons: AlertButton<boolean>[] = [
@@ -36,7 +40,7 @@ export const ArchiveButton: React.FC = () => {
             if (!confirm) return;
         }
 
-        const progress = phases.reduce((previousValue, p) => previousValue + ((p.isOpen ? p.completedTasksCount : p.tasksCount) ?? 0), 0);
+        const progress = phases.reduce((previousValue, p) => previousValue + ((!p.archived ? p.completedTasksCount : p.tasksCount) ?? 0), 0);
         const total = phases.reduce((previousValue, p) => previousValue + (p.tasksCount ?? 0), 0);
         if (progress < total) {
             const confirm = await alert.present({
@@ -51,14 +55,21 @@ export const ArchiveButton: React.FC = () => {
             if (!confirm) return;
         }
 
-        archiveCampaign(campaign)
-    }, [ phases, archiveCampaign, campaign, alert ]);
+        try {
+            const data = await archiveCampaign(campaign)
+            if (data?.error)
+                toast.addError({ title: 'Fail archiving campaign', error: data.error })
+        } catch (error) {
+            toast.addError({ title: 'Fail archiving campaign', error })
+        }
+    }, [ phases, archiveCampaign, campaign, alert, toast ]);
 
-    if (campaign.archived || !campaign.isEditable || !campaign.isUserAllowedToManage) return <Fragment/>
+    if (campaign.archived || !campaign.hasChangePermission) return <Fragment/>
     return <Fragment>
         <Button color="medium" onClick={ archive }>
             <ArchiveLinearIcon size={ 20 }/>
             Archive
+            { isPending && <Spinner size={20}/> }
         </Button>
     </Fragment>
 }

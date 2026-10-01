@@ -4,6 +4,7 @@ from os.path import join
 
 from django.conf import settings
 from django.db import models
+from django.db.models import CheckConstraint, Q
 from metadatax.acquisition.models import ChannelConfiguration
 from typing_extensions import deprecated
 
@@ -48,6 +49,15 @@ class Dataset(AbstractDataset, AbstractArchivable, models.Model):
             "path",
         )
         ordering = ("-created_at",)
+        constraints = [
+            CheckConstraint(
+                name="dataset_archive_info",
+                check=Q(
+                    archived=True, archived_at__isnull=False, archived_by__isnull=False
+                )
+                | Q(archived=False, archived_at__isnull=True, archived_by__isnull=True),
+            )
+        ]
 
     def __str__(self):
         return self.name
@@ -55,6 +65,7 @@ class Dataset(AbstractDataset, AbstractArchivable, models.Model):
     related_channel_configurations = models.ManyToManyField(
         ChannelConfiguration, related_name="datasets"
     )
+    # pylint: disable=duplicate-code
     archived_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -63,8 +74,8 @@ class Dataset(AbstractDataset, AbstractArchivable, models.Model):
         related_name="archived_datasets",
     )
 
-    def archive(self, user: "User"):
-        super().archive(user, force=user.id == self.owner_id)
+    def has_change_permission(self, user: "User") -> bool:
+        return super().has_change_permission(user) or user.id == self.owner_id
 
     @deprecated("Related to old OSEkit")
     def get_config_folder(self) -> str:

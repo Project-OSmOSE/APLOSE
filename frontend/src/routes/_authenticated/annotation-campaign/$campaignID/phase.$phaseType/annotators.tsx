@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { Head } from '@/components/ui';
 import { Content, Page } from '@/components/layout';
-import { CampaignAPI } from '@/features/AnnotationCampaign';
+import { Campaign } from '@/features/AnnotationCampaign';
 import { Phase } from '@/features/AnnotationPhase';
 import { FileRange } from '@/features/AnnotationFileRange';
 import { User } from '@/features/User';
@@ -59,7 +59,7 @@ export const Route = createFileRoute(
     component: AnnotatorsPage,
     loader: async ({ params }) => {
         const [ { campaign }, phase ] = await Promise.all([
-            ensureValidQueryData(CampaignAPI.byIdQuery({
+            ensureValidQueryData(Campaign.byIdQuery({
                 id: params.campaignID,
             })),
             ensureValidQueryData(Phase.getQuery({

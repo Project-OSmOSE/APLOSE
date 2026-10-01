@@ -1,12 +1,12 @@
 import React from 'react';
 import { useTileManager } from './tile-manager.hook';
-import type { CampaignAnalysisFragment } from '@/features/AnnotationCampaign';
+import type { Campaign } from '@/features/AnnotationCampaign';
 import type { GetAnnotationSpectrogramQuery } from '@/features/AnnotationSpectrogram';
 import { useAnnotatorCanvasContext, useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
 
 export const SpectrogramDisplay: React.FC<{
     spectrogram: GetAnnotationSpectrogramQuery['annotationSpectrogramById'],
-    analysis: CampaignAnalysisFragment | null,
+    analysis: Campaign.AnalysisFragment | null,
 }> = ({ spectrogram, analysis }) => {
     const { displayCanvasRef, left } = useAnnotatorCanvasContext()
     const width = useWindowWidth()

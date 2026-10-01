@@ -8,9 +8,8 @@ query getAnnotationPhase(
     ) {
         id
         phase
-        isEditable
-        isUserAllowedToManage
-        endedAt
+        hasChangePermission
+        archived
         hasAnnotations
         tasksCount
         completedTasksCount
@@ -20,8 +19,12 @@ query getAnnotationPhase(
 }
 
 mutation endPhase($id: ID!) {
-    endAnnotationPhase(id: $id) {
+    archiveAnnotationPhase(id: $id) {
         ok
+        error {
+            field
+            messages
+        }
     }
 }
 

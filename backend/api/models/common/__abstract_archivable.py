@@ -1,13 +1,12 @@
-from typing import Optional
-
 from django.conf import settings
-from django.contrib.auth.models import Permission
 from django.core.exceptions import PermissionDenied
 from django.db import models, transaction
 from django.utils import timezone
 
+from .__abstract_permission import AbstractPermission
 
-class AbstractArchivable(models.Model):
+
+class AbstractArchivable(AbstractPermission, models.Model):
     class Meta:
         abstract = True
 
@@ -23,14 +22,8 @@ class AbstractArchivable(models.Model):
     )
 
     @transaction.atomic
-    def archive(self, user: "User", force: Optional[bool]):
-        edit_permissions = Permission.objects.get(
-            codename__startswith="change",
-            content_type__app_label=self._meta.app_label,
-            content_type__model=self._meta.model_name,
-        )
-
-        if not user.has_perm(edit_permissions) and not force:
+    def archive(self, user: "User"):
+        if not self.has_change_permission(user):
             raise PermissionDenied()
 
         self.archived = True
@@ -40,13 +33,7 @@ class AbstractArchivable(models.Model):
 
     @transaction.atomic
     def unarchive(self, user: "User"):
-        edit_permissions = Permission.objects.get(
-            codename__startswith="change",
-            content_type__app_label=self._meta.app_label,
-            content_type__model=self._meta.model_name,
-        )
-
-        if not user.has_perm(edit_permissions):
+        if not self.has_change_permission(user):
             raise PermissionDenied()
 
         self.archived = False

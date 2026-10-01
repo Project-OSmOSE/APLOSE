@@ -61,9 +61,9 @@ class ArchiveAnnotationCampaignTestCase(ExtendedTestCase):
         campaign = AnnotationCampaign.objects.get(pk=1)
 
         for phase in campaign.phases.all():
-            self.assertEqual(phase.is_open, True)
-            self.assertIsNone(phase.ended_at)
-            self.assertIsNone(phase.ended_by_id)
+            self.assertFalse(phase.archived)
+            self.assertIsNone(phase.archived_at)
+            self.assertIsNone(phase.archived_by)
 
         response = self.gql_query(
             QUERY, user=User.objects.get(username=username), variables=BASE_VARIABLES
@@ -75,9 +75,9 @@ class ArchiveAnnotationCampaignTestCase(ExtendedTestCase):
         self.assertEqual(campaign.archived_by.username, username)
 
         for phase in campaign.phases.all():
-            self.assertFalse(phase.is_open)
-            self.assertEqual(phase.ended_at.isoformat(), "2012-01-14T00:00:00+00:00")
-            self.assertEqual(phase.ended_by_id, campaign.archived_by_id)
+            self.assertTrue(phase.archived)
+            self.assertEqual(phase.archived_at.isoformat(), "2012-01-14T00:00:00+00:00")
+            self.assertEqual(phase.archived_by_id, campaign.archived_by_id)
 
     def test_connected_admin(self):
         self._test_archive("admin")

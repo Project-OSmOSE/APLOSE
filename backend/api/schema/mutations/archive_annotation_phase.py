@@ -4,12 +4,12 @@ from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissio
 from graphene_django.types import ErrorType
 from graphql import GraphQLResolveInfo
 
-from backend.api.models import AnnotationCampaign
+from backend.api.models import AnnotationPhase
 
 # pylint: disable=duplicate-code
 
 
-class AnnotationCampaignArchiveMutation(graphene.Mutation):
+class AnnotationCampaignPhaseMutation(graphene.Mutation):
     """Archive campaign"""
 
     class Arguments:
@@ -21,18 +21,18 @@ class AnnotationCampaignArchiveMutation(graphene.Mutation):
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     def mutate(self, info: GraphQLResolveInfo, id: int):
         try:
-            item = AnnotationCampaign.objects.get(id=id)
+            item = AnnotationPhase.objects.get(id=id)
             item.archive(user=info.context.user)
-        except AnnotationCampaign.DoesNotExist:
+        except AnnotationPhase.DoesNotExist:
             # noinspection PyArgumentList
-            return AnnotationCampaignArchiveMutation(
+            return AnnotationCampaignPhaseMutation(
                 ok=False, error=ErrorType(field="id", messages=["Does not exists"])
             )
         except PermissionDenied:
             # noinspection PyArgumentList
-            return AnnotationCampaignArchiveMutation(
+            return AnnotationCampaignPhaseMutation(
                 ok=False, error=ErrorType(field="id", messages=["Permission denied"])
             )
 
         # noinspection PyArgumentList
-        return AnnotationCampaignArchiveMutation(ok=True)
+        return AnnotationCampaignPhaseMutation(ok=True)

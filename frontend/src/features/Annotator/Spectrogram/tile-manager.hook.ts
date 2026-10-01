@@ -1,14 +1,14 @@
 import { type MutableRefObject, useCallback, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AnnotationSpectrogramAPI, type GetAnnotationSpectrogramQuery } from '@/features/AnnotationSpectrogram';
-import type { CampaignAnalysisFragment } from '@/features/AnnotationCampaign';
+import type { Campaign } from '@/features/AnnotationCampaign';
 import { useWindowContainerWidth, useWindowHeight } from '@/features/Annotator/Canvas';
 import { Zoom } from '../Zoom';
 import { ImageSettings } from '../ImageSettings';
 
 type TileManagerParams = {
     canvasRef: MutableRefObject<HTMLCanvasElement | null>,
-    analysis: CampaignAnalysisFragment | null,
+    analysis: Campaign.AnalysisFragment | null,
     spectrogram: GetAnnotationSpectrogramQuery['annotationSpectrogramById'],
     left: number,
     passive?: boolean
@@ -54,7 +54,7 @@ export const useTileManager = ({
     const loadingTileIndexesRef = useRef<number[]>([])
     const loadedTileIndexesRef = useRef<Map<number, HTMLImageElement>>(new Map())
 
-    const analysisRef = useRef<CampaignAnalysisFragment | null>(null)
+    const analysisRef = useRef<Campaign.AnalysisFragment | null>(null)
     const spectrogramRef = useRef<GetAnnotationSpectrogramQuery['annotationSpectrogramById']>(null)
     const spectrogramPathRef = useRef<string | null | undefined>()
 

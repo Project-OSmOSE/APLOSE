@@ -47,6 +47,11 @@ query getDatasetByID($id: ID!) {
         owner {
             displayName
         }
+        archivedAt
+        archivedBy {
+            displayName
+        }
+        hasChangePermission
     }
     allChannelConfigurations(datasetId: $id) {
         results {
@@ -96,6 +101,37 @@ query getDatasetByID($id: ID!) {
         analysis_DatasetId: $id
         orderBy: "name"
     ) {
-        results { ...BaseCampaign }
+        results {
+            id
+            name
+            archived
+            datasetName
+            tasksCount
+            completedTasksCount
+            hasChangePermission
+            deadline
+            phases {
+                results {
+                    id
+                    phase
+                    archived
+                    tasksCount
+                    completedTasksCount
+                    userTasksCount
+                    userCompletedTasksCount
+                }
+            }
+        }
     }
 }
+
+mutation archiveDataset($id: ID!) {
+    archiveDataset(id: $id) {
+        ok
+        error {
+            field
+            messages
+        }
+    }
+}
+

@@ -4,7 +4,6 @@ from django.utils.safestring import SafeString
 from django_extension.admin import ExtendedModelAdmin
 
 from backend.api.admin.common.__abstract_archivable import (
-    admin_archive,
     admin_unarchive,
 )
 from backend.api.models import AnnotationCampaign
@@ -57,7 +56,9 @@ class AnnotationCampaignAdmin(ExtendedModelAdmin):
         "allow_point_annotation",
     )
 
-    actions = [admin_archive, admin_unarchive]
+    actions = [
+        admin_unarchive,
+    ]
 
     @admin.display(description="Labels for acoustic features")
     def get_labels_with_acoustic_features(self, obj: AnnotationCampaign):

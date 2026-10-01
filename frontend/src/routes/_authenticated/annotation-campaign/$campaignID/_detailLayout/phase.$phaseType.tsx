@@ -164,7 +164,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
             { data && data.spectrograms.length === 0 &&
                 <p>You have no files to annotate.</p> }
             { campaign.archived ? <p>The campaign is archived. No more annotation can be done.</p> :
-                (phase?.endedAt && <p>The phase is ended. No more annotation can be done.</p>) }
+                (phase?.archived && <p>The phase is ended. No more annotation can be done.</p>) }
 
         </div>
     </div>

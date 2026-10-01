@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/react-query';
+import { mutationOptions, queryOptions } from '@tanstack/react-query';
 import { queryKeys } from '@/api/queryKeys';
 import { graphqlClient } from '@/api/graphqlClient';
 import {
@@ -7,6 +7,9 @@ import {
     AllDatasetsQueryVariables,
     AllDatasetsWithCampaignsDocument,
     type AllDatasetsWithCampaignsQuery,
+    ArchiveDatasetDocument,
+    type ArchiveDatasetMutation,
+    type ArchiveDatasetMutationVariables,
     GetDatasetByIdDocument,
     type GetDatasetByIdQuery,
     type GetDatasetByIdQueryVariables,
@@ -34,6 +37,13 @@ export const byIdQuery = (variables: GetDatasetByIdQueryVariables) => queryOptio
             analysis: cleanGqlList(data.allSpectrogramAnalysis?.results),
             campaigns: cleanGqlList(data.allAnnotationCampaigns?.results),
         })),
+})
+
+export const archiveMutation = mutationOptions({
+    mutationFn: (variables: ArchiveDatasetMutationVariables) =>
+        graphqlClient.request<ArchiveDatasetMutation>(ArchiveDatasetDocument, variables),
+    onSuccess: (_data, _variables, _onMutateResult, context) =>
+        context.client.invalidateQueries({ queryKey: queryKeys.dataset.base }),
 })
 
 export type {

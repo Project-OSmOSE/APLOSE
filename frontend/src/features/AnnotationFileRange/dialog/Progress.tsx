@@ -157,7 +157,7 @@ export const Progress: React.FC = () => {
                 </Tbody>
             </Table>
 
-            { phase?.isUserAllowedToManage && users && allFileRanges && (
+            { phase?.hasChangePermission && users && allFileRanges && (
                 <ButtonGroup spaceBetween>
                     { progress.length > 0 && <Fragment>
                         <Button onClick={ downloadAnnotations }>

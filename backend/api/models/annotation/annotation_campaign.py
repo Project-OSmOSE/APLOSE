@@ -5,7 +5,7 @@ from typing import Optional
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.db.models import signals, Q, QuerySet, Exists, OuterRef
+from django.db.models import signals, Q, QuerySet, Exists, OuterRef, CheckConstraint
 from django.dispatch import receiver
 from django.utils import timezone
 from django_extension.models import ExtendedQuerySet
@@ -63,6 +63,15 @@ class AnnotationCampaign(AbstractArchivable, models.Model):
 
     class Meta:
         ordering = ["name"]
+        constraints = [
+            CheckConstraint(
+                name="campaign_archive_info",
+                check=Q(
+                    archived=True, archived_at__isnull=False, archived_by__isnull=False
+                )
+                | Q(archived=False, archived_at__isnull=True, archived_by__isnull=True),
+            )
+        ]
 
     def __str__(self):
         return str(self.name)
@@ -108,10 +117,13 @@ class AnnotationCampaign(AbstractArchivable, models.Model):
         related_name="archived_campaigns",
     )
 
+    def has_change_permission(self, user: "User") -> bool:
+        return super().has_change_permission(user) or user.id == self.owner_id
+
     def archive(self, user: "User"):
-        super().archive(user, force=user.id == self.owner_id)
+        super().archive(user)
         for phase in self.phases.all():
-            phase.end(user)
+            phase.archive(user)
 
     def get_sorted_files(self) -> QuerySet[Spectrogram]:
         """Return sorted dataset files"""

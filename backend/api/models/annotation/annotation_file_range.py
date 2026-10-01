@@ -33,8 +33,7 @@ class AnnotationFileRangeQuerySet(ExtendedQuerySet):
                 # Assigned file range
                 annotator=user,
                 # Open phase
-                annotation_phase__ended_at__isnull=True,
-                annotation_phase__ended_by__isnull=True,
+                annotation_phase__archived=False,
                 # Open campaigns
                 annotation_phase__annotation_campaign__archived=False,
             )
@@ -48,8 +47,7 @@ class AnnotationFileRangeQuerySet(ExtendedQuerySet):
             # Open campaigns
             annotation_phase__annotation_campaign__archived=False,
             # Open phase
-            annotation_phase__ended_at__isnull=True,
-            annotation_phase__ended_by__isnull=True,
+            annotation_phase__archived=False,
         )
 
         # Admin can edit all file ranges

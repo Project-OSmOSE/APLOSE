@@ -8,4 +8,11 @@
     margin: 0.5rem 0;
     color: var(--color-dark-tint);
   }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: start;
+  }
 }

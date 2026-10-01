@@ -16,9 +16,8 @@ query (
     ) {
         id
         phase
-        isEditable
-        isUserAllowedToManage
-        endedAt
+        hasChangePermission
+        archived
         tasksCount
         completedTasksCount
         userTasksCount

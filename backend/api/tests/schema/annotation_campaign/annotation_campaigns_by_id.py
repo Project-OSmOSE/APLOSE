@@ -14,8 +14,7 @@ query ($id: ID!) {
         instructionsUrl
         deadline
         archived
-        isEditable
-        isUserAllowedToManage
+        hasChangePermission
         allowPointAnnotation
         allowColormapTuning
         allowImageTuning

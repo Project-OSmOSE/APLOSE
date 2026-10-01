@@ -8,14 +8,14 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Dialog } from '@/components/base/Dialog';
 import { Button, ButtonGroup } from '@/components/base/Button';
 import { Spinner } from '@/components/base/Spinner';
-import { CampaignAPI } from '@/features/AnnotationCampaign';
+import { Campaign } from '@/features/AnnotationCampaign';
 
 
 type Label = Pick<AnnotationLabelNode, 'id' | 'name'>
 
 export const Set: React.FC = () => {
     const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const { data } = useQuery(CampaignAPI.byIdQuery({ id: campaignID }))
+    const { data } = useQuery(Campaign.byIdQuery({ id: campaignID }))
     const { campaign, labels } = useMemo(() => ({ ...data }), [ data ])
     const toastManager = Toast.useToastManager();
     const {
@@ -23,7 +23,7 @@ export const Set: React.FC = () => {
         isPending: isSubmitting,
         error: patchError,
         isSuccess: isPatchSuccessful,
-    } = useMutation(CampaignAPI.updateFeaturedLabelsMutation);
+    } = useMutation(Campaign.updateFeaturedLabelsMutation);
 
     const [ labelsWithAcousticFeatures, setLabelsWithAcousticFeatures ] = useState<Label[]>(cleanGqlList(campaign!.labelsWithAcousticFeatures));
     const [ disabled, setDisabled ] = useState<boolean>(true);
@@ -69,14 +69,14 @@ export const Set: React.FC = () => {
 
 
             <ButtonGroup spaceBetween>
-                { campaign!.isEditable && campaign!.isUserAllowedToManage && !campaign!.archived && (
+                { campaign && campaign.hasChangePermission && !campaign.archived && (
                     <Button onClick={ toggleDisabled }
                             disabled={ isSubmitting || !disabled }>
                         Update labels with features
                     </Button>
                 ) }
                 { isSubmitting && <Spinner/> }
-                { campaign!.isEditable && campaign!.isUserAllowedToManage && !disabled && (
+                { campaign && campaign.hasChangePermission && !campaign.archived && (
                     <Button color="primary"
                             disabled={ isSubmitting }
                             onClick={ onSave }>

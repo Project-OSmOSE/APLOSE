@@ -1,15 +1,15 @@
 import React, { useMemo, useState } from 'react';
-import { useLoaderData } from '@tanstack/react-router';
+import { useQuery } from "@tanstack/react-query";
 
 import { type Order, Table, Tbody, Td, Th, Thead, Tr } from '@/components/ui';
-import { Badge, Note } from '@/components/base';
+import { Note } from '@/components/base';
 import { dateToString } from '@/service/function';
 
-import { CampaignName } from '@/features/AnnotationCampaign/CampaignInfo';
+import { Campaign } from "@/features/AnnotationCampaign";
 
 import * as API from '../api';
-import { DatasetName } from './Name.tsx';
 import styles from './styles.module.scss'
+import { DatasetName } from './Name.tsx';
 
 
 type Sort = {
@@ -28,7 +28,7 @@ type Dataset = API.Fragment & {
 }
 
 export const DatasetTable: React.FC = () => {
-    const allDatasets = useLoaderData({ from: '/_authenticated/_admin/dataset/' })
+    const { data: allDatasets } = useQuery(API.allWithCampaignsQuery)
 
     const [ sorting, setSorting ] = useState<Sort>({ column: 'createdAt', order: 'desc' });
 
@@ -113,10 +113,9 @@ export const DatasetTable: React.FC = () => {
                 <Td>{ d.spectrogramCount ?? 0 }</Td>
                 <Td>
                     <div className={ styles.campaignList }> { d.annotationCampaigns.edges.map((e) =>
-                        e?.node && <CampaignName id={ e.node.id } key={ e.node.id } link>
-                            { e.node.name }&nbsp;
-                            { e.node.archived && <Badge color="medium">Archived</Badge> }
-                        </CampaignName>) }</div>
+                        e?.node && <Campaign.Name campaign={ e.node }
+                                                  key={ e.node.id }
+                                                  link/>) }</div>
                 </Td>
             </tr>) }
 

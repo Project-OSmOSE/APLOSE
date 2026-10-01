@@ -1,10 +1,10 @@
-import { Card, type CardProps } from './Card.tsx';
+import { CampaignCard, type CampaignCardProps } from './Card.tsx';
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
 import { AnnotationPhaseType } from '@/api/types.gql-generated.ts';
 
 const meta = {
     title: 'Features/AnnotationCampaign/Card',
-    component: Card,
+    component: CampaignCard,
     parameters: {
         // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
         layout: 'centered',
@@ -17,7 +17,7 @@ const meta = {
             control: { type: 'object' },
             type: 'AnnotationCampaign',
         },
-    } satisfies Partial<Record<keyof CardProps, any>>,
+    } satisfies Partial<Record<keyof CampaignCardProps, any>>,
     // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#story-args
     args: {
         campaign: {
@@ -26,27 +26,25 @@ const meta = {
             deadline: null,
             archived: false,
             datasetName: 'APOCADO_C4D6_ST336363566',
-            phases: {
-                results: [
-                    {
-                        phase: AnnotationPhaseType.Annotation,
-                        isOpen: false,
-                        userTasksCount: 12,
-                        userCompletedTasksCount: 12,
-                    },
-                    {
-                        phase: AnnotationPhaseType.Verification,
-                        isOpen: true,
-                        userTasksCount: 37,
-                        userCompletedTasksCount: 12,
-                    },
-                ],
-            },
             tasksCount: 79320,
             completedTasksCount: 24814,
         },
-    } satisfies CardProps,
-} satisfies Meta<typeof Card>;
+        phases: [
+            {
+                phase: AnnotationPhaseType.Annotation,
+                archived: true,
+                userTasksCount: 12,
+                userCompletedTasksCount: 12,
+            },
+            {
+                phase: AnnotationPhaseType.Verification,
+                archived: false,
+                userTasksCount: 37,
+                userCompletedTasksCount: 12,
+            },
+        ],
+    } satisfies CampaignCardProps,
+} satisfies Meta<typeof CampaignCard>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

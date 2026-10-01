@@ -30,7 +30,7 @@ query (
             completedTasksCount
             userTasksCount
             userCompletedTasksCount
-            isOpen
+            archived
         }
     }
 }

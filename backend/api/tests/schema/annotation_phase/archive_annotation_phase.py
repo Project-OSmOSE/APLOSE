@@ -9,8 +9,11 @@ from backend.aplose.models import User
 
 QUERY = """
 mutation ($id: ID!) {
-    endAnnotationPhase(id: $id) {
+    archiveAnnotationPhase(id: $id) {
         ok
+        error {
+            messages
+        }
     }
 }
 """
@@ -18,7 +21,7 @@ BASE_VARIABLES = {"id": 1}
 
 
 @freeze_time("2012-01-14 00:00:00")
-class EndAnnotationPhaseTestCase(ExtendedTestCase):
+class ArchiveAnnotationPhaseTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ALL_FIXTURES
@@ -37,32 +40,29 @@ class EndAnnotationPhaseTestCase(ExtendedTestCase):
         response = self.gql_query(
             QUERY, user=User.objects.get(username="admin"), variables={"id": 99}
         )
-        self.assertResponseHasErrors(response)
-        content = json.loads(response.content)
-        self.assertEqual(content["errors"][0]["message"], "Not found")
+        content = json.loads(response.content)["data"]["archiveAnnotationPhase"]
+        self.assertEqual(content["error"]["messages"][0], "Does not exists")
 
     def test_connected_no_access(self):
         response = self.gql_query(
             QUERY, user=User.objects.get(username="user4"), variables=BASE_VARIABLES
         )
-        self.assertResponseHasErrors(response)
-        content = json.loads(response.content)
-        self.assertEqual(content["errors"][0]["message"], "Not found")
+        content = json.loads(response.content)["data"]["archiveAnnotationPhase"]
+        self.assertEqual(content["error"]["messages"][0], "Permission denied")
 
     def test_connected_not_allowed(self):
         response = self.gql_query(
             QUERY, user=User.objects.get(username="user2"), variables=BASE_VARIABLES
         )
-        self.assertResponseHasErrors(response)
-        content = json.loads(response.content)
-        self.assertEqual(content["errors"][0]["message"], "Forbidden")
+        content = json.loads(response.content)["data"]["archiveAnnotationPhase"]
+        self.assertEqual(content["error"]["messages"][0], "Permission denied")
 
     def _test_end(self, username: str):
         phase = AnnotationPhase.objects.get(pk=1)
 
-        self.assertTrue(phase.is_open)
-        self.assertIsNone(phase.ended_at)
-        self.assertIsNone(phase.ended_by_id)
+        self.assertFalse(phase.archived)
+        self.assertIsNone(phase.archived_at)
+        self.assertIsNone(phase.archived_by)
 
         response = self.gql_query(
             QUERY, user=User.objects.get(username=username), variables=BASE_VARIABLES
@@ -70,9 +70,9 @@ class EndAnnotationPhaseTestCase(ExtendedTestCase):
         self.assertResponseNoErrors(response)
 
         phase = AnnotationPhase.objects.get(pk=1)
-        self.assertFalse(phase.is_open)
-        self.assertEqual(phase.ended_at.isoformat(), "2012-01-14T00:00:00+00:00")
-        self.assertEqual(phase.ended_by.username, username)
+        self.assertTrue(phase.archived)
+        self.assertEqual(phase.archived_at.isoformat(), "2012-01-14T00:00:00+00:00")
+        self.assertEqual(phase.archived_by.username, username)
 
     def test_connected_admin(self):
         self._test_end("admin")

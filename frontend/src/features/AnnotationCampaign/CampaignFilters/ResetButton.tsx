@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { RestartLinearIcon } from '@solar-icons/react';
-import { type AllCampaignsQueryVariables } from '../api';
+import * as API from '../api';
 import { Route } from '@/routes/_authenticated/annotation-campaign';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/base/Button';
@@ -23,7 +23,7 @@ export const AnnotationCampaignResetFiltersButton: React.FC = () => {
                 filter_annotatorID: user.id,
                 filter_ownerID: null,
                 filter_datasetID: null,
-            } as AllCampaignsQueryVariables,
+            } as API.AllQueryVariables,
         })
     }, [ navigate, user ])
 

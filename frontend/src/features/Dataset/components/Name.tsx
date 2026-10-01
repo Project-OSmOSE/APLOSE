@@ -14,12 +14,10 @@ export const DatasetName: React.FC<{
         return <Link { ...props }
                      to="/dataset/$datasetID" preload={ false } params={ { datasetID: dataset.id } }
                      color="primary">
-            { dataset.name }
-            { dataset.archived && <Badge color='medium'>Archived</Badge> }
+            { dataset.name }&nbsp;{ dataset.archived && <Badge color='medium'>Archived</Badge> }
         </Link>
 
     return <p { ...props }>
-        { dataset.name }
-        { dataset.archived && <Badge color='medium'>Archived</Badge> }
+        { dataset.name }&nbsp;{ dataset.archived && <Badge color='medium'>Archived</Badge> }
     </p>
 }

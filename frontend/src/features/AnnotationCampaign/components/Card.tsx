@@ -1,36 +1,39 @@
 import React from 'react';
 import { type LinkComponentProps } from '@tanstack/react-router'
-import { type AllCampaignsQuery } from '../api';
-import { Badge } from '@/features/AnnotationCampaign/components/Badge';
+import { CampaignBadge } from './Badge';
 import { Progress } from '@/components/base/Progress';
-import { Card as BaseCard, Note } from '@/components/base';
-import { PhasesProgress } from './PhasesProgress';
+import { Card, Note } from '@/components/base';
+import { CampaignPhasesProgress } from './PhasesProgress';
+import { AnnotationCampaignNode, AnnotationPhaseNode } from "@/api";
 
-type Campaign = NonNullable<NonNullable<AllCampaignsQuery['allAnnotationCampaigns']>['results'][number]>;
 
-export type CardProps = { campaign: Campaign }
+export type CampaignCardProps = {
+    campaign: Pick<AnnotationCampaignNode, 'name' | 'id' | 'archived' | 'deadline' | 'datasetName' | 'tasksCount' | 'completedTasksCount'>
+    phases: Pick<AnnotationPhaseNode, 'phase' | 'archived' | 'userTasksCount' | 'userCompletedTasksCount'>[]
+}
 
-export const Card: React.FC<CardProps> = ({ campaign }) => {
+export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign, phases }) => {
     let to: Pick<LinkComponentProps, 'to'>['to'] = '/annotation-campaign/$campaignID'
     const params: any = { campaignID: campaign.id }
 
-    const phases = campaign.phases?.results.filter(p => p !== null) ?? []
     if (phases.length > 0) {
         to = '/annotation-campaign/$campaignID/phase/$phaseType'
         params.phaseType = phases[0].phase
     }
 
-    return <BaseCard.Root to={ to }
-                          preload={ false }
-                          params={ params }
-                          data-testid="campaign-card">
-        <BaseCard.Head>
-            <Badge campaign={ campaign }/>
+    return <Card.Root to={ to }
+                      preload={ false }
+                      params={ params }
+                      data-testid="campaign-card">
+        <Card.Head>
+            <CampaignBadge campaign={ campaign }/>
             <p>{ campaign.name }</p>
             <Note color="medium">{ campaign.datasetName }</Note>
-        </BaseCard.Head>
+        </Card.Head>
 
-        <PhasesProgress userRelated campaign={ campaign }/>
+        <CampaignPhasesProgress userRelated
+                                campaign={ campaign }
+                                phases={ phases }/>
 
         { campaign.tasksCount ?
             <Progress value={ campaign.completedTasksCount / campaign.tasksCount * 100 }
@@ -41,5 +44,5 @@ export const Card: React.FC<CardProps> = ({ campaign }) => {
                                     color="medium">
                 Campaign progress
             </Progress> }
-    </BaseCard.Root>
+    </Card.Root>
 }

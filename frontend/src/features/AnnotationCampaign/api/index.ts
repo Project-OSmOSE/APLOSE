@@ -19,7 +19,6 @@ import {
     type UpdateCampaignFeaturedLabelsMutation,
     type UpdateCampaignFeaturedLabelsMutationVariables,
 } from './annotation-campaign.generated'
-import { queryClient } from '@/api/queryClient';
 
 export const allQuery = (variables: AllCampaignsQueryVariables) => queryOptions({
     queryKey: queryKeys.campaign.all(variables),
@@ -42,24 +41,31 @@ export const byIdQuery = (variables: GetCampaignQueryVariables) => queryOptions(
 export const createMutation = mutationOptions({
     mutationFn: (variables: CreateCampaignMutationVariables) => graphqlClient.request<CreateCampaignMutation>(CreateCampaignDocument, variables)
         .then(data => data.createAnnotationCampaign),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.campaign.base }),
+    onSuccess: (_data, _vars, _result, context) =>
+        context.client.invalidateQueries({ queryKey: queryKeys.campaign.base }),
 })
 
 
 export const archiveMutation = mutationOptions({
-    mutationFn: (variables: ArchiveCampaignMutationVariables) => graphqlClient.request<ArchiveCampaignMutation>(ArchiveCampaignDocument, variables),
-    onSuccess: (_data, variables) => {
-        queryClient.invalidateQueries({ queryKey: queryKeys.campaign.byId({ id: variables.id }) })
-        queryClient.invalidateQueries({ queryKey: queryKeys.campaign.base })
-    },
+    mutationFn: (variables: ArchiveCampaignMutationVariables) =>
+        graphqlClient.request<ArchiveCampaignMutation>(ArchiveCampaignDocument, variables)
+            .then(data => data.archiveAnnotationCampaign),
+    onSuccess: (_data, _vars, _result, context) => Promise.all([
+        context.client.invalidateQueries({ queryKey: queryKeys.campaign.base }),
+        context.client.invalidateQueries({ queryKey: queryKeys.dataset.base })
+    ]),
 })
 
 export const updateFeaturedLabelsMutation = mutationOptions({
     mutationFn: (variables: UpdateCampaignFeaturedLabelsMutationVariables) => graphqlClient.request<UpdateCampaignFeaturedLabelsMutation>(UpdateCampaignFeaturedLabelsDocument, variables),
-    onSuccess: (_data, variables) => {
-        queryClient.invalidateQueries({ queryKey: queryKeys.campaign.byId({ id: variables.id }) })
-    },
+    onSuccess: (_data, variables, _result, context) =>
+        context.client.invalidateQueries({ queryKey: queryKeys.campaign.byId({ id: variables.id }) }),
 })
 
 
-export type * from './annotation-campaign.generated'
+export type {
+    AllCampaignsQueryVariables as AllQueryVariables,
+    GetCampaignQuery as GetQuery,
+
+    CampaignAnalysisFragment as AnalysisFragment,
+} from './annotation-campaign.generated'

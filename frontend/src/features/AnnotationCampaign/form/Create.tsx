@@ -14,7 +14,7 @@ import { ColormapComponent } from '@/features/Colormap';
 import * as API from '../api'
 import styles from './CampaignForm.module.scss'
 
-export const Create: React.FC = () => {
+export const CampaignCreateForm: React.FC = () => {
     const dispatch = useAppDispatch();
     const toastManager = Toast.useToastManager()
     const navigate = useNavigate();

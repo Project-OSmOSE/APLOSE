@@ -1,33 +1,29 @@
-import { createFileRoute, useLoaderData, useNavigate } from '@tanstack/react-router';
 import React, { useCallback, useEffect } from 'react';
+import { createFileRoute, useLoaderData, useNavigate } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
 
 import { Head, WarningText } from '@/components/ui';
 
-import {
-    type AllCampaignsQueryVariables,
-    AnnotationCampaignListFilterActionBar,
-    CampaignAPI,
-    Cards,
-} from '@/features/AnnotationCampaign';
-import { useQuery } from '@tanstack/react-query';
 import { Content } from '@/components/layout/Content';
 import { Center } from '@/components/layout/Display';
-import { Spinner } from '@/components/base/Spinner';
+import { Spinner } from '@/components/base';
 import { Page } from '@/components/layout';
 import { ensureValidQueryData } from '@/api/utils';
+
+import { Campaign } from '@/features/AnnotationCampaign';
 
 const AnnotationCampaignList: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useLoaderData({ from: '/_authenticated' })
     const params = Route.useParams()
     const search = Route.useSearch()
-    const { data: campaigns, isFetching } = useQuery(CampaignAPI.allQuery({ ...search, ...params }))
+    const { data: campaigns, isFetching } = useQuery(Campaign.allQuery({ ...search, ...params }))
 
     const init = useCallback(() => {
         navigate({
             to: Route.to,
             search: (prev) => {
-                const updatedFilters: AllCampaignsQueryVariables = {
+                const updatedFilters: Campaign.AllQueryVariables = {
                     filter_annotatorID: user.id,
                     filter_isArchived: false,
                     ...prev,
@@ -56,18 +52,18 @@ const AnnotationCampaignList: React.FC = () => {
         <Content style={ { gridTemplateRows: 'auto auto 1fr' } }>
             <Head title="Annotation campaigns"/>
 
-            <AnnotationCampaignListFilterActionBar/>
+            <Campaign.ListFilterActionBar/>
 
-            <Cards campaigns={ campaigns } isFetching={ isFetching }/>
+            <Campaign.Cards campaigns={ campaigns } isFetching={ isFetching }/>
         </Content>
     </Page.Authenticated>
 }
 
 
 export const Route = createFileRoute('/_authenticated/annotation-campaign/')({
-    validateSearch: (search: Record<string, unknown>) => search as AllCampaignsQueryVariables,
-    loaderDeps: ({ search }) => search as AllCampaignsQueryVariables,
-    loader: ({ params, deps }) => ensureValidQueryData(CampaignAPI.allQuery({
+    validateSearch: (search: Record<string, unknown>) => search as Campaign.AllQueryVariables,
+    loaderDeps: ({ search }) => search as Campaign.AllQueryVariables,
+    loader: ({ params, deps }) => ensureValidQueryData(Campaign.allQuery({
         ...deps,
         ...params,
     })),

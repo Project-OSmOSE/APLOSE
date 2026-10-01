@@ -1,51 +1,28 @@
 import React from 'react';
-import { useCampaignState } from '@/features/AnnotationCampaign/hooks';
-import { Progress } from '@/components/base/Progress';
-import {
-    type AnnotationCampaignNode,
-    type AnnotationPhaseNode,
-    AnnotationPhaseType,
-    type Maybe,
-} from '@/api/types.gql-generated';
+import { type AnnotationCampaignNode, type AnnotationPhaseNode, } from '@/api/types.gql-generated';
+import { Progress } from '@/components/base';
+import { Campaign } from '@/features/AnnotationCampaign';
 
 type Props = {
     userRelated?: false,
-    campaign: Pick<AnnotationCampaignNode, 'archived' | 'deadline'> & {
-        phases?: Maybe<{
-            results: Array<Maybe<{
-                phase: AnnotationPhaseType,
-                isOpen: boolean;
-                completedTasksCount: number,
-                tasksCount: number,
-            }>>
-        }>;
-    }
+    phases: Pick<AnnotationPhaseNode, 'phase' | 'archived' | 'tasksCount' | 'completedTasksCount'>[]
+    campaign: Pick<AnnotationCampaignNode, 'archived' | 'deadline'>
 } | {
     userRelated: true,
-    campaign: Pick<AnnotationCampaignNode, 'archived' | 'deadline'> & {
-        phases?: Maybe<{
-            results: Array<Maybe<{
-                phase: AnnotationPhaseType,
-                isOpen: boolean;
-                userCompletedTasksCount: number,
-                userTasksCount: number,
-            }>>
-        }>;
-    }
+    phases: Pick<AnnotationPhaseNode, 'phase' | 'archived' | 'userTasksCount' | 'userCompletedTasksCount'>[]
+    campaign: Pick<AnnotationCampaignNode, 'archived' | 'deadline'>
 }
-export const PhasesProgress: React.FC<Props> = React.memo(({ userRelated, campaign }) => {
-    const { color } = useCampaignState(campaign)
+export const CampaignPhasesProgress: React.FC<Props> = React.memo(({ userRelated, campaign, phases }) => {
+    const { color } = Campaign.useState(campaign)
 
-    return campaign.phases?.results
-        .filter(p => !!p)
-        .sort((a, b) => a.phase.localeCompare(b.phase))
+    return phases.sort((a, b) => a.phase.localeCompare(b.phase))
         .map(p => (
-            <Progress key={ p.phase }
-                      value={ userRelated ? (p as AnnotationPhaseNode).userCompletedTasksCount : (p as AnnotationPhaseNode).completedTasksCount }
-                      max={ userRelated? (p as AnnotationPhaseNode).userTasksCount : (p as AnnotationPhaseNode).tasksCount }
-                      color={ !p.isOpen ? 'medium' : color }>
-                { p.phase } { !p.isOpen && <i>Closed</i> }
-            </Progress>
-        ),
-    )
+                <Progress key={ p.phase }
+                          value={ userRelated ? (p as AnnotationPhaseNode).userCompletedTasksCount : (p as AnnotationPhaseNode).completedTasksCount }
+                          max={ userRelated ? (p as AnnotationPhaseNode).userTasksCount : (p as AnnotationPhaseNode).tasksCount }
+                          color={ p.archived ? 'medium' : color }>
+                    { p.phase } { p.archived && <i>Closed</i> }
+                </Progress>
+            ),
+        )
 })

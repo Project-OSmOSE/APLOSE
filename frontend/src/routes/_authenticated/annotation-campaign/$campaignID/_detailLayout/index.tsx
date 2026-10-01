@@ -3,7 +3,7 @@ import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 import { dateToString, pluralize } from '@/service/function';
 
 import { LabelDialog } from '@/features/Labels';
-import { CampaignComponents } from '@/features/AnnotationCampaign';
+import { Campaign } from '@/features/AnnotationCampaign';
 import { Dataset } from '@/features/Dataset';
 import { AnalysisAPI, SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 
@@ -23,8 +23,8 @@ const AnnotationCampaignInfo: React.FC = () => {
                 </div> }
 
                 {/* GLOBAL */ }
-                <CampaignComponents.ArchiveButton/>
-                <CampaignComponents.InstructionsButton instructionsUrl={ campaign.instructionsUrl }/>
+                <Campaign.ArchiveButton campaign={ campaign } phases={ phases }/>
+                <Campaign.InstructionsButton campaign={ campaign }/>
                 { campaign.archived && <Note color="medium">
                     Archived
                     on { dateToString(campaign.archivedAt) } by { campaign.archivedBy?.displayName }
@@ -78,7 +78,7 @@ const AnnotationCampaignInfo: React.FC = () => {
                 </Fragment> }
 
                 {/* PROGRESS */ }
-                <CampaignComponents.PhasesProgress campaign={ campaign }/>
+                <Campaign.PhasesProgress campaign={ campaign } phases={ phases }/>
 
             </div>
         }, [ campaign, phases, analysis ],

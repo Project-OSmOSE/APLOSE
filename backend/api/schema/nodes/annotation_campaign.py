@@ -1,13 +1,10 @@
 import graphene
 import graphene_django_optimizer
-from django.db import models
 from django.db.models import (
     Exists,
     OuterRef,
     QuerySet,
     F,
-    Q,
-    ExpressionWrapper,
     Subquery,
     Func,
     Value,
@@ -27,16 +24,14 @@ from backend.api.models import (
 from backend.api.schema.filter_sets import AnnotationCampaignFilterSet
 from backend.aplose.models import User
 from backend.aplose.schema import UserNode
+from .__abstract_permission import AbstractPermissionNode
 from .annotation_phase import AnnotationPhaseNode
 from .detector import DetectorNode
 from .label import AnnotationLabelNode
 
 
-class AnnotationCampaignNode(ExtendedNode):
+class AnnotationCampaignNode(AbstractPermissionNode, ExtendedNode):
     """AnnotationCampaign schema"""
-
-    is_editable = graphene.Boolean(required=True)
-    is_user_allowed_to_manage = graphene.Boolean(required=True)
 
     dataset_name = graphene.String(required=True)
 
@@ -108,16 +103,6 @@ class AnnotationCampaignNode(ExtendedNode):
             .prefetch_related("phases")
             .annotate(
                 dataset_name=F("dataset__name"),
-                is_editable=ExpressionWrapper(
-                    Q(archived=False),
-                    output_field=models.BooleanField(),
-                ),
-                is_user_allowed_to_manage=ExpressionWrapper(
-                    Value(True)
-                    if info.context.user.is_staff or info.context.user.is_superuser
-                    else Q(owner_id=info.context.user.id),
-                    output_field=models.BooleanField(),
-                ),
                 tasks_count=Coalesce(
                     Subquery(
                         AnnotationFileRange.objects.filter(

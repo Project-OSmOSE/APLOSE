@@ -3,9 +3,6 @@
 import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
-from django.db.models import F, ExpressionWrapper, Q, BooleanField, Model
-
-from backend.api.models import AnnotationCampaign
 
 
 def migrate_campaign_archive_info(apps, _):

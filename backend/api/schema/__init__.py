@@ -40,7 +40,7 @@ class APIMutation(graphene.ObjectType):
 
     # Annotation phase
     create_annotation_phase = CreateAnnotationPhase.Field()
-    end_annotation_phase = EndAnnotationPhaseMutation.Field()
+    archive_annotation_phase = AnnotationCampaignPhaseMutation.Field()
 
     # File ranges
     create_file_range = AnnotationFileRangeCreateMutation.Field()
