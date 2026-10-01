@@ -84,11 +84,13 @@ export const useAddAnnotation = () => {
 }
 
 export const useValidateAnnotation = () => {
+    const { user } = useLoaderData({ from: '/_authenticated' })
     const allAnnotations = useAppSelector(selectAllAnnotations);
     const _updateValidation = useUpdateValidation()
     const dispatch = useAppDispatch();
 
     return useCallback((annotation: Annotation): Annotation => {
+        if (annotation.annotator === user.id) return annotation
         annotation = dispatch(updateAnnotation({
             id: annotation.id,
             validation: _updateValidation(true, annotation.validation),
@@ -109,15 +111,17 @@ export const useValidateAnnotation = () => {
         }
         dispatch(focusAnnotation(annotation))
         return annotation
-    }, [ dispatch, allAnnotations, _updateValidation ])
+    }, [ dispatch, allAnnotations, user, _updateValidation ])
 }
 
 export const useInvalidateAnnotation = () => {
+    const { user } = useLoaderData({ from: '/_authenticated' })
     const allAnnotations = useAppSelector(selectAllAnnotations);
     const _updateValidation = useUpdateValidation()
     const dispatch = useAppDispatch();
 
     return useCallback((annotation: Annotation): Annotation => {
+        if (annotation.annotator === user.id) return annotation
         annotation = dispatch(updateAnnotation({
             id: annotation.id,
             validation: _updateValidation(false, annotation.validation),
@@ -135,7 +139,7 @@ export const useInvalidateAnnotation = () => {
             dispatch(focusAnnotation(annotation))
         }
         return annotation
-    }, [ dispatch, allAnnotations, _updateValidation ])
+    }, [ dispatch, allAnnotations, user, _updateValidation ])
 }
 
 export const useUpdateAnnotation = () => {
