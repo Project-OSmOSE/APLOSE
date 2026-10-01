@@ -415,7 +415,9 @@ class Command(management.BaseCommand):
 
             # Create archive
             if dataset.name == "Test archived":
-                c.archive(user=self.admin)
+                c.archived = True
+                c.archived_by = self.admin
+                c.archived_at = timezone.now()
 
             # Add analysis
             for analysis in dataset.spectrogram_analysis.all():
