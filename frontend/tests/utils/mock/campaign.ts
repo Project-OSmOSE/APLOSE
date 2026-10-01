@@ -7,7 +7,7 @@ import type {
   CreateCampaignMutationVariables,
   GetCampaignQuery,
   UpdateCampaignFeaturedLabelsMutation,
-} from '../../../src/features/AnnotationCampaign';
+} from '../../../src/features/AnnotationCampaign/api/annotation-campaign.generated';
 import {
   campaign,
   colormap,
@@ -31,20 +31,19 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
   annotationCampaignById: {
     id: campaign.id,
     name: campaign.name,
-    isArchived: campaign.isArchived,
+    archived: campaign.archived,
     deadline: campaign.deadline,
     allowColormapTuning: campaign.allowColormapTuning,
-    archive: null,
     createdAt: campaign.createdAt,
     allowImageTuning: campaign.allowImageTuning,
     allowPointAnnotation: campaign.allowPointAnnotation,
-    isEditable: true,
-    isUserAllowedToManage: false,
+    hasChangePermission: false,
     colormapDefault: campaign.colormapDefault,
     colormapInvertedDefault: campaign.colormapInvertedDefault,
     description: campaign.description,
     spectrogramsCount: dataset.spectrogramCount,
     instructionsUrl: campaign.instructionsUrl,
+    allowDigitalZoom: campaign.allowDigitalZoom,
     owner: {
       id: USERS.creator.id,
       email: USERS.creator.email,
@@ -53,6 +52,7 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
     dataset: {
       id: dataset.id,
       name: dataset.name,
+      archived: dataset.archived,
     },
     annotators: [ {
       id: USERS.annotator.id,
@@ -101,13 +101,15 @@ const DEFAULT_GET_CAMPAIGN: GetCampaignQuery = {
         phase: AnnotationPhaseType.Annotation,
         tasksCount,
         completedTasksCount,
-        isOpen: phase.isOpen,
+        archived: phase.archived,
+        hasChangePermission: false,
       }, {
         id: '2',
         phase: AnnotationPhaseType.Verification,
         tasksCount,
         completedTasksCount,
-        isOpen: phase.isOpen,
+        archived: phase.archived,
+        hasChangePermission: false,
       } ],
     },
   },
@@ -128,14 +130,14 @@ export const CAMPAIGN_QUERIES: {
             id: campaign.id,
             name: campaign.name,
             datasetName: dataset.name,
-            isArchived: campaign.isArchived,
+            archived: campaign.archived,
             deadline: campaign.deadline,
             tasksCount,
             completedTasksCount,
             phases: {
               results: [ {
                 phase: AnnotationPhaseType.Annotation,
-                isOpen: true,
+                archived: false,
                 userTasksCount,
                 userCompletedTasksCount,
               } ]
@@ -155,8 +157,7 @@ export const CAMPAIGN_QUERIES: {
       ...DEFAULT_GET_CAMPAIGN,
       annotationCampaignById: {
         ...DEFAULT_GET_CAMPAIGN.annotationCampaignById,
-        isEditable: true,
-        isUserAllowedToManage: true,
+        hasChangePermission: true,
       },
     },
     withoutConfidence: {

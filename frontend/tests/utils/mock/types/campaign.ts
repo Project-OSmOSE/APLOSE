@@ -4,7 +4,7 @@ const deadline = new Date()
 deadline.setTime(0)
 
 export type Campaign = Omit<AnnotationCampaignNode,
-  'dataset' | 'annotators' | 'confidenceSet' | 'owner' | 'analysis' | 'archive' | 'labelSet' |
+  'hasChangePermission' | 'dataset' | 'annotators' | 'confidenceSet' | 'owner' | 'analysis' | 'archive' | 'labelSet' |
   'labelsWithAcousticFeatures' | 'detectors' | 'phases' | 'isEditable' | 'isUserAllowedToManage' | 'datasetName' |
     'completedTasksCount' | 'tasksCount' | 'phaseTypes' | 'userTasksCount' | 'userCompletedTasksCount' |
     'spectrogramsCount'
@@ -13,7 +13,7 @@ export const campaign: Campaign = {
   id: '1',
   name: 'Test campaign',
   description: 'Test campaign description',
-  isArchived: false,
+  archived: false,
   deadline: deadline.toISOString().split('T')[0],
   allowColormapTuning: false,
   allowImageTuning: false,

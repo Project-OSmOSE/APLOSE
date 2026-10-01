@@ -1,7 +1,7 @@
 import type { DatasetNode } from '../../../../src/api/types.gql-generated';
 
 export type Dataset =
-  Omit<DatasetNode, 'owner' | 'annotationCampaigns' | 'spectrogramAnalysis' | 'relatedChannelConfigurations'>
+  Omit<DatasetNode, 'hasChangePermission' | 'owner' | 'annotationCampaigns' | 'spectrogramAnalysis' | 'relatedChannelConfigurations'>
 
 export const dataset: Dataset = {
   id: '1',
@@ -14,4 +14,5 @@ export const dataset: Dataset = {
   start: '2021-08-02T00:00:00Z',
   end: '2022-07-13T06:00:00Z',
   spectrogramCount: 99,
+  archived: false
 }
