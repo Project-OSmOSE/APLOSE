@@ -11,7 +11,11 @@ COPY pyproject.toml .
 COPY poetry.lock .
 
 ENV POETRY_CACHE_DIR=/opt/.cache/pypoetry
-RUN poetry install --only main --no-root
+RUN if [ "$STAGING" = "true" ]; then \
+      poetry install --no-root; \
+    else \
+      poetry install --only main --no-root; \
+    fi
 
 COPY manage.py .
 COPY backend backend

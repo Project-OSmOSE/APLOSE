@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: dockerfiles/back.dockerfile
+      args:
+        STAGING: "${STAGING:-false}"
     image: osmose_back-image
     container_name: osmose_back
     user: "101:101"
