@@ -70,7 +70,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
                     dataset=dataset,
                     relative_path=make_path_relative(
                         PureWindowsPath(info["dataset"]).parent.as_posix(),
-                        to=dataset.path,
+                        to=osekit_project.folder,
                     ),
                     detailed=detailed,
                 )
@@ -93,7 +93,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
                 continue
             path = make_path_relative(
                 PureWindowsPath(info["dataset"]).parent.as_posix(),
-                to=dataset.path,
+                to=osekit_dataset.folder,
             )
             if path == relative_path:
                 if not detailed:
