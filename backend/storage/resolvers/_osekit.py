@@ -71,7 +71,10 @@ class OSEkitResolver(LegacyOSEkitResolver):
                     dataset=dataset,
                     relative_path=make_path_relative(
                         PureWindowsPath(info["dataset"]).parent.as_posix(),
-                        to=join(settings.DATASET_EXPORT_PATH,make_path_relative(osekit_project.folder)),
+                        to=join(
+                            settings.DATASET_EXPORT_PATH,
+                            make_path_relative(osekit_project.folder),
+                        ),
                     ),
                     detailed=detailed,
                 )
@@ -94,7 +97,10 @@ class OSEkitResolver(LegacyOSEkitResolver):
                 continue
             path = make_path_relative(
                 PureWindowsPath(info["dataset"]).parent.as_posix(),
-                to=join(settings.DATASET_EXPORT_PATH,make_path_relative(osekit_dataset.folder)),
+                to=join(
+                    settings.DATASET_EXPORT_PATH,
+                    make_path_relative(osekit_dataset.folder),
+                ),
             )
             if path == relative_path:
                 if not detailed:
