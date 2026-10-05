@@ -20,8 +20,8 @@ export const TimeAxis: React.FC = () => {
 
   const timeStep = useMemo(() => {
     if (!spectrogram || spectrogram.duration <= 60) return { smallStep: 1, regularStep: 5 }
-    else if (spectrogram.duration > 60 && spectrogram.duration <= 120) return { smallStep: 2, regularStep: 5 }
-    else if (spectrogram.duration > 120 && spectrogram.duration <= 500) return { smallStep: 4, regularStep: 5 }
+    else if (spectrogram.duration > 60 && spectrogram.duration <= 120) return { smallStep: 2, regularStep: 10 }
+    else if (spectrogram.duration > 120 && spectrogram.duration <= 500) return { smallStep: 5, regularStep: 10 }
     else if (spectrogram.duration > 500 && spectrogram.duration <= 1000) return { smallStep: 10, regularStep: 60 }
     else return { smallStep: 30, regularStep: 120 }
   }, [ spectrogram ])
