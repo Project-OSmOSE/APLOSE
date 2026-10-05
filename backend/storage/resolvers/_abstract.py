@@ -135,7 +135,7 @@ class AbstractResolver:
         """Get item from storage"""
         dataset = self.get_dataset(path)
         if not dataset:
-            return StorageFolder(path=path)
+            return StorageFolder(path=path or self.path)
 
         if discover_analysis:
             analysis = self.get_analysis(path=path)
