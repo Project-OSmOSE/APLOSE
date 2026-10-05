@@ -1,18 +1,15 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { MagnifierLinearIcon } from '@solar-icons/react';
-import { useAppDispatch } from '@/features/App';
+import type { BaseUIEvent } from '@base-ui/react';
 import { gqlAPI } from '@/api/baseGqlApi';
 import { WarningText } from '@/components/ui';
+import { Button, Dialog, Field, Form, HelpButton, Note, Spinner } from '@/components/base';
+import { Center } from "@/components/layout";
+import { useAppDispatch } from '@/features/App';
 import { Item } from '@/features/Storage';
-import { useQuery } from '@tanstack/react-query';
 import * as API from '../api'
-import { Button, HelpButton } from '@/components/base/Button';
-import { Dialog } from '@/components/base/Dialog';
-import { Form } from '@/components/base/Form';
-import { Field } from '@/components/base/Field';
-import { Spinner } from '@/components/base/Spinner';
-import { Note } from '@/components/base/Note';
-import type { BaseUIEvent } from '@base-ui/react';
+import styles from './styles.module.scss'
 
 export const Search: React.FC = () => {
     const [ searchQuery, setSearchQuery ] = useState<string | undefined>();
@@ -35,7 +32,7 @@ export const Search: React.FC = () => {
     }, [ setSearchQuery ])
 
     const content = useMemo(() => {
-        if (isLoading) return <Spinner/>
+        if (isLoading) return <Center><Spinner/></Center>
         if (error) return <WarningText error={ error }/>
         if (!searchQuery) return <Note color="medium">
             You can search for the exact path of:
@@ -54,7 +51,8 @@ export const Search: React.FC = () => {
             <Dialog.Title>Search path</Dialog.Title>
             <Dialog.CloseIcon/>
 
-            <Form horizontal onSubmit={ submit }>
+            <Form className={styles.SearchForm}
+                  onSubmit={ submit }>
                 <Field.Root name="search">
                     <Field.Control required
                                    startIcon={ MagnifierLinearIcon }
@@ -66,7 +64,9 @@ export const Search: React.FC = () => {
                 <Button color="primary" type="submit">Search</Button>
             </Form>
 
-            { content }
+            <div className={ styles.SearchContent }>
+                { content }
+            </div>
 
             <HelpButton url="/doc/user/data/generate">
                 How to generate a dataset
