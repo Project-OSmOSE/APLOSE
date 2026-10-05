@@ -32,7 +32,6 @@
   gap: 1rem;
 
   .list {
-    margin-left: 0.75rem;
     grid-column: 1 / -1;
   }
 }
@@ -45,6 +44,7 @@
   padding-top: 1rem;
   gap: 1rem;
   align-content: start;
+  margin-left: 0.75rem;
 
   p {
     margin: 0;
