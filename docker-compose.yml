@@ -1,4 +1,9 @@
-version: '3.6'
+# Shared log rotation settings to avoid filling the disk
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
 
 services:
   osmose_back:
@@ -13,18 +18,38 @@ services:
     environment:
       ENV: production
       STAGING: "${STAGING:-false}"
-      SECRET_KEY: "${SECRET_KEY}"
-      OSMOSE_HOST: "${OSMOSE_HOST}"
+      # Fail fast at startup if a required variable is missing
+      SECRET_KEY: "${SECRET_KEY:?SECRET_KEY is required}"
+      OSMOSE_HOST: "${OSMOSE_HOST:?OSMOSE_HOST is required}"
       OSMOSE_DB_HOST: db
-      OSMOSE_DB_PORT: 5432
-      OSMOSE_DB_USER: "${OSMOSE_DB_USER}"
-      OSMOSE_DB_PWD: "${OSMOSE_DB_PWD}"
+      OSMOSE_DB_PORT: "5432"
+      OSMOSE_DB_USER: "${OSMOSE_DB_USER:?OSMOSE_DB_USER is required}"
+      OSMOSE_DB_PWD: "${OSMOSE_DB_PWD:?OSMOSE_DB_PWD is required}"
       OSMOSE_DB_BASE: "${OSMOSE_DB_USER}"
-      OSMOSE_PROXY_URL: "${OSMOSE_PROXY_URL}"
-#    read_only: true
+      OSMOSE_PROXY_URL: "${OSMOSE_PROXY_URL:-}"
+    # Wait until PostgreSQL actually accepts connections, not just until it started
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 8000), 3).close()" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    # Hardening
+#    security_opt:
+#      - no-new-privileges:true
+#    cap_drop:
+#      - ALL
+    # read_only: true  # TODO: enable once writable paths are mounted as tmpfs/volumes
     volumes:
       - static:/opt/staticfiles
       - ./volumes/datawork:/opt/datawork:ro
+    networks:
+      - default   # reachable by the front, outbound access (proxy)
+      - internal  # private link to the database
+    logging: *default-logging
     restart: always
 
   osmose_front:
@@ -36,51 +61,97 @@ services:
     user: "101:101"
     environment:
       OSMOSE_BACK_HOST: osmose_back
+    depends_on:
+      osmose_back:
+        condition: service_healthy
+    # HTTP check on the port exposed to https-portal (8080).
+    # Uses 127.0.0.1 rather than "localhost" to avoid IPv6 resolution issues.
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+#    security_opt:
+#      - no-new-privileges:true
+#    cap_drop:
+#      - ALL
     volumes:
       - static:/opt/staticfiles:ro
       - ./volumes/datawork:/opt/datawork:ro
+    networks:
+      - default
+    logging: *default-logging
     restart: always
 
   db:
-    image: postgres:13.3-alpine
+    image: postgres:16
     container_name: osmose_db
     environment:
-      POSTGRES_USER: "${OSMOSE_DB_USER}"
-      POSTGRES_PASSWORD: "${OSMOSE_DB_PWD}"
+      POSTGRES_USER: "${OSMOSE_DB_USER:?OSMOSE_DB_USER is required}"
+      POSTGRES_PASSWORD: "${OSMOSE_DB_PWD:?OSMOSE_DB_PWD is required}"
+      POSTGRES_DB: "${OSMOSE_DB_USER}"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${OSMOSE_DB_USER}", "-d", "${OSMOSE_DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     volumes:
       - ./volumes/postgresql:/var/lib/postgresql/data
+    networks:
+      - internal  # not reachable from the outside nor from the front
+    logging: *default-logging
     restart: always
 
   https-portal:
+    # Check for a newer release before deploying
     image: steveltn/https-portal:1.24
     container_name: osmose_https-portal
+    depends_on:
+      osmose_back:
+        condition: service_healthy
+      osmose_front:
+        condition: service_healthy
     ports:
-      - '80:80'
-      - '443:443'
+      - "80:80"
+      - "443:443"
     volumes:
       - https-portal-data:/var/lib/https-portal
     environment:
-      DOMAINS: "${OSMOSE_HOST} -> http://osmose_front:8080"
+      DOMAINS: "${OSMOSE_HOST:?OSMOSE_HOST is required} -> http://osmose_front:8080"
       STAGE: "${HTTPS_PORTAL_STAGE:-production}"
       CLIENT_MAX_BODY_SIZE: 10M
+    networks:
+      - default
+    logging: *default-logging
     restart: always
 
-  # DEV only: Access to DB
+  # DEV only: database admin UI.
+  # Start with: docker compose --profile dev up -d
 #  pgadmin:
+#    profiles: ["dev"]
 #    container_name: osmose_pgadmin
 #    image: dpage/pgadmin4:latest
 #    restart: unless-stopped
 #    ports:
-#      - 8080:80
+#      - "127.0.0.1:8080:80"  # bound to localhost only
 #    environment:
-#      PGADMIN_DEFAULT_EMAIL: admin@osmose.fr
-#      PGADMIN_DEFAULT_PASSWORD: osmose29
+#      # Credentials come from .env: never commit them in this file
+#      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_EMAIL:?PGADMIN_EMAIL is required}"
+#      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_PASSWORD:?PGADMIN_PASSWORD is required}"
 #    volumes:
 #      - pgadmin_data:/var/lib/pgadmin
-#    links:
-#      - db:pgsql-server
 #    depends_on:
-#      - db
+#      db:
+#        condition: service_healthy
+#    networks:
+#      - internal
+
+networks:
+  # Database network: no outbound access, only osmose_back (and pgadmin in dev) can reach it
+  internal:
+    internal: true
 
 volumes:
   https-portal-data:
