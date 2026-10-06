@@ -39,8 +39,11 @@ export default (_: ConfigEnv): UserConfig => {
         ],
         resolve: {
             alias: [
-                { find: '@', replacement: resolve(__dirname, './src') },
+                { find: '@', replacement: resolve(import.meta.dirname, './src') },
             ],
+        },
+        build: {
+            cssMinify: 'esbuild',
         },
         css: {
             preprocessorOptions: {

@@ -3,10 +3,15 @@ import { resolve } from 'node:path';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
+import { playwright } from '@vitest/browser-playwright';
 const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
+  define: {
+    'process.env.NODE_ENV': '"test"',
+    'process.env.REACT_APP_GRAPHQL_ENDPOINT': '"/api/graphql"',
+  },
   resolve: {
     alias: [{
       find: '@',
@@ -21,6 +26,7 @@ export default defineConfig({
     }
   },
   test: {
+    exclude: ['tests/**/*.spec.ts', 'node_modules/**'],
     projects: [{
       extends: true,
       test: {
@@ -41,7 +47,7 @@ export default defineConfig({
         browser: {
           enabled: true,
           headless: true,
-          provider: 'playwright',
+          provider: playwright(),
           instances: [{
             browser: 'chromium'
           }]

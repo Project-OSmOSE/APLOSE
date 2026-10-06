@@ -165,7 +165,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - name: Install Node dependencies
         working-directory: frontend
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       # ── Generate GraphQL ───────────────────────────────
       - name: Download schema
