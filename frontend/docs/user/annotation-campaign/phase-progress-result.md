@@ -46,7 +46,6 @@ A table containing all annotations and comments left by the campaign annotators.
 | Column                              |                   Type                    | Description                                                                                            |
 |-------------------------------------|:-----------------------------------------:|--------------------------------------------------------------------------------------------------------|
 | dataset                             |                  string                   | Name of the dataset.                                                                                   |
-| analysis                            |                  string                   | Name of the analysis.                                                                                  |
 | filename                            |                  string                   | Name of the file.                                                                                      |
 | annotation_id                       |                    int                    | ID of the annotation                                                                                   |
 | is_update_of_id                     |                    int                    | In the case this annotation is an update/correction of an other, this is the ID of the base annotation |
@@ -61,7 +60,7 @@ A table containing all annotations and comments left by the campaign annotators.
 | end_datetime                        |                 timestamp                 | Absolute end of the annotation                                                                         |
 | type                                |            WEAK / POINT / BOX             | Type of the annotation                                                                                 |
 | confidence_indicator_label          |                  string                   | The name of the level of confidence (if exists)                                                        |
-| confidence_indicator_level          |          string<br/>[int]/[int]           | The level of confidence on the maximum level available (if exists)                                     |
+| confidence_indicator_level          |                [int]/[int]                | The level of confidence on the maximum level available (if exists)                                     |
 | comments                            |                  string                   | Comment left by the annotator.                                                                         |
 | created_at_phase                    |         ANNOTATION / VERIFICATION         | Phase on which the annotation was created                                                              |
 | signal_quantity                     |             SINGLE / MULTIPLE             | The amount of signals in the box. If multiple, none of the following are filled                        |

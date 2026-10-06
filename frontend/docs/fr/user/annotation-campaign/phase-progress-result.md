@@ -46,7 +46,6 @@ Tableau contenant toutes les annotations et tous les commentaires laissés par l
 | Colonne                             |                   Type                    | Description                                                                                               |
 |-------------------------------------|:-----------------------------------------:|-----------------------------------------------------------------------------------------------------------|
 | dataset                             |                  string                   | Nom du dataset.                                                                                           |
-| analysis                            |                  string                   | Nom de l'analyse.                                                                                         |
 | filename                            |                  string                   | Nom du fichier.                                                                                           |
 | annotation_id                       |                    int                    | ID de l'annotation                                                                                        |
 | is_update_of_id                     |                    int                    | Si cette annotation est une mise à jour/correction d'une autre, il s'agit de l'ID de l'annotation de base |
@@ -61,7 +60,7 @@ Tableau contenant toutes les annotations et tous les commentaires laissés par l
 | end_datetime                        |                 timestamp                 | Fin absolue de l'annotation                                                                               |
 | type                                |            WEAK / POINT / BOX             | Type d'annotation                                                                                         |
 | confidence_indicator_label          |                  string                   | Nom du niveau de confiance (le cas échéant)                                                               |
-| confidence_indicator_level          |          string<br/>[int]/[int]           | Niveau de confiance par rapport au niveau maximal disponible (le cas échéant)                             |
+| confidence_indicator_level          |                [int]/[int]                | Niveau de confiance par rapport au niveau maximal disponible (le cas échéant)                             |
 | comments                            |                  string                   | Commentaire laissé par l'annotateur.                                                                      |
 | created_at_phase                    |         ANNOTATION / VERIFICATION         | Phase sur laquelle l'annotation a été créée                                                               |
 | signal_quantity                     |             SINGLE / MULTIPLE             | La quantité de signaux contenus dans la boîte. Si "MULTIPLE", aucun des paramètres suivant ne sera rempli |
