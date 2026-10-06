@@ -54,8 +54,8 @@ class AnnotationSerializer(serializers.ModelSerializer):
             "id": {"required": False, "allow_null": True, "read_only": False},
             "start_time": {"min_value": 0},
             "end_time": {"min_value": 0},
-            "start_frequency": {"min_value": 0},
-            "end_frequency": {"min_value": 0},
+            "min_frequency": {"min_value": 0},
+            "max_frequency": {"min_value": 0},
         }
 
     def __init__(self, instance=None, data=empty, **kwargs):
@@ -114,10 +114,10 @@ class AnnotationSerializer(serializers.ModelSerializer):
                     max_value=sampling_frequency / 2
                 ),
             )
-            fields["start_frequency"].max_value = sampling_frequency / 2
-            fields["start_frequency"].validators.append(validator)
-            fields["end_frequency"].max_value = sampling_frequency / 2
-            fields["end_frequency"].validators.append(validator)
+            fields["min_frequency"].max_value = sampling_frequency / 2
+            fields["min_frequency"].validators.append(validator)
+            fields["max_frequency"].max_value = sampling_frequency / 2
+            fields["max_frequency"].validators.append(validator)
 
         return fields
 
@@ -134,12 +134,12 @@ class AnnotationSerializer(serializers.ModelSerializer):
 
         if self.context.get("force_max_frequency", False):
             if (
-                float(data["start_frequency"])
-                > self.fields["start_frequency"].max_value
+                float(data["min_frequency"])
+                > self.fields["min_frequency"].max_value
             ):
-                data["start_frequency"] = self.fields["start_frequency"].max_value
-            if float(data["end_frequency"]) > self.fields["end_frequency"].max_value:
-                data["end_frequency"] = self.fields["end_frequency"].max_value
+                data["min_frequency"] = self.fields["min_frequency"].max_value
+            if float(data["max_frequency"]) > self.fields["max_frequency"].max_value:
+                data["max_frequency"] = self.fields["max_frequency"].max_value
 
         if data.get("comments"):
             data["comments"] = [
@@ -175,13 +175,13 @@ class AnnotationSerializer(serializers.ModelSerializer):
         if end_time is not None and (start_time is None or start_time > end_time):
             attrs["start_time"] = end_time
             attrs["end_time"] = start_time
-        start_frequency = attrs.get("start_frequency")
-        end_frequency = attrs.get("end_frequency")
-        if end_frequency is not None and (
-            start_frequency is None or start_frequency > end_frequency
+        min_frequency = attrs.get("min_frequency")
+        max_frequency = attrs.get("max_frequency")
+        if max_frequency is not None and (
+            min_frequency is None or min_frequency > max_frequency
         ):
-            attrs["start_frequency"] = end_frequency
-            attrs["end_frequency"] = start_frequency
+            attrs["min_frequency"] = max_frequency
+            attrs["max_frequency"] = min_frequency
 
         return super().validate(attrs)
 

@@ -14,12 +14,12 @@ export const Trend: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
             && !annotation?.acousticFeatures?.endFrequency) {
             switch (value) {
                 case SignalTrendType.Ascending:
-                    update.startFrequency = annotation.startFrequency
-                    update.endFrequency = annotation.endFrequency
+                    update.startFrequency = annotation.minFrequency
+                    update.endFrequency = annotation.maxFrequency
                     break;
                 case SignalTrendType.Descending:
-                    update.startFrequency = annotation.endFrequency
-                    update.endFrequency = annotation.startFrequency
+                    update.startFrequency = annotation.maxFrequency
+                    update.endFrequency = annotation.minFrequency
                     break;
             }
         }

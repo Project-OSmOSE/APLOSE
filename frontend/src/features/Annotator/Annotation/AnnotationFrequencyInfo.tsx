@@ -8,12 +8,12 @@ import { NBSP } from '@/service/type';
 export const AnnotationFrequencyInfo: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
 
     const correctedStartFrequency = useMemo(() => {
-        if (annotation.update?.startFrequency !== annotation.startFrequency) return annotation.update?.startFrequency;
+        if (annotation.update?.minFrequency !== annotation.minFrequency) return annotation.update?.minFrequency;
         return undefined
     }, [ annotation ])
 
     const correctedEndFrequency = useMemo(() => {
-        if (annotation.update?.endFrequency !== annotation.endFrequency) return annotation.update?.endFrequency;
+        if (annotation.update?.maxFrequency !== annotation.maxFrequency) return annotation.update?.maxFrequency;
         return undefined
     }, [ annotation ])
 
@@ -24,17 +24,17 @@ export const AnnotationFrequencyInfo: React.FC<{ annotation: Annotation }> = ({ 
         <CourseUpLinearIcon size={ 20 } className={ styles.mainIcon }/>
 
         <span className={ isCorrected ? 'disabled' : undefined }>
-      { annotation.startFrequency!.toFixed(2) }Hz
+      { annotation.minFrequency!.toFixed(2) }Hz
             { annotation.type === AnnotationType.Box && <Fragment>
-                { NBSP }<AltArrowRightLinearIcon size={ 16 }/> { annotation.endFrequency!.toFixed(2) }Hz
+                { NBSP }<AltArrowRightLinearIcon size={ 16 }/> { annotation.maxFrequency!.toFixed(2) }Hz
             </Fragment> }
     </span>
 
         { isCorrected && <span>
-      { (correctedStartFrequency ?? annotation.startFrequency!).toFixed(2) }Hz
+      { (correctedStartFrequency ?? annotation.minFrequency!).toFixed(2) }Hz
             { annotation.type === AnnotationType.Box && <Fragment>
                 { NBSP }<AltArrowRightLinearIcon
-                                       size={ 16 }/> { (correctedEndFrequency ?? annotation.endFrequency!).toFixed(2) }Hz
+                                       size={ 16 }/> { (correctedEndFrequency ?? annotation.maxFrequency!).toFixed(2) }Hz
             </Fragment> }
     </span> }
     </div>

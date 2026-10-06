@@ -140,7 +140,7 @@ export class AnnotatorPage {
     await this.page.evaluate(() => window.scrollTo({ left: 0, top: 0 }))
   }
 
-  async draw(type: Exclude<AnnotationType, AnnotationType.Weak>): Promise<Pick<Annotation, 'startTime' | 'startFrequency' | 'endTime' | 'endFrequency'>> {
+  async draw(type: Exclude<AnnotationType, AnnotationType.Weak>): Promise<Pick<Annotation, 'startTime' | 'minFrequency' | 'endTime' | 'maxFrequency'>> {
     return test.step(`Draw ${ type }`, async () => {
       await this.scrollTop();
       const canvas = this.page.getByTestId('drawable-canvas').first()
@@ -152,9 +152,9 @@ export class AnnotatorPage {
       return {
         startTime: 2.704,
         endTime: type === 'Box' ? 4.607 : undefined,
-        startFrequency: type === 'Box' ? 0.000 : 55.000,
-        endFrequency: type === 'Box' ? 55.000 : undefined,
-      } as Pick<Annotation, 'startTime' | 'startFrequency' | 'endTime' | 'endFrequency'>
+        minFrequency: type === 'Box' ? 0.000 : 55.000,
+        maxFrequency: type === 'Box' ? 55.000 : undefined,
+      } as Pick<Annotation, 'startTime' | 'minFrequency' | 'endTime' | 'maxFrequency'>
     })
   }
 

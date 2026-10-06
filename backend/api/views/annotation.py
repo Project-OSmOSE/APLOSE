@@ -140,8 +140,8 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
                 level=row["confidence__level"],
             )
         annotation = {
-            "start_frequency": row["start_frequency"] or None,
-            "end_frequency": row["end_frequency"] or None,
+            "min_frequency": row["start_frequency"] or None,
+            "max_frequency": row["end_frequency"] or None,
             "label": campaign.import_new_label(row["label__name"]),
             "confidence": confidence,
             "annotation_phase": phase.id,
@@ -160,11 +160,11 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
         annotation["end_time"] = end_time
 
         none_start_frequency = (
-            annotation["start_frequency"] is None
+            annotation["min_frequency"] is None
             or float(row["start_frequency"]) == 0.0
         )
         none_end_frequency = (
-            annotation["end_frequency"] is None
+            annotation["max_frequency"] is None
             or float(row["end_frequency"]) == max_fft / 2
         )
 
@@ -175,18 +175,18 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
             and none_end_frequency
         ):
             annotation["type"] = Annotation.Type.WEAK
-            annotation["start_frequency"] = None
-            annotation["end_frequency"] = None
+            annotation["min_frequency"] = None
+            annotation["max_frequency"] = None
             annotation["start_time"] = None
             annotation["end_time"] = None
         elif (
             row["start_datetime"] == row["end_datetime"] or row["end_datetime"] is None
         ) and (
             row["start_frequency"] == row["end_frequency"]
-            or annotation["end_frequency"] is None
+            or annotation["max_frequency"] is None
         ):
             annotation["type"] = Annotation.Type.POINT
-            annotation["end_frequency"] = None
+            annotation["max_frequency"] = None
             annotation["end_time"] = None
         else:
             annotation["type"] = Annotation.Type.BOX

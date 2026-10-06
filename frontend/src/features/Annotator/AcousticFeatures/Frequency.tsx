@@ -14,14 +14,14 @@ export const Frequency: React.FC<{ annotation: Annotation }> = ({ annotation }) 
     const updateAnnotation = useUpdateAnnotation()
     const onMinUpdate = useCallback((value: number) => {
         updateAnnotation(annotation, {
-            startFrequency: value,
-            endFrequency: Math.max(annotation.endFrequency ?? 0, value),
+            minFrequency: value,
+            maxFrequency: Math.max(annotation.maxFrequency ?? 0, value),
         })
     }, [ updateAnnotation, annotation ])
     const onMaxUpdate = useCallback((value: number) => {
         updateAnnotation(annotation, {
-            startFrequency: Math.min(annotation.startFrequency ?? 0, value),
-            endFrequency: value,
+            minFrequency: Math.min(annotation.minFrequency ?? 0, value),
+            maxFrequency: value,
         })
     }, [ updateAnnotation, annotation ])
 
@@ -39,14 +39,14 @@ export const Frequency: React.FC<{ annotation: Annotation }> = ({ annotation }) 
             <Th scope="row" rowSpan={ 10 }>Frequency</Th>
 
             {/* Min */ }
-            <InputRow label="Min" value={ annotation.startFrequency! } max={ maxFrequency } unit="Hz"
+            <InputRow label="Min" value={ annotation.minFrequency! } max={ maxFrequency } unit="Hz"
                       disabled={ phase?.phase === 'Verification' }
                       onUpdate={ onMinUpdate }/>
         </Tr>
 
         {/* Max */ }
         <Tr>
-            <InputRow label="Max" value={ annotation.endFrequency! } max={ maxFrequency } unit="Hz"
+            <InputRow label="Max" value={ annotation.maxFrequency! } max={ maxFrequency } unit="Hz"
                       disabled={ phase?.phase === 'Verification' }
                       onUpdate={ onMaxUpdate }/>
         </Tr>
@@ -54,7 +54,7 @@ export const Frequency: React.FC<{ annotation: Annotation }> = ({ annotation }) 
         {/* Range */ }
         <Tr>
             <NoteRow label="Range"
-                     note={ `${ (annotation.endFrequency ?? 0) - (annotation.startFrequency ?? 0) }Hz` }/>
+                     note={ `${ (annotation.maxFrequency ?? 0) - (annotation.minFrequency ?? 0) }Hz` }/>
         </Tr>
 
         {/* Start */ }

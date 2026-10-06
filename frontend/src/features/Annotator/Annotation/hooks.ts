@@ -8,7 +8,7 @@ import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
 import { useLoaderData, useParams } from '@tanstack/react-router';
 import { Alert } from '@/components/base';
 
-type AnnotationEqualsType = Pick<Annotation, 'label' | 'confidence' | 'startTime' | 'endTime' | 'startFrequency' | 'endFrequency'>
+type AnnotationEqualsType = Pick<Annotation, 'label' | 'confidence' | 'startTime' | 'endTime' | 'minFrequency' | 'maxFrequency'>
 
 
 const useGetNewAnnotationID = () => {
@@ -25,8 +25,8 @@ const useAnnotationEquals = () => {
             && a.confidence === b.confidence
             && a.startTime === b.startTime
             && a.endTime === b.endTime
-            && a.startFrequency === b.startFrequency
-            && a.endFrequency === b.endFrequency
+            && a.minFrequency === b.minFrequency
+            && a.maxFrequency === b.maxFrequency
     }, [])
 }
 

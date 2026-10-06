@@ -23,8 +23,8 @@ export const weakAnnotation: Annotation = {
   type: AnnotationType.Weak,
   startTime: null,
   endTime: null,
-  startFrequency: null,
-  endFrequency: null,
+  minFrequency: null,
+  maxFrequency: null,
 }
 
 
@@ -33,6 +33,6 @@ export const boxAnnotation: Annotation = {
   type: AnnotationType.Box,
   startTime: 5,
   endTime: 10,
-  startFrequency: 12,
-  endFrequency: 40,
+  minFrequency: 12,
+  maxFrequency: 40,
 }

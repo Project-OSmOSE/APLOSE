@@ -38,8 +38,8 @@ presence_annotation = {
     "confidence": "confident",
     "startTime": None,
     "endTime": None,
-    "startFrequency": None,
-    "endFrequency": None,
+    "minFrequency": None,
+    "maxFrequency": None,
     "acousticFeatures": None,
     "annotationPhase": "1",
 }
@@ -48,8 +48,8 @@ box_annotation = {
     "confidence": "confident",
     "startTime": 0,
     "endTime": 10,
-    "startFrequency": 5,
-    "endFrequency": 25,
+    "minFrequency": 5,
+    "maxFrequency": 25,
     "acousticFeatures": {
         "startFrequency": 10.0,
         "endFrequency": 50.0,
@@ -240,8 +240,8 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
                         **presence_annotation,
                         "startTime": 9,
                         "endTime": 7,
-                        "startFrequency": 9,
-                        "endFrequency": 7,
+                        "minFrequency": 9,
+                        "maxFrequency": 7,
                     }
                 ],
             },
@@ -252,8 +252,8 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
         new_annotation: Annotation = Annotation.objects.order_by("id").last()
         self.assertEqual(new_annotation.start_time, 7)
         self.assertEqual(new_annotation.end_time, 9)
-        self.assertEqual(new_annotation.start_frequency, 7)
-        self.assertEqual(new_annotation.end_frequency, 9)
+        self.assertEqual(new_annotation.min_frequency, 7)
+        self.assertEqual(new_annotation.max_frequency, 9)
 
     # Errors
 
@@ -292,8 +292,8 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
                         **presence_annotation,
                         "startTime": -1,
                         "endTime": -1,
-                        "startFrequency": -1,
-                        "endFrequency": -1,
+                        "minFrequency": -1,
+                        "maxFrequency": -1,
                     }
                 ],
             },
@@ -303,8 +303,8 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
         errors = json.loads(response.content)["data"]["updateAnnotations"]["errors"]
         self.assertEqual(errors[0][0]["field"], "startTime")
         self.assertEqual(errors[0][1]["field"], "endTime")
-        self.assertEqual(errors[0][2]["field"], "startFrequency")
-        self.assertEqual(errors[0][3]["field"], "endFrequency")
+        self.assertEqual(errors[0][2]["field"], "minFrequency")
+        self.assertEqual(errors[0][3]["field"], "maxFrequency")
 
     def test_connected_annotator_max_value(self):
         previous_count = Annotation.objects.count()
@@ -318,8 +318,8 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
                         **presence_annotation,
                         "startTime": 16 * 60,
                         "endTime": 17 * 60,
-                        "startFrequency": 130_000,
-                        "endFrequency": 140_000,
+                        "minFrequency": 130_000,
+                        "maxFrequency": 140_000,
                     }
                 ],
             },
@@ -329,5 +329,5 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
         errors = json.loads(response.content)["data"]["updateAnnotations"]["errors"]
         self.assertEqual(errors[0][0]["field"], "startTime")
         self.assertEqual(errors[0][1]["field"], "endTime")
-        self.assertEqual(errors[0][2]["field"], "startFrequency")
-        self.assertEqual(errors[0][3]["field"], "endFrequency")
+        self.assertEqual(errors[0][2]["field"], "minFrequency")
+        self.assertEqual(errors[0][3]["field"], "maxFrequency")

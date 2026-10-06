@@ -108,8 +108,8 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.assertEqual(annotation.type, Annotation.Type.WEAK)
         self.assertEqual(annotation.start_time, None)
         self.assertEqual(annotation.end_time, None)
-        self.assertEqual(annotation.start_frequency, None)
-        self.assertEqual(annotation.end_frequency, None)
+        self.assertEqual(annotation.min_frequency, None)
+        self.assertEqual(annotation.max_frequency, None)
 
     def __check_weak_two_files_annotation(
         self, annotations: QuerySet[Annotation], phase_id: int
@@ -121,8 +121,8 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.assertEqual(annotation_1.spectrogram_id, 1)
         self.assertEqual(annotation_1.start_time, None)
         self.assertEqual(annotation_1.end_time, None)
-        self.assertEqual(annotation_1.start_frequency, None)
-        self.assertEqual(annotation_1.end_frequency, None)
+        self.assertEqual(annotation_1.min_frequency, None)
+        self.assertEqual(annotation_1.max_frequency, None)
         self.assertEqual(annotation_1.type, Annotation.Type.WEAK)
         annotation_2: Annotation = annotations.exclude(id=annotation_1.id).first()
         # Second annotation doesn't cover all file -> strong
@@ -131,8 +131,8 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.assertEqual(annotation_2.spectrogram_id, 2)
         self.assertEqual(annotation_2.start_time, 0)
         self.assertEqual(annotation_2.end_time, 10 * 60)
-        self.assertEqual(annotation_2.start_frequency, 0)
-        self.assertEqual(annotation_2.end_frequency, 240)
+        self.assertEqual(annotation_2.min_frequency, 0)
+        self.assertEqual(annotation_2.max_frequency, 240)
         self.assertEqual(annotation_2.type, Annotation.Type.BOX)
 
     def __check_point_annotation(self, annotation: Annotation, phase_id: int):
@@ -142,8 +142,8 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.assertEqual(annotation.type, Annotation.Type.POINT)
         self.assertEqual(annotation.start_time, 0.8)
         self.assertEqual(annotation.end_time, None)
-        self.assertEqual(annotation.start_frequency, 100)
-        self.assertEqual(annotation.end_frequency, None)
+        self.assertEqual(annotation.min_frequency, 100)
+        self.assertEqual(annotation.max_frequency, None)
 
     def __check_box_one_file_annotation(self, annotation: Annotation, phase_id: int):
         self.__check_global_result(annotation)
@@ -151,8 +151,8 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.assertEqual(annotation.spectrogram_id, 1)
         self.assertEqual(annotation.start_time, 0.8)
         self.assertEqual(annotation.end_time, 1.8)
-        self.assertEqual(annotation.start_frequency, 100)
-        self.assertEqual(annotation.end_frequency, 200)
+        self.assertEqual(annotation.min_frequency, 100)
+        self.assertEqual(annotation.max_frequency, 200)
         self.assertEqual(annotation.type, Annotation.Type.BOX)
 
     def __check_box_two_files_annotation(
@@ -164,8 +164,8 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.assertEqual(annotation_1.spectrogram_id, 1)
         self.assertEqual(annotation_1.start_time, 0.8)
         self.assertEqual(annotation_1.end_time, 15 * 60)
-        self.assertEqual(annotation_1.start_frequency, 100)
-        self.assertEqual(annotation_1.end_frequency, 200)
+        self.assertEqual(annotation_1.min_frequency, 100)
+        self.assertEqual(annotation_1.max_frequency, 200)
         self.assertEqual(annotation_1.type, Annotation.Type.BOX)
         annotation_2: Annotation = annotations.exclude(id=annotation_1.id).first()
         self.__check_global_result(annotation_2)
@@ -173,8 +173,8 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.assertEqual(annotation_2.spectrogram_id, 2)
         self.assertEqual(annotation_2.start_time, 0)
         self.assertEqual(annotation_2.end_time, 8)
-        self.assertEqual(annotation_2.start_frequency, 100)
-        self.assertEqual(annotation_2.end_frequency, 200)
+        self.assertEqual(annotation_2.min_frequency, 100)
+        self.assertEqual(annotation_2.max_frequency, 200)
         self.assertEqual(annotation_2.type, Annotation.Type.BOX)
 
     def tearDown(self):
@@ -371,7 +371,7 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
 
         self.__check_point_annotation(Annotation.objects.latest("id"), phase_id)
 
-    def test_campaign_owner_point_no_end_frequency(self):
+    def test_campaign_owner_point_no_max_frequency(self):
         self.log_client(User.objects.get(username="user1"))
         url, phase_id, _ = self._get_url()
         old_count = Annotation.objects.count()
@@ -465,8 +465,8 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Annotation.objects.count(), old_count)
 
-        self.assertEqual(response.data[0].get("start_frequency")[0].code, "min_value")
-        self.assertEqual(response.data[0].get("end_frequency")[0].code, "min_value")
+        self.assertEqual(response.data[0].get("min_frequency")[0].code, "min_value")
+        self.assertEqual(response.data[0].get("max_frequency")[0].code, "min_value")
 
     def test_campaign_owner_over_frequency(self):
         self.log_client(User.objects.get(username="user1"))
@@ -479,8 +479,8 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Annotation.objects.count(), old_count)
 
-        self.assertEqual(response.data[0].get("start_frequency")[0].code, "max_value")
-        self.assertEqual(response.data[0].get("end_frequency")[0].code, "max_value")
+        self.assertEqual(response.data[0].get("min_frequency")[0].code, "max_value")
+        self.assertEqual(response.data[0].get("max_frequency")[0].code, "max_value")
 
     def test_campaign_owner_over_frequency_forced(self):
         self.log_client(User.objects.get(username="user1"))

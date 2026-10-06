@@ -57,16 +57,16 @@ export const StrongAnnotation: React.FC<{
             x: timeScale.valueToPosition(annotation.update?.startTime ?? annotation.startTime!) - delta,
             y: frequencyScale.valueToPosition(
                 annotation.type === AnnotationType.Box ?
-                    annotation.update?.endFrequency ?? annotation.endFrequency! :
-                    annotation.update?.startFrequency ?? annotation.startFrequency!,
+                    annotation.update?.maxFrequency ?? annotation.maxFrequency! :
+                    annotation.update?.minFrequency ?? annotation.minFrequency!,
             ) - delta,
             width: annotation.type === AnnotationType.Box ? timeScale.valuesToPositionRange(
                 annotation.update?.startTime ?? annotation.startTime!,
                 annotation.update?.endTime ?? annotation.endTime!,
             ) : undefined,
             height: annotation.type === AnnotationType.Box ? frequencyScale.valuesToPositionRange(
-                annotation.update?.startFrequency ?? annotation.startFrequency!,
-                annotation.update?.endFrequency ?? annotation.endFrequency!,
+                annotation.update?.minFrequency ?? annotation.minFrequency!,
+                annotation.update?.maxFrequency ?? annotation.maxFrequency!,
             ) : undefined,
         }satisfies ExtendedDivPosition
     }, [ annotation, timeScale, frequencyScale ])
@@ -77,29 +77,29 @@ export const StrongAnnotation: React.FC<{
         }
         let newStartTime = timeScale.positionToValue(x);
         let newEndTime = timeScale.positionToValue(x + (width ?? 0));
-        let newEndFrequency = frequencyScale.positionToValue(y);
-        let newStartFrequency = frequencyScale.positionToValue(y + (height ?? 0));
+        let newMaxFrequency = frequencyScale.positionToValue(y);
+        let newMinFrequency = frequencyScale.positionToValue(y + (height ?? 0));
         const _startTime = annotation.update?.startTime ?? annotation.startTime;
         const _endTime = annotation.update?.endTime ?? annotation.endTime;
-        const _endFrequency = annotation.update?.endFrequency ?? annotation.endFrequency;
-        const _startFrequency = annotation.update?.startFrequency ?? annotation.startFrequency;
+        const _maxFrequency = annotation.update?.maxFrequency ?? annotation.maxFrequency;
+        const _minFrequency = annotation.update?.minFrequency ?? annotation.minFrequency;
         if (_startTime && formatTime(newStartTime, true) === formatTime(_startTime, true)) newStartTime = _startTime;
         if (_endTime && formatTime(newEndTime, true) === formatTime(_endTime, true)) newEndTime = _endTime;
-        if (_startFrequency && _startFrequency.toFixed(2) === newStartFrequency.toFixed(2)) newStartFrequency = _startFrequency;
-        if (_endFrequency && _endFrequency.toFixed(2) === newEndFrequency.toFixed(2)) newEndFrequency = _endFrequency;
+        if (_minFrequency && _minFrequency.toFixed(2) === newMinFrequency.toFixed(2)) newMinFrequency = _minFrequency;
+        if (_maxFrequency && _maxFrequency.toFixed(2) === newMaxFrequency.toFixed(2)) newMaxFrequency = _maxFrequency;
         switch (annotation.type) {
             case AnnotationType.Box:
                 updateAnnotation(annotation, {
                     startTime: newStartTime,
                     endTime: newEndTime,
-                    startFrequency: newStartFrequency,
-                    endFrequency: newEndFrequency,
+                    minFrequency: newMinFrequency,
+                    maxFrequency: newMaxFrequency,
                 })
                 break;
             case AnnotationType.Point:
                 updateAnnotation(annotation, {
                     startTime: newStartTime,
-                    startFrequency: newStartFrequency,
+                    minFrequency: newMinFrequency,
                 })
                 break;
         }

@@ -54,13 +54,13 @@ export const useGetFreqTime = () => {
 export const useIsInAnnotation = () => {
     const getFreqTime = useGetFreqTime()
 
-    return useCallback((event: Position, annotation: Pick<AnnotationNode, 'startFrequency' | 'endFrequency' | 'startTime' | 'endTime'>) => {
+    return useCallback((event: Position, annotation: Pick<AnnotationNode, 'minFrequency' | 'maxFrequency' | 'startTime' | 'endTime'>) => {
         const position = getFreqTime(event);
         if (!position) return false;
         if (annotation.startTime && position.time < annotation.startTime) return false
         if (annotation.endTime && position.time > annotation.endTime) return false
-        if (annotation.startFrequency && position.frequency < annotation.startFrequency) return false
-        return !(annotation.endFrequency && position.frequency > annotation.endFrequency);
+        if (annotation.minFrequency && position.frequency < annotation.minFrequency) return false
+        return !(annotation.maxFrequency && position.frequency > annotation.maxFrequency);
 
     }, [ getFreqTime ])
 }

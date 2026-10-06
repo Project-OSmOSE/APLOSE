@@ -49,8 +49,8 @@ query (
                     type
                     startTime
                     endTime
-                    startFrequency
-                    endFrequency
+                    minFrequency
+                    maxFrequency
                     label {
                         name
                     }

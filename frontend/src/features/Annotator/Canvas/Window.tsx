@@ -103,7 +103,7 @@ export const AnnotatorCanvasWindow: React.FC = () => {
         refreshInteractionCanvas()
     }, [
         // On current newAnnotation changed
-        tempAnnotation?.endTime, tempAnnotation?.endFrequency, tempAnnotation,
+        tempAnnotation?.endTime, tempAnnotation?.maxFrequency, tempAnnotation,
         // On Spectrogram or analysis changed
         spectrogram, selectedAnalysis,
         // On window dimensions change

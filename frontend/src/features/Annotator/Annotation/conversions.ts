@@ -71,7 +71,7 @@ export function convertAnnotationsToPost(annotations: Annotation[]): AnnotationI
 }
 
 type Node =
-  Pick<AnnotationNode, 'id' | 'type' | 'startFrequency' | 'endFrequency' | 'startTime' | 'endTime'>
+  Pick<AnnotationNode, 'id' | 'type' | 'minFrequency' | 'maxFrequency' | 'startTime' | 'endTime'>
   & {
   isUpdateOf?: Maybe<Pick<AnnotationNode, 'id'>>,
   annotator?: Maybe<Pick<UserNode, 'id'>>,
@@ -103,8 +103,8 @@ export function convertGqlToAnnotation(annotation: Node,
     annotator: annotation.annotator?.id,
     validation: convertGqlToValidation(annotation.validations?.results ?? [], phase, annotation.annotator?.id === userId),
     acousticFeatures: annotation.acousticFeatures ? convertGqlToFeatures(annotation.acousticFeatures) : undefined,
-    endFrequency: annotation.endFrequency === null ? undefined : annotation.endFrequency,
-    startFrequency: annotation.startFrequency === null ? undefined : annotation.startFrequency,
+    maxFrequency: annotation.maxFrequency === null ? undefined : annotation.maxFrequency,
+    minFrequency: annotation.minFrequency === null ? undefined : annotation.minFrequency,
     endTime: annotation.endTime === null ? undefined : annotation.endTime,
     startTime: annotation.startTime === null ? undefined : annotation.startTime,
     confidence: annotation.confidence?.label,
