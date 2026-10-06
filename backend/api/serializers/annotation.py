@@ -133,10 +133,7 @@ class AnnotationSerializer(serializers.ModelSerializer):
             data["annotator"] = self.context.get("user").id
 
         if self.context.get("force_max_frequency", False):
-            if (
-                float(data["min_frequency"])
-                > self.fields["min_frequency"].max_value
-            ):
+            if float(data["min_frequency"]) > self.fields["min_frequency"].max_value:
                 data["min_frequency"] = self.fields["min_frequency"].max_value
             if float(data["max_frequency"]) > self.fields["max_frequency"].max_value:
                 data["max_frequency"] = self.fields["max_frequency"].max_value

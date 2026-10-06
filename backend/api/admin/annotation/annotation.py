@@ -9,6 +9,7 @@ from backend.api.models import Annotation
 class AnnotationAdmin(ExtendedModelAdmin):
     """Annotation presentation in DjangoAdmin"""
 
+    # pylint: disable=duplicate-code
     list_display = (
         "id",
         "type",

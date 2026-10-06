@@ -26,24 +26,26 @@ Vous pouvez par exemple vérifier les annotations générées par un détecteur 
 
 ### Sélectionnez une analyse
 
-Si votre campagne comporte plusieurs analyses, vous devez sélectionner celle sur laquelle les annotations ont été effectuées.
+Si votre campagne comporte plusieurs analyses, vous devez sélectionner celle sur laquelle les annotations ont été
+effectuées.
 
 ### Télécharger un fichier CSV
 
-Vous pouvez soit cliquer sur la zone « Importer une annotation », soit y faire glisser un fichier. Le fichier doit être au format CSV et comporter les colonnes suivantes :
+Vous pouvez soit cliquer sur la zone « Importer une annotation », soit y faire glisser un fichier. Le fichier doit être
+au format CSV et comporter les colonnes suivantes :
 
-| Colonne                    |          Type          | Description                                                                                               |
-|----------------------------|:----------------------:|-----------------------------------------------------------------------------------------------------------|
-| dataset                    |         string         | Nom du dataset. S'il ne correspond pas au dataset de la campagne, vous aurez le choix de le garder ou non |
-| start_datetime             |       timestamp        | Début de l'annotation                                                                                     |
-| end_datetime               |       timestamp        | Fin de l'annotation                                                                                       |
-| start_frequency            |          int           | Fréquence minimum de l'annotation                                                                         |
-| end_frequency              |          int           | Fréquence maximum de l'annotation                                                                         |
-| annotation                 |         string         | Label de l'annotation                                                                                     |
-| annotator                  |         string         | Détecteur aillant créé l'annotation                                                                       |
-| is_box                     |        boolean         | Si l'annotation est une boîte ou une présence                                                             |
-| confidence_indicator_label |         string         | Nom de l'indice de confiance (s'il existe)                                                                |
-| confidence_indicator_level | string<br/>[int]/[int] | Niveau de confiance / Niveau maximum de confiance (s'il existe)                                           |
+| Colonne                    |   Type    | Description                                                     |
+|----------------------------|:---------:|-----------------------------------------------------------------|
+| dataset                    |  string   | Nom du dataset.                                                 |
+| start_datetime             | timestamp | Début absolu de l'annotation                                    |
+| end_datetime               | timestamp | Fin absolue de l'annotation                                     |
+| min_frequency              |    int    | Fréquence minimum de l'annotation                               |
+| max_frequency              |    int    | Fréquence maximum de l'annotation                               |
+| label                      |  string   | Label de l'annotation                                           |
+| detector                   |  string   | Détecteur aillant créé l'annotation                             |
+| detector_configuration     |  string   | Configuration du détecteur aillant créé l'annotation            |
+| confidence_indicator_label |  string   | Nom de l'indice de confiance (s'il existe)                      |
+| confidence_indicator_level |    int    | Niveau de confiance / Niveau maximum de confiance (s'il existe) |
 
 Dans le cas de présences, la date de début/fin et la fréquence de début/fin doivent être celles du fichier.
 

@@ -134,23 +134,26 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
     ) -> Optional[dict]:
         campaign: AnnotationCampaign = phase.annotation_campaign
         confidence = None
-        if row["confidence__label"] and row["confidence__level"] is not None:
+        if (
+            row["confidence_indicator_label"]
+            and row["confidence_indicator_level"] is not None
+        ):
             confidence = campaign.import_new_confidence(
-                label=row["confidence__label"],
-                level=row["confidence__level"],
+                label=row["confidence_indicator_label"],
+                level=row["confidence_indicator_level"],
             )
         annotation = {
-            "min_frequency": row["start_frequency"] or None,
-            "max_frequency": row["end_frequency"] or None,
-            "label": campaign.import_new_label(row["label__name"]),
+            "min_frequency": row["min_frequency"] or None,
+            "max_frequency": row["max_frequency"] or None,
+            "label": campaign.import_new_label(row["label"]),
             "confidence": confidence,
             "annotation_phase": phase.id,
             "annotator": None,
             "annotator_expertise_level": None,
             "is_update_of": None,
             "detector_configuration": DetectorConfiguration.objects.get_or_create(
-                configuration=row["detector_configuration__configuration"],
-                detector=Detector.objects.get_or_create(name=row["detector__name"])[0],
+                configuration=row["detector_configuration"],
+                detector=Detector.objects.get_or_create(name=row["detector"])[0],
             )[0],
             "spectrogram": s,
         }
@@ -159,20 +162,19 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
         annotation["start_time"] = start_time
         annotation["end_time"] = end_time
 
-        none_start_frequency = (
-            annotation["min_frequency"] is None
-            or float(row["start_frequency"]) == 0.0
+        none_min_frequency = (
+            annotation["min_frequency"] is None or float(row["min_frequency"]) == 0.0
         )
-        none_end_frequency = (
+        none_max_frequency = (
             annotation["max_frequency"] is None
-            or float(row["end_frequency"]) == max_fft / 2
+            or float(row["max_frequency"]) == max_fft / 2
         )
 
         if (
             start_time == 0
             and to_seconds(s.end - s.start) == end_time
-            and none_start_frequency
-            and none_end_frequency
+            and none_min_frequency
+            and none_max_frequency
         ):
             annotation["type"] = Annotation.Type.WEAK
             annotation["min_frequency"] = None
@@ -182,7 +184,7 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
         elif (
             row["start_datetime"] == row["end_datetime"] or row["end_datetime"] is None
         ) and (
-            row["start_frequency"] == row["end_frequency"]
+            row["min_frequency"] == row["max_frequency"]
             or annotation["max_frequency"] is None
         ):
             annotation["type"] = Annotation.Type.POINT

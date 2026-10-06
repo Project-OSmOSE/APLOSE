@@ -32,15 +32,18 @@ export const ImportAnnotationsPage: React.FC = () => {
     const [ file, setFile ] = useState<File | undefined>();
     const [ annotations, setAnnotations ] = useState<Annotation[]>([]);
     const detectorNames = useMemo(() => {
-        return [ ...new Set(cleanGqlList(annotations.map(a => a.initial__detector__name))) ]
+        console.debug('detectorNames', JSON.stringify(annotations.map(a => a.initial__detector)))
+        return [ ...new Set(cleanGqlList(annotations.map(a => a.initial__detector))) ]
     }, [ annotations ]);
 
     const onFileLoaded = useCallback((file: File, annotations: Annotation[]) => {
+        console.debug('onFileLoaded', JSON.stringify(annotations.map(a => a.label)))
         setFile(file)
         setAnnotations(annotations)
     }, [])
 
     const onFileReset = useCallback(() => {
+        console.debug('onFileReset')
         setFile(undefined)
         setAnnotations([]);
     }, [])
@@ -72,13 +75,13 @@ export const ImportAnnotationsPage: React.FC = () => {
         }
 
         const annotationsForUpload = annotations
-            .map(a => [ a, detectors.find(d => d.name === a.initial__detector__name) ] as const)
+            .map(a => [ a, detectors.find(d => d.name === a.initial__detector) ] as const)
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             .filter(([ _, d ]) => !!d)
             .map(([ a, d ]) => ({
                 ...a,
-                detector__name: d!.existingName ?? d!.name,
-                detector_configuration__configuration: d!.configurationText,
+                detector: d!.existingName ?? d!.name,
+                detector_configuration: d!.configurationText,
             }))
         setTotal(annotationsForUpload.length)
         const didUpload = await upload(annotationsForUpload)

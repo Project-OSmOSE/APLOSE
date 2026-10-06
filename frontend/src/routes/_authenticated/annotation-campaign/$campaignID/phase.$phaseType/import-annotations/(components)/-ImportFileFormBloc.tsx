@@ -35,12 +35,16 @@ export const ImportFileFormBloc: React.FC<ImportFileFormBlocProps> = ({
     const handleInput = useCallback(async (file: File) => {
         setIsLoading(true)
         let rows, headers;
+        console.debug('handleInput', file.name)
 
         try {
             const data = await spreadsheetHandler.loadFile(file)
             rows = data.rows;
             headers = data.headers;
+            console.debug('handleInput', rows.length, JSON.stringify(headers))
         } catch (error) {
+            console.debug('handleInput', error)
+            console.debug('handleInput', JSON.stringify(error))
             toastManager.add({
                 type: 'danger', title: 'Fail reading file',
                 description: getErrorMessage(error),
@@ -54,6 +58,7 @@ export const ImportFileFormBloc: React.FC<ImportFileFormBlocProps> = ({
             if (!headers.includes(column)) missingColumns.push(column);
         }
         if (missingColumns.length > 0) {
+            console.debug('handleInput miss', JSON.stringify(missingColumns))
             toastManager.add({
                 type: 'danger', title: 'Fail reading file',
                 description: `Missing columns: ${ missingColumns.join(', ') }`,
@@ -64,16 +69,13 @@ export const ImportFileFormBloc: React.FC<ImportFileFormBlocProps> = ({
         onLoaded(
             file,
             rows.map(r => {
-                const confidence_indicator: string | undefined = r.confidence_indicator_level
-                const confidence__level = confidence_indicator?.split('/') ?? []
                 return {
                     ...r,
-                    start_frequency: r.start_frequency !== undefined ? +r.start_frequency : undefined,
-                    end_frequency: r.end_frequency !== undefined ? +r.end_frequency : undefined,
-                    label__name: r.annotation,
-                    confidence__label: r.confidence_indicator_label,
-                    confidence__level: confidence__level.length > 0 ? +confidence__level[0] : undefined,
-                    initial__detector__name: r.annotator,
+                    min_frequency: r.min_frequency !== undefined ? +r.min_frequency : undefined,
+                    max_frequency: r.max_frequency !== undefined ? +r.max_frequency : undefined,
+                    confidence_indicator_label: r.confidence_indicator_label,
+                    confidence_indicator_level: r.confidence_indicator_level !== undefined ? +r.confidence_indicator_level : undefined,
+                    initial__detector: r.detector,
                 } as Annotation
             }))
         setIsLoading(false)
