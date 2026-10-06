@@ -14,6 +14,7 @@ class ConfidenceAdmin(ExtendedModelAdmin):
         "id",
         "label",
         "level",
+        "get_usages",
     )
 
     def save_model(self, request, obj, form, change):
@@ -23,3 +24,8 @@ class ConfidenceAdmin(ExtendedModelAdmin):
         except IntegrityError as error:
             messages.set_level(request, messages.ERROR)
             messages.error(request, error)
+
+    @admin.display(description="Usages")
+    def get_usages(self, confidence: Confidence):
+        """Get indicators"""
+        return self.list_queryset(confidence.confidence_indicator_sets.all(), allow_edit=True)
