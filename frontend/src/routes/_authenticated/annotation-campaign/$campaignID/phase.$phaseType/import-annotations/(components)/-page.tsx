@@ -32,18 +32,15 @@ export const ImportAnnotationsPage: React.FC = () => {
     const [ file, setFile ] = useState<File | undefined>();
     const [ annotations, setAnnotations ] = useState<Annotation[]>([]);
     const detectorNames = useMemo(() => {
-        console.debug('detectorNames', JSON.stringify(annotations.map(a => a.initial__detector)))
         return [ ...new Set(cleanGqlList(annotations.map(a => a.initial__detector))) ]
     }, [ annotations ]);
 
     const onFileLoaded = useCallback((file: File, annotations: Annotation[]) => {
-        console.debug('onFileLoaded', JSON.stringify(annotations.map(a => a.label)))
         setFile(file)
         setAnnotations(annotations)
     }, [])
 
     const onFileReset = useCallback(() => {
-        console.debug('onFileReset')
         setFile(undefined)
         setAnnotations([]);
     }, [])

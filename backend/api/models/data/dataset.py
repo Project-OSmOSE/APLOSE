@@ -63,7 +63,7 @@ class Dataset(AbstractDataset, AbstractArchivable, models.Model):
         return self.name
 
     related_channel_configurations = models.ManyToManyField(
-        ChannelConfiguration, related_name="datasets"
+        ChannelConfiguration, related_name="datasets", blank=True
     )
     # pylint: disable=duplicate-code
     archived_by = models.ForeignKey(
