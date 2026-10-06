@@ -46,7 +46,7 @@ const TEST = {
                 const bounds = await page.annotator.draw(type);
                 expect(page.annotator.getAnnotationForLabel(LABELS.classic, { type })).toBeTruthy()
                 await expect(page.annotator.annotationsBlock.getByText(Math.floor(bounds.startTime).toString()).first()).toBeVisible();
-                await expect(page.annotator.annotationsBlock.getByText(bounds.startFrequency.toString()).first()).toBeVisible();
+                await expect(page.annotator.annotationsBlock.getByText(bounds.minFrequency.toString()).first()).toBeVisible();
                 return bounds
             })
 

@@ -5,13 +5,13 @@ import { AnnotationPhaseType, type ImportAnnotation } from '@/api';
 const keys: (keyof ImportAnnotation)[] = [
   'start_datetime',
   'end_datetime',
-  'start_frequency',
-  'end_frequency',
-  'label__name',
-  'confidence__label',
-  'confidence__level',
-  'detector__name',
-  'detector_configuration__configuration',
+  'min_frequency',
+  'max_frequency',
+  'label',
+  'confidence_indicator_label',
+  'confidence_indicator_level',
+  'detector',
+  'detector_configuration',
 ];
 
 export type ImportAnnotationsParams = {

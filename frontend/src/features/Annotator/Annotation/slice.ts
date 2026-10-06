@@ -22,7 +22,7 @@ export type Annotation =
   update?: Annotation;
   acousticFeatures?: Features;
 };
-export type TempAnnotation = Pick<Annotation, 'type' | 'startTime' | 'startFrequency' | 'endTime' | 'endFrequency'>
+export type TempAnnotation = Pick<Annotation, 'type' | 'startTime' | 'minFrequency' | 'endTime' | 'maxFrequency'>
 
 type AnnotationState = {
   allAnnotations: Annotation[];

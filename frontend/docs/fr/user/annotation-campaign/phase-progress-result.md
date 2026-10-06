@@ -43,42 +43,40 @@
 
 Tableau contenant toutes les annotations et tous les commentaires laissés par les annotateurs de la campagne.
 
-| Colonne                               |                   Type                    | Description                                                                                               |
-|---------------------------------------|:-----------------------------------------:|-----------------------------------------------------------------------------------------------------------|
-| dataset                               |                  string                   | Nom du dataset.                                                                                           |
-| analysis                              |                  string                   | Nom de l'analyse.                                                                                         |
-| filename                              |                  string                   | Nom du fichier.                                                                                           |
-| annotation_id                         |                    int                    | ID de l'annotation                                                                                        |
-| is_update_of_id                       |                    int                    | Si cette annotation est une mise à jour/correction d'une autre, il s'agit de l'ID de l'annotation de base |
-| start_time                            |                   float                   | Début relatif de l'annotation                                                                             |
-| end_time                              |                   float                   | Fin relative de l'annotation                                                                              |
-| ~~start_frequency~~<br/>min_frequency |                    int                    | Fréquence minimum de l'annotation                                                                         |
-| ~~end_frequency~~<br/>max_frequency   |                    int                    | Fréquence maximum de l'annotation                                                                         |
-| annotation                            |                  string                   | Label de l'annotation                                                                                     |
-| annotator                             |                  string                   | Auteur de l'annotation ou du commentaire                                                                  |
-| annotator_expertise                   |         NOVICE / AVERAGE / EXPERT         | Niveau d'expertise de l'annotateur au moment où l'annotation a été effectuée                              |
-| start_datetime                        |                 timestamp                 | Début absolu de l'annotation                                                                              |
-| end_datetime                          |                 timestamp                 | Fin absolue de l'annotation                                                                               |
-| ~~is_box~~                            |                ~~boolean~~                | ~~L'annotation est soit une boîte, soit une annotation faible~~                                           |
-| type                                  |            WEAK / POINT / BOX             | Type d'annotation                                                                                         |
-| confidence_indicator_label            |                  string                   | Nom du niveau de confiance (le cas échéant)                                                               |
-| confidence_indicator_level            |          string<br/>[int]/[int]           | Niveau de confiance par rapport au niveau maximal disponible (le cas échéant)                             |
-| comments                              |                  string                   | Commentaire laissé par l'annotateur.                                                                      |
-| created_at_phase                      |         ANNOTATION / VERIFICATION         | Phase sur laquelle l'annotation a été créée                                                               |
-| signal_quantity                       |             SINGLE / MULTIPLE             | La quantité de signaux contenus dans la boîte. Si "MULTIPLE", aucun des paramètres suivant ne sera rempli |
-| signal_is_intensity_too_low           |                  boolean                  | Si l'intensité du signal est trop faible pour correctement remplir les paramètres acoustiques             |
-| signal_does_overlap_other_signals     |                  boolean                  | Si le signal se supperpose à d'autres signaux                                                             |
-| signal_start_frequency                |                    int                    | Fréquence au début du signal (en Hz)                                                                      |
-| signal_end_frequency                  |                    int                    | Fréquence à la fin du signal (en Hz)                                                                      |
-| signal_relative_max_frequency_count   |                    int                    | Nombre de maxima relatifs                                                                                 |
-| signal_relative_min_frequency_count   |                    int                    | Nombre de minima relatifs                                                                                 |
-| signal_steps_count                    |                    int                    | Nombre d'étapes dans le signal                                                                            |
-| signal_has_harmonics                  |                  boolean                  | Si le signal contient des harmoniques                                                                     |
-| signal_trend                          | FLAT / ASCENDING / DESCENDING / MODULATED | Tendance générale du signal                                                                               |
-| signal_sidebands                      |                  boolean                  | Si le signal présente des bandes latérales                                                                |
-| signal_subharmonics                   |                  boolean                  | Si le signal présente des sous-harmoniques                                                                |
-| signal_frequency_jumps                |               boolean / int               | Si le signal présente des sauts en fréquences, si oui il peut contenir le nombre de sauts                 |
-| signal_deterministic_chaos            |                  boolean                  | Si le signal présente un chaos déterministique                                                            |
+| Colonne                             |                   Type                    | Description                                                                                               |
+|-------------------------------------|:-----------------------------------------:|-----------------------------------------------------------------------------------------------------------|
+| dataset                             |                  string                   | Nom du dataset.                                                                                           |
+| filename                            |                  string                   | Nom du fichier.                                                                                           |
+| annotation_id                       |                    int                    | ID de l'annotation                                                                                        |
+| is_update_of_id                     |                    int                    | Si cette annotation est une mise à jour/correction d'une autre, il s'agit de l'ID de l'annotation de base |
+| start_time                          |                   float                   | Début relatif de l'annotation                                                                             |
+| end_time                            |                   float                   | Fin relative de l'annotation                                                                              |
+| min_frequency                       |                    int                    | Fréquence minimum de l'annotation                                                                         |
+| max_frequency                       |                    int                    | Fréquence maximum de l'annotation                                                                         |
+| label                               |                  string                   | Label de l'annotation                                                                                     |
+| annotator                           |                  string                   | Auteur de l'annotation ou du commentaire                                                                  |
+| annotator_expertise                 |         NOVICE / AVERAGE / EXPERT         | Niveau d'expertise de l'annotateur au moment où l'annotation a été effectuée                              |
+| start_datetime                      |                 timestamp                 | Début absolu de l'annotation                                                                              |
+| end_datetime                        |                 timestamp                 | Fin absolue de l'annotation                                                                               |
+| type                                |            WEAK / POINT / BOX             | Type d'annotation                                                                                         |
+| confidence_indicator_label          |                  string                   | Nom du niveau de confiance (le cas échéant)                                                               |
+| confidence_indicator_level          |                [int]/[int]                | Niveau de confiance par rapport au niveau maximal disponible (le cas échéant)                             |
+| comments                            |                  string                   | Commentaire laissé par l'annotateur.                                                                      |
+| created_at_phase                    |         ANNOTATION / VERIFICATION         | Phase sur laquelle l'annotation a été créée                                                               |
+| signal_quantity                     |             SINGLE / MULTIPLE             | La quantité de signaux contenus dans la boîte. Si "MULTIPLE", aucun des paramètres suivant ne sera rempli |
+| signal_is_intensity_too_low         |                  boolean                  | Si l'intensité du signal est trop faible pour correctement remplir les paramètres acoustiques             |
+| signal_does_overlap_other_signals   |                  boolean                  | Si le signal se supperpose à d'autres signaux                                                             |
+| signal_start_frequency              |                    int                    | Fréquence au début du signal (en Hz)                                                                      |
+| signal_end_frequency                |                    int                    | Fréquence à la fin du signal (en Hz)                                                                      |
+| signal_relative_max_frequency_count |                    int                    | Nombre de maxima relatifs                                                                                 |
+| signal_relative_min_frequency_count |                    int                    | Nombre de minima relatifs                                                                                 |
+| signal_steps_count                  |                    int                    | Nombre d'étapes dans le signal                                                                            |
+| signal_has_harmonics                |                  boolean                  | Si le signal contient des harmoniques                                                                     |
+| signal_trend                        | FLAT / ASCENDING / DESCENDING / MODULATED | Tendance générale du signal                                                                               |
+| signal_sidebands                    |                  boolean                  | Si le signal présente des bandes latérales                                                                |
+| signal_subharmonics                 |                  boolean                  | Si le signal présente des sous-harmoniques                                                                |
+| signal_frequency_jumps              |               boolean / int               | Si le signal présente des sauts en fréquences, si oui il peut contenir le nombre de sauts                 |
+| signal_deterministic_chaos          |                  boolean                  | Si le signal présente un chaos déterministique                                                            |
 
 ### Status
 

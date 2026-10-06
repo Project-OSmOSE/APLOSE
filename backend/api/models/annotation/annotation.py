@@ -117,22 +117,22 @@ class Annotation(models.Model):
                         type="W",
                         start_time__isnull=True,
                         end_time__isnull=True,
-                        start_frequency__isnull=True,
-                        end_frequency__isnull=True,
+                        min_frequency__isnull=True,
+                        max_frequency__isnull=True,
                     )
                     | models.Q(
                         type="P",
                         start_time__isnull=False,
                         end_time__isnull=True,
-                        start_frequency__isnull=False,
-                        end_frequency__isnull=True,
+                        min_frequency__isnull=False,
+                        max_frequency__isnull=True,
                     )
                     | models.Q(
                         type="B",
                         start_time__isnull=False,
                         end_time__isnull=False,
-                        start_frequency__isnull=False,
-                        end_frequency__isnull=False,
+                        min_frequency__isnull=False,
+                        max_frequency__isnull=False,
                     )
                 ),
             ),
@@ -144,8 +144,8 @@ class Annotation(models.Model):
     )
     start_time = models.FloatField(null=True, blank=True)
     end_time = models.FloatField(null=True, blank=True)
-    start_frequency = models.FloatField(null=True, blank=True)
-    end_frequency = models.FloatField(null=True, blank=True)
+    min_frequency = models.FloatField(null=True, blank=True)
+    max_frequency = models.FloatField(null=True, blank=True)
 
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
     confidence = models.ForeignKey(

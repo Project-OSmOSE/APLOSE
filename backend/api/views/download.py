@@ -43,16 +43,13 @@ REPORT_HEADERS = [  # headers
     "is_update_of_id",
     "start_time",
     "end_time",
-    "start_frequency",  # Legacy
-    "end_frequency",  # Legacy
     "min_frequency",
     "max_frequency",
-    "annotation",
+    "label",
     "annotator",
     "annotator_expertise",
     "start_datetime",
     "end_datetime",
-    "is_box",  # Legacy
     "type",
     "confidence_indicator_label",
     "confidence_indicator_level",
@@ -104,11 +101,6 @@ def _get_annotations_for_report(
         When(type=Annotation.Type.BOX, then=Value("BOX")),
         default=None,
         output_field=models.CharField(),
-    )
-    is_box_query = Case(
-        When(type=Annotation.Type.WEAK, then=Value(0)),
-        default=Value(1),
-        output_field=models.IntegerField(),
     )
     max_confidence = (
         max(
@@ -208,9 +200,8 @@ def _get_annotations_for_report(
         .annotate(
             dataset=Value(phase.annotation_campaign.dataset.name),
             filename=F("spectrogram__filename"),
-            annotation=F("label__name"),
+            label=F("label__name"),
             annotator_expertise=expertise_query,
-            is_box=is_box_query,
             type_label=type_query,
             confidence_indicator_label=F("confidence__label"),
             confidence_indicator_level=confidence_level_query,
@@ -287,8 +278,6 @@ def _get_annotations_for_report(
                     "comments",
                     "start_time",
                     "end_time",
-                    "start_frequency",
-                    "end_frequency",
                     "type",
                 )
             ],
@@ -325,8 +314,6 @@ def _get_annotations_for_report(
                 default=F("_end_time"),
                 output_field=models.FloatField(),
             ),
-            start_frequency=F("min_frequency"),
-            end_frequency=F("max_frequency"),
             type=F("type_label"),
         )
     )

@@ -9,13 +9,14 @@ from backend.api.models import Annotation
 class AnnotationAdmin(ExtendedModelAdmin):
     """Annotation presentation in DjangoAdmin"""
 
+    # pylint: disable=duplicate-code
     list_display = (
         "id",
         "type",
         "start_time",
         "end_time",
-        "start_frequency",
-        "end_frequency",
+        "min_frequency",
+        "max_frequency",
         "label",
         "confidence",
         "annotation_phase",

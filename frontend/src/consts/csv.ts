@@ -9,14 +9,15 @@ export const MIME_TYPES: { [key in FileType]: string } = {
 export const ACCEPT_CSV_SEPARATOR = ',';
 export const IMPORT_ANNOTATIONS_COLUMNS = {
     required: [
-        'start_frequency' as const,
-        'end_frequency' as const,
+        'min_frequency' as const,
+        'max_frequency' as const,
         'start_datetime' as const,
         'end_datetime' as const,
-        'annotation' as const,
-        'annotator' as const,
+        'label' as const,
+        'detector' as const,
     ],
     optional: [
+        'detector_configuration' as const,
         'confidence_indicator_label' as const,
         'confidence_indicator_level' as const,
     ],

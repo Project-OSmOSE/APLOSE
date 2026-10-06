@@ -26,8 +26,8 @@ presence_result = {
     "confidence": "confident",
     "start_time": None,
     "end_time": None,
-    "start_frequency": None,
-    "end_frequency": None,
+    "min_frequency": None,
+    "max_frequency": None,
     "detector_configuration": None,
     "validations": [],
     "comments": [],
@@ -38,8 +38,8 @@ box_result = {
     "confidence": "confident",
     "start_time": 0.0,
     "end_time": 10.0,
-    "start_frequency": 5.0,
-    "end_frequency": 25.0,
+    "min_frequency": 5.0,
+    "max_frequency": 25.0,
     "detector_configuration": None,
     "validations": [],
     "comments": [],
@@ -112,15 +112,15 @@ class CreateTestCase(TestCase):
                 **presence_result,
                 "start_time": 9 * 60,
                 "end_time": 7 * 60,
-                "start_frequency": 200,
-                "end_frequency": 100,
+                "min_frequency": 200,
+                "max_frequency": 100,
             }
         )
         self.assertTrue(serializer.is_valid(raise_exception=True))
         self.assertEqual(serializer.data["start_time"], 7 * 60)
         self.assertEqual(serializer.data["end_time"], 9 * 60)
-        self.assertEqual(serializer.data["start_frequency"], 100)
-        self.assertEqual(serializer.data["end_frequency"], 200)
+        self.assertEqual(serializer.data["min_frequency"], 100)
+        self.assertEqual(serializer.data["max_frequency"], 200)
 
     # Errors
     def test_required(self):
@@ -134,8 +134,8 @@ class CreateTestCase(TestCase):
             {
                 "start_time": None,
                 "end_time": None,
-                "start_frequency": None,
-                "end_frequency": None,
+                "min_frequency": None,
+                "max_frequency": None,
                 "annotator": None,
                 "detector_configuration": None,
                 "label": None,
@@ -182,15 +182,16 @@ class CreateTestCase(TestCase):
                 **presence_result,
                 "start_time": -1,
                 "end_time": -1,
-                "start_frequency": -1,
-                "end_frequency": -1,
+                "min_frequency": -1,
+                "max_frequency": -1,
             }
         )
         self.assertFalse(serializer.is_valid(raise_exception=False))
+        print(serializer.errors)
         self.assertEqual(serializer.errors["start_time"][0].code, "min_value")
         self.assertEqual(serializer.errors["end_time"][0].code, "min_value")
-        self.assertEqual(serializer.errors["start_frequency"][0].code, "min_value")
-        self.assertEqual(serializer.errors["start_frequency"][0].code, "min_value")
+        self.assertEqual(serializer.errors["min_frequency"][0].code, "min_value")
+        self.assertEqual(serializer.errors["min_frequency"][0].code, "min_value")
 
     def test_max_value(self):
         serializer = self._get_serializer(
@@ -198,15 +199,15 @@ class CreateTestCase(TestCase):
                 **presence_result,
                 "start_time": 16 * 60,
                 "end_time": 17 * 60,
-                "start_frequency": 130_000,
-                "end_frequency": 140_000,
+                "min_frequency": 130_000,
+                "max_frequency": 140_000,
             }
         )
         self.assertFalse(serializer.is_valid(raise_exception=False))
         self.assertEqual(serializer.errors["start_time"][0].code, "max_value")
         self.assertEqual(serializer.errors["end_time"][0].code, "max_value")
-        self.assertEqual(serializer.errors["start_frequency"][0].code, "max_value")
-        self.assertEqual(serializer.errors["start_frequency"][0].code, "max_value")
+        self.assertEqual(serializer.errors["min_frequency"][0].code, "max_value")
+        self.assertEqual(serializer.errors["min_frequency"][0].code, "max_value")
 
 
 @freeze_time("2012-01-14 00:00:00")
@@ -227,8 +228,8 @@ class UpdateTestCase(CreateTestCase):
             confidence=phase.annotation_campaign.confidence_set.confidence_indicators.first(),
             start_time=1,
             end_time=9,
-            start_frequency=10,
-            end_frequency=15,
+            min_frequency=10,
+            max_frequency=15,
             acoustic_features=features_instance,
         )
 
@@ -289,16 +290,16 @@ class UpdateTestCase(CreateTestCase):
                 **presence_result,
                 "start_time": 9,
                 "end_time": 7,
-                "start_frequency": 200,
-                "end_frequency": 100,
+                "min_frequency": 200,
+                "max_frequency": 100,
             }
         )
         self.assertTrue(serializer.is_valid(raise_exception=True))
         serializer.save()
         self.assertEqual(serializer.instance.start_time, 7)
         self.assertEqual(serializer.instance.end_time, 9)
-        self.assertEqual(serializer.instance.start_frequency, 100)
-        self.assertEqual(serializer.instance.end_frequency, 200)
+        self.assertEqual(serializer.instance.min_frequency, 100)
+        self.assertEqual(serializer.instance.max_frequency, 200)
 
 
 @freeze_time("2012-01-14 00:00:00")
@@ -314,8 +315,8 @@ class CreateUpdateOfResultTestCase(TestCase):
                 "confidence": "confident",
                 "start_time": 0.0,
                 "end_time": 20.0,
-                "start_frequency": 6.0,
-                "end_frequency": 12.0,
+                "min_frequency": 6.0,
+                "max_frequency": 12.0,
                 "detector_configuration": None,
                 "validations": [],
                 "comments": [],

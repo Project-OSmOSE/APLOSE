@@ -26,9 +26,9 @@ export const useDrawTempAnnotation = () => {
         context.strokeStyle = 'blue';
         context.strokeRect(
             timeScale.valueToPosition(Math.min(tempAnnotation.startTime!, tempAnnotation.endTime!)),
-            frequencyScale.valueToPosition(Math.max(tempAnnotation.startFrequency!, tempAnnotation.endFrequency!)),
+            frequencyScale.valueToPosition(Math.max(tempAnnotation.minFrequency!, tempAnnotation.maxFrequency!)),
             Math.floor(timeScale.valuesToPositionRange(tempAnnotation.startTime!, tempAnnotation.endTime!)),
-            frequencyScale.valuesToPositionRange(tempAnnotation.startFrequency!, tempAnnotation.endFrequency!),
+            frequencyScale.valuesToPositionRange(tempAnnotation.minFrequency!, tempAnnotation.maxFrequency!),
         );
     }, [ tempAnnotation, timeScale, frequencyScale ])
 }
@@ -60,8 +60,8 @@ export const useTempAnnotationsEvents = () => {
             type: AnnotationType.Box,
             startTime: data.time,
             endTime: data.time,
-            startFrequency: data.frequency,
-            endFrequency: data.frequency,
+            minFrequency: data.frequency,
+            maxFrequency: data.frequency,
         }))
     }, [ isHoverCanvas, getFreqTime, isDrawingEnabled, dispatch ])
     useRegisterToEvent(MOUSE_DOWN_EVENT, onStartTempAnnotation);
@@ -75,7 +75,7 @@ export const useTempAnnotationsEvents = () => {
                 dispatch(setTempAnnotation({
                     ...tempAnnotation,
                     endTime: data.time,
-                    endFrequency: data.frequency,
+                    maxFrequency: data.frequency,
                 }))
             }
         }
@@ -89,23 +89,23 @@ export const useTempAnnotationsEvents = () => {
             const data = getFreqTime(e);
             if (data) {
                 annotation.endTime = data.time;
-                annotation.endFrequency = data.frequency;
+                annotation.maxFrequency = data.frequency;
             }
             if (annotation.type !== AnnotationType.Box) return;
             const start_time = Math.min(annotation.startTime!, annotation.endTime!);
             const end_time = Math.max(annotation.startTime!, annotation.endTime!);
-            const start_frequency = Math.min(annotation.startFrequency!, annotation.endFrequency!);
-            const end_frequency = Math.max(annotation.startFrequency!, annotation.endFrequency!);
+            const minFrequency = Math.min(annotation.minFrequency!, annotation.maxFrequency!);
+            const maxFrequency = Math.max(annotation.minFrequency!, annotation.maxFrequency!);
             annotation.startTime = start_time;
             annotation.endTime = end_time;
-            annotation.startFrequency = start_frequency;
-            annotation.endFrequency = end_frequency;
+            annotation.minFrequency = minFrequency;
+            annotation.maxFrequency = maxFrequency;
 
-            if (!frequencyScale.isRangeContinuouslyOnScale(start_frequency, end_frequency)) {
+            if (!frequencyScale.isRangeContinuouslyOnScale(minFrequency, maxFrequency)) {
                 toastManager.add({
                     title: 'Frequency void overlap',
                     description: `Be careful, your annotation overlaps a void in the frequency scale.
-         Check your annotation really goes from ${ start_frequency.toFixed(0) }Hz to ${ end_frequency.toFixed(0) }Hz.`,
+         Check your annotation really goes from ${ minFrequency.toFixed(0) }Hz to ${ maxFrequency.toFixed(0) }Hz.`,
                     type: 'warning',
                 })
             }
@@ -118,14 +118,14 @@ export const useTempAnnotationsEvents = () => {
                 })
             }
             const width = timeScale.valuesToPositionRange(annotation.startTime, annotation.endTime);
-            const height = frequencyScale.valuesToPositionRange(annotation.startFrequency, annotation.endFrequency);
+            const height = frequencyScale.valuesToPositionRange(annotation.minFrequency, annotation.maxFrequency);
             if (width > 2 && height > 2) {
                 addAnnotation({
                     type: AnnotationType.Box,
                     startTime: annotation.startTime,
-                    startFrequency: annotation.startFrequency,
+                    minFrequency: annotation.minFrequency,
                     endTime: annotation.endTime,
-                    endFrequency: annotation.endFrequency,
+                    maxFrequency: annotation.maxFrequency,
                     label: focusedLabel,
                     confidence: defaultConfidence ?? focusedConfidence ?? undefined,
                 })
@@ -133,7 +133,7 @@ export const useTempAnnotationsEvents = () => {
                 addAnnotation({
                     type: AnnotationType.Point,
                     startTime: annotation.startTime,
-                    startFrequency: annotation.endFrequency,
+                    minFrequency: annotation.maxFrequency,
                     label: focusedLabel,
                     confidence: defaultConfidence ?? focusedConfidence ?? undefined,
                 })

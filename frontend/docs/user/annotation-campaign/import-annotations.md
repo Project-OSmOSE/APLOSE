@@ -33,18 +33,18 @@ If your campaign has more than one analysis, you must select the analysis on whi
 You can either click on the "Import annotation" zone or drag a file in it. The file should be a csv with the following
 columns:
 
-| Column                     |          Type          | Description                                                                                                       |
-|----------------------------|:----------------------:|-------------------------------------------------------------------------------------------------------------------|
-| dataset                    |         string         | Name of the dataset. If it doesn't correspond to the campaign dataset, you will have the choice to keep it or not |
-| start_datetime             |       timestamp        | Start of the annotation                                                                                           |
-| end_datetime               |       timestamp        | End of the annotation                                                                                             |
-| start_frequency            |          int           | Lower frequency of the annotation                                                                                 |
-| end_frequency              |          int           | Higher frequency of the annotation                                                                                |
-| annotation                 |         string         | Label of the annotation                                                                                           |
-| annotator                  |         string         | Detector or annotator that created the annotation                                                                 |
-| is_box                     |        boolean         | Either the annotation is a box or a weak annotation                                                               |
-| confidence_indicator_label |         string         | The name of the level of confidence (if exists)                                                                   |
-| confidence_indicator_level | string<br/>[int]/[int] | The level of confidence on the maximum level available (if exists)                                                |
+| Column                     |   Type    | Description                                                                                                       |
+|----------------------------|:---------:|-------------------------------------------------------------------------------------------------------------------|
+| dataset                    |  string   | Name of the dataset. If it doesn't correspond to the campaign dataset, you will have the choice to keep it or not |
+| start_datetime             | timestamp | Absolute start of the annotation                                                                                  |
+| end_datetime               | timestamp | Absolute end of the annotation                                                                                    |
+| min_frequency              |    int    | Lower frequency of the annotation                                                                                 |
+| max_frequency              |    int    | Higher frequency of the annotation                                                                                |
+| label                      |  string   | Label of the annotation                                                                                           |
+| detector                   |  string   | Detector that created the annotation                                                                              |
+| detector_configuration     |  string   | Configuration of the detector that created the annotation                                                         |
+| confidence_indicator_label |  string   | The name of the level of confidence (if exists)                                                                   |
+| confidence_indicator_level |    int    | The level of confidence on the maximum level available (if exists)                                                |
 
 In the case of weak annotations, start/end datetime and start/end frequency should be the ones of the file.
 
