@@ -35,16 +35,12 @@ export const ImportFileFormBloc: React.FC<ImportFileFormBlocProps> = ({
     const handleInput = useCallback(async (file: File) => {
         setIsLoading(true)
         let rows, headers;
-        console.debug('handleInput', file.name)
 
         try {
             const data = await spreadsheetHandler.loadFile(file)
             rows = data.rows;
             headers = data.headers;
-            console.debug('handleInput', rows.length, JSON.stringify(headers))
         } catch (error) {
-            console.debug('handleInput', error)
-            console.debug('handleInput', JSON.stringify(error))
             toastManager.add({
                 type: 'danger', title: 'Fail reading file',
                 description: getErrorMessage(error),
@@ -58,7 +54,6 @@ export const ImportFileFormBloc: React.FC<ImportFileFormBlocProps> = ({
             if (!headers.includes(column)) missingColumns.push(column);
         }
         if (missingColumns.length > 0) {
-            console.debug('handleInput miss', JSON.stringify(missingColumns))
             toastManager.add({
                 type: 'danger', title: 'Fail reading file',
                 description: `Missing columns: ${ missingColumns.join(', ') }`,

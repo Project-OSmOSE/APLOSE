@@ -95,7 +95,6 @@ function downloadFile(filename: string, type: string, blob: Blob) {
 
 export async function downloadResponseHandler(response: Response, filename?: string) {
     // TODO: reject errors correctly (catchable) - like a standard API error
-    console.debug(response.headers)
     if (response.status !== 200) return `[${ response.status }] ${ response.statusText }`;
     const type = response.headers.get('content-type')
     if (!type) throw new Error('No file type provided')

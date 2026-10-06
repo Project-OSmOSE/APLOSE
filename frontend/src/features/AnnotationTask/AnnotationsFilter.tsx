@@ -89,7 +89,6 @@ export const AnnotationsFilterModal: React.FC = () => {
     }, [ update, labels, tmpWithAnnotations, confidences, formRef ])
 
     const onReset = useCallback((event: BaseUIEvent<FormEvent<HTMLFormElement>>) => {
-        console.debug('onReset!!!')
         event.preventDefault();
         update({
             withAnnotations: undefined,

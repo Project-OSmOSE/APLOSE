@@ -100,7 +100,6 @@ export const ZoomRoot: React.FC<Props> = ({ children, campaign, analysis }) => {
     }, [ zoomLevel ])
 
     const zoomIn = useCallback((origin?: TimeFreqPosition) => {
-        console.debug('zoomIn', origin)
         if (zoomInLevel === null) return;
         signal.emit({
             level: zoomInLevel,
