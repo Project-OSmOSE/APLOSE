@@ -32,4 +32,6 @@ class ConfidenceSetAdmin(ExtendedModelAdmin):
     @admin.display(description="Usages")
     def get_usages(self, confidence_set: ConfidenceSet):
         """Get indicators"""
-        return self.list_queryset(confidence_set.annotationcampaign_set.all(), allow_edit=True)
+        return self.list_queryset(
+            confidence_set.annotationcampaign_set.all(), allow_edit=True
+        )
