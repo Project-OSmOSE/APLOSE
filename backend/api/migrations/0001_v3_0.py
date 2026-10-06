@@ -1224,7 +1224,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="spectrogramanalysis",
             constraint=models.CheckConstraint(
-                check=models.Q(
+                condition=models.Q(
                     ("legacy", True),
                     models.Q(("data_duration__isnull", False), ("legacy", False)),
                     _connector="OR",
@@ -1235,14 +1235,14 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="spectrogram",
             constraint=models.CheckConstraint(
-                check=models.Q(("start__lt", django.db.models.expressions.F("end"))),
+                condition=models.Q(("start__lt", django.db.models.expressions.F("end"))),
                 name="start is lower than end",
             ),
         ),
         migrations.AddConstraint(
             model_name="legacyspectrogramconfiguration",
             constraint=models.CheckConstraint(
-                check=models.Q(
+                condition=models.Q(
                     models.Q(
                         ("linear_frequency_scale__isnull", True),
                         ("multi_linear_frequency_scale__isnull", False),
@@ -1302,7 +1302,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="annotation",
             constraint=models.CheckConstraint(
-                check=models.Q(
+                condition=models.Q(
                     models.Q(
                         ("annotator__isnull", True),
                         ("detector_configuration__isnull", False),
@@ -1319,7 +1319,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="annotation",
             constraint=models.CheckConstraint(
-                check=models.Q(
+                condition=models.Q(
                     models.Q(
                         ("end_frequency__isnull", True),
                         ("end_time__isnull", True),

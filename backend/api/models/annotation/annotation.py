@@ -101,7 +101,7 @@ class Annotation(models.Model):
         constraints = [
             models.CheckConstraint(
                 name="require_user_or_detector",
-                check=(
+                condition=(
                     models.Q(
                         annotator__isnull=True, detector_configuration__isnull=False
                     )
@@ -112,7 +112,7 @@ class Annotation(models.Model):
             ),
             models.CheckConstraint(
                 name="Annotation type",
-                check=(
+                condition=(
                     models.Q(
                         type="W",
                         start_time__isnull=True,

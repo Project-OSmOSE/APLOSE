@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="annotationcampaign",
             constraint=models.CheckConstraint(
-                check=models.Q(
+                condition=models.Q(
                     models.Q(
                         ("archived", True),
                         ("archived_at__isnull", False),
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="annotationphase",
             constraint=models.CheckConstraint(
-                check=models.Q(
+                condition=models.Q(
                     models.Q(
                         ("archived", True),
                         ("archived_at__isnull", False),
@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="dataset",
             constraint=models.CheckConstraint(
-                check=models.Q(
+                condition=models.Q(
                     models.Q(
                         ("archived", True),
                         ("archived_at__isnull", False),

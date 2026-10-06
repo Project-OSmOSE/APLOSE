@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="annotation",
             constraint=models.CheckConstraint(
-                check=models.Q(
+                condition=models.Q(
                     models.Q(
                         ("end_time__isnull", True),
                         ("max_frequency__isnull", True),

@@ -60,7 +60,7 @@ class AnnotationPhase(AbstractArchivable, models.Model):
         constraints = [
             CheckConstraint(
                 name="phase_archive_info",
-                check=Q(
+                condition=Q(
                     archived=True, archived_at__isnull=False, archived_by__isnull=False
                 )
                 | Q(archived=False, archived_at__isnull=True, archived_by__isnull=True),
