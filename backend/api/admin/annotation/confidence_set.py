@@ -20,6 +20,7 @@ class ConfidenceSetAdmin(ExtendedModelAdmin):
         "name",
         "desc",
         "get_indicators",
+        "get_usages",
     )
     inlines = (ConfidenceRelationInline,)
 
@@ -27,3 +28,10 @@ class ConfidenceSetAdmin(ExtendedModelAdmin):
     def get_indicators(self, confidence_set: ConfidenceSet):
         """Get indicators"""
         return self.list_queryset(confidence_set.confidence_indicators.all())
+
+    @admin.display(description="Usages")
+    def get_usages(self, confidence_set: ConfidenceSet):
+        """Get indicators"""
+        return self.list_queryset(
+            confidence_set.annotationcampaign_set.all(), allow_edit=True
+        )
