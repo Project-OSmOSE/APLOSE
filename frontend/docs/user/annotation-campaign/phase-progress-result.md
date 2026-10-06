@@ -52,14 +52,13 @@ A table containing all annotations and comments left by the campaign annotators.
 | is_update_of_id                       |                    int                    | In the case this annotation is an update/correction of an other, this is the ID of the base annotation |
 | start_time                            |                   float                   | Relative start of the annotation                                                                       |
 | end_time                              |                   float                   | Relative end of the annotation                                                                         |
-| ~~start_frequency~~<br/>min_frequency |                    int                    | Lower frequency of the annotation                                                                      |
-| ~~end_frequency~~<br/>max_frequency   |                    int                    | Higher frequency of the annotation                                                                     |
+| min_frequency                         |                    int                    | Lower frequency of the annotation                                                                      |
+| max_frequency                         |                    int                    | Higher frequency of the annotation                                                                     |
 | annotation                            |                  string                   | Label of the annotation                                                                                |
 | annotator                             |                  string                   | Author of the annotation or comment                                                                    |
 | annotator_expertise                   |         NOVICE / AVERAGE / EXPERT         | Expertise level of the annotator at the time the annotation was made                                   |
 | start_datetime                        |                 timestamp                 | Absolute start of the annotation                                                                       |
 | end_datetime                          |                 timestamp                 | Absolute end of the annotation                                                                         |
-| ~~is_box~~                            |                ~~boolean~~                | ~~Either the annotation is a box or a weak annotation~~                                                |
 | type                                  |            WEAK / POINT / BOX             | Type of the annotation                                                                                 |
 | confidence_indicator_label            |                  string                   | The name of the level of confidence (if exists)                                                        |
 | confidence_indicator_level            |          string<br/>[int]/[int]           | The level of confidence on the maximum level available (if exists)                                     |
