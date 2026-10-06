@@ -54,7 +54,7 @@ Tableau contenant toutes les annotations et tous les commentaires laissés par l
 | end_time                            |                   float                   | Fin relative de l'annotation                                                                              |
 | min_frequency                       |                    int                    | Fréquence minimum de l'annotation                                                                         |
 | max_frequency                       |                    int                    | Fréquence maximum de l'annotation                                                                         |
-| annotation                          |                  string                   | Label de l'annotation                                                                                     |
+| label                               |                  string                   | Label de l'annotation                                                                                     |
 | annotator                           |                  string                   | Auteur de l'annotation ou du commentaire                                                                  |
 | annotator_expertise                 |         NOVICE / AVERAGE / EXPERT         | Niveau d'expertise de l'annotateur au moment où l'annotation a été effectuée                              |
 | start_datetime                      |                 timestamp                 | Début absolu de l'annotation                                                                              |

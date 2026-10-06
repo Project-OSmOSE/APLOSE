@@ -45,7 +45,7 @@ REPORT_HEADERS = [  # headers
     "end_time",
     "min_frequency",
     "max_frequency",
-    "annotation",
+    "label",
     "annotator",
     "annotator_expertise",
     "start_datetime",
@@ -200,7 +200,7 @@ def _get_annotations_for_report(
         .annotate(
             dataset=Value(phase.annotation_campaign.dataset.name),
             filename=F("spectrogram__filename"),
-            annotation=F("label__name"),
+            label=F("label__name"),
             annotator_expertise=expertise_query,
             type_label=type_query,
             confidence_indicator_label=F("confidence__label"),
