@@ -84,7 +84,7 @@ class AnnotationPhaseNode(AbstractPermissionNode, ExtendedNode):
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_has_file_range_change_permission(
-            self: AnnotationPhase, info: GraphQLResolveInfo
+        self: AnnotationPhase, info: GraphQLResolveInfo
     ):
         # pylint: disable=not-callable
         return self.has_file_range_change_permission(info.context.user)

@@ -4,9 +4,9 @@ from django.db import models
 from django.db.models import Q, CheckConstraint
 from django_extension.models import ExtendedEnum, ExtendedQuerySet
 
-from .annotation_file_range import AnnotationFileRange
 from backend.api.models.common.__abstract_archivable import AbstractArchivable
 from backend.aplose.models import User
+from .annotation_file_range import AnnotationFileRange
 
 
 class AnnotationPhaseQuerySet(ExtendedQuerySet):
@@ -102,4 +102,6 @@ class AnnotationPhase(AbstractArchivable, models.Model):
         )
 
     def has_file_range_change_permission(self, user: "User") -> bool:
-        return self.has_change_permission(user) and AnnotationFileRange.has_global_change_permission(user)
+        return self.has_change_permission(
+            user
+        ) and AnnotationFileRange.has_global_change_permission(user)
