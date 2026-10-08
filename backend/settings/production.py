@@ -17,7 +17,7 @@ CSRF_COOKIE_SECURE = True
 # Prod settings
 SECRET_KEY = os.environ["SECRET_KEY"]
 ALLOWED_HOSTS = [os.environ["OSMOSE_HOST"]]
-CSRF_TRUSTED_ORIGINS = [os.environ["OSMOSE_HOST"]]
+CSRF_TRUSTED_ORIGINS = [f"https://{os.environ["OSMOSE_HOST"]}"]
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
