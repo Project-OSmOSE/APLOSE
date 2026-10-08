@@ -45,7 +45,7 @@ jobs:
         uses: actions/configure-pages@v4
       - name: Install dependencies
         working-directory: frontend
-        run: npm ci # or pnpm install / yarn install / bun install
+        run: npm ci --legacy-peer-deps # or pnpm install / yarn install / bun install
       - name: Build with VitePress
         working-directory: frontend
         run: npx vitepress build docs --base "/APLOSE/"
