@@ -22,6 +22,7 @@ class SpectrogramAnalysisRelationAdmin(ExtendedModelAdmin):
     def has_add_permission(self, request: HttpRequest) -> bool:
         return False
 
-    def has_change_permission(self, request: HttpRequest, obj: SpectrogramAnalysisRelation | None = None) -> bool:
+    def has_change_permission(
+        self, request: HttpRequest, obj: SpectrogramAnalysisRelation | None = None
+    ) -> bool:
         return False
-
