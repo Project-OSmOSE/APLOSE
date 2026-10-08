@@ -200,7 +200,7 @@ def _get_annotations_for_report(
         .annotate(
             dataset=Value(phase.annotation_campaign.dataset.name),
             filename=F("spectrogram__filename"),
-            label=F("label__name"),
+            label_name=F("label__name"),
             annotator_expertise=expertise_query,
             type_label=type_query,
             confidence_indicator_label=F("confidence__label"),
@@ -228,20 +228,8 @@ def _get_annotations_for_report(
             signal_deterministic_chaos=F("acoustic_features__has_deterministic_chaos"),
             _start_time=F("start_time"),
             _end_time=F("end_time"),
-            min_frequency=Case(
-                When(type=Annotation.Type.WEAK, then=Value(0.0)),
-                default=F("start_frequency"),
-                output_field=models.FloatField(),
-            ),
-            max_frequency=Case(
-                When(type=Annotation.Type.POINT, then=F("start_frequency")),
-                When(
-                    type=Annotation.Type.WEAK,
-                    then=max_fft / 2,
-                ),
-                default=F("end_frequency"),
-                output_field=models.FloatField(),
-            ),
+            _min_frequency=F("min_frequency"),
+            _max_frequency=F("max_frequency"),
             annotation_id=F("id"),
             created_at_phase=phase_type_query,
         )
@@ -278,7 +266,10 @@ def _get_annotations_for_report(
                     "comments",
                     "start_time",
                     "end_time",
+                    "min_frequency",
+                    "max_frequency",
                     "type",
+                    "label",
                 )
             ],
             "annotator__username",
@@ -286,7 +277,10 @@ def _get_annotations_for_report(
             "validations",
             "_start_time",
             "_end_time",
+            "_min_frequency",
+            "_max_frequency",
             "type_label",
+            "label_name",
         )
         .annotate(
             annotator=Case(
@@ -298,6 +292,7 @@ def _get_annotations_for_report(
                 default=Value(""),
                 output_field=models.CharField(),
             ),
+            label=F("label_name"),
             comments=F("comments_data"),
             start_time=Case(
                 When(type=Annotation.Type.WEAK, then=Value(0.0)),
@@ -312,6 +307,20 @@ def _get_annotations_for_report(
                     - Extract(F("spectrogram__start"), lookup_name="epoch"),
                 ),
                 default=F("_end_time"),
+                output_field=models.FloatField(),
+            ),
+            min_frequency=Case(
+                When(type=Annotation.Type.WEAK, then=Value(0.0)),
+                default=F("_min_frequency"),
+                output_field=models.FloatField(),
+            ),
+            max_frequency=Case(
+                When(type=Annotation.Type.POINT, then=F("_min_frequency")),
+                When(
+                    type=Annotation.Type.WEAK,
+                    then=max_fft / 2,
+                ),
+                default=F("_max_frequency"),
                 output_field=models.FloatField(),
             ),
             type=F("type_label"),
