@@ -113,10 +113,6 @@ TIME_ZONE = "UTC"
 
 USE_I18N = True
 
-USE_L10N = True
-
-USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -193,4 +189,11 @@ GRAPHENE = {
     "SCHEMA": "backend.schema.schema",
     "MIDDLEWARE": ["graphene_django.debug.middleware.DjangoDebugMiddleware"],
     "TESTING_ENDPOINT": "/api/graphql/public",
+}
+
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    },
 }

@@ -23,7 +23,7 @@ class SpectrogramAnalysis(AbstractAnalysis, models.Model):
         constraints = [
             CheckConstraint(
                 name="spectrogram_analysis_legacy",
-                check=Q(legacy=True) | Q(legacy=False, data_duration__isnull=False),
+                condition=Q(legacy=True) | Q(legacy=False, data_duration__isnull=False),
             )
         ]
         ordering = ("-created_at",)

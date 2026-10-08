@@ -27,14 +27,20 @@ class ModelResolver(OSEkitResolver):
     ) -> list[SpectrogramAnalysis | FailedItem]:
         analysis = []
 
-        for a in dataset.spectrogram_analysis.all():
-            if exists(join(dataset.path, a.path)):
-                analysis.append(a)
+        if dataset.pk:
+            # Not initialized datasets has neither pk nor spectrogram_analysis relations
+            for a in dataset.spectrogram_analysis.all():
+                if exists(join(dataset.path, a.path)):
+                    analysis.append(a)
 
         for a in super()._get_all_analysis_for_dataset(
             dataset=dataset, detailed=detailed
         ):
-            if not dataset.spectrogram_analysis.filter(path=a.path).exists():
+            if (
+                not dataset.pk
+                or not dataset.spectrogram_analysis.filter(path=a.path).exists()
+            ):
+                # Not initialized datasets has neither pk nor spectrogram_analysis relations
                 analysis.append(a)
 
         return analysis
@@ -42,7 +48,10 @@ class ModelResolver(OSEkitResolver):
     def _get_analysis(
         self, dataset: Dataset, relative_path: str, detailed: bool = False
     ) -> SpectrogramAnalysis | FailedItem:
-        if dataset.spectrogram_analysis.filter(path=relative_path).exists():
+        if (
+            dataset.pk
+            and dataset.spectrogram_analysis.filter(path=relative_path).exists()
+        ):
             return dataset.spectrogram_analysis.get(path=relative_path)
         return super()._get_analysis(
             dataset=dataset, relative_path=relative_path, detailed=detailed

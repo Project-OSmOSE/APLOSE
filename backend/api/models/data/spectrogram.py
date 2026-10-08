@@ -47,7 +47,7 @@ class Spectrogram(AbstractFile, TimeSegment, models.Model):
         ordering = ("start", "id")
         constraints = [
             models.CheckConstraint(
-                name="start is lower than end", check=Q(start__lt=F("end"))
+                name="start is lower than end", condition=Q(start__lt=F("end"))
             )
         ]
 

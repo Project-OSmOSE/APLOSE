@@ -16,6 +16,10 @@ SECRET_KEY = "(7ez_3daj2vkxl+pq8fbk8cav8$y4wrs!(!x(q!ec01iq2k7gl"
 DEBUG = True
 
 ALLOWED_HOSTS = []
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://localhost:5173",
+]
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
