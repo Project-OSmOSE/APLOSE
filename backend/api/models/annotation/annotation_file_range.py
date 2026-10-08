@@ -8,6 +8,7 @@ from django_extension.models import ExtendedQuerySet
 
 from backend.aplose.models import User
 from .annotation_task import AnnotationTask
+from ..common.__abstract_permission import AbstractPermission
 from ..data import Spectrogram
 
 
@@ -63,7 +64,7 @@ class AnnotationFileRangeQuerySet(ExtendedQuerySet):
         )
 
 
-class AnnotationFileRange(models.Model):
+class AnnotationFileRange(AbstractPermission, models.Model):
     """Gives a range of files to annotate by an annotator within a campaign"""
 
     objects = models.Manager.from_queryset(AnnotationFileRangeQuerySet)()

@@ -27,7 +27,8 @@ export const PHASE_QUERIES: {
         userTasksCount,
         archived: phase.archived,
         hasAnnotations: phase.hasAnnotations,
-        hasChangePermission: true
+        hasChangePermission: true,
+        hasFileRangeChangePermission: true,
       },
     },
     managerVerification: {
@@ -41,6 +42,7 @@ export const PHASE_QUERIES: {
         archived: phase.archived,
         hasAnnotations: phase.hasAnnotations,
         hasChangePermission: true,
+        hasFileRangeChangePermission: true,
       },
     },
     Annotation: {
@@ -54,6 +56,7 @@ export const PHASE_QUERIES: {
         archived: phase.archived,
         hasAnnotations: phase.hasAnnotations,
         hasChangePermission: false,
+        hasFileRangeChangePermission: false,
       },
     },
     Verification: {
@@ -67,6 +70,7 @@ export const PHASE_QUERIES: {
         archived: phase.archived,
         hasAnnotations: phase.hasAnnotations,
         hasChangePermission: false,
+        hasFileRangeChangePermission: false,
       },
     },
   },

@@ -2,6 +2,7 @@ import graphene
 import graphene_django_optimizer
 from django.db.models import Sum
 from django_extension.schema.types import ExtendedNode
+from graphql import GraphQLResolveInfo
 
 from backend.api.models import AnnotationPhase, AnnotationTask
 from backend.api.schema.enums import AnnotationPhaseType
@@ -78,3 +79,12 @@ class AnnotationPhaseNode(AbstractPermissionNode, ExtendedNode):
             ).distinct(),
             info,
         )
+
+    has_file_range_change_permission = graphene.Boolean(required=True)
+
+    @graphene_django_optimizer.resolver_hints()
+    def resolve_has_file_range_change_permission(
+        self: AnnotationPhase, info: GraphQLResolveInfo
+    ):
+        # pylint: disable=not-callable
+        return self.has_file_range_change_permission(info.context.user)

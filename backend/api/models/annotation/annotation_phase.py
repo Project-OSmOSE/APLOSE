@@ -6,6 +6,7 @@ from django_extension.models import ExtendedEnum, ExtendedQuerySet
 
 from backend.api.models.common.__abstract_archivable import AbstractArchivable
 from backend.aplose.models import User
+from .annotation_file_range import AnnotationFileRange
 
 
 class AnnotationPhaseQuerySet(ExtendedQuerySet):
@@ -99,3 +100,8 @@ class AnnotationPhase(AbstractArchivable, models.Model):
             or user.id == self.created_by_id
             or user.id == self.annotation_campaign.owner_id
         )
+
+    def has_file_range_change_permission(self, user: "User") -> bool:
+        return self.has_change_permission(
+            user
+        ) and AnnotationFileRange.has_global_change_permission(user)
