@@ -27,8 +27,8 @@ def resolve_paths(root, info, spectrogram_id: int, analysis_id: int):
             spectrogram_id=spectrogram_id,
             analysis_id=analysis_id,
         )
-    except SpectrogramAnalysisRelation.DoesNotExist:
-        raise NotFoundError
+    except SpectrogramAnalysisRelation.DoesNotExist as e:
+        raise NotFoundError from e
 
     resolver = Resolver(join(relation.analysis.dataset.path, relation.analysis.path))
     paths = resolver.get_spectrogram_paths(relation=relation)
