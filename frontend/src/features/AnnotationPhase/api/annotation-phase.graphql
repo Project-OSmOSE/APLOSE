@@ -9,6 +9,7 @@ query getAnnotationPhase(
         id
         phase
         hasChangePermission
+        hasFileRangeChangePermission
         archived
         hasAnnotations
         tasksCount

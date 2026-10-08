@@ -104,7 +104,7 @@ export const FileRangeActionBar: React.FC<{ isPending?: boolean }> = ({ isPendin
                            </Dialog.Root>
                        </div>
 
-                       { phase?.hasChangePermission && <Fragment>
+                       { phase?.hasFileRangeChangePermission && <Fragment>
                            {/* Manage annotators */ }
                            <Popover.Root>
                                <Popover.TriggerLink data-testid="manage"
