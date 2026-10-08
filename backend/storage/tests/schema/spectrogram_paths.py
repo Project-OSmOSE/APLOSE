@@ -5,7 +5,7 @@ from django.conf import settings
 from django.test import override_settings
 from django_extension.tests import ExtendedTestCase
 
-from backend.api.models import Spectrogram, SpectrogramAnalysis
+from backend.api.models import SpectrogramAnalysis
 from backend.aplose.models import User
 from .import_dataset import (
     QUERY as IMPORT_QUERY,
@@ -50,9 +50,7 @@ class SpectrogramPathsTestCase(ExtendedTestCase):
         )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
-        self.assertEqual(
-            content["errors"][0]["message"], "No Spectrogram matches the given query."
-        )
+        self.assertEqual(content["errors"][0]["message"], "Not found")
 
     @override_settings(DATASET_EXPORT_PATH=GOOD, VOLUMES_ROOT=VOLUMES_ROOT)
     def test(self):

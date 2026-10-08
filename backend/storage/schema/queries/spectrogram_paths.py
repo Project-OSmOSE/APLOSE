@@ -1,5 +1,5 @@
 import graphene
-from django.shortcuts import get_object_or_404
+from django_extension.schema.errors import NotFoundError
 from django_extension.schema.permissions import GraphQLResolve, GraphQLPermissions
 
 from backend.api.models import (
@@ -22,11 +22,13 @@ class SpectrogramPathsNode(graphene.ObjectType):
 
 @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
 def resolve_paths(root, info, spectrogram_id: int, analysis_id: int):
-    relation: SpectrogramAnalysisRelation = get_object_or_404(
-        SpectrogramAnalysisRelation,
-        spectrogram_id=spectrogram_id,
-        analysis_id=analysis_id,
-    )
+    try:
+        relation: SpectrogramAnalysisRelation = SpectrogramAnalysisRelation.objects.get(
+            spectrogram_id=spectrogram_id,
+            analysis_id=analysis_id,
+        )
+    except SpectrogramAnalysisRelation.DoesNotExist:
+        raise NotFoundError
 
     resolver = Resolver(join(relation.analysis.dataset.path, relation.analysis.path))
     paths = resolver.get_spectrogram_paths(relation=relation)
