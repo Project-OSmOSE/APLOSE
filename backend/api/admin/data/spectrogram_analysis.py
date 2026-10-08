@@ -14,7 +14,7 @@ def store_paths(analysis: SpectrogramAnalysis):
     # Only process one analysis
 
     relations_to_fill = analysis.spectrogram_relations.filter(
-        spectrogram_path__isnull=False,
+        spectrogram_path__isnull=True,
     )
     if analysis.legacy:
         for relation in relations_to_fill.all():
@@ -84,4 +84,5 @@ class SpectrogramAnalysisAdmin(ExtendedModelAdmin):
         """Store spectrogram and audio paths in database"""
         # Only process one analysis
         analysis = queryset.first()
-        store_paths(analysis=analysis)
+        if analysis is not None:
+            store_paths(analysis=analysis)
