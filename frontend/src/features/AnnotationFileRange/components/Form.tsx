@@ -45,20 +45,19 @@ export const FileRangeForm: React.FC<FileRangeFormProps> = ({
 
     const otherFileRanges = useMemo(() => {
         return allFileRanges.filter(fr => fr.id !== fileRange?.id)
-    }, [allFileRanges, fileRange])
+    }, [ allFileRanges, fileRange ])
 
     const create = useCallback(async () => {
         try {
-            await createMutationAsync({
-                annotatorID: annotator.id,
-                annotatorDisplayName: annotator.displayName,
-                phaseID: phase.id,
-                input: {
-                    firstFileIndex,
-                    lastFileIndex,
-                },
+            const data = await createMutationAsync({
+                firstFileIndex,
+                lastFileIndex,
+                annotator: annotator.id,
+                annotationPhase: phase.id,
             })
-            onSuccess()
+            if (data.createFileRange?.errors?.length) {
+                toast.addGqlError({ errors: data.createFileRange.errors, title: 'Error while creating file range' })
+            } else onSuccess()
         } catch (error) {
             toast.addError({ error, title: 'Error while creating file range' })
         }
@@ -67,16 +66,15 @@ export const FileRangeForm: React.FC<FileRangeFormProps> = ({
     const update = useCallback(async () => {
         if (!fileRange) return
         try {
-            await updateMutationAsync({
-                annotatorID: annotator.id,
-                phaseID: phase.id,
-                input: {
-                    id: fileRange.id,
-                    firstFileIndex,
-                    lastFileIndex,
-                },
+            const data = await updateMutationAsync({
+                id: fileRange.id,
+                firstFileIndex,
+                lastFileIndex,
+                annotationPhase: phase.id,
             })
-            onSuccess()
+            if (data.updateFileRange?.errors?.length) {
+                toast.addGqlError({ errors: data.updateFileRange.errors, title: 'Error while updating file range' })
+            } else onSuccess()
         } catch (error) {
             toast.addError({ error, title: 'Error while updating file range' })
         }
@@ -91,9 +89,9 @@ export const FileRangeForm: React.FC<FileRangeFormProps> = ({
     return <Form onSubmit={ submit } onReset={ onCancel }>
         <div>
             { otherFileRanges && <FileRangeDistribution fileRanges={ otherFileRanges }
-                                     spectrogramsCount={ campaign.spectrogramsCount }
-                                     label="Assigned file ranges"
-                                     color="medium"/> }
+                                                        spectrogramsCount={ campaign.spectrogramsCount }
+                                                        label="Assigned file ranges"
+                                                        color="medium"/> }
             <FileRangeDistribution fileRanges={ [ { firstFileIndex, lastFileIndex } ] }
                                    spectrogramsCount={ campaign.spectrogramsCount }
                                    label="Current range"

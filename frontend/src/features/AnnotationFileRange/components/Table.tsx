@@ -191,7 +191,7 @@ const FileRangeRow: React.FC<FileRangeRowProps> = ({ campaign, phase, fileRanges
         <Dialog.Root open={ isCreateOpen } onOpenChange={ setIsCreateOpen }>
             <Dialog.Portal>
                 <Dialog.Content>
-                    <Dialog.Title>Update { annotator.displayName } file ranges</Dialog.Title>
+                    <Dialog.Title>Add a file range to { annotator.displayName }</Dialog.Title>
                     <Dialog.CloseIcon/>
 
                     <FileRangeForm allFileRanges={ fileRanges }
