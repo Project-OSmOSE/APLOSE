@@ -90,11 +90,14 @@ query getCampaign($id: ID!) {
             labels {
                 id
                 displayName
+                source {
+                    englishName
+                }
             }
         }
         labelsWithAcousticFeatures {
             id
-            name
+            displayName
         }
         owner {
             id

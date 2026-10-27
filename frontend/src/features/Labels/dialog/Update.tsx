@@ -1,14 +1,14 @@
 import React from 'react';
 import { Dialog, Note } from '@/components/base';
-import type { AnnotationLabelFragment } from '../api';
+import { LabelFragment } from "@/features/Mx/Ontology/api";
 import styles from './styles.module.scss';
 
 export type UpdateProps = {
-    availableLabels: AnnotationLabelFragment[];
-    selected?: AnnotationLabelFragment,
-    onSelect: (label: AnnotationLabelFragment) => void;
+    availableLabels: LabelFragment[];
+    selectedID?: string,
+    onSelectID: (id: string) => void;
 }
-export const Update: React.FC<UpdateProps> = ({ availableLabels, selected, onSelect }) => {
+export const Update: React.FC<UpdateProps> = ({ availableLabels, selectedID, onSelectID }) => {
     return <Dialog.Content>
         <Dialog.Title>Update annotation label</Dialog.Title>
         <Dialog.CloseIcon/>
@@ -16,10 +16,10 @@ export const Update: React.FC<UpdateProps> = ({ availableLabels, selected, onSel
 
         <div className={ styles.flexWrap }>
             { availableLabels.map((label, index) => <Dialog.Close key={ label.id }
-                                                                  disabled={ label.name === selected?.name }
+                                                                  disabled={ label.id === selectedID }
                                                                   annotationColorIndex={ index }
-                                                                  onClick={ () => onSelect(label) }>
-                { label.name }
+                                                                  onClick={ () => onSelectID(label.id) }>
+                { label.displayName }
             </Dialog.Close>) }
         </div>
     </Dialog.Content>

@@ -14,8 +14,8 @@ import {
 import { AnnotationType } from '@/api';
 import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
 import { useAppDispatch, useAppSelector } from '@/features/App';
-import { setHiddenLabels } from './slice';
-import { selectFocusLabel, selectHiddenLabels } from './selectors';
+import { setHiddenLabelIds } from './slice';
+import { selectFocusLabelId, selectHiddenLabelIds } from './selectors';
 import { NBSP } from '@/service/type';
 import { useLoaderData } from '@tanstack/react-router';
 import { Popover } from '@/components/base/Popover';
@@ -23,15 +23,16 @@ import { Chip, type ChipProps, ChipRemove } from '@/components/base';
 import { EyeClosedLinearIcon, EyeLinearIcon, UnreadLinearIcon } from '@solar-icons/react';
 import { useHotkeySequence } from '@tanstack/react-hotkeys';
 import type { Hotkey } from '@tanstack/hotkeys/src/hotkey';
+import { LabelFragment } from "@/features/Mx/Ontology/api";
 
 export const AlphanumericKeys = [ 'à', '&', 'é', '"', '\'', '(', '-', 'è', '_', 'ç' ]
 
 export const LabelChip: React.FC<{
-    label: string;
+    label: LabelFragment;
 }> = ({ label }) => {
     const { labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
-    const focusedLabel = useAppSelector(selectFocusLabel)
-    const hiddenLabels = useAppSelector(selectHiddenLabels)
+    const focusedLabelId = useAppSelector(selectFocusLabelId)
+    const hiddenLabelIds = useAppSelector(selectHiddenLabelIds)
     const defaultConfidence = useAppSelector(selectDefaultConfidence);
     const addAnnotation = useAddAnnotation()
     const updateAnnotation = useUpdateAnnotation()
@@ -40,21 +41,21 @@ export const LabelChip: React.FC<{
     const allAnnotations = useAppSelector(selectAllAnnotations)
     const getAnnotation = useGetAnnotation()
     const removeAnnotation = useRemoveAnnotation()
-    const index = useMemo(() => labels.map(l => l.name).indexOf(label), [ labels, label ])
+    const index = useMemo(() => labels.map(l => l.id).indexOf(label.id), [ labels, label ])
     const numberShortcuts = useMemo(() => (index + 1).toString()?.split('') as Hotkey[], [ index ]);
     const keyShortcuts = useMemo(() => (index + 1).toString()?.split('').map(i => AlphanumericKeys[+i]) as Hotkey[], [ index ]);
     const isUsed = useMemo(() => allAnnotations.some(a => {
-        if (a.label !== label) return false
+        if (a.labelId !== label.id) return false
         if (!a.validation) return true
         return a.validation.isValid
     }), [ allAnnotations, label ])
-    const isHidden = useMemo(() => hiddenLabels.includes(label), [ hiddenLabels, label ])
+    const isHidden = useMemo(() => hiddenLabelIds.includes(label.id), [ hiddenLabelIds, label ])
     const dispatch = useAppDispatch()
 
     const select = useCallback(() => {
         const weakProperties = {
             type: AnnotationType.Weak,
-            label,
+            labelId: label.id,
         }
 
         const weak = getAnnotation(weakProperties)
@@ -67,8 +68,8 @@ export const LabelChip: React.FC<{
             // If focused annotation exists
             if (focusedAnnotation.type !== AnnotationType.Weak) {
                 // If focused annotation is strong => update its label
-                updateAnnotation(focusedAnnotation, { label })
-            } else if (focusedAnnotation.label === label) {
+                updateAnnotation(focusedAnnotation, { labelId: label.id })
+            } else if (focusedAnnotation.labelId === label.id) {
                 // If focused annotation is weak and has selected label => remove weak annotation
                 removeAnnotation(focusedAnnotation)
                 return
@@ -86,19 +87,19 @@ export const LabelChip: React.FC<{
     const show = useCallback((event: MouseEvent) => {
         event.stopPropagation();
         // Hide all but current if ctrlKey pressed
-        if (event.ctrlKey) dispatch(setHiddenLabels(labels.map(l => l.name).filter(l => l !== label)))
-        else dispatch(setHiddenLabels(hiddenLabels.filter(l => l !== label)))
-    }, [ label, hiddenLabels, dispatch, labels ])
+        if (event.ctrlKey) dispatch(setHiddenLabelIds(labels.map(l => l.id).filter(id => id !== label.id)))
+        else dispatch(setHiddenLabelIds(hiddenLabelIds.filter(id => id !== label.id)))
+    }, [ label, hiddenLabelIds, dispatch, labels ])
 
     const hide = useCallback((event: MouseEvent) => {
         event.stopPropagation();
         // Hide all but current if ctrlKey pressed => show
         if (event.ctrlKey) show(event)
-        else dispatch(setHiddenLabels([ ...hiddenLabels, label ]))
-    }, [ label, show, dispatch, hiddenLabels ])
+        else dispatch(setHiddenLabelIds([ ...hiddenLabelIds, label.id ]))
+    }, [ label, show, dispatch, hiddenLabelIds ])
 
     const remove = useCallback(() => {
-        const annotation = getAnnotation({ label, type: AnnotationType.Weak })
+        const annotation = getAnnotation({ labelId: label.id, type: AnnotationType.Weak })
         if (!annotation) return;
         removeAnnotation(annotation)
     }, [ label, getAnnotation, removeAnnotation ])
@@ -108,13 +109,13 @@ export const LabelChip: React.FC<{
               onClick={ select }
               { ...(isUsed ? { annotationColorIndex: index } : { color: 'medium' }) as Partial<ChipProps> }>
 
-            { focusedLabel === label && <UnreadLinearIcon size={ 20 }/> }
+            { focusedLabelId === label.id && <UnreadLinearIcon size={ 20 }/> }
 
             <div className={ styles['colorIndicator-' + index%10] }/>
 
             <Popover.Root>
                 <Popover.Trigger render={ <span/> } nativeButton={ false }>
-                    { label }
+                    { label.displayName }
                 </Popover.Trigger>
                 <Popover.Content>
                     <Popover.Title>Shortcut</Popover.Title>

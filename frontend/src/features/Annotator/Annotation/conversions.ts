@@ -11,7 +11,6 @@ import {
   type ConfidenceNode,
   type DetectorConfigurationNode,
   type DetectorNode,
-  LabelNode,
   type Maybe,
   type UserNode,
 } from '@/api/types.gql-generated.ts';
@@ -60,6 +59,8 @@ export function convertAnnotationsToPost(annotations: Annotation[]): AnnotationI
     isUpdateOf: a.id?.toString(),
   } as Annotation)) ].map(a => ({
     ...a,
+    label: a.labelId,
+    labelId: undefined,
     type: undefined,
     id: a.id > 0 ? a.id : undefined,
     comments: convertCommentsToPost(a.comments ?? []),
@@ -71,7 +72,7 @@ export function convertAnnotationsToPost(annotations: Annotation[]): AnnotationI
 }
 
 type Node =
-  Pick<AnnotationNode, 'id' | 'type' | 'minFrequency' | 'maxFrequency' | 'startTime' | 'endTime'>
+  Pick<AnnotationNode, 'id' | 'type' | 'minFrequency' | 'maxFrequency' | 'startTime' | 'endTime' | 'labelId'>
   & {
   isUpdateOf?: Maybe<Pick<AnnotationNode, 'id'>>,
   annotator?: Maybe<Pick<UserNode, 'id'>>,
@@ -86,7 +87,6 @@ type Node =
   validations?: Maybe<{
     results: Maybe<Pick<AnnotationValidationNode, 'id' | 'isValid'>>[],
   }>,
-  label: Pick<LabelNode, 'displayName'>,
   annotationPhase: Pick<AnnotationPhaseNode, 'id'>
 }
 
@@ -97,7 +97,7 @@ export function convertGqlToAnnotation(annotation: Node,
     id: +annotation.id,
     annotationPhase: annotation.annotationPhase.id,
     update: undefined,
-    label: annotation.label.displayName,
+    labelId: annotation.labelId,
     comments: convertGqlToComments(annotation.comments?.results ?? []),
     type: annotation.type,
     annotator: annotation.annotator?.id,

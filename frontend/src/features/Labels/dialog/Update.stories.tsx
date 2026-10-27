@@ -25,22 +25,19 @@ const meta = {
         availableLabels: [
             {
                 id: '1',
-                name: 'Boat',
+                displayName: 'Boat',
             },
             {
                 id: '2',
-                name: 'Whale',
+                displayName: 'Whale',
             },
             {
                 id: '3',
-                name: 'Dolphin',
+                displayName: 'Dolphin',
             },
         ],
-        selected: {
-            id: '2',
-            name: 'Whale',
-        },
-        onSelect: fn(),
+        selectedID: '2',
+        onSelectID: fn(),
     } satisfies UpdateProps,
 } satisfies Meta<typeof Update>;
 export default meta;

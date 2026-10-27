@@ -117,7 +117,7 @@ const InnerAnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }
             focus: defaultAnnotation?.confidence ?? undefined,
         }))
         dispatch(AnnotatorLabelSlice.actions.initSpectrogram({
-            focus: defaultAnnotation?.label ?? undefined,
+            focus: defaultAnnotation?.labelId ?? undefined,
         }))
         dispatch(AnnotatorCommentSlice.actions.initSpectrogram({
             taskComments: cleanGqlList(data.spectrogram?.task?.userComments?.results),

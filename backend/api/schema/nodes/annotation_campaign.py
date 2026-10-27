@@ -13,6 +13,7 @@ from django.db.models.functions import Coalesce
 from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 from django_extension.schema.types import ExtendedNode
 from graphql import GraphQLResolveInfo
+from metadatax.ontology.schema import LabelNode
 
 from backend.api.models import (
     AnnotationCampaign,
@@ -27,7 +28,6 @@ from backend.aplose.schema import UserNode
 from .__abstract_permission import AbstractPermissionNode
 from .annotation_phase import AnnotationPhaseNode
 from .detector import DetectorNode
-from .label import AnnotationLabelNode
 
 
 class AnnotationCampaignNode(AbstractPermissionNode, ExtendedNode):
@@ -76,7 +76,7 @@ class AnnotationCampaignNode(AbstractPermissionNode, ExtendedNode):
             info,
         )
 
-    labels_with_acoustic_features = graphene.List(AnnotationLabelNode)
+    labels_with_acoustic_features = graphene.List(LabelNode)
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_labels_with_acoustic_features(self: AnnotationCampaign, info):

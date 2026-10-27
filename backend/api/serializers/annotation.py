@@ -26,9 +26,8 @@ class AnnotationSerializer(serializers.ModelSerializer):
     type = EnumField(enum=Annotation.Type, read_only=True)
     annotator_expertise_level = EnumField(enum=ExpertiseLevel, read_only=True)
 
-    label = serializers.SlugRelatedField(
+    label = serializers.PrimaryKeyRelatedField(
         queryset=Label.objects.all(),
-        slug_field="name",
     )
     confidence = serializers.SlugRelatedField(
         queryset=Confidence.objects.all(),

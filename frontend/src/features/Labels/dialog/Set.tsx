@@ -1,6 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Toast } from '@/components/base/Toast';
-import { AnnotationLabelNode } from '@/api';
 import { Table } from '../component';
 import { useParams } from '@tanstack/react-router';
 import { cleanGqlList } from '@/api/utils';
@@ -9,9 +8,8 @@ import { Dialog } from '@/components/base/Dialog';
 import { Button, ButtonGroup } from '@/components/base/Button';
 import { Spinner } from '@/components/base/Spinner';
 import { Campaign } from '@/features/AnnotationCampaign';
+import { LabelFragment } from "@/features/Mx/Ontology/api";
 
-
-type Label = Pick<AnnotationLabelNode, 'id' | 'name'>
 
 export const Set: React.FC = () => {
     const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID' })
@@ -25,7 +23,7 @@ export const Set: React.FC = () => {
         isSuccess: isPatchSuccessful,
     } = useMutation(Campaign.updateFeaturedLabelsMutation);
 
-    const [ labelsWithAcousticFeatures, setLabelsWithAcousticFeatures ] = useState<Label[]>(cleanGqlList(campaign!.labelsWithAcousticFeatures));
+    const [ labelsWithAcousticFeatures, setLabelsWithAcousticFeatures ] = useState<LabelFragment[]>(cleanGqlList(campaign!.labelsWithAcousticFeatures));
     const [ disabled, setDisabled ] = useState<boolean>(true);
 
     useEffect(() => {

@@ -24,7 +24,6 @@ import {
 } from '@solar-icons/react';
 import { Button, Dialog } from '@/components/base';
 import { LabelDialog } from '@/features/Labels';
-import type { AnnotationLabelFragment } from '@/features/Labels/api';
 
 export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
     const { campaign, labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
@@ -37,9 +36,9 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
     const { user } = useLoaderData({ from: '/_authenticated' })
 
     const updateAnnotation = useUpdateAnnotation()
-    const updateLabel = useCallback((label: AnnotationLabelFragment) => {
+    const updateLabel = useCallback((labelId: string) => {
         if (!annotation) return;
-        updateAnnotation(annotation, { label: label.name })
+        updateAnnotation(annotation, { labelId })
     }, [ annotation, updateAnnotation ]);
     const dispatch = useAppDispatch();
 
@@ -149,8 +148,8 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
         <Dialog.Root open={ isLabelModalOpen } onOpenChange={ setIsLabelModalOpen }>
             <Dialog.Portal>
                 <LabelDialog.Update availableLabels={ labels }
-                                    selected={ labels.find(l => l.name === annotation.label) }
-                                    onSelect={ updateLabel }/>
+                                    selectedID={ annotation.labelId }
+                                    onSelectID={ updateLabel }/>
             </Dialog.Portal>
         </Dialog.Root>
     </Tr>

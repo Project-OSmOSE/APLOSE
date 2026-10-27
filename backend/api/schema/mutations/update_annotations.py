@@ -25,6 +25,7 @@ class UpdateAnnotationsMutation(ListSerializerMutation):
             "spectrogram",
         )
 
+
     @classmethod
     def get_serializer_queryset(cls, root, info, **input):
         if input.get("phase_type").value == AnnotationPhaseType.Annotation:

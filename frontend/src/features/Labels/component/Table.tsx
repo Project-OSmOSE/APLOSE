@@ -1,16 +1,14 @@
-import React, { MouseEvent, Fragment } from 'react';
+import React, { Fragment, MouseEvent } from 'react';
 import { Table as BaseTable, Tbody, Td, Th, Thead, Tr, WarningText } from '@/components/ui';
-import { AnnotationLabelNode } from '@/api';
 import { Checkbox } from '@/components/base/Checkbox';
 import type { BaseUIEvent } from '@base-ui/react';
-
-type Label = Pick<AnnotationLabelNode, 'name' | 'id'>
+import { LabelFragment } from "@/features/Mx/Ontology/api";
 
 export const Table: React.FC<{
     description?: string,
-    labels: Label[],
-    labelsWithAcousticFeatures: Label[];
-    setLabelsWithAcousticFeatures: (value: Label[]) => void
+    labels: LabelFragment[],
+    labelsWithAcousticFeatures: LabelFragment[];
+    setLabelsWithAcousticFeatures: (value: LabelFragment[]) => void
     disabled?: boolean;
     allDisabled?: boolean;
     error?: string;
@@ -24,7 +22,7 @@ export const Table: React.FC<{
           error,
       }) => {
 
-    const onLabelChecked = (event: BaseUIEvent<MouseEvent>, label: Label) => {
+    const onLabelChecked = (event: BaseUIEvent<MouseEvent>, label: LabelFragment) => {
         event.stopPropagation()
         event.preventDefault()
         if (labelsWithAcousticFeatures.find(l => l.id === label.id)) {
@@ -48,7 +46,7 @@ export const Table: React.FC<{
             </Thead>
             <Tbody>
                 { labels.map(label => <Tr key={ label.id }>
-                    <Th scope="row">{ label.name }</Th>
+                    <Th scope="row">{ label.displayName }</Th>
                     <Td center>
                         <Checkbox checked={ labelsWithAcousticFeatures.some(l => l.id === label.id) }
                                   disabled={ disabled || allDisabled }

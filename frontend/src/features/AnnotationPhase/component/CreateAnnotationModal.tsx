@@ -3,7 +3,6 @@ import { useLoaderData } from '@tanstack/react-router';
 import { useMutation } from '@tanstack/react-query';
 import type { BaseUIEvent } from '@base-ui/react';
 
-import { AnnotationLabelNode } from '@/api';
 import { Button, ButtonGroup, Checkbox, Dialog, Field, Form, Spinner, Toast } from '@/components/base';
 
 import { LabelAPI, LabelComponent } from '@/features/Labels';
@@ -11,8 +10,9 @@ import { ConfidenceAPI, ConfidenceComponent } from '@/features/Confidence';
 
 import * as API from '../api'
 import styles from './styles.module.scss'
+import { LabelFragment } from "@/features/Mx/Ontology/api";
+import { cleanGqlList } from "@/api/utils.ts";
 
-type Label = Pick<AnnotationLabelNode, 'id' | 'name'>
 type N<T> = NonNullable<T>
 type LabelSet = N<N<LabelAPI.ListLabelSetsQuery['allLabelSets']>['results'][number]>
 type ConfidenceSet = N<N<ConfidenceAPI.ListConfidenceSetsQuery['allConfidenceSets']>['results'][number]>
@@ -24,7 +24,7 @@ export const CreateAnnotationModal: React.FC<{ closeOnCreate: () => void }> = ({
 
     const [ labelSet, setLabelSet ] = useState<LabelSet | null>(null);
 
-    const [ labelsWithAcousticFeatures, setLabelsWithAcousticFeatures ] = useState<Label[]>([]);
+    const [ labelsWithAcousticFeatures, setLabelsWithAcousticFeatures ] = useState<LabelFragment[]>([]);
 
     const [ confidenceSet, setConfidenceSet ] = useState<ConfidenceSet | null>(null);
 
@@ -63,7 +63,7 @@ export const CreateAnnotationModal: React.FC<{ closeOnCreate: () => void }> = ({
                 <Field.Error/>
             </Field.Root>
             { labelSet && <LabelComponent.Table description={ labelSet.description ?? undefined }
-                                                labels={ (labelSet.labels ?? []).filter(l => l !== null) as Label[] }
+                                                labels={ cleanGqlList(labelSet.labels) }
                                                 labelsWithAcousticFeatures={ labelsWithAcousticFeatures }
                                                 setLabelsWithAcousticFeatures={ setLabelsWithAcousticFeatures }/> }
 

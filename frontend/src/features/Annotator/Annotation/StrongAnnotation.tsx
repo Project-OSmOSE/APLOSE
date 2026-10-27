@@ -2,7 +2,7 @@ import React, { Fragment, type MouseEvent, useCallback, useEffect, useMemo, useR
 import { Annotation, focusAnnotation } from './slice';
 import { AnnotationType } from '@/api';
 import { useAppDispatch, useAppSelector } from '@/features/App';
-import { selectHiddenLabels } from '@/features/Annotator/Label';
+import { selectHiddenLabelIds } from '@/features/Annotator/Label';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 import { selectIsSelectingPositionForAnnotation } from '@/features/Annotator/UX';
 import { type ExtendedDivPosition, useExtendedDiv } from '@/components/ui/ExtendedDiv';
@@ -42,7 +42,7 @@ export const StrongAnnotation: React.FC<{
         dispatch(focusAnnotation(annotation))
     }, [ annotation, dispatch ])
 
-    const hiddenLabels = useAppSelector(selectHiddenLabels)
+    const hiddenLabelIds = useAppSelector(selectHiddenLabelIds)
 
     const [ isMouseHover, setIsMouseHover ] = useState<boolean>(false);
 
@@ -116,15 +116,15 @@ export const StrongAnnotation: React.FC<{
     })
     useEffect(() => {
         initPosition()
-    }, [ timeScale, frequencyScale, hiddenLabels ]);
+    }, [ timeScale, frequencyScale, hiddenLabelIds ]);
 
     const index = useMemo(() => {
-        return labels.map(l => l.name).indexOf(annotation.update?.label ?? annotation.label)
+        return labels.map(l => l.id).indexOf(annotation.update?.labelId ?? annotation.labelId)
     }, [ labels, annotation ])
 
     if (!spectrogram) return <Fragment/>
     if (annotation.type === AnnotationType.Weak) return <Fragment/>
-    if (hiddenLabels.includes(annotation.label)) return <Fragment/>
+    if (hiddenLabelIds.includes(annotation.labelId)) return <Fragment/>
     if (!annotation.update && annotation.validation?.isValid == false) return <Fragment/>
 
     // State

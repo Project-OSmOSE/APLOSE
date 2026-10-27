@@ -30,7 +30,7 @@ export const AcousticFeatures: React.FC = () => {
         if (!focusedAnnotation) return
         const weak = getAnnotation({
             type: AnnotationType.Weak,
-            label: focusedAnnotation.label,
+            labelId: focusedAnnotation.labelId,
         });
         if (weak) dispatch(focusAnnotation(weak))
     }, [ getAnnotation, focusedAnnotation, dispatch ])
@@ -73,7 +73,7 @@ export const AcousticFeatures: React.FC = () => {
 
     return useMemo(() => {
         if (!focusedAnnotation) return <Fragment/>;
-        if (!campaign.labelsWithAcousticFeatures?.find(l => l?.name === focusedAnnotation.label)) return <Fragment/>;
+        if (!campaign.labelsWithAcousticFeatures?.find(l => l?.id === focusedAnnotation.labelId)) return <Fragment/>;
         if (focusedAnnotation.type !== AnnotationType.Box) return <Fragment/>;
         return <div ref={ divRef }
                     className={ styles.features }

@@ -3,12 +3,12 @@ import { AnnotatorLabelSlice } from './slice';
 import type { AppState } from '@/features/App';
 
 
-export const selectHiddenLabels = createSelector(
+export const selectHiddenLabelIds = createSelector(
     (state: AppState) => state.annotator,
-    AnnotatorLabelSlice.selectors.selectHiddenLabels,
+    AnnotatorLabelSlice.selectors.selectHiddenLabelIds,
 )
 
-export const selectFocusLabel = createSelector(
+export const selectFocusLabelId = createSelector(
     (state: AppState) => state.annotator,
-    AnnotatorLabelSlice.selectors.selectFocus,
+    AnnotatorLabelSlice.selectors.selectFocusId,
 )

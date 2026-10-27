@@ -23,6 +23,8 @@ class AnnotationNode(ExtendedNode):
         AnnotationCommentNode, source="annotation_comments"
     )
 
+    label_id = graphene.ID(required=True)
+
     class Meta:
         model = Annotation
         fields = "__all__"

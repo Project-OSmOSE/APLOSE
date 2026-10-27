@@ -12,9 +12,10 @@ export type Comment = Omit<AnnotationCommentSerializerInput, 'id'> & { id: numbe
 export type Validation = AnnotationValidationSerializerInput
 export type Features = AnnotationAcousticFeaturesSerializerInput
 export type Annotation =
-  Omit<AnnotationInput, 'id' | 'isUpdateOf' | 'comments' | 'validations' | 'acousticFeatures'>
+  Omit<AnnotationInput, 'id' | 'isUpdateOf' | 'comments' | 'validations' | 'acousticFeatures' | 'label'>
   & {
   id: number,
+  labelId: string,
   type: AnnotationType;
   comments?: Comment[];
   annotator?: string | number;

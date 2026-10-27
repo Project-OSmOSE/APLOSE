@@ -26,9 +26,10 @@ export const allQuery = (variables: AllCampaignsQueryVariables) => queryOptions(
         .then(data => cleanGqlList(data.allAnnotationCampaigns?.results)),
 })
 
-export const byIdQuery = (variables: GetCampaignQueryVariables) => queryOptions({
-    queryKey: queryKeys.campaign.byId(variables),
-    queryFn: () => graphqlClient.request<GetCampaignQuery>(GetCampaignDocument, variables)
+export const byIdQuery = ({ id }: Partial<GetCampaignQueryVariables>) => queryOptions({
+    enabled: !!id,
+    queryKey: queryKeys.campaign.byId({ id: id ?? '' }),
+    queryFn: () => graphqlClient.request<GetCampaignQuery>(GetCampaignDocument, { id: id ?? '' })
         .then(data => ({
             campaign: data.annotationCampaignById,
             phases: cleanGqlList(data.annotationCampaignById?.phases?.results),
