@@ -89,7 +89,7 @@ query getCampaign($id: ID!) {
             description
             labels {
                 id
-                name
+                displayName
             }
         }
         labelsWithAcousticFeatures {

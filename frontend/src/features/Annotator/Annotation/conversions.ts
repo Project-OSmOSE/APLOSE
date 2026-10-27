@@ -3,7 +3,6 @@ import {
   AnnotationAcousticFeaturesSerializerInput,
   type AnnotationCommentNode,
   AnnotationInput,
-  type AnnotationLabelNode,
   type AnnotationNode,
   type AnnotationPhaseNode,
   AnnotationPhaseType,
@@ -12,9 +11,10 @@ import {
   type ConfidenceNode,
   type DetectorConfigurationNode,
   type DetectorNode,
+  LabelNode,
   type Maybe,
   type UserNode,
-} from '@/api';
+} from '@/api/types.gql-generated.ts';
 import { type Annotation, type Features, type Validation } from './slice';
 import { convertCommentsToPost, convertGqlToComments } from '@/features/Annotator/Comment/conversions';
 
@@ -86,7 +86,7 @@ type Node =
   validations?: Maybe<{
     results: Maybe<Pick<AnnotationValidationNode, 'id' | 'isValid'>>[],
   }>,
-  label: Pick<AnnotationLabelNode, 'name'>,
+  label: Pick<LabelNode, 'displayName'>,
   annotationPhase: Pick<AnnotationPhaseNode, 'id'>
 }
 
@@ -97,7 +97,7 @@ export function convertGqlToAnnotation(annotation: Node,
     id: +annotation.id,
     annotationPhase: annotation.annotationPhase.id,
     update: undefined,
-    label: annotation.label.name,
+    label: annotation.label.displayName,
     comments: convertGqlToComments(annotation.comments?.results ?? []),
     type: annotation.type,
     annotator: annotation.annotator?.id,

@@ -5,7 +5,6 @@ import graphene_django_optimizer
 from django_extension.schema.types import ExtendedNode
 
 from backend.api.models import Label, Annotation
-from backend.api.schema.filter_sets import LabelFilterSet
 
 
 class AnnotationLabelNode(ExtendedNode):
@@ -14,7 +13,7 @@ class AnnotationLabelNode(ExtendedNode):
     class Meta:
         model = Label
         fields = "__all__"
-        filterset_class = LabelFilterSet
+        filterset_fields = {}
 
     uses = graphene.Int(required=True, deployment_id=graphene.ID())
 

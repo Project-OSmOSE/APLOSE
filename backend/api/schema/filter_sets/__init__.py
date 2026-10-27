@@ -8,6 +8,5 @@ from .annotation_spectrogram import AnnotationSpectrogramFilterSet
 from .annotation_task import AnnotationTaskFilterSet
 from .annotation_validation import AnnotationValidationFilterSet
 from .dataset import DatasetFilterSet
-from .label import LabelFilterSet
 from .spectrogram import SpectrogramFilterSet
 from .spectrogram_analysis import SpectrogramAnalysisFilterSet

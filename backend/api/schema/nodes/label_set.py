@@ -1,9 +1,9 @@
 import graphene
 import graphene_django_optimizer
 from django_extension.schema.types import ExtendedNode
+from metadatax.ontology.schema import LabelNode
 
 from backend.api.models import LabelSet
-from .label import AnnotationLabelNode
 
 
 class LabelSetNode(ExtendedNode):
@@ -14,7 +14,7 @@ class LabelSetNode(ExtendedNode):
         fields = "__all__"
         filter_fields = "__all__"
 
-    labels = graphene.List(AnnotationLabelNode, required=True)
+    labels = graphene.List(LabelNode, required=True)
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_labels(self: LabelSet, info):

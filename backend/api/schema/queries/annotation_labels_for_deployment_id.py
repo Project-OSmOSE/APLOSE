@@ -1,8 +1,8 @@
 import graphene
 from graphene_django_pagination import DjangoPaginationConnectionField
+from metadatax.ontology.schema import LabelNode
 
 from backend.api.models import Label
-from backend.api.schema.nodes import AnnotationLabelNode
 
 
 def resolve_labels(root, info, deployment_id: int):
@@ -13,7 +13,7 @@ def resolve_labels(root, info, deployment_id: int):
 
 
 AnnotationLabelsForDeploymentIdField = DjangoPaginationConnectionField(
-    AnnotationLabelNode,
+    LabelNode,
     deployment_id=graphene.ID(required=True),
     resolver=resolve_labels,
 )
