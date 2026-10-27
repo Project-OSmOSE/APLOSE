@@ -9,13 +9,13 @@ from django.db.models import signals, Q, QuerySet, Exists, OuterRef, CheckConstr
 from django.dispatch import receiver
 from django.utils import timezone
 from django_extension.models import ExtendedQuerySet
+from metadatax.ontology.models import Label
 
 from backend.aplose.models import User
 from backend.api.models.common.__abstract_archivable import AbstractArchivable
 from .annotation_phase import AnnotationPhase
 from .confidence import Confidence
 from .confidence_set import ConfidenceSet, ConfidenceIndicatorSetIndicator
-from .label import Label
 from .label_set import LabelSet
 from ..data import Dataset, SpectrogramAnalysis, Spectrogram
 

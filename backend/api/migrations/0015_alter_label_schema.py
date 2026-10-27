@@ -34,7 +34,6 @@ class Migration(migrations.Migration):
                 to="api.label",
             ),
         ),
-
         # Label Set
         migrations.AddField(
             model_name="labelset",
@@ -46,5 +45,10 @@ class Migration(migrations.Migration):
             name="labels",
             field=models.ManyToManyField(to="api.label", blank=True, null=True),
         ),
-
+        # Annotation campaign
+        migrations.AddField(
+            model_name="annotationcampaign",
+            name="mx_labels_with_acoustic_features",
+            field=models.ManyToManyField(blank=True, to="ontology.label"),
+        ),
     ]

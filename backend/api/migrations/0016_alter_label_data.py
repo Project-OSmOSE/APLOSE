@@ -26,6 +26,7 @@ def create_api_unknown(apps, _):
     label.metadatax_label = MxLabel.objects.get(nickname="Unknown")
     label.save()
 
+
 def update_label_set(apps, _):
     LabelSet = apps.get_model("api", "LabelSet")
 
@@ -33,12 +34,29 @@ def update_label_set(apps, _):
         for l in lset.labels.all():
             lset.mx_labels.add(l.metadatax_label)
 
+
 def reverse_update_label_set(apps, _):
     LabelSet = apps.get_model("api", "LabelSet")
 
     for lset in LabelSet.objects.all():
         for mx_l in lset.mx_labels.all():
             lset.labels.add(mx_l.label_set.first())
+
+
+def update_campaign(apps, _):
+    AnnotationCampaign = apps.get_model("api", "AnnotationCampaign")
+
+    for campaign in AnnotationCampaign.objects.all():
+        for l in campaign.labels_with_acoustic_features.all():
+            campaign.mx_labels_with_acoustic_features.add(l.metadatax_label)
+
+
+def reverse_update_campaign(apps, _):
+    AnnotationCampaign = apps.get_model("api", "AnnotationCampaign")
+
+    for campaign in AnnotationCampaign.objects.all():
+        for mx_l in campaign.mx_labels_with_acoustic_features.all():
+            campaign.labels_with_acoustic_features.add(mx_l.label_set.first())
 
 
 class Migration(migrations.Migration):
@@ -52,10 +70,10 @@ class Migration(migrations.Migration):
             code=create_mx_unknown,
             reverse_code=django.db.migrations.operations.special.RunPython.noop,
         ),
-
         # Annotation
         migrations.RunSQL(
             sql="""
+                -- noinspection SqlResolve
                 UPDATE api_annotation a
                 SET mx_label_id = l.metadatax_label_id
                 FROM api_label l
@@ -69,13 +87,16 @@ class Migration(migrations.Migration):
                 WHERE a.mx_label_id = l.metadatax_label_id;
                 """,
         ),
-
         # Label Set
         migrations.RunPython(
             code=update_label_set,
             reverse_code=reverse_update_label_set,
         ),
-
+        # Annotation Campaign
+        migrations.RunPython(
+            code=update_campaign,
+            reverse_code=reverse_update_campaign,
+        ),
         migrations.RunPython(
             code=django.db.migrations.operations.special.RunPython.noop,
             reverse_code=create_api_unknown,

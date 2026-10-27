@@ -29,7 +29,6 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.CASCADE, to="ontology.label"
             ),
         ),
-
         # Label Set
         migrations.RemoveField(
             model_name="labelset",
@@ -44,5 +43,15 @@ class Migration(migrations.Migration):
             model_name="labelset",
             name="labels",
             field=models.ManyToManyField(to="ontology.label"),
+        ),
+        # Annotation Campaign
+        migrations.RemoveField(
+            model_name="annotationcampaign",
+            name="labels_with_acoustic_features",
+        ),
+        migrations.RenameField(
+            model_name="annotationcampaign",
+            old_name="mx_labels_with_acoustic_features",
+            new_name="labels_with_acoustic_features",
         ),
     ]
