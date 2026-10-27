@@ -2,8 +2,7 @@
 
 from django.db import models
 from django.db.models import QuerySet
-
-from .label import Label
+from metadatax.ontology.models import Label
 
 
 class LabelSet(models.Model):

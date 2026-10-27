@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # Annotation
         migrations.AddField(
             model_name="annotation",
             name="mx_label",
@@ -33,4 +34,17 @@ class Migration(migrations.Migration):
                 to="api.label",
             ),
         ),
+
+        # Label Set
+        migrations.AddField(
+            model_name="labelset",
+            name="mx_labels",
+            field=models.ManyToManyField(to="ontology.label", blank=True, null=True),
+        ),
+        migrations.AlterField(
+            model_name="labelset",
+            name="labels",
+            field=models.ManyToManyField(to="api.label", blank=True, null=True),
+        ),
+
     ]

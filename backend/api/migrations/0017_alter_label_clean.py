@@ -8,10 +8,11 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("api", "0016_alter_annotation_label_data"),
+        ("api", "0016_alter_label_data"),
     ]
 
     operations = [
+        # Annotation
         migrations.RemoveField(
             model_name="annotation",
             name="label",
@@ -27,5 +28,21 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE, to="ontology.label"
             ),
+        ),
+
+        # Label Set
+        migrations.RemoveField(
+            model_name="labelset",
+            name="labels",
+        ),
+        migrations.RenameField(
+            model_name="labelset",
+            old_name="mx_labels",
+            new_name="labels",
+        ),
+        migrations.AlterField(
+            model_name="labelset",
+            name="labels",
+            field=models.ManyToManyField(to="ontology.label"),
         ),
     ]
