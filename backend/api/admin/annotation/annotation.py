@@ -31,7 +31,9 @@ class AnnotationAdmin(ExtendedModelAdmin):
     )
     search_fields = (
         "spectrogram__filename",
-        "label__name",
+        "label__nickname",
+        "label__source__english_name",
+        "label__sound__english_name",
         "confidence__label",
         "annotator__username",
         "annotator__first_name",
