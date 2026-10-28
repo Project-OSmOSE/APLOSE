@@ -4,6 +4,7 @@ from django.core import validators
 from django.db import transaction
 from django.db.models import Max, QuerySet
 from django_extension.serializers import EnumField, ListSerializer
+from metadatax.ontology.models import Label
 from rest_framework import serializers
 from rest_framework.fields import empty, FloatField
 
@@ -11,7 +12,6 @@ from backend.api.models import (
     Annotation,
     AnnotationPhase,
     Spectrogram,
-    Label,
     Confidence,
     AnnotationValidation,
     AnnotationComment,

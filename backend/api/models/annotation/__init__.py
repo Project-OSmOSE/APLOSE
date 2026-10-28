@@ -11,5 +11,4 @@ from .confidence import Confidence
 from .confidence_set import ConfidenceSet, ConfidenceIndicatorSetIndicator
 from .detector import Detector
 from .detector_configuration import DetectorConfiguration
-from .label import Label
 from .label_set import LabelSet

@@ -54,4 +54,9 @@ class Migration(migrations.Migration):
             old_name="mx_labels_with_acoustic_features",
             new_name="labels_with_acoustic_features",
         ),
+
+        # Remove Label
+        migrations.DeleteModel(
+            name="Label",
+        ),
     ]
