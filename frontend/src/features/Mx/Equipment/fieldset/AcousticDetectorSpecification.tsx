@@ -30,7 +30,8 @@ export const AcousticDetectorSpecificationFieldset: React.FC<{
 
             <Field.Root name={ `${ name }-detectedLabels` }>
                 <Field.Label>Detected labels</Field.Label>
-                <MxOntology.LabelMultiCombobox defaultValueString={ cleanGqlList(input?.detectedLabels) ?? undefined }/>
+                <MxOntology.LabelCombobox multiple={ true }
+                                          defaultValueString={ cleanGqlList(input?.detectedLabels) ?? undefined }/>
                 <Field.Error/>
             </Field.Root>
 

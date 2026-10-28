@@ -20,6 +20,12 @@ mutation createSource($input: PostSourceMutationInput!) {
 fragment Label on LabelNode {
     id
     displayName
+    source {
+        englishName
+    }
+    sound {
+        englishName
+    }
 }
 query allLabels {
     allLabels {

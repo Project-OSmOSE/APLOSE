@@ -1,7 +1,6 @@
 import React, { type FormEvent, Fragment, useCallback, useRef, useState } from 'react';
 import { AnnotationPhaseType } from '@/api';
 import { ConfidenceComponent } from '@/features/Confidence';
-import { LabelComponent } from '@/features/Labels';
 import { DetectorComponent } from '@/features/Detector';
 import { User } from '@/features/User';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
@@ -13,6 +12,7 @@ import type { BaseUIEvent } from '@base-ui/react';
 import { Field } from '@/components/base/Field';
 import { Toggle } from '@/components/base/Toggle';
 import { ButtonGroup } from '@/components/base/Button';
+import { MxOntology } from "@/features/Mx";
 import { cleanGqlList } from '@/api/utils';
 
 
@@ -41,7 +41,7 @@ export const AnnotationsFilterModal: React.FC = () => {
             withAcousticFeatures,
         }),
     });
-    const { user } = useLoaderData({from: '/_authenticated'})
+    const { user } = useLoaderData({ from: '/_authenticated' })
     const formRef = useRef<HTMLFormElement | null>(null)
     const routeParams = Route.useParams()
     const navigate = useNavigate();
@@ -115,9 +115,9 @@ export const AnnotationsFilterModal: React.FC = () => {
 
             <Field.Root name="annotationLabel" horizontal>
                 <Field.Label>Filter by label</Field.Label>
-                <LabelComponent.Select items={ labels }
-                                       disabled={ tmpWithAnnotations !== true }
-                                       defaultValueString={ annotationLabel ?? undefined }/>
+                <MxOntology.LabelCombobox items={ labels }
+                                          disabled={ tmpWithAnnotations !== true }
+                                          defaultValueString={ annotationLabel ?? undefined }/>
             </Field.Root>
 
             { campaign.confidenceSet && <Field.Root name="annotationConfidence" horizontal>

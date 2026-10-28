@@ -12,6 +12,7 @@ import { Guidelines } from './-Guidelines';
 import type { Annotation } from './-type';
 import { ImportFileFormBloc } from './-ImportFileFormBloc';
 import { DetectorsTable } from './-DetectorsTable';
+import { LabelsTable } from "./-LabelsTable.tsx";
 import styles from './styles.module.scss';
 
 export const ImportAnnotationsPage: React.FC = () => {
@@ -33,6 +34,9 @@ export const ImportAnnotationsPage: React.FC = () => {
     const [ annotations, setAnnotations ] = useState<Annotation[]>([]);
     const detectorNames = useMemo(() => {
         return [ ...new Set(cleanGqlList(annotations.map(a => a.initial__detector))) ]
+    }, [ annotations ]);
+    const labels = useMemo(() => {
+        return [ ...new Set(cleanGqlList(annotations.map(a => a.label))) ]
     }, [ annotations ]);
 
     const onFileLoaded = useCallback((file: File, annotations: Annotation[]) => {
@@ -79,11 +83,12 @@ export const ImportAnnotationsPage: React.FC = () => {
                 ...a,
                 detector: d!.existingName ?? d!.name,
                 detector_configuration: d!.configurationText,
+                label_id: formData.get(`label-${ a.label }`)! as string
             }))
         setTotal(annotationsForUpload.length)
         const didUpload = await upload(annotationsForUpload)
         if (didUpload) router.history.back()
-    }, [ toastManager, annotations, detectorNames, router, upload ])
+    }, [ toastManager, annotations, labels, router, upload ])
 
     return <Page.Authenticated>
         <Content oneContent>
@@ -97,6 +102,8 @@ export const ImportAnnotationsPage: React.FC = () => {
                                     onReset={ onFileReset }/>
 
                 <DetectorsTable names={ detectorNames }/>
+
+                <LabelsTable labels={ labels }/>
 
                 { isUploading && <div>
                     <Progress value={ uploaded } max={ total } color="primary">
@@ -115,7 +122,6 @@ export const ImportAnnotationsPage: React.FC = () => {
                     </Button>
                 </ButtonGroup>
             </Form>
-
         </Content>
     </Page.Authenticated>
 }

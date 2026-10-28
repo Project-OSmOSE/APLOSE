@@ -7,6 +7,7 @@ from django.db import transaction
 from django.db.models import Max
 from django_extension.filters import get_boolean_query_param
 from django_extension.schema.errors import ForbiddenError, NotFoundError
+from metadatax.ontology.models import Label
 from rest_framework import viewsets, permissions, status, serializers
 from rest_framework.decorators import action
 from rest_framework.request import Request
@@ -145,7 +146,7 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
         annotation = {
             "min_frequency": row["min_frequency"] or None,
             "max_frequency": row["max_frequency"] or None,
-            "label": campaign.import_new_label(row["label"]),
+            "label": campaign.import_new_label(Label.objects.get(pk=row["label_id"])).pk,
             "confidence": confidence,
             "annotation_phase": phase.id,
             "annotator": None,

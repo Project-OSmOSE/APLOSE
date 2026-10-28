@@ -7,7 +7,7 @@ const keys: (keyof ImportAnnotation)[] = [
   'end_datetime',
   'min_frequency',
   'max_frequency',
-  'label',
+  'label_id',
   'confidence_indicator_label',
   'confidence_indicator_level',
   'detector',

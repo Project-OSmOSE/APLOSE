@@ -154,9 +154,8 @@ class AnnotationCampaign(AbstractArchivable, models.Model):
             analysis__annotation_campaigns=self
         ).distinct()
 
-    def import_new_label(self, name: str) -> Label:
+    def import_new_label(self, label: Label) -> Label:
         """Import new label into campaign label set"""
-        label: Label = Label.objects.get_or_create(name=name)[0]
         if not self.label_set.labels.filter(
             id=label.id
         ).exists():  # If the campaign's label set doesn't contain this label
