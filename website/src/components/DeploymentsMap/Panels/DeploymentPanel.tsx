@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { IoCaretUp, IoClose, IoDownloadOutline, IoOpenOutline } from 'react-icons/io5';
 import styles from './panel.module.scss'
 import { ContactLink } from '../ContactLink';
-import { DeploymentLabel, Deployment, useGqlSdk } from "../../../api";
+import { Deployment, DeploymentLabel, useGqlSdk } from "../../../api";
 import { AccessibilityEnum } from "../../../api/types.gql-generated";
 
 export const DeploymentPanel: React.FC<{
@@ -25,7 +25,7 @@ export const DeploymentPanel: React.FC<{
 
         sdk.deploymentById({ id: deploymentID }).then(({ data }) => {
             setDeployment(data.deploymentById ?? undefined)
-            setLabels((data.annotationLabelsForDeploymentId?.results ?? []).filter(l => l !== null) as any)
+            setLabels((data.annotationLabelsForDeploymentId ?? []).filter(l => l !== null) as any)
         })
     }, [ deploymentID ]);
 
@@ -126,8 +126,7 @@ const DeploymentInfo: React.FC<{ deployment: Deployment }> = ({ deployment }) =>
         <p>
             { deployment.name }
             { contacts.map(c => c && <small key={ c.id }>
-                <br/>({ c.role }:
-                { c.contact && <ContactLink contact={ c.contact }/> }
+                <br/>({ c.role }: { c.contact && <ContactLink contact={ c.contact }/> })
             </small>) }
         </p>
     </Fragment>
@@ -172,10 +171,12 @@ const Labels: React.FC<{ labels?: DeploymentLabel[] }> = ({ labels }) => {
     return <Fragment>
         <small>Labels</small>
         <p>
-            { labels.map((label: any) => <span key={ label.id }>
-        { label.name } ({ label.uses })
-        <br/>
-      </span>) }
+            { labels.map((label: any) =>
+                <span key={ label.id }>
+                        { label.label.source.englishName }
+                    { label.label.sound && ` - ${ label.label.sound.englishName }` } ({ label.uses })
+                        <br/>
+                    </span>) }
         </p>
     </Fragment>
 }
