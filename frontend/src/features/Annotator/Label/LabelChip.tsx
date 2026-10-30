@@ -1,6 +1,13 @@
 import React, { Fragment, MouseEvent, useCallback, useMemo } from 'react';
-import styles from './styles.module.scss';
+import { useParams } from '@tanstack/react-router';
+import { EyeClosedLinearIcon, EyeLinearIcon, UnreadLinearIcon } from '@solar-icons/react';
+import { useHotkeySequence } from '@tanstack/react-hotkeys';
+import type { Hotkey } from '@tanstack/hotkeys/src/hotkey';
+import { useQuery } from "@tanstack/react-query";
+import { AnnotationType } from '@/api/types.gql-generated.ts';
+import { NBSP } from '@/service/type';
 import { Kbd } from '@/components/ui';
+import { Chip, type ChipProps, ChipRemove, Popover } from '@/components/base';
 import {
     focusAnnotation,
     selectAllAnnotations,
@@ -11,26 +18,21 @@ import {
     useUpdateAnnotation,
     useValidateAnnotation,
 } from '@/features/Annotator/Annotation';
-import { AnnotationType } from '@/api';
 import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
 import { useAppDispatch, useAppSelector } from '@/features/App';
+import { Campaign } from "@/features";
+import { MxOntology } from "@/features/Mx";
 import { setHiddenLabelIds } from './slice';
 import { selectFocusLabelId, selectHiddenLabelIds } from './selectors';
-import { NBSP } from '@/service/type';
-import { useLoaderData } from '@tanstack/react-router';
-import { Popover } from '@/components/base/Popover';
-import { Chip, type ChipProps, ChipRemove } from '@/components/base';
-import { EyeClosedLinearIcon, EyeLinearIcon, UnreadLinearIcon } from '@solar-icons/react';
-import { useHotkeySequence } from '@tanstack/react-hotkeys';
-import type { Hotkey } from '@tanstack/hotkeys/src/hotkey';
-import { LabelFragment } from "@/features/Mx/Ontology/api";
+import styles from './styles.module.scss';
 
 export const AlphanumericKeys = [ 'à', '&', 'é', '"', '\'', '(', '-', 'è', '_', 'ç' ]
 
 export const LabelChip: React.FC<{
-    label: LabelFragment;
+    label: MxOntology.LabelFragment;
 }> = ({ label }) => {
-    const { labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const { data: labels } = useQuery(Campaign.labelsByIdQuery({ id: campaignID }))
     const focusedLabelId = useAppSelector(selectFocusLabelId)
     const hiddenLabelIds = useAppSelector(selectHiddenLabelIds)
     const defaultConfidence = useAppSelector(selectDefaultConfidence);
@@ -41,7 +43,7 @@ export const LabelChip: React.FC<{
     const allAnnotations = useAppSelector(selectAllAnnotations)
     const getAnnotation = useGetAnnotation()
     const removeAnnotation = useRemoveAnnotation()
-    const index = useMemo(() => labels.map(l => l.id).indexOf(label.id), [ labels, label ])
+    const index = useMemo(() => labels?.map(l => l.label.id).indexOf(label.id) ?? 0, [ labels, label ])
     const numberShortcuts = useMemo(() => (index + 1).toString()?.split('') as Hotkey[], [ index ]);
     const keyShortcuts = useMemo(() => (index + 1).toString()?.split('').map(i => AlphanumericKeys[+i]) as Hotkey[], [ index ]);
     const isUsed = useMemo(() => allAnnotations.some(a => {
@@ -87,7 +89,7 @@ export const LabelChip: React.FC<{
     const show = useCallback((event: MouseEvent) => {
         event.stopPropagation();
         // Hide all but current if ctrlKey pressed
-        if (event.ctrlKey) dispatch(setHiddenLabelIds(labels.map(l => l.id).filter(id => id !== label.id)))
+        if (event.ctrlKey) dispatch(setHiddenLabelIds(labels?.map(l => l.label.id).filter(id => id !== label.id) ?? []))
         else dispatch(setHiddenLabelIds(hiddenLabelIds.filter(id => id !== label.id)))
     }, [ label, hiddenLabelIds, dispatch, labels ])
 
@@ -111,7 +113,7 @@ export const LabelChip: React.FC<{
 
             { focusedLabelId === label.id && <UnreadLinearIcon size={ 20 }/> }
 
-            <div className={ styles['colorIndicator-' + index%10] }/>
+            <div className={ styles['colorIndicator-' + index % 10] }/>
 
             <Popover.Root>
                 <Popover.Trigger render={ <span/> } nativeButton={ false }>

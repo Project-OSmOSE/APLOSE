@@ -1,19 +1,16 @@
 import React, { type FormEvent, Fragment, useCallback, useRef, useState } from 'react';
-import { AnnotationPhaseType } from '@/api';
+import { useQuery } from "@tanstack/react-query";
+import { useLoaderData, useNavigate, useParams } from '@tanstack/react-router';
+import type { BaseUIEvent } from '@base-ui/react';
+import { AnnotationPhaseType } from '@/api/types.gql-generated.ts';
+import { cleanGqlList } from '@/api/utils';
 import { ConfidenceComponent } from '@/features/Confidence';
 import { DetectorComponent } from '@/features/Detector';
-import { User } from '@/features/User';
+import { MxOntology } from '@/features/Mx';
+import { User, Campaign } from '@/features';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
-import { useLoaderData, useNavigate } from '@tanstack/react-router';
-import { Dialog } from '@/components/base/Dialog';
-import { Form } from '@/components/base/Form';
+import { ButtonGroup, Dialog, Field, Form, Toggle } from '@/components/base';
 import type { AllSpectrogramsFilters } from '@/features/AnnotationSpectrogram';
-import type { BaseUIEvent } from '@base-ui/react';
-import { Field } from '@/components/base/Field';
-import { Toggle } from '@/components/base/Toggle';
-import { ButtonGroup } from '@/components/base/Button';
-import { MxOntology } from "@/features/Mx";
-import { cleanGqlList } from '@/api/utils';
 
 
 export const AnnotationsFilterModal: React.FC = () => {
@@ -41,11 +38,12 @@ export const AnnotationsFilterModal: React.FC = () => {
             withAcousticFeatures,
         }),
     });
-    const { user } = useLoaderData({ from: '/_authenticated' })
+    const { data: user } = useQuery(User.currentQuery)
     const formRef = useRef<HTMLFormElement | null>(null)
-    const routeParams = Route.useParams()
+    const routeParams = useParams({ from: '/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType' })
     const navigate = useNavigate();
-    const { campaign, labels, confidences } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { data: labels } = useQuery(Campaign.labelsByIdQuery({ id: routeParams.campaignID }))
+    const { campaign, confidences } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
 
     const [ tmpWithAF, setTmpWithAF ] = useState<boolean | null>(withAcousticFeatures ?? null);
     const [ tmpWithAnnotations, setTmpWithAnnotations ] = useState<boolean | null>(withAnnotations ?? null);
@@ -139,7 +137,7 @@ export const AnnotationsFilterModal: React.FC = () => {
 
                 <Field.Root name="annotationAnnotator" horizontal>
                     <Field.Label>Filter by annotator</Field.Label>
-                    <User.Select items={ cleanGqlList(campaign.annotators).filter(a => a.id !== user.id) }
+                    <User.Select items={ cleanGqlList(campaign.annotators).filter(a => a.id !== user?.id) }
                                  disabled={ tmpWithAnnotations !== true }
                                  defaultValueString={ annotationAnnotator ?? undefined }/>
                 </Field.Root>

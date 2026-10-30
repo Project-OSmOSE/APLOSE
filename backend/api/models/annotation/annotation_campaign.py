@@ -11,8 +11,8 @@ from django.utils import timezone
 from django_extension.models import ExtendedQuerySet
 from metadatax.ontology.models import Label
 
-from backend.aplose.models import User
 from backend.api.models.common.__abstract_archivable import AbstractArchivable
+from backend.aplose.models import User
 from .annotation_phase import AnnotationPhase
 from .confidence import Confidence
 from .confidence_set import ConfidenceSet, ConfidenceIndicatorSetIndicator
@@ -82,10 +82,12 @@ class AnnotationCampaign(AbstractArchivable, models.Model):
     instructions_url = models.URLField(null=True, blank=True)
     deadline = models.DateField(null=True, blank=True)
 
-    label_set = models.ForeignKey(
-        LabelSet, on_delete=models.PROTECT, null=True, blank=True
+    labels = models.ManyToManyField(
+        Label,
+        blank=True,
+        through="AnnotationCampaignLabel",
+        related_name="annotation_campaigns",
     )
-    labels_with_acoustic_features = models.ManyToManyField(Label, blank=True)
     allow_point_annotation = models.BooleanField(default=False)
     dataset = models.ForeignKey(
         Dataset,
@@ -133,20 +135,6 @@ class AnnotationCampaign(AbstractArchivable, models.Model):
             .distinct()
         )
 
-    @transaction.atomic
-    def update_labels_with_acoustic_features(self, new_labels: [str]):
-        """Update labels with acoustic features"""
-        removed_labels = self.labels_with_acoustic_features.filter(
-            ~Q(name__in=new_labels)
-        )
-        for label in removed_labels:
-            self.labels_with_acoustic_features.remove(label)
-
-        added_labels = self.label_set.labels.filter(name__in=new_labels)
-        for label in added_labels:
-            if not self.labels_with_acoustic_features.filter(name=label.name).exists():
-                self.labels_with_acoustic_features.add(label)
-
     @property
     def spectrograms(self) -> QuerySet[Spectrogram]:
         """Recover campaign spectrograms"""
@@ -156,20 +144,10 @@ class AnnotationCampaign(AbstractArchivable, models.Model):
 
     def import_new_label(self, label: Label) -> Label:
         """Import new label into campaign label set"""
-        if not self.label_set.labels.filter(
-            id=label.id
-        ).exists():  # If the campaign's label set doesn't contain this label
-            if (
-                self.label_set.annotationcampaign_set.count() > 1
-            ):  # If the campaign's label set also belong to other campaigns
-                # Duplicate label set
-                old_label_set = self.label_set
-                self.label_set = LabelSet.create_for_campaign(
-                    campaign=self,
-                    labels=old_label_set.labels.all(),
-                )
-                self.save()
-            self.label_set.labels.add(label)
+        if not self.labels.filter(id=label.id).exists():
+            self.annotationcampaignlabel_set.create(
+                label=label
+            )
         return label
 
     def import_new_confidence(self, label: str, level: int) -> Confidence:
@@ -214,27 +192,15 @@ class AnnotationCampaignAnalysis(models.Model):
     # TODO: check analysis is from the same dataset as campaign
 
 
-@receiver(
-    signal=signals.m2m_changed,
-    sender=AnnotationCampaign.labels_with_acoustic_features.through,
-)
-def check_labels_features_in_label_set(sender, **kwargs):
-    """Check added labels in labels_with_acoustic_features does belong to the campaign label_set"""
-    action = kwargs.pop("action", None)
-    if action != "pre_add":
-        return
-    campaign: Optional[AnnotationCampaign] = kwargs.pop("instance", None)
-    if not campaign:
-        return
-    pk_set = kwargs.pop("pk_set", {})
-    for pk in pk_set:
-        label = Label.objects.get(pk=pk)
-        if not label:
-            continue
-        if label not in campaign.label_set.labels.all():
-            raise ValidationError(
-                {
-                    "labels_with_acoustic_features": "Label with acoustic features should belong to label set"
-                },
-                code="invalid",
-            )
+class AnnotationCampaignLabel(models.Model):
+    """AnnotationCampaign <> Label manyToMany relation table"""
+
+    class Meta:
+        unique_together = ("annotation_campaign", "label")
+
+    annotation_campaign = models.ForeignKey(
+        AnnotationCampaign, on_delete=models.CASCADE
+    )
+    label = models.ForeignKey(Label, on_delete=models.PROTECT)
+
+    enable_acoustic_features = models.BooleanField(default=False)

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Dialog, Note } from '@/components/base';
-import { LabelFragment } from "@/features/Mx/Ontology/api";
+import { LabelNode } from "@/api/types.gql-generated.ts";
 import styles from './styles.module.scss';
 
 export type UpdateProps = {
-    availableLabels: LabelFragment[];
+    availableLabels: Pick<LabelNode, 'id' | 'displayName'>[];
     selectedID?: string,
     onSelectID: (id: string) => void;
 }

@@ -1,21 +1,22 @@
 import React, { Fragment, type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Annotation, focusAnnotation } from './slice';
+import { useLoaderData, useParams } from '@tanstack/react-router';
+import { useQuery } from "@tanstack/react-query";
 import { AnnotationType } from '@/api';
+import { formatTime } from '@/service/function';
+import { MOUSE_DOWN_EVENT } from '@/components/ui/Event';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectHiddenLabelIds } from '@/features/Annotator/Label';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 import { selectIsSelectingPositionForAnnotation } from '@/features/Annotator/UX';
 import { type ExtendedDivPosition, useExtendedDiv } from '@/components/ui/ExtendedDiv';
 import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
-
-import styles from './styles.module.scss'
-import { formatTime } from '@/service/function';
 import { useUpdateAnnotation } from '@/features/Annotator/Annotation/hooks';
 import { AnnotationHeadContent } from '@/features/Annotator/Annotation/Head';
-import { MOUSE_DOWN_EVENT } from '@/components/ui/Event';
 import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
-import { useLoaderData } from '@tanstack/react-router';
 import { useIsDrawingEnabled } from '@/features/Annotator/UX/hooks';
+import { Campaign } from "@/features";
+import { Annotation, focusAnnotation } from './slice';
+import styles from './styles.module.scss'
 
 const POINT_RADIUS = 16; // px
 
@@ -26,7 +27,8 @@ export const StrongAnnotation: React.FC<{
         spectrogram,
         isEditionAuthorized,
     } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
-    const { labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const { data: labels } = useQuery(Campaign.labelsByIdQuery({ id: campaignID }))
     const dispatch = useAppDispatch();
     const windowWidth = useWindowWidth()
     const windowHeight = useWindowHeight()
@@ -119,7 +121,7 @@ export const StrongAnnotation: React.FC<{
     }, [ timeScale, frequencyScale, hiddenLabelIds ]);
 
     const index = useMemo(() => {
-        return labels.map(l => l.id).indexOf(annotation.update?.labelId ?? annotation.labelId)
+        return labels?.map(l => l.label.id).indexOf(annotation.update?.labelId ?? annotation.labelId) ?? 0
     }, [ labels, annotation ])
 
     if (!spectrogram) return <Fragment/>

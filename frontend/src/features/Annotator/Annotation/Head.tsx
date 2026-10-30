@@ -6,27 +6,30 @@ import {
     SortHorizontalLinearIcon,
     TrashBinTrashLinearIcon,
 } from '@solar-icons/react';
+import { useParams } from '@tanstack/react-router';
+import { useQuery } from "@tanstack/react-query";
 import { Kbd } from '@/components/ui';
+import { Dialog, Popover } from '@/components/base';
 import { useAudio } from '@/features/Audio';
 import { LabelDialog } from '@/features/Labels';
-import type { Annotation } from './slice';
 import { useRemoveAnnotation, useUpdateAnnotation } from '@/features/Annotator/Annotation/hooks';
 import { useAppSelector } from '@/features/App';
 import { selectFocusLabelId } from '@/features/Annotator/Label';
-import { Dialog, Popover } from '@/components/base';
-import { useLoaderData } from '@tanstack/react-router';
+import { Campaign } from "@/features";
+import type { Annotation } from './slice';
 
 export const AnnotationHeadContent: React.FC<{
     annotation: Annotation,
     index: number;
 }> = ({ annotation, index }) => {
-    const { labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const { data: labels } = useQuery(Campaign.labelsByIdQuery({ id: campaignID }))
     const audio = useAudio()
     const focusedLabelId = useAppSelector(selectFocusLabelId)
     const updateAnnotation = useUpdateAnnotation()
     const removeAnnotation = useRemoveAnnotation()
     const annotationLabel = useMemo(() => {
-        return labels.find(l => l.id === (annotation.update?.labelId ?? annotation?.labelId))
+        return labels?.find(l => l.label.id === (annotation.update?.labelId ?? annotation?.labelId))
     }, [annotation, labels])
 
     const play = useCallback(() => {
@@ -56,7 +59,7 @@ export const AnnotationHeadContent: React.FC<{
             <ChatSquareLinearIcon size={ 20 }/> }
 
         {/* Label */ }
-        <p>{ annotationLabel?.displayName }</p>
+        <p>{ annotationLabel?.label.displayName }</p>
 
         {/* Update label button */ }
         <Dialog.Root>
@@ -69,7 +72,7 @@ export const AnnotationHeadContent: React.FC<{
                 </Popover.Root>
             </Dialog.Trigger>
             <Dialog.Portal>
-                <LabelDialog.Update availableLabels={ labels }
+                <LabelDialog.Update availableLabels={ labels?.map(l => l.label) ?? [] }
                                     selectedID={ focusedLabelId }
                                     onSelectID={ updateLabel }/>
             </Dialog.Portal>

@@ -36,6 +36,8 @@ class APIMutation(graphene.ObjectType):
     # Annotation campaign
     create_annotation_campaign = CreateAnnotationCampaignMutation.Field()
     update_annotation_campaign = UpdateAnnotationCampaignMutation.Field()
+    add_annotation_campaign_labels = AnnotationCampaignLabelListMutation.Field()
+    update_annotation_campaign_label_acoustic_features = AnnotationCampaignLabelAcousticFeaturesMutation.Field()
     archive_annotation_campaign = AnnotationCampaignArchiveMutation.Field()
 
     # Annotation phase

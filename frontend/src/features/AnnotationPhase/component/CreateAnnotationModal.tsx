@@ -2,19 +2,18 @@ import React, { type FormEvent, Fragment, useCallback, useState } from 'react';
 import { useLoaderData } from '@tanstack/react-router';
 import { useMutation } from '@tanstack/react-query';
 import type { BaseUIEvent } from '@base-ui/react';
-
-import { Button, ButtonGroup, Checkbox, Dialog, Field, Form, Spinner, Toast } from '@/components/base';
-
-import { LabelAPI, LabelComponent } from '@/features/Labels';
+import { TrashBinTrashLinearIcon } from '@solar-icons/react';
+import { AnnotationCampaignLabelInput } from "@/api/types.gql-generated.ts";
+import { ensureValidQueryData } from "@/api/utils.ts";
+import { Button, ButtonGroup, Checkbox, Dialog, Field, Form, Note, Spinner, Toast } from '@/components/base';
 import { ConfidenceAPI, ConfidenceComponent } from '@/features/Confidence';
+import { Campaign } from "@/features";
+import { MxOntology } from "@/features/Mx";
 
 import * as API from '../api'
 import styles from './styles.module.scss'
-import { LabelFragment } from "@/features/Mx/Ontology/api";
-import { cleanGqlList } from "@/api/utils.ts";
 
 type N<T> = NonNullable<T>
-type LabelSet = N<N<LabelAPI.ListLabelSetsQuery['allLabelSets']>['results'][number]>
 type ConfidenceSet = N<N<ConfidenceAPI.ListConfidenceSetsQuery['allConfidenceSets']>['results'][number]>
 
 export const CreateAnnotationModal: React.FC<{ closeOnCreate: () => void }> = ({ closeOnCreate }) => {
@@ -22,9 +21,33 @@ export const CreateAnnotationModal: React.FC<{ closeOnCreate: () => void }> = ({
     const { isPending, mutateAsync } = useMutation(API.createAnnotationMutation)
     const toastManager = Toast.useToastManager()
 
-    const [ labelSet, setLabelSet ] = useState<LabelSet | null>(null);
-
-    const [ labelsWithAcousticFeatures, setLabelsWithAcousticFeatures ] = useState<LabelFragment[]>([]);
+    const [ labelRelations, setLabelRelations ] = useState<Omit<Campaign.LabelRelationFragment, 'id'>[]>([]);
+    const addLabels = useCallback((newLabels: MxOntology.LabelFragment[]) => {
+        setLabelRelations(prev => [
+            ...prev,
+            ...newLabels
+                .filter(label => !prev.some(l => l.label.id === label.id))
+                .map(label => ({ label, enableAcousticFeatures: false }))
+        ])
+    }, [ setLabelRelations ])
+    const removeLabel = useCallback((relation: Omit<Campaign.LabelRelationFragment, 'id'>) => {
+        setLabelRelations(prev => prev.filter(rel => rel.label.id !== relation.label.id))
+    }, [ setLabelRelations ])
+    const [ isLoadingCampaignLabels, setIsLoadingCampaignLabels ] = useState<boolean>(false)
+    const addLabelsFromCampaign = useCallback(async (newCampaigns: Campaign.AllFragment[]) => {
+        setIsLoadingCampaignLabels(true)
+        try {
+            const campaignLabels = await Promise.all(newCampaigns.map(c => ensureValidQueryData(Campaign.labelsByIdQuery(c))))
+            setLabelRelations(prev => [
+                ...prev,
+                ...campaignLabels.flatMap(labels => labels)
+                    .filter(rel => !prev.some(l => l.label.id === rel.label.id))
+                    .map(rel => ({ ...rel, id: undefined }))
+            ])
+        } finally {
+            setIsLoadingCampaignLabels(false)
+        }
+    }, [ setLabelRelations ])
 
     const [ confidenceSet, setConfidenceSet ] = useState<ConfidenceSet | null>(null);
 
@@ -34,16 +57,21 @@ export const CreateAnnotationModal: React.FC<{ closeOnCreate: () => void }> = ({
         try {
             await mutateAsync({
                 campaignID: campaign.id,
-                labelSetID: formData.get('labelSetID') as string,
                 confidenceSetID: formData.get('confidenceSetID') as string || undefined,
-                labelsWithAcousticFeatures: labelsWithAcousticFeatures.map(l => l.id),
+                labels: [ ...formData.entries() ]
+                    .filter(([ name, ]) => name.split('-')[0] === 'label')
+                    .map(([ name, enableAcousticFeaturesStr ]) => ({
+                        annotationCampaign: campaign.id,
+                        enableAcousticFeatures: enableAcousticFeaturesStr === 'true',
+                        label: name.split('-')[1]
+                    } satisfies AnnotationCampaignLabelInput)),
                 allowPointAnnotation: formData.get('allowPointAnnotation') === 'true',
             })
             closeOnCreate()
         } catch (error) {
             toastManager.addError({ title: 'Annotation phase creation failed', error })
         }
-    }, [ mutateAsync, campaign, labelsWithAcousticFeatures, closeOnCreate, toastManager ])
+    }, [ mutateAsync, campaign, labelRelations, closeOnCreate, toastManager ])
 
     if (campaign.archived) return <Fragment/>
     return <Dialog.Content>
@@ -53,19 +81,35 @@ export const CreateAnnotationModal: React.FC<{ closeOnCreate: () => void }> = ({
         <Form onSubmit={ onSubmit }>
             <p>In an "Annotation" phase, you create new annotations.</p>
 
-            <Field.Root name="labelSetID">
-                <div className={ styles.horizontalField }>
-                    <Field.Label required>Label set</Field.Label>
-                    <LabelComponent.SetSelect value={ labelSet }
-                                              onValueChange={ setLabelSet }
-                                              required/>
-                </div>
-                <Field.Error/>
+            <Field.Root>
+                <Field.Label>Add label</Field.Label>
+                <MxOntology.LabelCombobox multiple side='top'
+                                          value={ [] }
+                                          onValueChange={ addLabels }/>
             </Field.Root>
-            { labelSet && <LabelComponent.Table description={ labelSet.description ?? undefined }
-                                                labels={ cleanGqlList(labelSet.labels) }
-                                                labelsWithAcousticFeatures={ labelsWithAcousticFeatures }
-                                                setLabelsWithAcousticFeatures={ setLabelsWithAcousticFeatures }/> }
+            <Field.Root>
+                <Field.Label>Add labels from another campaign</Field.Label>
+                <Campaign.Combobox multiple side='top'
+                                   loading={ isLoadingCampaignLabels }
+                                   value={ [] }
+                                   onValueChange={ addLabelsFromCampaign }/>
+            </Field.Root>
+
+            { labelRelations.length > 0 && <Note>Labels</Note> }
+
+            { labelRelations.map((rel, key) =>
+                <Field.Root key={ key } name={ `label-${ rel.label.id }` }>
+                    <div className={ styles.label }>
+                        <Button onClick={ () => removeLabel(rel) }>
+                            <TrashBinTrashLinearIcon size={ 16 }/>
+                        </Button>
+                        <Checkbox defaultChecked={ rel.enableAcousticFeatures }/>
+                        <Field.Label>
+                            { rel.label.displayName }
+                        </Field.Label>
+                    </div>
+                    <Field.Error/>
+                </Field.Root>) }
 
             <Field.Root name="confidenceSetID">
                 <div className={ styles.horizontalField }>

@@ -1,14 +1,14 @@
-import { useAppDispatch, useAppSelector } from '@/features/App';
 import { useCallback } from 'react';
+import { useLoaderData, useParams } from '@tanstack/react-router';
+import { useQuery } from "@tanstack/react-query";
+import { AnnotationType } from '@/api/types.gql-generated.ts';
+import { Alert } from '@/components/base';
+import { useAppDispatch, useAppSelector } from '@/features/App';
+import { getNewItemID } from '@/service/function';
+import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
+import { Campaign } from "@/features";
 import { addAnnotation, type Annotation, blur, focusAnnotation, removeAnnotation, updateAnnotation } from './slice';
 import { selectAllAnnotations } from './selectors'
-import { getNewItemID } from '@/service/function';
-import { AnnotationType } from '@/api';
-import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
-import { useLoaderData, useParams } from '@tanstack/react-router';
-import { Alert } from '@/components/base';
-import { useQuery } from "@tanstack/react-query";
-import { Campaign } from "@/features/AnnotationCampaign";
 
 type AnnotationEqualsType = Pick<Annotation, 'confidence' | 'startTime' | 'endTime' | 'minFrequency' | 'maxFrequency'> & { labelId: string }
 
@@ -198,7 +198,7 @@ export const useUpdateAnnotation = () => {
 export const useRemoveAnnotation = () => {
     const { phaseType, campaignID } = useParams({ strict: false });
     const { user } = useLoaderData({ from: '/_authenticated' })
-    const { data: campaignData } = useQuery(Campaign.byIdQuery({ id: campaignID }))
+    const { data: labels } = useQuery(Campaign.labelsByIdQuery({ id: campaignID }))
     const allAnnotations = useAppSelector(selectAllAnnotations);
 
     const getAnnotations = useGetAnnotations()
@@ -217,7 +217,7 @@ export const useRemoveAnnotation = () => {
     const remove = useCallback(async (annotation: Annotation, focusWeak: boolean = true, mustConfirm: boolean = true) => {
         if (annotation.type === 'Weak' && mustConfirm) {
             const annotationsForLabel = getAnnotations({ labelId: annotation.labelId })
-            const label = campaignData?.labels.find(l => l.id === annotation.labelId)
+            const label = labels?.find(l => l.label.id === annotation.labelId)
             const confirmRemove = await alert.present({
                 color: 'warning',
                 message: `You are about to remove ${ annotationsForLabel.length } annotations using "${ label }" label. Are you sure?`,
@@ -240,7 +240,7 @@ export const useRemoveAnnotation = () => {
             if (weak && focusWeak && annotation.annotator === user.id) dispatch(focusAnnotation(weak))
             else dispatch(blur())
         }
-    }, [ phaseType, allAnnotations, actualRemove, alert, getAnnotations, user, dispatch, campaignData ])
+    }, [ phaseType, allAnnotations, actualRemove, alert, getAnnotations, user, dispatch, labels ])
 
     return useCallback((annotation: Annotation) => remove(annotation), [ remove ])
 }

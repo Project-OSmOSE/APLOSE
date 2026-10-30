@@ -7,13 +7,22 @@ from backend.api.admin.common.__abstract_archivable import (
     admin_unarchive,
 )
 from backend.api.models import AnnotationCampaign
-from ...models.annotation.annotation_campaign import AnnotationCampaignAnalysis
+from ...models.annotation.annotation_campaign import (
+    AnnotationCampaignAnalysis,
+    AnnotationCampaignLabel,
+)
 
 
 class AnnotationCampaignAnalysisRelationInline(admin.TabularInline):
-    """Confidence entry with relation related fields"""
+    """AnnotationCampaign entry with analysis related fields"""
 
     model = AnnotationCampaignAnalysis
+
+
+class AnnotationCampaignLabelRelationInline(admin.TabularInline):
+    """AnnotationCampaign entry with label related fields"""
+
+    model = AnnotationCampaignLabel
 
 
 @admin.register(AnnotationCampaign)
@@ -30,8 +39,7 @@ class AnnotationCampaignAdmin(ExtendedModelAdmin):
         "archived",
         "instructions_url",
         "deadline",
-        "label_set",
-        "get_labels_with_acoustic_features",
+        "get_labels",
         "allow_point_annotation",
         "owner",
         "show_spectrogram_analysis",
@@ -41,9 +49,10 @@ class AnnotationCampaignAdmin(ExtendedModelAdmin):
         "colormap_tuning",
         "allow_digital_zoom",
     )
-    inlines = (AnnotationCampaignAnalysisRelationInline,)
-
-    filter_horizontal = ("labels_with_acoustic_features",)
+    inlines = (
+        AnnotationCampaignAnalysisRelationInline,
+        AnnotationCampaignLabelRelationInline,
+    )
 
     search_fields = (
         "name",
@@ -60,10 +69,13 @@ class AnnotationCampaignAdmin(ExtendedModelAdmin):
         admin_unarchive,
     ]
 
-    @admin.display(description="Labels for acoustic features")
-    def get_labels_with_acoustic_features(self, obj: AnnotationCampaign):
-        """show_labels_with_acoustic_features"""
-        return self.list_queryset(obj.labels_with_acoustic_features.all())
+    @admin.display(description="Labels")
+    def get_labels(self, obj: AnnotationCampaign):
+        """show_labels"""
+        return self.list_queryset(
+            obj.annotationcampaignlabel_set.all(),
+            to_str=lambda x: f"{str(x)} [AF]" if x.enable_acoustic_features else str(x),
+        )
 
     @admin.display(description="Spectrogram analysis")
     def show_spectrogram_analysis(self, obj: AnnotationCampaign):

@@ -29,6 +29,7 @@ export const queryKeys = {
         base: [ 'campaign' ],
         all: (variables: AllCampaignsQueryVariables) => [ 'campaign', variables ] as const,
         byId: (variables: GetCampaignQueryVariables) => [ 'campaign', variables.id ] as const,
+        labelsById: (variables: GetCampaignQueryVariables) => [ 'campaign', 'labels', variables.id ] as const,
     },
     phase: {
         get: ({ campaignID, phase }: GetAnnotationPhaseQueryVariables) => [ 'phase', campaignID, phase ] as const,

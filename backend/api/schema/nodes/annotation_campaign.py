@@ -28,7 +28,16 @@ from backend.aplose.schema import UserNode
 from .__abstract_permission import AbstractPermissionNode
 from .annotation_phase import AnnotationPhaseNode
 from .detector import DetectorNode
+from backend.api.models.annotation.annotation_campaign import AnnotationCampaignLabel
 
+
+class AnnotationCampaignLabelNode(AbstractPermissionNode, ExtendedNode):
+    """AnnotationCampaignLabel schema"""
+
+    class Meta:
+        model = AnnotationCampaignLabel
+        fields = "__all__"
+        filterset_fields = {}
 
 class AnnotationCampaignNode(AbstractPermissionNode, ExtendedNode):
     """AnnotationCampaign schema"""
@@ -76,12 +85,12 @@ class AnnotationCampaignNode(AbstractPermissionNode, ExtendedNode):
             info,
         )
 
-    labels_with_acoustic_features = graphene.List(LabelNode)
+    labels = graphene.List(AnnotationCampaignLabelNode)
 
     @graphene_django_optimizer.resolver_hints()
-    def resolve_labels_with_acoustic_features(self: AnnotationCampaign, info):
+    def resolve_labels(self: AnnotationCampaign, info):
         """Resolve featured labels"""
-        return self.labels_with_acoustic_features.all()
+        return self.annotationcampaignlabel_set.all()
 
     spectrograms_count = graphene.Int(required=True)
 

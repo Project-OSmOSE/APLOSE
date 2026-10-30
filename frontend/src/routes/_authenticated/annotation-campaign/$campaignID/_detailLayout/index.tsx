@@ -1,15 +1,13 @@
 import React, { Fragment, useMemo } from 'react';
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 import { dateToString, pluralize } from '@/service/function';
-
-import { LabelDialog } from '@/features/Labels';
+import { ensureValidQueryData } from '@/api/utils';
+import { Note } from '@/components/base';
 import { Campaign } from '@/features/AnnotationCampaign';
 import { Dataset } from '@/features/Dataset';
 import { AnalysisAPI, SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 
 import styles from './index.module.scss';
-import { Dialog, Note } from '@/components/base';
-import { ensureValidQueryData } from '@/api/utils';
 
 const AnnotationCampaignInfo: React.FC = () => {
     const analysis = Route.useLoaderData()
@@ -44,19 +42,7 @@ const AnnotationCampaignInfo: React.FC = () => {
 
                 {/* ANNOTATION */ }
                 { phases.length > 0 && <Fragment>
-                    <div className={ styles.bloc }>
-                        <div>
-                            <h4>Label set</h4>
-                            { campaign.labelSet && <Dialog.Root>
-                                <Dialog.Trigger color="medium" disabled={ !campaign.labelSet }>
-                                    { campaign.labelSet?.name ?? 'No label set' }
-                                </Dialog.Trigger>
-                                <Dialog.Portal>
-                                    <LabelDialog.Set/>
-                                </Dialog.Portal>
-                            </Dialog.Root> }
-                        </div>
-                    </div>
+                    <Campaign.LabelsDialog campaign={ campaign }/>
 
                     <div className={ styles.bloc }>
                         <div>

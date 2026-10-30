@@ -1,28 +1,32 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useLoaderData, useParams } from '@tanstack/react-router';
+import { useQuery } from "@tanstack/react-query";
 import { MinusCircleLinearIcon } from '@solar-icons/react';
-import styles from './styles.module.scss';
+import { AnnotationType } from '@/api/types.gql-generated.ts';
 import { type ExtendedDivPosition, Table, Tbody, useExtendedDiv } from '@/components/ui';
-import { AnnotationType } from '@/api';
+import { Button } from '@/components/base';
 import { useTimeScale } from '@/features/Annotator/Axis';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
 import { focusAnnotation } from '@/features/Annotator/Annotation/slice';
 import { useGetAnnotation } from '@/features/Annotator/Annotation';
-import { QuantitySwitch } from './Quantity';
-import { Frequency } from './Frequency';
-import { Trend } from './Trend';
 import { Duration } from '@/features/Annotator/AcousticFeatures/Duration';
 import { NonLinearPhenomena } from '@/features/Annotator/AcousticFeatures/NonLinearPhenomena';
 import { Checks } from '@/features/Annotator/AcousticFeatures/Checks';
 import { useAnnotatorCanvasContext, useWindowWidth } from '@/features/Annotator/Canvas';
-import { useLoaderData } from '@tanstack/react-router';
-import { Button } from '@/components/base';
+import { Campaign } from "@/features";
+import { QuantitySwitch } from './Quantity';
+import { Frequency } from './Frequency';
+import { Trend } from './Trend';
+import styles from './styles.module.scss';
 
 export const AcousticFeatures: React.FC = () => {
     const { left } = useAnnotatorCanvasContext()
     const focusedAnnotation = useAppSelector(selectAnnotation)
     const getAnnotation = useGetAnnotation()
     const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const { data: labels } = useQuery(Campaign.labelsByIdQuery({ id: campaignID }))
     const timeScale = useTimeScale()
     const dispatch = useAppDispatch();
 
@@ -73,7 +77,7 @@ export const AcousticFeatures: React.FC = () => {
 
     return useMemo(() => {
         if (!focusedAnnotation) return <Fragment/>;
-        if (!campaign.labelsWithAcousticFeatures?.find(l => l?.id === focusedAnnotation.labelId)) return <Fragment/>;
+        if (!labels?.find(l => l?.enableAcousticFeatures && l?.label.id === focusedAnnotation.labelId)) return <Fragment/>;
         if (focusedAnnotation.type !== AnnotationType.Box) return <Fragment/>;
         return <div ref={ divRef }
                     className={ styles.features }

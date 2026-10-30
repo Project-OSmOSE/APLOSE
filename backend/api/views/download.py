@@ -130,9 +130,9 @@ def _get_annotations_for_report(
         .values_list("data", flat=True)
     )
     featured_label_ids = list(
-        phase.annotation_campaign.labels_with_acoustic_features.values_list(
-            "id", flat=True
-        )
+        phase.annotation_campaign.annotationcampaignlabel_set.filter(
+            enable_acoustic_features=True
+        ).values_list("label_id", flat=True)
     )
     signal_quantity_query = Case(
         When(acoustic_features__isnull=False, then=Value("SINGLE")),
@@ -205,10 +205,13 @@ def _get_annotations_for_report(
             label_name=Concat(
                 F("label__source__english_name"),
                 Case(
-                    When(label__sound__isnull=False, then=Concat(Value(" - "), F("label__sound__english_name"))),
+                    When(
+                        label__sound__isnull=False,
+                        then=Concat(Value(" - "), F("label__sound__english_name")),
+                    ),
                     default=None,
                     output_field=models.CharField(),
-                )
+                ),
             ),
             annotator_expertise=expertise_query,
             type_label=type_query,

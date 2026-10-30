@@ -24,10 +24,9 @@ export const Route = createFileRoute(
             phases,
             analysis,
             confidences,
-            labels,
         } = await ensureValidQueryData(Campaign.byIdQuery({ id: campaignID }))
         if (!campaign) throw notFound()
-        return { campaign, phases, analysis, confidences, labels }
+        return { campaign, phases, analysis, confidences }
     },
     component: Outlet,
     errorComponent: (props) => <ErrorComponent { ...props }/>,

@@ -1,29 +1,26 @@
-import React, { useCallback, useMemo } from 'react';
-import styles from './styles.module.scss';
-import { Bloc } from '@/components/ui';
-import { LabelChip } from './LabelChip';
-import { useAppDispatch, useAppSelector } from '@/features/App';
-import { selectHiddenLabelIds } from './selectors';
-import { blur } from '@/features/Annotator/Annotation';
-import { setHiddenLabelIds } from './slice';
-import { useLoaderData } from '@tanstack/react-router';
-import { Button } from '@/components/base/Button';
+import React, { useCallback } from 'react';
+import { useParams } from '@tanstack/react-router';
 import { useHotkey } from '@tanstack/react-hotkeys';
+import { useQuery } from "@tanstack/react-query";
+import { Bloc } from '@/components/ui';
+import { Button } from '@/components/base';
+import { useAppDispatch, useAppSelector } from '@/features/App';
+import { blur } from '@/features/Annotator/Annotation';
+import { Campaign } from "@/features";
+import { setHiddenLabelIds } from './slice';
+import { selectHiddenLabelIds } from './selectors';
+import { LabelChip } from './LabelChip';
+import styles from './styles.module.scss';
 
 export const LabelsBloc: React.FC = () => {
-    const { labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const { data: labels } = useQuery(Campaign.labelsByIdQuery({ id: campaignID }))
     const hiddenLabelIds = useAppSelector(selectHiddenLabelIds)
     const dispatch = useAppDispatch()
 
     const showAllLabels = useCallback(() => {
         dispatch(setHiddenLabelIds([]))
     }, [ dispatch ])
-
-    const sortedLabels = useMemo(() => {
-        return labels.sort((a, b) => {
-            return a.source.englishName.localeCompare(b.source.englishName)
-        })
-    }, [labels])
 
     const escape = useCallback(() => dispatch(blur()), [ dispatch ])
     useHotkey('Escape', escape)
@@ -35,7 +32,7 @@ export const LabelsBloc: React.FC = () => {
                                                    className={ styles.showButton }>Show all</Button> }
         </Bloc.Title>
         <Bloc.Content>
-            { sortedLabels.map((label) => <LabelChip label={ label } key={ label.id }/>) }
+            { labels?.map((label) => <LabelChip label={ label.label } key={ label.label.id }/>) }
         </Bloc.Content>
     </Bloc.Root>
 }
