@@ -1,14 +1,14 @@
 import React from 'react';
 import { Toggle } from '@/components/base';
-import { ContactTypeEnum } from '@/api';
+import * as API from '../api'
 
 type Props =
-    Omit<Toggle.RadioGroupProps<ContactTypeEnum>, 'items' | 'itemToElementLabel' | 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue' | 'itemName'>
+    Omit<Toggle.RadioGroupProps<API.ContactTypeEnum>, 'items' | 'itemToElementLabel' | 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue' | 'itemName'>
 
-const ALL_TYPES: ContactTypeEnum[] = [
-    ContactTypeEnum.Institution,
-    ContactTypeEnum.Team,
-    ContactTypeEnum.Person,
+const ALL_TYPES: API.ContactTypeEnum[] = [
+    API.ContactTypeEnum.Institution,
+    API.ContactTypeEnum.Team,
+    API.ContactTypeEnum.Person,
 ]
 
 export const ContactTypeToggle: React.FC<Props> = ({ ...props }) => {

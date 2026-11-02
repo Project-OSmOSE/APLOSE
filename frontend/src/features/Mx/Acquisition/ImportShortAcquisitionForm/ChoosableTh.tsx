@@ -1,11 +1,10 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
+import { TrashBinTrashLinearIcon } from '@solar-icons/react';
 import { Th } from '@/components/ui';
 import { Button, ButtonGroup, ComboboxSelect, Field } from '@/components/base';
-import { useImportShortAcquisitionContext } from './Root';
-import { TrashBinTrashLinearIcon } from '@solar-icons/react';
-import { type Key, useFormatKey } from './keys'
 import { MxCommon } from '@/features/Mx';
-import { ContactTypeEnum } from '@/api';
+import { useImportShortAcquisitionContext } from './Root';
+import { type Key, useFormatKey } from './keys'
 import styles from './styles.module.scss'
 
 
@@ -67,7 +66,7 @@ export const ChoosableTh: React.FC<{ header: string }> = ({ header }) => {
         }
     }, [ setKeyForRaw, setVisualObservationIndex, getVisualObservationIndex, mapRawToKey, header ])
 
-    const onContactTypeChange = useCallback((value: ContactTypeEnum) => {
+    const onContactTypeChange = useCallback((value: MxCommon.ContactTypeEnum) => {
         setContactTypeForRaw(header, value)
     }, [ setContactTypeForRaw, header ])
 
@@ -108,7 +107,7 @@ export const ChoosableTh: React.FC<{ header: string }> = ({ header }) => {
                     <MxCommon.RoleSelect required/>
                 </Field.Root>
                 <Field.Root name="contacts-contactType">
-                    <MxCommon.ContactTypeToggle value={ contactType || ContactTypeEnum.Institution }
+                    <MxCommon.ContactTypeToggle value={ contactType || MxCommon.ContactTypeEnum.Institution }
                                                 onValueChange={ onContactTypeChange }/>
                 </Field.Root>
             </Fragment> }

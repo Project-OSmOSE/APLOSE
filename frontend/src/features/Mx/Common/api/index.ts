@@ -69,3 +69,7 @@ export const createPerson = optimisticMutationOptions({
 
 export type ContactFragment = PersonFragment | TeamFragment | InstitutionFragment
 export type * from './common.generated'
+export {
+    ContactTypeEnum,
+    RoleEnum,
+} from '@/api/types.gql-generated.ts'

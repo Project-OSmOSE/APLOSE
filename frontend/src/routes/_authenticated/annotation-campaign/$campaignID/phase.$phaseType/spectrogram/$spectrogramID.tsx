@@ -1,7 +1,6 @@
 import React, { Fragment, MouseEvent, useCallback, useEffect, useMemo, useRef } from 'react';
 import { createFileRoute, notFound } from '@tanstack/react-router'
 
-import { AnnotationPhaseType } from '@/api';
 import { CurrentTime, PlaybackRateSelect, PlayPauseButton } from '@/features/Audio';
 import { usePointer } from '@/features/Annotator/Pointer';
 import { AnnotatorSkeleton } from '@/features/Annotator/Skeleton';
@@ -20,6 +19,7 @@ import { User } from '@/features/User';
 import { ConfigBar } from '@/features/Annotator/ConfigBar';
 import { DownloadButtons } from '@/features/Annotator/DownloadButtons';
 import { Campaign } from '@/features/AnnotationCampaign';
+import { Phase } from '@/features/AnnotationPhase';
 import { useAppDispatch } from '@/features/App';
 
 const AnnotatorPage: React.FC = () => {
@@ -87,7 +87,7 @@ export const Route = createFileRoute(
 )({
     validateSearch: (search: Record<string, unknown>) => search as AllSpectrogramsFilters,
     params: {
-        parse: rawParams => rawParams as { campaignID: string, spectrogramID: string, phaseType: AnnotationPhaseType },
+        parse: rawParams => rawParams as { campaignID: string, spectrogramID: string, phaseType: Phase.Type },
     },
     loaderDeps: ({ search }) => search as AllSpectrogramsFilters,
     loader: async ({ params: { campaignID, phaseType, spectrogramID }, deps }) => {

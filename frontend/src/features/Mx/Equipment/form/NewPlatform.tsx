@@ -5,9 +5,8 @@ import { MxCommon } from '@/features/Mx';
 import * as API from '../api'
 import { PlatformTypeSelect } from '../input';
 import styles from './styles.module.scss'
-import { ContactTypeEnum } from '@/api';
 
-const DEFAULT_OWNER_TYPE = ContactTypeEnum.Institution
+const DEFAULT_OWNER_TYPE = MxCommon.ContactTypeEnum.Institution
 
 export const NewPlatformForm: React.FC<CreateDialog.FormProps<API.PlatformFragment, API.CreatePlatformMutationVariables['input']>> = ({
                                                                                                                                           onCreate,
@@ -15,7 +14,7 @@ export const NewPlatformForm: React.FC<CreateDialog.FormProps<API.PlatformFragme
                                                                                                                                       }) => {
     const { data, mutateAsync, isPending } = useMutation(API.createPlatform)
     const toastManager = Toast.useToastManager()
-    const [ ownerType, setOwnerType ] = useState<ContactTypeEnum | undefined>();
+    const [ ownerType, setOwnerType ] = useState<MxCommon.ContactTypeEnum | undefined>();
 
     const submit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();

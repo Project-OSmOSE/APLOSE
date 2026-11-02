@@ -1,7 +1,7 @@
 import React, { Fragment, type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLoaderData, useParams } from '@tanstack/react-router';
 import { useQuery } from "@tanstack/react-query";
-import { AnnotationType } from '@/api';
+import { AnnotationType } from '@/api/types.gql-generated.ts';
 import { formatTime } from '@/service/function';
 import { MOUSE_DOWN_EVENT } from '@/components/ui/Event';
 import { useAppDispatch, useAppSelector } from '@/features/App';

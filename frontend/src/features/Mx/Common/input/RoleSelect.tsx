@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select, type SelectProps } from '@/components/base';
-import { RoleEnum } from '@/api';
+import { RoleEnum } from '../api';
 
 const ALL_ROLES: RoleEnum[] = [
     RoleEnum.MainContact,

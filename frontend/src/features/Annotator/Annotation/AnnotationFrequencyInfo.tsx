@@ -2,7 +2,7 @@ import React, { Fragment, useMemo } from 'react';
 import { AltArrowRightLinearIcon, CourseUpLinearIcon } from '@solar-icons/react';
 import type { Annotation } from './slice';
 import styles from './styles.module.scss';
-import { AnnotationType } from '@/api';
+import { AnnotationType } from '@/api/types.gql-generated.ts';
 import { NBSP } from '@/service/type';
 
 export const AnnotationFrequencyInfo: React.FC<{ annotation: Annotation }> = ({ annotation }) => {

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { type Annotation, blur, focusAnnotation } from '@/features/Annotator/Annotation/slice';
-import { ConfidenceNode } from '@/api';
+import { ConfidenceNode } from '@/api/types.gql-generated.ts';
 
 export type Confidence = Pick<ConfidenceNode, 'isDefault' | 'label'>
 

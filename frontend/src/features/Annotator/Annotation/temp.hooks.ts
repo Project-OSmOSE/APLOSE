@@ -3,7 +3,7 @@ import { MouseEvent, PointerEvent, useCallback } from 'react';
 import { blur, clearTempAnnotation, setTempAnnotation } from './slice';
 import { selectTempAnnotation } from './selectors';
 import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
-import { AnnotationType } from '@/api';
+import { AnnotationType } from '@/api/types.gql-generated.ts';
 import { MOUSE_DOWN_EVENT, MOUSE_MOVE_EVENT, MOUSE_UP_EVENT, useRegisterToEvent } from '@/components/ui/Event';
 import { useGetFreqTime, useIsHoverCanvas } from '@/features/Annotator/Pointer';
 import { formatTime } from '@/service/function';

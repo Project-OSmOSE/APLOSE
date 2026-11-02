@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { createFileRoute, notFound, Outlet, useNavigate } from '@tanstack/react-router'
 import { Background, Controls, Node, ReactFlow, useOnSelectionChange, useReactFlow } from '@xyflow/react';
 
-import { SoundNode, SourceNode } from '@/api';
+import { SoundNode, SourceNode } from '@/api/types.gql-generated.ts';
 import { NewNode, NODE_ORIGIN, NODE_TYPES, OntologyAPI, useGetInitialNodes, useOntologyTreeFlow } from '@/features/Ontology';
 
 import styles from './$type.module.scss';

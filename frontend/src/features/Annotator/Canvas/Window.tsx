@@ -16,7 +16,7 @@ import { useAudio } from '@/features/Audio';
 import { useAnnotatorCanvasContext } from '@/features/Annotator/Canvas/context';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { setAllFileAsSeen } from '@/features/Annotator/UX/slice';
-import { AnnotationType } from '@/api';
+import { AnnotationType } from '@/api/types.gql-generated.ts';
 import { AcousticFeatures } from '@/features/Annotator/AcousticFeatures';
 import { useAnnotatorAnalysis } from '@/features/Annotator/Analysis';
 import { useLoaderData } from '@tanstack/react-router';

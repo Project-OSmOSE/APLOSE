@@ -3,7 +3,7 @@ import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { BaseUIEvent } from '@base-ui/react';
 
-import type { SourceNode } from '@/api';
+import type { SourceNode } from '@/api/types.gql-generated.ts';
 import { ensureValidQueryData } from '@/api/utils';
 import { OntologyAPI, type UpdateSoundMutationVariables } from '@/features/Ontology';
 

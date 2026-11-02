@@ -5,7 +5,7 @@ import {
   AnnotationInput,
   AnnotationType,
   AnnotationValidationSerializerInput,
-} from '@/api';
+} from '@/api/types.gql-generated.ts';
 
 
 export type Comment = Omit<AnnotationCommentSerializerInput, 'id'> & { id: number }

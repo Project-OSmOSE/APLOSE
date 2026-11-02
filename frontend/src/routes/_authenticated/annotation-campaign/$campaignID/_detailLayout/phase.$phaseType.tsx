@@ -4,11 +4,9 @@ import { FilterLinearIcon, FilterBoldIcon } from '@solar-icons/react';
 
 import { Pagination, Table, Tbody, Th, Thead, Tr, WarningText } from '@/components/ui';
 
-import { AnnotationPhaseType } from '@/api';
-
 import { AnnotationsFilterModal, DateFilterModal, StatusFilterModal } from '@/features/AnnotationTask';
 import { FileRangeActionBar } from '@/features/AnnotationFileRange';
-import { PhaseAPI, PhaseComponent } from '@/features/AnnotationPhase';
+import { Phase } from '@/features/AnnotationPhase';
 import {
     type AllSpectrogramsFilters,
     AnnotationSpectrogramAPI,
@@ -58,7 +56,7 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
         offset: PAGE_SIZE * ((search.page ?? 1) - 1),
         ...search,
     }))
-    const { data: phase } = useQuery(PhaseAPI.getQuery({
+    const { data: phase } = useQuery(Phase.getQuery({
         campaignID,
         phase: phaseType,
     }))
@@ -88,9 +86,9 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
 
             <FileRangeActionBar isPending={ isFetching }/>
 
-            { phase?.phase === 'Verification' && !phase?.hasAnnotations && phases.find(p => p.phase === AnnotationPhaseType.Verification) &&
+            { phase?.phase === 'Verification' && !phase?.hasAnnotations && phases.find(p => p.phase === Phase.Type.Verification) &&
                 <WarningText message="Your campaign doesn't have any annotations to check"
-                             children={ <PhaseComponent.ImportAnnotationsButton/> }/> }
+                             children={ <Phase.ImportAnnotationsButton/> }/> }
 
             { !isLoading && <Table spacing="small">
                 <Thead>
@@ -173,11 +171,11 @@ const AnnotationCampaignPhaseDetail: React.FC = () => {
 export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase/$phaseType')({
     validateSearch: (search: Record<string, unknown>) => search as AllSpectrogramsFilters,
     params: {
-        parse: rawParams => rawParams as { campaignID: string, phaseType: AnnotationPhaseType },
+        parse: rawParams => rawParams as { campaignID: string, phaseType: Phase.Type },
     },
     loaderDeps: ({ search }) => search as AllSpectrogramsFilters,
     loader: async ({ params: { campaignID, phaseType } }) => {
-        const phase = await ensureValidQueryData(PhaseAPI.getQuery({
+        const phase = await ensureValidQueryData(Phase.getQuery({
             campaignID,
             phase: phaseType,
         }))

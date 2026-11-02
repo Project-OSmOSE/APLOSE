@@ -3,7 +3,6 @@ export {
     type ArchiveCampaignButtonProps as ArchiveButtonProps
 } from './ArchiveButton'
 export { CampaignBadge as Badge } from './Badge'
-export { CampaignCard as Card } from './Card'
 export { CampaignCards as Cards } from './Cards'
 export { CampaignCombobox as Combobox } from './Combobox.tsx'
 export { CampaignInstructionsButton as InstructionsButton } from './InstructionsButton'

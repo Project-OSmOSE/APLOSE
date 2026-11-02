@@ -2,7 +2,7 @@ import React, { Fragment, type HTMLProps, ReactNode, useCallback, useEffect, use
 import { AltArrowRightLinearIcon, CheckCircleLinearIcon } from '@solar-icons/react';
 import { Footer, Navigation } from '@/components/layout';
 import styles from './styles.module.scss';
-import { AnnotationTaskStatus } from '@/api';
+import { AnnotationTaskStatus } from '@/api/types.gql-generated.ts';
 import { useAppDispatch } from '@/features/App';
 import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
 import { PointerProvider } from '@/features/Annotator/Pointer/context';

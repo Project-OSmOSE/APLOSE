@@ -28,21 +28,23 @@ const meta = {
             datasetName: 'APOCADO_C4D6_ST336363566',
             tasksCount: 79320,
             completedTasksCount: 24814,
+            phases: {
+                results: [
+                    {
+                        phase: AnnotationPhaseType.Annotation,
+                        archived: true,
+                        userTasksCount: 12,
+                        userCompletedTasksCount: 12,
+                    },
+                    {
+                        phase: AnnotationPhaseType.Verification,
+                        archived: false,
+                        userTasksCount: 37,
+                        userCompletedTasksCount: 12,
+                    },
+                ]
+            },
         },
-        phases: [
-            {
-                phase: AnnotationPhaseType.Annotation,
-                archived: true,
-                userTasksCount: 12,
-                userCompletedTasksCount: 12,
-            },
-            {
-                phase: AnnotationPhaseType.Verification,
-                archived: false,
-                userTasksCount: 37,
-                userCompletedTasksCount: 12,
-            },
-        ],
     } satisfies CampaignCardProps,
 } satisfies Meta<typeof CampaignCard>;
 export default meta;

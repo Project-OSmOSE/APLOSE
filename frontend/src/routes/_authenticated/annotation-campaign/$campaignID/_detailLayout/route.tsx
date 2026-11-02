@@ -1,13 +1,11 @@
 import { createFileRoute, Outlet, useLoaderData, useParams } from '@tanstack/react-router'
-import { AnnotationPhaseType } from '@/api';
 import React, { Fragment } from 'react';
-import { Head, Tab, Tabs } from '@/components/ui';
 import { dateToString } from '@/service/function';
 import { NBSP } from '@/service/type';
+import { Head, Tab, Tabs } from '@/components/ui';
+import { Content, Page } from '@/components/layout';
 import { User } from '@/features/User';
-import { PhaseComponent } from '@/features/AnnotationPhase';
-import { Content } from '@/components/layout/Content';
-import { Page } from '@/components/layout';
+import { Phase } from '@/features/AnnotationPhase';
 
 const AnnotationCampaignDetail: React.FC = () => {
     const { phaseType } = useParams({ strict: false });
@@ -32,8 +30,8 @@ const AnnotationCampaignDetail: React.FC = () => {
                         Information
                     </Tab>
 
-                    <PhaseComponent.Tab phaseType={ AnnotationPhaseType.Annotation }/>
-                    <PhaseComponent.Tab phaseType={ AnnotationPhaseType.Verification }/>
+                    <Phase.Tab phaseType={ Phase.Type.Annotation }/>
+                    <Phase.Tab phaseType={ Phase.Type.Verification }/>
                 </Tabs>
 
                 <Outlet/>
