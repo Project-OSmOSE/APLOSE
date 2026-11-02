@@ -2,7 +2,8 @@ import { type AnnotationNode, AnnotationType } from '../../../../src/api/types.g
 
 
 export type Annotation = Omit<AnnotationNode,
-  'label'
+  'labelId'
+  | 'label'
   | 'acousticFeatures'
   | 'annotationPhase'
   | 'spectrogram'

@@ -86,9 +86,7 @@ export const TASK_QUERIES: {
                                     id: USERS.annotator.id,
                                     displayName: USERS.annotator.displayName,
                                 },
-                                label: {
-                                    name: LABELS.classic.name,
-                                },
+                                labelId: LABELS.classic.id,
                                 confidence: {
                                     label: CONFIDENCES.sure.label,
                                 },
@@ -103,9 +101,7 @@ export const TASK_QUERIES: {
                                     id: USERS.annotator.id,
                                     displayName: USERS.annotator.displayName,
                                 },
-                                label: {
-                                    name: LABELS.classic.name,
-                                },
+                                labelId: LABELS.classic.id,
                                 confidence: {
                                     label: CONFIDENCES.notSure.label,
                                 },
@@ -143,9 +139,7 @@ export const TASK_QUERIES: {
                                     id: USERS.creator.id,
                                     displayName: USERS.creator.displayName,
                                 },
-                                label: {
-                                    name: LABELS.classic.name,
-                                },
+                                labelId: LABELS.classic.id,
                                 confidence: {
                                     label: CONFIDENCES.sure.label,
                                 },
@@ -160,9 +154,7 @@ export const TASK_QUERIES: {
                                     id: USERS.creator.id,
                                     displayName: USERS.creator.displayName,
                                 },
-                                label: {
-                                    name: LABELS.classic.name,
-                                },
+                                labelId: LABELS.classic.id,
                                 confidence: {
                                     label: CONFIDENCES.notSure.label,
                                 },

@@ -1,7 +1,6 @@
 import { DATASET_QUERIES } from './dataset';
 import { ANALYSIS_QUERIES } from './spectrogramAnalysis';
 import { CAMPAIGN_MUTATIONS, CAMPAIGN_QUERIES } from './campaign';
-import { LABEL_SET_QUERIES } from './labelSet';
 import { GET_CURRENT_USER_QUERY, USER_QUERIES } from './user';
 import { PHASE_MUTATIONS, PHASE_QUERIES } from './phase';
 import { TASK_MUTATIONS, TASK_QUERIES } from './task';
@@ -16,7 +15,6 @@ type GqlQueries =
     & typeof STORAGE_QUERIES
     & typeof ANALYSIS_QUERIES
     & typeof CAMPAIGN_QUERIES
-    & typeof LABEL_SET_QUERIES
     & typeof USER_QUERIES
     & typeof PHASE_QUERIES
     & typeof TASK_QUERIES
@@ -29,7 +27,6 @@ const GQL_MOCK_QUERIES: GqlQueries & { getCurrentUser: typeof GET_CURRENT_USER_Q
     ...STORAGE_QUERIES,
     ...ANALYSIS_QUERIES,
     ...CAMPAIGN_QUERIES,
-    ...LABEL_SET_QUERIES,
     ...USER_QUERIES,
     ...PHASE_QUERIES,
     ...TASK_QUERIES,
