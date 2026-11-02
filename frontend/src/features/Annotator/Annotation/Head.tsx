@@ -11,12 +11,12 @@ import { useQuery } from "@tanstack/react-query";
 import { Kbd } from '@/components/ui';
 import { Dialog, Popover } from '@/components/base';
 import { useAudio } from '@/features/Audio';
-import { LabelDialog } from '@/features/Labels';
 import { useRemoveAnnotation, useUpdateAnnotation } from '@/features/Annotator/Annotation/hooks';
 import { useAppSelector } from '@/features/App';
 import { selectFocusLabelId } from '@/features/Annotator/Label';
 import { Campaign } from "@/features";
 import type { Annotation } from './slice';
+import { MxOntology } from "@/features/Mx";
 
 export const AnnotationHeadContent: React.FC<{
     annotation: Annotation,
@@ -30,7 +30,7 @@ export const AnnotationHeadContent: React.FC<{
     const removeAnnotation = useRemoveAnnotation()
     const annotationLabel = useMemo(() => {
         return labels?.find(l => l.label.id === (annotation.update?.labelId ?? annotation?.labelId))
-    }, [annotation, labels])
+    }, [ annotation, labels ])
 
     const play = useCallback(() => {
         audio.play(annotation.startTime ?? undefined, annotation.endTime ?? undefined)
@@ -72,9 +72,9 @@ export const AnnotationHeadContent: React.FC<{
                 </Popover.Root>
             </Dialog.Trigger>
             <Dialog.Portal>
-                <LabelDialog.Update availableLabels={ labels?.map(l => l.label) ?? [] }
-                                    selectedID={ focusedLabelId }
-                                    onSelectID={ updateLabel }/>
+                <MxOntology.UpdateLabelDialogContent availableLabels={ labels?.map(l => l.label) ?? [] }
+                                                     selectedID={ focusedLabelId }
+                                                     onSelectID={ updateLabel }/>
             </Dialog.Portal>
         </Dialog.Root>
 

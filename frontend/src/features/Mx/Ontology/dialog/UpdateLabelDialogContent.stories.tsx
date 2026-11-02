@@ -1,19 +1,19 @@
 import { Dialog } from '@base-ui/react';
-import { Update, type UpdateProps } from './Update.tsx';
+import { UpdateLabelDialogContent, type UpdateProps } from './UpdateLabelDialogContent.tsx';
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
 // @ts-expect-error: using different ts-config: moduleResolution (see tsconfig.storybook.json)
 import { fn } from 'storybook/test';
 
 
 const meta = {
-    title: 'features/Label/dialog/Update',
+    title: 'features/Label/dialog/UpdateLabelDialogContent',
     component: (props: UpdateProps) => (
         <Dialog.Root >
             <Dialog.Trigger>
                 Open me
             </Dialog.Trigger>
             <Dialog.Portal>
-                <Update { ...props }/>
+                <UpdateLabelDialogContent { ...props }/>
             </Dialog.Portal>
         </Dialog.Root>
     ),
@@ -39,7 +39,7 @@ const meta = {
         selectedID: '2',
         onSelectID: fn(),
     } satisfies UpdateProps,
-} satisfies Meta<typeof Update>;
+} satisfies Meta<typeof UpdateLabelDialogContent>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

@@ -18,7 +18,6 @@ import { AnnotationConfidenceInfo } from '@/features/Annotator/Annotation/Annota
 import { InvalidateAnnotationModal } from '@/features/Annotator/Annotation/InvalidateAnnotationModal';
 import { useAppDispatch, useAppSelector } from '@/features/App';
 import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
-import { LabelDialog } from '@/features/Labels';
 import { Campaign } from "@/features";
 import { useInvalidateAnnotation, useUpdateAnnotation, useValidateAnnotation } from './hooks';
 import { AnnotationFrequencyInfo } from './AnnotationFrequencyInfo';
@@ -26,6 +25,7 @@ import { AnnotationTimeInfo } from './AnnotationTimeInfo';
 import { AnnotationLabelInfo } from './AnnotationLabelInfo';
 import { type Annotation, focusAnnotation } from './slice';
 import styles from './styles.module.scss';
+import { MxOntology } from "@/features/Mx";
 
 export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
     const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
@@ -151,9 +151,9 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
 
         <Dialog.Root open={ isLabelModalOpen } onOpenChange={ setIsLabelModalOpen }>
             <Dialog.Portal>
-                <LabelDialog.Update availableLabels={ labels?.map(l => l.label) ?? [] }
-                                    selectedID={ annotation.labelId }
-                                    onSelectID={ updateLabel }/>
+                <MxOntology.UpdateLabelDialogContent availableLabels={ labels?.map(l => l.label) ?? [] }
+                                                     selectedID={ annotation.labelId }
+                                                     onSelectID={ updateLabel }/>
             </Dialog.Portal>
         </Dialog.Root>
     </Tr>

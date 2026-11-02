@@ -8,7 +8,7 @@ export type UpdateProps = {
     selectedID?: string,
     onSelectID: (id: string) => void;
 }
-export const Update: React.FC<UpdateProps> = ({ availableLabels, selectedID, onSelectID }) => {
+export const UpdateLabelDialogContent: React.FC<UpdateProps> = ({ availableLabels, selectedID, onSelectID }) => {
     return <Dialog.Content>
         <Dialog.Title>Update annotation label</Dialog.Title>
         <Dialog.CloseIcon/>
