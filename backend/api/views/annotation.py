@@ -146,7 +146,9 @@ class AnnotationViewSet(viewsets.ReadOnlyModelViewSet):
         annotation = {
             "min_frequency": row["min_frequency"] or None,
             "max_frequency": row["max_frequency"] or None,
-            "label": campaign.import_new_label(Label.objects.get(pk=row["label_id"])).pk,
+            "label": campaign.import_new_label(
+                Label.objects.get(pk=row["label_id"])
+            ).pk,
             "confidence": confidence,
             "annotation_phase": phase.id,
             "annotator": None,

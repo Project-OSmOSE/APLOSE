@@ -12,6 +12,10 @@ from .file_range import (
     AnnotationFileRangeDeleteMutation,
 )
 from .submit_annotation_task import SubmitAnnotationTaskMutation
-from .update_annotation_campaign import UpdateAnnotationCampaignMutation, AnnotationCampaignLabelListMutation, AnnotationCampaignLabelAcousticFeaturesMutation
+from .update_annotation_campaign import (
+    UpdateAnnotationCampaignMutation,
+    AnnotationCampaignLabelListMutation,
+    AnnotationCampaignLabelAcousticFeaturesMutation,
+)
 from .update_annotation_comments import UpdateAnnotationCommentsMutation
 from .update_annotations import UpdateAnnotationsMutation

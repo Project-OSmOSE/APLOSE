@@ -13,7 +13,6 @@ from django.db.models.functions import Coalesce
 from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 from django_extension.schema.types import ExtendedNode
 from graphql import GraphQLResolveInfo
-from metadatax.ontology.schema import LabelNode
 
 from backend.api.models import (
     AnnotationCampaign,
@@ -22,13 +21,13 @@ from backend.api.models import (
     AnnotationTask,
     Spectrogram,
 )
+from backend.api.models.annotation.annotation_campaign import AnnotationCampaignLabel
 from backend.api.schema.filter_sets import AnnotationCampaignFilterSet
 from backend.aplose.models import User
 from backend.aplose.schema import UserNode
 from .__abstract_permission import AbstractPermissionNode
 from .annotation_phase import AnnotationPhaseNode
 from .detector import DetectorNode
-from backend.api.models.annotation.annotation_campaign import AnnotationCampaignLabel
 
 
 class AnnotationCampaignLabelNode(AbstractPermissionNode, ExtendedNode):
@@ -38,6 +37,7 @@ class AnnotationCampaignLabelNode(AbstractPermissionNode, ExtendedNode):
         model = AnnotationCampaignLabel
         fields = "__all__"
         filterset_fields = {}
+
 
 class AnnotationCampaignNode(AbstractPermissionNode, ExtendedNode):
     """AnnotationCampaign schema"""

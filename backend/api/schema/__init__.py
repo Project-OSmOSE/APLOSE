@@ -12,7 +12,6 @@ from .nodes import (
     AnnotationSpectrogramNode,
     DatasetNode,
     ConfidenceSetNode,
-    LabelSetNode,
     AnnotationFileRangeNode,
     AnnotationPhaseNode,
     DetectorNode,
@@ -37,7 +36,9 @@ class APIMutation(graphene.ObjectType):
     create_annotation_campaign = CreateAnnotationCampaignMutation.Field()
     update_annotation_campaign = UpdateAnnotationCampaignMutation.Field()
     add_annotation_campaign_labels = AnnotationCampaignLabelListMutation.Field()
-    update_annotation_campaign_label_acoustic_features = AnnotationCampaignLabelAcousticFeaturesMutation.Field()
+    update_annotation_campaign_label_acoustic_features = (
+        AnnotationCampaignLabelAcousticFeaturesMutation.Field()
+    )
     archive_annotation_campaign = AnnotationCampaignArchiveMutation.Field()
 
     # Annotation phase
@@ -71,7 +72,6 @@ class APIQuery(graphene.ObjectType):
     )
 
     # Label
-    all_label_sets = AuthenticatedPaginationConnectionField(LabelSetNode)
     annotation_labels_for_deployment_id = AnnotationLabelsForDeploymentIdField
 
     # Confidence

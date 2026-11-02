@@ -1,12 +1,9 @@
 """Campaign model"""
 # pylint: disable=duplicate-code
-from typing import Optional
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
-from django.db import models, transaction
-from django.db.models import signals, Q, QuerySet, Exists, OuterRef, CheckConstraint
-from django.dispatch import receiver
+from django.db import models
+from django.db.models import Q, QuerySet, Exists, OuterRef, CheckConstraint
 from django.utils import timezone
 from django_extension.models import ExtendedQuerySet
 from metadatax.ontology.models import Label
@@ -16,7 +13,6 @@ from backend.aplose.models import User
 from .annotation_phase import AnnotationPhase
 from .confidence import Confidence
 from .confidence_set import ConfidenceSet, ConfidenceIndicatorSetIndicator
-from .label_set import LabelSet
 from ..data import Dataset, SpectrogramAnalysis, Spectrogram
 
 
@@ -145,9 +141,7 @@ class AnnotationCampaign(AbstractArchivable, models.Model):
     def import_new_label(self, label: Label) -> Label:
         """Import new label into campaign label set"""
         if not self.labels.filter(id=label.id).exists():
-            self.annotationcampaignlabel_set.create(
-                label=label
-            )
+            self.annotationcampaignlabel_set.create(label=label)
         return label
 
     def import_new_confidence(self, label: str, level: int) -> Confidence:
