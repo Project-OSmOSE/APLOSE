@@ -2,9 +2,12 @@ import { AnnotationPhaseType } from '../src/api/types.gql-generated';
 import { essentialTag, expect, test } from './utils';
 import { dateToString } from '../src/service/function';
 import { gqlURL, interceptRequests } from './utils/mock';
-import { campaign, confidenceSet, dataset, LABELS, labelSet, spectrogramAnalysis, USERS } from './utils/mock/types';
+import { campaign, confidenceSet, dataset, LABELS, spectrogramAnalysis, USERS } from './utils/mock/types';
 import type { GqlMutation } from './utils/mock/_gql';
 import type { Params } from './utils/types';
+import {
+    UpdateCampaignLabelAcousticFeaturesMutationVariables
+} from "../src/features/AnnotationCampaign/api/annotation-campaign.generated";
 
 
 // Utils
@@ -34,6 +37,7 @@ const TEST = {
             await interceptRequests(page, {
                 getCurrentUser: as,
                 getCampaign: as == 'annotator' ? 'default' : 'manager',
+
             })
             await test.step(`Navigate`, () => page.campaignDetail.go({ as }));
 
@@ -57,13 +61,13 @@ const TEST = {
                 await expect(page.getByText(spectrogramAnalysis.name)).toBeVisible()
             })
 
-            await test.step('Display label set', async () => {
-                await expect(page.getByText(labelSet.name)).toBeVisible()
+            await test.step('Display labels', async () => {
                 await page.campaignDetail.labelModal.button.click()
-                await expect(page.campaignDetail.labelModal.modal.getByText(labelSet.name)).toBeVisible()
+                await expect(page.campaignDetail.labelModal.modal).toBeVisible()
+                await expect(page.campaignDetail.labelModal.modal.getByText(page.campaignDetail.labelModal.name)).toBeVisible()
 
-                await expect(page.campaignDetail.labelModal.modal.getByText(LABELS.classic.name)).toBeVisible()
-                await expect(page.campaignDetail.labelModal.modal.getByText(LABELS.featured.name)).toBeVisible()
+                await expect(page.campaignDetail.labelModal.modal.getByText(LABELS.classic.displayName)).toBeVisible()
+                await expect(page.campaignDetail.labelModal.modal.getByText(LABELS.featured.displayName)).toBeVisible()
 
                 expect(await page.campaignDetail.labelModal.hasAcousticFeatures(LABELS.classic)).toBeFalsy()
                 expect(await page.campaignDetail.labelModal.hasAcousticFeatures(LABELS.featured)).toBeTruthy()
@@ -103,7 +107,7 @@ const TEST = {
 
             await test.step('Cannot update labels with features', async () => {
                 await page.campaignDetail.labelModal.button.click()
-                await expect(page.campaignDetail.labelModal.updateButton).not.toBeVisible();
+                await expect(page.campaignDetail.labelModal.enableUpdateButton).not.toBeVisible();
                 await page.campaignDetail.labelModal.closeButton.click()
             })
         }),
@@ -141,22 +145,28 @@ const TEST = {
 
             await test.step('Update featured labels', async () => {
                 await page.campaignDetail.labelModal.button.click()
-                await page.campaignDetail.labelModal.updateButton.click();
+                await page.campaignDetail.labelModal.enableUpdateButton.click();
 
                 expect(await page.campaignDetail.labelModal.hasAcousticFeatures(LABELS.classic)).toBeFalsy()
                 expect(await page.campaignDetail.labelModal.hasAcousticFeatures(LABELS.featured)).toBeTruthy()
 
-                await page.campaignDetail.labelModal.getLabelCheckbox(LABELS.classic).click()
-                await page.campaignDetail.labelModal.getLabelCheckbox(LABELS.featured).click()
-
-                const [ request ] = await Promise.all([
-                    page.waitForRequest(gqlURL),
-                    page.campaignDetail.labelModal.saveButton.click(),
+                // Add features to classic label
+                const [ requestClassic ] = await Promise.all([
+                    page.waitForGqlRequest('updateCampaignLabelAcousticFeatures'),
+                    page.campaignDetail.labelModal.getLabelCheckbox(LABELS.classic).click(),
                 ])
-                const data = await request.postDataJSON();
-                expect(data.operationName).toEqual('updateCampaignFeaturedLabels' as GqlMutation);
-                expect(data.variables.id).toEqual(campaign.id)
-                expect(data.variables.labelsWithAcousticFeatures).toEqual([ LABELS.classic.id ])
+                const variablesClassic: UpdateCampaignLabelAcousticFeaturesMutationVariables = await requestClassic.postDataJSON().variables
+                expect(variablesClassic.relationId).toEqual(LABELS.classic.id)
+                expect(variablesClassic.enableAcousticFeatures).toBeTruthy()
+
+                // Remove features from featured label
+                const [ requestFeatured ] = await Promise.all([
+                    page.waitForGqlRequest('updateCampaignLabelAcousticFeatures'),
+                    page.campaignDetail.labelModal.getLabelCheckbox(LABELS.featured).click(),
+                ])
+                const variablesFeatured: UpdateCampaignLabelAcousticFeaturesMutationVariables =  await requestFeatured.postDataJSON().variables
+                expect(variablesFeatured.relationId).toEqual(LABELS.featured.id)
+                expect(variablesFeatured.enableAcousticFeatures).toBeFalsy()
             })
         }),
 }

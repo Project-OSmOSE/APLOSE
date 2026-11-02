@@ -2,7 +2,9 @@ import { essentialTag, expect, type Page, test } from './utils';
 import { interceptRequests, mockError } from './utils/mock';
 import type { GqlMutation } from './utils/mock/_gql';
 import { campaign, dataset, spectrogramAnalysis, type UserType } from './utils/mock/types';
-import type { CreateCampaignMutationVariables } from '../src/features/AnnotationCampaign';
+import type {
+    CreateCampaignMutationVariables
+} from '../src/features/AnnotationCampaign/api/annotation-campaign.generated';
 import type { Params } from './utils/types';
 
 // Utils

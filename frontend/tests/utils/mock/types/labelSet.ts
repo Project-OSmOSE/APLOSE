@@ -1,14 +1,26 @@
-import { type AnnotationLabelNode, type LabelSetNode, type Maybe } from '../../../../src/api/types.gql-generated';
+import { LabelNode, type Maybe, SoundNode, SourceNode } from '../../../../src/api/types.gql-generated';
 
-export type Label = Omit<AnnotationLabelNode, 'metadataxLabel' | 'annotationSet' | 'annotationcampaignSet' | 'labelsetSet' | 'uses'>
+export type Label = Pick<LabelNode, 'id' | 'displayName'> & {
+  sound?: Maybe<Pick<SoundNode, 'englishName'>>;
+  source: Pick<SourceNode, 'englishName'>;
+}
 export const LABELS: { [key in 'classic' | 'featured']: Label } = {
   classic: {
     id: '1',
-    name: 'Rain',
+    displayName: 'Rain',
+    source: {
+      englishName: 'Rain'
+    }
   },
   featured: {
     id: '2',
-    name: 'Whistle',
+    displayName: 'Whale - Whistle',
+    source: {
+      englishName: 'Whale'
+    },
+    sound: {
+      englishName: 'Whistle'
+    }
   },
 }
 

@@ -7,7 +7,7 @@ export type Campaign = Omit<AnnotationCampaignNode,
   'hasChangePermission' | 'dataset' | 'annotators' | 'confidenceSet' | 'owner' | 'analysis' | 'archive' | 'labelSet' |
   'labelsWithAcousticFeatures' | 'detectors' | 'phases' | 'isEditable' | 'isUserAllowedToManage' | 'datasetName' |
     'completedTasksCount' | 'tasksCount' | 'phaseTypes' | 'userTasksCount' | 'userCompletedTasksCount' |
-    'spectrogramsCount'
+    'spectrogramsCount' |'annotationcampaignlabelSet' | 'labels'
 >
 export const campaign: Campaign = {
   id: '1',
