@@ -1,28 +1,67 @@
-- model: api.label
+- model: ontology.source
   pk: 1
   fields:
-    name: Mysticetes
-- model: api.label
+    english_name: Mysticetes
+- model: ontology.source
   pk: 2
   fields:
-    name: Odoncetes
-- model: api.label
+    english_name: Odoncetes
+- model: ontology.source
   pk: 3
   fields:
-    name: Boat
-- model: api.label
+    english_name: Boat
+- model: ontology.source
   pk: 4
   fields:
-    name: Rain
-- model: api.label
+    english_name: Rain
+- model: ontology.source
   pk: 5
   fields:
-    name: Other
-- model: api.label
+    english_name: Other
+
+- model: ontology.sound
+  pk: 1
+  fields:
+    english_name: Dcall
+- model: ontology.sound
+  pk: 2
+  fields:
+    english_name: 40-Hz
+
+- model: ontology.label
+  pk: 1
+  fields:
+#    nickname: Mysticetes
+    source: 1
+- model: ontology.label
+  pk: 2
+  fields:
+#    nickname: Odoncetes
+    source: 2
+- model: ontology.label
+  pk: 3
+  fields:
+#    nickname: Boat
+    source: 3
+- model: ontology.label
+  pk: 4
+  fields:
+#    nickname: Rain
+    source: 4
+- model: ontology.label
+  pk: 5
+  fields:
+#    nickname: Other
+    source: 5
+- model: ontology.label
   pk: 6
   fields:
-    name: Dcall
-- model: api.label
+    nickname: Dcall
+    source: 1
+    sound: 1
+- model: ontology.label
   pk: 7
   fields:
-    name: 40-Hz
+    nickname: 40-Hz
+    source: 1
+    sound: 2

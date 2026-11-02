@@ -26,7 +26,6 @@ ANNOTATION_FIXTURES = [
     "detector",
     "detector_configuration",
     "label",
-    "label_set",
 ]
 
 ALL_FIXTURES = [
