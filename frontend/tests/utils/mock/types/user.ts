@@ -1,4 +1,4 @@
-import { ExpertiseLevelType, type UserNode } from '../../../../src/api/types.gql-generated';
+import { ExpertiseLevelType, LabelDisplayPreferenceType, type UserNode } from '../../../../src/api/types.gql-generated';
 import { User as UserFeature } from '../../../../src/features/User';
 
 export type User = Omit<UserNode, '__typename'
@@ -15,6 +15,9 @@ export type User = Omit<UserNode, '__typename'
   | 'dateJoined'
   | 'endedPhases'
   | 'lastLogin'
+  | 'archivedPhases'
+  | 'archivedCampaigns'
+  | 'archivedDatasets'
   | 'spectrogramAnalysis'>
 
 export type UserType = 'annotator' | 'creator' | 'staff' | 'superuser';
@@ -34,6 +37,7 @@ function getUser(type: UserType, id: number): User {
     isAdmin: type === 'superuser' || type === 'staff',
     isStaff: type === 'staff',
     isSuperuser: type === 'superuser',
+    labelDisplayPreference: LabelDisplayPreferenceType.English
   }
 }
 

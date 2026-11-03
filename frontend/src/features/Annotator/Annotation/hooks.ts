@@ -226,7 +226,7 @@ export const useRemoveAnnotation = () => {
                     {
                         type: 'Confirm',
                         confirmData: true,
-                        text: `Remove "${ label?.label.displayName }" annotations`,
+                        text: `Remove "${ label?.label.preferredDisplay }" annotations`,
                     },
                 ],
             })

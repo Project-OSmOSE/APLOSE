@@ -1,20 +1,20 @@
 import { LabelNode, type Maybe, SoundNode, SourceNode } from '../../../../src/api/types.gql-generated';
 
-export type Label = Pick<LabelNode, 'id' | 'displayName'> & {
+export type Label = Pick<LabelNode, 'id' | 'preferredDisplay'> & {
     sound?: Maybe<Pick<SoundNode, 'englishName'>>;
     source: Pick<SourceNode, 'englishName'>;
 }
 export const LABELS: { [key in 'classic' | 'featured']: Label } = {
     classic: {
         id: '1',
-        displayName: 'Rain',
+        preferredDisplay: 'Rain',
         source: {
             englishName: 'Rain'
         }
     },
     featured: {
         id: '2',
-        displayName: 'Whale - Whistle',
+        preferredDisplay: 'Whale - Whistle',
         source: {
             englishName: 'Whale'
         },

@@ -66,8 +66,8 @@ const TEST = {
                 await expect(page.campaignDetail.labelModal.modal).toBeVisible()
                 await expect(page.campaignDetail.labelModal.modal.getByText(page.campaignDetail.labelModal.name)).toBeVisible()
 
-                await expect(page.campaignDetail.labelModal.modal.getByText(LABELS.classic.displayName)).toBeVisible()
-                await expect(page.campaignDetail.labelModal.modal.getByText(LABELS.featured.displayName)).toBeVisible()
+                await expect(page.campaignDetail.labelModal.modal.getByText(LABELS.classic.preferredDisplay)).toBeVisible()
+                await expect(page.campaignDetail.labelModal.modal.getByText(LABELS.featured.preferredDisplay)).toBeVisible()
 
                 expect(await page.campaignDetail.labelModal.hasAcousticFeatures(LABELS.classic)).toBeFalsy()
                 expect(await page.campaignDetail.labelModal.hasAcousticFeatures(LABELS.featured)).toBeTruthy()

@@ -2,7 +2,7 @@
 from django_extension.schema.fields import AuthenticatedPaginationConnectionField
 from graphene import ObjectType
 
-from .mutations import UpdateUserPasswordMutation, UpdateUserMutation
+from .mutations import UpdateUserPasswordMutation, UpdateUserMutation, UpdateUserLabelDisplayPreferenceMutation
 from .nodes import UserGroupNode, UserNode
 from .queries import CurrentUserField
 
@@ -22,3 +22,4 @@ class AploseMutation(ObjectType):
 
     user_update_password = UpdateUserPasswordMutation.Field()
     current_user_update = UpdateUserMutation.Field()
+    current_user_update_label_display_preference = UpdateUserLabelDisplayPreferenceMutation.Field()

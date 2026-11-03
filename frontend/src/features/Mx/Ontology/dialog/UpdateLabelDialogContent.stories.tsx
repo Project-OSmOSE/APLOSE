@@ -25,15 +25,15 @@ const meta = {
         availableLabels: [
             {
                 id: '1',
-                displayName: 'Boat',
+                preferredDisplay: 'Boat',
             },
             {
                 id: '2',
-                displayName: 'Whale',
+                preferredDisplay: 'Whale',
             },
             {
                 id: '3',
-                displayName: 'Dolphin',
+                preferredDisplay: 'Dolphin',
             },
         ],
         selectedID: '2',

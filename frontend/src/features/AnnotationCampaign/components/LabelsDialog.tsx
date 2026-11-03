@@ -89,7 +89,7 @@ const LabelRow: React.FC<{
 
     return <Tr>
         <Th scope="row">
-            { labelRelation.label.displayName }
+            { labelRelation.label.preferredDisplay }
             { isSubmitting && <Spinner/> }
         </Th>
         <Td center>

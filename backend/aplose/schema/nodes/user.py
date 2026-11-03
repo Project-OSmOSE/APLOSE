@@ -10,7 +10,7 @@ from graphene import (
 from graphql import GraphQLResolveInfo
 
 from backend.aplose.models import User
-from backend.aplose.schema.enums import ExpertiseLevelType
+from ..enums import ExpertiseLevelType, LabelDisplayPreferenceType
 
 
 class UserNode(ExtendedNode):
@@ -22,6 +22,7 @@ class UserNode(ExtendedNode):
         filter_fields = {}
 
     expertise = ExpertiseLevelType()
+    label_display_preference = LabelDisplayPreferenceType(required=True)
     display_name = String(required=True)
     is_admin = Boolean(required=True)
 
@@ -32,6 +33,7 @@ class UserNode(ExtendedNode):
             .resolve_queryset(queryset, info)
             .annotate(
                 expertise=F("aplose__expertise_level"),
+                label_display_preference=F("aplose__label_display_preference"),
                 is_admin=Case(
                     When(is_superuser=True, then=True),
                     When(is_staff=True, then=True),

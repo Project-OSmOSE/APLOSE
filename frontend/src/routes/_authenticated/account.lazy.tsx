@@ -4,8 +4,6 @@ import { createLazyFileRoute, useLoaderData } from '@tanstack/react-router';
 import { Head } from '@/components/ui';
 
 import { User } from '@/features/User';
-import { Field } from '@/components/base/Field';
-import { Form } from '@/components/base/Form';
 import { Content } from '@/components/layout/Content';
 import { Page } from '@/components/layout';
 
@@ -15,19 +13,18 @@ const Account: React.FC = () => {
     const { user } = useLoaderData({ from: '/_authenticated' })
 
     return <Page.Authenticated>
-        <Content start className={ styles.Content }>
-            <Head title="Account"/>
+        <Content start oneContent>
+            <Head title="Account" subtitle={ user.username }/>
 
-            <Form>
-                <Field.Root>
-                    <Field.Label>Username</Field.Label>
-                    <Field.Control value={ user.username } type="text" disabled/>
-                </Field.Root>
-            </Form>
+            <Content inner className={ styles.Content }>
 
-            <User.EmailForm/>
+                <User.EmailForm/>
 
-            <User.PasswordForm/>
+                <User.PasswordForm/>
+
+                <User.LabelPreferenceForm/>
+                
+            </Content>
         </Content>
     </Page.Authenticated>
 }

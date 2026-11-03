@@ -19,7 +19,7 @@ mutation createSource($input: PostSourceMutationInput!) {
 # Label
 fragment Label on LabelNode {
     id
-    displayName
+    preferredDisplay
     source {
         englishName
     }

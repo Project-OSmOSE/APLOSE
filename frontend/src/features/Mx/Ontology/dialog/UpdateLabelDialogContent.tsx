@@ -4,7 +4,7 @@ import { LabelNode } from "@/api/types.gql-generated.ts";
 import styles from './styles.module.scss';
 
 export type UpdateProps = {
-    availableLabels: Pick<LabelNode, 'id' | 'displayName'>[];
+    availableLabels: Pick<LabelNode, 'id' | 'preferredDisplay'>[];
     selectedID?: string,
     onSelectID: (id: string) => void;
 }
@@ -19,7 +19,7 @@ export const UpdateLabelDialogContent: React.FC<UpdateProps> = ({ availableLabel
                                                                   disabled={ label.id === selectedID }
                                                                   annotationColorIndex={ index }
                                                                   onClick={ () => onSelectID(label.id) }>
-                { label.displayName }
+                { label.preferredDisplay }
             </Dialog.Close>) }
         </div>
     </Dialog.Content>

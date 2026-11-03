@@ -61,13 +61,7 @@ fragment CampaignAnalysis on SpectrogramAnalysisNode {
 
 fragment LabelRelation on AnnotationCampaignLabelNode {
     id
-    label {
-        id
-        displayName
-        source {
-            englishName
-        }
-    }
+    label { ...Label }
     enableAcousticFeatures
 }
 

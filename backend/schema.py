@@ -3,6 +3,7 @@
 import graphene
 from django.contrib.contenttypes.models import ContentType
 from django_extension.filters import IDFilter
+from django_extension.schema.fields import ByIdField
 from django_extension.schema.types import ExtendedNode
 from django_filters import NumberFilter, FilterSet
 from graphene import relay, Field
@@ -19,6 +20,7 @@ from metadatax.schema import Mutation as MetadataxMutation, Query as MetadataxQu
 from .api.schema import APIQuery, APIMutation
 from .aplose.schema import AploseQuery, AploseMutation
 from .osmosewebsite.schema import OSmOSEWebsiteQuery, WebsiteProjectNode
+from .schema_overrides import LabelNode
 from .storage.schema import StorageQuery, StorageMutation
 
 
@@ -133,6 +135,9 @@ class Query(
         ChannelConfigurationNode, filterset_class=ChannelConfigurationFilterSet
     )
     all_projects = DjangoPaginationConnectionField(ProjectNodeOverride)
+
+    all_labels = DjangoPaginationConnectionField(LabelNode)
+    label_by_id = ByIdField(LabelNode)
 
 
 class Mutation(

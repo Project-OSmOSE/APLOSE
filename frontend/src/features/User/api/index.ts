@@ -14,6 +14,9 @@ import {
     UpdateCurrentUserPasswordDocument,
     type UpdateCurrentUserPasswordMutation,
     type UpdateCurrentUserPasswordMutationVariables,
+    UpdateLabelDisplayPreferenceDocument,
+    type UpdateLabelDisplayPreferenceMutation,
+    type UpdateLabelDisplayPreferenceMutationVariables,
 } from './user.generated'
 import { queryClient } from '@/api/queryClient';
 import { cleanGqlList } from '@/api/utils';
@@ -55,8 +58,17 @@ export const updatePasswordMutation = mutationOptions({
         .then(data => data.userUpdatePassword),
 })
 
+export const updateLabelPreferenceMutation = mutationOptions({
+    mutationFn: (variables: UpdateLabelDisplayPreferenceMutationVariables) =>
+        graphqlClient.request<UpdateLabelDisplayPreferenceMutation>(UpdateLabelDisplayPreferenceDocument, variables)
+        .then(data => data.currentUserUpdateLabelDisplayPreference),
+})
+
 
 export type {
     UserFragment as Fragment,
     UserGroupFragment as GroupFragment,
 } from './user.generated'
+export {
+    LabelDisplayPreferenceType
+} from '@/api/types.gql-generated.ts'

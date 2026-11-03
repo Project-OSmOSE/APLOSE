@@ -1,7 +1,7 @@
 import graphene
 from django.db.models import Prefetch, Count
 from metadatax.ontology.models import Label
-from metadatax.ontology.schema import LabelNode
+from backend.schema_overrides import LabelNode
 
 from backend.api.models import Annotation
 

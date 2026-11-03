@@ -1,4 +1,9 @@
 .Content {
-  gap: 4rem;
-  justify-items: center;
+  //justify-items: center;
+  align-content: start;
+  gap: 2rem;
+
+  form {
+    height: fit-content;
+  }
 }

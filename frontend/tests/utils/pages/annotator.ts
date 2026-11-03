@@ -37,7 +37,7 @@ export class AnnotatorPage {
   }
 
   getLabelChip(label: Label) {
-    return this.page.getByTestId('label-chip').filter({ hasText: label.displayName })
+    return this.page.getByTestId('label-chip').filter({ hasText: label.preferredDisplay })
   }
 
   getConfidenceChip(confidence: Confidence) {
@@ -45,7 +45,7 @@ export class AnnotatorPage {
   }
 
   getAnnotationForLabel(label: Label, { type }: Pick<Params, 'type'>): Locator {
-    return this.annotationsBlock.getByText(label.displayName).nth(type === AnnotationType.Weak ? 0 : 1)
+    return this.annotationsBlock.getByText(label.preferredDisplay).nth(type === AnnotationType.Weak ? 0 : 1)
   }
 
   getAnnotationValidateBtn({ type }: Pick<Params, 'type'>): Locator {
@@ -65,7 +65,7 @@ export class AnnotatorPage {
   async updateBoxAnnotationLabel(newLabel: Label): Promise<void> {
     await this.getAnnotationInvalidateBtn({ type: AnnotationType.Box }).click()
     await this.page.getByRole('dialog').getByRole('button', { name: 'Change the label' }).click()
-    await this.page.getByRole('dialog').getByRole('button', { name: newLabel.displayName }).click()
+    await this.page.getByRole('dialog').getByRole('button', { name: newLabel.preferredDisplay }).click()
   }
 
   async isLabelUsed(label: Label): Promise<boolean> {
@@ -103,7 +103,7 @@ export class AnnotatorPage {
   async confirmeRemoveWeak(label: Label, { method }: Pick<Params, 'method'>) {
     switch (method) {
       case 'mouse':
-        await this.page.getByRole('dialog').getByRole('button', { name: `Remove "${ label.displayName }" annotations` }).click()
+        await this.page.getByRole('dialog').getByRole('button', { name: `Remove "${ label.preferredDisplay }" annotations` }).click()
         break;
       case 'shortcut':
         await this.page.keyboard.press('Enter')

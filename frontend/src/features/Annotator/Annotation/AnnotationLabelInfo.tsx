@@ -24,10 +24,10 @@ export const AnnotationLabelInfo: React.FC<{ annotation: Annotation }> = ({ anno
         <TagLinearIcon size={ 20 } className={ styles.mainIcon }/>
 
         <span className={ correctedLabel ? 'disabled' : undefined }>
-      { baseLabel?.label.displayName }
+      { baseLabel?.label.preferredDisplay }
             <span>{ annotation.type === AnnotationType.Weak ? ` (Weak)` : '' }</span>
     </span>
 
-        { correctedLabel && <p>{ correctedLabel.label.displayName }</p> }
+        { correctedLabel && <p>{ correctedLabel.label.preferredDisplay }</p> }
     </div>
 }

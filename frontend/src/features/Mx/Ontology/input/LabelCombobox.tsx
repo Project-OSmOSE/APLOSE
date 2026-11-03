@@ -12,7 +12,7 @@ export const LabelCombobox = <Multiple extends boolean = false>({ items, ...prop
 
     const filter = useCallback((itemValue: API.LabelFragment, query: string): boolean => {
         const refStrings = [
-                ...itemValue.displayName.split(' '),
+                ...itemValue.preferredDisplay.split(' '),
                 ...itemValue.source.englishName.split(' '),
                 ...(itemValue.sound?.englishName.split(' ') ?? []),
         ].map(s => s.toLocaleLowerCase())
@@ -23,7 +23,7 @@ export const LabelCombobox = <Multiple extends boolean = false>({ items, ...prop
                            items={ items ?? labels }
                            itemToStringValue={ itemValue => itemValue.id }
                            itemToStringLabel={ itemValue => itemValue.source.englishName + (itemValue.sound ? ` - ${ itemValue.sound.englishName }` : '') }
-                           itemToElementLabel={ itemValue => itemValue.displayName }
+                           itemToElementLabel={ itemValue => itemValue.preferredDisplay }
                            loading={ isFetching }
                            isItemEqualToValue={ (itemValue, value) => itemValue.id == value.id }
                            filter={ filter }

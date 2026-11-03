@@ -105,7 +105,7 @@ export const CreateAnnotationModal: React.FC<{ closeOnCreate: () => void }> = ({
                         </Button>
                         <Checkbox defaultChecked={ rel.enableAcousticFeatures }/>
                         <Field.Label>
-                            { rel.label.displayName }
+                            { rel.label.preferredDisplay }
                         </Field.Label>
                     </div>
                     <Field.Error/>

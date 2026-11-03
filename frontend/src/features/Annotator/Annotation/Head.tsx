@@ -59,7 +59,7 @@ export const AnnotationHeadContent: React.FC<{
             <ChatSquareLinearIcon size={ 20 }/> }
 
         {/* Label */ }
-        <p>{ annotationLabel?.label.displayName }</p>
+        <p>{ annotationLabel?.label.preferredDisplay }</p>
 
         {/* Update label button */ }
         <Dialog.Root>

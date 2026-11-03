@@ -117,7 +117,7 @@ export const LabelChip: React.FC<{
 
             <Popover.Root>
                 <Popover.Trigger render={ <span/> } nativeButton={ false }>
-                    { label.displayName }
+                    { label.preferredDisplay }
                 </Popover.Trigger>
                 <Popover.Content>
                     <Popover.Title>Shortcut</Popover.Title>

@@ -55,7 +55,7 @@ class LabelModal {
     }
 
     getLabelCheckbox(label: Label): Locator {
-        return this.modal.getByRole('row', { name: label.displayName }).getByRole('checkbox')
+        return this.modal.getByRole('row', { name: label.preferredDisplay }).getByRole('checkbox')
     }
 
     async hasAcousticFeatures(label: Label): Promise<boolean> {
