@@ -24,9 +24,16 @@ query ($id: ID!) {
             id
             name
         }
-        labelsWithAcousticFeatures {
+        labels {
             id
-            name
+            label {
+                id
+                displayName
+                source {
+                    englishName
+                }
+            }
+            enableAcousticFeatures
         }
         owner {
             id
@@ -44,13 +51,6 @@ query ($id: ID!) {
             desc
             confidenceIndicators {
                 label
-            }
-        }
-        labelSet {
-            name
-            description
-            labels {
-                name
             }
         }
         detectors {
@@ -97,7 +97,7 @@ ARCHIVED_VARIABLES = {
 }
 
 
-class AnnotationCampaignsByIDTestCase(ExtendedTestCase):
+class AnnotationCampaignByIDTestCase(ExtendedTestCase):
 
     GRAPHQL_URL = "/api/graphql"
     fixtures = ALL_FIXTURES
@@ -115,11 +115,10 @@ class AnnotationCampaignsByIDTestCase(ExtendedTestCase):
         content = json.loads(response.content)["data"]["annotationCampaignById"]
         self.assertEqual(content["name"], "Test SPM campaign")
         self.assertEqual(content["dataset"]["id"], "1")
-        self.assertEqual(content["labelsWithAcousticFeatures"], [])
         self.assertEqual(content["owner"]["email"], "user1@osmose.xyz")
         self.assertFalse(content["archived"])
         self.assertEqual(content["confidenceSet"]["name"], "Confidence/NoConfidence")
-        self.assertEqual(content["labelSet"]["name"], "Test SPM campaign")
+        self.assertEqual(len(content["labels"]), 5)
         self.assertEqual(len(content["annotators"]), 2)
         self.assertEqual(content["annotators"][0]["id"], "1")
         self.assertEqual(len(content["analysis"]["edges"]), 1)

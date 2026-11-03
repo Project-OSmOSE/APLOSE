@@ -74,7 +74,7 @@ class AnnotationSerializer(serializers.ModelSerializer):
 
         if phase is not None:
             campaign = phase.annotation_campaign
-            fields["label"].queryset = campaign.label_set.labels
+            fields["label"].queryset = campaign.labels
             fields["spectrogram"].queryset = Spectrogram.objects.filter(
                 analysis__in=campaign.analysis.all()
             ).distinct()

@@ -29,7 +29,6 @@ class CreateAnnotationPhaseTestCase(ExtendedTestCase):
         *COMMON_FIXTURES,
         "annotation_campaign",
         "label",
-        "label_set",
         "confidence",
         "confidence_set",
     ]

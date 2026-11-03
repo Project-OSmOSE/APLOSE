@@ -192,6 +192,11 @@ class AnnotationCampaignLabel(models.Model):
     class Meta:
         unique_together = ("annotation_campaign", "label")
 
+    def __str__(self) -> str:
+        if self.enable_acoustic_features:
+            return f"{self.annotation_campaign}: {self.label} [AF]"
+        return f"{self.annotation_campaign}: {self.label}"
+
     annotation_campaign = models.ForeignKey(
         AnnotationCampaign, on_delete=models.CASCADE
     )

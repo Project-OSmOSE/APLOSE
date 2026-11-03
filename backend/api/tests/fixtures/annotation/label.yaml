@@ -27,6 +27,10 @@
   pk: 2
   fields:
     english_name: 40-Hz
+- model: ontology.sound
+  pk: 3
+  fields:
+    english_name: Click
 
 - model: ontology.label
   pk: 1
@@ -56,12 +60,18 @@
 - model: ontology.label
   pk: 6
   fields:
-    nickname: Dcall
+#    nickname: Dcall
     source: 1
     sound: 1
 - model: ontology.label
   pk: 7
   fields:
-    nickname: 40-Hz
+#    nickname: 40-Hz
     source: 1
     sound: 2
+- model: ontology.label
+  pk: 8
+  fields:
+#    nickname: click
+    source: 2
+    sound: 3

@@ -1,6 +1,8 @@
 """API annotation annotation_campaign GraphQL tests"""
 from .all_annotation_campaigns import AllAnnotationCampaignsTestCase
-from .annotation_campaigns_by_id import AnnotationCampaignsByIDTestCase
+from .annotation_campaign_by_id import AnnotationCampaignByIDTestCase
 from .archive_annotation_campaign import ArchiveAnnotationCampaignTestCase
 from .create_annotation_campaign import CreateAnnotationCampaignTestCase
 from .update_annotation_campaign import UpdateAnnotationCampaignTestCase
+from .add_annotation_campaign_labels import AddAnnotationCampaignLabelsTestCase
+from .update_annotation_campaign_labels import UpdateAnnotationCampaignLabelsTestCase

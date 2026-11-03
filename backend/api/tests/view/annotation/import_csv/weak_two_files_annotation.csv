@@ -1,2 +1,2 @@
-dataset,min_frequency,max_frequency,label,detector,start_datetime,end_datetime,confidence_indicator_label,confidence_indicator_level,detector_configuration
-Dataset,0,240,click,nnini,2012-10-03T10:00:00+00:00,2012-10-03T11:10:00+00:00,sure,1,test
+dataset,min_frequency,max_frequency,label,label_id,detector,start_datetime,end_datetime,confidence_indicator_label,confidence_indicator_level,detector_configuration
+Dataset,0,240,click,8,nnini,2012-10-03T10:00:00+00:00,2012-10-03T11:10:00+00:00,sure,1,test

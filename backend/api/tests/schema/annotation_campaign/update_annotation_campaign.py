@@ -11,16 +11,12 @@ from backend.aplose.models import User
 QUERY = """
 mutation (
     $campaignID: ID!
-    $labelsWithAcousticFeatures: [ID]
-    $labelSetID: ID
     $confidenceSetID: ID
     $allowPointAnnotation: Boolean
      ) {
     updateAnnotationCampaign(input: {
         id: $campaignID
         allowPointAnnotation: $allowPointAnnotation
-        labelsWithAcousticFeatures: $labelsWithAcousticFeatures
-        labelSet: $labelSetID
         confidenceSet: $confidenceSetID
     }) {
         errors {
@@ -32,8 +28,6 @@ mutation (
 """
 BASE_VARIABLES = {
     "campaignID": 1,
-    "labelsWithAcousticFeatures": None,
-    "labelSetID": None,
     "confidenceSetID": None,
     "allowPointAnnotation": None,
 }
@@ -63,10 +57,7 @@ class UpdateAnnotationCampaignTestCase(ExtendedTestCase):
         )
         self.assertResponseHasErrors(response)
         content = json.loads(response.content)
-        self.assertEqual(
-            content["errors"][0]["message"],
-            "AnnotationCampaign matching query does not exist.",
-        )
+        self.assertEqual(content["errors"][0]["message"], "Not found")
 
     def test_connected_no_access(self):
         response = self.gql_query(
@@ -90,19 +81,12 @@ class UpdateAnnotationCampaignTestCase(ExtendedTestCase):
             user=User.objects.get(username=username),
             variables={
                 **BASE_VARIABLES,
-                "labelsWithAcousticFeatures": [6],
-                "labelSetID": 2,
                 "confidenceSetID": None,
                 "allowPointAnnotation": True,
             },
         )
         self.assertResponseNoErrors(response)
         campaign = AnnotationCampaign.objects.get(pk=1)
-        self.assertEqual(
-            list(campaign.labels_with_acoustic_features.values_list("name", flat=True)),
-            ["Dcall"],
-        )
-        self.assertEqual(campaign.label_set_id, 2)
         self.assertIsNone(campaign.confidence_set)
         self.assertTrue(campaign.allow_point_annotation)
 

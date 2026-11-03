@@ -52,7 +52,7 @@ query (
                     minFrequency
                     maxFrequency
                     label {
-                        name
+                        displayName
                     }
                     confidence {
                         label

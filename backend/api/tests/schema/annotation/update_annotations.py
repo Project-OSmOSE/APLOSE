@@ -42,7 +42,7 @@ BASE_VARIABLES = {
 }
 
 presence_annotation = {
-    "label": "Boat",
+    "label": "3",
     "confidence": "confident",
     "startTime": None,
     "endTime": None,
@@ -52,7 +52,7 @@ presence_annotation = {
     "annotationPhase": "1",
 }
 box_annotation = {
-    "label": "Boat",
+    "label": "3",
     "confidence": "confident",
     "startTime": 0,
     "endTime": 10,
@@ -116,7 +116,7 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
 
         new_annotation: Annotation = Annotation.objects.order_by("id").last()
         self.assertEqual(new_annotation.type, Annotation.Type.WEAK)
-        self.assertEqual(new_annotation.label.name, "Boat")
+        self.assertEqual(new_annotation.label.source.english_name, "Boat")
         self.assertEqual(new_annotation.confidence.label, "confident")
         self.assertEqual(new_annotation.spectrogram_id, 9)
         self.assertEqual(new_annotation.annotator_id, 4)
@@ -135,7 +135,7 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
         new_annotation: Annotation = Annotation.objects.order_by("id").last()
         self.assertEqual(new_annotation.type, Annotation.Type.BOX)
         self.assertEqual(new_annotation.start_time, 0.0)
-        self.assertEqual(new_annotation.label.name, "Boat")
+        self.assertEqual(new_annotation.label.source.english_name, "Boat")
         self.assertEqual(new_annotation.confidence.label, "confident")
         self.assertEqual(new_annotation.spectrogram_id, 9)
         self.assertEqual(new_annotation.annotator_id, 4)
@@ -165,7 +165,7 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
         new_annotation: Annotation = Annotation.objects.order_by("id").last()
         self.assertEqual(new_annotation.type, Annotation.Type.BOX)
         self.assertEqual(new_annotation.start_time, 0.0)
-        self.assertEqual(new_annotation.label.name, "Boat")
+        self.assertEqual(new_annotation.label.source.english_name, "Boat")
         self.assertEqual(new_annotation.confidence.label, "confident")
         self.assertEqual(new_annotation.spectrogram_id, 9)
         self.assertEqual(new_annotation.annotator_id, 4)
@@ -204,7 +204,7 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
                     {
                         **box_annotation,
                         "isUpdateOf": str(box.id),
-                        "label": "Mysticetes",
+                        "label": "1",
                     },
                 ],
             },
@@ -214,7 +214,7 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
 
         box = Annotation.objects.get(id=box.id)
         update: Annotation = box.updated_to.order_by("id").last()
-        self.assertEqual(update.label.name, "Mysticetes")
+        self.assertEqual(update.label.source.english_name, "Mysticetes")
 
     def test_connected_annotator_add_presence_with_comment(self):
         previous_count = Annotation.objects.count()
@@ -276,7 +276,7 @@ class UpdateAnnotationsTestCase(ExtendedTestCase):
                 "annotations": [
                     {
                         **presence_annotation,
-                        "label": "DCall",  # label exist in different label set
+                        "label": "6",  # label exist out of AnnotationCampaign
                         "confidence": "test",
                     }
                 ],

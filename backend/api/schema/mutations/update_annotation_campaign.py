@@ -7,7 +7,7 @@ from django_extension.schema.mutations import (
     ExtendedModelFormMutation,
     ListSerializerMutation,
 )
-from django_extension.schema.permissions import GraphQLPermissions
+from django_extension.schema.permissions import GraphQLPermissions, GraphQLResolve
 from django_extension.serializers import ListSerializer
 from rest_framework import serializers
 
@@ -31,6 +31,7 @@ class UpdateAnnotationCampaignMutation(ExtendedModelFormMutation):
         permission = GraphQLPermissions.AUTHENTICATED
 
     @classmethod
+    @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     def mutate_and_get_payload(cls, root, info, **kwargs):
         AnnotationCampaign.objects.get_editable_or_fail(
             user=info.context.user,
@@ -58,6 +59,7 @@ class AnnotationCampaignLabelAcousticFeaturesMutation(ExtendedModelFormMutation)
         permission = GraphQLPermissions.AUTHENTICATED
 
     @classmethod
+    @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     def mutate_and_get_payload(cls, root, info, **kwargs):
         AnnotationCampaign.objects.get_editable_or_fail(
             user=info.context.user,
@@ -88,6 +90,7 @@ class AnnotationCampaignLabelListMutation(ListSerializerMutation):
         serializer_class = AnnotationCampaignLabelSerializer
 
     @classmethod
+    @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     def get_serializer_queryset(cls, root, info, **kwargs):
         campaign: AnnotationCampaign = AnnotationCampaign.objects.get_editable_or_fail(
             user=info.context.user,
