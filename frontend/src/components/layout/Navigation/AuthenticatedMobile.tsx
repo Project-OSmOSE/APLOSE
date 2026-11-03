@@ -53,7 +53,6 @@ export const AuthenticatedMobile: React.FC<{ className?: string }> = ({ classNam
                             </NavigationMenu.List>
 
                             <NavigationMenu.List>
-                                { data?.user.isSuperuser && <Fragment>
                                     <NavigationMenu.Item>
                                         <Link to="/ontology/$type"
                                               params={ { type: 'source' } }>
@@ -61,6 +60,7 @@ export const AuthenticatedMobile: React.FC<{ className?: string }> = ({ classNam
                                         </Link>
                                     </NavigationMenu.Item>
 
+                                { data?.user.isSuperuser && <Fragment>
                                     <NavigationMenu.Item>
                                         <Link to="/sql">
                                             SQL query

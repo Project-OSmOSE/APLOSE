@@ -1,17 +1,18 @@
 import React, { useMemo } from 'react';
-import { createLazyFileRoute, Outlet, useParams } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useParams } from '@tanstack/react-router'
 
 import { Head, Tab, Tabs } from '@/components/ui';
+import { Content, Page } from '@/components/layout';
 
 import styles from './ontology.module.scss';
-import { Content } from '@/components/layout/Content';
 
 const OntologyPage: React.FC = () => {
 
     const { type } = useParams({ strict: false });
 
-    return useMemo(() => <Content className={styles.content}>
-            <Head title="Ontology"/>
+    return useMemo(() => <Page.Authenticated>
+            <Content className={ styles.content }>
+                <Head title="Ontology"/>
 
                 <Tabs>
                     <Tab to="/ontology/$type" params={ { type: 'source' } }
@@ -25,10 +26,11 @@ const OntologyPage: React.FC = () => {
                 </Tabs>
 
                 <Outlet/>
-        </Content>,
+            </Content>
+        </Page.Authenticated>,
         [ type ])
 }
 
-export const Route = createLazyFileRoute('/_authenticated/_superuser/ontology')({
+export const Route = createFileRoute('/_authenticated/ontology')({
     component: OntologyPage,
 })

@@ -8,6 +8,7 @@ import { NewNode, NODE_ORIGIN, NODE_TYPES, OntologyAPI, useGetInitialNodes, useO
 import styles from './$type.module.scss';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ensureValidQueryData } from '@/api/utils';
+import { User } from "@/features/User";
 
 
 type DataType = Pick<SoundNode | SourceNode, 'id' | 'englishName'> & {
@@ -15,6 +16,7 @@ type DataType = Pick<SoundNode | SourceNode, 'id' | 'englishName'> & {
 }
 
 const OntologyTab: React.FC = () => {
+    const { data: user } = useQuery(User.currentQuery)
     const type = Route.useParams({ select: ({ type }) => type })
 
     const { data: initialSources } = useQuery({ ...OntologyAPI.allSourcesQuery, enabled: type === 'source' })
@@ -94,6 +96,7 @@ const OntologyTab: React.FC = () => {
         onNew: onNewNode,
         patch: update,
         del: deleteNode,
+        enableEdit: !!user?.isSuperuser
     })
 
     const { fitView } = useReactFlow()
@@ -118,7 +121,13 @@ const OntologyTab: React.FC = () => {
                        fitViewOptions={ { padding: 2 } }
                        selectionKeyCode={ null }
                        multiSelectionKeyCode={ null }
-                       nodeOrigin={ NODE_ORIGIN }>
+                       deleteKeyCode={ user?.isSuperuser ? "Delete" : null}
+                       nodeOrigin={ NODE_ORIGIN }
+
+                       edgesReconnectable={ user?.isSuperuser }
+                       edgesFocusable={ user?.isSuperuser }
+                       nodesConnectable={ user?.isSuperuser }
+                       nodesDraggable={ user?.isSuperuser }>
                 <Background/>
                 <Controls showInteractive={ false }/>
             </ReactFlow>
@@ -128,7 +137,7 @@ const OntologyTab: React.FC = () => {
         [ nodes, edges, onNodesChange, onNodesDelete, onConnect, onConnectEnd, onEdgesChange, onEdgesDelete ])
 }
 
-export const Route = createFileRoute('/_authenticated/_superuser/ontology/$type')({
+export const Route = createFileRoute('/_authenticated/ontology/$type')({
     beforeLoad: ({ params }) => {
         const { type } = params
         if (type !== 'source' && type !== 'sound') throw notFound()

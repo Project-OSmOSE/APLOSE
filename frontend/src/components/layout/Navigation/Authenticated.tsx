@@ -44,20 +44,18 @@ export const Authenticated: React.FC<{ className?: string }> = ({ className }) =
         </NavigationMenu.List>
 
         <NavigationMenu.List>
-            { data?.user.isSuperuser && <Fragment>
-                <NavigationMenu.Item>
-                    <Link to="/ontology/$type"
-                          params={ { type: 'source' } }>
-                        Ontology
-                    </Link>
-                </NavigationMenu.Item>
+            <NavigationMenu.Item>
+                <Link to="/ontology/$type"
+                      params={ { type: 'source' } }>
+                    Ontology
+                </Link>
+            </NavigationMenu.Item>
 
-                <NavigationMenu.Item>
-                    <Link to="/sql">
-                        SQL query
-                    </Link>
-                </NavigationMenu.Item>
-            </Fragment> }
+            { data?.user.isSuperuser && <NavigationMenu.Item>
+                <Link to="/sql">
+                    SQL query
+                </Link>
+            </NavigationMenu.Item> }
 
             <NavigationMenu.Item>
                 <NavigationMenu.Trigger>

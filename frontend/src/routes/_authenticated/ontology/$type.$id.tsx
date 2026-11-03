@@ -7,15 +7,13 @@ import type { SourceNode } from '@/api/types.gql-generated.ts';
 import { ensureValidQueryData } from '@/api/utils';
 import { OntologyAPI, type UpdateSoundMutationVariables } from '@/features/Ontology';
 
-import { Button, ButtonGroup } from '@/components/base/Button';
-import { Spinner } from '@/components/base/Spinner';
-import { Form } from '@/components/base/Form';
-import { Fieldset } from '@/components/base/Fieldset';
-import { Field } from '@/components/base/Field';
+import { Button, ButtonGroup, Field, Fieldset, Form, Spinner } from '@/components/base';
+import { User } from "@/features/User";
 
 import styles from './$type.$id.module.scss';
 
 const OntologyPanel: React.FC = () => {
+    const { data: user } = useQuery(User.currentQuery)
     const { type, id } = Route.useParams({ select: ({ type, id }) => ({ type, id }) });
 
     const { data: source, isFetching: isFetchingSource } = useQuery({
@@ -67,49 +65,54 @@ const OntologyPanel: React.FC = () => {
 
                 <Field.Root name="englishName">
                     <Field.Label required>English name</Field.Label>
-                    <Field.Control type="text" placeholder={ data.englishName }/>
+                    <Field.Control type="text" placeholder={ data.englishName }
+                                   disabled={ !user?.isSuperuser }/>
                     <Field.Error/>
                 </Field.Root>
 
                 { type === 'source' && <Field.Root name="latinName">
                     <Field.Label>Latin name</Field.Label>
-                    <Field.Control type="text" placeholder={ (data as SourceNode).latinName ?? undefined }/>
+                    <Field.Control type="text" placeholder={ (data as SourceNode).latinName ?? undefined }
+                                   disabled={ !user?.isSuperuser }/>
                     <Field.Error/>
                 </Field.Root> }
 
                 <Field.Root name="frenchName">
                     <Field.Label>French name</Field.Label>
-                    <Field.Control type="text" placeholder={ data.frenchName ?? undefined }/>
+                    <Field.Control type="text" placeholder={ data.frenchName ?? undefined }
+                                   disabled={ !user?.isSuperuser }/>
                     <Field.Error/>
                 </Field.Root>
 
                 <Field.Root name="codeName">
                     <Field.Label>Code name</Field.Label>
-                    <Field.Control type="text" placeholder={ data.codeName ?? undefined }/>
+                    <Field.Control type="text" placeholder={ data.codeName ?? undefined }
+                                   disabled={ !user?.isSuperuser }/>
                     <Field.Error/>
                 </Field.Root>
 
                 <Field.Root name="taxon">
                     <Field.Label>Taxon</Field.Label>
-                    <Field.Control type="text" placeholder={ data.taxon ?? undefined }/>
+                    <Field.Control type="text" placeholder={ data.taxon ?? undefined }
+                                   disabled={ !user?.isSuperuser }/>
                     <Field.Error/>
                 </Field.Root>
 
             </Fieldset.Root>
 
-            <ButtonGroup spaceBetween>
+            { user?.isSuperuser && <ButtonGroup spaceBetween>
                 <Button type="reset">
                     Reset
                 </Button>
                 <Button type="submit" color="primary">
                     Save
                 </Button>
-            </ButtonGroup>
+            </ButtonGroup> }
         </Form> }
     </div>
 }
 
-export const Route = createFileRoute('/_authenticated/_superuser/ontology/$type/$id')({
+export const Route = createFileRoute('/_authenticated/ontology/$type/$id')({
     beforeLoad: ({ params }) => {
         const { type, id } = params
         if (!id) throw notFound()
