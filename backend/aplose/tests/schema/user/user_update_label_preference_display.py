@@ -34,14 +34,18 @@ class UserUpdatePasswordTestCase(ExtendedTestCase):
     def test_connected(self):
         user: User = User.objects.get(username="user1")
 
-        response = self.gql_query(QUERY, user=user, variables={ "preference": "English" })
+        response = self.gql_query(QUERY, user=user, variables={"preference": "English"})
         self.assertResponseNoErrors(response)
 
         aplose_user: AploseUser = user.aplose
-        self.assertEqual(aplose_user.label_display_preference, LabelDisplayPreference.ENGLISH)
+        self.assertEqual(
+            aplose_user.label_display_preference, LabelDisplayPreference.ENGLISH
+        )
 
-        response = self.gql_query(QUERY, user=user, variables={ "preference": "French" })
+        response = self.gql_query(QUERY, user=user, variables={"preference": "French"})
         self.assertResponseNoErrors(response)
 
         aplose_user.refresh_from_db()
-        self.assertEqual(aplose_user.label_display_preference, LabelDisplayPreference.FRENCH)
+        self.assertEqual(
+            aplose_user.label_display_preference, LabelDisplayPreference.FRENCH
+        )

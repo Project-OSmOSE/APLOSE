@@ -5,7 +5,13 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django_extension.admin import ExtendedModelAdmin
 
-from backend.aplose.models import AploseUser, User, ExpertiseLevel, AnnotatorGroup, LabelDisplayPreference
+from backend.aplose.models import (
+    AploseUser,
+    User,
+    ExpertiseLevel,
+    AnnotatorGroup,
+    LabelDisplayPreference,
+)
 
 
 class AploseUserInline(admin.StackedInline):

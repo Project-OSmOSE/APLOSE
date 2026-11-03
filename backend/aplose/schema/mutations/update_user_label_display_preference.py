@@ -12,13 +12,15 @@ class UpdateUserLabelDisplayPreferenceMutation(graphene.Mutation):
     class Arguments:
         preference = LabelDisplayPreferenceType(required=True)
 
-    ok= graphene.Boolean(required=True)
+    ok = graphene.Boolean(required=True)
 
     @classmethod
     @GraphQLResolve(permission=GraphQLPermissions.AUTHENTICATED)
     def mutate(cls, root, info, preference: LabelDisplayPreferenceType):
         try:
-            aplose_user: AploseUser = AploseUser.objects.get(user_id=info.context.user.id)
+            aplose_user: AploseUser = AploseUser.objects.get(
+                user_id=info.context.user.id
+            )
             aplose_user.label_display_preference = preference.value
             aplose_user.save()
         except AploseUser.DoesNotExist:

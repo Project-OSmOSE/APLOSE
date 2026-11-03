@@ -12,6 +12,7 @@ class ExpertiseLevel(models.TextChoices):
     AVERAGE = ("A", "Average")
     NOVICE = ("N", "Novice")
 
+
 class LabelDisplayPreference(models.TextChoices):
     """Preference for string display of labels (Mx)"""
 
