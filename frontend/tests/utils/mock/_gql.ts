@@ -9,6 +9,7 @@ import type { UserType } from './types';
 import { DETECTOR_QUERIES } from './detector';
 import { COLLABORATOR_QUERIES } from './collaborators';
 import { STORAGE_MUTATIONS, STORAGE_QUERIES } from './storage';
+import { LABEL_QUERIES } from './labels';
 
 type GqlQueries =
     typeof DATASET_QUERIES
@@ -21,6 +22,7 @@ type GqlQueries =
     & typeof FILE_RANGE_QUERIES
     & typeof DETECTOR_QUERIES
     & typeof COLLABORATOR_QUERIES
+    & typeof LABEL_QUERIES
 
 const GQL_MOCK_QUERIES: GqlQueries & { getCurrentUser: typeof GET_CURRENT_USER_QUERY } = {
     ...DATASET_QUERIES,
@@ -33,6 +35,7 @@ const GQL_MOCK_QUERIES: GqlQueries & { getCurrentUser: typeof GET_CURRENT_USER_Q
     ...FILE_RANGE_QUERIES,
     ...DETECTOR_QUERIES,
     ...COLLABORATOR_QUERIES,
+    ...LABEL_QUERIES,
     getCurrentUser: GET_CURRENT_USER_QUERY,
 }
 

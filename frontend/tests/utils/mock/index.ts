@@ -23,6 +23,7 @@ export async function interceptRequests(
     const req = route.request().postDataJSON();
 
     if (!Object.keys(operations).includes(req.operationName)) {
+      console.debug(req.operationName, GQL_MOCK[req.operationName])
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
