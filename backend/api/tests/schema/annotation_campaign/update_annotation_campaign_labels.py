@@ -3,7 +3,6 @@ import json
 from django_extension.tests import ExtendedTestCase
 from freezegun import freeze_time
 
-from backend.api.models import AnnotationCampaign
 from backend.api.models.annotation.annotation_campaign import AnnotationCampaignLabel
 from backend.api.tests.fixtures import ALL_FIXTURES
 from backend.aplose.models import User
@@ -71,7 +70,8 @@ class UpdateAnnotationCampaignLabelsTestCase(ExtendedTestCase):
 
     def test_connected_not_allowed(self):
         response = self.gql_query(
-            QUERY, user=User.objects.get(username="user2"),
+            QUERY,
+            user=User.objects.get(username="user2"),
             variables={
                 "relationId": AnnotationCampaignLabel.objects.first().pk,
                 "enableAcousticFeatures": True,

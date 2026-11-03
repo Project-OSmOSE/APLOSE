@@ -18,4 +18,5 @@ class Migration(migrations.Migration):
             model_name="annotationcampaign",
             name="labels_with_acoustic_features",
         ),
+        migrations.DeleteModel(name="labelset"),
     ]
