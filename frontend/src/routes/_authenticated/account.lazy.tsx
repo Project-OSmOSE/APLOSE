@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { createLazyFileRoute, useLoaderData } from '@tanstack/react-router';
 
 import { Head } from '@/components/ui';
-
+import { ExternalLink } from "@/components/base";
+import { Content, Page } from '@/components/layout';
 import { User } from '@/features/User';
-import { Content } from '@/components/layout/Content';
-import { Page } from '@/components/layout';
 
 import styles from './account.module.scss'
 
@@ -14,16 +13,18 @@ const Account: React.FC = () => {
 
     return <Page.Authenticated>
         <Content start oneContent>
-            <Head title="Account" subtitle={ user.username }/>
+            <Head title="Account" subtitle={ user.username }
+                  buttons={ <Fragment>
+                      <ExternalLink href="#email">Update email</ExternalLink>
+                      <ExternalLink href="#password">Update password</ExternalLink>
+                      <ExternalLink href="#label">Update label preferences</ExternalLink>
+                  </Fragment> }
+            />
 
             <Content inner className={ styles.Content }>
-
-                <User.EmailForm/>
-
-                <User.PasswordForm/>
-
-                <User.LabelPreferenceForm/>
-                
+                <User.EmailForm id="email"/>
+                <User.PasswordForm id="password"/>
+                <User.LabelPreferenceForm id="label"/>
             </Content>
         </Content>
     </Page.Authenticated>

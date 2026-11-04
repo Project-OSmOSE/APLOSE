@@ -14,18 +14,10 @@ Chaque dataset doit être importé afin de pouvoir être utilisé par APLOSE.
 
 :::
 
-Accédez à la page "Dataset" dans le panneau de navigation.
+Accédez à la page "Storage" dans le panneau de navigation.
 
-![](/data/datasets.png)
+![](/data/storage.png)
 
-Cliquer sur le bouton "Import dataset"
+Parcourez l'espace de stockage jusqu'à ce que vous trouviez votre dataset.
+Vous pouvez choisir d'importer le dataset entier ou seulement une de ses analyses.
 
-![](/data/datasets-import.png)
-
-Dans la modale, vous pouvez voir la liste des datasets disponibles pour l'importation.
-
-Les datasets nouvellement importés devraient alors apparaître sur la page des datasets.
-
-
-Cliquez sur le bouton suivant pour importer un dataset complet ou une seule analyse du dataset.
-![](/data/button-import.png)

@@ -18,7 +18,6 @@ import {
     type UpdateLabelDisplayPreferenceMutation,
     type UpdateLabelDisplayPreferenceMutationVariables,
 } from './user.generated'
-import { queryClient } from '@/api/queryClient';
 import { cleanGqlList } from '@/api/utils';
 
 
@@ -50,7 +49,8 @@ export type { AllUserGroupsQuery as AllGroupsQuery } from './user.generated'
 export const updateEmailMutation = mutationOptions({
     mutationFn: (variables: UpdateCurrentUserEmailMutationVariables) => graphqlClient.request<UpdateCurrentUserEmailMutation>(UpdateCurrentUserEmailDocument, variables)
         .then(data => data.currentUserUpdate),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.user.current }),
+    onSuccess: (_data, _variables, _onMutateResult, context) =>
+        context.client.invalidateQueries({ queryKey: queryKeys.user.current }),
 })
 
 export const updatePasswordMutation = mutationOptions({
@@ -62,6 +62,13 @@ export const updateLabelPreferenceMutation = mutationOptions({
     mutationFn: (variables: UpdateLabelDisplayPreferenceMutationVariables) =>
         graphqlClient.request<UpdateLabelDisplayPreferenceMutation>(UpdateLabelDisplayPreferenceDocument, variables)
         .then(data => data.currentUserUpdateLabelDisplayPreference),
+    onSuccess: (_data, _variables, _onMutateResult, context) => Promise.all([
+        context.client.invalidateQueries({ queryKey: queryKeys.user.current }),
+        context.client.invalidateQueries({ queryKey: queryKeys.campaign.labelsByIdBase }),
+        context.client.invalidateQueries({ queryKey: queryKeys.mx.ontology.allLabels }),
+        context.client.invalidateQueries({ queryKey: queryKeys.mx.ontology.source.all }),
+        context.client.invalidateQueries({ queryKey: queryKeys.mx.ontology.sound.all }),
+    ])
 })
 
 

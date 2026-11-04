@@ -10,9 +10,9 @@
 
 <!--@include: ../terminology/phase.md-->
 
-**Label**
+**Ontologie**
 
-<!--@include: ../terminology/label.md-->
+<!--@include: ../terminology/ontology.md-->
 
 **Confiance - Confidence**
 
@@ -25,26 +25,8 @@ Pour créer une phase « Annotation », cliquez sur l'onglet « Annotation ».
 
 ![](/annotation-campaign/add-annotation-phase.png)
 
-Vous devrez renseigner l'ensemble de labels (Label set) et un ensemble de niveaux de confiance (Confidence indicator
+Vous devrez renseigner les labels à utiliser et un ensemble de niveaux de confiance (Confidence indicator
 set). Vous pourrez également spécifier si l'annotation de type "Point" est autorisée.
-
-::: details Créer un ensemble de labels
-
-Accédez à la partie administration de APLOSE en cliquant sur le lien "Admin".
-
-Cherchez "Label sets" dans le bloc "API" et cliquez sur "Add".
-
-![](/annotation-campaign/label-set/nav.png)
-
-Vous pouvez remplir le formulaire avec le nom de votre ensemble (Name), le propriétaire (owner), et sélectionner les
-labels dont vous avez besoin pour vos campagnes d'annotation.
-Si vous ne trouvez pas les labels souhaités, vous pouvez cliquer sur le bouton « + » près de la liste des labels pour en
-créer un nouveau.
-
-![](/annotation-campaign/label-set/form.png)
-
-Lorsque votre formulaire est rempli, vous pouvez le sauvegarder (save).
-:::
 
 ::: details Créer un ensemble de confiance
 

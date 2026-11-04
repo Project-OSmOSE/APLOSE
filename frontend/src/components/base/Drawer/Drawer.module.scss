@@ -83,3 +83,10 @@
     margin-right: 0;
   }
 }
+
+.ContentBloc {
+  display: grid;
+  gap: 0.5rem;
+  margin: 2rem 0;
+  justify-items: start;
+}

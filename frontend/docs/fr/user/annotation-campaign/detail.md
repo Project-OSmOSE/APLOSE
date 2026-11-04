@@ -10,9 +10,9 @@
 
 <!--@include: ../terminology/phase.md-->
 
-**Label**
+**Ontologie**
 
-<!--@include: ../terminology/label.md-->
+<!--@include: ../terminology/ontology.md-->
 
 **Confiance - Confidence**
 
@@ -34,7 +34,7 @@ Vous pouvez consulter toutes les informations relatives à la campagne dans l'on
   - Dataset : Nom du dataset, qui est un lien vers la [page détaillée du dataset ](/user/data/manage)
   - Analysis : Tableau de l'analyse à partir du dataset utilisé dans cette campagne
 - Informations sur les annotations (si des phases existent)
-  - Label set : Modale de l'ensemble d'étiquettes contenant une description du dataset et la liste de ses labels.
+  - Labels : Modale contenant la liste des labels.
   - Confidence set : Ensemble de niveaux de confiances et liste de ses niveaux de confiances
   - Annotation type : Types d'annotations autorisés
 - Progression globale (si des phases existent)

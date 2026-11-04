@@ -1,12 +1,11 @@
 import React, { useCallback } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type { BaseUIEvent } from '@base-ui/react';
-import { Button, ButtonGroup, Field, Fieldset, Form, Spinner, Toast } from '@/components/base';
+import { type BaseUIEvent, Button, ButtonGroup, Field, Fieldset, Form, Spinner, Toast } from '@/components/base';
 import * as API from '../api';
 import * as INPUT from '../input';
 
 
-export const LabelPreferenceForm: React.FC = () => {
+export const LabelPreferenceForm: React.FC<{ id?: string }> = ({ id }) => {
     const { data: user } = useQuery(API.currentQuery)
     const toastManager = Toast.useToastManager()
     const {
@@ -26,7 +25,7 @@ export const LabelPreferenceForm: React.FC = () => {
         }
     }, [ mutateAsync, toastManager ])
 
-    return <Form onSubmit={ submit }>
+    return <Form id={ id } onSubmit={ submit }>
         <Fieldset.Root>
             <Fieldset.Legend>Update label preferences</Fieldset.Legend>
 

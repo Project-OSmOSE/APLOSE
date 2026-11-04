@@ -1,9 +1,11 @@
 .Content {
-  //justify-items: center;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
+  overflow: auto;
 
   form {
     height: fit-content;
+    flex-shrink: 0;
   }
 }

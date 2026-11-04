@@ -10,9 +10,9 @@
 
 <!--@include: ../terminology/phase.md-->
 
-**Label**
+**Ontologie**
 
-<!--@include: ../terminology/label.md-->
+<!--@include: ../terminology/ontology.md-->
 
 **Confiance - Confidence**
 

@@ -14,25 +14,27 @@ Every imported dataset can be managed on a dedicated page
 
 :::
 
-
-Access the "Datasets" page from the navigation panel and clic on your dataset name.
+You can access a dataset by clicking on its name from "Datasets" or "Storage" pages.
 
 ![](/data/dataset-detail.png)
 
-Here you will find all the information on your dataset:
-- Start/End dates of the contained data
-- Table of imported analysis
+This page list all related analysis, annotation campaigns and channel configurations.
 
-On the analysis table you can download their complete configuration.
+## Global information
 
-### Import a new analysis
+The information button opens a drawer containing start/end dates of the data, information about its import and the
+ability to archive this dataset.  
+![](/data/dataset-detail-drawer.png)
+
+## Import a new analysis
 
 Click on the "Import analysis" button
 
-![](/data/analysis-import.png)
+![](/data/dataset-detail-import-analysis.png)
 
-In the modal you can see the list of all available analysis for this dataset.
+In the dialog you can see the list of all analysis and import new ones.
 
-Clic on the following button to import an analysis.
-![](/data/button-import.png)
+## Create a campaign
+
+In the Annotation campaign section you can create "New annotation campaign".
 

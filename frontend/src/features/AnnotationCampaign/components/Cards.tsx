@@ -17,7 +17,7 @@ export const CampaignCards: React.FC<CardsProps> = React.memo(({
     if (isFetching)
         return <Center><Spinner/></Center>
     if (!campaigns || campaigns.length === 0)
-        return <Center><Note color="medium">No campaigns</Note></Center>
+        return <Note color="medium">No campaigns</Note>
 
     return <div className={ styles.cards }>
         { campaigns?.map(c =>
