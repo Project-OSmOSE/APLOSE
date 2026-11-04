@@ -110,12 +110,7 @@ query deploymentById($id: ID!) {
     annotationLabelsForDeploymentId(deploymentId: $id) {
         label {
             id
-            source {
-                englishName
-            }
-            sound {
-                englishName
-            }
+            preferredDisplay
         }
         uses
     }

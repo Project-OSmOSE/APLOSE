@@ -171,10 +171,9 @@ const Labels: React.FC<{ labels?: DeploymentLabel[] }> = ({ labels }) => {
     return <Fragment>
         <small>Labels</small>
         <p>
-            { labels.map((label: any) =>
-                <span key={ label.id }>
-                        { label.label.source.englishName }
-                    { label.label.sound && ` - ${ label.label.sound.englishName }` } ({ label.uses })
+            { labels.map((label: DeploymentLabel) =>
+                <span key={ label.label.id }>
+                        { label.label.preferredDisplay } ({ label.uses })
                         <br/>
                     </span>) }
         </p>

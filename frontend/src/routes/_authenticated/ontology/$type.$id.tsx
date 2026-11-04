@@ -5,7 +5,7 @@ import type { BaseUIEvent } from '@base-ui/react';
 
 import type { SourceNode } from '@/api/types.gql-generated.ts';
 import { ensureValidQueryData } from '@/api/utils';
-import { OntologyAPI, type UpdateSoundMutationVariables } from '@/features/Ontology';
+import { MxOntology } from '@/features/Mx';
 
 import { Button, ButtonGroup, Field, Fieldset, Form, Spinner } from '@/components/base';
 import { User } from "@/features/User";
@@ -17,16 +17,16 @@ const OntologyPanel: React.FC = () => {
     const { type, id } = Route.useParams({ select: ({ type, id }) => ({ type, id }) });
 
     const { data: source, isFetching: isFetchingSource } = useQuery({
-        ...OntologyAPI.sourceByIdQuery({ id }),
+        ...MxOntology.sourceById({ id }),
         enabled: type === 'source',
     });
     const { data: sound, isFetching: isFetchingSound } = useQuery({
-        ...OntologyAPI.soundByIdQuery({ id }),
+        ...MxOntology.soundById({ id }),
         enabled: type === 'sound',
     });
 
-    const { mutateAsync: updateSource } = useMutation(OntologyAPI.updateSourceMutation)
-    const { mutateAsync: updateSound } = useMutation(OntologyAPI.updateSoundMutation)
+    const { mutateAsync: updateSource } = useMutation(MxOntology.updateSource)
+    const { mutateAsync: updateSound } = useMutation(MxOntology.updateSound)
 
     const isFetching = useMemo(() => isFetchingSound || isFetchingSource, [ isFetchingSource, isFetchingSound ])
     const data = useMemo(() => type == 'source' ? source : sound, [ type, source, sound ])
@@ -35,9 +35,9 @@ const OntologyPanel: React.FC = () => {
         if (!data) return;
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        const info: UpdateSoundMutationVariables = {
+        const info: MxOntology.UpdateSoundInput = {
             id: data.id,
-            parent_id: data.parent?.id,
+            parent: data.parent?.id,
             englishName: formData.get('englishName') as string || data.englishName,
             frenchName: formData.get('frenchName') as string || data.frenchName,
             codeName: formData.get('codeName') as string || data.codeName,
@@ -121,9 +121,9 @@ export const Route = createFileRoute('/_authenticated/ontology/$type/$id')({
     loader: ({ params: { type, id } }) => {
         switch (type) {
             case 'source':
-                return ensureValidQueryData(OntologyAPI.sourceByIdQuery({ id }))
+                return ensureValidQueryData(MxOntology.sourceById({ id }))
             case 'sound':
-                return ensureValidQueryData(OntologyAPI.soundByIdQuery({ id }))
+                return ensureValidQueryData(MxOntology.soundById({ id }))
         }
     },
     component: OntologyPanel,

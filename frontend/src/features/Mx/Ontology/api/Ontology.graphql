@@ -1,19 +1,64 @@
 # Source
 fragment Source on SourceNode {
+    __typename
     id
-    displayName
+    preferredDisplay
     parent { id }
 }
-query allSources{
-    allSources {
-        results { ...Source }
-    }
+fragment DetailedSource on SourceNode {
+    ...Source
+    englishName
+    latinName
+    frenchName
+    codeName
+    taxon
 }
-mutation createSource($input: PostSourceMutationInput!) {
+
+query allSources{
+    allSources { results { ...Source } }
+}
+query detailedSourceByID($id: ID!){
+    sourceById(id: $id) { ...DetailedSource }
+}
+mutation postSource($input: PostSourceMutationInput!) {
     postSource(input: $input) {
-        source { ...Source }
+        source { ...DetailedSource }
         errors { field, messages }
     }
+}
+mutation deleteSource($id: ID!) {
+    deleteSource(id: $id) { ok }
+}
+
+# Sound
+fragment Sound on SoundNode {
+    __typename
+    id
+    preferredDisplay
+    parent { id }
+}
+fragment DetailedSound on SoundNode {
+    ...Sound
+    englishName
+    frenchName
+    codeName
+    taxon
+}
+
+query allSounds{
+    allSounds { results { ...Sound } }
+}
+query detailedSoundByID($id: ID!){
+    soundById(id: $id) { ...DetailedSound }
+}
+mutation postSound($input: PostSoundMutationInput!) {
+    postSound(input: $input) {
+        sound { ...DetailedSound }
+        errors { field, messages }
+    }
+}
+mutation deleteSound($id: ID!) {
+    deleteSound(id: $id) { ok }
 }
 
 # Label

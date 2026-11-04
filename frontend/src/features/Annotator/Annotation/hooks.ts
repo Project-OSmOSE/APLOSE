@@ -220,7 +220,7 @@ export const useRemoveAnnotation = () => {
             const label = labels?.find(l => l.label.id === annotation.labelId)
             const confirmRemove = await alert.present({
                 color: 'warning',
-                message: `You are about to remove ${ annotationsForLabel.length } annotations using "${ label }" label. Are you sure?`,
+                message: `You are about to remove ${ annotationsForLabel.length } annotations using "${ label?.label.preferredDisplay }" label. Are you sure?`,
                 buttons: [
                     { type: 'Cancel' },
                     {

@@ -7,28 +7,10 @@ import {
     type AllBehaviorsQuery,
     AllLabelsDocument,
     type AllLabelsQuery,
-    AllSourcesDocument,
-    type AllSourcesQuery,
     CreateBehaviorDocument,
     type CreateBehaviorMutation,
     type CreateBehaviorMutationVariables,
-    CreateSourceDocument,
-    type CreateSourceMutation,
-    type CreateSourceMutationVariables,
 } from './Ontology.generated';
-
-export const allSources = queryOptions({
-    queryKey: queryKeys.mx.ontology.allSources,
-    queryFn: () => graphqlClient.request<AllSourcesQuery>(AllSourcesDocument, {})
-        .then(data => cleanGqlList(data.allSources?.results)),
-})
-
-export const createSource = optimisticMutationOptions({
-    mutationKey: queryKeys.mx.ontology.allSources,
-    mutationFn: (input: CreateSourceMutationVariables['input']) =>
-        graphqlClient.request<CreateSourceMutation>(CreateSourceDocument, { input })
-        .then(data => data.postSource),
-})
 
 export const allLabels = queryOptions({
     queryKey: queryKeys.mx.ontology.allLabels,
@@ -49,4 +31,10 @@ export const createBehavior = optimisticMutationOptions({
             .then(data => data.behavior),
 })
 
-export type * from './Ontology.generated';
+export type {
+    LabelFragment,
+    BehaviorFragment,
+} from './Ontology.generated.ts'
+
+export * from './source.ts'
+export * from './sound.ts'

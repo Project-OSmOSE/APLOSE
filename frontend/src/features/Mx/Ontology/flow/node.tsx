@@ -1,22 +1,22 @@
 import React, { useMemo } from 'react';
 import { Handle, NodeProps, Position } from '@xyflow/react';
 import { useParams } from '@tanstack/react-router';
+import { Note } from '@/components/base';
 
+import * as API from '../api'
 import styles from './styles.module.scss'
-import { OntologyItem } from './type';
-import { Note } from '@/components/base/Note';
 
-type Props = NodeProps & { data: OntologyItem; type: any }
+type Props = NodeProps & { data: API.SoundFragment | API.SourceFragment; type: any }
 
-export const OntologyNode: React.FC<Props> = ({ data }) => {
+export const Node: React.FC<Props> = ({ data }) => {
     const { id } = useParams({ strict: false });
 
     const selected = useMemo(() => data.id.toString() === id, [ data.id, id ])
 
     return <div className={ [ styles.node, selected ? styles.selected : '' ].join(' ') }>
-        <p>{ data.englishName }</p>
+        <p>{ data.preferredDisplay }</p>
         { data.id !== '-1' && <Note>ID: { data.id }</Note> }
-        { data.englishName !== 'Root' && <Handle type="target" position={ Position.Left }/> }
+        { data.preferredDisplay !== 'Root' && <Handle type="target" position={ Position.Left }/> }
         <Handle type="source" position={ Position.Right }/>
     </div>
 }
