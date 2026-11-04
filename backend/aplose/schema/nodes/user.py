@@ -1,6 +1,16 @@
 """User GraphQL definitions"""
 
-from django.db.models import QuerySet, F, Value, CharField, Case, When, Q, BooleanField
+from django.db.models import (
+    QuerySet,
+    F,
+    Value,
+    CharField,
+    Case,
+    When,
+    Q,
+    BooleanField,
+    TextField,
+)
 from django.db.models.functions import Concat
 from django_extension.schema.types import ExtendedNode
 from graphene import (
@@ -9,7 +19,7 @@ from graphene import (
 )
 from graphql import GraphQLResolveInfo
 
-from backend.aplose.models import User
+from backend.aplose.models import User, LabelDisplayPreference
 from ..enums import ExpertiseLevelType, LabelDisplayPreferenceType
 
 
@@ -33,7 +43,13 @@ class UserNode(ExtendedNode):
             .resolve_queryset(queryset, info)
             .annotate(
                 expertise=F("aplose__expertise_level"),
-                label_display_preference=F("aplose__label_display_preference"),
+                label_display_preference=Case(
+                    When(
+                        aplose__isnull=False, then=F("aplose__label_display_preference")
+                    ),
+                    default=Value(LabelDisplayPreference.ENGLISH.value),
+                    output_field=TextField(),
+                ),
                 is_admin=Case(
                     When(is_superuser=True, then=True),
                     When(is_staff=True, then=True),
