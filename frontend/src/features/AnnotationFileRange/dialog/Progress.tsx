@@ -3,7 +3,7 @@ import { DownloadLinearIcon } from '@solar-icons/react';
 import { type Order, Table, Tbody, Td, Th, Thead, Tr, WarningText } from '@/components/ui';
 import { Toast } from '@/components/base/Toast';
 import { Progress as BaseProgress } from '@/components/base/Progress';
-import { AnnotationFileRangeNode, AnnotationTaskNodeNodeConnection, Maybe, UserNode } from '@/api';
+import { AnnotationFileRangeNode, AnnotationTaskNodeNodeConnection, Maybe, UserNode } from '@/api/types.gql-generated.ts';
 import { useDownloadAnnotations, useDownloadProgress } from '@/api/download';
 import { NBSP } from '@/service/type';
 import { useQuery } from '@tanstack/react-query';

@@ -2,7 +2,7 @@ import React, { Fragment, type HTMLProps, ReactNode, useCallback, useEffect, use
 import { AltArrowRightLinearIcon, CheckCircleLinearIcon } from '@solar-icons/react';
 import { Footer, Navigation } from '@/components/layout';
 import styles from './styles.module.scss';
-import { AnnotationTaskStatus } from '@/api';
+import { AnnotationTaskStatus } from '@/api/types.gql-generated.ts';
 import { useAppDispatch } from '@/features/App';
 import { AnnotatorCanvasContextProvider } from '@/features/Annotator/Canvas';
 import { PointerProvider } from '@/features/Annotator/Pointer/context';
@@ -117,7 +117,7 @@ const InnerAnnotatorSkeleton: React.FC<{ children?: ReactNode }> = ({ children }
             focus: defaultAnnotation?.confidence ?? undefined,
         }))
         dispatch(AnnotatorLabelSlice.actions.initSpectrogram({
-            focus: defaultAnnotation?.label ?? undefined,
+            focus: defaultAnnotation?.labelId ?? undefined,
         }))
         dispatch(AnnotatorCommentSlice.actions.initSpectrogram({
             taskComments: cleanGqlList(data.spectrogram?.task?.userComments?.results),

@@ -1,7 +1,6 @@
 import json
 
 from django_extension.tests import ExtendedTestCase
-from graphene_django.utils import GraphQLTestCase
 
 from backend.aplose.models import User
 

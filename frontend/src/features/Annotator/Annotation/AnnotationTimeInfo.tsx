@@ -2,7 +2,7 @@ import React, { Fragment, useMemo } from 'react';
 import { AltArrowRightLinearIcon, ClockCircleLinearIcon } from '@solar-icons/react';
 import type { Annotation } from './slice';
 import styles from './styles.module.scss';
-import { AnnotationType } from '@/api';
+import { AnnotationType } from '@/api/types.gql-generated.ts';
 import { formatTime } from '@/service/function';
 import { NBSP } from '@/service/type';
 

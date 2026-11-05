@@ -33,11 +33,11 @@ export const Link = React.forwardRef<HTMLAnchorElement, Omit<LinkProps, 'ref'>>(
         { inText
             ? <Fragment>
                 { children }
-                { target === '_blank' && <Fragment>{ NBSP }<SquareTopDownLinearIcon/></Fragment> }
+                { target === '_blank' && <Fragment>{ NBSP }<SquareTopDownLinearIcon size={ 16 }/></Fragment> }
             </Fragment>
             : <Button color={ color } { ...props }>
                 { children }
-                { target === '_blank' && <Fragment>{ NBSP }<SquareTopDownLinearIcon/></Fragment> }
+                { target === '_blank' && <Fragment>{ NBSP }<SquareTopDownLinearIcon size={ 16 }/></Fragment> }
             </Button> }
     </RouterLink>
 ))

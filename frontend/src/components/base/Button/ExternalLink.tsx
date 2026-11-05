@@ -22,9 +22,9 @@ export const ExternalLink: React.FC<ExternalLinkProps> = React.memo(({
        rel={ rel ?? target === '_blank' ? 'noopener noreferrer' : undefined }
        className={ [ styles.ExternalLink, inText ? styles.Text : '', className ].join(' ') }>
         { inText ? <Fragment>
-            { children }{ target === '_blank' && <Fragment>{ NBSP }<SquareTopDownLinearIcon/></Fragment> }
+            { children }{ target === '_blank' && <Fragment>{ NBSP }<SquareTopDownLinearIcon size={ 16 }/></Fragment> }
         </Fragment> : <Button { ...props }>
-            { children }{ target === '_blank' && <Fragment>{ NBSP }<SquareTopDownLinearIcon/></Fragment> }
+            { children }{ target === '_blank' && <Fragment>{ NBSP }<SquareTopDownLinearIcon size={ 16 }/></Fragment> }
         </Button> }
     </a>
 ))

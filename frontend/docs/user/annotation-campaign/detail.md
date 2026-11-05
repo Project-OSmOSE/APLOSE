@@ -10,9 +10,9 @@
 
 <!--@include: ../terminology/phase.md-->
 
-**Label**
+**Ontology**
 
-<!--@include: ../terminology/label.md-->
+<!--@include: ../terminology/ontology.md-->
 
 **Confidence**
 
@@ -22,7 +22,7 @@
 
 From the [campaign list](all), you can access to the campaign detail by clicking on its card.
 
-![](/annotation-campaign/detail.png)
+/annotation-campaign/detail.png)
 
 You can read in the "Information" tab all the campaign information:
 - Global information
@@ -34,7 +34,7 @@ You can read in the "Information" tab all the campaign information:
   - Name of the dataset, which is a link to the [dataset detailed page ](/user/data/manage)
   - Table of the analysis from the dataset used in this campaign
 - Annotation information (if phases exists)
-  - Label set modal containing a description of the set and the liste of its labels.
+  - Labels modal containing the list of the labels.
   - Confidence set and the list of its confidences
   - Annotation types allowed
 - Global progression (if phases exists)

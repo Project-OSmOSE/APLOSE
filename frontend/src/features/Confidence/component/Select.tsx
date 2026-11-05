@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ComboboxSelect, type ComboboxSelectProps } from '@/components/base'
-import { type ConfidenceNode } from '@/api';
+import { type ConfidenceNode } from '@/api/types.gql-generated.ts';
 
 type SelectValue = Pick<ConfidenceNode, 'label' | 'id'>;
 export const Select: React.FC<Omit<ComboboxSelectProps<SelectValue>, 'itemToStringLabel' | 'itemToStringValue' | 'isItemEqualToValue' | 'itemName'>> = (props) =>

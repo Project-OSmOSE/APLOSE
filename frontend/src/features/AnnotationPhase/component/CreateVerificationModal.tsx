@@ -1,12 +1,9 @@
 import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
-
-import { AnnotationPhaseType } from '@/api';
 import { Button, ButtonGroup, Dialog, Spinner, Toast } from '@/components/base';
-
 import { Campaign } from '@/features/AnnotationCampaign';
-
+import { Phase } from '@/features/AnnotationPhase';
 import { createVerificationMutation } from '../api'
 import { CreateAnnotationModal } from './CreateAnnotationModal';
 
@@ -22,7 +19,7 @@ export const CreateVerificationModal: React.FC<{
     const navigate = useNavigate()
     const toastManager = Toast.useToastManager()
 
-    const annotationPhaseExists = useMemo(() => data?.phases.find(p => p.phase === AnnotationPhaseType.Annotation), [ data ])
+    const annotationPhaseExists = useMemo(() => data?.phases.find(p => p.phase === Phase.Type.Annotation), [ data ])
 
     const [ shouldImport, setShouldImport ] = useState<boolean>(false);
 
@@ -34,7 +31,7 @@ export const CreateVerificationModal: React.FC<{
                 to: '/annotation-campaign/$campaignID/phase/$phaseType',
                 params: {
                     campaignID: campaign.id,
-                    phaseType: AnnotationPhaseType.Verification,
+                    phaseType: Phase.Type.Verification,
                 },
                 search: { page: 1 },
             })
@@ -50,7 +47,7 @@ export const CreateVerificationModal: React.FC<{
                 to: '/annotation-campaign/$campaignID/phase/$phaseType/import-annotations',
                 params: {
                     campaignID: campaign.id,
-                    phaseType: AnnotationPhaseType.Annotation,
+                    phaseType: Phase.Type.Annotation,
                 },
             })
         } catch (error) {

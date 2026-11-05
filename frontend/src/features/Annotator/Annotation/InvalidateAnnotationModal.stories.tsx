@@ -3,7 +3,7 @@ import { InvalidateAnnotationModal, type InvalidateAnnotationModalProps } from '
 import type { Meta, StoryObj } from '@storybook/tanstack-react/dist';
 // @ts-expect-error: using different ts-config: moduleResolution (see tsconfig.storybook.json)
 import { fn } from 'storybook/test';
-import { AnnotationType } from '@/api';
+import { AnnotationType } from '@/api/types.gql-generated.ts';
 
 
 const meta = {

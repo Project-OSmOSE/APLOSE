@@ -6,14 +6,16 @@ from rest_framework import status
 from backend.aplose.models import User
 
 URL = reverse("sql-post")
-SELECT_DATA = {"query": "SELECT * FROM api_label"}
-DROP_DATA = {"query": "DROP TABLE api_label"}
-INSERT_DATA = {"query": "INSERT INTO api_label (name) VALUES ('test')"}
-UPDATE_DATA = {"query": "UPDATE api_label SET name='test'"}
+SELECT_DATA = {"query": "SELECT * FROM mx_ontology_label"}
+DROP_DATA = {"query": "DROP TABLE mx_ontology_label"}
+INSERT_DATA = {
+    "query": "INSERT INTO mx_ontology_label (nickname, source_id) VALUES ('test', 1)"
+}
+UPDATE_DATA = {"query": "UPDATE mx_ontology_label SET nickname='test'"}
 
 
 class SqlViewSetTestCase(ExtendedTestCase):
-    fixtures = ["users", "label_set", "label"]
+    fixtures = ["users", "label"]
 
     # 401
     def test_post_unauthenticated(self):
@@ -36,8 +38,8 @@ class SqlViewSetTestCase(ExtendedTestCase):
         self.log_client(User.objects.get(username="admin"))
         response = self.client.post(URL, SELECT_DATA)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["count"], 7)
-        self.assertEqual(len(response.data["results"]), 7)
+        self.assertEqual(response.data["count"], 8)
+        self.assertEqual(len(response.data["results"]), 8)
 
     # 406
     def test_post_superuser_drop(self):

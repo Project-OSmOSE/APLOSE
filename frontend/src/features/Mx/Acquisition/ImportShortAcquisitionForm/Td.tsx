@@ -132,8 +132,9 @@ export const DeploymentTd: React.FC<{ header: string, rowIndex: number }> = ({ h
                 return <MxOntology.BehaviorMultiCombobox { ...objectSelect }
                                                          defaultStringLabel={ multipleDefaultStringLabel }/>
             case 'detectorSpec-labels':
-                return <MxOntology.LabelMultiCombobox { ...objectSelect }
-                                                      defaultStringLabel={ multipleDefaultStringLabel }/>
+                return <MxOntology.LabelCombobox { ...objectSelect }
+                                                 multiple={ true }
+                                                 defaultStringLabel={ multipleDefaultStringLabel }/>
             default:
                 return <Note color="danger">Not implemented</Note>
         }

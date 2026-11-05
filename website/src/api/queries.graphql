@@ -79,6 +79,7 @@ query allDeployments($projectID: Decimal) {
                 id
                 role
                 contact {
+                    __typename
                     ... on PersonNode {
                         firstName
                         lastName
@@ -107,11 +108,11 @@ query allDeployments($projectID: Decimal) {
 
 query deploymentById($id: ID!) {
     annotationLabelsForDeploymentId(deploymentId: $id) {
-        results {
+        label {
             id
-            name
-            uses(deploymentId: $id)
+            preferredDisplay
         }
+        uses
     }
     deploymentById(id: $id) {
         name
@@ -131,6 +132,7 @@ query deploymentById($id: ID!) {
                 id
                 role
                 contact {
+                    __typename
                     ... on PersonNode {
                         firstName
                         lastName
@@ -160,6 +162,7 @@ query deploymentById($id: ID!) {
             id
             role
             contact {
+                __typename
                 ... on PersonNode {
                     firstName
                     lastName

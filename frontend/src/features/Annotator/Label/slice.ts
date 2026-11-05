@@ -2,15 +2,15 @@ import { createSlice } from '@reduxjs/toolkit';
 import { type Annotation, blur, focusAnnotation } from '@/features/Annotator/Annotation/slice';
 
 type LabelState = {
-    hiddenLabels: string[];
-    focus?: string;
+    hiddenLabelIds: string[];
+    focusId?: string;
 
     _campaignID?: string;
 }
 
 const initialState: LabelState = {
-    hiddenLabels: [],
-    focus: undefined,
+    hiddenLabelIds: [],
+    focusId: undefined,
 
     _campaignID: undefined,
 }
@@ -19,32 +19,32 @@ export const AnnotatorLabelSlice = createSlice({
     name: 'AnnotatorLabel',
     initialState,
     reducers: {
-        setHiddenLabels: (state, action: { payload: string[] }) => {
-            state.hiddenLabels = action.payload;
+        setHiddenLabelIds: (state, action: { payload: string[] }) => {
+            state.hiddenLabelIds = action.payload;
         },
         initCampaign: (state) => {
-            state.focus = initialState.focus
-            state.hiddenLabels = initialState.hiddenLabels
+            state.focusId = initialState.focusId
+            state.hiddenLabelIds = initialState.hiddenLabelIds
         },
         initSpectrogram: (state, action: { payload: { focus: string | undefined } }) => {
-            state.focus = action.payload.focus
-            state.hiddenLabels = initialState.hiddenLabels
+            state.focusId = action.payload.focus
+            state.hiddenLabelIds = initialState.hiddenLabelIds
         },
     },
     extraReducers: builder => {
         builder.addCase(focusAnnotation, (state: LabelState, action: { payload: Annotation }) => {
-            state.focus = action.payload.label
+            state.focusId = action.payload.labelId
         })
         builder.addCase(blur, (state: LabelState) => {
-            state.focus = undefined
+            state.focusId = undefined
         })
     },
     selectors: {
-        selectHiddenLabels: state => state.hiddenLabels,
-        selectFocus: state => state.focus,
+        selectHiddenLabelIds: state => state.hiddenLabelIds,
+        selectFocusId: state => state.focusId,
     },
 })
 
 export const {
-    setHiddenLabels,
+    setHiddenLabelIds,
 } = AnnotatorLabelSlice.actions

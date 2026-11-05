@@ -31,8 +31,7 @@ mutation endPhase($id: ID!) {
 
 mutation createAnnotationPhase(
     $campaignID: ID!
-    $labelsWithAcousticFeatures: [ID]!
-    $labelSetID: ID!
+    $labels: [AnnotationCampaignLabelInput]!
     $confidenceSetID: ID
     $allowPointAnnotation: Boolean!
 ) {
@@ -42,10 +41,19 @@ mutation createAnnotationPhase(
     updateAnnotationCampaign(input: {
         id: $campaignID
         allowPointAnnotation: $allowPointAnnotation
-        labelsWithAcousticFeatures: $labelsWithAcousticFeatures
-        labelSet: $labelSetID
         confidenceSet: $confidenceSetID
     }) {
+        errors {
+            field
+            messages
+        }
+    }
+    addAnnotationCampaignLabels(
+        input: {
+            campaignId: $campaignID,
+            list: $labels
+        }
+    ) {
         errors {
             field
             messages

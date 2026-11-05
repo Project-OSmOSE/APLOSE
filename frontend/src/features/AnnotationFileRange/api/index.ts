@@ -37,21 +37,27 @@ export const createMutation = mutationOptions({
                 lastFileIndex: variables.lastFileIndex - 1,
             }
         }),
-    onSettled: (_data, _error, { annotationPhase }, _onMutateResult, context) =>
+    onSettled: (_data, _error, { annotationPhase }, _onMutateResult, context) => Promise.all([
         context.client.invalidateQueries({ queryKey: queryKeys.fileRange.list({ phaseID: annotationPhase }) }),
+        context.client.invalidateQueries({ queryKey: queryKeys.spectrogram.base }),
+    ])
 })
 
 export const updateMutation = mutationOptions({
-    mutationFn: (variables: Omit<UpdateFileRangeMutationVariables['input'], 'clientMutationId'> & { annotationPhase: string }) =>
+    mutationFn: (variables: Omit<UpdateFileRangeMutationVariables['input'], 'clientMutationId'> & {
+        annotationPhase: string
+    }) =>
         graphqlClient.request<UpdateFileRangeMutation>(UpdateFileRangeDocument, {
-        input: {
-            id: variables.id,
-            firstFileIndex: variables.firstFileIndex - 1,
-            lastFileIndex: variables.lastFileIndex - 1,
-        },
-    }),
-    onSettled: (_data, _error, { annotationPhase }, _onMutateResult, context) =>
+            input: {
+                id: variables.id,
+                firstFileIndex: variables.firstFileIndex - 1,
+                lastFileIndex: variables.lastFileIndex - 1,
+            },
+        }),
+    onSettled: (_data, _error, { annotationPhase }, _onMutateResult, context) => Promise.all([
         context.client.invalidateQueries({ queryKey: queryKeys.fileRange.list({ phaseID: annotationPhase }) }),
+        context.client.invalidateQueries({ queryKey: queryKeys.spectrogram.base }),
+    ])
 })
 
 export const deleteMutation = mutationOptions({
@@ -79,8 +85,10 @@ export const deleteMutation = mutationOptions({
         context.client.setQueryData(queryKeys.fileRange.list({ phaseID }), onMutateResult?.previousRanges)
     },
     // Always refetch after error or success:
-    onSettled: (_data, _error, { phaseID }, _onMutateResult, context) =>
+    onSettled: (_data, _error, { phaseID }, _onMutateResult, context) => Promise.all([
         context.client.invalidateQueries({ queryKey: queryKeys.fileRange.list({ phaseID }) }),
+        context.client.invalidateQueries({ queryKey: queryKeys.spectrogram.base }),
+    ])
 })
 
 export type * from './annotation-file-range.generated'

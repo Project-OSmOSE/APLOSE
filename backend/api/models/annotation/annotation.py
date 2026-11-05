@@ -4,6 +4,7 @@ from typing import Optional
 from django.db import models
 from django.db.models import Q, Exists, OuterRef
 from django_extension.models import ExtendedEnum, ExtendedQuerySet
+from metadatax.ontology.models import Label
 
 from backend.aplose.models import AploseUser, ExpertiseLevel, User
 from .acoustic_features import AcousticFeatures
@@ -11,7 +12,6 @@ from .annotation_file_range import AnnotationFileRange
 from .annotation_phase import AnnotationPhase
 from .confidence import Confidence
 from .detector_configuration import DetectorConfiguration
-from .label import Label
 from ..data import Spectrogram
 
 

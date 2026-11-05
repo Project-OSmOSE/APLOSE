@@ -177,9 +177,7 @@ query getAnnotationSpectrogram(
                     endTime
                     minFrequency
                     maxFrequency
-                    label {
-                        name
-                    }
+                    labelId
                     confidence {
                         label
                     }
@@ -236,9 +234,7 @@ query getAnnotationSpectrogram(
                     endTime
                     minFrequency
                     maxFrequency
-                    label {
-                        name
-                    }
+                    labelId
                     confidence {
                         label
                     }

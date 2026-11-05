@@ -9,7 +9,6 @@ import type {
     AllSpectrogramAnalysisForDatasetQueryVariables,
     AllSpectrogramAnalysisQueryVariables,
 } from '@/features/SpectrogramAnalysis/api';
-import type { GetDetailedSoundByIdQueryVariables, GetDetailedSourceByIdQueryVariables } from '@/features/Ontology/api';
 import type { GetAnnotationPhaseQueryVariables } from '@/features/AnnotationPhase/api';
 import type {
     AllAnnotationSpectrogramsQueryVariables,
@@ -19,6 +18,7 @@ import type {
 import type { AnnotationPhaseType } from '@/api/types.gql-generated';
 import type { AllDeploymentsQueryVariables } from '@/features/Mx/Acquisition/Deployment/all.generated';
 import type { AllEquipmentsQueryVariables } from '@/features/Mx/Equipment/api';
+import { DetailedSourceByIdQueryVariables } from "@/features/Mx/Ontology/api/Ontology.generated";
 
 /**
  * Keys factory pour les requêtes GraphQL
@@ -29,6 +29,8 @@ export const queryKeys = {
         base: [ 'campaign' ],
         all: (variables: AllCampaignsQueryVariables) => [ 'campaign', variables ] as const,
         byId: (variables: GetCampaignQueryVariables) => [ 'campaign', variables.id ] as const,
+        labelsByIdBase: [ 'campaign', 'labels' ] as const,
+        labelsById: (variables: GetCampaignQueryVariables) => [ 'campaign', 'labels', variables.id ] as const,
     },
     phase: {
         get: ({ campaignID, phase }: GetAnnotationPhaseQueryVariables) => [ 'phase', campaignID, phase ] as const,
@@ -72,16 +74,6 @@ export const queryKeys = {
     analysis: {
         all: (variables: AllSpectrogramAnalysisQueryVariables) => [ 'analysis', variables ] as const,
         allForDataset: ({ datasetID }: AllSpectrogramAnalysisForDatasetQueryVariables) => [ 'analysis', 'dataset', datasetID ] as const,
-    },
-    ontology: {
-        sound: {
-            all: [ 'ontology', 'sound' ] as const,
-            byId: (variables: GetDetailedSoundByIdQueryVariables) => [ 'ontology', 'sound', variables.id ] as const,
-        },
-        source: {
-            all: [ 'ontology', 'source' ] as const,
-            byId: (variables: GetDetailedSourceByIdQueryVariables) => [ 'ontology', 'source', variables.id ] as const,
-        },
     },
     storage: {
         browse: (variables: BrowseStorageQueryVariables) => [ 'storage', 'browse', variables.path.split('/') ] as const,
@@ -133,8 +125,15 @@ export const queryKeys = {
             },
         },
         ontology: {
+            source: {
+                all: [ 'mx', 'ontology', 'source' ] as const,
+                byID: ({ id }: DetailedSourceByIdQueryVariables) => [ 'mx', 'ontology', 'source', id ] as const,
+            },
+            sound: {
+                all: [ 'mx', 'ontology', 'sound' ] as const,
+                byID: ({ id }: DetailedSourceByIdQueryVariables) => [ 'mx', 'ontology', 'sound', id ] as const,
+            },
             allLabels: [ 'mx', 'ontology', 'label' ] as const,
-            allSources: [ 'mx', 'ontology', 'source' ] as const,
             allBehaviors: [ 'mx', 'ontology', 'behavior' ] as const,
         },
         data: {

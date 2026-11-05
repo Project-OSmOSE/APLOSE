@@ -1,4 +1,4 @@
-import { AnnotationCommentInput, type AnnotationCommentNode, type Maybe } from '@/api';
+import { AnnotationCommentInput, type AnnotationCommentNode } from '@/api/types.gql-generated.ts';
 import { Comment } from './slice'
 
 export function convertCommentsToPost(comments: Comment[]): AnnotationCommentInput[] {
@@ -8,7 +8,7 @@ export function convertCommentsToPost(comments: Comment[]): AnnotationCommentInp
   }))
 }
 
-export function convertGqlToComments(comments: Maybe<Pick<AnnotationCommentNode, 'id' | 'comment'>>[]): Comment[] {
+export function convertGqlToComments(comments: (Pick<AnnotationCommentNode, 'id' | 'comment'> | null)[]): Comment[] {
   return comments?.filter(c => !!c).map(c => ({
     id: +c!.id,
     comment: c!.comment,

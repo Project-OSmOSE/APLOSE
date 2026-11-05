@@ -13,11 +13,14 @@ import {
     type CreateCampaignMutation,
     type CreateCampaignMutationVariables,
     GetCampaignDocument,
+    GetCampaignLabelsDocument,
+    GetCampaignLabelsQuery,
+    GetCampaignLabelsQueryVariables,
     type GetCampaignQuery,
     type GetCampaignQueryVariables,
-    UpdateCampaignFeaturedLabelsDocument,
-    type UpdateCampaignFeaturedLabelsMutation,
-    type UpdateCampaignFeaturedLabelsMutationVariables,
+    UpdateCampaignLabelAcousticFeaturesDocument,
+    type UpdateCampaignLabelAcousticFeaturesMutation,
+    type UpdateCampaignLabelAcousticFeaturesMutationVariables,
 } from './annotation-campaign.generated'
 
 export const allQuery = (variables: AllCampaignsQueryVariables) => queryOptions({
@@ -26,16 +29,28 @@ export const allQuery = (variables: AllCampaignsQueryVariables) => queryOptions(
         .then(data => cleanGqlList(data.allAnnotationCampaigns?.results)),
 })
 
-export const byIdQuery = (variables: GetCampaignQueryVariables) => queryOptions({
-    queryKey: queryKeys.campaign.byId(variables),
-    queryFn: () => graphqlClient.request<GetCampaignQuery>(GetCampaignDocument, variables)
+export const byIdQuery = ({ id }: Partial<GetCampaignQueryVariables>) => queryOptions({
+    enabled: !!id,
+    queryKey: queryKeys.campaign.byId({ id: id ?? ' ' }),
+    queryFn: () => graphqlClient.request<GetCampaignQuery>(GetCampaignDocument, { id: id ?? '' })
         .then(data => ({
             campaign: data.annotationCampaignById,
             phases: cleanGqlList(data.annotationCampaignById?.phases?.results),
             analysis: cleanGqlList(data.annotationCampaignById?.analysis?.edges.map(e => e?.node)),
             confidences: cleanGqlList(data.annotationCampaignById?.confidenceSet?.confidenceIndicators),
-            labels: cleanGqlList(data.annotationCampaignById?.labelSet?.labels),
         })),
+})
+
+export const labelsByIdQuery = ({ id }: Partial<GetCampaignLabelsQueryVariables>) => queryOptions({
+    enabled: !!id,
+    queryKey: queryKeys.campaign.labelsById({ id: id ?? '' }),
+    queryFn: () => graphqlClient.request<GetCampaignLabelsQuery>(GetCampaignLabelsDocument, { id: id ?? '' })
+        .then(data =>
+            cleanGqlList(data.annotationCampaignById?.labels).sort((a, b) => {
+                return a.label.source.englishName.localeCompare(b.label.source.englishName)
+                    || a.label.id.localeCompare(b.label.id)
+            })
+        ),
 })
 
 export const createMutation = mutationOptions({
@@ -56,10 +71,13 @@ export const archiveMutation = mutationOptions({
     ]),
 })
 
-export const updateFeaturedLabelsMutation = mutationOptions({
-    mutationFn: (variables: UpdateCampaignFeaturedLabelsMutationVariables) => graphqlClient.request<UpdateCampaignFeaturedLabelsMutation>(UpdateCampaignFeaturedLabelsDocument, variables),
-    onSuccess: (_data, variables, _result, context) =>
-        context.client.invalidateQueries({ queryKey: queryKeys.campaign.byId({ id: variables.id }) }),
+export const updateLabelAcousticFeaturesMutation = mutationOptions({
+    mutationFn: (variables: UpdateCampaignLabelAcousticFeaturesMutationVariables & { campaignID: string }) =>
+        graphqlClient.request<UpdateCampaignLabelAcousticFeaturesMutation>(UpdateCampaignLabelAcousticFeaturesDocument, variables)
+            .then(data => data.updateAnnotationCampaignLabelAcousticFeatures),
+    onSuccess: (_data, variables, _result, context) => Promise.all([
+        context.client.invalidateQueries({ queryKey: queryKeys.campaign.labelsById({ id: variables.campaignID }) }),
+    ])
 })
 
 
@@ -68,4 +86,7 @@ export type {
     GetCampaignQuery as GetQuery,
 
     CampaignAnalysisFragment as AnalysisFragment,
+    AllCampaignFragment as AllFragment,
+    LabelRelationFragment,
+    CampaignFragment as Fragment,
 } from './annotation-campaign.generated'

@@ -16,8 +16,8 @@ export const AnnotationsBloc: React.FC = () => {
     const sortedAnnotations = useMemo(() => {
         // Need the spread to sort this readonly array
         return [ ...(allAnnotations ?? []) ].sort((a, b) => {
-            if (a.label !== b.label) {
-                return a.label.localeCompare(b.label);
+            if (a.labelId !== b.labelId) {
+                return parseInt(b.labelId) - parseInt(a.labelId);
             }
             return (a.startTime ?? 0) - (b.startTime ?? 0);
         })

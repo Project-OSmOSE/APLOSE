@@ -73,7 +73,7 @@ const TEST = {
                 expect(variables.spectrogramID).toEqual(TASKS.unsubmitted.id);
                 expect(variables.annotations).toEqual([ {
                     annotationPhase: phaseObj.id,
-                    label: LABELS.classic.name,
+                    label: LABELS.classic.id,
                     confidence: CONFIDENCES.sure.label,
                     annotator: USERS[as].id,
                     comments: [ {
@@ -125,7 +125,7 @@ const TEST = {
                     {
                         annotationPhase: phaseObj.id,
                         id: +weakAnnotation.id,
-                        label: LABELS.classic.name,
+                        label: LABELS.classic.id,
                         confidence: CONFIDENCES.sure.label,
                         annotator: USERS.annotator.id,
                         comments: [],
@@ -137,7 +137,7 @@ const TEST = {
                         endTime: boxAnnotation.endTime,
                         minFrequency: boxAnnotation.minFrequency,
                         maxFrequency: boxAnnotation.maxFrequency,
-                        label: LABELS.classic.name,
+                        label: LABELS.classic.id,
                         confidence: CONFIDENCES.notSure.label,
                         annotator: USERS.annotator.id,
                         comments: [],

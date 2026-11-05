@@ -49,3 +49,6 @@ export type {
     CreateVerificationPhaseMutationVariables,
     CreateAnnotationPhaseMutationVariables,
 } from './annotation-phase.generated'
+export {
+    AnnotationPhaseType as Type
+} from '@/api/types.gql-generated.ts'

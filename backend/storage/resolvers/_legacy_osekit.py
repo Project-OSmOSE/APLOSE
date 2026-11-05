@@ -191,7 +191,6 @@ class LegacyOSEkitResolver(StorageResolver):
             base_folder = join(line["path"], relative_path)
 
             for folder in listdir(base_folder):
-                print("get inner analysis", dataset, folder)
                 analysis.append(
                     self._get_analysis(
                         dataset=dataset,

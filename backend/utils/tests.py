@@ -8,7 +8,6 @@ all_fixtures = [
     "legacy_spectrogram_configuration",
     "spectrogram",
     "spectrogram_analysis",
-    "label_set",
     "label",
     "confidence_set",
     "confidence",

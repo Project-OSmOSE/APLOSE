@@ -4,6 +4,7 @@ from django.core import validators
 from django.db import transaction
 from django.db.models import Max, QuerySet
 from django_extension.serializers import EnumField, ListSerializer
+from metadatax.ontology.models import Label
 from rest_framework import serializers
 from rest_framework.fields import empty, FloatField
 
@@ -11,7 +12,6 @@ from backend.api.models import (
     Annotation,
     AnnotationPhase,
     Spectrogram,
-    Label,
     Confidence,
     AnnotationValidation,
     AnnotationComment,
@@ -26,9 +26,8 @@ class AnnotationSerializer(serializers.ModelSerializer):
     type = EnumField(enum=Annotation.Type, read_only=True)
     annotator_expertise_level = EnumField(enum=ExpertiseLevel, read_only=True)
 
-    label = serializers.SlugRelatedField(
+    label = serializers.PrimaryKeyRelatedField(
         queryset=Label.objects.all(),
-        slug_field="name",
     )
     confidence = serializers.SlugRelatedField(
         queryset=Confidence.objects.all(),
@@ -75,7 +74,7 @@ class AnnotationSerializer(serializers.ModelSerializer):
 
         if phase is not None:
             campaign = phase.annotation_campaign
-            fields["label"].queryset = campaign.label_set.labels
+            fields["label"].queryset = campaign.labels
             fields["spectrogram"].queryset = Spectrogram.objects.filter(
                 analysis__in=campaign.analysis.all()
             ).distinct()

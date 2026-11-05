@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { type Annotation, type Features } from '@/features/Annotator/Annotation';
 import { Td, Th, Tr } from '@/components/ui';
 import { useUpdateAnnotationFeatures } from '@/features/Annotator/AcousticFeatures/hooks';
-import { SignalTrendType } from '@/api';
+import { SignalTrendType } from '@/api/types.gql-generated.ts';
 import { Select } from '@/components/base';
 
 export const Trend: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
@@ -31,8 +31,8 @@ export const Trend: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
         <Td colSpan={ 2 }>
             <Select items={ Object.values(SignalTrendType) }
                     itemName="trend"
-                    itemToStringValue={ item => SignalTrendType[item] }
-                    itemToElementLabel={ item => SignalTrendType[item] }
+                    itemToStringValue={ item => SignalTrendType[item as SignalTrendType] }
+                    itemToElementLabel={ item => SignalTrendType[item as SignalTrendType] }
                     value={ annotation.acousticFeatures?.trend ?? undefined }
                     onValueChange={ onTrendUpdate }/>
         </Td>

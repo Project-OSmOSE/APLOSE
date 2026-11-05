@@ -1,5 +1,5 @@
 import React, { type FormEvent, useCallback } from 'react';
-import { AnnotationTaskStatus } from '@/api';
+import { AnnotationTaskStatus } from '@/api/types.gql-generated.ts';
 import { Route } from '@/routes/_authenticated/annotation-campaign/$campaignID/_detailLayout/phase.$phaseType';
 import { useLoaderData, useNavigate } from '@tanstack/react-router';
 import { Dialog } from '@/components/base/Dialog';

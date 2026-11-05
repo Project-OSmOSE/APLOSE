@@ -1,4 +1,4 @@
-fragment BaseCampaign on AnnotationCampaignNode {
+fragment AllCampaign on AnnotationCampaignNode {
     id
     name
     deadline
@@ -32,7 +32,7 @@ query allCampaigns(
 
         orderBy: "name"
     ) {
-        results { ...BaseCampaign }
+        results { ...AllCampaign }
     }
 }
 
@@ -59,84 +59,82 @@ fragment CampaignAnalysis on SpectrogramAnalysisNode {
     legacy
 }
 
-query getCampaign($id: ID!) {
-    annotationCampaignById(id: $id) {
+fragment LabelRelation on AnnotationCampaignLabelNode {
+    id
+    label { ...Label }
+    enableAcousticFeatures
+}
+
+fragment Campaign on AnnotationCampaignNode {
+    id
+    name
+    createdAt
+    instructionsUrl
+    deadline
+    archived
+    archivedAt
+    archivedBy {
+        displayName
+    }
+    hasChangePermission
+    allowPointAnnotation
+    allowColormapTuning
+    allowImageTuning
+    colormapDefault
+    colormapInvertedDefault
+    allowDigitalZoom
+    dataset {
         id
         name
-        createdAt
-        instructionsUrl
-        deadline
         archived
-        archivedAt
-        archivedBy {
-            displayName
-        }
-        hasChangePermission
-        allowPointAnnotation
-        allowColormapTuning
-        allowImageTuning
-        colormapDefault
-        colormapInvertedDefault
-        allowDigitalZoom
-        dataset {
+    }
+    owner {
+        id
+        displayName
+        email
+    }
+    description
+    confidenceSet {
+        id
+        name
+        desc
+        confidenceIndicators {
             id
-            name
-            archived
-        }
-        labelSet {
-            id
-            name
-            description
-            labels {
-                id
-                name
-            }
-        }
-        labelsWithAcousticFeatures {
-            id
-            name
-        }
-        owner {
-            id
-            displayName
-            email
-        }
-        description
-        confidenceSet {
-            id
-            name
-            desc
-            confidenceIndicators {
-                id
-                label
-                isDefault
-            }
-        }
-        detectors {
-            id
-            name
-        }
-        annotators {
-            id
-            displayName
-        }
-        analysis {
-            edges {
-                node { ...CampaignAnalysis }
-            }
-        }
-        spectrogramsCount
-        phases {
-            results {
-                id
-                phase
-                archived
-                hasChangePermission
-                tasksCount
-                completedTasksCount
-            }
+            label
+            isDefault
         }
     }
+    detectors {
+        id
+        name
+    }
+    annotators {
+        id
+        displayName
+    }
+    analysis {
+        edges {
+            node { ...CampaignAnalysis }
+        }
+    }
+    spectrogramsCount
+    phases {
+        results {
+            id
+            phase
+            archived
+            hasChangePermission
+            tasksCount
+            completedTasksCount
+        }
+    }
+}
+
+query getCampaign($id: ID!) {
+    annotationCampaignById(id: $id) { ...Campaign }
+}
+query getCampaignLabels($id: ID!) {
+    annotationCampaignById(id: $id) { labels { ...LabelRelation } }
 }
 
 mutation createCampaign(
@@ -188,20 +186,16 @@ mutation archiveCampaign($id: ID!) {
     }
 }
 
-mutation updateCampaignFeaturedLabels(
-    $id: ID!
-    $labelsWithAcousticFeatures: [ID]!
-    $labelSetID: ID!
-    $confidenceSetID: ID
-    $allowPointAnnotation: Boolean!
+mutation updateCampaignLabelAcousticFeatures(
+    $relationId: ID!
+    $enableAcousticFeatures: Boolean!
 ) {
-    updateAnnotationCampaign(input: {
-        id: $id
-        allowPointAnnotation: $allowPointAnnotation
-        labelsWithAcousticFeatures: $labelsWithAcousticFeatures
-        labelSet: $labelSetID
-        confidenceSet: $confidenceSetID
-    }) {
+    updateAnnotationCampaignLabelAcousticFeatures(
+        input: {
+            id: $relationId,
+            enableAcousticFeatures: $enableAcousticFeatures
+        }
+    ) {
         errors {
             field
             messages

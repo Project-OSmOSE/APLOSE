@@ -1,5 +1,5 @@
 export type {
-    ComboboxRootProps,
+    ComboboxRootProps as RootProps,
 } from '@base-ui/react/combobox'
 import { Combobox } from '@base-ui/react/combobox'
 

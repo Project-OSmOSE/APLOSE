@@ -4,6 +4,7 @@ from django.db.models import QuerySet, OuterRef, Q, Exists
 from django_extension.filters import ExtendedFilterSet, IDFilter
 from django_filters import OrderingFilter, filters
 from graphene_django import filter
+from metadatax.ontology.models import Label
 
 from backend.api.models import (
     Spectrogram,
@@ -12,7 +13,6 @@ from backend.api.models import (
     Annotation,
     AnnotationCampaign,
     Confidence,
-    Label,
     Detector,
     AnnotationPhase,
 )

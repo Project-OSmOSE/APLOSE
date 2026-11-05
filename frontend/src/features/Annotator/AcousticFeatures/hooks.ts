@@ -1,7 +1,7 @@
 import { useAppDispatch } from '@/features/App';
 import { useCallback } from 'react';
 import { type Annotation, focusAnnotation, updateAnnotation } from '@/features/Annotator/Annotation';
-import { AnnotationType } from '@/api';
+import { AnnotationType } from '@/api/types.gql-generated.ts';
 
 export const useUpdateAnnotationFeatures = () => {
     const dispatch = useAppDispatch();

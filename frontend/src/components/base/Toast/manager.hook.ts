@@ -7,7 +7,7 @@ import type {
 } from '@base-ui/react';
 import type { BaseColor } from '@/components/base/types';
 import { getErrorMessage } from '@/service/function';
-import type { ErrorType } from '@/api';
+import type { ErrorType } from '@/api/types.gql-generated.ts';
 import { cleanGqlList } from '@/api/utils';
 
 export type ToastManagerAddOptions<Data extends object = any> = BaseToastManagerAddOptions<Data> & { type?: BaseColor }

@@ -45,7 +45,7 @@ const STEP = {
                         id: +weakAnnotationComment.id,
                         comment: weakAnnotationComment.comment,
                     } ],
-                    label: LABELS.classic.name,
+                    label: LABELS.classic.id,
                     annotator: USERS.creator.id,
                     confidence: CONFIDENCES.sure.label,
                     validations: [
@@ -61,7 +61,7 @@ const STEP = {
                     minFrequency: boxAnnotation.minFrequency,
                     maxFrequency: boxAnnotation.maxFrequency,
                     comments: [],
-                    label: LABELS.classic.name,
+                    label: LABELS.classic.id,
                     annotator: USERS.creator.id,
                     confidence: CONFIDENCES.notSure.label,
                     validations: [
@@ -208,7 +208,7 @@ const TEST = {
             await STEP.submit(page, { weak: false, box: false }, {
                 annotationPhase: phaseObj.id,
                 comments: [],
-                label: LABELS.featured.name,
+                label: LABELS.featured.id,
                 annotator: USERS.annotator.id,
                 confidence: CONFIDENCES.sure.label,
             }, {
@@ -219,7 +219,7 @@ const TEST = {
                 minFrequency: boxAnnotation.minFrequency,
                 maxFrequency: boxAnnotation.maxFrequency,
                 comments: [],
-                label: LABELS.featured.name,
+                label: LABELS.featured.id,
                 annotator: USERS.annotator.id,
                 confidence: CONFIDENCES.notSure.label,
             })
@@ -253,7 +253,7 @@ const TEST = {
             await STEP.submit(page, { weak: true, box: true }, {
                 annotationPhase: phaseObj.id,
                 comments: [],
-                label: LABELS.featured.name,
+                label: LABELS.featured.id,
                 annotator: USERS.annotator.id,
                 confidence: CONFIDENCES.sure.label,
             })

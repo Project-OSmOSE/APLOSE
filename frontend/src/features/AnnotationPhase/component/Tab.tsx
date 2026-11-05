@@ -3,19 +3,19 @@ import { useNavigate, useParams } from '@tanstack/react-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AddCircleLineDuotoneIcon, CloseCircleLineDuotoneIcon } from '@solar-icons/react';
 
-import { AnnotationPhaseType } from '@/api';
 import { queryClient } from '@/api/queryClient';
 import { queryKeys } from '@/api/queryKeys';
 import { Tab as BaseTab } from '@/components/ui';
 import { Button, ButtonGroup, Dialog } from '@/components/base';
 
 import { Campaign } from '@/features/AnnotationCampaign';
+import { Phase } from '@/features/AnnotationPhase';
 
 import { endMutation } from '../api'
 import { CreateAnnotationModal } from './CreateAnnotationModal';
 import { CreateVerificationModal } from './CreateVerificationModal';
 
-export const Tab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: phaseType }) => {
+export const Tab: React.FC<{ phaseType: Phase.Type }> = ({ phaseType: phaseType }) => {
     const { phaseType: currentPhaseType } = useParams({ strict: false });
     const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { data, isFetching } = useQuery(Campaign.byIdQuery({ id: campaignID }))
@@ -41,7 +41,7 @@ export const Tab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: p
         dialogRootRef.current?.close()
         navigate({
             to: '/annotation-campaign/$campaignID/phase/$phaseType',
-            params: { campaignID, phaseType: AnnotationPhaseType.Annotation },
+            params: { campaignID, phaseType: Phase.Type.Annotation },
             search: { page: 1 },
         })
     }, [ navigate, campaignID ])
@@ -51,12 +51,12 @@ export const Tab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: p
         if (shouldImport) {
             navigate({
                 to: '/annotation-campaign/$campaignID/phase/$phaseType/import-annotations',
-                params: { campaignID, phaseType: AnnotationPhaseType.Verification },
+                params: { campaignID, phaseType: Phase.Type.Verification },
             })
         } else {
             navigate({
                 to: '/annotation-campaign/$campaignID/phase/$phaseType',
-                params: { campaignID, phaseType: AnnotationPhaseType.Verification },
+                params: { campaignID, phaseType: Phase.Type.Verification },
                 search: { page: 1 },
             })
         }
@@ -111,7 +111,7 @@ export const Tab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: p
 
     // Create phase
     switch (phaseType) {
-        case AnnotationPhaseType.Annotation:
+        case Phase.Type.Annotation:
             return <Fragment>
                 <Dialog.Root actionsRef={ dialogRootRef }>
                     <Dialog.Trigger disabled={ isFetching }>
@@ -123,7 +123,7 @@ export const Tab: React.FC<{ phaseType: AnnotationPhaseType }> = ({ phaseType: p
                     </Dialog.Portal>
                 </Dialog.Root>
             </Fragment>
-        case AnnotationPhaseType.Verification:
+        case Phase.Type.Verification:
             return <Fragment>
                 <Dialog.Root actionsRef={ dialogRootRef }>
                     <Dialog.Trigger disabled={ isFetching }>

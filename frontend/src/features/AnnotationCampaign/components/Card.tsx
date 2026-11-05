@@ -1,20 +1,21 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { type LinkComponentProps } from '@tanstack/react-router'
+import { cleanGqlList } from "@/api/utils.ts";
+import { Card, Note, Progress } from '@/components/base';
+import * as API from "../api";
 import { CampaignBadge } from './Badge';
-import { Progress } from '@/components/base/Progress';
-import { Card, Note } from '@/components/base';
 import { CampaignPhasesProgress } from './PhasesProgress';
-import { AnnotationCampaignNode, AnnotationPhaseNode } from "@/api";
 
 
 export type CampaignCardProps = {
-    campaign: Pick<AnnotationCampaignNode, 'name' | 'id' | 'archived' | 'deadline' | 'datasetName' | 'tasksCount' | 'completedTasksCount'>
-    phases: Pick<AnnotationPhaseNode, 'phase' | 'archived' | 'userTasksCount' | 'userCompletedTasksCount'>[]
+    campaign: API.AllFragment,
 }
 
-export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign, phases }) => {
+export const CampaignCard: React.FC<CampaignCardProps> = ({ campaign }) => {
     let to: Pick<LinkComponentProps, 'to'>['to'] = '/annotation-campaign/$campaignID'
     const params: any = { campaignID: campaign.id }
+
+    const phases = useMemo(() => cleanGqlList(campaign.phases?.results), [ campaign ])
 
     if (phases.length > 0) {
         to = '/annotation-campaign/$campaignID/phase/$phaseType'

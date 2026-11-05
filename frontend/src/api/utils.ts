@@ -17,7 +17,6 @@ import {
 } from '@tanstack/react-query';
 import { queryClient } from '@/api/queryClient';
 import { WithRequired } from '@tanstack/query-core';
-import { queryKeys } from '@/api/queryKeys';
 
 
 export function getTokenFromCookie(): Token | undefined {
@@ -103,7 +102,7 @@ export function optimisticMutationOptions<
             return { previousData } as any
         },
         onError: (_error, _new, onMutateResult, context) => {
-            context.client.setQueryData(queryKeys.mx.common.allInstitutions, onMutateResult?.previousData)
+            context.client.setQueryData(mutationKey, onMutateResult?.previousData)
         },
         onSettled: (_data, _error, _variables, _onMutateResult, context) =>
             context.client.invalidateQueries({ queryKey: mutationKey }),

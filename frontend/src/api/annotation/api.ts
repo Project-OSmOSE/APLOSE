@@ -1,5 +1,6 @@
 import { restAPI } from '@/api/baseRestApi';
-import { AnnotationPhaseType, type ImportAnnotation } from '@/api';
+import { type ImportAnnotation } from '@/api';
+import { Phase } from "@/features/AnnotationPhase";
 
 
 const keys: (keyof ImportAnnotation)[] = [
@@ -7,7 +8,7 @@ const keys: (keyof ImportAnnotation)[] = [
   'end_datetime',
   'min_frequency',
   'max_frequency',
-  'label',
+  'label_id',
   'confidence_indicator_label',
   'confidence_indicator_level',
   'detector',
@@ -25,7 +26,7 @@ export const AnnotationRestAPI = restAPI.injectEndpoints({
     importAnnotations: builder.mutation<void, ImportAnnotationsParams>({
       query: ({ campaignID, annotations, ...params }) => {
         return {
-          url: `/api/annotation/campaign/${ campaignID }/phase/${ AnnotationPhaseType.Annotation }/`,
+          url: `/api/annotation/campaign/${ campaignID }/phase/${ Phase.Type.Annotation }/`,
           method: 'POST',
           params,
           body: {

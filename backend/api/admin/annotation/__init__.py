@@ -9,7 +9,5 @@ from .annotation_task import AnnotationTaskAdmin
 from .annotation_validation import AnnotationValidationAdmin
 from .confidence import ConfidenceAdmin
 from .confidence_set import ConfidenceSetAdmin
-from .label import LabelAdmin
-from .label_set import LabelSetAdmin
 from .detector import DetectorAdmin
 from .detector_configuration import DetectorConfigurationAdmin

@@ -23,3 +23,4 @@ export * from './Slider'
 export * from './Spinner'
 export * from './Toast'
 export * from './Toggle'
+export type { BaseUIEvent } from '@base-ui/react';

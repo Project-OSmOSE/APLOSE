@@ -22,7 +22,7 @@ features = {
     "trend": "Modulated",
 }
 presence_result = {
-    "label": "Boat",
+    "label": "3",
     "confidence": "confident",
     "start_time": None,
     "end_time": None,
@@ -34,7 +34,7 @@ presence_result = {
     "acoustic_features": None,
 }
 box_result = {
-    "label": "Boat",
+    "label": "3",
     "confidence": "confident",
     "start_time": 0.0,
     "end_time": 10.0,
@@ -81,7 +81,7 @@ class CreateTestCase(TestCase):
         self.assertEqual(Annotation.objects.count(), previous_count + 1)
         instance: Annotation = serializer.instance
         self.assertEqual(instance.type, Annotation.Type.WEAK)
-        self.assertEqual(instance.label.name, "Boat")
+        self.assertEqual(instance.label.source.english_name, "Boat")
         self.assertEqual(instance.confidence.label, "confident")
         self.assertEqual(instance.annotation_phase_id, PHASE_ID)
         self.assertEqual(instance.spectrogram_id, SPECTROGRAM_ID)
@@ -98,7 +98,7 @@ class CreateTestCase(TestCase):
         instance: Annotation = serializer.instance
         self.assertEqual(instance.type, Annotation.Type.BOX)
         self.assertEqual(instance.start_time, 0.0)
-        self.assertEqual(instance.label.name, "Boat")
+        self.assertEqual(instance.label.source.english_name, "Boat")
         self.assertEqual(instance.confidence.label, "confident")
         self.assertEqual(instance.annotation_phase_id, PHASE_ID)
         self.assertEqual(instance.spectrogram_id, SPECTROGRAM_ID)
@@ -168,7 +168,7 @@ class CreateTestCase(TestCase):
     def test_does_not_exist(self):
         serializer = self._get_serializer(
             {
-                "label": "DCall",  # label exist in different label set
+                "label": "6",  # label exist out of AnnotationCampaign
                 "confidence": "test",
             }
         )
@@ -187,7 +187,6 @@ class CreateTestCase(TestCase):
             }
         )
         self.assertFalse(serializer.is_valid(raise_exception=False))
-        print(serializer.errors)
         self.assertEqual(serializer.errors["start_time"][0].code, "min_value")
         self.assertEqual(serializer.errors["end_time"][0].code, "min_value")
         self.assertEqual(serializer.errors["min_frequency"][0].code, "min_value")
@@ -224,7 +223,7 @@ class UpdateTestCase(CreateTestCase):
             annotation_phase=phase,
             spectrogram=phase.annotation_campaign.spectrograms.first(),
             annotator=annotator,
-            label=phase.annotation_campaign.label_set.labels.first(),
+            label=phase.annotation_campaign.labels.first(),
             confidence=phase.annotation_campaign.confidence_set.confidence_indicators.first(),
             start_time=1,
             end_time=9,
@@ -259,7 +258,7 @@ class UpdateTestCase(CreateTestCase):
         self.assertEqual(AcousticFeatures.objects.count(), previous_features_count - 1)
         instance: Annotation = serializer.instance
         self.assertEqual(instance.type, Annotation.Type.WEAK)
-        self.assertEqual(instance.label.name, "Boat")
+        self.assertEqual(instance.label.source.english_name, "Boat")
         self.assertEqual(instance.confidence.label, "confident")
         self.assertEqual(instance.annotation_phase_id, PHASE_ID)
         self.assertEqual(instance.spectrogram_id, SPECTROGRAM_ID)
@@ -276,7 +275,7 @@ class UpdateTestCase(CreateTestCase):
         instance: Annotation = serializer.instance
         self.assertEqual(instance.type, Annotation.Type.BOX)
         self.assertEqual(instance.start_time, 0.0)
-        self.assertEqual(instance.label.name, "Boat")
+        self.assertEqual(instance.label.source.english_name, "Boat")
         self.assertEqual(instance.confidence.label, "confident")
         self.assertEqual(instance.annotation_phase_id, PHASE_ID)
         self.assertEqual(instance.spectrogram_id, SPECTROGRAM_ID)
@@ -311,7 +310,7 @@ class CreateUpdateOfResultTestCase(TestCase):
         serializer = AnnotationSerializer(
             data={
                 "is_update_of": 1,
-                "label": "Mysticetes",
+                "label": "1",
                 "confidence": "confident",
                 "start_time": 0.0,
                 "end_time": 20.0,

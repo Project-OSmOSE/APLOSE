@@ -15,16 +15,9 @@ Each dataset should be imported in order to be used by APLOSE.
 :::
 
 
-Access the "Datasets" page from the navigation panel.
+Access the "Storage" page from the navigation panel.
 
-![](/data/datasets.png)
+![](/data/storage.png)
 
-Click on the "Import dataset" button
-
-![](/data/datasets-import.png)
-
-In the modal you can see the list of all available datasets and their analysis.
-
-Clic on the following button to import a complete dataset or just one analysis of the dataset.
-![](/data/button-import.png)
-
+Browse through the storage until you find your dataset.
+You can choose to import the entire dataset or just one of its analyses.

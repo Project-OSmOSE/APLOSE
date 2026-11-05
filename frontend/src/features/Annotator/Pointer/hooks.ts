@@ -3,7 +3,7 @@ import { useWindowHeight, useWindowWidth } from '@/features/Annotator/Canvas';
 import { useFrequencyScale, useTimeScale } from '@/features/Annotator/Axis';
 import { type Position, type TimeFreqPosition } from './context';
 import { useAnnotatorCanvasContext } from '@/features/Annotator/Canvas/context';
-import type { AnnotationNode } from '@/api';
+import type { AnnotationNode } from '@/api/types.gql-generated.ts';
 
 export const useIsHoverCanvas = () => {
     const width = useWindowWidth()

@@ -5,16 +5,17 @@ import {
   AnnotationInput,
   AnnotationType,
   AnnotationValidationSerializerInput,
-} from '@/api';
+} from '@/api/types.gql-generated.ts';
 
 
 export type Comment = Omit<AnnotationCommentSerializerInput, 'id'> & { id: number }
 export type Validation = AnnotationValidationSerializerInput
 export type Features = AnnotationAcousticFeaturesSerializerInput
 export type Annotation =
-  Omit<AnnotationInput, 'id' | 'isUpdateOf' | 'comments' | 'validations' | 'acousticFeatures'>
+  Omit<AnnotationInput, 'id' | 'isUpdateOf' | 'comments' | 'validations' | 'acousticFeatures' | 'label'>
   & {
   id: number,
+  labelId: string,
   type: AnnotationType;
   comments?: Comment[];
   annotator?: string | number;

@@ -5,7 +5,7 @@ import * as API from '../api'
 import { SourceSelect } from '../input';
 
 
-export const NewSourceForm: React.FC<CreateDialog.FormProps<API.SourceFragment, API.CreateSourceMutationVariables['input']>> = ({
+export const NewSourceForm: React.FC<CreateDialog.FormProps<API.SourceFragment, API.CreateSourceInput>> = ({
                                                                                                                                     onCreate,
                                                                                                                                     input,
                                                                                                                                 }) => {

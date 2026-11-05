@@ -1,4 +1,4 @@
 export * from './BehaviorMultiCombobox'
-export * from './LabelMultiCombobox'
+export * from './LabelCombobox.tsx'
 
 export * from './SourceSelect'

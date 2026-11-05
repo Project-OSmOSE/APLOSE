@@ -1,5 +1,5 @@
-import type { ComboboxRootProps } from '@base-ui/react/combobox';
-import type { ReactNode } from 'react';
+import { ReactNode } from "react";
+import { Combobox } from '@/components/base'
 
 
 export type CreateValue = {
@@ -9,7 +9,7 @@ export type CreateValue = {
 }
 
 export type BaseComboboxSelectProps<Value, Multiple extends boolean = false> =
-    Omit<ComboboxRootProps<Value, Multiple>, 'onValueChange'> & {
+    Omit<Combobox.RootProps<Value, Multiple>, 'onValueChange'> & {
     itemName: string
     id?: string
     loading?: boolean
@@ -24,7 +24,7 @@ export type ComboboxValueType<Value, Multiple extends boolean | undefined> = Mul
 export type FinalValue<Value, Multiple extends boolean = false> = Multiple extends true ? Value[] : (Value | null)
 
 export type ComboboxSelectProps<Value, Multiple extends boolean = false> = // TODO: check there is no more InputData type precision
-    Omit<ComboboxRootProps<Value, Multiple>, 'onValueChange'> & {
+    Omit<Combobox.RootProps<Value, Multiple>, 'onValueChange'> & {
     itemName: string
     id?: string
     loading?: boolean
@@ -39,6 +39,7 @@ export type ComboboxSelectProps<Value, Multiple extends boolean = false> = // TO
     defaultStringLabel?: Multiple extends true ? string[] : string;
     defaultValueString?: Multiple extends true ? string[] : string;
 } & Creatable<Value>
+    & Pick<Combobox.PositionerProps, 'side'>
 
 type Creatable<Value> = {
     creatable?: boolean,

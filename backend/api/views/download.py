@@ -130,9 +130,9 @@ def _get_annotations_for_report(
         .values_list("data", flat=True)
     )
     featured_label_ids = list(
-        phase.annotation_campaign.labels_with_acoustic_features.values_list(
-            "id", flat=True
-        )
+        phase.annotation_campaign.annotationcampaignlabel_set.filter(
+            enable_acoustic_features=True
+        ).values_list("label_id", flat=True)
     )
     signal_quantity_query = Case(
         When(acoustic_features__isnull=False, then=Value("SINGLE")),
@@ -186,6 +186,8 @@ def _get_annotations_for_report(
         .select_related(
             "spectrogram",
             "label",
+            "label__source",
+            "label__sound",
             "confidence",
             "annotator",
             "acoustic_features",
@@ -200,7 +202,17 @@ def _get_annotations_for_report(
         .annotate(
             dataset=Value(phase.annotation_campaign.dataset.name),
             filename=F("spectrogram__filename"),
-            label_name=F("label__name"),
+            label_name=Concat(
+                F("label__source__english_name"),
+                Case(
+                    When(
+                        label__sound__isnull=False,
+                        then=Concat(Value(" - "), F("label__sound__english_name")),
+                    ),
+                    default=None,
+                    output_field=models.CharField(),
+                ),
+            ),
             annotator_expertise=expertise_query,
             type_label=type_query,
             confidence_indicator_label=F("confidence__label"),
@@ -236,24 +248,34 @@ def _get_annotations_for_report(
         .extra(
             select={
                 "start_datetime": """
-                    SELECT 
-                        CASE 
-                            WHEN api_annotation.type = 'W' THEN to_char(f.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
-                            ELSE to_char((f.start + api_annotation.start_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
-                        END
-                    FROM api_spectrogram f
-                    WHERE api_annotation.spectrogram_id = f.id
-                    """,
+                                  -- noinspection SqlResolve @ any/"api_annotation"
+                                  SELECT CASE
+                                             WHEN api_annotation.type = 'W' THEN to_char(
+                                                     f.start::timestamp at time zone 'UTC',
+                                                     'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                                             ELSE to_char(
+                                                     (f.start + api_annotation.start_time * interval '1 second')::timestamp at time zone
+                                                     'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                                             END
+                                  FROM api_spectrogram f
+                                  WHERE api_annotation.spectrogram_id = f.id
+                                  """,
                 "end_datetime": """
-                    SELECT 
-                        CASE 
-                            WHEN api_annotation.type = 'W' THEN to_char(f.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
-                            WHEN api_annotation.type = 'P' THEN to_char((f.start + api_annotation.start_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
-                            ELSE to_char((f.start + api_annotation.end_time * interval '1 second')::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
-                        END
-                    FROM api_spectrogram f
-                    WHERE api_annotation.spectrogram_id = f.id
-                    """,
+                                -- noinspection SqlResolve @ any/"api_annotation"
+                                SELECT CASE
+                                           WHEN api_annotation.type = 'W' THEN to_char(
+                                                   f.end::timestamp at time zone 'UTC',
+                                                   'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                                           WHEN api_annotation.type = 'P' THEN to_char(
+                                                   (f.start + api_annotation.start_time * interval '1 second')::timestamp at time zone
+                                                   'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                                           ELSE to_char(
+                                                   (f.start + api_annotation.end_time * interval '1 second')::timestamp at time zone
+                                                   'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                                           END
+                                FROM api_spectrogram f
+                                WHERE api_annotation.spectrogram_id = f.id
+                                """,
             },
         )
         .values(
@@ -349,17 +371,18 @@ def _get_task_comments_for_report(
         .extra(
             select={
                 "start_datetime": """
-                SELECT 
-                    to_char(f.start::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
-                FROM api_spectrogram f
-                WHERE api_annotationcomment.spectrogram_id = f.id
-                """,
+                                  -- noinspection SqlResolve @ any/"api_annotationcomment"
+                                  SELECT to_char(f.start::timestamp at time zone 'UTC',
+                                                 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                                  FROM api_spectrogram f
+                                  WHERE api_annotationcomment.spectrogram_id = f.id
+                                  """,
                 "end_datetime": """
-                SELECT 
-                    to_char(f.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
-                FROM api_spectrogram f
-                WHERE api_annotationcomment.spectrogram_id = f.id
-                """,
+                                -- noinspection SqlResolve @ any/"api_annotationcomment"
+                                SELECT to_char(f.end::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MSOF":00"')
+                                FROM api_spectrogram f
+                                WHERE api_annotationcomment.spectrogram_id = f.id
+                                """,
             },
         )
     )

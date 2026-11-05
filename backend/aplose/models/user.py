@@ -13,6 +13,14 @@ class ExpertiseLevel(models.TextChoices):
     NOVICE = ("N", "Novice")
 
 
+class LabelDisplayPreference(models.TextChoices):
+    """Preference for string display of labels (Mx)"""
+
+    ENGLISH = ("E", "English")
+    FRENCH = ("F", "French")
+    CODE = ("C", "Code")
+
+
 class AploseUser(models.Model):
     """Override of default Django User model"""
 
@@ -24,6 +32,12 @@ class AploseUser(models.Model):
         null=True,
         default=ExpertiseLevel.NOVICE,
         help_text="Expertise level of the user.",
+    )
+
+    label_display_preference = models.TextField(
+        choices=LabelDisplayPreference.choices,
+        default=LabelDisplayPreference.ENGLISH,
+        help_text="Preference for ontology labels string display.",
     )
 
 

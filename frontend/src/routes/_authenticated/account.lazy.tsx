@@ -1,13 +1,10 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { createLazyFileRoute, useLoaderData } from '@tanstack/react-router';
 
 import { Head } from '@/components/ui';
-
+import { ExternalLink } from "@/components/base";
+import { Content, Page } from '@/components/layout';
 import { User } from '@/features/User';
-import { Field } from '@/components/base/Field';
-import { Form } from '@/components/base/Form';
-import { Content } from '@/components/layout/Content';
-import { Page } from '@/components/layout';
 
 import styles from './account.module.scss'
 
@@ -15,19 +12,20 @@ const Account: React.FC = () => {
     const { user } = useLoaderData({ from: '/_authenticated' })
 
     return <Page.Authenticated>
-        <Content start className={ styles.Content }>
-            <Head title="Account"/>
+        <Content start oneContent>
+            <Head title="Account" subtitle={ user.username }
+                  buttons={ <Fragment>
+                      <ExternalLink href="#email">Update email</ExternalLink>
+                      <ExternalLink href="#password">Update password</ExternalLink>
+                      <ExternalLink href="#label">Update label preferences</ExternalLink>
+                  </Fragment> }
+            />
 
-            <Form>
-                <Field.Root>
-                    <Field.Label>Username</Field.Label>
-                    <Field.Control value={ user.username } type="text" disabled/>
-                </Field.Root>
-            </Form>
-
-            <User.EmailForm/>
-
-            <User.PasswordForm/>
+            <Content inner className={ styles.Content }>
+                <User.EmailForm id="email"/>
+                <User.PasswordForm id="password"/>
+                <User.LabelPreferenceForm id="label"/>
+            </Content>
         </Content>
     </Page.Authenticated>
 }

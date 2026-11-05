@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback } from 'react';
 import { Annotation, focusAnnotation } from './slice'
-import { AnnotationType } from '@/api';
+import { AnnotationType } from '@/api/types.gql-generated.ts';
 import { useInvalidateAnnotation } from './hooks';
 import { useAppDispatch } from '@/features/App';
 import { Dialog } from '@/components/base';

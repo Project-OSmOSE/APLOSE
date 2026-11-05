@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment, useCallback, useMemo } from 'react';
 import {
     ChatSquareLinearIcon,
     ChatSquareLineBoldIcon,
@@ -6,33 +6,38 @@ import {
     SortHorizontalLinearIcon,
     TrashBinTrashLinearIcon,
 } from '@solar-icons/react';
+import { useParams } from '@tanstack/react-router';
+import { useQuery } from "@tanstack/react-query";
 import { Kbd } from '@/components/ui';
+import { Dialog, Popover } from '@/components/base';
 import { useAudio } from '@/features/Audio';
-import { LabelDialog } from '@/features/Labels';
-import type { Annotation } from './slice';
 import { useRemoveAnnotation, useUpdateAnnotation } from '@/features/Annotator/Annotation/hooks';
 import { useAppSelector } from '@/features/App';
-import { selectFocusLabel } from '@/features/Annotator/Label';
-import { Dialog, Popover } from '@/components/base';
-import { useLoaderData } from '@tanstack/react-router';
-import type { AnnotationLabelFragment } from '@/features/Labels/api';
+import { selectFocusLabelId } from '@/features/Annotator/Label';
+import { Campaign } from "@/features";
+import type { Annotation } from './slice';
+import { MxOntology } from "@/features/Mx";
 
 export const AnnotationHeadContent: React.FC<{
     annotation: Annotation,
     index: number;
 }> = ({ annotation, index }) => {
-    const { labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const { data: labels } = useQuery(Campaign.labelsByIdQuery({ id: campaignID }))
     const audio = useAudio()
-    const focusedLabel = useAppSelector(selectFocusLabel)
+    const focusedLabelId = useAppSelector(selectFocusLabelId)
     const updateAnnotation = useUpdateAnnotation()
     const removeAnnotation = useRemoveAnnotation()
+    const annotationLabel = useMemo(() => {
+        return labels?.find(l => l.label.id === (annotation.update?.labelId ?? annotation?.labelId))
+    }, [ annotation, labels ])
 
     const play = useCallback(() => {
         audio.play(annotation.startTime ?? undefined, annotation.endTime ?? undefined)
     }, [ audio, annotation ])
 
-    const updateLabel = useCallback((label: AnnotationLabelFragment) => {
-        updateAnnotation(annotation, { label: label.name })
+    const updateLabel = useCallback((labelId: string) => {
+        updateAnnotation(annotation, { labelId })
     }, [ annotation, updateAnnotation ]);
 
     const remove = useCallback(() => {
@@ -54,7 +59,7 @@ export const AnnotationHeadContent: React.FC<{
             <ChatSquareLinearIcon size={ 20 }/> }
 
         {/* Label */ }
-        <p>{ annotation.update?.label ?? annotation.label }</p>
+        <p>{ annotationLabel?.label.preferredDisplay }</p>
 
         {/* Update label button */ }
         <Dialog.Root>
@@ -67,9 +72,9 @@ export const AnnotationHeadContent: React.FC<{
                 </Popover.Root>
             </Dialog.Trigger>
             <Dialog.Portal>
-                <LabelDialog.Update availableLabels={ labels }
-                                    selected={ labels.find(l => l.name === focusedLabel) }
-                                    onSelect={ updateLabel }/>
+                <MxOntology.UpdateLabelDialogContent availableLabels={ labels?.map(l => l.label) ?? [] }
+                                                     selectedID={ focusedLabelId }
+                                                     onSelectID={ updateLabel }/>
             </Dialog.Portal>
         </Dialog.Root>
 

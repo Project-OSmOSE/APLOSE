@@ -1,5 +1,5 @@
 import { Locator, Page } from '@playwright/test';
-import { type Label, labelSet } from '../mock/types';
+import { campaign, type Label } from '../mock/types';
 import { CampaignListPage } from './campaign-list';
 import type { Params } from '../types';
 
@@ -27,20 +27,24 @@ export class CampaignDetailPage {
 
 class LabelModal {
 
+    get name(): string {
+        return `${ campaign.name } labels`
+    }
+
     get button(): Locator {
-        return this.page.getByRole('button', { name: labelSet.name });
+        return this.page.getByRole('button', { name: 'Labels', exact: true });
     }
 
     get modal(): Locator {
-        return this.page.getByRole('dialog', { name: 'Test label set' });
+        return this.page.getByRole('dialog', { name: this.name });
     }
 
-    get updateButton(): Locator {
-        return this.modal.getByRole('button', { name: 'Update' });
+    get enableUpdateButton(): Locator {
+        return this.modal.getByRole('button', { name: 'Enable update' });
     }
 
-    get saveButton(): Locator {
-        return this.modal.getByRole('button', { name: 'Save' });
+    get disableUpdateButton(): Locator {
+        return this.modal.getByRole('button', { name: 'Disable update' });
     }
 
     get closeButton(): Locator {
@@ -51,7 +55,7 @@ class LabelModal {
     }
 
     getLabelCheckbox(label: Label): Locator {
-        return this.modal.getByRole('row', { name: label.name }).getByRole('checkbox')
+        return this.modal.getByRole('row', { name: label.preferredDisplay }).getByRole('checkbox')
     }
 
     async hasAcousticFeatures(label: Label): Promise<boolean> {

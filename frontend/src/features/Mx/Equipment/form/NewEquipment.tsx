@@ -5,9 +5,8 @@ import { MxCommon } from '@/features/Mx';
 import styles from './styles.module.scss'
 import * as API from '../api'
 import { EquipmentModelSelect } from '../input';
-import { ContactTypeEnum } from '@/api';
 
-const DEFAULT_OWNER_TYPE = ContactTypeEnum.Institution
+const DEFAULT_OWNER_TYPE = MxCommon.ContactTypeEnum.Institution
 
 export const NewEquipmentForm: React.FC<CreateDialog.FormProps<API.EquipmentFragment, API.CreateEquipmentMutationVariables['input']>> = ({
                                                                                                                                              onCreate,
@@ -15,7 +14,7 @@ export const NewEquipmentForm: React.FC<CreateDialog.FormProps<API.EquipmentFrag
                                                                                                                                          }) => {
     const { data, mutateAsync, isPending } = useMutation(API.createEquipment)
     const toastManager = Toast.useToastManager()
-    const [ ownerType, setOwnerType ] = useState<ContactTypeEnum | undefined>();
+    const [ ownerType, setOwnerType ] = useState<MxCommon.ContactTypeEnum | undefined>();
     const [ model, setModel ] = useState<API.EquipmentModelFragment | undefined | null>();
     const isHydrophone = useMemo(() => {
         return model?.specifications?.find(spec => spec?.__typename === 'HydrophoneSpecificationNode')

@@ -10,9 +10,9 @@
 
 <!--@include: ../terminology/campaign.md-->
 
-**Label**
+**Ontology**
 
-<!--@include: ../terminology/label.md-->
+<!--@include: ../terminology/ontology.md-->
 
 **Confidence**
 

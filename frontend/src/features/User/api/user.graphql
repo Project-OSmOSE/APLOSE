@@ -7,6 +7,7 @@ fragment CurrentUser on UserNode {
     isSuperuser
     username
     email
+    labelDisplayPreference
 }
 
 query getCurrentUser {
@@ -45,7 +46,6 @@ query allUserGroups {
 }
 
 # Update email
-
 mutation updateCurrentUserEmail(
     $email: String!
 ) {
@@ -58,7 +58,6 @@ mutation updateCurrentUserEmail(
         }
     }
 }
-
 
 # Update password
 mutation updateCurrentUserPassword(
@@ -76,4 +75,11 @@ mutation updateCurrentUserPassword(
             messages
         }
     }
+}
+
+# Update label display preference
+mutation updateLabelDisplayPreference($preference: LabelDisplayPreferenceType!) {
+    currentUserUpdateLabelDisplayPreference(
+        preference: $preference
+    ) { ok }
 }

@@ -1,19 +1,6 @@
 import React, { Fragment, MouseEvent, useCallback, useMemo, useState } from 'react';
-import { type Annotation, focusAnnotation } from './slice';
-import { Td, Th, Tr } from '@/components/ui';
-import styles from './styles.module.scss';
-import { AnnotationLabelInfo } from './AnnotationLabelInfo';
-import { AnnotationPhaseType, AnnotationType } from '@/api';
-import { useInvalidateAnnotation, useUpdateAnnotation, useValidateAnnotation } from './hooks';
-import { useFocusCanvasOnTime } from '@/features/Annotator/Canvas';
-import { AnnotationTimeInfo } from './AnnotationTimeInfo';
-import { AnnotationFrequencyInfo } from './AnnotationFrequencyInfo';
-import { AnnotationConfidenceInfo } from '@/features/Annotator/Annotation/AnnotationConfidenceInfo';
 import { RiRobot2Fill, RiUser3Fill } from 'react-icons/ri';
-import { InvalidateAnnotationModal } from '@/features/Annotator/Annotation/InvalidateAnnotationModal';
-import { useAppDispatch, useAppSelector } from '@/features/App';
-import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
-import { useLoaderData } from '@tanstack/react-router';
+import { useLoaderData, useParams } from '@tanstack/react-router';
 import {
     ChatSquareLinearIcon,
     ChatSquareLineBoldIcon,
@@ -22,12 +9,28 @@ import {
     CloseCircleBoldDuotoneIcon,
     CloseCircleLineDuotoneIcon,
 } from '@solar-icons/react';
+import { useQuery } from "@tanstack/react-query";
+import { Td, Th, Tr } from '@/components/ui';
 import { Button, Dialog } from '@/components/base';
-import { LabelDialog } from '@/features/Labels';
-import type { AnnotationLabelFragment } from '@/features/Labels/api';
+import { AnnotationPhaseType, AnnotationType } from '@/api/types.gql-generated.ts';
+import { useFocusCanvasOnTime } from '@/features/Annotator/Canvas';
+import { AnnotationConfidenceInfo } from '@/features/Annotator/Annotation/AnnotationConfidenceInfo';
+import { InvalidateAnnotationModal } from '@/features/Annotator/Annotation/InvalidateAnnotationModal';
+import { useAppDispatch, useAppSelector } from '@/features/App';
+import { selectAnnotation } from '@/features/Annotator/Annotation/selectors';
+import { Campaign } from "@/features";
+import { useInvalidateAnnotation, useUpdateAnnotation, useValidateAnnotation } from './hooks';
+import { AnnotationFrequencyInfo } from './AnnotationFrequencyInfo';
+import { AnnotationTimeInfo } from './AnnotationTimeInfo';
+import { AnnotationLabelInfo } from './AnnotationLabelInfo';
+import { type Annotation, focusAnnotation } from './slice';
+import styles from './styles.module.scss';
+import { MxOntology } from "@/features/Mx";
 
 export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation }) => {
-    const { campaign, labels } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { campaignID } = useParams({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
+    const { data: labels } = useQuery(Campaign.labelsByIdQuery({ id: campaignID }))
+    const { campaign } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
     const { phase } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType' })
     const { annotations } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType/spectrogram/$spectrogramID' })
     const focusedAnnotation = useAppSelector(selectAnnotation)
@@ -37,9 +40,9 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
     const { user } = useLoaderData({ from: '/_authenticated' })
 
     const updateAnnotation = useUpdateAnnotation()
-    const updateLabel = useCallback((label: AnnotationLabelFragment) => {
+    const updateLabel = useCallback((labelId: string) => {
         if (!annotation) return;
-        updateAnnotation(annotation, { label: label.name })
+        updateAnnotation(annotation, { labelId })
     }, [ annotation, updateAnnotation ]);
     const dispatch = useAppDispatch();
 
@@ -148,9 +151,9 @@ export const AnnotationRow: React.FC<{ annotation: Annotation }> = ({ annotation
 
         <Dialog.Root open={ isLabelModalOpen } onOpenChange={ setIsLabelModalOpen }>
             <Dialog.Portal>
-                <LabelDialog.Update availableLabels={ labels }
-                                    selected={ labels.find(l => l.name === annotation.label) }
-                                    onSelect={ updateLabel }/>
+                <MxOntology.UpdateLabelDialogContent availableLabels={ labels?.map(l => l.label) ?? [] }
+                                                     selectedID={ annotation.labelId }
+                                                     onSelectID={ updateLabel }/>
             </Dialog.Portal>
         </Dialog.Root>
     </Tr>

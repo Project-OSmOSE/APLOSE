@@ -8,7 +8,6 @@ from django_extension.tests import ExtendedTestCase
 from rest_framework import status
 
 from backend.api.models import (
-    LabelSet,
     ConfidenceSet,
     AnnotationPhase,
     AnnotationCampaign,
@@ -37,6 +36,7 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
 
     fixtures = [
         "users",
+        "label",
         *DATA_FIXTURES,
     ]
 
@@ -44,7 +44,6 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         self,
         # pylint: disable=dangerous-default-value
         phase_type: AnnotationPhase.Type = AnnotationPhase.Type.ANNOTATION,
-        label_set: Optional[LabelSet] = None,
         confidence_set: Optional[ConfidenceSet] = None,
         campaign_id: Optional[int] = None,
     ):
@@ -55,7 +54,6 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
                 instructions_url="string",
                 deadline="2022-01-30",
                 created_at="2012-01-14T00:00:00Z",
-                label_set=label_set or LabelSet.objects.create(name="string label set"),
                 confidence_set=confidence_set,
                 owner_id=3,
                 dataset_id=1,
@@ -91,14 +89,13 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         )
 
     def __check_global_result(self, annotation: Annotation):
-        self.assertEqual(annotation.label.name, "click")
+        self.assertEqual(annotation.label.sound.english_name, "Click")
         self.assertEqual(annotation.confidence.label, "sure")
         self.assertEqual(annotation.annotator, None)
         self.assertEqual(annotation.annotation_comments.count(), 0)
         self.assertEqual(annotation.validations.count(), 0)
         self.assertEqual(annotation.detector_configuration.detector.name, "nnini")
         self.assertEqual(annotation.detector_configuration.configuration, "test")
-        self.assertIsNotNone(LabelSet.objects.get(name="string label set"))
         self.assertIsNotNone(ConfidenceSet.objects.get(name="string"))
 
     def __check_weak_one_file_annotation(self, annotation: Annotation, phase_id: int):
@@ -206,7 +203,7 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         url, phase_id, task_id = self._get_url()
         old_count = Annotation.objects.count()
         phase = AnnotationPhase.objects.get(id=phase_id)
-        self.assertEqual(phase.annotation_campaign.label_set.labels.count(), 0)
+        self.assertEqual(phase.annotation_campaign.labels.count(), 0)
         response = self.upload_csv_file_as_string(
             url,
             f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/weak_one_file_annotation.csv",
@@ -221,7 +218,7 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         result = Annotation.objects.latest("id")
         self.__check_weak_one_file_annotation(result, phase_id)
 
-        self.assertEqual(phase.annotation_campaign.label_set.labels.count(), 1)
+        self.assertEqual(phase.annotation_campaign.labels.count(), 1)
 
     def test_campaign_owner_weak_one_file_twice(self):
         self.log_client(User.objects.get(username="user1"))
@@ -264,41 +261,6 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         results = Annotation.objects.exclude(id__in=old_ids)
         self.__check_weak_two_files_annotation(results, phase_id)
 
-    def test_campaign_owner_weak_duplicate_used_label_set(self):
-        self.log_client(User.objects.get(username="user1"))
-        old_label_set = LabelSet.objects.create(name="Filled")
-        old_label_set.labels.create(name="Whale")
-        old_label_set.labels.create(name="Dolphins")
-
-        url, phase_id, task_id = self._get_url(label_set=old_label_set)
-
-        AnnotationCampaign.objects.create(
-            name="Other", label_set=old_label_set, owner_id=1, dataset_id=1
-        )
-
-        old_count = Annotation.objects.count()
-        old_set_count = LabelSet.objects.count()
-        phase = AnnotationPhase.objects.get(id=phase_id)
-        old_labels_count = phase.annotation_campaign.label_set.labels.count()
-        response = self.upload_csv_file_as_string(
-            url,
-            f"{os.path.dirname(os.path.realpath(__file__))}/import_csv/weak_one_file_annotation.csv",
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Annotation.objects.count(), old_count + 1)
-        self.assertEqual(
-            AnnotationTask.objects.get(id=task_id).status,
-            AnnotationTask.Status.FINISHED,
-        )
-
-        self.assertEqual(LabelSet.objects.count(), old_set_count + 1)
-        phase = AnnotationPhase.objects.get(id=phase_id)
-        self.assertEqual(
-            phase.annotation_campaign.label_set.labels.count(), old_labels_count + 1
-        )
-        self.assertNotEqual(phase.annotation_campaign.label_set, old_label_set)
-        self.assertEqual(old_label_set.labels.count(), old_labels_count)
-
     def test_campaign_owner_weak_duplicate_used_confidence_set(self):
         self.log_client(User.objects.get(username="user1"))
         old_confidence_set = ConfidenceSet.objects.create(name="Filled")
@@ -312,11 +274,9 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
         )
 
         url, phase_id, task_id = self._get_url(confidence_set=old_confidence_set)
-        phase = AnnotationPhase.objects.get(id=phase_id)
 
         AnnotationCampaign.objects.create(
             name="Other",
-            label_set=phase.annotation_campaign.label_set,
             owner_id=1,
             confidence_set=old_confidence_set,
             dataset_id=1,
@@ -339,7 +299,7 @@ class ImportAnnotationsForPhaseTestCase(ExtendedTestCase):
             AnnotationTask.Status.FINISHED,
         )
 
-        self.assertEqual(LabelSet.objects.count(), old_set_count + 1)
+        self.assertEqual(ConfidenceSet.objects.count(), old_set_count + 1)
         phase = AnnotationPhase.objects.get(id=phase_id)
         self.assertEqual(
             phase.annotation_campaign.confidence_set.confidence_indicators.count(),

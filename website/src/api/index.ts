@@ -46,7 +46,7 @@ export type LightProject = N<N<N<AllProjectsQuery['allWebsiteProjects']>['result
 export type Project = N<ProjectByIdQuery['websiteProjectById']>
 export type LightDeployment = N<N<N<AllDeploymentsQuery['allDeployments']>['results']>[number]>
 export type Deployment = N<DeploymentByIdQuery['deploymentById']>
-export type DeploymentLabel = N<N<N<DeploymentByIdQuery['annotationLabelsForDeploymentId']>['results']>[number]>
+export type DeploymentLabel = N<N<DeploymentByIdQuery['annotationLabelsForDeploymentId']>[number]>
 
 // Bibliography
 export type Bibliography = N<N<N<AllBibliographyQuery['allBibliography']>['edges'][number]>['node']>

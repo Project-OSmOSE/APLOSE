@@ -32,6 +32,7 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
                                                                             fixedValue,
                                                                             fixedValueString,
                                                                             name,
+                                                                            side,
                                                                             ...props
                                                                         }: ComboboxSelectProps<Value, Multiple>) {
     const [ query, setQuery ] = useState<string>('');
@@ -111,7 +112,7 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
         }
 
         setSelected(data as FinalValue<Value, Multiple>)
-    }, [ create, query, setSelected, itemName, multiple, selected ])
+    }, [ create, query, setSelected, multiple, selected ])
 
     const _defaultValue = useMemo(() => {
         if (defaultValue) return defaultValue
@@ -180,6 +181,7 @@ export function ComboboxSelect<Value, Multiple extends boolean = false>({
                               placeholder={ placeholder }/> }
 
         <Portal itemName={ itemName }
-                itemToElementLabel={ _itemToElementLabel }/>
+                itemToElementLabel={ _itemToElementLabel }
+                side={ side }/>
     </Combobox.Root>
 }

@@ -15,9 +15,6 @@
 ### Annotateur
 <!--@include: annotator.md-->
 
-### Label
-<!--@include: label.md-->
-
 ### Annotation
 <!--@include: annotation.md-->
 
@@ -29,3 +26,6 @@
 
 ### Tâche d'annotation - Annotation Task
 <!--@include: task.md-->
+
+### Ontologie
+<!--@include: ontology.md-->

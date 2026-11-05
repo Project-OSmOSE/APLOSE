@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { DetectorAPI } from '@/features/Detector';
 import { cleanGqlList } from '@/api/utils';
 import { NBSP } from '@/service/type';
-import styles from '../styles.module.scss'
+import styles from './styles.module.scss'
 
 type N<T> = NonNullable<T>;
 type Detector = N<N<DetectorAPI.ListDetectorsQuery['allDetectors']>['results'][number]>

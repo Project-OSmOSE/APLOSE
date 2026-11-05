@@ -1,7 +1,7 @@
 import React from 'react';
 import { Combobox, Spinner } from '@/components/base';
+import comboboxStyles from '../Combobox.module.scss';
 import { BaseComboboxSelectProps } from './types';
-import comboboxStyles from '@/components/base/Combobox/Combobox.module.scss';
 
 type MultipleInputGroupProps<Value> =
     Pick<BaseComboboxSelectProps<Value, true>, 'id' | 'itemName' | 'placeholder' | 'name' | 'disabled' | 'readOnly'>

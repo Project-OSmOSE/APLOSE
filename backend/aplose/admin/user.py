@@ -5,7 +5,13 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django_extension.admin import ExtendedModelAdmin
 
-from backend.aplose.models import AploseUser, User, ExpertiseLevel, AnnotatorGroup
+from backend.aplose.models import (
+    AploseUser,
+    User,
+    ExpertiseLevel,
+    AnnotatorGroup,
+    LabelDisplayPreference,
+)
 
 
 class AploseUserInline(admin.StackedInline):
@@ -27,6 +33,7 @@ class UserAdmin(BaseUserAdmin):
         "last_name",
         "is_staff",
         "expertise_level",
+        "label_display_preference",
     )
 
     list_filter = (
@@ -35,6 +42,7 @@ class UserAdmin(BaseUserAdmin):
         "is_active",
         "groups",
         "aplose__expertise_level",
+        "aplose__label_display_preference",
     )
 
     @admin.display(description="Expertise level")
@@ -42,6 +50,13 @@ class UserAdmin(BaseUserAdmin):
         """Display expertise level"""
         if obj.aplose.expertise_level:
             return ExpertiseLevel(obj.aplose.expertise_level).label
+        return None
+
+    @admin.display(description="Label display")
+    def label_display_preference(self, obj: User) -> Optional[str]:
+        """Label display preference"""
+        if obj.aplose.label_display_preference:
+            return LabelDisplayPreference(obj.aplose.label_display_preference).label
         return None
 
 

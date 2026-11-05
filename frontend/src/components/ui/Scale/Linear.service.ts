@@ -1,4 +1,4 @@
-import { LinearScaleNode } from '@/api';
+import { LinearScaleNode } from '@/api/types.gql-generated.ts';
 import { ScaleService, Step } from './types';
 
 export type LinearScale = Pick<LinearScaleNode, 'minValue' | 'maxValue' | 'ratio'>

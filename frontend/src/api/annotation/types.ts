@@ -10,6 +10,7 @@ export type ImportAnnotation = {
   max_frequency?: number;
 
   label: string
+  label_id: string
   confidence_indicator_label?: string
   confidence_indicator_level?: number
   detector: string

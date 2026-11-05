@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { AnnotationCommentInput } from '@/api';
+import { AnnotationCommentInput } from '@/api/types.gql-generated.ts';
 import { CommentFragment } from '@/features/AnnotationSpectrogram';
 
 

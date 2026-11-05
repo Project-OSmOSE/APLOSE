@@ -1,24 +1,16 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Form } from '@/components/base/Form';
-import { Fieldset } from '@/components/base/Fieldset';
-import { Field } from '@/components/base/Field';
-import { Button, ButtonGroup } from '@/components/base/Button';
+import { useMutation } from '@tanstack/react-query';
 import type { BaseUIEvent } from '@base-ui/react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { Spinner } from '@/components/base/Spinner';
-import * as API from '../api';
-import { updatePasswordMutation } from '../api';
-import { cleanGqlErrors } from '@/api/utils';
 import type { Errors } from '@base-ui/react/internals/form-context';
-import type { FieldControlProps } from '@/components/base/Field/Control';
-import { Toast } from '@/components/base/Toast';
+import { cleanGqlErrors } from '@/api/utils';
+import { Button, ButtonGroup, Field, Fieldset, Form, Spinner, Toast } from '@/components/base';
+import { updatePasswordMutation } from '../api';
 
-const PWD_CONSTRAINTS: Omit<Partial<FieldControlProps>, 'required' | 'autoComplete'> = {
+const PWD_CONSTRAINTS: Omit<Partial<Field.ControlProps>, 'required' | 'autoComplete'> = {
     minLength: 8,
 }
 
-export const PasswordForm: React.FC = () => {
-    const { data: user } = useQuery(API.currentQuery)
+export const PasswordForm: React.FC<{ id?: string }> = ({ id }) => {
     const [ newPasswordMismatch, setNewPasswordMismatch ] = useState<boolean>(false);
     const toastManager = Toast.useToastManager()
     const {
@@ -52,44 +44,44 @@ export const PasswordForm: React.FC = () => {
         return baseErrors
     }, [ data, newPasswordMismatch ])
 
-    return useMemo(() => <Form onSubmit={ submit }
-                               errors={ errors }>
-            <Fieldset.Root>
-                <Fieldset.Legend>Update password</Fieldset.Legend>
+    return <Form id={ id }
+                 onSubmit={ submit }
+                 errors={ errors }>
+        <Fieldset.Root>
+            <Fieldset.Legend>Update password</Fieldset.Legend>
 
-                <Field.Root name="oldPassword">
-                    <Field.Label>Old password</Field.Label>
-                    <Field.Control required
-                                   type="password"
-                                   autoComplete="current-password"/>
-                    <Field.Error/>
-                </Field.Root>
+            <Field.Root name="oldPassword">
+                <Field.Label>Old password</Field.Label>
+                <Field.Control required
+                               type="password"
+                               autoComplete="current-password"/>
+                <Field.Error/>
+            </Field.Root>
 
-                <Field.Root name="newPassword">
-                    <Field.Label>New password</Field.Label>
-                    <Field.Control required
-                                   type="password"
-                                   autoComplete="new-password"
-                                   { ...PWD_CONSTRAINTS } />
-                    <Field.Error/>
-                </Field.Root>
+            <Field.Root name="newPassword">
+                <Field.Label>New password</Field.Label>
+                <Field.Control required
+                               type="password"
+                               autoComplete="new-password"
+                               { ...PWD_CONSTRAINTS } />
+                <Field.Error/>
+            </Field.Root>
 
-                <Field.Root name="newPasswordConfirm">
-                    <Field.Label>Confirm new password</Field.Label>
-                    <Field.Control required
-                                   type="password"
-                                   autoComplete="new-password"
-                                   { ...PWD_CONSTRAINTS } />
-                    <Field.Error/>
-                </Field.Root>
+            <Field.Root name="newPasswordConfirm">
+                <Field.Label>Confirm new password</Field.Label>
+                <Field.Control required
+                               type="password"
+                               autoComplete="new-password"
+                               { ...PWD_CONSTRAINTS } />
+                <Field.Error/>
+            </Field.Root>
 
-                <ButtonGroup end>
-                    { isPending && <Spinner/> }
-                    <Button color="primary" type="submit" disabled={ isPending }>
-                        Update
-                    </Button>
-                </ButtonGroup>
-            </Fieldset.Root>
-        </Form>,
-        [ isPending, submit, user, errors ])
+            <ButtonGroup end>
+                { isPending && <Spinner/> }
+                <Button color="primary" type="submit" disabled={ isPending }>
+                    Update
+                </Button>
+            </ButtonGroup>
+        </Fieldset.Root>
+    </Form>
 }

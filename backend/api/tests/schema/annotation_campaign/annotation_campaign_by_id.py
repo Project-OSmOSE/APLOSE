@@ -1,0 +1,174 @@
+import json
+
+from django_extension.tests import ExtendedTestCase
+
+from backend.api.tests.fixtures import ALL_FIXTURES
+from backend.aplose.models import User
+
+QUERY = """
+query ($id: ID!) {
+    annotationCampaignById(id: $id) {
+        id
+        name
+        createdAt
+        instructionsUrl
+        deadline
+        archived
+        hasChangePermission
+        allowPointAnnotation
+        allowColormapTuning
+        allowImageTuning
+        colormapDefault
+        colormapInvertedDefault
+        dataset {
+            id
+            name
+        }
+        labels {
+            id
+            label {
+                id
+                displayName
+                source {
+                    englishName
+                }
+            }
+            enableAcousticFeatures
+        }
+        owner {
+            id
+            displayName
+            email
+        }
+        description
+        archived
+        archivedBy {
+            displayName
+        }
+        spectrogramsCount
+        confidenceSet {
+            name
+            desc
+            confidenceIndicators {
+                label
+            }
+        }
+        detectors {
+            id
+            name
+        }
+        annotators {
+            id
+            displayName
+        }
+        analysis {
+            edges {
+                node {
+                    id
+                    colormap {
+                        name
+                    }
+                    fft {
+                        nfft
+                        windowSize
+                        overlap
+                        samplingFrequency
+                    }
+                    frequencyScaleParts {
+                        ratio
+                        minValue
+                        maxValue
+                    }
+                    legacyConfiguration {
+                        zoomLevel
+                    }
+                    legacy
+                }
+            }
+        }
+    }
+}
+"""
+VARIABLES = {
+    "id": 1,
+}
+ARCHIVED_VARIABLES = {
+    "id": 3,
+}
+
+
+class AnnotationCampaignByIDTestCase(ExtendedTestCase):
+
+    GRAPHQL_URL = "/api/graphql"
+    fixtures = ALL_FIXTURES
+
+    def tearDown(self):
+        """Logout when tests ends"""
+        self.client.logout()
+
+    def _test_get_by_id(self, username: str):
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username=username), variables=VARIABLES
+        )
+        self.assertResponseNoErrors(response)
+
+        content = json.loads(response.content)["data"]["annotationCampaignById"]
+        self.assertEqual(content["name"], "Test SPM campaign")
+        self.assertEqual(content["dataset"]["id"], "1")
+        self.assertEqual(content["owner"]["email"], "user1@osmose.xyz")
+        self.assertFalse(content["archived"])
+        self.assertEqual(content["confidenceSet"]["name"], "Confidence/NoConfidence")
+        self.assertEqual(len(content["labels"]), 5)
+        self.assertEqual(len(content["annotators"]), 2)
+        self.assertEqual(content["annotators"][0]["id"], "1")
+        self.assertEqual(len(content["analysis"]["edges"]), 1)
+
+    def _test_get_by_id_archived(self, username: str):
+        response = self.gql_query(
+            QUERY,
+            user=User.objects.get(username=username),
+            variables=ARCHIVED_VARIABLES,
+        )
+        self.assertResponseNoErrors(response)
+
+        content = json.loads(response.content)["data"]["annotationCampaignById"]
+        self.assertEqual(content["name"], "Test RTF campaign")
+        self.assertEqual(content["owner"]["email"], "user1@osmose.xyz")
+        self.assertTrue(content["archived"])
+
+    def test_not_connected(self):
+        response = self.gql_query(QUERY, variables=VARIABLES)
+        self.assertResponseHasErrors(response)
+        content = json.loads(response.content)
+        self.assertEqual(content["errors"][0]["message"], "Unauthorized")
+
+    def test_connected_empty_user(self):
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user4"), variables=VARIABLES
+        )
+        self.assertResponseNoErrors(response)
+        content = json.loads(response.content)["data"]["annotationCampaignById"]
+        self.assertIsNone(content)
+
+    def test_connected_annotator(self):
+        self._test_get_by_id("user2")
+
+    def test_connected_annotator_archived(self):
+        response = self.gql_query(
+            QUERY, user=User.objects.get(username="user2"), variables=ARCHIVED_VARIABLES
+        )
+        self.assertResponseNoErrors(response)
+        content = json.loads(response.content)["data"]["annotationCampaignById"]
+        self.assertIsNone(content)
+
+    def test_connected_owner(self):
+        self._test_get_by_id("user1")
+
+    def test_connected_owner_archived(self):
+        self._test_get_by_id_archived("user1")
+
+    def test_connected_admin(self):
+        self._test_get_by_id("admin")
+
+    def test_connected_admin_archived(self):
+        self._test_get_by_id_archived("admin")

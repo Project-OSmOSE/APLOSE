@@ -18,9 +18,9 @@
 
 <!--@include: ../terminology/annotation.md-->
 
-**Label**
+**Ontology**
 
-<!--@include: ../terminology/label.md-->
+<!--@include: ../terminology/ontology.md-->
 
 **Confidence**
 

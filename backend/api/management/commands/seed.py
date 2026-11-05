@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from faker import Faker
 from metadatax.data.models import FileFormat
+from metadatax.ontology.models import Label, Source, Sound
 
 from backend.api.models import (
     FFT,
@@ -15,7 +16,6 @@ from backend.api.models import (
     Dataset,
     Spectrogram,
     SpectrogramAnalysis,
-    LabelSet,
     ConfidenceSet,
     Confidence,
     ConfidenceIndicatorSetIndicator,
@@ -26,7 +26,10 @@ from backend.api.models import (
     AnnotationComment,
     Annotation,
 )
-from backend.api.models.annotation.annotation_campaign import AnnotationCampaignAnalysis
+from backend.api.models.annotation.annotation_campaign import (
+    AnnotationCampaignAnalysis,
+    AnnotationCampaignLabel,
+)
 from backend.api.models.data.linear_scale import (
     get_frequency_scale_parts,
 )
@@ -60,6 +63,7 @@ class Command(management.BaseCommand):
         "dual_lf_hf": "Greys",
         "audible": "yiorrd",
     }
+    base_labels: list[Label] = []
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -90,7 +94,7 @@ class Command(management.BaseCommand):
         self._create_users()
         self._create_metadata()
         self._create_datasets()
-        self._create_label_sets()
+        self._create_labels()
         self._create_confidence_sets()
         self._create_annotation_campaigns()
         self._create_annotations()
@@ -338,29 +342,18 @@ class Command(management.BaseCommand):
         Spectrogram.objects.bulk_create(spectrograms)
         Spectrogram.analysis.through.objects.bulk_create(spectrogram_rels)
 
-    def _create_label_sets(self):
+    def _create_labels(self):
         print(" ###### _create_label_set ######")
 
-        l = LabelSet.objects.create(
-            name="Test SPM campaign",
-            description="Label set made for Test SPM campaign",
-        )
-        for label in ["Mysticetes", "Odoncetes", "Boat", "Rain", "Other"]:
-            l.labels.get_or_create(name=label)
+        self.base_labels = []
+        for source_name in ["Mysticetes", "Odoncetes", "Boat", "Rain", "Other"]:
+            source = Source.objects.get_or_create(english_name=source_name)[0]
+            self.base_labels.append(Label.objects.get_or_create(source=source)[0])
 
-        l = LabelSet.objects.create(
-            name="Test DCLDE LF campaign",
-            description="Test label set DCLDE LF 2015",
-        )
-        for label in ["Dcall", "40-Hz"]:
-            l.labels.get_or_create(name=label)
-
-        l = LabelSet.objects.create(
-            name="Big label set",
-            description="Test label set with lots of labels",
-        )
-        for _ in range(0, 20):
-            l.labels.get_or_create(name=self.fake.color_name())
+        source = Source.objects.get(english_name="Mysticetes")
+        for sound_name in ["Dcall", "40-Hz"]:
+            sound = Sound.objects.get_or_create(english_name=sound_name)[0]
+            Label.objects.get_or_create(source=source, sound=sound)
 
     def _create_confidence_sets(self):
         cs = ConfidenceSet.objects.create(
@@ -386,6 +379,7 @@ class Command(management.BaseCommand):
         campaign_analysis_rels = []
         phases = []
         file_ranges = []
+        campaign_labels = []
 
         dataset: Dataset
         for dataset in Dataset.objects.all():
@@ -399,11 +393,14 @@ class Command(management.BaseCommand):
                 deadline=timezone.make_aware(
                     datetime.strptime("2010-11-02", "%Y-%m-%d")
                 ),
-                label_set=LabelSet.objects.first(),
                 confidence_set=ConfidenceSet.objects.first(),
                 owner=self.admin,
                 dataset=dataset,
             )
+            for label in self.base_labels:
+                campaign_labels.append(
+                    AnnotationCampaignLabel(annotation_campaign=c, label=label)
+                )
 
             # Create phase
             p = AnnotationPhase(
@@ -446,6 +443,7 @@ class Command(management.BaseCommand):
             campaigns.append(c)
 
         AnnotationCampaign.objects.bulk_create(campaigns)
+        AnnotationCampaignLabel.objects.bulk_create(campaign_labels)
         AnnotationPhase.objects.bulk_create(phases)
         AnnotationCampaignAnalysis.objects.bulk_create(campaign_analysis_rels)
         AnnotationFileRange.objects.bulk_create(file_ranges)
@@ -453,7 +451,7 @@ class Command(management.BaseCommand):
     def _create_annotations(self):
         print(" ###### _create_annotations ######")
         phase: AnnotationPhase = AnnotationPhase.objects.first()
-        labels = phase.annotation_campaign.label_set.labels
+        labels = phase.annotation_campaign.labels.all()
         confidences = phase.annotation_campaign.confidence_set.confidence_indicators
 
         tasks = []
@@ -514,7 +512,7 @@ class Command(management.BaseCommand):
             if randint(1, 3) >= 2:
                 comments.append(
                     AnnotationComment(
-                        comment=f"a comment : {a.label.name}",
+                        comment=f"a comment : {a.label}",
                         annotation_phase=a.annotation_phase,
                         spectrogram=a.spectrogram,
                         author_id=a.annotator_id,

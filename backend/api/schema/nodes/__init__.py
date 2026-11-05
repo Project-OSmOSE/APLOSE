@@ -17,8 +17,6 @@ from .detector_configuration import DetectorConfigurationNode
 from .fft import FFTNode
 from .import_analysis import ImportAnalysisNode
 from .import_dataset import ImportDatasetNode
-from .label import AnnotationLabelNode
-from .label_set import LabelSetNode
 from .legacy_spectrogram_configuration import LegacySpectrogramConfigurationNode
 from .linear_scale import LinearScaleNode
 from .multi_linear_scale import MultiLinearScaleNode

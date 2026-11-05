@@ -1,5 +1,5 @@
 import React, { Fragment, type MouseEvent, useCallback, useMemo, useState } from 'react';
-import { ImportStatusEnum } from '@/api';
+import { ImportStatusEnum } from '@/api/types.gql-generated.ts';
 import styles from './styles.module.scss';
 import {
     type ImportDatasetFromStorageMutationVariables,

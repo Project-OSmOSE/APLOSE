@@ -1,4 +1,4 @@
-import type { AnnotationCampaignNode } from '@/api';
+import * as API from './api';
 import type { BaseColor } from '@/components/base/types';
 
 export const NOW = Date.now()
@@ -13,7 +13,7 @@ type StateReturnType = {
     state: CampaignState & ('Archived' | 'Open')
     color: BaseColor
 };
-export const useCampaignState = (campaign: Pick<AnnotationCampaignNode, 'archived' | 'deadline'>): StateReturnType => {
+export const useCampaignState = (campaign: Pick<API.Fragment, 'archived' | 'deadline'>): StateReturnType => {
     if (campaign.archived) return { state: 'Archived', color: 'medium' }
 
     const dueDate = campaign.deadline ? new Date(campaign.deadline) : undefined;

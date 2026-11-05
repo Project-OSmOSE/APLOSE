@@ -1,14 +1,16 @@
-import { useAppDispatch, useAppSelector } from '@/features/App';
 import { useCallback } from 'react';
+import { useLoaderData, useParams } from '@tanstack/react-router';
+import { useQuery } from "@tanstack/react-query";
+import { AnnotationType } from '@/api/types.gql-generated.ts';
+import { Alert } from '@/components/base';
+import { useAppDispatch, useAppSelector } from '@/features/App';
+import { getNewItemID } from '@/service/function';
+import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
+import { Campaign } from "@/features";
 import { addAnnotation, type Annotation, blur, focusAnnotation, removeAnnotation, updateAnnotation } from './slice';
 import { selectAllAnnotations } from './selectors'
-import { getNewItemID } from '@/service/function';
-import { AnnotationType } from '@/api';
-import { selectDefaultConfidence } from '@/features/Annotator/Confidence';
-import { useLoaderData, useParams } from '@tanstack/react-router';
-import { Alert } from '@/components/base';
 
-type AnnotationEqualsType = Pick<Annotation, 'label' | 'confidence' | 'startTime' | 'endTime' | 'minFrequency' | 'maxFrequency'>
+type AnnotationEqualsType = Pick<Annotation, 'confidence' | 'startTime' | 'endTime' | 'minFrequency' | 'maxFrequency'> & { labelId: string }
 
 
 const useGetNewAnnotationID = () => {
@@ -21,7 +23,7 @@ const useGetNewAnnotationID = () => {
 
 const useAnnotationEquals = () => {
     return useCallback((a: AnnotationEqualsType, b: AnnotationEqualsType): boolean => {
-        return a.label === b.label
+        return a.labelId === b.labelId
             && a.confidence === b.confidence
             && a.startTime === b.startTime
             && a.endTime === b.endTime
@@ -98,10 +100,10 @@ export const useValidateAnnotation = () => {
         })).payload as Annotation
         const otherStrongValidAnnotations = allAnnotations.filter(a => {
             if (a.type === AnnotationType.Weak) return false;
-            if (a.label !== annotation.label) return false;
+            if (a.labelId !== annotation.labelId) return false;
             return a.validation?.isValid
         });
-        const weakAnnotation = allAnnotations.find(a => a.type === AnnotationType.Weak && a.label === annotation.label);
+        const weakAnnotation = allAnnotations.find(a => a.type === AnnotationType.Weak && a.labelId === annotation.labelId);
         if (annotation.type !== AnnotationType.Weak && otherStrongValidAnnotations.length === 0 && weakAnnotation) {
             dispatch(updateAnnotation({
                 id: weakAnnotation.id,
@@ -127,7 +129,7 @@ export const useInvalidateAnnotation = () => {
             validation: _updateValidation(false, annotation.validation),
         })).payload as Annotation
         if (annotation.type === AnnotationType.Weak) {
-            const strongAnnotations = allAnnotations.filter(a => a.type !== AnnotationType.Weak && a.label === annotation.label);
+            const strongAnnotations = allAnnotations.filter(a => a.type !== AnnotationType.Weak && a.labelId === annotation.labelId);
             for (const a of strongAnnotations) {
                 dispatch(updateAnnotation({
                     id: a.id,
@@ -181,17 +183,22 @@ export const useUpdateAnnotation = () => {
                 annotation = invalidate(annotation)
             }
         }
-        if (update.label && !allAnnotations.find(a => a.label === update.label && a.type === AnnotationType.Weak)) {
+        if (update.labelId && !allAnnotations.find(a => a.labelId === update.labelId && a.type === AnnotationType.Weak)) {
             // Add missing weak when changing label of an annotation
-            add({ type: AnnotationType.Weak, label: update.label, confidence: update.confidence ?? defaultConfidence })
+            add({
+                type: AnnotationType.Weak,
+                labelId: update.labelId,
+                confidence: update.confidence ?? defaultConfidence
+            })
         }
         dispatch(focusAnnotation(annotation))
     }, [ dispatch, phaseType, allAnnotations, add, focus, _equals, validate, invalidate, user, getNewID, defaultConfidence, phase ])
 }
 
 export const useRemoveAnnotation = () => {
-    const { phaseType } = useParams({ strict: false });
+    const { phaseType, campaignID } = useParams({ strict: false });
     const { user } = useLoaderData({ from: '/_authenticated' })
+    const { data: labels } = useQuery(Campaign.labelsByIdQuery({ id: campaignID }))
     const allAnnotations = useAppSelector(selectAllAnnotations);
 
     const getAnnotations = useGetAnnotations()
@@ -205,20 +212,21 @@ export const useRemoveAnnotation = () => {
         } else {
             invalidate(annotation)
         }
-    }, [phaseType, dispatch, invalidate, user])
+    }, [ phaseType, dispatch, invalidate, user ])
 
     const remove = useCallback(async (annotation: Annotation, focusWeak: boolean = true, mustConfirm: boolean = true) => {
         if (annotation.type === 'Weak' && mustConfirm) {
-            const annotationsForLabel = getAnnotations({ label: annotation.label })
+            const annotationsForLabel = getAnnotations({ labelId: annotation.labelId })
+            const label = labels?.find(l => l.label.id === annotation.labelId)
             const confirmRemove = await alert.present({
                 color: 'warning',
-                message: `You are about to remove ${ annotationsForLabel.length } annotations using "${ annotation.label }" label. Are you sure?`,
+                message: `You are about to remove ${ annotationsForLabel.length } annotations using "${ label?.label.preferredDisplay }" label. Are you sure?`,
                 buttons: [
                     { type: 'Cancel' },
                     {
                         type: 'Confirm',
                         confirmData: true,
-                        text: `Remove "${ annotation.label }" annotations`,
+                        text: `Remove "${ label?.label.preferredDisplay }" annotations`,
                     },
                 ],
             })
@@ -228,11 +236,11 @@ export const useRemoveAnnotation = () => {
             }
         } else {
             actualRemove(annotation)
-            const weak = allAnnotations.find(a => a.type === AnnotationType.Weak && a.label === annotation.label && a.id !== annotation.id);
+            const weak = allAnnotations.find(a => a.type === AnnotationType.Weak && a.labelId === annotation.labelId && a.id !== annotation.id);
             if (weak && focusWeak && annotation.annotator === user.id) dispatch(focusAnnotation(weak))
             else dispatch(blur())
         }
-    }, [ phaseType, allAnnotations, actualRemove, alert, getAnnotations, user, dispatch ])
+    }, [ phaseType, allAnnotations, actualRemove, alert, getAnnotations, user, dispatch, labels ])
 
     return useCallback((annotation: Annotation) => remove(annotation), [ remove ])
 }

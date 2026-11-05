@@ -1,17 +1,16 @@
 import { createFileRoute, notFound, Outlet } from '@tanstack/react-router'
-import { AnnotationPhaseType } from '@/api';
 import { ensureValidQueryData } from '@/api/utils';
-import { PhaseAPI } from '@/features/AnnotationPhase';
+import { Phase } from '@/features/AnnotationPhase';
 
 export const Route = createFileRoute(
     '/_authenticated/annotation-campaign/$campaignID/phase/$phaseType',
 )({
     params: {
-        parse: rawParams => rawParams as { campaignID: string, phaseType: AnnotationPhaseType },
+        parse: rawParams => rawParams as { campaignID: string, phaseType: Phase.Type },
     },
     loader: async ({ params: { campaignID, phaseType }, parentMatchPromise }) => {
         const parentData = (await parentMatchPromise).loaderData!
-        const phase = await ensureValidQueryData(PhaseAPI.getQuery({
+        const phase = await ensureValidQueryData(Phase.getQuery({
             campaignID,
             phase: phaseType,
         }))

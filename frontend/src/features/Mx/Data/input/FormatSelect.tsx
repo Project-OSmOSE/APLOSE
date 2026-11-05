@@ -18,7 +18,7 @@ export function FormatSelect<Multiple extends boolean = false>(props: Props<Mult
             return data?.fileFormat
     }, [ mutateAsync, toastManager ])
 
-    return <ComboboxSelect itemName="institution"
+    return <ComboboxSelect itemName="format"
                            items={ allFormats }
                            itemToStringLabel={ item => item.name }
                            itemToStringValue={ item => item.id }

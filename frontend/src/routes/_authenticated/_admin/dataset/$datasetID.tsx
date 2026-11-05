@@ -1,13 +1,12 @@
 import React, { Fragment } from 'react';
 import { createFileRoute, type ErrorComponentProps, notFound } from '@tanstack/react-router'
 import { useQuery } from "@tanstack/react-query";
-import { CalendarLinearIcon, DownloadLinearIcon, WidgetAddLinearIcon } from '@solar-icons/react';
+import { DownloadLinearIcon, InfoSquareLinearIcon, WidgetAddLinearIcon } from '@solar-icons/react';
 
 import { ensureValidQueryData } from '@/api/utils';
 import { Head, WarningText } from '@/components/ui';
-import { Badge, ButtonGroup, Dialog, Link, Note, Spinner } from '@/components/base';
-import { Content } from '@/components/layout/Content';
-import { Center } from '@/components/layout/Display';
+import { Badge, ButtonGroup, Dialog, Drawer, Link, Spinner } from '@/components/base';
+import { Center, Content } from '@/components/layout';
 import { datetimeToString, dateToString } from '@/service/function';
 
 import { StorageModal } from '@/features/Storage';
@@ -25,38 +24,59 @@ const DatasetDetail: React.FC = () => {
     if (!data.dataset) return <Fragment/>
     return <Content oneContent>
         <Head title={ data.dataset.name } subtitle={ data.dataset.path } canGoBack>
-            { data.dataset.archived && <Center><Badge color='medium'>Archived</Badge></Center> }
+            <ButtonGroup center>
+                { data.dataset.archived && <Center><Badge color='medium'>Archived</Badge></Center> }
+                <Drawer.Root>
+                    <Drawer.Trigger color='medium'>
+                        <InfoSquareLinearIcon/>
+                    </Drawer.Trigger>
+                    <Drawer.Content>
+                        <Drawer.Close/>
+
+                        {/* Description */ }
+                        { data.dataset.description && <Drawer.ContentBloc>
+                            <Drawer.ContentBlocLabel>Description</Drawer.ContentBlocLabel>
+                            <Drawer.ContentBlocContent>{ data.dataset.description }</Drawer.ContentBlocContent>
+                        </Drawer.ContentBloc> }
+
+                        {/* Data start/end */ }
+                        <Drawer.ContentBloc>
+                            <Drawer.ContentBlocLabel>Dates</Drawer.ContentBlocLabel>
+                            <Drawer.ContentBlocContent>
+                                { datetimeToString(data.dataset.start) }
+                                <br/>
+                                { datetimeToString(data.dataset.end) }
+                            </Drawer.ContentBlocContent>
+                        </Drawer.ContentBloc>
+
+                        {/* Import */ }
+                        <Drawer.ContentBloc>
+                            <Drawer.ContentBlocLabel>Import</Drawer.ContentBlocLabel>
+                            <Drawer.ContentBlocContent>
+                                Imported on { dateToString(data.dataset.createdAt) }
+                                <br/>
+                                by { data.dataset.owner.displayName }
+                            </Drawer.ContentBlocContent>
+                        </Drawer.ContentBloc>
+
+                        {/* Archive */ }
+                        <Drawer.ContentBloc>
+                            <Drawer.ContentBlocLabel>Archive</Drawer.ContentBlocLabel>
+                            { data.dataset.archived
+                                ? <Drawer.ContentBlocContent>
+                                    Archived on { dateToString(data.dataset.archivedAt) }
+                                    <br/>
+                                    by { data.dataset.archivedBy?.displayName }
+                                </Drawer.ContentBlocContent>
+                                : <Dataset.ArchiveButton dataset={ data.dataset }
+                                                         annotationCampaigns={ data.campaigns }/> }
+                        </Drawer.ContentBloc>
+                    </Drawer.Content>
+                </Drawer.Root>
+            </ButtonGroup>
         </Head>
 
         <div style={ { overflow: 'auto' } }>
-            <div className={ styles.InfoBloc }>
-                <h4>Details</h4>
-                <div className={styles.info}>
-                { data.dataset.description && <Note color="medium">{ data.dataset.description }</Note> }
-
-                <Note color="medium">
-                    <CalendarLinearIcon
-                        size={ 16 }/> { datetimeToString(data.dataset.start) } - { datetimeToString(data.dataset.end) }
-                </Note>
-
-                <Note color="medium">
-                    Dataset imported on { dateToString(data.dataset.createdAt) } by { data.dataset.owner.displayName }
-                </Note>
-
-                { data.dataset.archived && <Note color="medium">
-                    Dataset archived on { dateToString(data.dataset.archivedAt) } by { data.dataset.archivedBy?.displayName }
-                </Note> }
-
-                <Dataset.ArchiveButton dataset={ data.dataset }
-                                       annotationCampaigns={ data.campaigns }/>
-                </div>
-            </div>
-
-
-            <div className={ styles.InfoBloc }>
-                <h4>Channel configurations</h4>
-                <ChannelConfigurationTable/>
-            </div>
 
             <div className={ styles.InfoBloc }>
                 <ButtonGroup spaceBetween>
@@ -81,13 +101,19 @@ const DatasetDetail: React.FC = () => {
                     <h4>Annotation campaigns</h4>
 
                     { !data.dataset.archived && <Link color="primary" to="/annotation-campaign/new"
-                                                 search={ { dataset_id: data.dataset.id } }>
+                                                      search={ { dataset_id: data.dataset.id } }>
                         <WidgetAddLinearIcon size={ 20 }/>
                         New annotation campaign
                     </Link> }
                 </ButtonGroup>
                 <Campaign.Cards campaigns={ data.campaigns }/>
             </div>
+            
+            <div className={ styles.InfoBloc }>
+                <h4>Channel configurations</h4>
+                <ChannelConfigurationTable/>
+            </div>
+
         </div>
     </Content>
 }

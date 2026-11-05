@@ -4,31 +4,44 @@ import { ComboboxSelect, type ComboboxSelectProps } from '@/components/base/Comb
 import { CreateDialog } from '@/components/base';
 import { NewSourceForm } from '../form'
 import * as API from '../api'
+import { User } from "@/features/User";
 
-type Value = API.SourceFragment
-type Input = API.CreateSourceMutationVariables['input']
-type Props = Omit<ComboboxSelectProps<Value>, 'create' | 'itemName'>
+type Props = Omit<ComboboxSelectProps<API.SourceFragment>, 'create' | 'itemName'>
 
 export const SourceSelect: React.FC<Props> = ({ creatable, value, ...props }) => {
+    const {data: user} = useQuery(User.currentQuery)
     const createDialogManager = CreateDialog.useManager()
     const { data: sources, isFetching } = useQuery(API.allSources)
 
-    const create = useCallback((englishName: string) => {
-        return createDialogManager.create<Value, Input>({
+    const create = useCallback((entry: string) => {
+        const input: Partial<API.CreateSourceInput> = {}
+        switch (user?.labelDisplayPreference) {
+            case User.LabelDisplayPreferenceType.French:
+                input.frenchName = entry
+                break
+            case User.LabelDisplayPreferenceType.Code:
+                input.codeName = entry
+                break
+            case User.LabelDisplayPreferenceType.English:
+            default:
+                input.englishName = entry
+                break
+        }
+        return createDialogManager.create<API.SourceFragment, API.CreateSourceInput>({
             title: `New source`,
             form: NewSourceForm,
-            input: { englishName } as Input,
+            input,
         })
-    }, [ createDialogManager ])
+    }, [ createDialogManager, user ])
 
     return <ComboboxSelect itemName="source"
                            creatable={ creatable }
                            create={ create }
                            items={ sources }
                            loading={ isFetching }
-                           itemToStringLabel={ (item: Value) => item.displayName }
-                           itemToStringValue={ (item: Value) => item.id }
-                           isItemEqualToValue={ (a: Value, b: Value) => a.id === b.id }
+                           itemToStringLabel={ (item: API.SourceFragment) => item.preferredDisplay }
+                           itemToStringValue={ (item: API.SourceFragment) => item.id }
+                           isItemEqualToValue={ (a: API.SourceFragment, b: API.SourceFragment) => a.id === b.id }
                            value={ value }
                            { ...props }/>
 }

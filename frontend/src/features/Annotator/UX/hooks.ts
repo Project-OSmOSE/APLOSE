@@ -12,6 +12,6 @@ export const useIsDrawingEnabled = () => {
 
 export const useCanDraw = () => {
     const isEnabled = useIsDrawingEnabled()
-    const focusLabel = useAppSelector(state => AnnotatorLabelSlice.selectors.selectFocus(state.annotator))
-    return useMemo(() => isEnabled && !!focusLabel, [ isEnabled, focusLabel ])
+    const focusLabelId = useAppSelector(state => AnnotatorLabelSlice.selectors.selectFocusId(state.annotator))
+    return useMemo(() => isEnabled && !!focusLabelId, [ isEnabled, focusLabelId ])
 }

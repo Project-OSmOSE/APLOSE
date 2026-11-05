@@ -3,7 +3,6 @@ import {
   AnnotationAcousticFeaturesSerializerInput,
   type AnnotationCommentNode,
   AnnotationInput,
-  type AnnotationLabelNode,
   type AnnotationNode,
   type AnnotationPhaseNode,
   AnnotationPhaseType,
@@ -14,7 +13,7 @@ import {
   type DetectorNode,
   type Maybe,
   type UserNode,
-} from '@/api';
+} from '@/api/types.gql-generated.ts';
 import { type Annotation, type Features, type Validation } from './slice';
 import { convertCommentsToPost, convertGqlToComments } from '@/features/Annotator/Comment/conversions';
 
@@ -60,6 +59,8 @@ export function convertAnnotationsToPost(annotations: Annotation[]): AnnotationI
     isUpdateOf: a.id?.toString(),
   } as Annotation)) ].map(a => ({
     ...a,
+    label: a.labelId,
+    labelId: undefined,
     type: undefined,
     id: a.id > 0 ? a.id : undefined,
     comments: convertCommentsToPost(a.comments ?? []),
@@ -71,7 +72,7 @@ export function convertAnnotationsToPost(annotations: Annotation[]): AnnotationI
 }
 
 type Node =
-  Pick<AnnotationNode, 'id' | 'type' | 'minFrequency' | 'maxFrequency' | 'startTime' | 'endTime'>
+  Pick<AnnotationNode, 'id' | 'type' | 'minFrequency' | 'maxFrequency' | 'startTime' | 'endTime' | 'labelId'>
   & {
   isUpdateOf?: Maybe<Pick<AnnotationNode, 'id'>>,
   annotator?: Maybe<Pick<UserNode, 'id'>>,
@@ -86,7 +87,6 @@ type Node =
   validations?: Maybe<{
     results: Maybe<Pick<AnnotationValidationNode, 'id' | 'isValid'>>[],
   }>,
-  label: Pick<AnnotationLabelNode, 'name'>,
   annotationPhase: Pick<AnnotationPhaseNode, 'id'>
 }
 
@@ -97,7 +97,7 @@ export function convertGqlToAnnotation(annotation: Node,
     id: +annotation.id,
     annotationPhase: annotation.annotationPhase.id,
     update: undefined,
-    label: annotation.label.name,
+    labelId: annotation.labelId,
     comments: convertGqlToComments(annotation.comments?.results ?? []),
     type: annotation.type,
     annotator: annotation.annotator?.id,

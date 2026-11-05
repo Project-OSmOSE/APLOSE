@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
-import { AnnotationPhaseType } from '@/api';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { Chip, ChipRemove } from '@/components/base/Chip';
+import { Chip, ChipRemove } from '@/components/base';
+import { Phase } from '@/features/AnnotationPhase';
 
 export const AnnotationCampaignPhaseTypeFilter: React.FC = () => {
     const filter_phase = useSearch({
@@ -15,15 +15,15 @@ export const AnnotationCampaignPhaseTypeFilter: React.FC = () => {
             to: '/annotation-campaign',
             search: (prev) => ({
                 ...prev,
-                filter_phase: !prev?.filter_phase ? AnnotationPhaseType.Verification : null,
+                filter_phase: !prev?.filter_phase ? Phase.Type.Verification : null,
             }),
             replace: true,
         })
     }, [ navigate ])
 
     return <Chip onClick={ toggle }
-                 color={ filter_phase === AnnotationPhaseType.Verification ? 'primary' : 'medium' }>
+                 color={ filter_phase === Phase.Type.Verification ? 'primary' : 'medium' }>
         Has verification
-        { filter_phase === AnnotationPhaseType.Verification && <ChipRemove/> }
+        { filter_phase === Phase.Type.Verification && <ChipRemove/> }
     </Chip>
 }

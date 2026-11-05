@@ -9,5 +9,4 @@ from .annotation_task import *
 from .confidence_set import *
 from .dataset import *
 from .detector import *
-from .label_set import *
 from .spectrogram_analysis import *

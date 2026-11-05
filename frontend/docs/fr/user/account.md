@@ -1,6 +1,6 @@
 # Gérer votre compte
 
-Votre compte peut être géré en suivant le lien "Account" dans le panneau de navigation.
+Votre compte peut être géré en suivant le lien "Account" accessible via votre avatar dans le panneau de navigation.
 
 ![](/user/account.png)
 
@@ -29,3 +29,16 @@ Pour mettre à jour votre mot de passe, remplissez le formulaire "Update passwor
 ![](/user/password-update.png)
 
 Cliquez ensuite sur le bouton "Update" en bas du formulaire.
+
+## Update label preferences
+
+::: details Terminologie
+
+**Ontologie**
+
+<!--@include: ./terminology/ontology.md-->
+
+:::
+
+Vous pouvez choisir ici si vous souhaitez que vos labels s'affichent en anglais, en français ou sous leur nom de code.
+![](/user/label-preference-update.png)
