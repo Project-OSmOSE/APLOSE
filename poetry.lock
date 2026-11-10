@@ -2201,13 +2201,13 @@ files = [
 
 [[package]]
 name = "metadatax"
-version = "1.0.0"
+version = "1.0.1"
 description = "PAM acquisition metadata"
 optional = false
 python-versions = ">=3.12,<3.14"
 groups = ["main"]
 files = [
-    {file = "v1.0.0.tar.gz", hash = "sha256:f84e06c9efba3df3a121405451b18a9cc2ba94a419ed21d3f27b3e4e3594cba1"},
+    {file = "v1.0.1.tar.gz", hash = "sha256:1eda2356b0f904934f7ef4265b2549850fa030b6d5054326ca70b0acc5f09fe8"},
 ]
 
 [package.dependencies]
@@ -2227,7 +2227,7 @@ python-dotenv = ">=1.0.1,<2.0.0"
 
 [package.source]
 type = "url"
-url = "https://github.com/PAM-Standardization/metadatax/archive/refs/tags/v1.0.0.tar.gz"
+url = "https://github.com/PAM-Standardization/metadatax/archive/refs/tags/v1.0.1.tar.gz"
 
 [[package]]
 name = "mistune"
@@ -4054,4 +4054,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<3.14"
-content-hash = "653cc78cced0947f9cac529cc91080503e7132c133ba5360fee78ac1e4711648"
+content-hash = "b4b0737c4fb917c24bc9d78ab4971b1bb86ea70378d5feb2aa1655c51ff6ab1f"
