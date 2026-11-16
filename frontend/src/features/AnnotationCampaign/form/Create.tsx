@@ -22,10 +22,10 @@ export const CampaignCreateForm: React.FC = () => {
 
     const { data: datasets } = useQuery(Dataset.allQuery({ archived: false }))
     const datasetSelectID = useId()
-    const [ dataset, _setDataset ] = useState<Dataset.SelectValue | null>(null);
+    const [ dataset, _setDataset ] = useState<Dataset.BaseFragment | null>(null);
     const analysisSelectID = useId()
     const [ analysis, setAnalysis ] = useState<AnalysisComponent.ComboboxSelectValue[]>([]);
-    const setDataset = useCallback((value: Dataset.SelectValue | null) => {
+    const setDataset = useCallback((value: Dataset.BaseFragment | null) => {
         _setDataset(value)
         setAnalysis([])
     }, [ setAnalysis, _setDataset ])

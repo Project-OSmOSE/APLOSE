@@ -1,7 +1,10 @@
-fragment Dataset on DatasetNode {
+fragment BaseDataset on DatasetNode {
     id
     name
     path
+}
+fragment Dataset on DatasetNode {
+    ...BaseDataset
     description
     createdAt
     legacy
@@ -17,10 +20,7 @@ query allDatasets($archived: Boolean) {
         orderBy: "name",
         archived: $archived
     ) {
-        results {
-            id
-            name
-        }
+        results { ...BaseDataset }
     }
 }
 
