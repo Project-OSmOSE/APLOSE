@@ -9,7 +9,7 @@ from metadatax.data.models import VisualObservation
 from osekit.core.spectro_data import SpectroData
 from osekit.core.spectro_dataset import SpectroDataset
 
-from backend.storage.utils import make_static_url, join, clean_path
+from backend.storage.utils import make_static_url, join, clean_path, exists
 from .__abstract_file import AbstractFile
 from .__abstract_time_segment import TimeSegment
 from .spectrogram_analysis import SpectrogramAnalysis
@@ -127,13 +127,15 @@ class SpectrogramAnalysisRelation(models.Model):
         self, spectro_dataset: SpectroDataset, spectro_data: SpectroData
     ) -> Paths:
         """Set paths for OSEkit data"""
-        file = (
-            list(spectro_data.audio_data.files)[0]
-            if len(spectro_data.audio_data.files) > 0
-            else None
-        )
+
+        audio_path = None
+        if len(spectro_data.audio_data.files) > 0:
+            audio_path = Path(list(spectro_data.audio_data.files)[0].path).resolve()
+
         return {
-            "audio": make_static_url(Path(file.path).resolve()) if file else None,
+            "audio": make_static_url(audio_path)
+            if audio_path and exists(audio_path)
+            else None,
             "spectrogram": make_static_url(
                 join(
                     clean_path(spectro_dataset.folder),
