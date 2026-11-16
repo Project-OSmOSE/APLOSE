@@ -50,5 +50,6 @@ export type {
     AllDatasetsQuery as AllQuery,
     AllDatasetsQueryVariables as AllQueryVariables,
 
+    BaseDatasetFragment as BaseFragment,
     DatasetFragment as Fragment,
 } from './dataset.generated.ts'

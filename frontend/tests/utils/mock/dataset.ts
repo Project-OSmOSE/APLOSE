@@ -1,8 +1,8 @@
 import type { GqlQuery } from './_types';
 import {
-  AllDatasetsQuery,
-  AllDatasetsWithCampaignsQuery,
-  GetDatasetByIdQuery,
+    AllDatasetsQuery,
+    AllDatasetsWithCampaignsQuery,
+    GetDatasetByIdQuery,
 } from '../../../src/features/Dataset/api/dataset.generated';
 import { dataset, deployment, USERS } from './types';
 import { ANALYSIS_QUERIES } from './spectrogramAnalysis';
@@ -26,6 +26,7 @@ export const DATASET_QUERIES: {
                     {
                         id: dataset.id,
                         name: dataset.name,
+                        path: dataset.path
                     },
                 ],
             },
