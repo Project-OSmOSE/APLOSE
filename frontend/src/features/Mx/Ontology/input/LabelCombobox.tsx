@@ -1,7 +1,7 @@
+import { useCallback } from "react";
 import { useQuery } from '@tanstack/react-query';
 import { ComboboxSelect, type ComboboxSelectProps } from '@/components/base';
 import * as API from '../api';
-import { useCallback } from "react";
 
 type Props<Multiple extends boolean = false> = Omit<
     ComboboxSelectProps<API.LabelFragment, Multiple>,

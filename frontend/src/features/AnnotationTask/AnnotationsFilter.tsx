@@ -113,7 +113,7 @@ export const AnnotationsFilterModal: React.FC = () => {
 
             <Field.Root name="annotationLabel" horizontal>
                 <Field.Label>Filter by label</Field.Label>
-                <MxOntology.LabelCombobox items={ labels }
+                <MxOntology.LabelCombobox items={ labels?.map(l => l.label) }
                                           disabled={ tmpWithAnnotations !== true }
                                           defaultValueString={ annotationLabel ?? undefined }/>
             </Field.Root>
