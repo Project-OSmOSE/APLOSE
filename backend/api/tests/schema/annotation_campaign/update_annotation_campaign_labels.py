@@ -91,7 +91,6 @@ class UpdateAnnotationCampaignLabelsTestCase(ExtendedTestCase):
                 "enableAcousticFeatures": True,
             },
         )
-        print(json.loads(response.content))
         self.assertResponseNoErrors(response)
         relation.refresh_from_db()
         self.assertTrue(relation.enable_acoustic_features)

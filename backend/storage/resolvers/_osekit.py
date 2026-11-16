@@ -88,18 +88,18 @@ class OSEkitResolver(LegacyOSEkitResolver):
             return super()._get_analysis(
                 dataset=dataset, relative_path=relative_path, detailed=detailed
             )
-        osekit_dataset = self._get_osekit_project(dataset.path)
+        osekit_project = self._get_osekit_project(dataset.path)
         spectro_dataset: SpectroDataset | None = None
-        if not osekit_dataset:
+        if not osekit_project:
             return None
-        for _name, info in osekit_dataset.outputs.items():
+        for _name, info in osekit_project.outputs.items():
             if info["class"] != SpectroDataset.__name__:
                 continue
             path = make_path_relative(
                 PureWindowsPath(info["dataset"]).parent.as_posix(),
                 to=join(
                     settings.DATASET_EXPORT_PATH,
-                    make_path_relative(osekit_dataset.folder),
+                    make_path_relative(osekit_project.folder),
                 ),
             )
             if path == relative_path:
@@ -108,7 +108,7 @@ class OSEkitResolver(LegacyOSEkitResolver):
                         name=PureWindowsPath(relative_path).name,
                         path=relative_path,
                     )
-                spectro_dataset = osekit_dataset.get_output(info["transform"])
+                spectro_dataset = osekit_project.get_output(info["transform"])
 
         if spectro_dataset is None:
             return None
