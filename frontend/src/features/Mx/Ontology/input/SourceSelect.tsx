@@ -15,14 +15,14 @@ export const SourceSelect: React.FC<Props> = ({ creatable, value, ...props }) =>
 
     const create = useCallback((entry: string) => {
         const input: Partial<API.CreateSourceInput> = {}
-        switch (user?.labelDisplayPreference) {
-            case User.LabelDisplayPreferenceType.French:
+        switch (user?.labelDisplay) {
+            case User.LabelDisplayEnum.French:
                 input.frenchName = entry
                 break
-            case User.LabelDisplayPreferenceType.Code:
+            case User.LabelDisplayEnum.Code:
                 input.codeName = entry
                 break
-            case User.LabelDisplayPreferenceType.English:
+            case User.LabelDisplayEnum.English:
             default:
                 input.englishName = entry
                 break

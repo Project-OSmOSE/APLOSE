@@ -24,7 +24,7 @@ const Account: React.FC = () => {
             <Content inner className={ styles.Content }>
                 <User.EmailForm id="email"/>
                 <User.PasswordForm id="password"/>
-                <User.LabelPreferenceForm id="label"/>
+                <User.LabelDisplayForm id="label"/>
             </Content>
         </Content>
     </Page.Authenticated>

@@ -5,7 +5,7 @@ import * as API from '../api';
 import * as INPUT from '../input';
 
 
-export const LabelPreferenceForm: React.FC<{ id?: string }> = ({ id }) => {
+export const LabelDisplayForm: React.FC<{ id?: string }> = ({ id }) => {
     const { data: user } = useQuery(API.currentQuery)
     const toastManager = Toast.useToastManager()
     const {
@@ -16,12 +16,12 @@ export const LabelPreferenceForm: React.FC<{ id?: string }> = ({ id }) => {
     const submit = useCallback(async (event: BaseUIEvent<React.FormEvent<HTMLFormElement>>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        const preference = formData.get('preference') as API.LabelDisplayPreferenceType;
+        const display = formData.get('display') as API.LabelDisplayEnum;
 
         try {
-            await mutateAsync({ preference })
+            await mutateAsync({ display })
         } catch (error) {
-            toastManager.addError({ title: 'Label preference update failed', error })
+            toastManager.addError({ title: 'Label display update failed', error })
         }
     }, [ mutateAsync, toastManager ])
 
@@ -29,9 +29,9 @@ export const LabelPreferenceForm: React.FC<{ id?: string }> = ({ id }) => {
         <Fieldset.Root>
             <Fieldset.Legend>Update label preferences</Fieldset.Legend>
 
-            <Field.Root name="preference" horizontal>
+            <Field.Root name="display" horizontal>
                 <Field.Label>Display</Field.Label>
-                <INPUT.LabelPreferenceToggle required defaultValue={ user?.labelDisplayPreference }/>
+                <INPUT.LabelDisplayToggle required defaultValue={ user?.labelDisplay ?? API.LabelDisplayEnum.English }/>
                 <Field.Error/>
             </Field.Root>
 

@@ -108,7 +108,7 @@ query allAnnotationSpectrograms(
 
 fragment VisualObservation on VisualObservationNode {
     source {
-        displayName
+        englishName
     }
     startDatetime
     endDatetime

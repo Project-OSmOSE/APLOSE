@@ -8,7 +8,7 @@ const meta = {
         <VisualObservationTable obs={ [
             {
                 source: {
-                    displayName: 'Stripped dolphin',
+                    englishName: 'Stripped dolphin',
                 },
                 otherHumanActivityPresence: true,
                 youngPresence: false,

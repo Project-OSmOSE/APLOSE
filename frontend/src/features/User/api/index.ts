@@ -14,9 +14,9 @@ import {
     UpdateCurrentUserPasswordDocument,
     type UpdateCurrentUserPasswordMutation,
     type UpdateCurrentUserPasswordMutationVariables,
-    UpdateLabelDisplayPreferenceDocument,
-    type UpdateLabelDisplayPreferenceMutation,
-    type UpdateLabelDisplayPreferenceMutationVariables,
+    UpdateLabelDisplayDocument,
+    type UpdateLabelDisplayMutation,
+    type UpdateLabelDisplayMutationVariables,
 } from './user.generated'
 import { cleanGqlList } from '@/api/utils';
 
@@ -59,9 +59,9 @@ export const updatePasswordMutation = mutationOptions({
 })
 
 export const updateLabelPreferenceMutation = mutationOptions({
-    mutationFn: (variables: UpdateLabelDisplayPreferenceMutationVariables) =>
-        graphqlClient.request<UpdateLabelDisplayPreferenceMutation>(UpdateLabelDisplayPreferenceDocument, variables)
-        .then(data => data.currentUserUpdateLabelDisplayPreference),
+    mutationFn: (variables: UpdateLabelDisplayMutationVariables) =>
+        graphqlClient.request<UpdateLabelDisplayMutation>(UpdateLabelDisplayDocument, variables)
+        .then(data => data.currentUserUpdateLabelDisplay),
     onSuccess: (_data, _variables, _onMutateResult, context) => Promise.all([
         context.client.invalidateQueries({ queryKey: queryKeys.user.current }),
         context.client.invalidateQueries({ queryKey: queryKeys.campaign.labelsByIdBase }),
@@ -77,5 +77,5 @@ export type {
     UserGroupFragment as GroupFragment,
 } from './user.generated'
 export {
-    LabelDisplayPreferenceType
+    LabelDisplayEnum
 } from '@/api/types.gql-generated.ts'
