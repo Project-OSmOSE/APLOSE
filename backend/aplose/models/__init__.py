@@ -4,5 +4,4 @@ from .user import (
     User,
     AnnotatorGroup,
     ExpertiseLevel,
-    LabelDisplayPreference,
 )

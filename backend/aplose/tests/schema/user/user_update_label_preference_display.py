@@ -1,8 +1,9 @@
 import json
 
 from django_extension.tests import ExtendedTestCase
+from metadatax.ontology.models import LabelDisplay
 
-from backend.aplose.models import User, AploseUser, LabelDisplayPreference
+from backend.aplose.models import User, AploseUser
 
 QUERY = """
 mutation ($preference: LabelDisplayPreferenceType!) {
@@ -39,7 +40,7 @@ class UserUpdatePasswordTestCase(ExtendedTestCase):
 
         aplose_user: AploseUser = user.aplose
         self.assertEqual(
-            aplose_user.label_display_preference, LabelDisplayPreference.ENGLISH
+            aplose_user.label_display, LabelDisplay.ENGLISH
         )
 
         response = self.gql_query(QUERY, user=user, variables={"preference": "French"})
@@ -47,5 +48,5 @@ class UserUpdatePasswordTestCase(ExtendedTestCase):
 
         aplose_user.refresh_from_db()
         self.assertEqual(
-            aplose_user.label_display_preference, LabelDisplayPreference.FRENCH
+            aplose_user.label_display, LabelDisplay.FRENCH
         )

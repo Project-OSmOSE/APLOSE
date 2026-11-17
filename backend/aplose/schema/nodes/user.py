@@ -1,5 +1,5 @@
 """User GraphQL definitions"""
-
+import graphene
 from django.db.models import (
     QuerySet,
     F,
@@ -18,9 +18,11 @@ from graphene import (
     Boolean,
 )
 from graphql import GraphQLResolveInfo
+from metadatax.ontology.models import LabelDisplay
+from metadatax.ontology.schema import LabelDisplayEnum
 
-from backend.aplose.models import User, LabelDisplayPreference
-from ..enums import ExpertiseLevelType, LabelDisplayPreferenceType
+from backend.aplose.models import User
+from ..enums import ExpertiseLevelType
 
 
 class UserNode(ExtendedNode):
@@ -32,7 +34,7 @@ class UserNode(ExtendedNode):
         filter_fields = {}
 
     expertise = ExpertiseLevelType()
-    label_display_preference = LabelDisplayPreferenceType(required=True)
+    label_display = graphene.NonNull(LabelDisplayEnum)
     display_name = String(required=True)
     is_admin = Boolean(required=True)
 
@@ -43,11 +45,11 @@ class UserNode(ExtendedNode):
             .resolve_queryset(queryset, info)
             .annotate(
                 expertise=F("aplose__expertise_level"),
-                label_display_preference=Case(
+                label_display=Case(
                     When(
-                        aplose__isnull=False, then=F("aplose__label_display_preference")
+                        aplose__isnull=False, then=F("aplose__label_display")
                     ),
-                    default=Value(LabelDisplayPreference.ENGLISH.value),
+                    default=Value(LabelDisplay.ENGLISH.value),
                     output_field=TextField(),
                 ),
                 is_admin=Case(

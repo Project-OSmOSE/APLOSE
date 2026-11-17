@@ -1,6 +1,7 @@
 """User-related models"""
 from django.contrib.auth import get_user_model
 from django.db import models
+from metadatax.ontology.models import LabelDisplay
 
 User = get_user_model()
 
@@ -11,14 +12,6 @@ class ExpertiseLevel(models.TextChoices):
     EXPERT = ("E", "Expert")
     AVERAGE = ("A", "Average")
     NOVICE = ("N", "Novice")
-
-
-class LabelDisplayPreference(models.TextChoices):
-    """Preference for string display of labels (Mx)"""
-
-    ENGLISH = ("E", "English")
-    FRENCH = ("F", "French")
-    CODE = ("C", "Code")
 
 
 class AploseUser(models.Model):
@@ -34,9 +27,9 @@ class AploseUser(models.Model):
         help_text="Expertise level of the user.",
     )
 
-    label_display_preference = models.TextField(
-        choices=LabelDisplayPreference.choices,
-        default=LabelDisplayPreference.ENGLISH,
+    label_display = models.TextField(
+        choices=LabelDisplay.choices,
+        default=LabelDisplay.ENGLISH,
         help_text="Preference for ontology labels string display.",
     )
 
