@@ -46,9 +46,7 @@ class UserNode(ExtendedNode):
             .annotate(
                 expertise=F("aplose__expertise_level"),
                 label_display=Case(
-                    When(
-                        aplose__isnull=False, then=F("aplose__label_display")
-                    ),
+                    When(aplose__isnull=False, then=F("aplose__label_display")),
                     default=Value(LabelDisplay.ENGLISH.value),
                     output_field=TextField(),
                 ),

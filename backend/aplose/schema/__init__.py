@@ -26,6 +26,4 @@ class AploseMutation(ObjectType):
 
     user_update_password = UpdateUserPasswordMutation.Field()
     current_user_update = UpdateUserMutation.Field()
-    current_user_update_label_display = (
-        UpdateUserLabelDisplayMutation.Field()
-    )
+    current_user_update_label_display = UpdateUserLabelDisplayMutation.Field()

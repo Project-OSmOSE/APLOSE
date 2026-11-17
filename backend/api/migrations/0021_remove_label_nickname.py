@@ -7,7 +7,9 @@ def merge_duplicates(apps, schema_editor):
     Label = apps.get_model("ontology", "Label")
 
     for label in Label.objects.all():
-        dupes = Label.objects.filter(source_id=label.source_id, sound_id=label.sound_id).exclude(id=label.id)
+        dupes = Label.objects.filter(
+            source_id=label.source_id, sound_id=label.sound_id
+        ).exclude(id=label.id)
         if dupes.exists():
             for duplicate in dupes:
                 duplicate.annotation_set.update(label_id=label.id)

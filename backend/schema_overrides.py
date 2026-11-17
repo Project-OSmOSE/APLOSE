@@ -27,7 +27,11 @@ class SourceNode(MxSourceNode):
         aplose_user: Optional[AploseUser] = AploseUser.objects.filter(
             user=info.context.user
         ).first()
-        return self.display(LabelDisplay(aplose_user.label_display) if aplose_user and aplose_user.label_display else LabelDisplay.ENGLISH)
+        return self.display(
+            LabelDisplay(aplose_user.label_display)
+            if aplose_user and aplose_user.label_display
+            else LabelDisplay.ENGLISH
+        )
 
 
 class SoundNode(MxSoundNode):
@@ -45,9 +49,11 @@ class SoundNode(MxSoundNode):
         aplose_user: Optional[AploseUser] = AploseUser.objects.filter(
             user=info.context.user
         ).first()
-        return self.display(LabelDisplay(aplose_user.label_display) if aplose_user and aplose_user.label_display else LabelDisplay.ENGLISH)
-
-
+        return self.display(
+            LabelDisplay(aplose_user.label_display)
+            if aplose_user and aplose_user.label_display
+            else LabelDisplay.ENGLISH
+        )
 
 
 class LabelNode(MxLabelNode):
@@ -65,4 +71,8 @@ class LabelNode(MxLabelNode):
         aplose_user: Optional[AploseUser] = AploseUser.objects.filter(
             user=info.context.user
         ).first()
-        return self.display(LabelDisplay(aplose_user.label_display) if aplose_user and aplose_user.label_display else LabelDisplay.ENGLISH)
+        return self.display(
+            LabelDisplay(aplose_user.label_display)
+            if aplose_user and aplose_user.label_display
+            else LabelDisplay.ENGLISH
+        )
