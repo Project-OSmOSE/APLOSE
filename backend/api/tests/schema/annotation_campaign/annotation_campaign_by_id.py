@@ -28,8 +28,11 @@ query ($id: ID!) {
             id
             label {
                 id
-                displayName
+                preferredDisplay
                 source {
+                    englishName
+                }
+                sound {
                     englishName
                 }
             }

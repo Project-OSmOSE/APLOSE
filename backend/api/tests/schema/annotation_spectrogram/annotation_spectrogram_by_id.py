@@ -51,9 +51,7 @@ query (
                     endTime
                     minFrequency
                     maxFrequency
-                    label {
-                        displayName
-                    }
+                    labelId
                     confidence {
                         label
                     }
