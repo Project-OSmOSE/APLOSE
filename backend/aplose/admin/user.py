@@ -4,13 +4,13 @@ from typing import Optional
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django_extension.admin import ExtendedModelAdmin
+from metadatax.ontology.models import LabelDisplay
 
 from backend.aplose.models import (
     AploseUser,
     User,
     ExpertiseLevel,
     AnnotatorGroup,
-    LabelDisplayPreference,
 )
 
 
@@ -33,7 +33,7 @@ class UserAdmin(BaseUserAdmin):
         "last_name",
         "is_staff",
         "expertise_level",
-        "label_display_preference",
+        "label_display",
     )
 
     list_filter = (
@@ -42,7 +42,7 @@ class UserAdmin(BaseUserAdmin):
         "is_active",
         "groups",
         "aplose__expertise_level",
-        "aplose__label_display_preference",
+        "aplose__label_display",
     )
 
     @admin.display(description="Expertise level")
@@ -53,10 +53,10 @@ class UserAdmin(BaseUserAdmin):
         return None
 
     @admin.display(description="Label display")
-    def label_display_preference(self, obj: User) -> Optional[str]:
+    def label_display(self, obj: User) -> Optional[str]:
         """Label display preference"""
-        if obj.aplose.label_display_preference:
-            return LabelDisplayPreference(obj.aplose.label_display_preference).label
+        if obj.aplose.label_display:
+            return LabelDisplay(obj.aplose.label_display).label
         return None
 
 

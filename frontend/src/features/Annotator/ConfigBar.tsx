@@ -61,7 +61,7 @@ export const ConfigBar: React.FC = () => {
                     <Popover.Content>
                         Visual observations:
                         <ul>
-                            { obs.map(o => <li>{ o.source.displayName }</li>) }
+                            { obs.map(o => <li>{ o.source.englishName }</li>) }
                         </ul>
                     </Popover.Content>
                 </Popover.Root>

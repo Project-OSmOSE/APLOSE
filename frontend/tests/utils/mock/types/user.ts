@@ -1,4 +1,4 @@
-import { ExpertiseLevelType, LabelDisplayPreferenceType, type UserNode } from '../../../../src/api/types.gql-generated';
+import { ExpertiseLevelType, LabelDisplayEnum, type UserNode } from '../../../../src/api/types.gql-generated';
 import { User as UserFeature } from '../../../../src/features/User';
 
 export type User = Omit<UserNode, '__typename'
@@ -37,7 +37,7 @@ function getUser(type: UserType, id: number): User {
     isAdmin: type === 'superuser' || type === 'staff',
     isStaff: type === 'staff',
     isSuperuser: type === 'superuser',
-    labelDisplayPreference: LabelDisplayPreferenceType.English
+    labelDisplay: LabelDisplayEnum.English
   }
 }
 

@@ -1,15 +1,16 @@
+# pylint: disable=not-callable
 from typing import Optional
 
 import graphene
 import graphene_django_optimizer
-from metadatax.ontology.models import Label, Source, Sound
+from metadatax.ontology.models import Label, Source, Sound, LabelDisplay
 from metadatax.ontology.schema import (
     LabelNode as MxLabelNode,
     SourceNode as MxSourceNode,
     SoundNode as MxSoundNode,
 )
 
-from .aplose.models import AploseUser, LabelDisplayPreference
+from .aplose.models import AploseUser
 
 
 class SourceNode(MxSourceNode):
@@ -27,21 +28,11 @@ class SourceNode(MxSourceNode):
         aplose_user: Optional[AploseUser] = AploseUser.objects.filter(
             user=info.context.user
         ).first()
-        name = str(self)
-
-        if (
-            aplose_user
-            and aplose_user.label_display_preference == LabelDisplayPreference.FRENCH
-        ):
-            return self.french_name or name
-
-        if (
-            aplose_user
-            and aplose_user.label_display_preference == LabelDisplayPreference.CODE
-        ):
-            return self.code_name or name
-
-        return name
+        return self.display(
+            LabelDisplay(aplose_user.label_display)
+            if aplose_user and aplose_user.label_display
+            else LabelDisplay.ENGLISH
+        )
 
 
 class SoundNode(MxSoundNode):
@@ -59,21 +50,11 @@ class SoundNode(MxSoundNode):
         aplose_user: Optional[AploseUser] = AploseUser.objects.filter(
             user=info.context.user
         ).first()
-        name = str(self)
-
-        if (
-            aplose_user
-            and aplose_user.label_display_preference == LabelDisplayPreference.FRENCH
-        ):
-            return self.french_name or name
-
-        if (
-            aplose_user
-            and aplose_user.label_display_preference == LabelDisplayPreference.CODE
-        ):
-            return self.code_name or name
-
-        return name
+        return self.display(
+            LabelDisplay(aplose_user.label_display)
+            if aplose_user and aplose_user.label_display
+            else LabelDisplay.ENGLISH
+        )
 
 
 class LabelNode(MxLabelNode):
@@ -88,9 +69,11 @@ class LabelNode(MxLabelNode):
 
     @graphene_django_optimizer.resolver_hints()
     def resolve_preferred_display(self: Label, info) -> str:
-        source_name = SourceNode.resolve_preferred_display(self.source, info)
-
-        if self.sound:
-            return f"{source_name} - {SoundNode.resolve_preferred_display(self.sound, info)}"
-
-        return source_name
+        aplose_user: Optional[AploseUser] = AploseUser.objects.filter(
+            user=info.context.user
+        ).first()
+        return self.display(
+            LabelDisplay(aplose_user.label_display)
+            if aplose_user and aplose_user.label_display
+            else LabelDisplay.ENGLISH
+        )

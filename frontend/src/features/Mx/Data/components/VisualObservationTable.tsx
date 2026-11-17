@@ -8,7 +8,7 @@ import styles from './styles.module.scss'
 type Obs =
     Omit<VisualObservationNode, 'behaviors' | 'reactionsToBoat' | 'deployment' | 'source' | '__typename' | 'id'>
     & {
-    source: Pick<SourceNode, 'displayName'>,
+    source: Pick<SourceNode, 'englishName'>,
     behaviors?: (Pick<BehaviorNode, 'name'> | null)[] | null,
     reactionsToBoat?: (Pick<BehaviorNode, 'name'> | null)[] | null,
 }
@@ -91,7 +91,7 @@ const VisualObservationBody: React.FC<{ obs: Obs }> = ({
 
     return <Tbody>
         <Tr>
-            <Th scope='row' rowSpan={ 2 }><Note data>{ source.displayName }</Note></Th>
+            <Th scope='row' rowSpan={ 2 }><Note data>{ source.englishName }</Note></Th>
             <Td rowSpan={ 2 } center><Note data>{ formatMinMax(countMin, countMax) }</Note></Td>
             <Td rowSpan={ 1 } bottom center><Note data>{ formatTime(startDatetime) }</Note></Td>
             <Td rowSpan={ 1 } bottom center><Note data>{ formatMinMax(startDistanceMin, startDistanceMax) }</Note></Td>

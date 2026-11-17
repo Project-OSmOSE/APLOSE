@@ -1,1 +1,1 @@
-export * from './LabelPreferenceToggle'
+export * from './LabelDisplayToggle.tsx'
