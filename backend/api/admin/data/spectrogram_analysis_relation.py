@@ -18,6 +18,9 @@ class SpectrogramAnalysisRelationAdmin(ExtendedModelAdmin):
         "audio_path",
         "spectrogram_path",
     )
+    list_filter = [
+        "analysis__dataset",
+    ]
 
     def has_add_permission(self, request: HttpRequest) -> bool:
         return False
