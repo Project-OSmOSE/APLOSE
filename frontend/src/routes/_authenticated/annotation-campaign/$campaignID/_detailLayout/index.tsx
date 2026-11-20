@@ -1,5 +1,5 @@
-import React, { Fragment, useMemo } from 'react';
-import { createFileRoute, useLoaderData } from '@tanstack/react-router';
+import React, { Fragment } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
 import { dateToString, pluralize } from '@/service/function';
 import { ensureValidQueryData } from '@/api/utils';
 import { Note } from '@/components/base';
@@ -8,67 +8,68 @@ import { Dataset } from '@/features/Dataset';
 import { AnalysisAPI, SpectrogramAnalysisTable } from '@/features/SpectrogramAnalysis';
 
 import styles from './index.module.scss';
+import { useQuery } from "@tanstack/react-query";
 
 const AnnotationCampaignInfo: React.FC = () => {
+    const { campaignID } = Route.useParams()
     const analysis = Route.useLoaderData()
-    const { campaign, phases } = useLoaderData({ from: '/_authenticated/annotation-campaign/$campaignID' })
+    const { data } = useQuery(Campaign.byIdQuery({ id: campaignID }))
 
-    return useMemo(() => {
-            return <div className={ styles.info }>
-                { campaign.description && <div>
-                    <Note color="medium">Description</Note>
-                    <p>{ campaign.description }</p>
-                </div> }
+    if (!data?.campaign) return <Fragment/>
+    const { campaign, phases } = data
+    return <div className={ styles.info }>
+        { campaign.description && <div>
+            <Note color="medium">Description</Note>
+            <p>{ campaign.description }</p>
+        </div> }
 
-                {/* GLOBAL */ }
-                <Campaign.ArchiveButton campaign={ campaign } phases={ phases }/>
-                <Campaign.InstructionsButton campaign={ campaign }/>
-                { campaign.archived && <Note color="medium">
-                    Archived
-                    on { dateToString(campaign.archivedAt) } by { campaign.archivedBy?.displayName }
-                </Note> }
-                { campaign.deadline && <div>
-                    <Note color="medium">Deadline</Note>
-                    <p>{ dateToString(campaign.deadline) }</p>
-                </div> }
+        {/* GLOBAL */ }
+        <Campaign.ArchiveButton campaign={ campaign } phases={ phases }/>
+        <Campaign.InstructionsButton campaign={ campaign }/>
+        { campaign.archived && <Note color="medium">
+            Archived
+            on { dateToString(campaign.archivedAt) } by { campaign.archivedBy?.displayName }
+        </Note> }
+        { campaign.deadline && <div>
+            <Note color="medium">Deadline</Note>
+            <p>{ dateToString(campaign.deadline) }</p>
+        </div> }
 
-                {/* DATA */ }
-                <div className={ styles.bloc }>
-                    <h4>Dataset</h4>
-                    <Dataset.Name dataset={ campaign.dataset } link/>
-                    <h4>Analysis</h4>
-                    <SpectrogramAnalysisTable analysis={ analysis } spacing="small"/>
+        {/* DATA */ }
+        <div className={ styles.bloc }>
+            <h4>Dataset</h4>
+            <Dataset.Name dataset={ campaign.dataset } link/>
+            <h4>Analysis</h4>
+            <SpectrogramAnalysisTable analysis={ analysis } spacing="small"/>
+        </div>
+
+        {/* ANNOTATION */ }
+        { phases.length > 0 && <Fragment>
+            <Campaign.LabelsDialog campaign={ campaign }/>
+
+            <div className={ styles.bloc }>
+                <div>
+                    <h4>Confidence set</h4>
+                    { !campaign.confidenceSet && <p>No confidence</p> }{ campaign.confidenceSet &&
+                    <p>{ campaign.confidenceSet.name }</p> }
                 </div>
-
-                {/* ANNOTATION */ }
-                { phases.length > 0 && <Fragment>
-                    <Campaign.LabelsDialog campaign={ campaign }/>
-
-                    <div className={ styles.bloc }>
-                        <div>
-                            <h4>Confidence set</h4>
-                            { !campaign.confidenceSet && <p>No confidence</p> }{ campaign.confidenceSet &&
-                            <p>{ campaign.confidenceSet.name }</p> }
-                        </div>
-                        { campaign.confidenceSet && <div>
-                            <Note color="medium">Indicator{ pluralize(campaign.confidenceSet.confidenceIndicators) }</Note>
-                            <p>{ campaign.confidenceSet.confidenceIndicators?.map(i => i?.label).join(', ') }</p>
-                        </div> }
-                    </div>
-                    <div className={ styles.bloc }>
-                        <div>
-                            <h4>Annotation types</h4>
-                            <p>Weak, box{ campaign.allowPointAnnotation ? ', point' : '' }</p>
-                        </div>
-                    </div>
-                </Fragment> }
-
-                {/* PROGRESS */ }
-                <Campaign.PhasesProgress campaign={ campaign } phases={ phases }/>
-
+                { campaign.confidenceSet && <div>
+                    <Note color="medium">Indicator{ pluralize(campaign.confidenceSet.confidenceIndicators) }</Note>
+                    <p>{ campaign.confidenceSet.confidenceIndicators?.map(i => i?.label).join(', ') }</p>
+                </div> }
             </div>
-        }, [ campaign, phases, analysis ],
-    )
+            <div className={ styles.bloc }>
+                <div>
+                    <h4>Annotation types</h4>
+                    <p>Weak, box{ campaign.allowPointAnnotation ? ', point' : '' }</p>
+                </div>
+            </div>
+        </Fragment> }
+
+        {/* PROGRESS */ }
+        <Campaign.PhasesProgress campaign={ campaign } phases={ phases }/>
+
+    </div>
 }
 
 export const Route = createFileRoute('/_authenticated/annotation-campaign/$campaignID/_detailLayout/')({
